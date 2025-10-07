@@ -1,0 +1,569 @@
+openapi: 3.0.3
+info:
+  title: Summer Camp Manager API
+  version: 1.0.0
+  description: API for managing summer camp operations including children, events, rooms, and team members
+
+components:
+  schemas:
+    Child:
+      type: object
+      required:
+        - id
+        - firstName
+        - lastName
+        - age
+        - gender
+        - parentContact
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        age:
+          type: integer
+          minimum: 5
+          maximum: 18
+        gender:
+          type: string
+          enum: [male, female]
+        parentContact:
+          type: string
+        allergies:
+          type: array
+          items:
+            type: string
+        medicalNotes:
+          type: string
+        photoUrl:
+          type: string
+        registrationDate:
+          type: string
+          format: date-time
+        sleepingRoomId:
+          type: string
+          format: uuid
+          description: ID of the sleeping room assigned to this child
+
+    TeamMember:
+      type: object
+      required:
+        - id
+        - firstName
+        - lastName
+        - role
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+          enum: [counselor, supervisor, director, nurse, instructor]
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        certifications:
+          type: array
+          items:
+            type: string
+        photoUrl:
+          type: string
+
+    Room:
+      type: object
+      required:
+        - id
+        - name
+        - capacity
+        - type
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        capacity:
+          type: integer
+          minimum: 1
+        type:
+          type: string
+          enum: [classroom, activity, sports, dining, outdoor, arts]
+        location:
+          type: string
+        equipment:
+          type: array
+          items:
+            type: string
+        notes:
+          type: string
+
+    SleepingRoom:
+      type: object
+      required:
+        - id
+        - name
+        - capacity
+        - gender
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        capacity:
+          type: integer
+          minimum: 1
+        gender:
+          type: string
+          enum: [boys, girls, mixed]
+        building:
+          type: string
+        floor:
+          type: integer
+        amenities:
+          type: array
+          items:
+            type: string
+        supervisorId:
+          type: string
+          format: uuid
+          description: Team member assigned as room supervisor
+        notes:
+          type: string
+
+    Event:
+      type: object
+      required:
+        - id
+        - title
+        - startTime
+        - endTime
+        - roomId
+        - capacity
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        roomId:
+          type: string
+          format: uuid
+        capacity:
+          type: integer
+          minimum: 1
+        assignedStaffIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        enrolledChildrenIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        type:
+          type: string
+          enum: [activity, sports, arts, education, meal, free-time]
+        requiredCertifications:
+          type: array
+          items:
+            type: string
+        color:
+          type: string
+          description: Hex color code for calendar display
+
+    Conflict:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [room_overcapacity, event_overcapacity, child_double_booked, staff_double_booked, missing_certification]
+        message:
+          type: string
+        entityId:
+          type: string
+        conflictingIds:
+          type: array
+          items:
+            type: string
+
+paths:
+  /children:
+    get:
+      summary: List all children
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Child'
+    post:
+      summary: Create a new child
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Child'
+      responses:
+        '201':
+          description: Created
+
+  /children/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get child by ID
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Child'
+    put:
+      summary: Update child
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Child'
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete child
+      responses:
+        '204':
+          description: Deleted
+
+  /team-members:
+    get:
+      summary: List all team members
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamMember'
+    post:
+      summary: Create a new team member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamMember'
+      responses:
+        '201':
+          description: Created
+
+  /team-members/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get team member by ID
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamMember'
+    put:
+      summary: Update team member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamMember'
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete team member
+      responses:
+        '204':
+          description: Deleted
+
+  /rooms:
+    get:
+      summary: List all rooms
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+    post:
+      summary: Create a new room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+      responses:
+        '201':
+          description: Created
+
+  /rooms/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get room by ID
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+    put:
+      summary: Update room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete room
+      responses:
+        '204':
+          description: Deleted
+
+  /events:
+    get:
+      summary: List all events
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+    post:
+      summary: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '201':
+          description: Created
+
+  /events/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get event by ID
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+    put:
+      summary: Update event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete event
+      responses:
+        '204':
+          description: Deleted
+
+  /events/{id}/enroll:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Enroll a child in an event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                childId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Enrolled
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conflict'
+
+  /events/{id}/unenroll:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Unenroll a child from an event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                childId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Unenrolled
+
+  /conflicts:
+    get:
+      summary: Check for scheduling conflicts
+      responses:
+        '200':
+          description: List of conflicts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conflict'
+
+  /sleeping-rooms:
+    get:
+      summary: List all sleeping rooms
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SleepingRoom'
+    post:
+      summary: Create a new sleeping room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SleepingRoom'
+      responses:
+        '201':
+          description: Created
+
+  /sleeping-rooms/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get sleeping room by ID
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SleepingRoom'
+    put:
+      summary: Update sleeping room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SleepingRoom'
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete sleeping room
+      responses:
+        '204':
+          description: Deleted
+
