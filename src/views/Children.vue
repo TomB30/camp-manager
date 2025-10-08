@@ -196,14 +196,23 @@
                   <div class="detail-label">Enrolled Events</div>
                   <div v-if="getChildEvents(selectedChild.id).length > 0" class="events-list">
                     <div 
-                      v-for="event in getChildEvents(selectedChild.id)"
-                      :key="event.id"
-                      class="event-item"
-                      :style="{ borderLeftColor: event.color || '#2196F3' }"
+                      v-for="(events, dateKey) in getChildEventsGroupedByDate(selectedChild.id)"
+                      :key="dateKey"
+                      class="event-date-group"
                     >
-                      <div class="event-item-title">{{ event.title }}</div>
-                      <div class="event-item-time text-xs text-secondary">
-                        {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}
+                      <div class="event-date-header">{{ formatDateHeader(dateKey) }}</div>
+                      <div class="event-date-items">
+                        <div 
+                          v-for="event in events"
+                          :key="event.id"
+                          class="event-item"
+                          :style="{ borderLeftColor: event.color || '#2196F3' }"
+                        >
+                          <div class="event-item-title">{{ event.title }}</div>
+                          <div class="event-item-time text-xs text-secondary">
+                            {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -455,8 +464,47 @@ const getChildEvents = (childId: string) => {
   return store.childEvents(childId);
 };
 
+const getChildEventsGroupedByDate = (childId: string) => {
+  const events = store.childEvents(childId);
+  
+  // Sort events by start time
+  const sortedEvents = [...events].sort((a, b) => 
+    new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+  );
+  
+  // Group by date
+  const grouped: Record<string, typeof events> = {};
+  
+  sortedEvents.forEach(event => {
+    const eventDate = new Date(event.startTime);
+    const dateKey = format(eventDate, 'yyyy-MM-dd');
+    
+    if (!grouped[dateKey]) {
+      grouped[dateKey] = [];
+    }
+    grouped[dateKey].push(event);
+  });
+  
+  return grouped;
+};
+
 const formatDate = (dateStr: string) => {
   return format(new Date(dateStr), 'MMMM d, yyyy');
+};
+
+const formatDateHeader = (dateKey: string) => {
+  const date = new Date(dateKey);
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  if (date.toDateString() === today.toDateString()) {
+    return `Today, ${format(date, 'EEEE, MMMM d')}`;
+  } else if (date.toDateString() === tomorrow.toDateString()) {
+    return `Tomorrow, ${format(date, 'EEEE, MMMM d')}`;
+  } else {
+    return format(date, 'EEEE, MMMM d, yyyy');
+  }
 };
 
 const formatTime = (dateStr: string) => {
@@ -686,11 +734,41 @@ const closeModal = () => {
   gap: 0.5rem;
 }
 
+.event-date-group {
+  margin-bottom: 1.5rem;
+}
+
+.event-date-group:last-child {
+  margin-bottom: 0;
+}
+
+.event-date-header {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--primary-color);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border-color);
+  text-transform: capitalize;
+}
+
+.event-date-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .event-item {
   padding: 0.75rem;
   background: var(--background);
   border-radius: var(--radius);
   border-left: 4px solid var(--primary-color);
+  transition: all 0.15s ease;
+}
+
+.event-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow);
 }
 
 .event-item-title {
