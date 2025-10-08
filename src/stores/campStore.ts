@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import type { Child, TeamMember, Room, SleepingRoom, Event, Conflict } from '@/types/api';
 import { storageService } from '@/services/storage';
 import { conflictDetector } from '@/services/conflicts';
+import { filterEventsByDate } from '@/utils/dateUtils';
 
 export const useCampStore = defineStore('camp', () => {
   // State
@@ -38,17 +39,7 @@ export const useCampStore = defineStore('camp', () => {
 
   const eventsForDate = computed(() => {
     return (date: Date) => {
-      // Use local date comparison to avoid timezone issues
-      const targetYear = date.getFullYear();
-      const targetMonth = date.getMonth();
-      const targetDay = date.getDate();
-      
-      return events.value.filter(event => {
-        const eventDate = new Date(event.startTime);
-        return eventDate.getFullYear() === targetYear &&
-               eventDate.getMonth() === targetMonth &&
-               eventDate.getDate() === targetDay;
-      });
+      return filterEventsByDate(events.value, date);
     };
   });
 

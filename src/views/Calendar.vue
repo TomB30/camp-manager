@@ -336,6 +336,7 @@ import { useCampStore } from '@/stores/campStore';
 import { format, addDays, startOfWeek, addWeeks } from 'date-fns';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
+import { filterEventsByDateAndHour } from '@/utils/dateUtils';
 import type { Event } from '@/types/api';
 
 const store = useCampStore();
@@ -587,15 +588,7 @@ const getWeekEventStyle = (event: Event) => {
 };
 
 const getEventsForDayAndHour = (day: Date, hour: number) => {
-  const dayStr = day.toISOString().split('T')[0];
-  return store.events.filter(event => {
-    const eventStart = new Date(event.startTime);
-    const eventDateStr = eventStart.toISOString().split('T')[0];
-    const eventStartHour = eventStart.getHours();
-    
-    // Only show the event in the hour it starts to avoid duplicates
-    return eventDateStr === dayStr && eventStartHour === hour;
-  });
+  return filterEventsByDateAndHour(store.events, day, hour);
 };
 
 const changeDate = (increment: number) => {

@@ -30,21 +30,6 @@
                 <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
             </button>
-            <button 
-              class="btn btn-sm" 
-              :class="{ 'btn-primary': viewMode === 'org-chart', 'btn-secondary': viewMode !== 'org-chart' }"
-              @click="viewMode = 'org-chart'"
-              title="Org Chart View"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="9" y="2" width="6" height="6" rx="1" />
-                <rect x="3" y="14" width="6" height="6" rx="1" />
-                <rect x="15" y="14" width="6" height="6" rx="1" />
-                <line x1="12" y1="8" x2="12" y2="11" />
-                <line x1="6" y1="14" x2="12" y2="11" />
-                <line x1="18" y1="14" x2="12" y2="11" />
-              </svg>
-            </button>
           </div>
           <button class="btn btn-primary" @click="showModal = true">+ Add Team Member</button>
         </div>
@@ -137,68 +122,6 @@
             </tr>
           </tbody>
         </table>
-      </div>
-
-      <!-- Org Chart View -->
-      <div v-if="viewMode === 'org-chart'" class="org-chart-container">
-        <div class="org-chart">
-          <!-- Top Level Members -->
-          <div v-for="topMember in getTopLevelMembers" :key="topMember.id" class="org-level">
-            <div class="org-node top-level" @click="selectMember(topMember.id)">
-              <div class="org-avatar" :style="{ background: getRoleColor(topMember.role) }">
-                {{ topMember.firstName.charAt(0) }}{{ topMember.lastName.charAt(0) }}
-              </div>
-              <div class="org-info">
-                <div class="org-name">{{ topMember.firstName }} {{ topMember.lastName }}</div>
-                <div class="org-role">{{ formatRole(topMember.role) }}</div>
-                <div class="org-reports" v-if="getDirectReports(topMember.id).length > 0">
-                  {{ getDirectReports(topMember.id).length }} Direct Report(s)
-                </div>
-              </div>
-            </div>
-
-            <!-- Direct Reports -->
-            <div v-if="getDirectReports(topMember.id).length > 0" class="org-children">
-              <div class="connector-line"></div>
-              <div class="org-child-nodes">
-                <div v-for="report in getDirectReports(topMember.id)" :key="report.id" class="org-child-wrapper">
-                  <div class="org-connector"></div>
-                  <div class="org-node" @click="selectMember(report.id)">
-                    <div class="org-avatar" :style="{ background: getRoleColor(report.role) }">
-                      {{ report.firstName.charAt(0) }}{{ report.lastName.charAt(0) }}
-                    </div>
-                    <div class="org-info">
-                      <div class="org-name">{{ report.firstName }} {{ report.lastName }}</div>
-                      <div class="org-role">{{ formatRole(report.role) }}</div>
-                      <div class="org-reports" v-if="getDirectReports(report.id).length > 0">
-                        {{ getDirectReports(report.id).length }} Direct Report(s)
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Sub-Level Reports -->
-                  <div v-if="getDirectReports(report.id).length > 0" class="org-sub-children">
-                    <div class="connector-line"></div>
-                    <div class="org-sub-nodes">
-                      <div v-for="subReport in getDirectReports(report.id)" :key="subReport.id" class="org-sub-wrapper">
-                        <div class="org-connector"></div>
-                        <div class="org-node small" @click="selectMember(subReport.id)">
-                          <div class="org-avatar-sm" :style="{ background: getRoleColor(subReport.role) }">
-                            {{ subReport.firstName.charAt(0) }}{{ subReport.lastName.charAt(0) }}
-                          </div>
-                          <div class="org-info">
-                            <div class="org-name-sm">{{ subReport.firstName }} {{ subReport.lastName }}</div>
-                            <div class="org-role-sm">{{ formatRole(subReport.role) }}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Member Detail Modal -->
@@ -356,7 +279,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
 import type { TeamMember } from '@/types/api';
@@ -368,6 +291,18 @@ const showModal = ref(false);
 const editingMemberId = ref<string | null>(null);
 const certificationsInput = ref('');
 const viewMode = ref<'grid' | 'table' | 'org-chart'>('grid');
+const expandedMembers = ref<Set<string>>(new Set());
+
+
+// Expand all by default on mount
+onMounted(() => {
+  // Auto-expand all members with reports
+  store.teamMembers.forEach(member => {
+    if (getDirectReports(member.id).length > 0) {
+      expandedMembers.value.add(member.id);
+    }
+  });
+});
 
 const formData = ref<{
   firstName: string;
@@ -462,10 +397,6 @@ const clearFilters = () => {
 const getDirectReports = (managerId: string) => {
   return filteredMembers.value.filter(member => member.managerId === managerId);
 };
-
-const getTopLevelMembers = computed(() => {
-  return filteredMembers.value.filter(member => !member.managerId);
-});
 
 const getManagerName = (managerId: string | undefined) => {
   if (!managerId) return 'None';
@@ -769,55 +700,119 @@ const closeModal = () => {
   padding: 0.25rem 0.5rem;
 }
 
-/* Org Chart Styles */
+/* Org Chart - Tree List Style */
 .org-chart-container {
-  padding: 2rem;
-  overflow-x: auto;
+  padding: 0;
 }
 
-.org-chart {
+.hierarchy-tree {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.tree-section {
+  margin-bottom: 2rem;
+}
+
+.tree-item {
   display: flex;
-  flex-direction: column;
-  gap: 3rem;
-  min-width: max-content;
+  align-items: stretch;
+  margin-bottom: 0.5rem;
+  position: relative;
 }
 
-.org-level {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.org-node {
-  background: var(--card-background);
-  border-radius: var(--radius);
-  padding: 1rem;
-  box-shadow: var(--shadow);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  min-width: 250px;
-}
-
-.org-node.top-level {
-  border: 2px solid var(--primary-color);
-}
-
-.org-node.small {
-  min-width: 200px;
-  padding: 0.75rem;
-}
-
-.org-node:hover {
-  transform: translateY(-2px);
+.tree-item:hover .tree-content {
+  background: var(--background);
   box-shadow: var(--shadow-lg);
 }
 
-.org-avatar {
-  width: 50px;
-  height: 50px;
+.tree-line {
+  position: relative;
+  min-width: 40px;
+  margin-right: 1rem;
+}
+
+.tree-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 20px;
+  width: 2px;
+  background: var(--border-color);
+}
+
+.tree-line::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  width: 20px;
+  height: 2px;
+  background: var(--border-color);
+}
+
+.tree-line.is-last::before {
+  bottom: 50%;
+}
+
+.level-0 .tree-line {
+  display: none;
+}
+
+.level-1 .tree-line {
+  margin-left: 0;
+}
+
+.level-2 .tree-line {
+  margin-left: 40px;
+}
+
+.tree-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--card-background);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.level-0 .tree-content {
+  border: 2px solid var(--primary-color);
+  box-shadow: var(--shadow-lg);
+}
+
+.expand-btn {
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+  border-radius: var(--radius);
+  flex-shrink: 0;
+}
+
+.expand-btn:hover {
+  background: var(--background);
+  color: var(--primary-color);
+}
+
+.expand-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.tree-avatar {
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   color: white;
   display: flex;
@@ -828,7 +823,7 @@ const closeModal = () => {
   flex-shrink: 0;
 }
 
-.org-avatar-sm {
+.tree-avatar-sm {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -841,104 +836,51 @@ const closeModal = () => {
   flex-shrink: 0;
 }
 
-.org-info {
+.tree-info {
   flex: 1;
+  min-width: 0;
 }
 
-.org-name {
+.tree-name {
   font-weight: 600;
   font-size: 1rem;
   margin-bottom: 0.25rem;
+  color: var(--text-primary);
 }
 
-.org-name-sm {
+.tree-name-sm {
   font-weight: 600;
   font-size: 0.875rem;
   margin-bottom: 0.125rem;
+  color: var(--text-primary);
 }
 
-.org-role {
+.tree-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tree-role {
   font-size: 0.875rem;
   color: var(--text-secondary);
-  margin-bottom: 0.25rem;
 }
 
-.org-role-sm {
+.tree-role-sm {
   font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
-.org-reports {
+.tree-count {
   font-size: 0.75rem;
   color: var(--primary-color);
   font-weight: 500;
-}
-
-.org-children {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 1.5rem;
-  position: relative;
-}
-
-.connector-line {
-  width: 2px;
-  height: 30px;
-  background: var(--border-color);
-  margin-bottom: 1rem;
-}
-
-.org-child-nodes {
-  display: flex;
-  gap: 2rem;
-  position: relative;
-}
-
-.org-child-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.org-connector {
-  width: 2px;
-  height: 30px;
-  background: var(--border-color);
-  margin-bottom: 1rem;
-  position: relative;
-}
-
-.org-connector::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--border-color);
-}
-
-.org-sub-children {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 1rem;
-}
-
-.org-sub-nodes {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.org-sub-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  padding: 0.125rem 0.5rem;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 999px;
+  opacity: 0.8;
 }
 </style>
 
