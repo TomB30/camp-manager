@@ -326,6 +326,18 @@
           </div>
         </div>
       </Teleport>
+
+      <!-- Confirm Delete Modal -->
+      <ConfirmModal
+        :show="showConfirmModal"
+        :title="confirmModalTitle"
+        :message="confirmModalMessage"
+        :details="confirmModalDetails"
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleConfirmAction"
+        @cancel="handleCancelConfirm"
+      />
     </div>
   </div>
 </template>
@@ -335,11 +347,19 @@ import { ref, computed } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { SleepingRoom } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const store = useCampStore();
 const selectedRoomId = ref<string | null>(null);
 const showModal = ref(false);
 const editingRoomId = ref<string | null>(null);
+
+// Confirm modal state
+const showConfirmModal = ref(false);
+const confirmModalTitle = ref('');
+const confirmModalMessage = ref('');
+const confirmModalDetails = ref('');
+const confirmAction = ref<(() => void) | null>(null);
 const amenitiesInput = ref('');
 const childToAssign = ref('');
 const viewMode = ref<'grid' | 'table'>('grid');
@@ -565,20 +585,39 @@ const saveRoom = async () => {
   closeModal();
 };
 
-const deleteRoomConfirm = async () => {
+const deleteRoomConfirm = () => {
   if (!selectedRoomId.value) return;
   
   const childCount = getAssignedCount(selectedRoomId.value);
-  if (childCount > 0) {
-    if (!confirm(`This room has ${childCount} children assigned. They will be unassigned. Continue?`)) {
-      return;
-    }
-  }
   
-  if (confirm('Are you sure you want to delete this sleeping room?')) {
-    await store.deleteSleepingRoom(selectedRoomId.value);
-    selectedRoomId.value = null;
+  // Setup the confirm modal
+  confirmModalTitle.value = 'Delete Sleeping Room';
+  confirmModalMessage.value = 'Are you sure you want to delete this sleeping room?';
+  confirmModalDetails.value = childCount > 0 
+    ? `This room has ${childCount} children assigned. They will be unassigned.`
+    : '';
+  
+  confirmAction.value = async () => {
+    if (selectedRoomId.value) {
+      await store.deleteSleepingRoom(selectedRoomId.value);
+      selectedRoomId.value = null;
+    }
+  };
+  
+  showConfirmModal.value = true;
+};
+
+const handleConfirmAction = async () => {
+  if (confirmAction.value) {
+    await confirmAction.value();
   }
+  showConfirmModal.value = false;
+  confirmAction.value = null;
+};
+
+const handleCancelConfirm = () => {
+  showConfirmModal.value = false;
+  confirmAction.value = null;
 };
 
 const closeModal = () => {

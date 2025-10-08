@@ -266,6 +266,18 @@
           </div>
         </div>
       </Teleport>
+
+      <!-- Confirm Delete Modal -->
+      <ConfirmModal
+        :show="showConfirmModal"
+        title="Delete Team Member"
+        message="Are you sure you want to delete this team member?"
+        details="They will be removed from all events."
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleConfirmAction"
+        @cancel="handleCancelConfirm"
+      />
     </div>
   </div>
 </template>
@@ -276,6 +288,7 @@ import { useCampStore } from '@/stores/campStore';
 import type { TeamMember } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const store = useCampStore();
 const selectedMemberId = ref<string | null>(null);
@@ -284,6 +297,10 @@ const editingMemberId = ref<string | null>(null);
 const certificationsInput = ref('');
 const viewMode = ref<'grid' | 'table' | 'org-chart'>('grid');
 const expandedMembers = ref<Set<string>>(new Set());
+
+// Confirm modal state
+const showConfirmModal = ref(false);
+const confirmAction = ref<(() => void) | null>(null);
 
 
 // Expand all by default on mount
@@ -469,12 +486,28 @@ const saveMember = async () => {
   closeModal();
 };
 
-const deleteMemberConfirm = async () => {
+const deleteMemberConfirm = () => {
   if (!selectedMemberId.value) return;
-  if (confirm('Are you sure you want to delete this team member? They will be removed from all events.')) {
-    await store.deleteTeamMember(selectedMemberId.value);
-    selectedMemberId.value = null;
+  confirmAction.value = async () => {
+    if (selectedMemberId.value) {
+      await store.deleteTeamMember(selectedMemberId.value);
+      selectedMemberId.value = null;
+    }
+  };
+  showConfirmModal.value = true;
+};
+
+const handleConfirmAction = async () => {
+  if (confirmAction.value) {
+    await confirmAction.value();
   }
+  showConfirmModal.value = false;
+  confirmAction.value = null;
+};
+
+const handleCancelConfirm = () => {
+  showConfirmModal.value = false;
+  confirmAction.value = null;
 };
 
 const closeModal = () => {

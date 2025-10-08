@@ -268,6 +268,17 @@
           </div>
         </div>
       </Teleport>
+
+      <!-- Confirm Delete Modal -->
+      <ConfirmModal
+        :show="showConfirmModal"
+        title="Delete Activity Room"
+        message="Are you sure you want to delete this room?"
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleConfirmAction"
+        @cancel="handleCancelConfirm"
+      />
     </div>
   </div>
 </template>
@@ -278,11 +289,16 @@ import { useCampStore } from '@/stores/campStore';
 import type { Room } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const store = useCampStore();
 const selectedRoomId = ref<string | null>(null);
 const showModal = ref(false);
 const editingRoomId = ref<string | null>(null);
+
+// Confirm modal state
+const showConfirmModal = ref(false);
+const confirmAction = ref<(() => void) | null>(null);
 const equipmentInput = ref('');
 const viewMode = ref<'grid' | 'table'>('grid');
 
@@ -467,12 +483,28 @@ const saveRoom = async () => {
   closeModal();
 };
 
-const deleteRoomConfirm = async () => {
+const deleteRoomConfirm = () => {
   if (!selectedRoomId.value) return;
-  if (confirm('Are you sure you want to delete this room?')) {
-    await store.deleteRoom(selectedRoomId.value);
-    selectedRoomId.value = null;
+  confirmAction.value = async () => {
+    if (selectedRoomId.value) {
+      await store.deleteRoom(selectedRoomId.value);
+      selectedRoomId.value = null;
+    }
+  };
+  showConfirmModal.value = true;
+};
+
+const handleConfirmAction = async () => {
+  if (confirmAction.value) {
+    await confirmAction.value();
   }
+  showConfirmModal.value = false;
+  confirmAction.value = null;
+};
+
+const handleCancelConfirm = () => {
+  showConfirmModal.value = false;
+  confirmAction.value = null;
 };
 
 const closeModal = () => {
