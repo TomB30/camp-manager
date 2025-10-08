@@ -127,6 +127,17 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'sarah.connor@camp.com',
     phone: '555-0101',
     certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
+    managerId: undefined, // Top of hierarchy
+  },
+  {
+    id: generateId('staff', 9),
+    firstName: 'James',
+    lastName: 'Rodriguez',
+    role: 'supervisor',
+    email: 'james.rodriguez@camp.com',
+    phone: '555-0109',
+    certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
+    managerId: generateId('staff', 1), // Reports to Sarah (Director)
   },
   {
     id: generateId('staff', 2),
@@ -136,6 +147,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'mike.peterson@camp.com',
     phone: '555-0102',
     certifications: ['First Aid', 'CPR'],
+    managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
     id: generateId('staff', 3),
@@ -145,6 +157,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'jessica.lee@camp.com',
     phone: '555-0103',
     certifications: ['First Aid', 'CPR'],
+    managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
     id: generateId('staff', 4),
@@ -154,6 +167,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'david.chen@camp.com',
     phone: '555-0104',
     certifications: ['Lifeguard', 'Swimming Instructor', 'CPR'],
+    managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
     id: generateId('staff', 5),
@@ -163,6 +177,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'rachel.martinez@camp.com',
     phone: '555-0105',
     certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
+    managerId: generateId('staff', 1), // Reports directly to Sarah (Director)
   },
   {
     id: generateId('staff', 6),
@@ -172,6 +187,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'tom.wilson@camp.com',
     phone: '555-0106',
     certifications: ['First Aid', 'CPR'],
+    managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
     id: generateId('staff', 7),
@@ -181,6 +197,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'amanda.foster@camp.com',
     phone: '555-0107',
     certifications: ['First Aid', 'CPR'],
+    managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
     id: generateId('staff', 8),
@@ -190,6 +207,7 @@ export const mockTeamMembers: TeamMember[] = [
     email: 'chris.bryant@camp.com',
     phone: '555-0108',
     certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
+    managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
 ];
 

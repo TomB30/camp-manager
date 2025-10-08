@@ -3,78 +3,623 @@
  * Do not make direct changes to the file.
  */
 
+
+export interface paths {
+  "/children": {
+    /** List all children */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Child"][];
+          };
+        };
+      };
+    };
+    /** Create a new child */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["Child"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/children/{id}": {
+    /** Get child by ID */
+    get: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Child"];
+          };
+        };
+      };
+    };
+    /** Update child */
+    put: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["Child"];
+        };
+      };
+      responses: {
+        /** @description Updated */
+        200: {
+          content: never;
+        };
+      };
+    };
+    /** Delete child */
+    delete: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+  };
+  "/team-members": {
+    /** List all team members */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["TeamMember"][];
+          };
+        };
+      };
+    };
+    /** Create a new team member */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["TeamMember"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/team-members/{id}": {
+    /** Get team member by ID */
+    get: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["TeamMember"];
+          };
+        };
+      };
+    };
+    /** Update team member */
+    put: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["TeamMember"];
+        };
+      };
+      responses: {
+        /** @description Updated */
+        200: {
+          content: never;
+        };
+      };
+    };
+    /** Delete team member */
+    delete: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+  };
+  "/rooms": {
+    /** List all rooms */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Room"][];
+          };
+        };
+      };
+    };
+    /** Create a new room */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["Room"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/rooms/{id}": {
+    /** Get room by ID */
+    get: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Room"];
+          };
+        };
+      };
+    };
+    /** Update room */
+    put: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["Room"];
+        };
+      };
+      responses: {
+        /** @description Updated */
+        200: {
+          content: never;
+        };
+      };
+    };
+    /** Delete room */
+    delete: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+  };
+  "/events": {
+    /** List all events */
+    get: {
+      parameters: {
+        query?: {
+          startDate?: string;
+          endDate?: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Event"][];
+          };
+        };
+      };
+    };
+    /** Create a new event */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["Event"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/events/{id}": {
+    /** Get event by ID */
+    get: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Event"];
+          };
+        };
+      };
+    };
+    /** Update event */
+    put: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["Event"];
+        };
+      };
+      responses: {
+        /** @description Updated */
+        200: {
+          content: never;
+        };
+      };
+    };
+    /** Delete event */
+    delete: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+  };
+  "/events/{id}/enroll": {
+    /** Enroll a child in an event */
+    post: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            /** Format: uuid */
+            childId?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Enrolled */
+        200: {
+          content: never;
+        };
+        /** @description Conflict */
+        409: {
+          content: {
+            "application/json": components["schemas"]["Conflict"];
+          };
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+  };
+  "/events/{id}/unenroll": {
+    /** Unenroll a child from an event */
+    post: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            /** Format: uuid */
+            childId?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Unenrolled */
+        200: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+  };
+  "/conflicts": {
+    /** Check for scheduling conflicts */
+    get: {
+      responses: {
+        /** @description List of conflicts */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Conflict"][];
+          };
+        };
+      };
+    };
+  };
+  "/sleeping-rooms": {
+    /** List all sleeping rooms */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["SleepingRoom"][];
+          };
+        };
+      };
+    };
+    /** Create a new sleeping room */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["SleepingRoom"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/sleeping-rooms/{id}": {
+    /** Get sleeping room by ID */
+    get: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["SleepingRoom"];
+          };
+        };
+      };
+    };
+    /** Update sleeping room */
+    put: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["SleepingRoom"];
+        };
+      };
+      responses: {
+        /** @description Updated */
+        200: {
+          content: never;
+        };
+      };
+    };
+    /** Delete sleeping room */
+    delete: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+  };
+}
+
+export type webhooks = Record<string, never>;
+
 export interface components {
   schemas: {
     Child: {
+      /** Format: uuid */
       id: string;
       firstName: string;
       lastName: string;
       age: number;
+      /** @enum {string} */
       gender: "male" | "female";
       parentContact: string;
       allergies?: string[];
       medicalNotes?: string;
       photoUrl?: string;
+      /** Format: date-time */
       registrationDate?: string;
+      /**
+       * Format: uuid
+       * @description ID of the sleeping room assigned to this child
+       */
       sleepingRoomId?: string;
     };
     TeamMember: {
+      /** Format: uuid */
       id: string;
       firstName: string;
       lastName: string;
+      /** @enum {string} */
       role: "counselor" | "supervisor" | "director" | "nurse" | "instructor";
+      /** Format: email */
       email?: string;
       phone?: string;
       certifications?: string[];
       photoUrl?: string;
+      /**
+       * Format: uuid
+       * @description ID of the team member who manages this person
+       */
+      managerId?: string;
     };
     Room: {
+      /** Format: uuid */
       id: string;
       name: string;
       capacity: number;
+      /** @enum {string} */
       type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
       location?: string;
       equipment?: string[];
       notes?: string;
     };
     SleepingRoom: {
+      /** Format: uuid */
       id: string;
       name: string;
       capacity: number;
+      /** @enum {string} */
       gender: "boys" | "girls" | "mixed";
       building?: string;
       floor?: number;
       amenities?: string[];
+      /**
+       * Format: uuid
+       * @description Team member assigned as room supervisor
+       */
       supervisorId?: string;
       notes?: string;
     };
     Event: {
+      /** Format: uuid */
       id: string;
       title: string;
       description?: string;
+      /** Format: date-time */
       startTime: string;
+      /** Format: date-time */
       endTime: string;
+      /** Format: uuid */
       roomId: string;
       capacity: number;
       assignedStaffIds?: string[];
       enrolledChildrenIds?: string[];
+      /** @enum {string} */
       type?: "activity" | "sports" | "arts" | "education" | "meal" | "free-time";
       requiredCertifications?: string[];
+      /** @description Hex color code for calendar display */
       color?: string;
     };
     Conflict: {
+      /** @enum {string} */
       type?: "room_overcapacity" | "event_overcapacity" | "child_double_booked" | "staff_double_booked" | "missing_certification";
       message?: string;
       entityId?: string;
       conflictingIds?: string[];
     };
   };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 
+export type $defs = Record<string, never>;
+
+export type external = Record<string, never>;
+
+export type operations = Record<string, never>;
+
+// Export commonly used types
 export type Child = components["schemas"]["Child"];
 export type TeamMember = components["schemas"]["TeamMember"];
 export type Room = components["schemas"]["Room"];
 export type SleepingRoom = components["schemas"]["SleepingRoom"];
 export type Event = components["schemas"]["Event"];
 export type Conflict = components["schemas"]["Conflict"];
-

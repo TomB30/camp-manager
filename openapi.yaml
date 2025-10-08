@@ -77,6 +77,10 @@ components:
             type: string
         photoUrl:
           type: string
+        managerId:
+          type: string
+          format: uuid
+          description: ID of the team member who manages this person
 
     Room:
       type: object

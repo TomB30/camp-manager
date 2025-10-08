@@ -30,6 +30,21 @@
                 <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
             </button>
+            <button 
+              class="btn btn-sm" 
+              :class="{ 'btn-primary': viewMode === 'org-chart', 'btn-secondary': viewMode !== 'org-chart' }"
+              @click="viewMode = 'org-chart'"
+              title="Org Chart View"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="2" width="6" height="6" rx="1" />
+                <rect x="3" y="14" width="6" height="6" rx="1" />
+                <rect x="15" y="14" width="6" height="6" rx="1" />
+                <line x1="12" y1="8" x2="12" y2="11" />
+                <line x1="6" y1="14" x2="12" y2="11" />
+                <line x1="18" y1="14" x2="12" y2="11" />
+              </svg>
+            </button>
           </div>
           <button class="btn btn-primary" @click="showModal = true">+ Add Team Member</button>
         </div>
@@ -124,6 +139,68 @@
         </table>
       </div>
 
+      <!-- Org Chart View -->
+      <div v-if="viewMode === 'org-chart'" class="org-chart-container">
+        <div class="org-chart">
+          <!-- Top Level Members -->
+          <div v-for="topMember in getTopLevelMembers" :key="topMember.id" class="org-level">
+            <div class="org-node top-level" @click="selectMember(topMember.id)">
+              <div class="org-avatar" :style="{ background: getRoleColor(topMember.role) }">
+                {{ topMember.firstName.charAt(0) }}{{ topMember.lastName.charAt(0) }}
+              </div>
+              <div class="org-info">
+                <div class="org-name">{{ topMember.firstName }} {{ topMember.lastName }}</div>
+                <div class="org-role">{{ formatRole(topMember.role) }}</div>
+                <div class="org-reports" v-if="getDirectReports(topMember.id).length > 0">
+                  {{ getDirectReports(topMember.id).length }} Direct Report(s)
+                </div>
+              </div>
+            </div>
+
+            <!-- Direct Reports -->
+            <div v-if="getDirectReports(topMember.id).length > 0" class="org-children">
+              <div class="connector-line"></div>
+              <div class="org-child-nodes">
+                <div v-for="report in getDirectReports(topMember.id)" :key="report.id" class="org-child-wrapper">
+                  <div class="org-connector"></div>
+                  <div class="org-node" @click="selectMember(report.id)">
+                    <div class="org-avatar" :style="{ background: getRoleColor(report.role) }">
+                      {{ report.firstName.charAt(0) }}{{ report.lastName.charAt(0) }}
+                    </div>
+                    <div class="org-info">
+                      <div class="org-name">{{ report.firstName }} {{ report.lastName }}</div>
+                      <div class="org-role">{{ formatRole(report.role) }}</div>
+                      <div class="org-reports" v-if="getDirectReports(report.id).length > 0">
+                        {{ getDirectReports(report.id).length }} Direct Report(s)
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Sub-Level Reports -->
+                  <div v-if="getDirectReports(report.id).length > 0" class="org-sub-children">
+                    <div class="connector-line"></div>
+                    <div class="org-sub-nodes">
+                      <div v-for="subReport in getDirectReports(report.id)" :key="subReport.id" class="org-sub-wrapper">
+                        <div class="org-connector"></div>
+                        <div class="org-node small" @click="selectMember(subReport.id)">
+                          <div class="org-avatar-sm" :style="{ background: getRoleColor(subReport.role) }">
+                            {{ subReport.firstName.charAt(0) }}{{ subReport.lastName.charAt(0) }}
+                          </div>
+                          <div class="org-info">
+                            <div class="org-name-sm">{{ subReport.firstName }} {{ subReport.lastName }}</div>
+                            <div class="org-role-sm">{{ formatRole(subReport.role) }}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Member Detail Modal -->
       <Teleport to="body">
         <div v-if="selectedMemberId" class="modal-overlay" @click.self="selectedMemberId = null">
@@ -138,6 +215,22 @@
                   <div class="detail-label">Role</div>
                   <div>
                     <span class="badge badge-primary">{{ formatRole(selectedMember.role) }}</span>
+                  </div>
+                </div>
+
+                <div class="detail-section">
+                  <div class="detail-label">Manager</div>
+                  <div>
+                    <span class="badge badge-success">{{ getManagerName(selectedMember.managerId) }}</span>
+                  </div>
+                </div>
+
+                <div v-if="getDirectReports(selectedMember.id).length > 0" class="detail-section">
+                  <div class="detail-label">Direct Reports</div>
+                  <div class="flex gap-1 flex-wrap">
+                    <span v-for="report in getDirectReports(selectedMember.id)" :key="report.id" class="badge badge-primary">
+                      {{ report.firstName }} {{ report.lastName }}
+                    </span>
                   </div>
                 </div>
 
@@ -220,6 +313,20 @@
                 </div>
 
                 <div class="form-group">
+                  <label class="form-label">Manager</label>
+                  <select v-model="formData.managerId" class="form-select">
+                    <option value="">No Manager (Top Level)</option>
+                    <option 
+                      v-for="member in store.teamMembers.filter(m => m.id !== editingMemberId)" 
+                      :key="member.id" 
+                      :value="member.id"
+                    >
+                      {{ member.firstName }} {{ member.lastName }} ({{ formatRole(member.role) }})
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
                   <label class="form-label">Email</label>
                   <input v-model="formData.email" type="email" class="form-input" />
                 </div>
@@ -260,7 +367,7 @@ const selectedMemberId = ref<string | null>(null);
 const showModal = ref(false);
 const editingMemberId = ref<string | null>(null);
 const certificationsInput = ref('');
-const viewMode = ref<'grid' | 'table'>('grid');
+const viewMode = ref<'grid' | 'table' | 'org-chart'>('grid');
 
 const formData = ref<{
   firstName: string;
@@ -269,6 +376,7 @@ const formData = ref<{
   email: string;
   phone: string;
   certifications: string[];
+  managerId: string;
 }>({
   firstName: '',
   lastName: '',
@@ -276,6 +384,7 @@ const formData = ref<{
   email: '',
   phone: '',
   certifications: [],
+  managerId: '',
 });
 
 // Filter state
@@ -349,6 +458,21 @@ const clearFilters = () => {
   filterCertification.value = '';
 };
 
+// Org chart functions
+const getDirectReports = (managerId: string) => {
+  return filteredMembers.value.filter(member => member.managerId === managerId);
+};
+
+const getTopLevelMembers = computed(() => {
+  return filteredMembers.value.filter(member => !member.managerId);
+});
+
+const getManagerName = (managerId: string | undefined) => {
+  if (!managerId) return 'None';
+  const manager = store.getTeamMemberById(managerId);
+  return manager ? `${manager.firstName} ${manager.lastName}` : 'Unknown';
+};
+
 const formatRole = (role: string) => {
   return role.charAt(0).toUpperCase() + role.slice(1);
 };
@@ -387,6 +511,7 @@ const editMember = () => {
     email: selectedMember.value.email || '',
     phone: selectedMember.value.phone || '',
     certifications: selectedMember.value.certifications || [],
+    managerId: selectedMember.value.managerId || '',
   };
   certificationsInput.value = (selectedMember.value.certifications || []).join(', ');
   
@@ -408,6 +533,7 @@ const saveMember = async () => {
     email: formData.value.email,
     phone: formData.value.phone,
     certifications,
+    managerId: formData.value.managerId || undefined,
   };
 
   if (editingMemberId.value) {
@@ -437,6 +563,7 @@ const closeModal = () => {
     email: '',
     phone: '',
     certifications: [],
+    managerId: '',
   };
   certificationsInput.value = '';
 };
@@ -640,6 +767,178 @@ const closeModal = () => {
 .badge-sm {
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
+}
+
+/* Org Chart Styles */
+.org-chart-container {
+  padding: 2rem;
+  overflow-x: auto;
+}
+
+.org-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  min-width: max-content;
+}
+
+.org-level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.org-node {
+  background: var(--card-background);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  min-width: 250px;
+}
+
+.org-node.top-level {
+  border: 2px solid var(--primary-color);
+}
+
+.org-node.small {
+  min-width: 200px;
+  padding: 0.75rem;
+}
+
+.org-node:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.org-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.org-avatar-sm {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.org-info {
+  flex: 1;
+}
+
+.org-name {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.org-name-sm {
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.125rem;
+}
+
+.org-role {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.org-role-sm {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.org-reports {
+  font-size: 0.75rem;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.org-children {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.5rem;
+  position: relative;
+}
+
+.connector-line {
+  width: 2px;
+  height: 30px;
+  background: var(--border-color);
+  margin-bottom: 1rem;
+}
+
+.org-child-nodes {
+  display: flex;
+  gap: 2rem;
+  position: relative;
+}
+
+.org-child-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.org-connector {
+  width: 2px;
+  height: 30px;
+  background: var(--border-color);
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.org-connector::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-color);
+}
+
+.org-sub-children {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.org-sub-nodes {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.org-sub-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
 
