@@ -194,23 +194,11 @@
 
                 <div class="detail-section">
                   <div class="detail-label">Scheduled Events</div>
-                  <div v-if="getRoomEvents(selectedRoom.id).length > 0" class="events-list">
-                    <div 
-                      v-for="event in getRoomEvents(selectedRoom.id)"
-                      :key="event.id"
-                      class="event-item"
-                      :style="{ borderLeftColor: event.color || '#2196F3' }"
-                    >
-                      <div class="event-item-title">{{ event.title }}</div>
-                      <div class="event-item-time text-xs text-secondary">
-                        {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}
-                      </div>
-                      <div class="text-xs text-secondary">
-                        {{ event.enrolledChildrenIds?.length || 0 }}/{{ event.capacity }} enrolled
-                      </div>
-                    </div>
-                  </div>
-                  <div v-else class="text-secondary">No events scheduled</div>
+                  <EventsByDate 
+                    :events="getRoomEvents(selectedRoom.id)"
+                    :show-enrollment="true"
+                    empty-message="No events scheduled"
+                  />
                 </div>
               </div>
             </div>
@@ -287,9 +275,9 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import { format } from 'date-fns';
 import type { Room } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
+import EventsByDate from '@/components/EventsByDate.vue';
 
 const store = useCampStore();
 const selectedRoomId = ref<string | null>(null);
@@ -430,10 +418,6 @@ const getRoomUsage = (roomId: string) => {
   }, 0);
   
   return totalUsage / roomEvents.length;
-};
-
-const formatTime = (dateStr: string) => {
-  return format(new Date(dateStr), 'h:mm a');
 };
 
 const selectRoom = (roomId: string) => {

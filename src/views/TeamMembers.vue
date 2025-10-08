@@ -178,20 +178,12 @@
 
                 <div class="detail-section">
                   <div class="detail-label">Assigned Events</div>
-                  <div v-if="getMemberEvents(selectedMember.id).length > 0" class="events-list">
-                    <div 
-                      v-for="event in getMemberEvents(selectedMember.id)"
-                      :key="event.id"
-                      class="event-item"
-                      :style="{ borderLeftColor: event.color || '#2196F3' }"
-                    >
-                      <div class="event-item-title">{{ event.title }}</div>
-                      <div class="event-item-time text-xs text-secondary">
-                        {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}
-                      </div>
-                    </div>
-                  </div>
-                  <div v-else class="text-secondary">No events assigned</div>
+                  <EventsByDate 
+                    :events="getMemberEvents(selectedMember.id)"
+                    :show-room="true"
+                    :get-room-name="getRoomName"
+                    empty-message="No events assigned"
+                  />
                 </div>
               </div>
             </div>
@@ -281,9 +273,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import { format } from 'date-fns';
 import type { TeamMember } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
+import EventsByDate from '@/components/EventsByDate.vue';
 
 const store = useCampStore();
 const selectedMemberId = ref<string | null>(null);
@@ -423,8 +415,9 @@ const getMemberEvents = (memberId: string) => {
   return store.staffEvents(memberId);
 };
 
-const formatTime = (dateStr: string) => {
-  return format(new Date(dateStr), 'h:mm a');
+const getRoomName = (roomId: string) => {
+  const room = store.getRoomById(roomId);
+  return room?.name || 'Unknown Room';
 };
 
 const selectMember = (memberId: string) => {
