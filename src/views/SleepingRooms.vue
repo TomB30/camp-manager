@@ -2,7 +2,7 @@
   <div class="container">
     <div class="sleeping-rooms-view">
       <div class="view-header">
-        <h2><Bed :size="24" class="inline" style="vertical-align: middle; margin-right: 0.5rem;" />Sleeping Rooms (Cabins)</h2>
+        <h2>Sleeping Rooms (Cabins)</h2>
         <div class="header-actions">
           <button class="btn btn-primary" @click="showModal = true">+ Add Sleeping Room</button>
         </div>
