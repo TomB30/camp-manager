@@ -900,15 +900,22 @@ const unenrollCamperFromEvent = (eventId: string, camperId: string) => {
   background: var(--surface-secondary);
 }
 
-.time-col-header,
+.time-col-header {
+  padding: 1rem 0.75rem;
+  text-align: center;
+  font-weight: 600;
+  border-right: 1px solid var(--border-light);
+  position: sticky;
+  left: 0;
+  z-index: 30;
+  background: var(--surface-secondary);
+}
+
 .day-header {
   padding: 1rem 0.75rem;
   text-align: center;
   font-weight: 600;
   border-right: 1px solid var(--border-light);
-}
-
-.day-header {
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
@@ -953,6 +960,9 @@ const unenrollCamperFromEvent = (eventId: string, camperId: string) => {
   align-items: flex-start;
   justify-content: center;
   padding-top: 0.75rem;
+  position: sticky;
+  left: 0;
+  z-index: 20;
 }
 
 .day-col {
