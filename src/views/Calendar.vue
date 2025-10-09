@@ -3,7 +3,16 @@
     <div class="calendar-view">
       <div class="calendar-header">
         <h2>Event Calendar</h2>
-        <div class="flex gap-2 items-center">
+      </div>
+
+      <!-- Date Navigation -->
+      <div class="calendar-controls card p-2">
+        <!-- Date Display -->
+        <div class="calendar-date">
+            <h3 v-if="viewMode === 'daily'">{{ formatDate(selectedDate) }}</h3>
+            <h3 v-else>{{ formatWeekRange(selectedDate) }}</h3>
+          </div>
+        <div class="flex gap-2 items-center justify-center flex-wrap">
           <!-- View Toggle -->
           <div class="view-toggle">
             <button 
@@ -33,11 +42,9 @@
           <button class="btn btn-primary" @click="showEventModal = true">+ New Event</button>
         </div>
       </div>
-
-      <div class="calendar-date">
-        <h3 v-if="viewMode === 'daily'">{{ formatDate(selectedDate) }}</h3>
-        <h3 v-else>{{ formatWeekRange(selectedDate) }}</h3>
-        <!-- Event Filters -->
+      
+      <!-- Event Filters -->
+      <div class="filter-section">
         <FilterBar
           :show-search="false"
           v-model:filterEventType="filterEventType"
@@ -49,7 +56,6 @@
           @clear="clearEventFilters"
         />
       </div>
-
 
 
       <!-- Daily View -->
@@ -133,28 +139,6 @@
         </div>
       </div>
 
-      <!-- Children Sidebar -->
-      <div class="children-panel card">
-        <h4 class="mb-2">Children</h4>
-        <div class="children-list">
-          <div
-            v-for="child in store.children"
-            :key="child.id"
-            class="child-item draggable"
-            :draggable="true"
-            @dragstart="onDragStart($event, child.id, null)"
-            @dragend="onDragEnd"
-          >
-            <div class="child-info">
-              <div class="font-medium">{{ child.firstName }} {{ child.lastName }}</div>
-              <div class="text-xs text-secondary">Age {{ child.age }}</div>
-            </div>
-            <div class="child-events text-xs">
-              {{ getChildTodayEvents(child.id).length }} events
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Event Detail Modal -->
@@ -476,12 +460,6 @@ const getStaffName = (staffId: string) => {
   return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
 };
 
-const getChildTodayEvents = (childId: string) => {
-  return todayEvents.value.filter(event => 
-    event.enrolledChildrenIds?.includes(childId)
-  );
-};
-
 const getEventStyle = (event: Event) => {
   const start = new Date(event.startTime);
   const end = new Date(event.endTime);
@@ -520,9 +498,13 @@ const getEventStyle = (event: Event) => {
   const eventIndex = allOverlapping.findIndex(e => e.id === event.id);
   const totalOverlapping = allOverlapping.length;
   
-  // Calculate width and position
-  const width = totalOverlapping > 1 ? `${100 / totalOverlapping}%` : 'calc(100% - 32px)';
-  const left = totalOverlapping > 1 ? `${(eventIndex * 100) / totalOverlapping}%` : '16px';
+  // Calculate width and position - split the total single-event width among overlapping events
+  const width = totalOverlapping > 1 
+    ? `calc((100% - 32px) / ${totalOverlapping})` 
+    : 'calc(100% - 32px)';
+  const left = totalOverlapping > 1 
+    ? `calc(16px + (100% - 32px) * ${eventIndex} / ${totalOverlapping})` 
+    : '16px';
   
   return {
     top: `${top}px`,
@@ -539,6 +521,15 @@ const getWeekEventStyle = (event: Event) => {
   
   const startMinutes = start.getHours() * 60 + start.getMinutes();
   const endMinutes = end.getHours() * 60 + end.getMinutes();
+  const durationMinutes = endMinutes - startMinutes;
+  
+  // Calculate height based on duration (80px per hour)
+  const heightPx = (durationMinutes / 60) * 80 - 4; // Subtract 4px for spacing
+  
+  // Debug logging
+  if (durationMinutes > 60) {
+    console.log(`Event: ${event.title}, Duration: ${durationMinutes}min, Height: ${heightPx}px`);
+  }
   
   // Find overlapping events for the same day
   const eventDate = start.toISOString().split('T')[0];
@@ -584,6 +575,7 @@ const getWeekEventStyle = (event: Event) => {
     background: event.color || '#3B82F6',
     width,
     left,
+    height: `${heightPx}px`,
   };
 };
 
@@ -723,25 +715,37 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
 .calendar-view {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 1.5rem;
-  grid-template-rows: auto auto 1fr;
+  gap: 1rem;
+  grid-template-rows: auto auto auto 1fr;
 }
 
 .calendar-header {
   grid-column: 1 / -1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 1rem;
 }
 
-.calendar-date {
+.calendar-header h2 {
+  text-align: left;
+}
+
+.filter-section {
   grid-column: 1 / -1;
+}
+
+.calendar-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  grid-column: 1 / -1;
+}
+
+.calendar-date {
   text-align: center;
-  margin-bottom: 0.75rem;
 }
 
 .calendar-grid {
+  grid-column: 1 / -1;
+  grid-row: 4;
   display: grid;
   grid-template-columns: 100px 1fr;
   gap: 0;
@@ -811,15 +815,15 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
   overflow: hidden;
   box-shadow: var(--shadow-md);
   transition: all 0.15s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  right: 0;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   margin-top: 50px; /* Account for header */
 }
 
 .event-block:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-lg);
-  z-index: 10;
+  z-index: 100 !important;
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .event-title {
@@ -834,38 +838,6 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
   opacity: 0.95;
   font-size: 0.8125rem;
   line-height: 1.4;
-}
-
-.children-panel {
-  grid-row: 3;
-  max-height: 840px;
-  overflow-y: auto;
-}
-
-.children-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.child-item {
-  padding: 0.75rem;
-  background: var(--background);
-  border-radius: var(--radius);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: move;
-  transition: all 0.15s ease;
-}
-
-.child-item:hover {
-  background: var(--primary-light);
-  transform: translateX(4px);
-}
-
-.child-item.dragging {
-  opacity: 0.5;
 }
 
 .enrolled-children {
@@ -906,15 +878,19 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
 
 /* Weekly View Styles */
 .weekly-grid {
+  grid-column: 1 / -1;
+  grid-row: 4;
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   overflow-x: auto;
+  overflow-y: visible !important;
   border: 1px solid var(--border-light);
 }
 
 .weekly-grid-inner {
   min-width: 1200px;
+  overflow: visible;
 }
 
 .week-header {
@@ -952,6 +928,7 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
 
 .week-body {
   position: relative;
+  overflow: visible;
 }
 
 .week-row {
@@ -960,6 +937,8 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
   border-bottom: 1px solid var(--border-light);
   min-height: 80px;
   height: 80px;
+  overflow: visible !important;
+  contain: none;
 }
 
 .time-col {
@@ -983,7 +962,7 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
   min-height: 80px;
   height: 80px;
   background: var(--surface);
-  overflow: visible;
+  overflow: visible !important;
   transition: background-color 0.15s ease;
 }
 
@@ -1001,17 +980,18 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
   border: 1px solid rgba(255, 255, 255, 0.2);
   position: absolute;
   top: 2px;
-  bottom: 2px;
-  z-index: 1;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   font-size: 0.75rem;
+  pointer-events: auto;
 }
 
 .week-event:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+  z-index: 200;
 }
 
 .week-event-title {
@@ -1057,18 +1037,8 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
     grid-template-columns: 1fr;
   }
 
-  .children-panel {
-    grid-row: auto;
-    max-height: 400px;
-  }
-
-  .calendar-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .calendar-header .flex {
-    flex-wrap: wrap;
+  .calendar-controls .flex {
+    justify-content: center;
   }
 }
 </style>
