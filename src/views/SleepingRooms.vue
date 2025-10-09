@@ -338,322 +338,318 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { SleepingRoom } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
-import DataTable, { type Column } from '@/components/DataTable.vue';
+import DataTable from '@/components/DataTable.vue';
 import { UserRound, Users, Bed, Building2, Mars, Venus } from 'lucide-vue-next';
 
-const store = useCampStore();
-const selectedRoomId = ref<string | null>(null);
-const showModal = ref(false);
-const editingRoomId = ref<string | null>(null);
-
-// Confirm modal state
-const showConfirmModal = ref(false);
-const confirmModalTitle = ref('');
-const confirmModalMessage = ref('');
-const confirmModalDetails = ref('');
-const confirmAction = ref<(() => void) | null>(null);
-const amenitiesInput = ref('');
-const camperToAssign = ref('');
-const viewMode = ref<'grid' | 'table'>('grid');
-
-// Pagination state
-const currentPage = ref(1);
-const pageSize = ref(10);
-
-const formData = ref<{
-  name: string;
-  gender: SleepingRoom['gender'];
-  capacity: number;
-  building: string;
-  floor: number | undefined;
-  supervisorId: string;
-  amenities: string[];
-  notes: string;
-}>({
-  name: '',
-  gender: 'boys',
-  capacity: 4,
-  building: '',
-  floor: undefined,
-  supervisorId: '',
-  amenities: [],
-  notes: '',
-});
-
-// Filter state
-const searchQuery = ref('');
-const filterGender = ref('');
-const filterOccupancy = ref('');
-
-const sleepingRoomFilters = computed<Filter[]>(() => [
-  {
-    model: 'filterGender',
-    value: filterGender.value,
-    placeholder: 'All Genders',
-    options: [
-      { label: 'Male', value: 'male' },
-      { label: 'Female', value: 'female' },
-    ],
+export default defineComponent({
+  name: 'SleepingRooms',
+  components: {
+    FilterBar,
+    ConfirmModal,
+    DataTable,
+    UserRound,
+    Users,
+    Bed,
+    Building2,
+    Mars,
+    Venus
   },
-  {
-    model: 'filterOccupancy',
-    value: filterOccupancy.value,
-    placeholder: 'All Occupancy',
-    options: [
-      { label: 'Available (< 100%)', value: 'available' },
-      { label: 'Full (100%)', value: 'full' },
-    ],
-  },
-]);
-
-const selectedRoom = computed(() => {
-  if (!selectedRoomId.value) return null;
-  return store.getSleepingRoomById(selectedRoomId.value);
-});
-
-const roomColumns: Column[] = [
-  { key: 'name', label: 'Cabin Name', width: '200px' },
-  { key: 'gender', label: 'Gender', width: '100px' },
-  { key: 'occupancy', label: 'Occupancy', width: '120px' },
-  { key: 'location', label: 'Location', width: '200px' },
-  { key: 'supervisor', label: 'Supervisor', width: '180px' },
-  { key: 'amenities', label: 'Amenities', width: '120px' },
-  { key: 'usage', label: 'Usage', width: '140px' },
-  { key: 'actions', label: 'Actions', width: '140px' },
-];
-
-const filteredRooms = computed(() => {
-  let rooms = store.sleepingRooms;
-
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    rooms = rooms.filter(room =>
-      room.name.toLowerCase().includes(query) ||
-      (room.building && room.building.toLowerCase().includes(query))
-    );
-  }
-
-  // Gender filter
-  if (filterGender.value) {
-    // Map "male" to "boys" and "female" to "girls"
-    const genderMap: Record<string, SleepingRoom['gender']> = {
-      'male': 'boys',
-      'female': 'girls'
+  data() {
+    return {
+      selectedRoomId: null as string | null,
+      showModal: false,
+      editingRoomId: null as string | null,
+      showConfirmModal: false,
+      confirmModalTitle: '',
+      confirmModalMessage: '',
+      confirmModalDetails: '',
+      confirmAction: null as (() => void) | null,
+      amenitiesInput: '',
+      camperToAssign: '',
+      viewMode: 'grid' as 'grid' | 'table',
+      currentPage: 1,
+      pageSize: 10,
+      formData: {
+        name: '',
+        gender: 'boys' as SleepingRoom['gender'],
+        capacity: 4,
+        building: '',
+        floor: undefined as number | undefined,
+        supervisorId: '',
+        amenities: [] as string[],
+        notes: '',
+      },
+      searchQuery: '',
+      filterGender: '',
+      filterOccupancy: '',
+      roomColumns: [
+        { key: 'name', label: 'Cabin Name', width: '200px' },
+        { key: 'gender', label: 'Gender', width: '100px' },
+        { key: 'occupancy', label: 'Occupancy', width: '120px' },
+        { key: 'location', label: 'Location', width: '200px' },
+        { key: 'supervisor', label: 'Supervisor', width: '180px' },
+        { key: 'amenities', label: 'Amenities', width: '120px' },
+        { key: 'usage', label: 'Usage', width: '140px' },
+        { key: 'actions', label: 'Actions', width: '140px' },
+      ]
     };
-    const mappedGender = genderMap[filterGender.value];
-    if (mappedGender) {
-      rooms = rooms.filter(room => room.gender === mappedGender);
+  },
+  computed: {
+    store() {
+      return useCampStore();
+    },
+    sleepingRoomFilters(): Filter[] {
+      return [
+        {
+          model: 'filterGender',
+          value: this.filterGender,
+          placeholder: 'All Genders',
+          options: [
+            { label: 'Male', value: 'male' },
+            { label: 'Female', value: 'female' },
+          ],
+        },
+        {
+          model: 'filterOccupancy',
+          value: this.filterOccupancy,
+          placeholder: 'All Occupancy',
+          options: [
+            { label: 'Available (< 100%)', value: 'available' },
+            { label: 'Full (100%)', value: 'full' },
+          ],
+        },
+      ];
+    },
+    selectedRoom() {
+      if (!this.selectedRoomId) return null;
+      return this.store.getSleepingRoomById(this.selectedRoomId);
+    },
+    filteredRooms() {
+      let rooms = this.store.sleepingRooms;
+
+      // Search filter
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        rooms = rooms.filter(room =>
+          room.name.toLowerCase().includes(query) ||
+          (room.building && room.building.toLowerCase().includes(query))
+        );
+      }
+
+      // Gender filter
+      if (this.filterGender) {
+        // Map "male" to "boys" and "female" to "girls"
+        const genderMap: Record<string, SleepingRoom['gender']> = {
+          'male': 'boys',
+          'female': 'girls'
+        };
+        const mappedGender = genderMap[this.filterGender];
+        if (mappedGender) {
+          rooms = rooms.filter(room => room.gender === mappedGender);
+        }
+      }
+
+      // Occupancy filter
+      if (this.filterOccupancy) {
+        rooms = rooms.filter(room => {
+          const occupancy = this.getRoomOccupancy(room.id);
+          if (this.filterOccupancy === 'available') return occupancy < 100;
+          if (this.filterOccupancy === 'full') return occupancy >= 100;
+          return true;
+        });
+      }
+
+      return rooms;
+    }
+  },
+  watch: {
+    searchQuery() {
+      this.currentPage = 1;
+    },
+    filterGender() {
+      this.currentPage = 1;
+    },
+    filterOccupancy() {
+      this.currentPage = 1;
+    }
+  },
+  methods: {
+    clearFilters() {
+      this.searchQuery = '';
+      this.filterGender = '';
+      this.filterOccupancy = '';
+    },
+    formatGender(gender: string): string {
+      return gender.charAt(0).toUpperCase() + gender.slice(1);
+    },
+    GenderIcon(gender: SleepingRoom['gender']) {
+      const iconMap: Record<SleepingRoom['gender'], any> = {
+        boys: Mars,
+        girls: Venus,
+        mixed: Users,
+      };
+      return iconMap[gender] || Bed;
+    },
+    getGenderColor(gender: SleepingRoom['gender']): string {
+      const colors: Record<SleepingRoom['gender'], string> = {
+        boys: '#3B82F6',
+        girls: '#EC4899',
+        mixed: '#8B5CF6',
+      };
+      return colors[gender] || '#64748B';
+    },
+    getRoomCampers(roomId: string) {
+      return this.store.campers.filter(camper => camper.sleepingRoomId === roomId);
+    },
+    getAssignedCount(roomId: string): number {
+      return this.getRoomCampers(roomId).length;
+    },
+    getRoomOccupancy(roomId: string): number {
+      const room = this.store.getSleepingRoomById(roomId);
+      if (!room) return 0;
+      return (this.getAssignedCount(roomId) / room.capacity) * 100;
+    },
+    getSupervisorName(staffId: string): string {
+      const staff = this.store.getTeamMemberById(staffId);
+      return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
+    },
+    getUnassignedCampers(gender: SleepingRoom['gender']) {
+      return this.store.campers.filter(camper => {
+        // Not assigned to any room
+        if (camper.sleepingRoomId) return false;
+        
+        // Gender restriction (mixed rooms accept all)
+        if (gender === 'mixed') return true;
+        
+        // Simple age-based gender assumption (in real app, would have gender field)
+        // For demo, we'll allow all unassigned campers
+        return true;
+      });
+    },
+    selectRoom(roomId: string) {
+      this.selectedRoomId = roomId;
+      this.camperToAssign = '';
+    },
+    async assignCamper() {
+      if (!this.camperToAssign || !this.selectedRoomId) return;
+      
+      const camper = this.store.getCamperById(this.camperToAssign);
+      if (!camper) return;
+      
+      camper.sleepingRoomId = this.selectedRoomId;
+      await this.store.updateCamper(camper);
+      this.camperToAssign = '';
+    },
+    async unassignCamper(camperId: string) {
+      const camper = this.store.getCamperById(camperId);
+      if (!camper) return;
+      
+      camper.sleepingRoomId = undefined;
+      await this.store.updateCamper(camper);
+    },
+    editRoom() {
+      if (!this.selectedRoom) return;
+      
+      this.editingRoomId = this.selectedRoom.id;
+      this.formData = {
+        name: this.selectedRoom.name,
+        gender: this.selectedRoom.gender,
+        capacity: this.selectedRoom.capacity,
+        building: this.selectedRoom.building || '',
+        floor: this.selectedRoom.floor,
+        supervisorId: this.selectedRoom.supervisorId || '',
+        amenities: this.selectedRoom.amenities || [],
+        notes: this.selectedRoom.notes || '',
+      };
+      this.amenitiesInput = (this.selectedRoom.amenities || []).join(', ');
+      
+      this.selectedRoomId = null;
+      this.showModal = true;
+    },
+    async saveRoom() {
+      const amenities = this.amenitiesInput
+        .split(',')
+        .map(a => a.trim())
+        .filter(a => a.length > 0);
+
+      const roomData: SleepingRoom = {
+        id: this.editingRoomId || `sleeping-${Date.now()}`,
+        name: this.formData.name,
+        gender: this.formData.gender,
+        capacity: this.formData.capacity,
+        building: this.formData.building,
+        floor: this.formData.floor,
+        supervisorId: this.formData.supervisorId || undefined,
+        amenities,
+        notes: this.formData.notes,
+      };
+
+      if (this.editingRoomId) {
+        await this.store.updateSleepingRoom(roomData);
+      } else {
+        await this.store.addSleepingRoom(roomData);
+      }
+
+      this.closeModal();
+    },
+    deleteRoomConfirm() {
+      if (!this.selectedRoomId) return;
+      
+      const camperCount = this.getAssignedCount(this.selectedRoomId);
+      
+      // Setup the confirm modal
+      this.confirmModalTitle = 'Delete Sleeping Room';
+      this.confirmModalMessage = 'Are you sure you want to delete this sleeping room?';
+      this.confirmModalDetails = camperCount > 0 
+        ? `This room has ${camperCount} campers assigned. They will be unassigned.`
+        : '';
+      
+      this.confirmAction = async () => {
+        if (this.selectedRoomId) {
+          await this.store.deleteSleepingRoom(this.selectedRoomId);
+          this.selectedRoomId = null;
+        }
+      };
+      
+      this.showConfirmModal = true;
+    },
+    async handleConfirmAction() {
+      if (this.confirmAction) {
+        await this.confirmAction();
+      }
+      this.showConfirmModal = false;
+      this.confirmAction = null;
+    },
+    handleCancelConfirm() {
+      this.showConfirmModal = false;
+      this.confirmAction = null;
+    },
+    closeModal() {
+      this.showModal = false;
+      this.editingRoomId = null;
+      this.formData = {
+        name: '',
+        gender: 'boys',
+        capacity: 4,
+        building: '',
+        floor: undefined,
+        supervisorId: '',
+        amenities: [],
+        notes: '',
+      };
+      this.amenitiesInput = '';
     }
   }
-
-  // Occupancy filter
-  if (filterOccupancy.value) {
-    rooms = rooms.filter(room => {
-      const occupancy = getRoomOccupancy(room.id);
-      if (filterOccupancy.value === 'available') return occupancy < 100;
-      if (filterOccupancy.value === 'full') return occupancy >= 100;
-      return true;
-    });
-  }
-
-  return rooms;
 });
-
-// Reset to page 1 when filters change
-watch([searchQuery, filterGender, filterOccupancy], () => {
-  currentPage.value = 1;
-});
-
-const clearFilters = () => {
-  searchQuery.value = '';
-  filterGender.value = '';
-  filterOccupancy.value = '';
-};
-
-const formatGender = (gender: string) => {
-  return gender.charAt(0).toUpperCase() + gender.slice(1);
-};
-
-const GenderIcon = (gender: SleepingRoom['gender']) => {
-  const iconMap: Record<SleepingRoom['gender'], any> = {
-    boys: Mars,
-    girls: Venus,
-    mixed: Users,
-  };
-  return iconMap[gender] || Bed;
-};
-
-const getGenderColor = (gender: SleepingRoom['gender']) => {
-  const colors: Record<SleepingRoom['gender'], string> = {
-    boys: '#3B82F6',
-    girls: '#EC4899',
-    mixed: '#8B5CF6',
-  };
-  return colors[gender] || '#64748B';
-};
-
-const getRoomCampers = (roomId: string) => {
-  return store.campers.filter(camper => camper.sleepingRoomId === roomId);
-};
-
-const getAssignedCount = (roomId: string) => {
-  return getRoomCampers(roomId).length;
-};
-
-const getRoomOccupancy = (roomId: string) => {
-  const room = store.getSleepingRoomById(roomId);
-  if (!room) return 0;
-  return (getAssignedCount(roomId) / room.capacity) * 100;
-};
-
-const getSupervisorName = (staffId: string) => {
-  const staff = store.getTeamMemberById(staffId);
-  return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
-};
-
-const getUnassignedCampers = (gender: SleepingRoom['gender']) => {
-  return store.campers.filter(camper => {
-    // Not assigned to any room
-    if (camper.sleepingRoomId) return false;
-    
-    // Gender restriction (mixed rooms accept all)
-    if (gender === 'mixed') return true;
-    
-    // Simple age-based gender assumption (in real app, would have gender field)
-    // For demo, we'll allow all unassigned campers
-    return true;
-  });
-};
-
-const selectRoom = (roomId: string) => {
-  selectedRoomId.value = roomId;
-  camperToAssign.value = '';
-};
-
-const assignCamper = async () => {
-  if (!camperToAssign.value || !selectedRoomId.value) return;
-  
-  const camper = store.getCamperById(camperToAssign.value);
-  if (!camper) return;
-  
-  camper.sleepingRoomId = selectedRoomId.value;
-  await store.updateCamper(camper);
-  camperToAssign.value = '';
-};
-
-const unassignCamper = async (camperId: string) => {
-  const camper = store.getCamperById(camperId);
-  if (!camper) return;
-  
-  camper.sleepingRoomId = undefined;
-  await store.updateCamper(camper);
-};
-
-const editRoom = () => {
-  if (!selectedRoom.value) return;
-  
-  editingRoomId.value = selectedRoom.value.id;
-  formData.value = {
-    name: selectedRoom.value.name,
-    gender: selectedRoom.value.gender,
-    capacity: selectedRoom.value.capacity,
-    building: selectedRoom.value.building || '',
-    floor: selectedRoom.value.floor,
-    supervisorId: selectedRoom.value.supervisorId || '',
-    amenities: selectedRoom.value.amenities || [],
-    notes: selectedRoom.value.notes || '',
-  };
-  amenitiesInput.value = (selectedRoom.value.amenities || []).join(', ');
-  
-  selectedRoomId.value = null;
-  showModal.value = true;
-};
-
-const saveRoom = async () => {
-  const amenities = amenitiesInput.value
-    .split(',')
-    .map(a => a.trim())
-    .filter(a => a.length > 0);
-
-  const roomData: SleepingRoom = {
-    id: editingRoomId.value || `sleeping-${Date.now()}`,
-    name: formData.value.name,
-    gender: formData.value.gender,
-    capacity: formData.value.capacity,
-    building: formData.value.building,
-    floor: formData.value.floor,
-    supervisorId: formData.value.supervisorId || undefined,
-    amenities,
-    notes: formData.value.notes,
-  };
-
-  if (editingRoomId.value) {
-    await store.updateSleepingRoom(roomData);
-  } else {
-    await store.addSleepingRoom(roomData);
-  }
-
-  closeModal();
-};
-
-const deleteRoomConfirm = () => {
-  if (!selectedRoomId.value) return;
-  
-  const camperCount = getAssignedCount(selectedRoomId.value);
-  
-  // Setup the confirm modal
-  confirmModalTitle.value = 'Delete Sleeping Room';
-  confirmModalMessage.value = 'Are you sure you want to delete this sleeping room?';
-  confirmModalDetails.value = camperCount > 0 
-    ? `This room has ${camperCount} campers assigned. They will be unassigned.`
-    : '';
-  
-  confirmAction.value = async () => {
-    if (selectedRoomId.value) {
-      await store.deleteSleepingRoom(selectedRoomId.value);
-      selectedRoomId.value = null;
-    }
-  };
-  
-  showConfirmModal.value = true;
-};
-
-const handleConfirmAction = async () => {
-  if (confirmAction.value) {
-    await confirmAction.value();
-  }
-  showConfirmModal.value = false;
-  confirmAction.value = null;
-};
-
-const handleCancelConfirm = () => {
-  showConfirmModal.value = false;
-  confirmAction.value = null;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-  editingRoomId.value = null;
-  formData.value = {
-    name: '',
-    gender: 'boys',
-    capacity: 4,
-    building: '',
-    floor: undefined,
-    supervisorId: '',
-    amenities: [],
-    notes: '',
-  };
-  amenitiesInput.value = '';
-};
 </script>
+
+
 
 <style scoped>
 .sleeping-rooms-view {

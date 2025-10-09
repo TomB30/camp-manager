@@ -44,70 +44,79 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed, defineProps, defineEmits, withDefaults } from 'vue';
+<script lang="ts">
+import { defineComponent, PropType } from 'vue';
 import { format } from 'date-fns';
 import type { Event } from '@/types/api';
 
-interface Props {
-  events: Event[];
-  emptyMessage?: string;
-  showRoom?: boolean;
-  showEnrollment?: boolean;
-  getRoomName?: (roomId: string) => string;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  emptyMessage: 'No events',
-  showRoom: false,
-  showEnrollment: false,
-  getRoomName: () => 'Unknown Room',
-});
-
-defineEmits<{
-  'event-click': [event: Event];
-}>();
-
-const groupedEvents = computed(() => {
-  // Sort events by start time
-  const sortedEvents = [...props.events].sort((a, b) => 
-    new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-  );
-  
-  // Group by date
-  const grouped: Record<string, Event[]> = {};
-  
-  sortedEvents.forEach(event => {
-    const eventDate = new Date(event.startTime);
-    const dateKey = format(eventDate, 'yyyy-MM-dd');
-    
-    if (!grouped[dateKey]) {
-      grouped[dateKey] = [];
+export default defineComponent({
+  name: 'EventsByDate',
+  props: {
+    events: {
+      type: Array as PropType<Event[]>,
+      required: true
+    },
+    emptyMessage: {
+      type: String,
+      default: 'No events'
+    },
+    showRoom: {
+      type: Boolean,
+      default: false
+    },
+    showEnrollment: {
+      type: Boolean,
+      default: false
+    },
+    getRoomName: {
+      type: Function as PropType<(roomId: string) => string>,
+      default: () => () => 'Unknown Room'
     }
-    grouped[dateKey].push(event);
-  });
-  
-  return grouped;
-});
-
-const formatDateHeader = (dateKey: string) => {
-  const date = new Date(dateKey);
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  
-  if (date.toDateString() === today.toDateString()) {
-    return `Today, ${format(date, 'EEEE, MMMM d')}`;
-  } else if (date.toDateString() === tomorrow.toDateString()) {
-    return `Tomorrow, ${format(date, 'EEEE, MMMM d')}`;
-  } else {
-    return format(date, 'EEEE, MMMM d, yyyy');
+  },
+  emits: ['event-click'],
+  computed: {
+    groupedEvents(): Record<string, Event[]> {
+      // Sort events by start time
+      const sortedEvents = [...this.events].sort((a, b) => 
+        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+      );
+      
+      // Group by date
+      const grouped: Record<string, Event[]> = {};
+      
+      sortedEvents.forEach(event => {
+        const eventDate = new Date(event.startTime);
+        const dateKey = format(eventDate, 'yyyy-MM-dd');
+        
+        if (!grouped[dateKey]) {
+          grouped[dateKey] = [];
+        }
+        grouped[dateKey].push(event);
+      });
+      
+      return grouped;
+    }
+  },
+  methods: {
+    formatDateHeader(dateKey: string): string {
+      const date = new Date(dateKey);
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      if (date.toDateString() === today.toDateString()) {
+        return `Today, ${format(date, 'EEEE, MMMM d')}`;
+      } else if (date.toDateString() === tomorrow.toDateString()) {
+        return `Tomorrow, ${format(date, 'EEEE, MMMM d')}`;
+      } else {
+        return format(date, 'EEEE, MMMM d, yyyy');
+      }
+    },
+    formatTime(dateStr: string): string {
+      return format(new Date(dateStr), 'h:mm a');
+    }
   }
-};
-
-const formatTime = (dateStr: string) => {
-  return format(new Date(dateStr), 'h:mm a');
-};
+});
 </script>
 
 <style scoped>

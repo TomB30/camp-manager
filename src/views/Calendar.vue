@@ -314,8 +314,8 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, computed } from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format, addDays, startOfWeek, addWeeks } from 'date-fns';
 import ConfirmModal from '@/components/ConfirmModal.vue';
@@ -323,393 +323,373 @@ import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import { filterEventsByDateAndHour } from '@/utils/dateUtils';
 import type { Event } from '@/types/api';
 
-const store = useCampStore();
-const selectedDate = ref(new Date());
-const selectedEventId = ref<string | null>(null);
-const showEventModal = ref(false);
-const isDragOver = ref(false);
-const draggedCamperId = ref<string | null>(null);
-const draggedFromEventId = ref<string | null>(null);
-const viewMode = ref<'daily' | 'weekly'>('daily');
-
-// Confirmation modal state
-const showConfirmModal = ref(false);
-const confirmAction = ref<{
-  type: 'deleteEvent' | 'removeCamper';
-  data?: any;
-} | null>(null);
-
-const hours = Array.from({ length: 14 }, (_, i) => i + 7); // 7 AM to 8 PM
-
-// Week days (Sunday - Saturday)
-const weekDays = computed(() => {
-  const start = startOfWeek(selectedDate.value);
-  return Array.from({ length: 7 }, (_, i) => addDays(start, i));
-});
-
-const newEvent = ref({
-  title: '',
-  startTime: '09:00',
-  endTime: '10:00',
-  roomId: '',
-  capacity: 20,
-  type: 'activity' as Event['type'],
-  color: '#3B82F6',
-});
-
-// Event filters
-const filterEventType = ref('');
-const filterRoom = ref('');
-
-const eventFilters = computed<Filter[]>(() => [
-  {
-    model: 'filterEventType',
-    value: filterEventType.value,
-    placeholder: 'All Types',
-    options: [
-      { label: 'Activity', value: 'activity' },
-      { label: 'Sports', value: 'sports' },
-      { label: 'Meal', value: 'meal' },
-      { label: 'Assembly', value: 'assembly' },
-      { label: 'Quiet Time', value: 'quiet-time' },
-    ],
+export default defineComponent({
+  name: 'Calendar',
+  components: {
+    ConfirmModal,
+    FilterBar
   },
-  {
-    model: 'filterRoom',
-    value: filterRoom.value,
-    placeholder: 'All Rooms',
-    options: store.rooms.map(room => ({
-      label: room.name,
-      value: room.id,
-    })),
+  data() {
+    return {
+      selectedDate: new Date(),
+      selectedEventId: null as string | null,
+      showEventModal: false,
+      isDragOver: false,
+      draggedCamperId: null as string | null,
+      draggedFromEventId: null as string | null,
+      viewMode: 'daily' as 'daily' | 'weekly',
+      showConfirmModal: false,
+      confirmAction: null as {
+        type: 'deleteEvent' | 'removeCamper';
+        data?: any;
+      } | null,
+      hours: Array.from({ length: 14 }, (_, i) => i + 7),
+      newEvent: {
+        title: '',
+        startTime: '09:00',
+        endTime: '10:00',
+        roomId: '',
+        capacity: 20,
+        type: 'activity' as Event['type'],
+        color: '#3B82F6',
+      },
+      filterEventType: '',
+      filterRoom: ''
+    };
   },
-]);
+  computed: {
+    store() {
+      return useCampStore();
+    },
+    weekDays() {
+      const start = startOfWeek(this.selectedDate);
+      return Array.from({ length: 7 }, (_, i) => addDays(start, i));
+    },
+    eventFilters(): Filter[] {
+      return [
+        {
+          model: 'filterEventType',
+          value: this.filterEventType,
+          placeholder: 'All Types',
+          options: [
+            { label: 'Activity', value: 'activity' },
+            { label: 'Sports', value: 'sports' },
+            { label: 'Meal', value: 'meal' },
+            { label: 'Assembly', value: 'assembly' },
+            { label: 'Quiet Time', value: 'quiet-time' },
+          ],
+        },
+        {
+          model: 'filterRoom',
+          value: this.filterRoom,
+          placeholder: 'All Rooms',
+          options: this.store.rooms.map(room => ({
+            label: room.name,
+            value: room.id,
+          })),
+        },
+      ];
+    },
+    todayEvents() {
+      return this.store.eventsForDate(this.selectedDate);
+    },
+    filteredTodayEvents() {
+      let events = this.todayEvents;
 
-const todayEvents = computed(() => {
-  return store.eventsForDate(selectedDate.value);
-});
+      // Type filter
+      if (this.filterEventType) {
+        events = events.filter(event => event.type === this.filterEventType);
+      }
 
-const filteredTodayEvents = computed(() => {
-  let events = todayEvents.value;
+      // Room filter
+      if (this.filterRoom) {
+        events = events.filter(event => event.roomId === this.filterRoom);
+      }
 
-  // Type filter
-  if (filterEventType.value) {
-    events = events.filter(event => event.type === filterEventType.value);
-  }
-
-  // Room filter
-  if (filterRoom.value) {
-    events = events.filter(event => event.roomId === filterRoom.value);
-  }
-
-  return events;
-});
-
-const clearEventFilters = () => {
-  filterEventType.value = '';
-  filterRoom.value = '';
-};
-
-const selectedEvent = computed(() => {
-  if (!selectedEventId.value) return null;
-  return store.getEventById(selectedEventId.value);
-});
-
-const formatDate = (date: Date) => {
-  return format(date, 'EEEE, MMMM d, yyyy');
-};
-
-const formatWeekRange = (date: Date) => {
-  const start = startOfWeek(date);
-  const end = addDays(start, 6);
-  return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`;
-};
-
-const formatDayName = (date: Date) => {
-  return format(date, 'EEEE');
-};
-
-const formatDayDate = (date: Date) => {
-  const today = new Date();
-  const isToday = date.toDateString() === today.toDateString();
-  return isToday ? `${format(date, 'MMM d')} (Today)` : format(date, 'MMM d');
-};
-
-const formatHour = (hour: number) => {
-  const ampm = hour >= 12 ? 'PM' : 'AM';
-  const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-  return `${displayHour}:00 ${ampm}`;
-};
-
-const formatTime = (dateStr: string) => {
-  return format(new Date(dateStr), 'h:mm a');
-};
-
-const getRoomName = (roomId: string) => {
-  const room = store.getRoomById(roomId);
-  return room?.name || 'Unknown Room';
-};
-
-const getCamperName = (camperId: string) => {
-  const camper = store.getCamperById(camperId);
-  return camper ? `${camper.firstName} ${camper.lastName}` : 'Unknown';
-};
-
-const getStaffName = (staffId: string) => {
-  const staff = store.getTeamMemberById(staffId);
-  return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
-};
-
-const getEventStyle = (event: Event) => {
-  const start = new Date(event.startTime);
-  const end = new Date(event.endTime);
-  
-  const startMinutes = start.getHours() * 60 + start.getMinutes();
-  const endMinutes = end.getHours() * 60 + end.getMinutes();
-  const dayStartMinutes = 7 * 60; // 7 AM
-  
-  // Calculate position from top of grid (after header)
-  const top = ((startMinutes - dayStartMinutes) / 60) * 80; // 80px per hour
-  const height = ((endMinutes - startMinutes) / 60) * 80;
-  
-  // Find overlapping events
-  const overlappingEvents = filteredTodayEvents.value.filter(otherEvent => {
-    if (otherEvent.id === event.id) return false;
-    
-    const otherStart = new Date(otherEvent.startTime);
-    const otherEnd = new Date(otherEvent.endTime);
-    const otherStartMinutes = otherStart.getHours() * 60 + otherStart.getMinutes();
-    const otherEndMinutes = otherEnd.getHours() * 60 + otherEnd.getMinutes();
-    
-    // Check if events overlap
-    return (
-      (startMinutes < otherEndMinutes && endMinutes > otherStartMinutes)
-    );
-  });
-  
-  // Sort all overlapping events (including current) by start time, then by id for consistency
-  const allOverlapping = [event, ...overlappingEvents].sort((a, b) => {
-    const aStart = new Date(a.startTime).getTime();
-    const bStart = new Date(b.startTime).getTime();
-    if (aStart !== bStart) return aStart - bStart;
-    return a.id.localeCompare(b.id);
-  });
-  
-  const eventIndex = allOverlapping.findIndex(e => e.id === event.id);
-  const totalOverlapping = allOverlapping.length;
-  
-  // Calculate width and position - split the total single-event width among overlapping events
-  const width = totalOverlapping > 1 
-    ? `calc((100% - 32px) / ${totalOverlapping})` 
-    : 'calc(100% - 32px)';
-  const left = totalOverlapping > 1 
-    ? `calc(16px + (100% - 32px) * ${eventIndex} / ${totalOverlapping})` 
-    : '16px';
-  
-  return {
-    top: `${top}px`,
-    height: `${height}px`,
-    width,
-    left,
-    background: event.color || '#3B82F6',
-  };
-};
-
-const getWeekEventStyle = (event: Event) => {
-  const start = new Date(event.startTime);
-  const end = new Date(event.endTime);
-  
-  const startMinutes = start.getHours() * 60 + start.getMinutes();
-  const endMinutes = end.getHours() * 60 + end.getMinutes();
-  const durationMinutes = endMinutes - startMinutes;
-  
-  // Calculate height based on duration (80px per hour)
-  const heightPx = (durationMinutes / 60) * 80 - 4; // Subtract 4px for spacing
-  
-  // Debug logging
-  if (durationMinutes > 60) {
-    console.log(`Event: ${event.title}, Duration: ${durationMinutes}min, Height: ${heightPx}px`);
-  }
-  
-  // Find overlapping events for the same day
-  const eventDate = start.toISOString().split('T')[0];
-  const dayEvents = store.events.filter(e => {
-    const eDate = new Date(e.startTime).toISOString().split('T')[0];
-    return eDate === eventDate;
-  });
-  
-  const overlappingEvents = dayEvents.filter(otherEvent => {
-    if (otherEvent.id === event.id) return false;
-    
-    const otherStart = new Date(otherEvent.startTime);
-    const otherEnd = new Date(otherEvent.endTime);
-    const otherStartMinutes = otherStart.getHours() * 60 + otherStart.getMinutes();
-    const otherEndMinutes = otherEnd.getHours() * 60 + otherEnd.getMinutes();
-    
-    // Check if they're in the same hour block
-    const eventHour = start.getHours();
-    const otherHour = otherStart.getHours();
-    
-    // Check if events overlap
-    return eventHour === otherHour || (
-      startMinutes < otherEndMinutes && endMinutes > otherStartMinutes
-    );
-  });
-  
-  // Sort all overlapping events
-  const allOverlapping = [event, ...overlappingEvents].sort((a, b) => {
-    const aStart = new Date(a.startTime).getTime();
-    const bStart = new Date(b.startTime).getTime();
-    if (aStart !== bStart) return aStart - bStart;
-    return a.id.localeCompare(b.id);
-  });
-  
-  const eventIndex = allOverlapping.findIndex(e => e.id === event.id);
-  const totalOverlapping = allOverlapping.length;
-  
-  // Calculate width and position for overlapping events
-  const width = totalOverlapping > 1 ? `${98 / totalOverlapping}%` : 'calc(100% - 4px)';
-  const left = totalOverlapping > 1 ? `${(eventIndex * 98) / totalOverlapping}%` : '2px';
-  
-  return {
-    background: event.color || '#3B82F6',
-    width,
-    left,
-    height: `${heightPx}px`,
-  };
-};
-
-const getEventsForDayAndHour = (day: Date, hour: number) => {
-  return filterEventsByDateAndHour(store.events, day, hour);
-};
-
-const changeDate = (increment: number) => {
-  if (viewMode.value === 'daily') {
-    selectedDate.value = addDays(selectedDate.value, increment);
-  } else {
-    selectedDate.value = addWeeks(selectedDate.value, increment);
-  }
-};
-
-const goToToday = () => {
-  selectedDate.value = new Date();
-};
-
-const selectEvent = (event: Event) => {
-  selectedEventId.value = event.id;
-};
-
-const createEvent = async () => {
-  const [startHour, startMinute] = newEvent.value.startTime.split(':').map(Number);
-  const [endHour, endMinute] = newEvent.value.endTime.split(':').map(Number);
-  
-  const startTime = new Date(selectedDate.value);
-  startTime.setHours(startHour, startMinute, 0, 0);
-  
-  const endTime = new Date(selectedDate.value);
-  endTime.setHours(endHour, endMinute, 0, 0);
-  
-  const event: Event = {
-    id: `event-${Date.now()}`,
-    title: newEvent.value.title,
-    startTime: startTime.toISOString(),
-    endTime: endTime.toISOString(),
-    roomId: newEvent.value.roomId,
-    capacity: newEvent.value.capacity,
-    type: newEvent.value.type,
-    color: newEvent.value.color,
-    enrolledCamperIds: [],
-    assignedStaffIds: [],
-  };
-  
-  await store.addEvent(event);
-  showEventModal.value = false;
-  
-  // Reset form
-  newEvent.value = {
-    title: '',
-    startTime: '09:00',
-    endTime: '10:00',
-    roomId: '',
-    capacity: 20,
-    type: 'activity',
-    color: '#3B82F6',
-  };
-};
-
-const deleteEventConfirm = () => {
-  if (!selectedEventId.value) return;
-  const event = store.getEventById(selectedEventId.value);
-  confirmAction.value = {
-    type: 'deleteEvent',
-    data: { eventId: selectedEventId.value, eventName: event?.title }
-  };
-  showConfirmModal.value = true;
-};
-
-const handleConfirmAction = async () => {
-  if (!confirmAction.value) return;
-
-  if (confirmAction.value.type === 'deleteEvent') {
-    await store.deleteEvent(confirmAction.value.data.eventId);
-    selectedEventId.value = null;
-  } else if (confirmAction.value.type === 'removeCamper') {
-    await store.unenrollCamper(confirmAction.value.data.eventId, confirmAction.value.data.camperId);
-  }
-
-  showConfirmModal.value = false;
-  confirmAction.value = null;
-};
-
-const handleCancelConfirm = () => {
-  showConfirmModal.value = false;
-  confirmAction.value = null;
-};
-
-const onDragStart = (event: DragEvent, camperId: string, fromEventId: string | null) => {
-  draggedCamperId.value = camperId;
-  draggedFromEventId.value = fromEventId;
-  event.dataTransfer!.effectAllowed = 'move';
-};
-
-const onDragEnd = () => {
-  draggedCamperId.value = null;
-  draggedFromEventId.value = null;
-  isDragOver.value = false;
-};
-
-const onDrop = async (event: DragEvent, toEventId: string) => {
-  event.preventDefault();
-  isDragOver.value = false;
-  
-  if (!draggedCamperId.value) return;
-  
-  try {
-    if (draggedFromEventId.value) {
-      // Moving from one event to another
-      await store.moveCamper(draggedFromEventId.value, toEventId, draggedCamperId.value);
-    } else {
-      // Enrolling from the campers list
-      await store.enrollCamper(toEventId, draggedCamperId.value);
+      return events;
+    },
+    selectedEvent() {
+      if (!this.selectedEventId) return null;
+      return this.store.getEventById(this.selectedEventId);
     }
-  } catch (error: any) {
-    alert(error.message);
-  }
-  
-  draggedCamperId.value = null;
-  draggedFromEventId.value = null;
-};
+  },
+  methods: {
+    clearEventFilters() {
+      this.filterEventType = '';
+      this.filterRoom = '';
+    },
+    formatDate(date: Date): string {
+      return format(date, 'EEEE, MMMM d, yyyy');
+    },
+    formatWeekRange(date: Date): string {
+      const start = startOfWeek(date);
+      const end = addDays(start, 6);
+      return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`;
+    },
+    formatDayName(date: Date): string {
+      return format(date, 'EEEE');
+    },
+    formatDayDate(date: Date): string {
+      const today = new Date();
+      const isToday = date.toDateString() === today.toDateString();
+      return isToday ? `${format(date, 'MMM d')} (Today)` : format(date, 'MMM d');
+    },
+    formatHour(hour: number): string {
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+      return `${displayHour}:00 ${ampm}`;
+    },
+    formatTime(dateStr: string): string {
+      return format(new Date(dateStr), 'h:mm a');
+    },
+    getRoomName(roomId: string): string {
+      const room = this.store.getRoomById(roomId);
+      return room?.name || 'Unknown Room';
+    },
+    getCamperName(camperId: string): string {
+      const camper = this.store.getCamperById(camperId);
+      return camper ? `${camper.firstName} ${camper.lastName}` : 'Unknown';
+    },
+    getStaffName(staffId: string): string {
+      const staff = this.store.getTeamMemberById(staffId);
+      return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
+    },
+    getEventStyle(event: Event) {
+      const start = new Date(event.startTime);
+      const end = new Date(event.endTime);
+      
+      const startMinutes = start.getHours() * 60 + start.getMinutes();
+      const endMinutes = end.getHours() * 60 + end.getMinutes();
+      const dayStartMinutes = 7 * 60; // 7 AM
+      
+      // Calculate position from top of grid (after header)
+      const top = ((startMinutes - dayStartMinutes) / 60) * 80; // 80px per hour
+      const height = ((endMinutes - startMinutes) / 60) * 80;
+      
+      // Find overlapping events
+      const overlappingEvents = this.filteredTodayEvents.filter(otherEvent => {
+        if (otherEvent.id === event.id) return false;
+        
+        const otherStart = new Date(otherEvent.startTime);
+        const otherEnd = new Date(otherEvent.endTime);
+        const otherStartMinutes = otherStart.getHours() * 60 + otherStart.getMinutes();
+        const otherEndMinutes = otherEnd.getHours() * 60 + otherEnd.getMinutes();
+        
+        // Check if events overlap
+        return (
+          (startMinutes < otherEndMinutes && endMinutes > otherStartMinutes)
+        );
+      });
+      
+      // Sort all overlapping events (including current) by start time, then by id for consistency
+      const allOverlapping = [event, ...overlappingEvents].sort((a, b) => {
+        const aStart = new Date(a.startTime).getTime();
+        const bStart = new Date(b.startTime).getTime();
+        if (aStart !== bStart) return aStart - bStart;
+        return a.id.localeCompare(b.id);
+      });
+      
+      const eventIndex = allOverlapping.findIndex(e => e.id === event.id);
+      const totalOverlapping = allOverlapping.length;
+      
+      // Calculate width and position - split the total single-event width among overlapping events
+      const width = totalOverlapping > 1 
+        ? `calc((100% - 32px) / ${totalOverlapping})` 
+        : 'calc(100% - 32px)';
+      const left = totalOverlapping > 1 
+        ? `calc(16px + (100% - 32px) * ${eventIndex} / ${totalOverlapping})` 
+        : '16px';
+      
+      return {
+        top: `${top}px`,
+        height: `${height}px`,
+        width,
+        left,
+        background: event.color || '#3B82F6',
+      };
+    },
+    getWeekEventStyle(event: Event) {
+      const start = new Date(event.startTime);
+      const end = new Date(event.endTime);
+      
+      const startMinutes = start.getHours() * 60 + start.getMinutes();
+      const endMinutes = end.getHours() * 60 + end.getMinutes();
+      const durationMinutes = endMinutes - startMinutes;
+      
+      // Calculate height based on duration (80px per hour)
+      const heightPx = (durationMinutes / 60) * 80 - 4; // Subtract 4px for spacing
+      
+      // Find overlapping events for the same day
+      const eventDate = start.toISOString().split('T')[0];
+      const dayEvents = this.store.events.filter(e => {
+        const eDate = new Date(e.startTime).toISOString().split('T')[0];
+        return eDate === eventDate;
+      });
+      
+      const overlappingEvents = dayEvents.filter(otherEvent => {
+        if (otherEvent.id === event.id) return false;
+        
+        const otherStart = new Date(otherEvent.startTime);
+        const otherEnd = new Date(otherEvent.endTime);
+        const otherStartMinutes = otherStart.getHours() * 60 + otherStart.getMinutes();
+        const otherEndMinutes = otherEnd.getHours() * 60 + otherEnd.getMinutes();
+        
+        // Check if they're in the same hour block
+        const eventHour = start.getHours();
+        const otherHour = otherStart.getHours();
+        
+        // Check if events overlap
+        return eventHour === otherHour || (
+          startMinutes < otherEndMinutes && endMinutes > otherStartMinutes
+        );
+      });
+      
+      // Sort all overlapping events
+      const allOverlapping = [event, ...overlappingEvents].sort((a, b) => {
+        const aStart = new Date(a.startTime).getTime();
+        const bStart = new Date(b.startTime).getTime();
+        if (aStart !== bStart) return aStart - bStart;
+        return a.id.localeCompare(b.id);
+      });
+      
+      const eventIndex = allOverlapping.findIndex(e => e.id === event.id);
+      const totalOverlapping = allOverlapping.length;
+      
+      // Calculate width and position for overlapping events
+      const width = totalOverlapping > 1 ? `${98 / totalOverlapping}%` : 'calc(100% - 4px)';
+      const left = totalOverlapping > 1 ? `${(eventIndex * 98) / totalOverlapping}%` : '2px';
+      
+      return {
+        background: event.color || '#3B82F6',
+        width,
+        left,
+        height: `${heightPx}px`,
+      };
+    },
+    getEventsForDayAndHour(day: Date, hour: number) {
+      return filterEventsByDateAndHour(this.store.events, day, hour);
+    },
+    changeDate(increment: number) {
+      if (this.viewMode === 'daily') {
+        this.selectedDate = addDays(this.selectedDate, increment);
+      } else {
+        this.selectedDate = addWeeks(this.selectedDate, increment);
+      }
+    },
+    goToToday() {
+      this.selectedDate = new Date();
+    },
+    selectEvent(event: Event) {
+      this.selectedEventId = event.id;
+    },
+    async createEvent() {
+      const [startHour, startMinute] = this.newEvent.startTime.split(':').map(Number);
+      const [endHour, endMinute] = this.newEvent.endTime.split(':').map(Number);
+      
+      const startTime = new Date(this.selectedDate);
+      startTime.setHours(startHour, startMinute, 0, 0);
+      
+      const endTime = new Date(this.selectedDate);
+      endTime.setHours(endHour, endMinute, 0, 0);
+      
+      const event: Event = {
+        id: `event-${Date.now()}`,
+        title: this.newEvent.title,
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+        roomId: this.newEvent.roomId,
+        capacity: this.newEvent.capacity,
+        type: this.newEvent.type,
+        color: this.newEvent.color,
+        enrolledCamperIds: [],
+        assignedStaffIds: [],
+      };
+      
+      await this.store.addEvent(event);
+      this.showEventModal = false;
+      
+      // Reset form
+      this.newEvent = {
+        title: '',
+        startTime: '09:00',
+        endTime: '10:00',
+        roomId: '',
+        capacity: 20,
+        type: 'activity',
+        color: '#3B82F6',
+      };
+    },
+    deleteEventConfirm() {
+      if (!this.selectedEventId) return;
+      const event = this.store.getEventById(this.selectedEventId);
+      this.confirmAction = {
+        type: 'deleteEvent',
+        data: { eventId: this.selectedEventId, eventName: event?.title }
+      };
+      this.showConfirmModal = true;
+    },
+    async handleConfirmAction() {
+      if (!this.confirmAction) return;
 
-const unenrollCamperFromEvent = (eventId: string, camperId: string) => {
-  const camper = store.getCamperById(camperId);
-  const event = store.getEventById(eventId);
-  confirmAction.value = {
-    type: 'removeCamper',
-    data: { eventId, camperId, camperName: `${camper?.firstName} ${camper?.lastName}`, eventName: event?.title }
-  };
-  showConfirmModal.value = true;
-};
+      if (this.confirmAction.type === 'deleteEvent') {
+        await this.store.deleteEvent(this.confirmAction.data.eventId);
+        this.selectedEventId = null;
+      } else if (this.confirmAction.type === 'removeCamper') {
+        await this.store.unenrollCamper(this.confirmAction.data.eventId, this.confirmAction.data.camperId);
+      }
+
+      this.showConfirmModal = false;
+      this.confirmAction = null;
+    },
+    handleCancelConfirm() {
+      this.showConfirmModal = false;
+      this.confirmAction = null;
+    },
+    onDragStart(event: DragEvent, camperId: string, fromEventId: string | null) {
+      this.draggedCamperId = camperId;
+      this.draggedFromEventId = fromEventId;
+      event.dataTransfer!.effectAllowed = 'move';
+    },
+    onDragEnd() {
+      this.draggedCamperId = null;
+      this.draggedFromEventId = null;
+      this.isDragOver = false;
+    },
+    async onDrop(event: DragEvent, toEventId: string) {
+      event.preventDefault();
+      this.isDragOver = false;
+      
+      if (!this.draggedCamperId) return;
+      
+      try {
+        if (this.draggedFromEventId) {
+          // Moving from one event to another
+          await this.store.moveCamper(this.draggedFromEventId, toEventId, this.draggedCamperId);
+        } else {
+          // Enrolling from the campers list
+          await this.store.enrollCamper(toEventId, this.draggedCamperId);
+        }
+      } catch (error: any) {
+        alert(error.message);
+      }
+      
+      this.draggedCamperId = null;
+      this.draggedFromEventId = null;
+    },
+    unenrollCamperFromEvent(eventId: string, camperId: string) {
+      const camper = this.store.getCamperById(camperId);
+      const event = this.store.getEventById(eventId);
+      this.confirmAction = {
+        type: 'removeCamper',
+        data: { eventId, camperId, camperName: `${camper?.firstName} ${camper?.lastName}`, eventName: event?.title }
+      };
+      this.showConfirmModal = true;
+    }
+  }
+});
 </script>
+
+
 
 <style scoped>
 .calendar-view {

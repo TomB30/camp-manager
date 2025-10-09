@@ -145,64 +145,70 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed } from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
 import { Calendar, Users, UsersRound } from 'lucide-vue-next';
 
-const store = useCampStore();
-
-const todayEvents = computed(() => {
-  const today = new Date();
-  console.log('today', today);
-  return store.eventsForDate(today);
+export default defineComponent({
+  name: 'Dashboard',
+  components: {
+    Calendar,
+    Users,
+    UsersRound
+  },
+  computed: {
+    store() {
+      return useCampStore();
+    },
+    todayEvents() {
+      const today = new Date();
+      return this.store.eventsForDate(today);
+    },
+    sortedTodayEvents() {
+      return [...this.todayEvents].sort((a, b) => 
+        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+      );
+    },
+    recentCampers() {
+      return [...this.store.campers]
+        .sort((a, b) => {
+          const dateA = a.registrationDate ? new Date(a.registrationDate).getTime() : 0;
+          const dateB = b.registrationDate ? new Date(b.registrationDate).getTime() : 0;
+          return dateB - dateA;
+        })
+        .slice(0, 5);
+    }
+  },
+  methods: {
+    formatTime(dateStr: string): string {
+      return format(new Date(dateStr), 'h:mm a');
+    },
+    formatConflictType(type?: string): string {
+      if (!type) return 'Unknown';
+      return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    },
+    getRoomName(roomId: string): string {
+      const room = this.store.getRoomById(roomId);
+      return room?.name || 'Unknown Room';
+    },
+    getRoomUsage(roomId: string): number {
+      const roomEvents = this.store.roomEvents(roomId);
+      if (roomEvents.length === 0) return 0;
+      
+      const room = this.store.getRoomById(roomId);
+      if (!room) return 0;
+      
+      // Calculate average capacity usage
+      const totalUsage = roomEvents.reduce((sum, event) => {
+        return sum + ((event.enrolledCamperIds?.length || 0) / room.capacity) * 100;
+      }, 0);
+      
+      return totalUsage / roomEvents.length;
+    }
+  }
 });
-
-const sortedTodayEvents = computed(() => {
-  return [...todayEvents.value].sort((a, b) => 
-    new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-  );
-});
-
-const recentCampers = computed(() => {
-  return [...store.campers]
-    .sort((a, b) => {
-      const dateA = a.registrationDate ? new Date(a.registrationDate).getTime() : 0;
-      const dateB = b.registrationDate ? new Date(b.registrationDate).getTime() : 0;
-      return dateB - dateA;
-    })
-    .slice(0, 5);
-});
-
-const formatTime = (dateStr: string) => {
-  return format(new Date(dateStr), 'h:mm a');
-};
-
-const formatConflictType = (type?: string) => {
-  if (!type) return 'Unknown';
-  return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-};
-
-const getRoomName = (roomId: string) => {
-  const room = store.getRoomById(roomId);
-  return room?.name || 'Unknown Room';
-};
-
-const getRoomUsage = (roomId: string) => {
-  const roomEvents = store.roomEvents(roomId);
-  if (roomEvents.length === 0) return 0;
-  
-  const room = store.getRoomById(roomId);
-  if (!room) return 0;
-  
-  // Calculate average capacity usage
-  const totalUsage = roomEvents.reduce((sum, event) => {
-    return sum + ((event.enrolledChildrenIds?.length || 0) / room.capacity) * 100;
-  }, 0);
-  
-  return totalUsage / roomEvents.length;
-};
 </script>
 
 <style scoped>

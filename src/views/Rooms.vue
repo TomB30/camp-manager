@@ -275,14 +275,14 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { Room } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
-import DataTable, { type Column } from '@/components/DataTable.vue';
+import DataTable from '@/components/DataTable.vue';
 import { 
   BookOpen, 
   Target, 
@@ -294,256 +294,261 @@ import {
   MapPin 
 } from 'lucide-vue-next';
 
-const store = useCampStore();
-const selectedRoomId = ref<string | null>(null);
-const showModal = ref(false);
-const editingRoomId = ref<string | null>(null);
-
-// Confirm modal state
-const showConfirmModal = ref(false);
-const confirmAction = ref<(() => void) | null>(null);
-const equipmentInput = ref('');
-const viewMode = ref<'grid' | 'table'>('grid');
-
-// Pagination state
-const currentPage = ref(1);
-const pageSize = ref(10);
-
-const formData = ref<{
-  name: string;
-  type: Room['type'];
-  capacity: number;
-  location: string;
-  equipment: string[];
-  notes: string;
-}>({
-  name: '',
-  type: 'classroom',
-  capacity: 20,
-  location: '',
-  equipment: [],
-  notes: '',
-});
-
-// Filter state
-const searchQuery = ref('');
-const filterType = ref('');
-const filterCapacity = ref('');
-
-const roomFilters = computed<Filter[]>(() => [
-  {
-    model: 'filterType',
-    value: filterType.value,
-    placeholder: 'All Types',
-    options: [
-      { label: 'Classroom', value: 'classroom' },
-      { label: 'Outdoor', value: 'outdoor' },
-      { label: 'Sports', value: 'sports' },
-      { label: 'Arts', value: 'arts' },
-      { label: 'Dining', value: 'dining' },
-    ],
+export default defineComponent({
+  name: 'Rooms',
+  components: {
+    FilterBar,
+    EventsByDate,
+    ConfirmModal,
+    DataTable,
+    BookOpen,
+    Target,
+    Dumbbell,
+    Utensils,
+    Trees,
+    Palette,
+    Home,
+    MapPin
   },
-  {
-    model: 'filterCapacity',
-    value: filterCapacity.value,
-    placeholder: 'All Capacities',
-    options: [
-      { label: 'Small (< 15)', value: 'small' },
-      { label: 'Medium (15-30)', value: 'medium' },
-      { label: 'Large (> 30)', value: 'large' },
-    ],
+  data() {
+    return {
+      selectedRoomId: null as string | null,
+      showModal: false,
+      editingRoomId: null as string | null,
+      showConfirmModal: false,
+      confirmAction: null as (() => void) | null,
+      equipmentInput: '',
+      viewMode: 'grid' as 'grid' | 'table',
+      currentPage: 1,
+      pageSize: 10,
+      formData: {
+        name: '',
+        type: 'classroom' as Room['type'],
+        capacity: 20,
+        location: '',
+        equipment: [] as string[],
+        notes: '',
+      },
+      searchQuery: '',
+      filterType: '',
+      filterCapacity: '',
+      roomColumns: [
+        { key: 'name', label: 'Room Name', width: '200px' },
+        { key: 'type', label: 'Type', width: '120px' },
+        { key: 'capacity', label: 'Capacity', width: '100px' },
+        { key: 'location', label: 'Location', width: '180px' },
+        { key: 'equipment', label: 'Equipment', width: '120px' },
+        { key: 'usage', label: 'Usage', width: '140px' },
+        { key: 'events', label: 'Events', width: '100px' },
+        { key: 'actions', label: 'Actions', width: '140px' },
+      ]
+    };
   },
-]);
+  computed: {
+    store() {
+      return useCampStore();
+    },
+    roomFilters(): Filter[] {
+      return [
+        {
+          model: 'filterType',
+          value: this.filterType,
+          placeholder: 'All Types',
+          options: [
+            { label: 'Classroom', value: 'classroom' },
+            { label: 'Outdoor', value: 'outdoor' },
+            { label: 'Sports', value: 'sports' },
+            { label: 'Arts', value: 'arts' },
+            { label: 'Dining', value: 'dining' },
+          ],
+        },
+        {
+          model: 'filterCapacity',
+          value: this.filterCapacity,
+          placeholder: 'All Capacities',
+          options: [
+            { label: 'Small (< 15)', value: 'small' },
+            { label: 'Medium (15-30)', value: 'medium' },
+            { label: 'Large (> 30)', value: 'large' },
+          ],
+        },
+      ];
+    },
+    selectedRoom() {
+      if (!this.selectedRoomId) return null;
+      return this.store.getRoomById(this.selectedRoomId);
+    },
+    filteredRooms() {
+      let rooms = this.store.rooms;
 
-const selectedRoom = computed(() => {
-  if (!selectedRoomId.value) return null;
-  return store.getRoomById(selectedRoomId.value);
-});
+      // Search filter
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        rooms = rooms.filter(room =>
+          room.name.toLowerCase().includes(query) ||
+          (room.location && room.location.toLowerCase().includes(query))
+        );
+      }
 
-const roomColumns: Column[] = [
-  { key: 'name', label: 'Room Name', width: '200px' },
-  { key: 'type', label: 'Type', width: '120px' },
-  { key: 'capacity', label: 'Capacity', width: '100px' },
-  { key: 'location', label: 'Location', width: '180px' },
-  { key: 'equipment', label: 'Equipment', width: '120px' },
-  { key: 'usage', label: 'Usage', width: '140px' },
-  { key: 'events', label: 'Events', width: '100px' },
-  { key: 'actions', label: 'Actions', width: '140px' },
-];
+      // Type filter
+      if (this.filterType) {
+        rooms = rooms.filter(room => room.type === this.filterType);
+      }
 
-const filteredRooms = computed(() => {
-  let rooms = store.rooms;
+      // Capacity filter
+      if (this.filterCapacity) {
+        rooms = rooms.filter(room => {
+          if (this.filterCapacity === 'small') return room.capacity < 15;
+          if (this.filterCapacity === 'medium') return room.capacity >= 15 && room.capacity <= 30;
+          if (this.filterCapacity === 'large') return room.capacity > 30;
+          return true;
+        });
+      }
 
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    rooms = rooms.filter(room =>
-      room.name.toLowerCase().includes(query) ||
-      (room.location && room.location.toLowerCase().includes(query))
-    );
-  }
-
-  // Type filter
-  if (filterType.value) {
-    rooms = rooms.filter(room => room.type === filterType.value);
-  }
-
-  // Capacity filter
-  if (filterCapacity.value) {
-    rooms = rooms.filter(room => {
-      if (filterCapacity.value === 'small') return room.capacity < 15;
-      if (filterCapacity.value === 'medium') return room.capacity >= 15 && room.capacity <= 30;
-      if (filterCapacity.value === 'large') return room.capacity > 30;
-      return true;
-    });
-  }
-
-  return rooms;
-});
-
-// Reset to page 1 when filters change
-watch([searchQuery, filterType, filterCapacity], () => {
-  currentPage.value = 1;
-});
-
-const clearFilters = () => {
-  searchQuery.value = '';
-  filterType.value = '';
-  filterCapacity.value = '';
-};
-
-const formatRoomType = (type: string) => {
-  return type.charAt(0).toUpperCase() + type.slice(1);
-};
-
-const RoomTypeIcon = (type: Room['type']) => {
-  const iconMap: Record<Room['type'], any> = {
-    classroom: BookOpen,
-    activity: Target,
-    sports: Dumbbell,
-    dining: Utensils,
-    outdoor: Trees,
-    arts: Palette,
-  };
-  return iconMap[type] || Home;
-};
-
-const getRoomTypeColor = (type: Room['type']) => {
-  const colors: Record<Room['type'], string> = {
-    classroom: '#2196F3',
-    activity: '#4CAF50',
-    sports: '#FF9800',
-    dining: '#795548',
-    outdoor: '#8BC34A',
-    arts: '#9C27B0',
-  };
-  return colors[type] || '#757575';
-};
-
-const getRoomEvents = (roomId: string) => {
-  return store.roomEvents(roomId);
-};
-
-const getRoomUsage = (roomId: string) => {
-  const roomEvents = store.roomEvents(roomId);
-  if (roomEvents.length === 0) return 0;
-  
-  const room = store.getRoomById(roomId);
-  if (!room) return 0;
-  
-  // Calculate average capacity usage
-  const totalUsage = roomEvents.reduce((sum, event) => {
-    return sum + ((event.enrolledChildrenIds?.length || 0) / room.capacity) * 100;
-  }, 0);
-  
-  return totalUsage / roomEvents.length;
-};
-
-const selectRoom = (roomId: string) => {
-  selectedRoomId.value = roomId;
-};
-
-const editRoom = () => {
-  if (!selectedRoom.value) return;
-  
-  editingRoomId.value = selectedRoom.value.id;
-  formData.value = {
-    name: selectedRoom.value.name,
-    type: selectedRoom.value.type,
-    capacity: selectedRoom.value.capacity,
-    location: selectedRoom.value.location || '',
-    equipment: selectedRoom.value.equipment || [],
-    notes: selectedRoom.value.notes || '',
-  };
-  equipmentInput.value = (selectedRoom.value.equipment || []).join(', ');
-  
-  selectedRoomId.value = null;
-  showModal.value = true;
-};
-
-const saveRoom = async () => {
-  const equipment = equipmentInput.value
-    .split(',')
-    .map(e => e.trim())
-    .filter(e => e.length > 0);
-
-  const roomData: Room = {
-    id: editingRoomId.value || `room-${Date.now()}`,
-    name: formData.value.name,
-    type: formData.value.type,
-    capacity: formData.value.capacity,
-    location: formData.value.location,
-    equipment,
-    notes: formData.value.notes,
-  };
-
-  if (editingRoomId.value) {
-    await store.updateRoom(roomData);
-  } else {
-    await store.addRoom(roomData);
-  }
-
-  closeModal();
-};
-
-const deleteRoomConfirm = () => {
-  if (!selectedRoomId.value) return;
-  confirmAction.value = async () => {
-    if (selectedRoomId.value) {
-      await store.deleteRoom(selectedRoomId.value);
-      selectedRoomId.value = null;
+      return rooms;
     }
-  };
-  showConfirmModal.value = true;
-};
+  },
+  watch: {
+    searchQuery() {
+      this.currentPage = 1;
+    },
+    filterType() {
+      this.currentPage = 1;
+    },
+    filterCapacity() {
+      this.currentPage = 1;
+    }
+  },
+  methods: {
+    clearFilters() {
+      this.searchQuery = '';
+      this.filterType = '';
+      this.filterCapacity = '';
+    },
+    formatRoomType(type: string): string {
+      return type.charAt(0).toUpperCase() + type.slice(1);
+    },
+    RoomTypeIcon(type: Room['type']) {
+      const iconMap: Record<Room['type'], any> = {
+        classroom: BookOpen,
+        activity: Target,
+        sports: Dumbbell,
+        dining: Utensils,
+        outdoor: Trees,
+        arts: Palette,
+      };
+      return iconMap[type] || Home;
+    },
+    getRoomTypeColor(type: Room['type']): string {
+      const colors: Record<Room['type'], string> = {
+        classroom: '#2196F3',
+        activity: '#4CAF50',
+        sports: '#FF9800',
+        dining: '#795548',
+        outdoor: '#8BC34A',
+        arts: '#9C27B0',
+      };
+      return colors[type] || '#757575';
+    },
+    getRoomEvents(roomId: string) {
+      return this.store.roomEvents(roomId);
+    },
+    getRoomUsage(roomId: string): number {
+      const roomEvents = this.store.roomEvents(roomId);
+      if (roomEvents.length === 0) return 0;
+      
+      const room = this.store.getRoomById(roomId);
+      if (!room) return 0;
+      
+      // Calculate average capacity usage
+      const totalUsage = roomEvents.reduce((sum, event) => {
+        return sum + ((event.enrolledCamperIds?.length || 0) / room.capacity) * 100;
+      }, 0);
+      
+      return totalUsage / roomEvents.length;
+    },
+    selectRoom(roomId: string) {
+      this.selectedRoomId = roomId;
+    },
+    editRoom() {
+      if (!this.selectedRoom) return;
+      
+      this.editingRoomId = this.selectedRoom.id;
+      this.formData = {
+        name: this.selectedRoom.name,
+        type: this.selectedRoom.type,
+        capacity: this.selectedRoom.capacity,
+        location: this.selectedRoom.location || '',
+        equipment: this.selectedRoom.equipment || [],
+        notes: this.selectedRoom.notes || '',
+      };
+      this.equipmentInput = (this.selectedRoom.equipment || []).join(', ');
+      
+      this.selectedRoomId = null;
+      this.showModal = true;
+    },
+    async saveRoom() {
+      const equipment = this.equipmentInput
+        .split(',')
+        .map(e => e.trim())
+        .filter(e => e.length > 0);
 
-const handleConfirmAction = async () => {
-  if (confirmAction.value) {
-    await confirmAction.value();
+      const roomData: Room = {
+        id: this.editingRoomId || `room-${Date.now()}`,
+        name: this.formData.name,
+        type: this.formData.type,
+        capacity: this.formData.capacity,
+        location: this.formData.location,
+        equipment,
+        notes: this.formData.notes,
+      };
+
+      if (this.editingRoomId) {
+        await this.store.updateRoom(roomData);
+      } else {
+        await this.store.addRoom(roomData);
+      }
+
+      this.closeModal();
+    },
+    deleteRoomConfirm() {
+      if (!this.selectedRoomId) return;
+      this.confirmAction = async () => {
+        if (this.selectedRoomId) {
+          await this.store.deleteRoom(this.selectedRoomId);
+          this.selectedRoomId = null;
+        }
+      };
+      this.showConfirmModal = true;
+    },
+    async handleConfirmAction() {
+      if (this.confirmAction) {
+        await this.confirmAction();
+      }
+      this.showConfirmModal = false;
+      this.confirmAction = null;
+    },
+    handleCancelConfirm() {
+      this.showConfirmModal = false;
+      this.confirmAction = null;
+    },
+    closeModal() {
+      this.showModal = false;
+      this.editingRoomId = null;
+      this.formData = {
+        name: '',
+        type: 'classroom',
+        capacity: 20,
+        location: '',
+        equipment: [],
+        notes: '',
+      };
+      this.equipmentInput = '';
+    }
   }
-  showConfirmModal.value = false;
-  confirmAction.value = null;
-};
-
-const handleCancelConfirm = () => {
-  showConfirmModal.value = false;
-  confirmAction.value = null;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-  editingRoomId.value = null;
-  formData.value = {
-    name: '',
-    type: 'classroom',
-    capacity: 20,
-    location: '',
-    equipment: [],
-    notes: '',
-  };
-  equipmentInput.value = '';
-};
+});
 </script>
+
 
 <style scoped>
 .rooms-view {

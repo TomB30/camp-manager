@@ -38,7 +38,7 @@
       <label class="text-sm text-secondary">Items per page:</label>
       <select 
         :value="pageSize"
-        @change="$emit('update:pageSize', Number($event.target.value))"
+        @change="handlePageSizeChange"
         class="form-select"
       >
         <option :value="10">10</option>
@@ -50,59 +50,75 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed } from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 
-const props = defineProps<{
-  currentPage: number;
-  pageSize: number;
-  totalItems: number;
-}>();
-
-defineEmits<{
-  'update:currentPage': [value: number];
-  'update:pageSize': [value: number];
-}>();
-
-const totalPages = computed(() => Math.ceil(props.totalItems / props.pageSize));
-
-const startItem = computed(() => {
-  if (props.totalItems === 0) return 0;
-  return (props.currentPage - 1) * props.pageSize + 1;
-});
-
-const endItem = computed(() => {
-  const end = props.currentPage * props.pageSize;
-  return Math.min(end, props.totalItems);
-});
-
-const visiblePages = computed(() => {
-  const pages: number[] = [];
-  const maxVisible = 5;
-  
-  if (totalPages.value <= maxVisible) {
-    // Show all pages if total is less than max
-    for (let i = 1; i <= totalPages.value; i++) {
-      pages.push(i);
+export default defineComponent({
+  name: 'Pagination',
+  props: {
+    currentPage: {
+      type: Number,
+      required: true
+    },
+    pageSize: {
+      type: Number,
+      required: true
+    },
+    totalItems: {
+      type: Number,
+      required: true
     }
-  } else {
-    // Show current page and surrounding pages
-    let start = Math.max(1, props.currentPage - 2);
-    let end = Math.min(totalPages.value, props.currentPage + 2);
-    
-    // Adjust if we're near the start or end
-    if (props.currentPage <= 3) {
-      end = maxVisible;
-    } else if (props.currentPage >= totalPages.value - 2) {
-      start = totalPages.value - maxVisible + 1;
+  },
+  emits: ['update:currentPage', 'update:pageSize'],
+  computed: {
+    totalPages(): number {
+      return Math.ceil(this.totalItems / this.pageSize);
+    },
+    startItem(): number {
+      if (this.totalItems === 0) return 0;
+      return (this.currentPage - 1) * this.pageSize + 1;
+    },
+    endItem(): number {
+      const end = this.currentPage * this.pageSize;
+      return Math.min(end, this.totalItems);
+    },
+    visiblePages(): number[] {
+      const pages: number[] = [];
+      const maxVisible = 5;
+      
+      if (this.totalPages <= maxVisible) {
+        // Show all pages if total is less than max
+        for (let i = 1; i <= this.totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        // Show current page and surrounding pages
+        let start = Math.max(1, this.currentPage - 2);
+        let end = Math.min(this.totalPages, this.currentPage + 2);
+        
+        // Adjust if we're near the start or end
+        if (this.currentPage <= 3) {
+          end = maxVisible;
+        } else if (this.currentPage >= this.totalPages - 2) {
+          start = this.totalPages - maxVisible + 1;
+        }
+        
+        for (let i = start; i <= end; i++) {
+          pages.push(i);
+        }
+      }
+      
+      return pages;
     }
-    
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
+  },
+  methods: {
+    handlePageSizeChange(event: Event) {
+      const target = event.target as HTMLSelectElement | null;
+      if (!target) return;
+      this.$emit('update:pageSize', Number(target.value));
+      this.$emit('update:currentPage', 1);
     }
   }
-  
-  return pages;
 });
 </script>
 

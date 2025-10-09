@@ -45,8 +45,8 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed } from 'vue';
+<script lang="ts">
+import { defineComponent, PropType } from 'vue';
 import Pagination from './Pagination.vue';
 
 export interface Column {
@@ -56,70 +56,94 @@ export interface Column {
   formatter?: (value: any, item: any) => string;
 }
 
-const props = defineProps<{
-  columns: Column[];
-  data: any[];
-  currentPage: number;
-  pageSize: number;
-  rowKey?: string | ((item: any) => string);
-  clickable?: boolean;
-}>();
-
-const emit = defineEmits<{
-  'update:currentPage': [value: number];
-  'update:pageSize': [value: number];
-  'row-click': [item: any];
-}>();
-
-const currentPageModel = computed({
-  get: () => props.currentPage,
-  set: (value) => emit('update:currentPage', value)
+export default defineComponent({
+  name: 'DataTable',
+  components: {
+    Pagination
+  },
+  props: {
+    columns: {
+      type: Array as PropType<Column[]>,
+      required: true
+    },
+    data: {
+      type: Array as PropType<any[]>,
+      required: true
+    },
+    currentPage: {
+      type: Number,
+      required: true
+    },
+    pageSize: {
+      type: Number,
+      required: true
+    },
+    rowKey: {
+      type: [String, Function] as PropType<string | ((item: any) => string)>,
+      default: undefined
+    },
+    clickable: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ['update:currentPage', 'update:pageSize', 'row-click'],
+  computed: {
+    currentPageModel: {
+      get(): number {
+        return this.currentPage;
+      },
+      set(value: number) {
+        this.$emit('update:currentPage', value);
+      }
+    },
+    pageSizeModel: {
+      get(): number {
+        return this.pageSize;
+      },
+      set(value: number) {
+        this.$emit('update:pageSize', value);
+      }
+    },
+    paginatedData(): any[] {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.data.slice(start, end);
+    }
+  },
+  methods: {
+    getRowKey(item: any, index: number): string {
+      if (typeof this.rowKey === 'function') {
+        return this.rowKey(item);
+      }
+      if (typeof this.rowKey === 'string') {
+        return item[this.rowKey];
+      }
+      return item.id || `row-${index}`;
+    },
+    getNestedValue(item: any, key: string): any {
+      const keys = key.split('.');
+      let value = item;
+      for (const k of keys) {
+        value = value?.[k];
+        if (value === undefined) break;
+      }
+      return value;
+    },
+    formatValue(item: any, column: Column): string {
+      const value = this.getNestedValue(item, column.key);
+      if (column.formatter) {
+        return column.formatter(value, item);
+      }
+      return value ?? '—';
+    },
+    handleRowClick(item: any) {
+      if (this.clickable) {
+        this.$emit('row-click', item);
+      }
+    }
+  }
 });
-
-const pageSizeModel = computed({
-  get: () => props.pageSize,
-  set: (value) => emit('update:pageSize', value)
-});
-
-const paginatedData = computed(() => {
-  const start = (props.currentPage - 1) * props.pageSize;
-  const end = start + props.pageSize;
-  return props.data.slice(start, end);
-});
-
-const getRowKey = (item: any, index: number): string => {
-  if (typeof props.rowKey === 'function') {
-    return props.rowKey(item);
-  }
-  if (typeof props.rowKey === 'string') {
-    return item[props.rowKey];
-  }
-  return item.id || `row-${index}`;
-};
-
-const getNestedValue = (item: any, key: string): any => {
-  const keys = key.split('.');
-  let value = item;
-  for (const k of keys) {
-    value = value?.[k];
-    if (value === undefined) break;
-  }
-  return value;
-};
-
-const formatValue = (item: any, column: Column): string => {
-  const value = getNestedValue(item, column.key);
-  if (column.formatter) {
-    return column.formatter(value, item);
-  }
-  return value ?? '—';
-};
-
-const handleRowClick = (item: any) => {
-  if (props.clickable) {
-    emit('row-click', item);
-  }
-};
 </script>
 
 <style scoped>

@@ -45,8 +45,8 @@
   </aside>
 </template>
 
-<script setup lang="ts">
-import { RouterLink } from 'vue-router';
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { 
   Sun, 
@@ -59,7 +59,24 @@ import {
   AlertTriangle 
 } from 'lucide-vue-next';
 
-const store = useCampStore();
+export default defineComponent({
+  name: 'Sidebar',
+  components: {
+    Sun,
+    LayoutDashboard,
+    Calendar,
+    Users,
+    UsersRound,
+    Home,
+    Bed,
+    AlertTriangle
+  },
+  computed: {
+    store() {
+      return useCampStore();
+    }
+  }
+});
 </script>
 
 <style scoped>

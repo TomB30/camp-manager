@@ -22,7 +22,7 @@
           v-for="(filter, index) in filters"
           :key="index"
           :value="filter.value"
-          @change="$emit(`update:${filter.model}`, ($event.target as HTMLSelectElement).value)"
+          @change="handleFilterChange(filter.model, $event)"
           class="form-select form-select-sm"
         >
           <option value="">{{ filter.placeholder }}</option>
@@ -57,8 +57,8 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed } from 'vue';
+<script lang="ts">
+import { defineComponent, PropType } from 'vue';
 
 export interface FilterOption {
   label: string;
@@ -72,33 +72,51 @@ export interface Filter {
   options: FilterOption[];
 }
 
-interface Props {
-  showSearch?: boolean;
-  searchQuery?: string;
-  searchPlaceholder?: string;
-  filters: Filter[];
-  filteredCount?: number;
-  totalCount?: number;
-  showCount?: boolean;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  showSearch: true,
-  searchQuery: '',
-  searchPlaceholder: 'Search...',
-  showCount: true,
-  filteredCount: 0,
-  totalCount: 0,
-});
-
-defineEmits<{
-  (e: 'update:searchQuery', value: string): void;
-  (e: `update:${string}`, value: string): void;
-  (e: 'clear'): void;
-}>();
-
-const hasActiveFilters = computed(() => {
-  return props.searchQuery || props.filters.some(f => f.value);
+export default defineComponent({
+  name: 'FilterBar',
+  props: {
+    showSearch: {
+      type: Boolean,
+      default: true
+    },
+    searchQuery: {
+      type: String,
+      default: ''
+    },
+    searchPlaceholder: {
+      type: String,
+      default: 'Search...'
+    },
+    filters: {
+      type: Array as PropType<Filter[]>,
+      required: true
+    },
+    filteredCount: {
+      type: Number,
+      default: 0
+    },
+    totalCount: {
+      type: Number,
+      default: 0
+    },
+    showCount: {
+      type: Boolean,
+      default: true
+    }
+  },
+  emits: ['update:searchQuery', 'clear'],
+  computed: {
+    hasActiveFilters(): boolean {
+      return !!this.searchQuery || this.filters.some((f: Filter) => f.value);
+    }
+  },
+  methods: {
+    handleFilterChange(model: string, event: Event) {
+      const target = event.target as HTMLSelectElement | null;
+      if (!target) return;
+      this.$emit(`update:${model}` as any, target.value);
+    }
+  }
 });
 </script>
 

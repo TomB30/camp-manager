@@ -24,30 +24,47 @@
   </Teleport>
 </template>
 
-<script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 
-defineProps<{
-  show: boolean;
-  title: string;
-  message: string;
-  details?: string;
-  confirmText?: string;
-  dangerMode?: boolean;
-}>();
-
-const emit = defineEmits<{
-  confirm: [];
-  cancel: [];
-}>();
-
-const confirm = () => {
-  emit('confirm');
-};
-
-const cancel = () => {
-  emit('cancel');
-};
+export default defineComponent({
+  name: 'ConfirmModal',
+  props: {
+    show: {
+      type: Boolean,
+      required: true
+    },
+    title: {
+      type: String,
+      required: true
+    },
+    message: {
+      type: String,
+      required: true
+    },
+    details: {
+      type: String,
+      default: undefined
+    },
+    confirmText: {
+      type: String,
+      default: 'Confirm'
+    },
+    dangerMode: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ['confirm', 'cancel'],
+  methods: {
+    confirm() {
+      this.$emit('confirm');
+    },
+    cancel() {
+      this.$emit('cancel');
+    }
+  }
+});
 </script>
 
 <style scoped>

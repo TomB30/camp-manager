@@ -7,25 +7,30 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { onMounted } from 'vue';
-import { RouterView } from 'vue-router';
+<script lang="ts">
+import { defineComponent } from 'vue';
 import Sidebar from './components/Sidebar.vue';
 import { useCampStore } from './stores/campStore';
 import { storageService } from './services/storage';
 import { mockData } from './data/mockData';
 
-const store = useCampStore();
-
-onMounted(async () => {
-  // Check if we have data, if not, seed with mock data
-  const existingCampers = await storageService.getCampers();
-  
-  if (existingCampers.length === 0) {
-    await storageService.seedData(mockData);
+export default defineComponent({
+  name: 'App',
+  components: {
+    Sidebar
+  },
+  async mounted() {
+    const store = useCampStore();
+    
+    // Check if we have data, if not, seed with mock data
+    const existingCampers = await storageService.getCampers();
+    
+    if (existingCampers.length === 0) {
+      await storageService.seedData(mockData);
+    }
+    
+    await store.loadAll();
   }
-  
-  await store.loadAll();
 });
 </script>
 

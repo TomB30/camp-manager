@@ -292,295 +292,292 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
 import type { Child } from '@/types/api';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
-import DataTable, { type Column } from '@/components/DataTable.vue';
+import DataTable from '@/components/DataTable.vue';
 
-const store = useCampStore();
-const selectedCamperId = ref<string | null>(null);
-const showModal = ref(false);
-const editingCamperId = ref<string | null>(null);
-const allergiesInput = ref('');
-const viewMode = ref<'grid' | 'table'>('grid');
-
-// Pagination state
-const currentPage = ref(1);
-const pageSize = ref(10);
-
-// Confirmation modal state
-const showConfirmModal = ref(false);
-const camperToDelete = ref<{ id: string; name: string } | null>(null);
-
-const formData = ref<{
-  firstName: string;
-  lastName: string;
-  age: number;
-  gender: 'male' | 'female';
-  parentContact: string;
-  allergies: string[];
-  medicalNotes: string;
-  sleepingRoomId: string;
-}>({
-  firstName: '',
-  lastName: '',
-  age: 8,
-  gender: 'male',
-  parentContact: '',
-  allergies: [],
-  medicalNotes: '',
-  sleepingRoomId: '',
-});
-
-// Filter state
-const searchQuery = ref('');
-const filterGender = ref('');
-const filterAge = ref('');
-const filterSleepingRoom = ref('');
-
-const campersFilters = computed<Filter[]>(() => [
-  {
-    model: 'filterGender',
-    value: filterGender.value,
-    placeholder: 'All Genders',
-    options: [
-      { label: 'Male', value: 'male' },
-      { label: 'Female', value: 'female' },
-    ],
+export default defineComponent({
+  name: 'Campers',
+  components: {
+    ConfirmModal,
+    FilterBar,
+    EventsByDate,
+    DataTable
   },
-  {
-    model: 'filterAge',
-    value: filterAge.value,
-    placeholder: 'All Ages',
-    options: [
-      { label: '6-8 years', value: '6-8' },
-      { label: '9-11 years', value: '9-11' },
-      { label: '12-14 years', value: '12-14' },
-      { label: '15+ years', value: '15+' },
-    ],
+  data() {
+    return {
+      selectedCamperId: null as string | null,
+      showModal: false,
+      editingCamperId: null as string | null,
+      allergiesInput: '',
+      viewMode: 'grid' as 'grid' | 'table',
+      currentPage: 1,
+      pageSize: 10,
+      showConfirmModal: false,
+      camperToDelete: null as { id: string; name: string } | null,
+      formData: {
+        firstName: '',
+        lastName: '',
+        age: 8,
+        gender: 'male' as 'male' | 'female',
+        parentContact: '',
+        allergies: [] as string[],
+        medicalNotes: '',
+        sleepingRoomId: '',
+      },
+      searchQuery: '',
+      filterGender: '',
+      filterAge: '',
+      filterSleepingRoom: '',
+      camperColumns: [
+        { key: 'name', label: 'Name', width: '200px' },
+        { key: 'age', label: 'Age', width: '80px' },
+        { key: 'gender', label: 'Gender', width: '100px' },
+        { key: 'cabin', label: 'Cabin', width: '120px' },
+        { key: 'parentContact', label: 'Parent Contact', width: '200px' },
+        { key: 'allergies', label: 'Allergies', width: '120px' },
+        { key: 'events', label: "Today's Events", width: '120px' },
+        { key: 'actions', label: 'Actions', width: '140px' },
+      ]
+    };
   },
-  {
-    model: 'filterSleepingRoom',
-    value: filterSleepingRoom.value,
-    placeholder: 'All Cabins',
-    options: [
-      { label: 'Unassigned', value: 'unassigned' },
-      ...store.sleepingRooms.map(room => ({
-        label: room.name,
-        value: room.id,
-      })),
-    ],
+
+  computed: {
+    store() {
+      return useCampStore();
+    },
+    campersFilters(): Filter[] {
+      return [
+        {
+          model: 'filterGender',
+          value: this.filterGender,
+          placeholder: 'All Genders',
+          options: [
+            { label: 'Male', value: 'male' },
+            { label: 'Female', value: 'female' },
+          ],
+        },
+        {
+          model: 'filterAge',
+          value: this.filterAge,
+          placeholder: 'All Ages',
+          options: [
+            { label: '6-8 years', value: '6-8' },
+            { label: '9-11 years', value: '9-11' },
+            { label: '12-14 years', value: '12-14' },
+            { label: '15+ years', value: '15+' },
+          ],
+        },
+        {
+          model: 'filterSleepingRoom',
+          value: this.filterSleepingRoom,
+          placeholder: 'All Cabins',
+          options: [
+            { label: 'Unassigned', value: 'unassigned' },
+            ...this.store.sleepingRooms.map(room => ({
+              label: room.name,
+              value: room.id,
+            })),
+          ],
+        },
+      ];
+    },
+    selectedCamper() {
+      if (!this.selectedCamperId) return null;
+      return this.store.getCamperById(this.selectedCamperId);
+    },
+    filteredCampers() {
+      let campers = this.store.campers;
+
+      // Search filter
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        campers = campers.filter(camper =>
+          camper.firstName.toLowerCase().includes(query) ||
+          camper.lastName.toLowerCase().includes(query) ||
+          `${camper.firstName} ${camper.lastName}`.toLowerCase().includes(query)
+        );
+      }
+
+      // Gender filter
+      if (this.filterGender) {
+        campers = campers.filter(camper => camper.gender === this.filterGender);
+      }
+
+      // Age filter
+      if (this.filterAge) {
+        const [min, max] = this.filterAge === '15+' 
+          ? [15, 999] 
+          : this.filterAge.split('-').map(Number);
+        campers = campers.filter(camper => camper.age >= min && (max ? camper.age <= max : true));
+      }
+
+      // Sleeping room filter
+      if (this.filterSleepingRoom) {
+        if (this.filterSleepingRoom === 'unassigned') {
+          campers = campers.filter(camper => !camper.sleepingRoomId);
+        } else {
+          campers = campers.filter(camper => camper.sleepingRoomId === this.filterSleepingRoom);
+        }
+      }
+
+      return campers;
+    }
   },
-]);
+  watch: {
+    searchQuery() {
+      this.currentPage = 1;
+    },
+    filterGender() {
+      this.currentPage = 1;
+    },
+    filterAge() {
+      this.currentPage = 1;
+    },
+    filterSleepingRoom() {
+      this.currentPage = 1;
+    }
+  },
 
-const selectedCamper = computed(() => {
-  if (!selectedCamperId.value) return null;
-  return store.getCamperById(selectedCamperId.value);
-});
+  methods: {
+    clearFilters() {
+      this.searchQuery = '';
+      this.filterGender = '';
+      this.filterAge = '';
+      this.filterSleepingRoom = '';
+    },
+    getCamperTodayEvents(camperId: string) {
+      const today = new Date();
+      return this.store.camperEvents(camperId).filter(event => {
+        const eventDate = new Date(event.startTime);
+        return eventDate.toDateString() === today.toDateString();
+      });
+    },
+    getCamperEvents(camperId: string) {
+      return this.store.camperEvents(camperId);
+    },
+    formatDate(dateStr: string): string {
+      return format(new Date(dateStr), 'MMMM d, yyyy');
+    },
+    getSleepingRoomName(roomId: string): string {
+      const room = this.store.getSleepingRoomById(roomId);
+      return room?.name || 'Unknown Room';
+    },
+    formatGender(gender: string): string {
+      return gender.charAt(0).toUpperCase() + gender.slice(1);
+    },
+    formatRoomGender(gender: string): string {
+      return gender.charAt(0).toUpperCase() + gender.slice(1);
+    },
+    getAvailableSleepingRooms(camperGender: 'male' | 'female') {
+      return this.store.sleepingRooms.filter(room => {
+        // Mixed rooms accept all
+        if (room.gender === 'mixed') return true;
+        
+        // Match room gender with camper gender
+        if (camperGender === 'male' && room.gender === 'boys') return true;
+        if (camperGender === 'female' && room.gender === 'girls') return true;
+        
+        return false;
+      });
+    },
+    selectCamper(camperId: string) {
+      this.selectedCamperId = camperId;
+    },
+    editCamper() {
+      if (!this.selectedCamper) return;
+      
+      this.editingCamperId = this.selectedCamper.id;
+      this.formData = {
+        firstName: this.selectedCamper.firstName,
+        lastName: this.selectedCamper.lastName,
+        age: this.selectedCamper.age,
+        gender: this.selectedCamper.gender,
+        parentContact: this.selectedCamper.parentContact,
+        allergies: this.selectedCamper.allergies || [],
+        medicalNotes: this.selectedCamper.medicalNotes || '',
+        sleepingRoomId: this.selectedCamper.sleepingRoomId || '',
+      };
+      this.allergiesInput = (this.selectedCamper.allergies || []).join(', ');
+      
+      this.selectedCamperId = null;
+      this.showModal = true;
+    },
+    async saveCamper() {
+      const allergies = this.allergiesInput
+        .split(',')
+        .map(a => a.trim())
+        .filter(a => a.length > 0);
 
-const camperColumns: Column[] = [
-  { key: 'name', label: 'Name', width: '200px' },
-  { key: 'age', label: 'Age', width: '80px' },
-  { key: 'gender', label: 'Gender', width: '100px' },
-  { key: 'cabin', label: 'Cabin', width: '120px' },
-  { key: 'parentContact', label: 'Parent Contact', width: '200px' },
-  { key: 'allergies', label: 'Allergies', width: '120px' },
-  { key: 'events', label: "Today's Events", width: '120px' },
-  { key: 'actions', label: 'Actions', width: '140px' },
-];
+      const camperData: Child = {
+        id: this.editingCamperId || `child-${Date.now()}`,
+        firstName: this.formData.firstName,
+        lastName: this.formData.lastName,
+        age: this.formData.age,
+        gender: this.formData.gender,
+        parentContact: this.formData.parentContact,
+        allergies,
+        medicalNotes: this.formData.medicalNotes,
+        sleepingRoomId: this.formData.sleepingRoomId || undefined,
+        registrationDate: this.editingCamperId 
+          ? this.store.getCamperById(this.editingCamperId)?.registrationDate 
+          : new Date().toISOString(),
+      };
 
-const filteredCampers = computed(() => {
-  let campers = store.campers;
+      if (this.editingCamperId) {
+        await this.store.updateCamper(camperData);
+      } else {
+        await this.store.addCamper(camperData);
+      }
 
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    campers = campers.filter(camper =>
-      camper.firstName.toLowerCase().includes(query) ||
-      camper.lastName.toLowerCase().includes(query) ||
-      `${camper.firstName} ${camper.lastName}`.toLowerCase().includes(query)
-    );
-  }
-
-  // Gender filter
-  if (filterGender.value) {
-    campers = campers.filter(camper => camper.gender === filterGender.value);
-  }
-
-  // Age filter
-  if (filterAge.value) {
-    const [min, max] = filterAge.value === '15+' 
-      ? [15, 999] 
-      : filterAge.value.split('-').map(Number);
-    campers = campers.filter(camper => camper.age >= min && (max ? camper.age <= max : true));
-  }
-
-  // Sleeping room filter
-  if (filterSleepingRoom.value) {
-    if (filterSleepingRoom.value === 'unassigned') {
-      campers = campers.filter(camper => !camper.sleepingRoomId);
-    } else {
-      campers = campers.filter(camper => camper.sleepingRoomId === filterSleepingRoom.value);
+      this.closeModal();
+    },
+    deleteCamperConfirm() {
+      if (!this.selectedCamperId) return;
+      const camper = this.store.getCamperById(this.selectedCamperId);
+      if (!camper) return;
+      
+      this.camperToDelete = {
+        id: this.selectedCamperId,
+        name: `${camper.firstName} ${camper.lastName}`
+      };
+      this.showConfirmModal = true;
+    },
+    async handleConfirmDelete() {
+      if (!this.camperToDelete) return;
+      
+      await this.store.deleteCamper(this.camperToDelete.id);
+      this.selectedCamperId = null;
+      this.showConfirmModal = false;
+      this.camperToDelete = null;
+    },
+    handleCancelDelete() {
+      this.showConfirmModal = false;
+      this.camperToDelete = null;
+    },
+    closeModal() {
+      this.showModal = false;
+      this.editingCamperId = null;
+      this.formData = {
+        firstName: '',
+        lastName: '',
+        age: 8,
+        gender: 'male',
+        parentContact: '',
+        allergies: [],
+        medicalNotes: '',
+        sleepingRoomId: '',
+      };
+      this.allergiesInput = '';
     }
   }
-
-  return campers;
 });
-
-// Reset to page 1 when filters change
-watch([searchQuery, filterGender, filterAge, filterSleepingRoom], () => {
-  currentPage.value = 1;
-});
-
-const clearFilters = () => {
-  searchQuery.value = '';
-  filterGender.value = '';
-  filterAge.value = '';
-  filterSleepingRoom.value = '';
-};
-
-const getCamperTodayEvents = (camperId: string) => {
-  const today = new Date();
-  return store.camperEvents(camperId).filter(event => {
-    const eventDate = new Date(event.startTime);
-    return eventDate.toDateString() === today.toDateString();
-  });
-};
-
-const getCamperEvents = (camperId: string) => {
-  return store.camperEvents(camperId);
-};
-
-const formatDate = (dateStr: string) => {
-  return format(new Date(dateStr), 'MMMM d, yyyy');
-};
-
-const getSleepingRoomName = (roomId: string) => {
-  const room = store.getSleepingRoomById(roomId);
-  return room?.name || 'Unknown Room';
-};
-
-const formatGender = (gender: string) => {
-  return gender.charAt(0).toUpperCase() + gender.slice(1);
-};
-
-const formatRoomGender = (gender: string) => {
-  return gender.charAt(0).toUpperCase() + gender.slice(1);
-};
-
-const getAvailableSleepingRooms = (camperGender: 'male' | 'female') => {
-  return store.sleepingRooms.filter(room => {
-    // Mixed rooms accept all
-    if (room.gender === 'mixed') return true;
-    
-    // Match room gender with camper gender
-    if (camperGender === 'male' && room.gender === 'boys') return true;
-    if (camperGender === 'female' && room.gender === 'girls') return true;
-    
-    return false;
-  });
-};
-
-const selectCamper = (camperId: string) => {
-  selectedCamperId.value = camperId;
-};
-
-const editCamper = () => {
-  if (!selectedCamper.value) return;
-  
-  editingCamperId.value = selectedCamper.value.id;
-  formData.value = {
-    firstName: selectedCamper.value.firstName,
-    lastName: selectedCamper.value.lastName,
-    age: selectedCamper.value.age,
-    gender: selectedCamper.value.gender,
-    parentContact: selectedCamper.value.parentContact,
-    allergies: selectedCamper.value.allergies || [],
-    medicalNotes: selectedCamper.value.medicalNotes || '',
-    sleepingRoomId: selectedCamper.value.sleepingRoomId || '',
-  };
-  allergiesInput.value = (selectedCamper.value.allergies || []).join(', ');
-  
-  selectedCamperId.value = null;
-  showModal.value = true;
-};
-
-const saveCamper = async () => {
-  const allergies = allergiesInput.value
-    .split(',')
-    .map(a => a.trim())
-    .filter(a => a.length > 0);
-
-  const camperData: Child = {
-    id: editingCamperId.value || `child-${Date.now()}`,
-    firstName: formData.value.firstName,
-    lastName: formData.value.lastName,
-    age: formData.value.age,
-    gender: formData.value.gender,
-    parentContact: formData.value.parentContact,
-    allergies,
-    medicalNotes: formData.value.medicalNotes,
-    sleepingRoomId: formData.value.sleepingRoomId || undefined,
-    registrationDate: editingCamperId.value 
-      ? store.getCamperById(editingCamperId.value)?.registrationDate 
-      : new Date().toISOString(),
-  };
-
-  if (editingCamperId.value) {
-    await store.updateCamper(camperData);
-  } else {
-    await store.addCamper(camperData);
-  }
-
-  closeModal();
-};
-
-const deleteCamperConfirm = () => {
-  if (!selectedCamperId.value) return;
-  const camper = store.getCamperById(selectedCamperId.value);
-  if (!camper) return;
-  
-  camperToDelete.value = {
-    id: selectedCamperId.value,
-    name: `${camper.firstName} ${camper.lastName}`
-  };
-  showConfirmModal.value = true;
-};
-
-const handleConfirmDelete = async () => {
-  if (!camperToDelete.value) return;
-  
-  await store.deleteCamper(camperToDelete.value.id);
-  selectedCamperId.value = null;
-  showConfirmModal.value = false;
-  camperToDelete.value = null;
-};
-
-const handleCancelDelete = () => {
-  showConfirmModal.value = false;
-  camperToDelete.value = null;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-  editingCamperId.value = null;
-  formData.value = {
-    firstName: '',
-    lastName: '',
-    age: 8,
-    gender: 'male',
-    parentContact: '',
-    allergies: [],
-    medicalNotes: '',
-    sleepingRoomId: '',
-  };
-  allergiesInput.value = '';
-};
 </script>
 
 <style scoped>

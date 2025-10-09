@@ -597,7 +597,7 @@ export interface components {
     };
     Conflict: {
       /** @enum {string} */
-      type?: "room_overcapacity" | "event_overcapacity" | "child_double_booked" | "staff_double_booked" | "missing_certification";
+      type?: "room_overcapacity" | "event_overcapacity" | "camper_double_booked" | "staff_double_booked" | "missing_certification";
       message?: string;
       entityId?: string;
       conflictingIds?: string[];

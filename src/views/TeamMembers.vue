@@ -273,269 +273,261 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { TeamMember } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
-import DataTable, { type Column } from '@/components/DataTable.vue';
+import DataTable from '@/components/DataTable.vue';
 
-const store = useCampStore();
-const selectedMemberId = ref<string | null>(null);
-const showModal = ref(false);
-const editingMemberId = ref<string | null>(null);
-const certificationsInput = ref('');
-const viewMode = ref<'grid' | 'table' | 'org-chart'>('grid');
-const expandedMembers = ref<Set<string>>(new Set());
-
-// Pagination state
-const currentPage = ref(1);
-const pageSize = ref(10);
-
-// Confirm modal state
-const showConfirmModal = ref(false);
-const confirmAction = ref<(() => void) | null>(null);
-
-
-// Expand all by default on mount
-onMounted(() => {
-  // Auto-expand all members with reports
-  store.teamMembers.forEach(member => {
-    if (getDirectReports(member.id).length > 0) {
-      expandedMembers.value.add(member.id);
-    }
-  });
-});
-
-const formData = ref<{
-  firstName: string;
-  lastName: string;
-  role: TeamMember['role'];
-  email: string;
-  phone: string;
-  certifications: string[];
-  managerId: string;
-}>({
-  firstName: '',
-  lastName: '',
-  role: 'counselor',
-  email: '',
-  phone: '',
-  certifications: [],
-  managerId: '',
-});
-
-// Filter state
-const searchQuery = ref('');
-const filterRole = ref('');
-const filterCertification = ref('');
-
-const teamFilters = computed<Filter[]>(() => [
-  {
-    model: 'filterRole',
-    value: filterRole.value,
-    placeholder: 'All Roles',
-    options: [
-      { label: 'Counselor', value: 'counselor' },
-      { label: 'Activity Leader', value: 'activity-leader' },
-      { label: 'Medical Staff', value: 'medical-staff' },
-      { label: 'Administrator', value: 'administrator' },
-    ],
+export default defineComponent({
+  name: 'TeamMembers',
+  components: {
+    FilterBar,
+    EventsByDate,
+    ConfirmModal,
+    DataTable
   },
-  {
-    model: 'filterCertification',
-    value: filterCertification.value,
-    placeholder: 'All Certifications',
-    options: [
-      { label: 'First Aid', value: 'First Aid' },
-      { label: 'CPR', value: 'CPR' },
-      { label: 'Lifeguard', value: 'Lifeguard' },
-      { label: 'Swimming Instructor', value: 'Swimming Instructor' },
-      { label: 'Wilderness First Aid', value: 'Wilderness First Aid' },
-    ],
+  data() {
+    return {
+      selectedMemberId: null as string | null,
+      showModal: false,
+      editingMemberId: null as string | null,
+      certificationsInput: '',
+      viewMode: 'grid' as 'grid' | 'table' | 'org-chart',
+      expandedMembers: new Set<string>(),
+      currentPage: 1,
+      pageSize: 10,
+      showConfirmModal: false,
+      confirmAction: null as (() => void) | null,
+      formData: {
+        firstName: '',
+        lastName: '',
+        role: 'counselor' as TeamMember['role'],
+        email: '',
+        phone: '',
+        certifications: [] as string[],
+        managerId: '',
+      },
+      searchQuery: '',
+      filterRole: '',
+      filterCertification: '',
+      memberColumns: [
+        { key: 'name', label: 'Name', width: '200px' },
+        { key: 'role', label: 'Role', width: '140px' },
+        { key: 'email', label: 'Email', width: '200px' },
+        { key: 'phone', label: 'Phone', width: '150px' },
+        { key: 'certifications', label: 'Certifications', width: '140px' },
+        { key: 'events', label: 'Events', width: '100px' },
+        { key: 'actions', label: 'Actions', width: '140px' },
+      ]
+    };
   },
-]);
+  computed: {
+    store() {
+      return useCampStore();
+    },
+    teamFilters(): Filter[] {
+      return [
+        {
+          model: 'filterRole',
+          value: this.filterRole,
+          placeholder: 'All Roles',
+          options: [
+            { label: 'Counselor', value: 'counselor' },
+            { label: 'Activity Leader', value: 'activity-leader' },
+            { label: 'Medical Staff', value: 'medical-staff' },
+            { label: 'Administrator', value: 'administrator' },
+          ],
+        },
+        {
+          model: 'filterCertification',
+          value: this.filterCertification,
+          placeholder: 'All Certifications',
+          options: [
+            { label: 'First Aid', value: 'First Aid' },
+            { label: 'CPR', value: 'CPR' },
+            { label: 'Lifeguard', value: 'Lifeguard' },
+            { label: 'Swimming Instructor', value: 'Swimming Instructor' },
+            { label: 'Wilderness First Aid', value: 'Wilderness First Aid' },
+          ],
+        },
+      ];
+    },
+    selectedMember() {
+      if (!this.selectedMemberId) return null;
+      return this.store.getTeamMemberById(this.selectedMemberId);
+    },
+    filteredMembers() {
+      let members = this.store.teamMembers;
 
-const selectedMember = computed(() => {
-  if (!selectedMemberId.value) return null;
-  return store.getTeamMemberById(selectedMemberId.value);
-});
+      // Search filter
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        members = members.filter(member =>
+          member.firstName.toLowerCase().includes(query) ||
+          member.lastName.toLowerCase().includes(query) ||
+          `${member.firstName} ${member.lastName}`.toLowerCase().includes(query) ||
+          (member.email && member.email.toLowerCase().includes(query))
+        );
+      }
 
-const memberColumns: Column[] = [
-  { key: 'name', label: 'Name', width: '200px' },
-  { key: 'role', label: 'Role', width: '140px' },
-  { key: 'email', label: 'Email', width: '200px' },
-  { key: 'phone', label: 'Phone', width: '150px' },
-  { key: 'certifications', label: 'Certifications', width: '140px' },
-  { key: 'events', label: 'Events', width: '100px' },
-  { key: 'actions', label: 'Actions', width: '140px' },
-];
+      // Role filter
+      if (this.filterRole) {
+        members = members.filter(member => member.role === this.filterRole);
+      }
 
-const filteredMembers = computed(() => {
-  let members = store.teamMembers;
+      // Certification filter
+      if (this.filterCertification) {
+        members = members.filter(member =>
+          member.certifications && member.certifications.includes(this.filterCertification)
+        );
+      }
 
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    members = members.filter(member =>
-      member.firstName.toLowerCase().includes(query) ||
-      member.lastName.toLowerCase().includes(query) ||
-      `${member.firstName} ${member.lastName}`.toLowerCase().includes(query) ||
-      (member.email && member.email.toLowerCase().includes(query))
-    );
-  }
-
-  // Role filter
-  if (filterRole.value) {
-    members = members.filter(member => member.role === filterRole.value);
-  }
-
-  // Certification filter
-  if (filterCertification.value) {
-    members = members.filter(member =>
-      member.certifications && member.certifications.includes(filterCertification.value)
-    );
-  }
-
-  return members;
-});
-
-// Reset to page 1 when filters change
-watch([searchQuery, filterRole, filterCertification], () => {
-  currentPage.value = 1;
-});
-
-const clearFilters = () => {
-  searchQuery.value = '';
-  filterRole.value = '';
-  filterCertification.value = '';
-};
-
-// Org chart functions
-const getDirectReports = (managerId: string) => {
-  return filteredMembers.value.filter(member => member.managerId === managerId);
-};
-
-const getManagerName = (managerId: string | undefined) => {
-  if (!managerId) return 'None';
-  const manager = store.getTeamMemberById(managerId);
-  return manager ? `${manager.firstName} ${manager.lastName}` : 'Unknown';
-};
-
-const formatRole = (role: string) => {
-  return role.charAt(0).toUpperCase() + role.slice(1);
-};
-
-const getRoleColor = (role: TeamMember['role']) => {
-  const colors: Record<TeamMember['role'], string> = {
-    director: '#9C27B0',
-    supervisor: '#2196F3',
-    counselor: '#4CAF50',
-    nurse: '#F44336',
-    instructor: '#FF9800',
-  };
-  return colors[role] || '#757575';
-};
-
-const getMemberEvents = (memberId: string) => {
-  return store.staffEvents(memberId);
-};
-
-const getRoomName = (roomId: string) => {
-  const room = store.getRoomById(roomId);
-  return room?.name || 'Unknown Room';
-};
-
-const selectMember = (memberId: string) => {
-  selectedMemberId.value = memberId;
-};
-
-const editMember = () => {
-  if (!selectedMember.value) return;
-  
-  editingMemberId.value = selectedMember.value.id;
-  formData.value = {
-    firstName: selectedMember.value.firstName,
-    lastName: selectedMember.value.lastName,
-    role: selectedMember.value.role,
-    email: selectedMember.value.email || '',
-    phone: selectedMember.value.phone || '',
-    certifications: selectedMember.value.certifications || [],
-    managerId: selectedMember.value.managerId || '',
-  };
-  certificationsInput.value = (selectedMember.value.certifications || []).join(', ');
-  
-  selectedMemberId.value = null;
-  showModal.value = true;
-};
-
-const saveMember = async () => {
-  const certifications = certificationsInput.value
-    .split(',')
-    .map(c => c.trim())
-    .filter(c => c.length > 0);
-
-  const memberData: TeamMember = {
-    id: editingMemberId.value || `staff-${Date.now()}`,
-    firstName: formData.value.firstName,
-    lastName: formData.value.lastName,
-    role: formData.value.role,
-    email: formData.value.email,
-    phone: formData.value.phone,
-    certifications,
-    managerId: formData.value.managerId || undefined,
-  };
-
-  if (editingMemberId.value) {
-    await store.updateTeamMember(memberData);
-  } else {
-    await store.addTeamMember(memberData);
-  }
-
-  closeModal();
-};
-
-const deleteMemberConfirm = () => {
-  if (!selectedMemberId.value) return;
-  confirmAction.value = async () => {
-    if (selectedMemberId.value) {
-      await store.deleteTeamMember(selectedMemberId.value);
-      selectedMemberId.value = null;
+      return members;
     }
-  };
-  showConfirmModal.value = true;
-};
+  },
+  watch: {
+    searchQuery() {
+      this.currentPage = 1;
+    },
+    filterRole() {
+      this.currentPage = 1;
+    },
+    filterCertification() {
+      this.currentPage = 1;
+    }
+  },
+  mounted() {
+    // Auto-expand all members with reports
+    this.store.teamMembers.forEach(member => {
+      if (this.getDirectReports(member.id).length > 0) {
+        this.expandedMembers.add(member.id);
+      }
+    });
+  },
+  methods: {
+    clearFilters() {
+      this.searchQuery = '';
+      this.filterRole = '';
+      this.filterCertification = '';
+    },
+    getDirectReports(managerId: string) {
+      return this.filteredMembers.filter(member => member.managerId === managerId);
+    },
+    getManagerName(managerId: string | undefined): string {
+      if (!managerId) return 'None';
+      const manager = this.store.getTeamMemberById(managerId);
+      return manager ? `${manager.firstName} ${manager.lastName}` : 'Unknown';
+    },
+    formatRole(role: string): string {
+      return role.charAt(0).toUpperCase() + role.slice(1);
+    },
+    getRoleColor(role: TeamMember['role']): string {
+      const colors: Record<TeamMember['role'], string> = {
+        director: '#9C27B0',
+        supervisor: '#2196F3',
+        counselor: '#4CAF50',
+        nurse: '#F44336',
+        instructor: '#FF9800',
+      };
+      return colors[role] || '#757575';
+    },
+    getMemberEvents(memberId: string) {
+      return this.store.staffEvents(memberId);
+    },
+    getRoomName(roomId: string): string {
+      const room = this.store.getRoomById(roomId);
+      return room?.name || 'Unknown Room';
+    },
+    selectMember(memberId: string) {
+      this.selectedMemberId = memberId;
+    },
+    editMember() {
+      if (!this.selectedMember) return;
+      
+      this.editingMemberId = this.selectedMember.id;
+      this.formData = {
+        firstName: this.selectedMember.firstName,
+        lastName: this.selectedMember.lastName,
+        role: this.selectedMember.role,
+        email: this.selectedMember.email || '',
+        phone: this.selectedMember.phone || '',
+        certifications: this.selectedMember.certifications || [],
+        managerId: this.selectedMember.managerId || '',
+      };
+      this.certificationsInput = (this.selectedMember.certifications || []).join(', ');
+      
+      this.selectedMemberId = null;
+      this.showModal = true;
+    },
+    async saveMember() {
+      const certifications = this.certificationsInput
+        .split(',')
+        .map(c => c.trim())
+        .filter(c => c.length > 0);
 
-const handleConfirmAction = async () => {
-  if (confirmAction.value) {
-    await confirmAction.value();
+      const memberData: TeamMember = {
+        id: this.editingMemberId || `staff-${Date.now()}`,
+        firstName: this.formData.firstName,
+        lastName: this.formData.lastName,
+        role: this.formData.role,
+        email: this.formData.email,
+        phone: this.formData.phone,
+        certifications,
+        managerId: this.formData.managerId || undefined,
+      };
+
+      if (this.editingMemberId) {
+        await this.store.updateTeamMember(memberData);
+      } else {
+        await this.store.addTeamMember(memberData);
+      }
+
+      this.closeModal();
+    },
+    deleteMemberConfirm() {
+      if (!this.selectedMemberId) return;
+      this.confirmAction = async () => {
+        if (this.selectedMemberId) {
+          await this.store.deleteTeamMember(this.selectedMemberId);
+          this.selectedMemberId = null;
+        }
+      };
+      this.showConfirmModal = true;
+    },
+    async handleConfirmAction() {
+      if (this.confirmAction) {
+        await this.confirmAction();
+      }
+      this.showConfirmModal = false;
+      this.confirmAction = null;
+    },
+    handleCancelConfirm() {
+      this.showConfirmModal = false;
+      this.confirmAction = null;
+    },
+    closeModal() {
+      this.showModal = false;
+      this.editingMemberId = null;
+      this.formData = {
+        firstName: '',
+        lastName: '',
+        role: 'counselor',
+        email: '',
+        phone: '',
+        certifications: [],
+        managerId: '',
+      };
+      this.certificationsInput = '';
+    }
   }
-  showConfirmModal.value = false;
-  confirmAction.value = null;
-};
-
-const handleCancelConfirm = () => {
-  showConfirmModal.value = false;
-  confirmAction.value = null;
-};
-
-const closeModal = () => {
-  showModal.value = false;
-  editingMemberId.value = null;
-  formData.value = {
-    firstName: '',
-    lastName: '',
-    role: 'counselor',
-    email: '',
-    phone: '',
-    certifications: [],
-    managerId: '',
-  };
-  certificationsInput.value = '';
-};
+});
 </script>
+
+
 
 <style scoped>
 .team-view {
