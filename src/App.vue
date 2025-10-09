@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <Header />
-    <main class="flex-1">
+    <Sidebar />
+    <main class="main-content">
       <RouterView />
     </main>
   </div>
@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { RouterView } from 'vue-router';
-import Header from './components/Header.vue';
+import Sidebar from './components/Sidebar.vue';
 import { useCampStore } from './stores/campStore';
 import { storageService } from './services/storage';
 import { mockData } from './data/mockData';
@@ -33,12 +33,24 @@ onMounted(async () => {
 #app {
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
 }
 
-main {
+.main-content {
   flex: 1;
-  padding: 2rem 0;
+  margin-left: 260px;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  #app {
+    flex-direction: column;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 1rem;
+  }
 }
 </style>
 
