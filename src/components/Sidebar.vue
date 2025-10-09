@@ -52,7 +52,7 @@ const store = useCampStore();
 
 <style scoped>
 .sidebar {
-  width: 260px;
+  width: 220px;
   background: var(--surface);
   border-right: 1px solid var(--border-light);
   height: 100vh;

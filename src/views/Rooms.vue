@@ -104,7 +104,7 @@
           </thead>
           <tbody>
             <tr 
-              v-for="room in filteredRooms"
+              v-for="room in paginatedRooms"
               :key="room.id"
               class="table-row"
             >
@@ -152,6 +152,11 @@
             </tr>
           </tbody>
         </table>
+        <Pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :total-items="filteredRooms.length"
+        />
       </div>
 
       <!-- Room Detail Modal -->
@@ -287,12 +292,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { Room } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
+import Pagination from '@/components/Pagination.vue';
 
 const store = useCampStore();
 const selectedRoomId = ref<string | null>(null);
@@ -304,6 +310,10 @@ const showConfirmModal = ref(false);
 const confirmAction = ref<(() => void) | null>(null);
 const equipmentInput = ref('');
 const viewMode = ref<'grid' | 'table'>('grid');
+
+// Pagination state
+const currentPage = ref(1);
+const pageSize = ref(20);
 
 const formData = ref<{
   name: string;
@@ -384,6 +394,17 @@ const filteredRooms = computed(() => {
   }
 
   return rooms;
+});
+
+const paginatedRooms = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return filteredRooms.value.slice(start, end);
+});
+
+// Reset to page 1 when filters change
+watch([searchQuery, filterType, filterCapacity], () => {
+  currentPage.value = 1;
 });
 
 const clearFilters = () => {
@@ -685,7 +706,7 @@ const closeModal = () => {
 }
 
 .rooms-table td {
-  padding: 1rem;
+  padding: 8px 16px;
   font-size: 0.875rem;
 }
 

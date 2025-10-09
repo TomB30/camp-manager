@@ -91,7 +91,7 @@
           </thead>
           <tbody>
             <tr 
-              v-for="member in filteredMembers"
+              v-for="member in paginatedMembers"
               :key="member.id"
               class="table-row"
             >
@@ -125,6 +125,11 @@
             </tr>
           </tbody>
         </table>
+        <Pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :total-items="filteredMembers.length"
+        />
       </div>
 
       <!-- Member Detail Modal -->
@@ -286,12 +291,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { TeamMember } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
+import Pagination from '@/components/Pagination.vue';
 
 const store = useCampStore();
 const selectedMemberId = ref<string | null>(null);
@@ -300,6 +306,10 @@ const editingMemberId = ref<string | null>(null);
 const certificationsInput = ref('');
 const viewMode = ref<'grid' | 'table' | 'org-chart'>('grid');
 const expandedMembers = ref<Set<string>>(new Set());
+
+// Pagination state
+const currentPage = ref(1);
+const pageSize = ref(20);
 
 // Confirm modal state
 const showConfirmModal = ref(false);
@@ -397,6 +407,17 @@ const filteredMembers = computed(() => {
   }
 
   return members;
+});
+
+const paginatedMembers = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return filteredMembers.value.slice(start, end);
+});
+
+// Reset to page 1 when filters change
+watch([searchQuery, filterRole, filterCertification], () => {
+  currentPage.value = 1;
 });
 
 const clearFilters = () => {
@@ -671,7 +692,7 @@ const closeModal = () => {
 }
 
 .team-table td {
-  padding: 1rem;
+  padding: 8px 16px;
   font-size: 0.875rem;
 }
 

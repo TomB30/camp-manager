@@ -97,7 +97,7 @@
           </thead>
           <tbody>
             <tr 
-              v-for="camper in filteredCampers"
+              v-for="camper in paginatedCampers"
               :key="camper.id"
               class="table-row"
             >
@@ -139,6 +139,11 @@
             </tr>
           </tbody>
         </table>
+        <Pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :total-items="filteredCampers.length"
+        />
       </div>
 
       <!-- Camper Detail Modal -->
@@ -307,13 +312,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
 import type { Child } from '@/types/api';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
+import Pagination from '@/components/Pagination.vue';
 
 const store = useCampStore();
 const selectedCamperId = ref<string | null>(null);
@@ -321,6 +327,10 @@ const showModal = ref(false);
 const editingCamperId = ref<string | null>(null);
 const allergiesInput = ref('');
 const viewMode = ref<'grid' | 'table'>('grid');
+
+// Pagination state
+const currentPage = ref(1);
+const pageSize = ref(20);
 
 // Confirmation modal state
 const showConfirmModal = ref(false);
@@ -428,6 +438,17 @@ const filteredCampers = computed(() => {
   }
 
   return campers;
+});
+
+const paginatedCampers = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return filteredCampers.value.slice(start, end);
+});
+
+// Reset to page 1 when filters change
+watch([searchQuery, filterGender, filterAge, filterSleepingRoom], () => {
+  currentPage.value = 1;
 });
 
 const clearFilters = () => {
@@ -713,7 +734,7 @@ const closeModal = () => {
 }
 
 .campers-table td {
-  padding: 1rem;
+  padding: 8px 16px;
   font-size: 0.875rem;
 }
 
