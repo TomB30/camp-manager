@@ -4,6 +4,21 @@
       <div class="view-header">
         <h2>Team Management</h2>
         <div class="header-actions">
+          <button class="btn btn-primary" @click="showModal = true">+ Add Team Member</button>
+        </div>
+      </div>
+
+      <!-- Search and Filters -->
+      <FilterBar
+        v-model:searchQuery="searchQuery"
+        v-model:filterRole="filterRole"
+        v-model:filterCertification="filterCertification"
+        :filters="teamFilters"
+        :filtered-count="filteredMembers.length"
+        :total-count="store.teamMembers.length"
+        @clear="clearFilters"
+      >
+        <template #prepend>
           <div class="view-toggle">
             <button 
               class="btn btn-sm" 
@@ -31,20 +46,8 @@
               </svg>
             </button>
           </div>
-          <button class="btn btn-primary" @click="showModal = true">+ Add Team Member</button>
-        </div>
-      </div>
-
-      <!-- Search and Filters -->
-      <FilterBar
-        v-model:searchQuery="searchQuery"
-        v-model:filterRole="filterRole"
-        v-model:filterCertification="filterCertification"
-        :filters="teamFilters"
-        :filtered-count="filteredMembers.length"
-        :total-count="store.teamMembers.length"
-        @clear="clearFilters"
-      />
+        </template>
+      </FilterBar>
 
       <!-- Grid View -->
       <div v-if="viewMode === 'grid'" class="team-grid">

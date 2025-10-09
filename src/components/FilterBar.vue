@@ -39,15 +39,19 @@
       <!-- Actions -->
       <div class="filter-actions">
         <button 
-          v-if="hasActiveFilters"
-          @click="$emit('clear')"
-          class="btn btn-sm btn-secondary"
+        v-if="hasActiveFilters"
+        @click="$emit('clear')"
+        class="btn btn-sm btn-secondary"
         >
-          Clear
-        </button>
-        <span v-if="showCount" class="text-xs text-secondary count-badge">
-          {{ filteredCount }}/{{ totalCount }}
-        </span>
+        Clear
+      </button>
+      <span v-if="showCount" class="text-xs text-secondary count-badge">
+        {{ filteredCount }}/{{ totalCount }}
+      </span>
+      <!-- Custom slot for additional controls (e.g., view toggle) -->
+      <div v-if="$slots.prepend" class="prepend-slot">
+        <slot name="prepend"></slot>
+      </div>
       </div>
     </div>
   </div>
@@ -152,7 +156,7 @@ const hasActiveFilters = computed(() => {
 
 .filter-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   align-items: center;
   margin-left: auto;
 }
@@ -160,6 +164,12 @@ const hasActiveFilters = computed(() => {
 .count-badge {
   white-space: nowrap;
   font-weight: 500;
+}
+
+.prepend-slot {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
 }
 
 @media (max-width: 768px) {

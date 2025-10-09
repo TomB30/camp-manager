@@ -4,6 +4,22 @@
       <div class="view-header">
         <h2>Children Management</h2>
         <div class="header-actions">
+          <button class="btn btn-primary" @click="showModal = true">+ Add Child</button>
+        </div>
+      </div>
+
+      <!-- Search and Filters -->
+      <FilterBar
+        v-model:searchQuery="searchQuery"
+        v-model:filterGender="filterGender"
+        v-model:filterAge="filterAge"
+        v-model:filterSleepingRoom="filterSleepingRoom"
+        :filters="childrenFilters"
+        :filtered-count="filteredChildren.length"
+        :total-count="store.children.length"
+        @clear="clearFilters"
+      >
+        <template #prepend>
           <div class="view-toggle">
             <button 
               class="btn btn-sm" 
@@ -31,21 +47,8 @@
               </svg>
             </button>
           </div>
-          <button class="btn btn-primary" @click="showModal = true">+ Add Child</button>
-        </div>
-      </div>
-
-      <!-- Search and Filters -->
-      <FilterBar
-        v-model:searchQuery="searchQuery"
-        v-model:filterGender="filterGender"
-        v-model:filterAge="filterAge"
-        v-model:filterSleepingRoom="filterSleepingRoom"
-        :filters="childrenFilters"
-        :filtered-count="filteredChildren.length"
-        :total-count="store.children.length"
-        @clear="clearFilters"
-      />
+        </template>
+      </FilterBar>
 
       <!-- Grid View -->
       <div v-if="viewMode === 'grid'" class="children-grid">
