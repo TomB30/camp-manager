@@ -1,11 +1,11 @@
 # Summer Camp Manager
 
-A comprehensive web application for managing summer camp operations, including children enrollment, team member scheduling, room management, and event planning.
+A comprehensive web application for managing summer camp operations, including campers enrollment, team member scheduling, room management, and event planning.
 
 ## Features
 
 ### 🎯 Core Functionality
-- **Children Management**: Track children information, allergies, medical notes, and parent contacts
+- **Campers Management**: Track children information, allergies, medical notes, and parent contacts
 - **Team Management**: Manage staff members with roles, certifications, and contact information
 - **Room Management**: Organize rooms with capacity tracking and equipment lists
 - **Event Calendar**: Visual calendar with drag-and-drop functionality for scheduling
@@ -17,7 +17,7 @@ A comprehensive web application for managing summer camp operations, including c
   - Missing required certifications
 
 ### ✨ Key Features
-- **Drag & Drop Interface**: Easily move children between events
+- **Drag & Drop Interface**: Easily move campers between events
 - **Real-time Validation**: Prevent conflicts when enrolling children in events
 - **Capacity Management**: Visual indicators for room and event capacity
 - **Responsive Design**: Works seamlessly on desktop and tablet devices
@@ -73,7 +73,7 @@ camp-manager/
 │   ├── views/             # Page components
 │   │   ├── Dashboard.vue  # Overview and statistics
 │   │   ├── Calendar.vue   # Event calendar with drag-and-drop
-│   │   ├── Children.vue   # Children management
+│   │   ├── Campers.vue   # Children management
 │   │   ├── TeamMembers.vue # Staff management
 │   │   └── Rooms.vue      # Room management
 │   ├── stores/            # Pinia stores
@@ -110,13 +110,13 @@ camp-manager/
 - Navigate between days using Previous/Next buttons
 - Create new events with the "+ New Event" button
 - **Drag and drop children** from the sidebar to enroll them in events
-- **Drag and drop children between events** to move them
+- **Drag and drop campers between events** to move them
 - Click on events to see details and manage enrollment
 - Real-time conflict detection prevents double-booking
 
-### Children Management
+### Campers Management
 - Add new children with medical information and allergies
-- View all enrolled children in a card layout
+- View all enrolled campers in a card layout
 - Click on any child to see their schedule and details
 - Edit or delete child records
 

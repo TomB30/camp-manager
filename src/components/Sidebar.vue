@@ -14,9 +14,9 @@
           <span class="nav-icon">📅</span>
           <span class="nav-text">Calendar</span>
         </RouterLink>
-        <RouterLink to="/children" class="nav-link">
+        <RouterLink to="/campers" class="nav-link">
           <span class="nav-icon">👶</span>
-          <span class="nav-text">Children</span>
+          <span class="nav-text">Campers</span>
         </RouterLink>
         <RouterLink to="/team" class="nav-link">
           <span class="nav-icon">👥</span>

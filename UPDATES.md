@@ -84,7 +84,7 @@ Perfect for overnight camps that need to see the full week schedule at a glance.
 
 Children now have sleeping room assignments integrated throughout the app.
 
-#### Updates in Children Management:
+#### Updates in Campers Management:
 - **Children Profile**
   - Shows assigned sleeping room (cabin)
   - "Not assigned to a cabin" status if unassigned
@@ -251,7 +251,7 @@ Actions:
 3. Select a child
 4. Child is automatically assigned
 
-**Method 2: From Children View**
+**Method 2: From Campers View**
 1. Click on a child (or **"Edit"**)
 2. In the form, select "Sleeping Room (Cabin)"
 3. Choose from available cabins

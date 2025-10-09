@@ -10,8 +10,8 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
           </div>
           <div class="stat-content">
-            <div class="stat-label">Total Children</div>
-            <div class="stat-value">{{ store.children.length }}</div>
+            <div class="stat-label">Total Campers</div>
+            <div class="stat-value">{{ store.campers.length }}</div>
           </div>
         </div>
 
@@ -84,7 +84,7 @@
                   {{ getRoomName(event.roomId) }}
                 </span>
                 <span class="text-secondary text-sm">
-                  {{ event.enrolledChildrenIds?.length || 0 }}/{{ event.capacity }} children
+                  {{ event.enrolledCamperIds?.length || 0 }}/{{ event.capacity }} campers
                 </span>
               </div>
             </div>
@@ -100,8 +100,8 @@
             <button class="btn btn-primary" @click="$router.push('/calendar')">
               📅 View Calendar
             </button>
-            <button class="btn btn-secondary" @click="$router.push('/children')">
-              👶 Manage Children
+            <button class="btn btn-secondary" @click="$router.push('/campers')">
+              👶 Manage Campers
             </button>
             <button class="btn btn-secondary" @click="$router.push('/team')">
               👥 Manage Team
@@ -112,9 +112,9 @@
         <div class="card">
           <h4 class="mb-2">Recent Enrollments</h4>
           <div class="recent-list">
-            <div v-for="child in recentChildren" :key="child.id" class="recent-item">
-              <span class="font-medium">{{ child.firstName }} {{ child.lastName }}</span>
-              <span class="text-xs text-secondary">Age {{ child.age }}</span>
+            <div v-for="camper in recentCampers" :key="camper.id" class="recent-item">
+              <span class="font-medium">{{ camper.firstName }} {{ camper.lastName }}</span>
+              <span class="text-xs text-secondary">Age {{ camper.age }}</span>
             </div>
           </div>
         </div>
@@ -161,8 +161,8 @@ const sortedTodayEvents = computed(() => {
   );
 });
 
-const recentChildren = computed(() => {
-  return [...store.children]
+const recentCampers = computed(() => {
+  return [...store.campers]
     .sort((a, b) => {
       const dateA = a.registrationDate ? new Date(a.registrationDate).getTime() : 0;
       const dateB = b.registrationDate ? new Date(b.registrationDate).getTime() : 0;

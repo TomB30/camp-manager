@@ -59,7 +59,7 @@ The calendar is the heart of the application where you manage events and enrollm
 
 **Method 2: Move Between Events**
 1. Click on an event to open details
-2. In the modal, you'll see enrolled children
+2. In the modal, you'll see enrolled campers
 3. Drag a child from the enrolled list
 4. Drop them onto another event in the calendar
 
@@ -84,7 +84,7 @@ You'll see an error message if you try to create a conflict.
 - Click **Today** to jump to the current date
 - Click any event to see full details and manage enrollment
 
-### 3. Children Management (`/children`)
+### 3. Campers Management (`/campers`)
 
 Manage all registered children in your camp.
 
@@ -272,7 +272,7 @@ To reset to the original sample data:
 1. Open browser developer tools (F12)
 2. Go to Application/Storage → Local Storage
 3. Copy the values for:
-   - `camp_children`
+   - `camp_campers`
    - `camp_team_members`
    - `camp_rooms`
    - `camp_events`

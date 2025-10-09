@@ -7,7 +7,7 @@ import { filterEventsByDate } from '@/utils/dateUtils';
 
 export const useCampStore = defineStore('camp', () => {
   // State
-  const children = ref<Child[]>([]);
+  const campers = ref<Child[]>([]);
   const teamMembers = ref<TeamMember[]>([]);
   const rooms = ref<Room[]>([]);
   const sleepingRooms = ref<SleepingRoom[]>([]);
@@ -17,8 +17,8 @@ export const useCampStore = defineStore('camp', () => {
   const selectedDate = ref(new Date());
 
   // Computed
-  const getChildById = computed(() => {
-    return (id: string) => children.value.find(c => c.id === id);
+  const getCamperById = computed(() => {
+    return (id: string) => campers.value.find(c => c.id === id);
   });
 
   const getTeamMemberById = computed(() => {
@@ -43,10 +43,10 @@ export const useCampStore = defineStore('camp', () => {
     };
   });
 
-  const childEvents = computed(() => {
-    return (childId: string) => {
+  const camperEvents = computed(() => {
+    return (camperId: string) => {
       return events.value.filter(event => 
-        event.enrolledChildrenIds?.includes(childId)
+        event.enrolledCamperIds?.includes(camperId)
       );
     };
   });
@@ -69,15 +69,15 @@ export const useCampStore = defineStore('camp', () => {
   async function loadAll() {
     loading.value = true;
     try {
-      const [childrenData, membersData, roomsData, sleepingRoomsData, eventsData] = await Promise.all([
-        storageService.getChildren(),
+      const [campersData, membersData, roomsData, sleepingRoomsData, eventsData] = await Promise.all([
+        storageService.getCampers(),
         storageService.getTeamMembers(),
         storageService.getRooms(),
         storageService.getSleepingRooms(),
         storageService.getEvents(),
       ]);
 
-      children.value = childrenData;
+      campers.value = campersData;
       teamMembers.value = membersData;
       rooms.value = roomsData;
       sleepingRooms.value = sleepingRoomsData;
@@ -92,36 +92,36 @@ export const useCampStore = defineStore('camp', () => {
   function updateConflicts() {
     conflicts.value = conflictDetector.detectConflicts(
       events.value,
-      children.value,
+      campers.value,
       teamMembers.value,
       rooms.value
     );
   }
 
-  // Children actions
-  async function addChild(child: Child) {
-    await storageService.saveChild(child);
-    children.value.push(child);
+  // Campers actions
+  async function addCamper(camper: Child) {
+    await storageService.saveCamper(camper);
+    campers.value.push(camper);
     updateConflicts();
   }
 
-  async function updateChild(child: Child) {
-    await storageService.saveChild(child);
-    const index = children.value.findIndex(c => c.id === child.id);
+  async function updateCamper(camper: Child) {
+    await storageService.saveCamper(camper);
+    const index = campers.value.findIndex(c => c.id === camper.id);
     if (index >= 0) {
-      children.value[index] = child;
+      campers.value[index] = camper;
     }
     updateConflicts();
   }
 
-  async function deleteChild(id: string) {
-    await storageService.deleteChild(id);
-    children.value = children.value.filter(c => c.id !== id);
+  async function deleteCamper(id: string) {
+    await storageService.deleteCamper(id);
+    campers.value = campers.value.filter(c => c.id !== id);
     
     // Remove from events
     events.value.forEach(event => {
-      if (event.enrolledChildrenIds?.includes(id)) {
-        event.enrolledChildrenIds = event.enrolledChildrenIds.filter(childId => childId !== id);
+      if (event.enrolledCamperIds?.includes(id)) {
+        event.enrolledCamperIds = event.enrolledCamperIds.filter(camperId => camperId !== id);
       }
     });
     
@@ -198,10 +198,10 @@ export const useCampStore = defineStore('camp', () => {
     await storageService.deleteSleepingRoom(id);
     sleepingRooms.value = sleepingRooms.value.filter(r => r.id !== id);
     
-    // Update children who were assigned to this room
-    children.value.forEach(child => {
-      if (child.sleepingRoomId === id) {
-        child.sleepingRoomId = undefined;
+    // Update campers who were assigned to this room
+    campers.value.forEach(camper => {
+      if (camper.sleepingRoomId === id) {
+        camper.sleepingRoomId = undefined;
       }
     });
   }
@@ -228,43 +228,43 @@ export const useCampStore = defineStore('camp', () => {
     updateConflicts();
   }
 
-  async function enrollChild(eventId: string, childId: string) {
+  async function enrollCamper(eventId: string, camperId: string) {
     const event = events.value.find(e => e.id === eventId);
     if (!event) throw new Error('Event not found');
 
-    const validation = conflictDetector.canEnrollChild(event, childId, events.value);
+    const validation = conflictDetector.canEnrollCamper(event, camperId, events.value);
     if (!validation.canEnroll) {
       throw new Error(validation.reason);
     }
 
-    await storageService.enrollChild(eventId, childId);
+    await storageService.enrollCamper(eventId, camperId);
     
-    if (!event.enrolledChildrenIds) {
-      event.enrolledChildrenIds = [];
+    if (!event.enrolledCamperIds) {
+      event.enrolledCamperIds = [];
     }
-    event.enrolledChildrenIds.push(childId);
+    event.enrolledCamperIds.push(camperId);
     
     updateConflicts();
   }
 
-  async function unenrollChild(eventId: string, childId: string) {
+  async function unenrollCamper(eventId: string, camperId: string) {
     const event = events.value.find(e => e.id === eventId);
     if (!event) throw new Error('Event not found');
 
-    await storageService.unenrollChild(eventId, childId);
-    event.enrolledChildrenIds = event.enrolledChildrenIds?.filter(id => id !== childId) || [];
+    await storageService.unenrollCamper(eventId, camperId);
+    event.enrolledCamperIds = event.enrolledCamperIds?.filter(id => id !== camperId) || [];
     
     updateConflicts();
   }
 
-  async function moveChild(fromEventId: string, toEventId: string, childId: string) {
-    await unenrollChild(fromEventId, childId);
-    await enrollChild(toEventId, childId);
+  async function moveCamper(fromEventId: string, toEventId: string, camperId: string) {
+    await unenrollCamper(fromEventId, camperId);
+    await enrollCamper(toEventId, camperId);
   }
 
   return {
     // State
-    children,
+    campers,
     teamMembers,
     rooms,
     sleepingRooms,
@@ -274,22 +274,22 @@ export const useCampStore = defineStore('camp', () => {
     selectedDate,
     
     // Computed
-    getChildById,
+    getCamperById,
     getTeamMemberById,
     getRoomById,
     getSleepingRoomById,
     getEventById,
     eventsForDate,
-    childEvents,
+    camperEvents,
     staffEvents,
     roomEvents,
     
     // Actions
     loadAll,
     updateConflicts,
-    addChild,
-    updateChild,
-    deleteChild,
+    addCamper,
+    updateCamper,
+    deleteCamper,
     addTeamMember,
     updateTeamMember,
     deleteTeamMember,
@@ -302,9 +302,9 @@ export const useCampStore = defineStore('camp', () => {
     addEvent,
     updateEvent,
     deleteEvent,
-    enrollChild,
-    unenrollChild,
-    moveChild,
+    enrollCamper,
+    unenrollCamper,
+    moveCamper,
   };
 });
 

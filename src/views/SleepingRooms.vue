@@ -206,41 +206,41 @@
                 </div>
 
                 <div class="detail-section">
-                  <div class="detail-label">Assigned Children</div>
-                  <div v-if="getRoomChildren(selectedRoom.id).length > 0" class="children-list">
+                  <div class="detail-label">Assigned Campers</div>
+                  <div v-if="getRoomCampers(selectedRoom.id).length > 0" class="campers-list">
                     <div 
-                      v-for="child in getRoomChildren(selectedRoom.id)"
-                      :key="child.id"
-                      class="child-item"
+                      v-for="camper in getRoomCampers(selectedRoom.id)"
+                      :key="camper.id"
+                      class="camper-item"
                     >
-                      <div class="child-info">
+                      <div class="camper-info">
                         <div class="font-medium">
-                          {{ child.firstName }} {{ child.lastName }}
+                          {{ camper.firstName }} {{ camper.lastName }}
                         </div>
-                        <div class="text-xs text-secondary">Age {{ child.age }}</div>
+                        <div class="text-xs text-secondary">Age {{ camper.age }}</div>
                       </div>
                       <button 
                         class="btn btn-sm btn-secondary"
-                        @click="unassignChild(child.id)"
+                        @click="unassignCamper(camper.id)"
                       >
                         Unassign
                       </button>
                     </div>
                   </div>
-                  <div v-else class="text-secondary">No children assigned</div>
+                  <div v-else class="text-secondary">No campers assigned</div>
                 </div>
 
-                <!-- Assign children -->
+                <!-- Assign campers -->
                 <div v-if="getAssignedCount(selectedRoom.id) < selectedRoom.capacity" class="detail-section">
-                  <div class="detail-label">Assign Child</div>
-                  <select v-model="childToAssign" class="form-select" @change="assignChild">
-                    <option value="">Select a child...</option>
+                  <div class="detail-label">Assign Camper</div>
+                  <select v-model="camperToAssign" class="form-select" @change="assignCamper">
+                    <option value="">Select a camper...</option>
                     <option 
-                      v-for="child in getUnassignedChildren(selectedRoom.gender)"
-                      :key="child.id"
-                      :value="child.id"
+                      v-for="camper in getUnassignedCampers(selectedRoom.gender)"
+                      :key="camper.id"
+                      :value="camper.id"
                     >
-                      {{ child.firstName }} {{ child.lastName }} (Age {{ child.age }})
+                      {{ camper.firstName }} {{ camper.lastName }} (Age {{ camper.age }})
                     </option>
                   </select>
                 </div>
@@ -364,7 +364,7 @@ const confirmModalMessage = ref('');
 const confirmModalDetails = ref('');
 const confirmAction = ref<(() => void) | null>(null);
 const amenitiesInput = ref('');
-const childToAssign = ref('');
+const camperToAssign = ref('');
 const viewMode = ref<'grid' | 'table'>('grid');
 
 const formData = ref<{
@@ -484,12 +484,12 @@ const getGenderColor = (gender: SleepingRoom['gender']) => {
   return colors[gender] || '#64748B';
 };
 
-const getRoomChildren = (roomId: string) => {
-  return store.children.filter(child => child.sleepingRoomId === roomId);
+const getRoomCampers = (roomId: string) => {
+  return store.campers.filter(camper => camper.sleepingRoomId === roomId);
 };
 
 const getAssignedCount = (roomId: string) => {
-  return getRoomChildren(roomId).length;
+  return getRoomCampers(roomId).length;
 };
 
 const getRoomOccupancy = (roomId: string) => {
@@ -503,42 +503,42 @@ const getSupervisorName = (staffId: string) => {
   return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
 };
 
-const getUnassignedChildren = (gender: SleepingRoom['gender']) => {
-  return store.children.filter(child => {
+const getUnassignedCampers = (gender: SleepingRoom['gender']) => {
+  return store.campers.filter(camper => {
     // Not assigned to any room
-    if (child.sleepingRoomId) return false;
+    if (camper.sleepingRoomId) return false;
     
     // Gender restriction (mixed rooms accept all)
     if (gender === 'mixed') return true;
     
     // Simple age-based gender assumption (in real app, would have gender field)
-    // For demo, we'll allow all unassigned children
+    // For demo, we'll allow all unassigned campers
     return true;
   });
 };
 
 const selectRoom = (roomId: string) => {
   selectedRoomId.value = roomId;
-  childToAssign.value = '';
+  camperToAssign.value = '';
 };
 
-const assignChild = async () => {
-  if (!childToAssign.value || !selectedRoomId.value) return;
+const assignCamper = async () => {
+  if (!camperToAssign.value || !selectedRoomId.value) return;
   
-  const child = store.getChildById(childToAssign.value);
-  if (!child) return;
+  const camper = store.getCamperById(camperToAssign.value);
+  if (!camper) return;
   
-  child.sleepingRoomId = selectedRoomId.value;
-  await store.updateChild(child);
-  childToAssign.value = '';
+  camper.sleepingRoomId = selectedRoomId.value;
+  await store.updateCamper(camper);
+  camperToAssign.value = '';
 };
 
-const unassignChild = async (childId: string) => {
-  const child = store.getChildById(childId);
-  if (!child) return;
+const unassignCamper = async (camperId: string) => {
+  const camper = store.getCamperById(camperId);
+  if (!camper) return;
   
-  child.sleepingRoomId = undefined;
-  await store.updateChild(child);
+  camper.sleepingRoomId = undefined;
+  await store.updateCamper(camper);
 };
 
 const editRoom = () => {
@@ -591,13 +591,13 @@ const saveRoom = async () => {
 const deleteRoomConfirm = () => {
   if (!selectedRoomId.value) return;
   
-  const childCount = getAssignedCount(selectedRoomId.value);
+  const camperCount = getAssignedCount(selectedRoomId.value);
   
   // Setup the confirm modal
   confirmModalTitle.value = 'Delete Sleeping Room';
   confirmModalMessage.value = 'Are you sure you want to delete this sleeping room?';
-  confirmModalDetails.value = childCount > 0 
-    ? `This room has ${childCount} children assigned. They will be unassigned.`
+  confirmModalDetails.value = camperCount > 0 
+    ? `This room has ${camperCount} campers assigned. They will be unassigned.`
     : '';
   
   confirmAction.value = async () => {
@@ -745,13 +745,13 @@ const closeModal = () => {
   margin-bottom: 0.5rem;
 }
 
-.children-list {
+.campers-list {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.child-item {
+.camper-item {
   padding: 0.75rem;
   background: var(--background);
   border-radius: var(--radius);

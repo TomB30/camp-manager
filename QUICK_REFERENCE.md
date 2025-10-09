@@ -19,7 +19,7 @@ src/
 ├── views/
 │   ├── Dashboard.vue          # Main overview
 │   ├── Calendar.vue           # Event calendar (drag-drop)
-│   ├── Children.vue           # Children management
+│   ├── Campers.vue           # Children management
 │   ├── TeamMembers.vue        # Staff management
 │   └── Rooms.vue              # Room management
 ├── stores/campStore.ts        # State management (Pinia)
@@ -163,7 +163,7 @@ format(date, 'EEEE')             // Tuesday
 ```
 /              Dashboard
 /calendar      Event calendar
-/children      Children list
+/campers      Children list
 /team          Team members
 /rooms         Rooms
 ```
@@ -230,7 +230,7 @@ import {
 ## 📊 Local Storage Keys
 
 ```javascript
-camp_children        // Children data
+camp_campers        // Children data
 camp_team_members    // Staff data
 camp_rooms          // Room data
 camp_events         // Event data
@@ -240,7 +240,7 @@ camp_events         // Event data
 
 ```javascript
 // In browser console:
-localStorage.getItem('camp_children')  // View children
+localStorage.getItem('camp_campers')  // View children
 localStorage.clear()                   // Reset all data
 
 // Check store

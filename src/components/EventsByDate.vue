@@ -33,7 +33,7 @@
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
-                {{ event.enrolledChildrenIds?.length || 0 }}/{{ event.capacity }}
+                {{ event.enrolledCamperIds?.length || 0 }}/{{ event.capacity }}
               </div>
             </div>
           </div>
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, defineProps, defineEmits, withDefaults } from 'vue';
 import { format } from 'date-fns';
 import type { Event } from '@/types/api';
 

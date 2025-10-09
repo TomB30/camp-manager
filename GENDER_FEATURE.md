@@ -52,7 +52,7 @@ Each child is assigned to a gender-appropriate cabin:
 
 ### 3. **UI Updates**
 
-#### Children View (`src/views/Children.vue`)
+#### Campers View (`src/views/Campers.vue`)
 
 **Display Changes**:
 1. **Child Cards**: Gender badge displayed alongside age
@@ -236,7 +236,7 @@ Child saved with gender + sleepingRoomId
 | `openapi.yaml` | Added `gender` field to Child schema (required, enum) |
 | `src/types/api.ts` | Updated Child type with gender field |
 | `src/data/mockData.ts` | Added gender to all 8 mock children |
-| `src/views/Children.vue` | Added gender UI, filtering logic, display |
+| `src/views/Campers.vue` | Added gender UI, filtering logic, display |
 
 **Total Changes**: 4 files modified
 

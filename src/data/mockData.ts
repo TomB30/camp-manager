@@ -3,7 +3,7 @@ import type { Child, TeamMember, Room, SleepingRoom, Event } from '@/types/api';
 // Generate consistent IDs
 const generateId = (prefix: string, index: number) => `${prefix}-${String(index).padStart(3, '0')}`;
 
-// Extended sleeping rooms for more children
+// Extended sleeping rooms for more campers
 export const mockSleepingRooms: SleepingRoom[] = [
   {
     id: generateId('sleeping', 1),
@@ -67,7 +67,7 @@ export const mockSleepingRooms: SleepingRoom[] = [
   },
 ];
 
-// Generate many children
+// Generate many campers
 const firstNames = {
   male: ['Liam', 'Noah', 'Oliver', 'Elijah', 'James', 'William', 'Benjamin', 'Lucas', 'Henry', 'Alexander', 'Mason', 'Michael', 'Ethan', 'Daniel', 'Jacob', 'Logan', 'Jackson', 'Levi', 'Sebastian', 'Mateo', 'Jack', 'Owen', 'Theodore', 'Aiden', 'Samuel', 'Joseph', 'John', 'David', 'Wyatt', 'Matthew'],
   female: ['Emma', 'Olivia', 'Ava', 'Isabella', 'Sophia', 'Charlotte', 'Mia', 'Amelia', 'Harper', 'Evelyn', 'Abigail', 'Emily', 'Elizabeth', 'Mila', 'Ella', 'Avery', 'Sofia', 'Camila', 'Aria', 'Scarlett', 'Victoria', 'Madison', 'Luna', 'Grace', 'Chloe', 'Penelope', 'Layla', 'Riley', 'Zoey', 'Nora']
@@ -77,8 +77,8 @@ const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', '
 
 const allergies = ['Peanuts', 'Tree nuts', 'Dairy', 'Eggs', 'Soy', 'Wheat', 'Fish', 'Shellfish'];
 
-const generateChildren = (count: number): Child[] => {
-  const children: Child[] = [];
+const generateCampers = (count: number): Child[] => {
+  const campers: Child[] = [];
   let maleCount = 0;
   let femaleCount = 0;
   
@@ -97,26 +97,26 @@ const generateChildren = (count: number): Child[] => {
     
     // 25% chance of having an allergy
     const hasAllergy = Math.random() < 0.25;
-    const childAllergies = hasAllergy ? [allergies[i % allergies.length]] : [];
+    const camperAllergies = hasAllergy ? [allergies[i % allergies.length]] : [];
     
-    children.push({
+    campers.push({
       id: generateId('child', i),
       firstName,
       lastName,
       age,
       gender,
       parentContact: `parent${i}@example.com`,
-      allergies: childAllergies,
-      medicalNotes: hasAllergy ? `Please avoid ${childAllergies[0]}` : undefined,
+      allergies: camperAllergies,
+      medicalNotes: hasAllergy ? `Please avoid ${camperAllergies[0]}` : undefined,
       sleepingRoomId: generateId('sleeping', roomNumber),
       registrationDate: new Date(2025, 5, 1 + (i % 7)).toISOString(),
     });
   }
   
-  return children;
+  return campers;
 };
 
-export const mockChildren: Child[] = generateChildren(48);
+export const mockCampers: Child[] = generateCampers(48);
 
 export const mockTeamMembers: TeamMember[] = [
   {
@@ -305,7 +305,7 @@ const createEvent = (
   capacity: number,
   type: Event['type'],
   staffIds: string[],
-  childrenIds: string[],
+  camperIds: string[],
   color: string,
   requiredCerts?: string[]
 ): Event => {
@@ -322,7 +322,7 @@ const createEvent = (
     capacity,
     type,
     assignedStaffIds: staffIds,
-    enrolledChildrenIds: childrenIds,
+    enrolledCamperIds: camperIds,
     color,
     requiredCertifications: requiredCerts,
   };
@@ -333,13 +333,13 @@ const generateWeekEvents = (): Event[] => {
   const events: Event[] = [];
   let eventId = 1;
   
-  // Helper to get random children
-  const getRandomChildren = (count: number, startIdx: number = 0) => {
-    const children = [];
+  // Helper to get random campers
+  const getRandomCampers = (count: number, startIdx: number = 0) => {
+    const campers = [];
     for (let i = 0; i < count; i++) {
-      children.push(generateId('child', startIdx + i + 1));
+      campers.push(generateId('child', startIdx + i + 1));
     }
-    return children;
+    return campers;
   };
   
   // Days of the week (0 = today through 6 = next week)
@@ -357,7 +357,7 @@ const generateWeekEvents = (): Event[] => {
       50,
       'activity',
       [generateId('staff', 1), generateId('staff', 2)],
-      getRandomChildren(30, childOffset),
+      getRandomCampers(30, childOffset),
       '#6366F1',
     ));
     
@@ -372,7 +372,7 @@ const generateWeekEvents = (): Event[] => {
       15,
       'activity',
       [generateId('staff', 3)],
-      getRandomChildren(12, childOffset),
+      getRandomCampers(12, childOffset),
       '#A855F7',
     ));
     
@@ -386,7 +386,7 @@ const generateWeekEvents = (): Event[] => {
       20,
       'sports',
       [generateId('staff', 6), generateId('staff', 8)],
-      getRandomChildren(18, childOffset + 12),
+      getRandomCampers(18, childOffset + 12),
       '#10B981',
     ));
     
@@ -401,7 +401,7 @@ const generateWeekEvents = (): Event[] => {
       60,
       'meal',
       [generateId('staff', 2), generateId('staff', 7)],
-      getRandomChildren(40, childOffset),
+      getRandomCampers(40, childOffset),
       '#64748B',
     ));
     
@@ -416,7 +416,7 @@ const generateWeekEvents = (): Event[] => {
       20,
       'sports',
       [generateId('staff', 4)],
-      getRandomChildren(18, childOffset),
+      getRandomCampers(18, childOffset),
       '#06B6D4',
       ['Lifeguard']
     ));
@@ -431,7 +431,7 @@ const generateWeekEvents = (): Event[] => {
       15,
       'activity',
       [generateId('staff', 3)],
-      getRandomChildren(12, childOffset + 18),
+      getRandomCampers(12, childOffset + 18),
       '#F59E0B',
     ));
     
@@ -447,7 +447,7 @@ const generateWeekEvents = (): Event[] => {
         20,
         'sports',
         [generateId('staff', 6)],
-        getRandomChildren(16, childOffset),
+        getRandomCampers(16, childOffset),
         '#EF4444',
       ));
       
@@ -461,7 +461,7 @@ const generateWeekEvents = (): Event[] => {
         20,
         'activity',
         [generateId('staff', 7)],
-        getRandomChildren(14, childOffset + 16),
+        getRandomCampers(14, childOffset + 16),
         '#EC4899',
       ));
     } else {
@@ -475,7 +475,7 @@ const generateWeekEvents = (): Event[] => {
         30,
         'activity',
         [generateId('staff', 8), generateId('staff', 2)],
-        getRandomChildren(25, childOffset),
+        getRandomCampers(25, childOffset),
         '#84CC16',
       ));
     }
@@ -491,7 +491,7 @@ const generateWeekEvents = (): Event[] => {
       60,
       'meal',
       [generateId('staff', 3), generateId('staff', 6)],
-      getRandomChildren(40, childOffset),
+      getRandomCampers(40, childOffset),
       '#64748B',
     ));
     
@@ -507,7 +507,7 @@ const generateWeekEvents = (): Event[] => {
         40,
         'activity',
         [generateId('staff', 1), generateId('staff', 2), generateId('staff', 3)],
-        getRandomChildren(35, childOffset),
+        getRandomCampers(35, childOffset),
         '#F97316',
       ));
     } else if (day === 6) {
@@ -521,7 +521,7 @@ const generateWeekEvents = (): Event[] => {
         25,
         'activity',
         [generateId('staff', 1), generateId('staff', 7)],
-        getRandomChildren(20, childOffset),
+        getRandomCampers(20, childOffset),
         '#8B5CF6',
       ));
     }
@@ -534,7 +534,7 @@ export const mockEvents: Event[] = generateWeekEvents();
 
 // Export all mock data together for easy import
 export const mockData = {
-  children: mockChildren,
+  campers: mockCampers,
   teamMembers: mockTeamMembers,
   rooms: mockRooms,
   sleepingRooms: mockSleepingRooms,

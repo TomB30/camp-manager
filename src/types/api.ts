@@ -5,8 +5,8 @@
 
 
 export interface paths {
-  "/children": {
-    /** List all children */
+  "/campers": {
+    /** List all campers */
     get: {
       responses: {
         /** @description Success */
@@ -17,7 +17,7 @@ export interface paths {
         };
       };
     };
-    /** Create a new child */
+    /** Create a new camper */
     post: {
       requestBody: {
         content: {
@@ -32,8 +32,8 @@ export interface paths {
       };
     };
   };
-  "/children/{id}": {
-    /** Get child by ID */
+  "/campers/{id}": {
+    /** Get camper by ID */
     get: {
       parameters: {
         path: {
@@ -588,7 +588,7 @@ export interface components {
       roomId: string;
       capacity: number;
       assignedStaffIds?: string[];
-      enrolledChildrenIds?: string[];
+      enrolledCamperIds?: string[];
       /** @enum {string} */
       type?: "activity" | "sports" | "arts" | "education" | "meal" | "free-time";
       requiredCertifications?: string[];

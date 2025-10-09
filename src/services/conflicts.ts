@@ -3,7 +3,7 @@ import type { Conflict, Event, Child, TeamMember, Room } from '@/types/api';
 export class ConflictDetector {
   detectConflicts(
     events: Event[],
-    children: Child[],
+    campers: Child[],
     teamMembers: TeamMember[],
     rooms: Room[]
   ): Conflict[] {
@@ -11,13 +11,13 @@ export class ConflictDetector {
 
     // Check for event capacity conflicts
     events.forEach(event => {
-      const enrolledCount = event.enrolledChildrenIds?.length || 0;
+      const enrolledCount = event.enrolledCamperIds?.length || 0;
       if (enrolledCount > event.capacity) {
         conflicts.push({
           type: 'event_overcapacity',
-          message: `Event "${event.title}" has ${enrolledCount} children enrolled but capacity is ${event.capacity}`,
+          message: `Event "${event.title}" has ${enrolledCount} campers enrolled but capacity is ${event.capacity}`,
           entityId: event.id,
-          conflictingIds: event.enrolledChildrenIds || [],
+          conflictingIds: event.enrolledCamperIds || [],
         });
       }
     });
@@ -43,8 +43,8 @@ export class ConflictDetector {
 
           if (this.eventsOverlap(event1, event2)) {
             const totalCapacity = 
-              (event1.enrolledChildrenIds?.length || 0) + 
-              (event2.enrolledChildrenIds?.length || 0);
+              (event1.enrolledCamperIds?.length || 0) + 
+              (event2.enrolledCamperIds?.length || 0);
 
             if (totalCapacity > room.capacity) {
               conflicts.push({
@@ -59,29 +59,29 @@ export class ConflictDetector {
       }
     });
 
-    // Check for child double-booking
-    const childSchedules = new Map<string, Event[]>();
+    // Check for camper double-booking
+    const camperSchedules = new Map<string, Event[]>();
     events.forEach(event => {
-      event.enrolledChildrenIds?.forEach(childId => {
-        if (!childSchedules.has(childId)) {
-          childSchedules.set(childId, []);
+      event.enrolledCamperIds?.forEach(camperId => {
+        if (!camperSchedules.has(camperId)) {
+          camperSchedules.set(camperId, []);
         }
-        childSchedules.get(childId)!.push(event);
+        camperSchedules.get(camperId)!.push(event);
       });
     });
 
-    childSchedules.forEach((childEvents, childId) => {
-      const child = children.find(c => c.id === childId);
-      if (!child) return;
+    camperSchedules.forEach((camperEvents, camperId) => {
+      const camper = campers.find(c => c.id === camperId);
+      if (!camper) return;
 
-      for (let i = 0; i < childEvents.length; i++) {
-        for (let j = i + 1; j < childEvents.length; j++) {
-          if (this.eventsOverlap(childEvents[i], childEvents[j])) {
+      for (let i = 0; i < camperEvents.length; i++) {
+        for (let j = i + 1; j < camperEvents.length; j++) {
+          if (this.eventsOverlap(camperEvents[i], camperEvents[j])) {
             conflicts.push({
-              type: 'child_double_booked',
-              message: `${child.firstName} ${child.lastName} is enrolled in overlapping events`,
-              entityId: childId,
-              conflictingIds: [childEvents[i].id, childEvents[j].id],
+              type: 'camper_double_booked',
+              message: `${camper.firstName} ${camper.lastName} is enrolled in overlapping events`,
+              entityId: camperId,
+              conflictingIds: [camperEvents[i].id, camperEvents[j].id],
             });
           }
         }
@@ -148,12 +148,12 @@ export class ConflictDetector {
     return conflicts;
   }
 
-  canEnrollChild(event: Event, childId: string, allEvents: Event[]): { 
+  canEnrollCamper(event: Event, camperId: string, allEvents: Event[]): { 
     canEnroll: boolean; 
     reason?: string 
   } {
     // Check capacity
-    const enrolledCount = event.enrolledChildrenIds?.length || 0;
+    const enrolledCount = event.enrolledCamperIds?.length || 0;
     if (enrolledCount >= event.capacity) {
       return { 
         canEnroll: false, 
@@ -162,15 +162,15 @@ export class ConflictDetector {
     }
 
     // Check for time conflicts
-    const childEvents = allEvents.filter(e => 
-      e.enrolledChildrenIds?.includes(childId) && e.id !== event.id
+    const camperEvents = allEvents.filter(e => 
+      e.enrolledCamperIds?.includes(camperId) && e.id !== event.id
     );
 
-    for (const existingEvent of childEvents) {
+    for (const existingEvent of camperEvents) {
       if (this.eventsOverlap(event, existingEvent)) {
         return {
           canEnroll: false,
-          reason: `Child is already enrolled in "${existingEvent.title}" at this time`,
+          reason: `Camper is already enrolled in "${existingEvent.title}" at this time`,
         };
       }
     }

@@ -16,7 +16,7 @@ A comprehensive web application for managing summer camp operations, built with 
 ### Core Features
 1. **Dashboard** - Overview with statistics, conflicts, and today's schedule
 2. **Calendar View** - Visual timeline with drag-and-drop enrollment
-3. **Children Management** - CRUD operations with medical info tracking
+3. **Campers Management** - CRUD operations with medical info tracking
 4. **Team Management** - Staff management with roles and certifications
 5. **Room Management** - Facility organization with capacity tracking
 6. **Conflict Detection** - Automatic validation preventing scheduling issues

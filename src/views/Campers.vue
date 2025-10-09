@@ -1,10 +1,10 @@
 <template>
   <div class="container">
-    <div class="children-view">
+    <div class="campers-view">
       <div class="view-header">
-        <h2>Children Management</h2>
+        <h2>Campers Management</h2>
         <div class="header-actions">
-          <button class="btn btn-primary" @click="showModal = true">+ Add Child</button>
+          <button class="btn btn-primary" @click="showModal = true">+ Add Camper</button>
         </div>
       </div>
 
@@ -14,9 +14,9 @@
         v-model:filterGender="filterGender"
         v-model:filterAge="filterAge"
         v-model:filterSleepingRoom="filterSleepingRoom"
-        :filters="childrenFilters"
-        :filtered-count="filteredChildren.length"
-        :total-count="store.children.length"
+        :filters="campersFilters"
+        :filtered-count="filteredCampers.length"
+        :total-count="store.campers.length"
         @clear="clearFilters"
       >
         <template #prepend>
@@ -51,38 +51,38 @@
       </FilterBar>
 
       <!-- Grid View -->
-      <div v-if="viewMode === 'grid'" class="children-grid">
+      <div v-if="viewMode === 'grid'" class="campers-grid">
         <div 
-          v-for="child in filteredChildren"
-          :key="child.id"
-          class="child-card card"
-          @click="selectChild(child.id)"
+          v-for="camper in filteredCampers"
+          :key="camper.id"
+          class="camper-card card"
+          @click="selectCamper(camper.id)"
         >
-          <div class="child-avatar">
-            {{ child.firstName.charAt(0) }}{{ child.lastName.charAt(0) }}
+          <div class="camper-avatar">
+            {{ camper.firstName.charAt(0) }}{{ camper.lastName.charAt(0) }}
           </div>
-          <div class="child-details">
-            <h4>{{ child.firstName }} {{ child.lastName }}</h4>
-            <div class="child-meta">
-              <span class="badge badge-primary">Age {{ child.age }}</span>
-              <span class="badge badge-primary">{{ formatGender(child.gender) }}</span>
-              <span v-if="child.allergies && child.allergies.length > 0" class="badge badge-warning">
-                {{ child.allergies.length }} Allergy(ies)
+          <div class="camper-details">
+            <h4>{{ camper.firstName }} {{ camper.lastName }}</h4>
+            <div class="camper-meta">
+              <span class="badge badge-primary">Age {{ camper.age }}</span>
+              <span class="badge badge-primary">{{ formatGender(camper.gender) }}</span>
+              <span v-if="camper.allergies && camper.allergies.length > 0" class="badge badge-warning">
+                {{ camper.allergies.length }} Allergy(ies)
               </span>
             </div>
-            <div class="child-contact text-sm text-secondary mt-1">
-              {{ child.parentContact }}
+            <div class="camper-contact text-sm text-secondary mt-1">
+              {{ camper.parentContact }}
             </div>
-            <div class="child-events text-sm mt-2">
-              <strong>Today's Events:</strong> {{ getChildTodayEvents(child.id).length }}
+            <div class="camper-events text-sm mt-2">
+              <strong>Today's Events:</strong> {{ getCamperTodayEvents(camper.id).length }}
             </div>
           </div>
         </div>
       </div>
 
       <!-- Table View -->
-      <div v-if="viewMode === 'table'" class="children-table-container">
-        <table class="children-table">
+      <div v-if="viewMode === 'table'" class="campers-table-container">
+        <table class="campers-table">
           <thead>
             <tr>
               <th>Name</th>
@@ -97,42 +97,42 @@
           </thead>
           <tbody>
             <tr 
-              v-for="child in filteredChildren"
-              :key="child.id"
+              v-for="camper in filteredCampers"
+              :key="camper.id"
               class="table-row"
             >
-              <td class="child-name-cell">
-                <div class="child-name-content">
-                  <div class="child-avatar-sm">
-                    {{ child.firstName.charAt(0) }}{{ child.lastName.charAt(0) }}
+              <td class="camper-name-cell">
+                <div class="camper-name-content">
+                  <div class="camper-avatar-sm">
+                    {{ camper.firstName.charAt(0) }}{{ camper.lastName.charAt(0) }}
                   </div>
                   <div>
-                    <div class="child-fullname">{{ child.firstName }} {{ child.lastName }}</div>
+                    <div class="camper-fullname">{{ camper.firstName }} {{ camper.lastName }}</div>
                   </div>
                 </div>
               </td>
-              <td>{{ child.age }}</td>
+              <td>{{ camper.age }}</td>
               <td>
-                <span class="badge badge-primary badge-sm">{{ formatGender(child.gender) }}</span>
+                <span class="badge badge-primary badge-sm">{{ formatGender(camper.gender) }}</span>
               </td>
               <td>
-                <span v-if="child.sleepingRoomId" class="badge badge-primary badge-sm">
-                  {{ getSleepingRoomName(child.sleepingRoomId) }}
+                <span v-if="camper.sleepingRoomId" class="badge badge-primary badge-sm">
+                  {{ getSleepingRoomName(camper.sleepingRoomId) }}
                 </span>
                 <span v-else class="text-secondary">—</span>
               </td>
-              <td class="contact-cell">{{ child.parentContact }}</td>
+              <td class="contact-cell">{{ camper.parentContact }}</td>
               <td>
-                <span v-if="child.allergies && child.allergies.length > 0" class="badge badge-warning badge-sm">
-                  {{ child.allergies.length }} allergy(ies)
+                <span v-if="camper.allergies && camper.allergies.length > 0" class="badge badge-warning badge-sm">
+                  {{ camper.allergies.length }} allergy(ies)
                 </span>
                 <span v-else class="text-secondary">None</span>
               </td>
               <td>
-                <span class="event-count">{{ getChildTodayEvents(child.id).length }}</span>
+                <span class="event-count">{{ getCamperTodayEvents(camper.id).length }}</span>
               </td>
               <td>
-                <button class="btn btn-sm btn-secondary" @click="selectChild(child.id)">
+                <button class="btn btn-sm btn-secondary" @click="selectCamper(camper.id)">
                   View Details
                 </button>
               </td>
@@ -141,56 +141,56 @@
         </table>
       </div>
 
-      <!-- Child Detail Modal -->
+      <!-- Camper Detail Modal -->
       <Teleport to="body">
-        <div v-if="selectedChildId" class="modal-overlay" @click.self="selectedChildId = null">
+        <div v-if="selectedCamperId" class="modal-overlay" @click.self="selectedCamperId = null">
           <div class="modal">
             <div class="modal-header">
-              <h3>{{ selectedChild?.firstName }} {{ selectedChild?.lastName }}</h3>
-              <button class="btn btn-icon btn-secondary" @click="selectedChildId = null">✕</button>
+              <h3>{{ selectedCamper?.firstName }} {{ selectedCamper?.lastName }}</h3>
+              <button class="btn btn-icon btn-secondary" @click="selectedCamperId = null">✕</button>
             </div>
             <div class="modal-body">
-              <div v-if="selectedChild">
+              <div v-if="selectedCamper">
                 <div class="detail-section">
                   <div class="detail-label">Age</div>
-                  <div>{{ selectedChild.age }} years old</div>
+                  <div>{{ selectedCamper.age }} years old</div>
                 </div>
 
                 <div class="detail-section">
                   <div class="detail-label">Parent Contact</div>
-                  <div>{{ selectedChild.parentContact }}</div>
+                  <div>{{ selectedCamper.parentContact }}</div>
                 </div>
 
-                <div v-if="selectedChild.allergies && selectedChild.allergies.length > 0" class="detail-section">
+                <div v-if="selectedCamper.allergies && selectedCamper.allergies.length > 0" class="detail-section">
                   <div class="detail-label">Allergies</div>
                   <div class="flex gap-1 flex-wrap">
-                    <span v-for="allergy in selectedChild.allergies" :key="allergy" class="badge badge-warning">
+                    <span v-for="allergy in selectedCamper.allergies" :key="allergy" class="badge badge-warning">
                       {{ allergy }}
                     </span>
                   </div>
                 </div>
 
-                <div v-if="selectedChild.medicalNotes" class="detail-section">
+                <div v-if="selectedCamper.medicalNotes" class="detail-section">
                   <div class="detail-label">Medical Notes</div>
-                  <div>{{ selectedChild.medicalNotes }}</div>
+                  <div>{{ selectedCamper.medicalNotes }}</div>
                 </div>
 
                 <div class="detail-section">
                   <div class="detail-label">Gender</div>
                   <div>
-                    <span class="badge badge-primary">{{ formatGender(selectedChild.gender) }}</span>
+                    <span class="badge badge-primary">{{ formatGender(selectedCamper.gender) }}</span>
                   </div>
                 </div>
 
-                <div v-if="selectedChild.registrationDate" class="detail-section">
+                <div v-if="selectedCamper.registrationDate" class="detail-section">
                   <div class="detail-label">Registration Date</div>
-                  <div>{{ formatDate(selectedChild.registrationDate) }}</div>
+                  <div>{{ formatDate(selectedCamper.registrationDate) }}</div>
                 </div>
 
                 <div class="detail-section">
                   <div class="detail-label">Sleeping Room Assignment</div>
-                  <div v-if="selectedChild.sleepingRoomId">
-                    <span class="badge badge-primary">{{ getSleepingRoomName(selectedChild.sleepingRoomId) }}</span>
+                  <div v-if="selectedCamper.sleepingRoomId">
+                    <span class="badge badge-primary">{{ getSleepingRoomName(selectedCamper.sleepingRoomId) }}</span>
                   </div>
                   <div v-else class="text-secondary">Not assigned to a cabin</div>
                 </div>
@@ -198,29 +198,29 @@
                 <div class="detail-section">
                   <div class="detail-label">Enrolled Events</div>
                   <EventsByDate 
-                    :events="getChildEvents(selectedChild.id)"
+                    :events="getCamperEvents(selectedCamper.id)"
                     empty-message="No events enrolled"
                   />
                 </div>
               </div>
             </div>
             <div class="modal-footer">
-              <button class="btn btn-error" @click="deleteChildConfirm">Delete Child</button>
-              <button class="btn btn-secondary" @click="editChild">Edit</button>
-              <button class="btn btn-secondary" @click="selectedChildId = null">Close</button>
+              <button class="btn btn-error" @click="deleteCamperConfirm">Delete Camper</button>
+              <button class="btn btn-secondary" @click="editCamper">Edit</button>
+              <button class="btn btn-secondary" @click="selectedCamperId = null">Close</button>
             </div>
           </div>
         </div>
 
-        <!-- Add/Edit Child Modal -->
+        <!-- Add/Edit Camper Modal -->
         <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
           <div class="modal">
             <div class="modal-header">
-              <h3>{{ editingChildId ? 'Edit Child' : 'Add New Child' }}</h3>
+              <h3>{{ editingCamperId ? 'Edit Camper' : 'Add New Camper' }}</h3>
               <button class="btn btn-icon btn-secondary" @click="closeModal">✕</button>
             </div>
             <div class="modal-body">
-              <form @submit.prevent="saveChild">
+              <form @submit.prevent="saveCamper">
                 <div class="grid grid-cols-2">
                   <div class="form-group">
                     <label class="form-label">First Name</label>
@@ -283,8 +283,8 @@
             </div>
             <div class="modal-footer">
               <button class="btn btn-secondary" @click="closeModal">Cancel</button>
-              <button class="btn btn-primary" @click="saveChild">
-                {{ editingChildId ? 'Update' : 'Add' }} Child
+              <button class="btn btn-primary" @click="saveCamper">
+                {{ editingCamperId ? 'Update' : 'Add' }} Camper
               </button>
             </div>
           </div>
@@ -294,9 +294,9 @@
       <!-- Confirmation Modal -->
       <ConfirmModal
         :show="showConfirmModal"
-        title="Delete Child"
-        :message="`Are you sure you want to delete ${childToDelete?.name}?`"
-        details="This action cannot be undone. The child will be removed from all events and their sleeping room assignment."
+        title="Delete Camper"
+        :message="`Are you sure you want to delete ${camperToDelete?.name}?`"
+        details="This action cannot be undone. The camper will be removed from all events and their sleeping room assignment."
         confirm-text="Delete"
         :danger-mode="true"
         @confirm="handleConfirmDelete"
@@ -316,15 +316,15 @@ import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 
 const store = useCampStore();
-const selectedChildId = ref<string | null>(null);
+const selectedCamperId = ref<string | null>(null);
 const showModal = ref(false);
-const editingChildId = ref<string | null>(null);
+const editingCamperId = ref<string | null>(null);
 const allergiesInput = ref('');
 const viewMode = ref<'grid' | 'table'>('grid');
 
 // Confirmation modal state
 const showConfirmModal = ref(false);
-const childToDelete = ref<{ id: string; name: string } | null>(null);
+const camperToDelete = ref<{ id: string; name: string } | null>(null);
 
 const formData = ref<{
   firstName: string;
@@ -352,7 +352,7 @@ const filterGender = ref('');
 const filterAge = ref('');
 const filterSleepingRoom = ref('');
 
-const childrenFilters = computed<Filter[]>(() => [
+const campersFilters = computed<Filter[]>(() => [
   {
     model: 'filterGender',
     value: filterGender.value,
@@ -387,27 +387,27 @@ const childrenFilters = computed<Filter[]>(() => [
   },
 ]);
 
-const selectedChild = computed(() => {
-  if (!selectedChildId.value) return null;
-  return store.getChildById(selectedChildId.value);
+const selectedCamper = computed(() => {
+  if (!selectedCamperId.value) return null;
+  return store.getCamperById(selectedCamperId.value);
 });
 
-const filteredChildren = computed(() => {
-  let children = store.children;
+const filteredCampers = computed(() => {
+  let campers = store.campers;
 
   // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
-    children = children.filter(child =>
-      child.firstName.toLowerCase().includes(query) ||
-      child.lastName.toLowerCase().includes(query) ||
-      `${child.firstName} ${child.lastName}`.toLowerCase().includes(query)
+    campers = campers.filter(camper =>
+      camper.firstName.toLowerCase().includes(query) ||
+      camper.lastName.toLowerCase().includes(query) ||
+      `${camper.firstName} ${camper.lastName}`.toLowerCase().includes(query)
     );
   }
 
   // Gender filter
   if (filterGender.value) {
-    children = children.filter(child => child.gender === filterGender.value);
+    campers = campers.filter(camper => camper.gender === filterGender.value);
   }
 
   // Age filter
@@ -415,19 +415,19 @@ const filteredChildren = computed(() => {
     const [min, max] = filterAge.value === '15+' 
       ? [15, 999] 
       : filterAge.value.split('-').map(Number);
-    children = children.filter(child => child.age >= min && (max ? child.age <= max : true));
+    campers = campers.filter(camper => camper.age >= min && (max ? camper.age <= max : true));
   }
 
   // Sleeping room filter
   if (filterSleepingRoom.value) {
     if (filterSleepingRoom.value === 'unassigned') {
-      children = children.filter(child => !child.sleepingRoomId);
+      campers = campers.filter(camper => !camper.sleepingRoomId);
     } else {
-      children = children.filter(child => child.sleepingRoomId === filterSleepingRoom.value);
+      campers = campers.filter(camper => camper.sleepingRoomId === filterSleepingRoom.value);
     }
   }
 
-  return children;
+  return campers;
 });
 
 const clearFilters = () => {
@@ -437,16 +437,16 @@ const clearFilters = () => {
   filterSleepingRoom.value = '';
 };
 
-const getChildTodayEvents = (childId: string) => {
+const getCamperTodayEvents = (camperId: string) => {
   const today = new Date();
-  return store.childEvents(childId).filter(event => {
+  return store.camperEvents(camperId).filter(event => {
     const eventDate = new Date(event.startTime);
     return eventDate.toDateString() === today.toDateString();
   });
 };
 
-const getChildEvents = (childId: string) => {
-  return store.childEvents(childId);
+const getCamperEvents = (camperId: string) => {
+  return store.camperEvents(camperId);
 };
 
 const formatDate = (dateStr: string) => {
@@ -466,51 +466,51 @@ const formatRoomGender = (gender: string) => {
   return gender.charAt(0).toUpperCase() + gender.slice(1);
 };
 
-const getAvailableSleepingRooms = (childGender: 'male' | 'female') => {
+const getAvailableSleepingRooms = (camperGender: 'male' | 'female') => {
   return store.sleepingRooms.filter(room => {
     // Mixed rooms accept all
     if (room.gender === 'mixed') return true;
     
-    // Match room gender with child gender
-    if (childGender === 'male' && room.gender === 'boys') return true;
-    if (childGender === 'female' && room.gender === 'girls') return true;
+    // Match room gender with camper gender
+    if (camperGender === 'male' && room.gender === 'boys') return true;
+    if (camperGender === 'female' && room.gender === 'girls') return true;
     
     return false;
   });
 };
 
-const selectChild = (childId: string) => {
-  selectedChildId.value = childId;
+const selectCamper = (camperId: string) => {
+  selectedCamperId.value = camperId;
 };
 
-const editChild = () => {
-  if (!selectedChild.value) return;
+const editCamper = () => {
+  if (!selectedCamper.value) return;
   
-  editingChildId.value = selectedChild.value.id;
+  editingCamperId.value = selectedCamper.value.id;
   formData.value = {
-    firstName: selectedChild.value.firstName,
-    lastName: selectedChild.value.lastName,
-    age: selectedChild.value.age,
-    gender: selectedChild.value.gender,
-    parentContact: selectedChild.value.parentContact,
-    allergies: selectedChild.value.allergies || [],
-    medicalNotes: selectedChild.value.medicalNotes || '',
-    sleepingRoomId: selectedChild.value.sleepingRoomId || '',
+    firstName: selectedCamper.value.firstName,
+    lastName: selectedCamper.value.lastName,
+    age: selectedCamper.value.age,
+    gender: selectedCamper.value.gender,
+    parentContact: selectedCamper.value.parentContact,
+    allergies: selectedCamper.value.allergies || [],
+    medicalNotes: selectedCamper.value.medicalNotes || '',
+    sleepingRoomId: selectedCamper.value.sleepingRoomId || '',
   };
-  allergiesInput.value = (selectedChild.value.allergies || []).join(', ');
+  allergiesInput.value = (selectedCamper.value.allergies || []).join(', ');
   
-  selectedChildId.value = null;
+  selectedCamperId.value = null;
   showModal.value = true;
 };
 
-const saveChild = async () => {
+const saveCamper = async () => {
   const allergies = allergiesInput.value
     .split(',')
     .map(a => a.trim())
     .filter(a => a.length > 0);
 
-  const childData: Child = {
-    id: editingChildId.value || `child-${Date.now()}`,
+  const camperData: Child = {
+    id: editingCamperId.value || `child-${Date.now()}`,
     firstName: formData.value.firstName,
     lastName: formData.value.lastName,
     age: formData.value.age,
@@ -519,49 +519,49 @@ const saveChild = async () => {
     allergies,
     medicalNotes: formData.value.medicalNotes,
     sleepingRoomId: formData.value.sleepingRoomId || undefined,
-    registrationDate: editingChildId.value 
-      ? store.getChildById(editingChildId.value)?.registrationDate 
+    registrationDate: editingCamperId.value 
+      ? store.getCamperById(editingCamperId.value)?.registrationDate 
       : new Date().toISOString(),
   };
 
-  if (editingChildId.value) {
-    await store.updateChild(childData);
+  if (editingCamperId.value) {
+    await store.updateCamper(camperData);
   } else {
-    await store.addChild(childData);
+    await store.addCamper(camperData);
   }
 
   closeModal();
 };
 
-const deleteChildConfirm = () => {
-  if (!selectedChildId.value) return;
-  const child = store.getChildById(selectedChildId.value);
-  if (!child) return;
+const deleteCamperConfirm = () => {
+  if (!selectedCamperId.value) return;
+  const camper = store.getCamperById(selectedCamperId.value);
+  if (!camper) return;
   
-  childToDelete.value = {
-    id: selectedChildId.value,
-    name: `${child.firstName} ${child.lastName}`
+  camperToDelete.value = {
+    id: selectedCamperId.value,
+    name: `${camper.firstName} ${camper.lastName}`
   };
   showConfirmModal.value = true;
 };
 
 const handleConfirmDelete = async () => {
-  if (!childToDelete.value) return;
+  if (!camperToDelete.value) return;
   
-  await store.deleteChild(childToDelete.value.id);
-  selectedChildId.value = null;
+  await store.deleteCamper(camperToDelete.value.id);
+  selectedCamperId.value = null;
   showConfirmModal.value = false;
-  childToDelete.value = null;
+  camperToDelete.value = null;
 };
 
 const handleCancelDelete = () => {
   showConfirmModal.value = false;
-  childToDelete.value = null;
+  camperToDelete.value = null;
 };
 
 const closeModal = () => {
   showModal.value = false;
-  editingChildId.value = null;
+  editingCamperId.value = null;
   formData.value = {
     firstName: '',
     lastName: '',
@@ -577,7 +577,7 @@ const closeModal = () => {
 </script>
 
 <style scoped>
-.children-view {
+.campers-view {
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -612,25 +612,25 @@ const closeModal = () => {
   justify-content: center;
 }
 
-.children-grid {
+.campers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
-.child-card {
+.camper-card {
   cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
   gap: 1rem;
 }
 
-.child-card:hover {
+.camper-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
 }
 
-.child-avatar {
+.camper-avatar {
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -644,16 +644,16 @@ const closeModal = () => {
   flex-shrink: 0;
 }
 
-.child-details {
+.camper-details {
   flex: 1;
   min-width: 0;
 }
 
-.child-details h4 {
+.camper-details h4 {
   margin-bottom: 0.5rem;
 }
 
-.child-meta {
+.camper-meta {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
@@ -677,24 +677,24 @@ const closeModal = () => {
 }
 
 /* Table View Styles */
-.children-table-container {
+.campers-table-container {
   background: var(--card-background);
   border-radius: var(--radius);
   overflow-x: auto;
   box-shadow: var(--shadow);
 }
 
-.children-table {
+.campers-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.children-table thead {
+.campers-table thead {
   background: var(--background);
   border-bottom: 2px solid var(--border-color);
 }
 
-.children-table th {
+.campers-table th {
   padding: 1rem;
   text-align: left;
   font-weight: 600;
@@ -703,31 +703,31 @@ const closeModal = () => {
   white-space: nowrap;
 }
 
-.children-table tbody tr {
+.campers-table tbody tr {
   border-bottom: 1px solid var(--border-color);
   transition: all 0.15s ease;
 }
 
-.children-table tbody tr:hover {
+.campers-table tbody tr:hover {
   background: var(--background);
 }
 
-.children-table td {
+.campers-table td {
   padding: 1rem;
   font-size: 0.875rem;
 }
 
-.child-name-cell {
+.camper-name-cell {
   min-width: 200px;
 }
 
-.child-name-content {
+.camper-name-content {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.child-avatar-sm {
+.camper-avatar-sm {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -741,7 +741,7 @@ const closeModal = () => {
   flex-shrink: 0;
 }
 
-.child-fullname {
+.camper-fullname {
   font-weight: 500;
   color: var(--text-primary);
 }
@@ -772,4 +772,5 @@ const closeModal = () => {
   padding: 0.25rem 0.5rem;
 }
 </style>
+
 

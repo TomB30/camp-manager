@@ -1,7 +1,7 @@
 import type { Child, TeamMember, Room, SleepingRoom, Event } from '@/types/api';
 
 const STORAGE_KEYS = {
-  CHILDREN: 'camp_children',
+  CAMPERS: 'camp_campers',
   TEAM_MEMBERS: 'camp_team_members',
   ROOMS: 'camp_rooms',
   SLEEPING_ROOMS: 'camp_sleeping_rooms',
@@ -12,45 +12,45 @@ const STORAGE_KEYS = {
 const delay = (ms: number = 50) => new Promise(resolve => setTimeout(resolve, ms));
 
 class StorageService {
-  // Children operations
-  async getChildren(): Promise<Child[]> {
+  // Campers operations
+  async getCampers(): Promise<Child[]> {
     await delay();
-    const data = localStorage.getItem(STORAGE_KEYS.CHILDREN);
+    const data = localStorage.getItem(STORAGE_KEYS.CAMPERS);
     return data ? JSON.parse(data) : [];
   }
 
-  async getChild(id: string): Promise<Child | null> {
+  async getCamper(id: string): Promise<Child | null> {
     await delay();
-    const children = await this.getChildren();
-    return children.find(c => c.id === id) || null;
+    const campers = await this.getCampers();
+    return campers.find(c => c.id === id) || null;
   }
 
-  async saveChild(child: Child): Promise<Child> {
+  async saveCamper(camper: Child): Promise<Child> {
     await delay();
-    const children = await this.getChildren();
-    const index = children.findIndex(c => c.id === child.id);
+    const campers = await this.getCampers();
+    const index = campers.findIndex(c => c.id === camper.id);
     
     if (index >= 0) {
-      children[index] = child;
+      campers[index] = camper;
     } else {
-      children.push(child);
+      campers.push(camper);
     }
     
-    localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(children));
-    return child;
+    localStorage.setItem(STORAGE_KEYS.CAMPERS, JSON.stringify(campers));
+    return camper;
   }
 
-  async deleteChild(id: string): Promise<void> {
+  async deleteCamper(id: string): Promise<void> {
     await delay();
-    const children = await this.getChildren();
-    const filtered = children.filter(c => c.id !== id);
-    localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(filtered));
+    const campers = await this.getCampers();
+    const filtered = campers.filter(c => c.id !== id);
+    localStorage.setItem(STORAGE_KEYS.CAMPERS, JSON.stringify(filtered));
     
     // Also remove from all events
     const events = await this.getEvents();
     const updatedEvents = events.map(event => ({
       ...event,
-      enrolledChildrenIds: event.enrolledChildrenIds?.filter(childId => childId !== id) || [],
+      enrolledCamperIds: event.enrolledCamperIds?.filter(camperId => camperId !== id) || [],
     }));
     localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(updatedEvents));
   }
@@ -167,13 +167,13 @@ class StorageService {
     const filtered = rooms.filter(r => r.id !== id);
     localStorage.setItem(STORAGE_KEYS.SLEEPING_ROOMS, JSON.stringify(filtered));
     
-    // Also remove from children assignments
-    const children = await this.getChildren();
-    const updatedChildren = children.map(child => ({
-      ...child,
-      sleepingRoomId: child.sleepingRoomId === id ? undefined : child.sleepingRoomId,
+    // Also remove from campers assignments
+    const campers = await this.getCampers();
+    const updatedCampers = campers.map(camper => ({
+      ...camper,
+      sleepingRoomId: camper.sleepingRoomId === id ? undefined : camper.sleepingRoomId,
     }));
-    localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(updatedChildren));
+    localStorage.setItem(STORAGE_KEYS.CAMPERS, JSON.stringify(updatedCampers));
   }
 
   // Events operations
@@ -222,27 +222,27 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(filtered));
   }
 
-  async enrollChild(eventId: string, childId: string): Promise<void> {
+  async enrollCamper(eventId: string, camperId: string): Promise<void> {
     await delay();
     const event = await this.getEvent(eventId);
     if (!event) throw new Error('Event not found');
     
-    if (!event.enrolledChildrenIds) {
-      event.enrolledChildrenIds = [];
+    if (!event.enrolledCamperIds) {
+      event.enrolledCamperIds = [];
     }
     
-    if (!event.enrolledChildrenIds.includes(childId)) {
-      event.enrolledChildrenIds.push(childId);
+    if (!event.enrolledCamperIds.includes(camperId)) {
+      event.enrolledCamperIds.push(camperId);
       await this.saveEvent(event);
     }
   }
 
-  async unenrollChild(eventId: string, childId: string): Promise<void> {
+  async unenrollCamper(eventId: string, camperId: string): Promise<void> {
     await delay();
     const event = await this.getEvent(eventId);
     if (!event) throw new Error('Event not found');
     
-    event.enrolledChildrenIds = event.enrolledChildrenIds?.filter(id => id !== childId) || [];
+    event.enrolledCamperIds = event.enrolledCamperIds?.filter(id => id !== camperId) || [];
     await this.saveEvent(event);
   }
 
@@ -255,15 +255,15 @@ class StorageService {
   }
 
   async seedData(data: {
-    children?: Child[];
+    campers?: Child[];
     teamMembers?: TeamMember[];
     rooms?: Room[];
     sleepingRooms?: SleepingRoom[];
     events?: Event[];
   }): Promise<void> {
     await delay();
-    if (data.children) {
-      localStorage.setItem(STORAGE_KEYS.CHILDREN, JSON.stringify(data.children));
+    if (data.campers) {
+      localStorage.setItem(STORAGE_KEYS.CAMPERS, JSON.stringify(data.campers));
     }
     if (data.teamMembers) {
       localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(data.teamMembers));

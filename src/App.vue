@@ -19,9 +19,9 @@ const store = useCampStore();
 
 onMounted(async () => {
   // Check if we have data, if not, seed with mock data
-  const existingChildren = await storageService.getChildren();
+  const existingCampers = await storageService.getCampers();
   
-  if (existingChildren.length === 0) {
+  if (existingCampers.length === 0) {
     await storageService.seedData(mockData);
   }
   

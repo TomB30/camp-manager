@@ -30,7 +30,7 @@ camp-manager/
 │   ├── views/               # Page components (routes)
 │   │   ├── Dashboard.vue    # Main dashboard
 │   │   ├── Calendar.vue     # Event calendar
-│   │   ├── Children.vue     # Children management
+│   │   ├── Campers.vue     # Children management
 │   │   ├── TeamMembers.vue  # Staff management
 │   │   └── Rooms.vue        # Room management
 │   │
@@ -124,7 +124,7 @@ Provides async CRUD operations for all entities using localStorage:
 
 ```typescript
 // Children
-await storageService.getChildren()
+await storageService.getCampers()
 await storageService.getChild(id)
 await storageService.saveChild(child)
 await storageService.deleteChild(id)
@@ -546,7 +546,7 @@ console.warn('Potential conflict:', event)
 ### Check Local Storage
 
 Open DevTools → Application → Local Storage:
-- `camp_children`
+- `camp_campers`
 - `camp_team_members`
 - `camp_rooms`
 - `camp_events`

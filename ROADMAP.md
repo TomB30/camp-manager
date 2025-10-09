@@ -132,7 +132,7 @@
 - [ ] Session/week configuration
 - [ ] Session templates
 - [ ] Copy schedule between sessions
-- [ ] Session-specific children enrollment
+- [ ] Session-specific campers enrollment
 
 ### Attendance Tracking
 - [ ] Check-in/check-out system

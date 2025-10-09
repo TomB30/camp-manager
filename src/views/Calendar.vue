@@ -87,7 +87,7 @@
             <div class="event-details">
               <div class="event-room text-xs">{{ getRoomName(event.roomId) }}</div>
               <div class="event-capacity text-xs">
-                {{ event.enrolledChildrenIds?.length || 0 }}/{{ event.capacity }}
+                {{ event.enrolledCamperIds?.length || 0 }}/{{ event.capacity }}
               </div>
             </div>
           </div>
@@ -129,7 +129,7 @@
                       {{ getRoomName(event.roomId) }}
                     </div>
                     <div class="week-event-capacity text-xs">
-                      {{ event.enrolledChildrenIds?.length || 0 }}/{{ event.capacity }}
+                      {{ event.enrolledCamperIds?.length || 0 }}/{{ event.capacity }}
                     </div>
                   </div>
                 </div>
@@ -164,9 +164,9 @@
               <div class="mb-3">
                 <div class="text-sm text-secondary mb-1">Capacity</div>
                 <div>
-                  {{ selectedEvent.enrolledChildrenIds?.length || 0 }}/{{ selectedEvent.capacity }}
+                  {{ selectedEvent.enrolledCamperIds?.length || 0 }}/{{ selectedEvent.capacity }}
                   <span 
-                    v-if="(selectedEvent.enrolledChildrenIds?.length || 0) >= selectedEvent.capacity"
+                    v-if="(selectedEvent.enrolledCamperIds?.length || 0) >= selectedEvent.capacity"
                     class="badge badge-error ml-2"
                   >
                     Full
@@ -176,37 +176,37 @@
 
               <div class="mb-3">
                 <div class="flex items-center justify-between mb-2">
-                  <div class="text-sm text-secondary">Enrolled Children</div>
+                  <div class="text-sm text-secondary">Enrolled Campers</div>
                 </div>
                 <div 
-                  class="enrolled-children drop-zone"
+                  class="enrolled-campers drop-zone"
                   :class="{ 'drag-over': isDragOver }"
                   @drop="onDrop($event, selectedEvent.id)"
                   @dragover.prevent="isDragOver = true"
                   @dragleave="isDragOver = false"
                 >
                   <div
-                    v-for="childId in selectedEvent.enrolledChildrenIds"
-                    :key="childId"
-                    class="enrolled-child draggable"
+                    v-for="camperId in selectedEvent.enrolledCamperIds"
+                    :key="camperId"
+                    class="enrolled-camper draggable"
                     :draggable="true"
-                    @dragstart="onDragStart($event, childId, selectedEvent.id)"
+                    @dragstart="onDragStart($event, camperId, selectedEvent.id)"
                     @dragend="onDragEnd"
                   >
-                    <div class="child-info">
+                    <div class="camper-info">
                       <div class="font-medium">
-                        {{ getChildName(childId) }}
+                        {{ getCamperName(camperId) }}
                       </div>
                     </div>
                     <button 
                       class="btn btn-sm btn-error"
-                      @click="unenrollChildFromEvent(selectedEvent.id, childId)"
+                      @click="unenrollCamperFromEvent(selectedEvent.id, camperId)"
                     >
                       Remove
                     </button>
                   </div>
-                  <div v-if="!selectedEvent.enrolledChildrenIds?.length" class="empty-state">
-                    <p class="text-secondary text-sm">No children enrolled. Drag and drop to enroll.</p>
+                  <div v-if="!selectedEvent.enrolledCamperIds?.length" class="empty-state">
+                    <p class="text-secondary text-sm">No campers enrolled. Drag and drop to enroll.</p>
                   </div>
                 </div>
               </div>
@@ -299,13 +299,13 @@
     <!-- Confirmation Modal -->
     <ConfirmModal
       :show="showConfirmModal"
-      :title="confirmAction?.type === 'deleteEvent' ? 'Delete Event' : 'Remove Child from Event'"
+      :title="confirmAction?.type === 'deleteEvent' ? 'Delete Event' : 'Remove Camper from Event'"
       :message="confirmAction?.type === 'deleteEvent' 
         ? `Are you sure you want to delete the event '${confirmAction.data.eventName}'?` 
-        : `Are you sure you want to remove ${confirmAction?.data.childName} from '${confirmAction?.data.eventName}'?`"
+        : `Are you sure you want to remove ${confirmAction?.data.camperName} from '${confirmAction?.data.eventName}'?`"
       :details="confirmAction?.type === 'deleteEvent' 
-        ? 'This action cannot be undone. All enrolled children will be removed from this event.' 
-        : 'The child will no longer be enrolled in this event.'"
+        ? 'This action cannot be undone. All enrolled campers will be removed from this event.' 
+        : 'The camper will no longer be enrolled in this event.'"
       :confirm-text="confirmAction?.type === 'deleteEvent' ? 'Delete' : 'Remove'"
       :danger-mode="true"
       @confirm="handleConfirmAction"
@@ -328,14 +328,14 @@ const selectedDate = ref(new Date());
 const selectedEventId = ref<string | null>(null);
 const showEventModal = ref(false);
 const isDragOver = ref(false);
-const draggedChildId = ref<string | null>(null);
+const draggedCamperId = ref<string | null>(null);
 const draggedFromEventId = ref<string | null>(null);
 const viewMode = ref<'daily' | 'weekly'>('daily');
 
 // Confirmation modal state
 const showConfirmModal = ref(false);
 const confirmAction = ref<{
-  type: 'deleteEvent' | 'removeChild';
+  type: 'deleteEvent' | 'removeCamper';
   data?: any;
 } | null>(null);
 
@@ -450,9 +450,9 @@ const getRoomName = (roomId: string) => {
   return room?.name || 'Unknown Room';
 };
 
-const getChildName = (childId: string) => {
-  const child = store.getChildById(childId);
-  return child ? `${child.firstName} ${child.lastName}` : 'Unknown';
+const getCamperName = (camperId: string) => {
+  const camper = store.getCamperById(camperId);
+  return camper ? `${camper.firstName} ${camper.lastName}` : 'Unknown';
 };
 
 const getStaffName = (staffId: string) => {
@@ -618,7 +618,7 @@ const createEvent = async () => {
     capacity: newEvent.value.capacity,
     type: newEvent.value.type,
     color: newEvent.value.color,
-    enrolledChildrenIds: [],
+    enrolledCamperIds: [],
     assignedStaffIds: [],
   };
   
@@ -653,8 +653,8 @@ const handleConfirmAction = async () => {
   if (confirmAction.value.type === 'deleteEvent') {
     await store.deleteEvent(confirmAction.value.data.eventId);
     selectedEventId.value = null;
-  } else if (confirmAction.value.type === 'removeChild') {
-    await store.unenrollChild(confirmAction.value.data.eventId, confirmAction.value.data.childId);
+  } else if (confirmAction.value.type === 'removeCamper') {
+    await store.unenrollCamper(confirmAction.value.data.eventId, confirmAction.value.data.camperId);
   }
 
   showConfirmModal.value = false;
@@ -666,14 +666,14 @@ const handleCancelConfirm = () => {
   confirmAction.value = null;
 };
 
-const onDragStart = (event: DragEvent, childId: string, fromEventId: string | null) => {
-  draggedChildId.value = childId;
+const onDragStart = (event: DragEvent, camperId: string, fromEventId: string | null) => {
+  draggedCamperId.value = camperId;
   draggedFromEventId.value = fromEventId;
   event.dataTransfer!.effectAllowed = 'move';
 };
 
 const onDragEnd = () => {
-  draggedChildId.value = null;
+  draggedCamperId.value = null;
   draggedFromEventId.value = null;
   isDragOver.value = false;
 };
@@ -682,30 +682,30 @@ const onDrop = async (event: DragEvent, toEventId: string) => {
   event.preventDefault();
   isDragOver.value = false;
   
-  if (!draggedChildId.value) return;
+  if (!draggedCamperId.value) return;
   
   try {
     if (draggedFromEventId.value) {
       // Moving from one event to another
-      await store.moveChild(draggedFromEventId.value, toEventId, draggedChildId.value);
+      await store.moveCamper(draggedFromEventId.value, toEventId, draggedCamperId.value);
     } else {
-      // Enrolling from the children list
-      await store.enrollChild(toEventId, draggedChildId.value);
+      // Enrolling from the campers list
+      await store.enrollCamper(toEventId, draggedCamperId.value);
     }
   } catch (error: any) {
     alert(error.message);
   }
   
-  draggedChildId.value = null;
+  draggedCamperId.value = null;
   draggedFromEventId.value = null;
 };
 
-const unenrollChildFromEvent = (eventId: string, childId: string) => {
-  const child = store.getChildById(childId);
+const unenrollCamperFromEvent = (eventId: string, camperId: string) => {
+  const camper = store.getCamperById(camperId);
   const event = store.getEventById(eventId);
   confirmAction.value = {
-    type: 'removeChild',
-    data: { eventId, childId, childName: `${child?.firstName} ${child?.lastName}`, eventName: event?.title }
+    type: 'removeCamper',
+    data: { eventId, camperId, camperName: `${camper?.firstName} ${camper?.lastName}`, eventName: event?.title }
   };
   showConfirmModal.value = true;
 };
@@ -840,7 +840,7 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
   line-height: 1.4;
 }
 
-.enrolled-children {
+.enrolled-campers {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -852,12 +852,12 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
   transition: all 0.15s ease;
 }
 
-.enrolled-children.drag-over {
+.enrolled-campers.drag-over {
   border-color: var(--primary-color);
   background: var(--primary-light);
 }
 
-.enrolled-child {
+.enrolled-camper {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -868,7 +868,7 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
   transition: all 0.15s ease;
 }
 
-.enrolled-child:hover {
+.enrolled-camper:hover {
   background: var(--primary-light);
 }
 
