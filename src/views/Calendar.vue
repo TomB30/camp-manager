@@ -722,7 +722,7 @@ const unenrollChildFromEvent = (eventId: string, childId: string) => {
 <style scoped>
 .calendar-view {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 2fr;
   gap: 1.5rem;
   grid-template-rows: auto auto 1fr;
 }
