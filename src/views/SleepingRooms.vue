@@ -2,7 +2,7 @@
   <div class="container">
     <div class="sleeping-rooms-view">
       <div class="view-header">
-        <h2>🛏️ Sleeping Rooms (Cabins)</h2>
+        <h2><Bed :size="24" class="inline" style="vertical-align: middle; margin-right: 0.5rem;" />Sleeping Rooms (Cabins)</h2>
         <div class="header-actions">
           <button class="btn btn-primary" @click="showModal = true">+ Add Sleeping Room</button>
         </div>
@@ -58,7 +58,7 @@
           @click="selectRoom(room.id)"
         >
           <div class="room-icon" :style="{ background: getGenderColor(room.gender) }">
-            {{ getGenderIcon(room.gender) }}
+            <component :is="GenderIcon(room.gender)" :size="24" :stroke-width="2" />
           </div>
           <div class="room-details">
             <h4>{{ room.name }}</h4>
@@ -67,7 +67,8 @@
               <span class="badge badge-success">{{ getAssignedCount(room.id) }}/{{ room.capacity }} beds</span>
             </div>
             <div v-if="room.building" class="room-location text-sm text-secondary mt-1">
-              🏠 {{ room.building }}{{ room.floor ? ` - Floor ${room.floor}` : '' }}
+              <Building2 :size="14" class="inline" />
+              {{ room.building }}{{ room.floor ? ` - Floor ${room.floor}` : '' }}
             </div>
             <div class="room-usage mt-2">
               <div class="usage-bar">
@@ -99,7 +100,7 @@
         <template #cell-name="{ item }">
           <div class="cabin-name-content">
             <div class="cabin-icon-sm" :style="{ background: getGenderColor(item.gender) }">
-              {{ getGenderIcon(item.gender) }}
+              <component :is="GenderIcon(item.gender)" :size="18" :stroke-width="2" />
             </div>
             <div class="cabin-name">{{ item.name }}</div>
           </div>
@@ -344,6 +345,7 @@ import type { SleepingRoom } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable, { type Column } from '@/components/DataTable.vue';
+import { UserRound, Users, Bed, Building2, Mars, Venus } from 'lucide-vue-next';
 
 const store = useCampStore();
 const selectedRoomId = ref<string | null>(null);
@@ -479,13 +481,13 @@ const formatGender = (gender: string) => {
   return gender.charAt(0).toUpperCase() + gender.slice(1);
 };
 
-const getGenderIcon = (gender: SleepingRoom['gender']) => {
-  const icons: Record<SleepingRoom['gender'], string> = {
-    boys: '👦',
-    girls: '👧',
-    mixed: '👫',
+const GenderIcon = (gender: SleepingRoom['gender']) => {
+  const iconMap: Record<SleepingRoom['gender'], any> = {
+    boys: Mars,
+    girls: Venus,
+    mixed: Users,
   };
-  return icons[gender] || '🛏️';
+  return iconMap[gender] || Bed;
 };
 
 const getGenderColor = (gender: SleepingRoom['gender']) => {

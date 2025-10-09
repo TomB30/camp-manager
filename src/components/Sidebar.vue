@@ -2,32 +2,33 @@
   <aside class="sidebar">
     <div class="sidebar-content">
       <div class="logo">
-        <h1>☀️ Summer Camp</h1>
+        <Sun :size="20" class="logo-icon" />
+        <h1>Summer Camp</h1>
       </div>
       
       <nav class="nav">
         <RouterLink to="/" class="nav-link">
-          <span class="nav-icon">📊</span>
+          <LayoutDashboard :size="20" class="nav-icon" />
           <span class="nav-text">Dashboard</span>
         </RouterLink>
         <RouterLink to="/calendar" class="nav-link">
-          <span class="nav-icon">📅</span>
+          <Calendar :size="20" class="nav-icon" />
           <span class="nav-text">Calendar</span>
         </RouterLink>
         <RouterLink to="/campers" class="nav-link">
-          <span class="nav-icon">👶</span>
+          <Users :size="20" class="nav-icon" />
           <span class="nav-text">Campers</span>
         </RouterLink>
         <RouterLink to="/team" class="nav-link">
-          <span class="nav-icon">👥</span>
+          <UsersRound :size="20" class="nav-icon" />
           <span class="nav-text">Team</span>
         </RouterLink>
         <RouterLink to="/rooms" class="nav-link">
-          <span class="nav-icon">🏠</span>
+          <Home :size="20" class="nav-icon" />
           <span class="nav-text">Activity Rooms</span>
         </RouterLink>
         <RouterLink to="/sleeping-rooms" class="nav-link">
-          <span class="nav-icon">🛏️</span>
+          <Bed :size="20" class="nav-icon" />
           <span class="nav-text">Cabins</span>
         </RouterLink>
       </nav>
@@ -35,7 +36,8 @@
       <div v-if="store.conflicts.length > 0" class="conflicts-section">
         <div class="conflicts-badge">
           <span class="badge badge-error">
-            ⚠️ {{ store.conflicts.length }} Conflict{{ store.conflicts.length > 1 ? 's' : '' }}
+            <AlertTriangle :size="16" />
+            {{ store.conflicts.length }} Conflict{{ store.conflicts.length > 1 ? 's' : '' }}
           </span>
         </div>
       </div>
@@ -46,6 +48,16 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
 import { useCampStore } from '@/stores/campStore';
+import { 
+  Sun, 
+  LayoutDashboard, 
+  Calendar, 
+  Users, 
+  UsersRound, 
+  Home, 
+  Bed, 
+  AlertTriangle 
+} from 'lucide-vue-next';
 
 const store = useCampStore();
 </script>
@@ -75,6 +87,14 @@ const store = useCampStore();
 .logo {
   padding: 0 1.5rem;
   margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-icon {
+  color: var(--accent-color);
+  flex-shrink: 0;
 }
 
 .logo h1 {
@@ -107,8 +127,7 @@ const store = useCampStore();
 }
 
 .nav-icon {
-  font-size: 1.25rem;
-  line-height: 1;
+  flex-shrink: 0;
 }
 
 .nav-text {
@@ -172,10 +191,6 @@ const store = useCampStore();
     min-width: 80px;
     text-align: center;
     padding: 0.5rem;
-  }
-
-  .nav-icon {
-    font-size: 1.5rem;
   }
 
   .nav-text {

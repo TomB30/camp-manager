@@ -58,7 +58,7 @@
           @click="selectRoom(room.id)"
         >
           <div class="room-icon" :style="{ background: getRoomTypeColor(room.type) }">
-            {{ getRoomTypeIcon(room.type) }}
+            <component :is="RoomTypeIcon(room.type)" :size="24" :stroke-width="2" />
           </div>
           <div class="room-details">
             <h4>{{ room.name }}</h4>
@@ -67,7 +67,8 @@
               <span class="badge badge-success">Capacity: {{ room.capacity }}</span>
             </div>
             <div v-if="room.location" class="room-location text-sm text-secondary mt-1">
-              📍 {{ room.location }}
+              <MapPin :size="14" class="inline" />
+              {{ room.location }}
             </div>
             <div class="room-usage mt-2">
               <div class="usage-bar">
@@ -99,7 +100,7 @@
         <template #cell-name="{ item }">
           <div class="room-name-content">
             <div class="room-icon-sm" :style="{ background: getRoomTypeColor(item.type) }">
-              {{ getRoomTypeIcon(item.type) }}
+              <component :is="RoomTypeIcon(item.type)" :size="18" :stroke-width="2" />
             </div>
             <div class="room-name">{{ item.name }}</div>
           </div>
@@ -282,6 +283,16 @@ import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable, { type Column } from '@/components/DataTable.vue';
+import { 
+  BookOpen, 
+  Target, 
+  Dumbbell, 
+  Utensils, 
+  Trees, 
+  Palette, 
+  Home,
+  MapPin 
+} from 'lucide-vue-next';
 
 const store = useCampStore();
 const selectedRoomId = ref<string | null>(null);
@@ -405,16 +416,16 @@ const formatRoomType = (type: string) => {
   return type.charAt(0).toUpperCase() + type.slice(1);
 };
 
-const getRoomTypeIcon = (type: Room['type']) => {
-  const icons: Record<Room['type'], string> = {
-    classroom: '📚',
-    activity: '🎯',
-    sports: '⚽',
-    dining: '🍽️',
-    outdoor: '🌳',
-    arts: '🎨',
+const RoomTypeIcon = (type: Room['type']) => {
+  const iconMap: Record<Room['type'], any> = {
+    classroom: BookOpen,
+    activity: Target,
+    sports: Dumbbell,
+    dining: Utensils,
+    outdoor: Trees,
+    arts: Palette,
   };
-  return icons[type] || '🏠';
+  return iconMap[type] || Home;
 };
 
 const getRoomTypeColor = (type: Room['type']) => {

@@ -98,13 +98,16 @@
           <h4 class="mb-2">Quick Actions</h4>
           <div class="flex flex-col gap-2">
             <button class="btn btn-primary" @click="$router.push('/calendar')">
-              📅 View Calendar
+              <Calendar :size="18" />
+              View Calendar
             </button>
             <button class="btn btn-secondary" @click="$router.push('/campers')">
-              👶 Manage Campers
+              <Users :size="18" />
+              Manage Campers
             </button>
             <button class="btn btn-secondary" @click="$router.push('/team')">
-              👥 Manage Team
+              <UsersRound :size="18" />
+              Manage Team
             </button>
           </div>
         </div>
@@ -146,6 +149,7 @@
 import { computed } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
+import { Calendar, Users, UsersRound } from 'lucide-vue-next';
 
 const store = useCampStore();
 
