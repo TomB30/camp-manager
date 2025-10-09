@@ -721,7 +721,6 @@ const unenrollCamperFromEvent = (eventId: string, camperId: string) => {
 
 .calendar-header {
   grid-column: 1 / -1;
-  margin-bottom: 1rem;
 }
 
 .calendar-header h2 {

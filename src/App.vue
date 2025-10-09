@@ -38,7 +38,7 @@ onMounted(async () => {
 .main-content {
   flex: 1;
   margin-left: 220px;
-  padding: 2rem;
+  padding: 1rem 2rem;
   min-height: 100vh;
 }
 

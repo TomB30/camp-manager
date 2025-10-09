@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="dashboard">
-      <h2 class="mb-3">Dashboard</h2>
+      <h2 class="mb-2">Dashboard</h2>
 
       <!-- Stats Cards -->
       <div class="stats-grid">
