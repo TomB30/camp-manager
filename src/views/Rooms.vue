@@ -88,76 +88,59 @@
       </div>
 
       <!-- Table View -->
-      <div v-if="viewMode === 'table'" class="rooms-table-container">
-        <table class="rooms-table">
-          <thead>
-            <tr>
-              <th>Room Name</th>
-              <th>Type</th>
-              <th>Capacity</th>
-              <th>Location</th>
-              <th>Equipment</th>
-              <th>Usage</th>
-              <th>Events</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-              v-for="room in paginatedRooms"
-              :key="room.id"
-              class="table-row"
-            >
-              <td class="room-name-cell">
-                <div class="room-name-content">
-                  <div class="room-icon-sm" :style="{ background: getRoomTypeColor(room.type) }">
-                    {{ getRoomTypeIcon(room.type) }}
-                  </div>
-                  <div class="room-name">{{ room.name }}</div>
-                </div>
-              </td>
-              <td>
-                <span class="badge badge-primary badge-sm">{{ formatRoomType(room.type) }}</span>
-              </td>
-              <td>{{ room.capacity }}</td>
-              <td class="location-cell">{{ room.location || '—' }}</td>
-              <td>
-                <span v-if="room.equipment && room.equipment.length > 0" class="badge badge-success badge-sm">
-                  {{ room.equipment.length }} item(s)
-                </span>
-                <span v-else class="text-secondary">None</span>
-              </td>
-              <td>
-                <div class="usage-indicator">
-                  <div class="usage-bar-sm">
-                    <div 
-                      class="usage-fill-sm"
-                      :style="{ 
-                        width: `${getRoomUsage(room.id)}%`,
-                        background: getRoomUsage(room.id) > 80 ? 'var(--error-color)' : 'var(--success-color)'
-                      }"
-                    ></div>
-                  </div>
-                  <span class="usage-text">{{ getRoomUsage(room.id).toFixed(0) }}%</span>
-                </div>
-              </td>
-              <td>
-                <span class="event-count">{{ getRoomEvents(room.id).length }}</span>
-              </td>
-              <td>
-                <button class="btn btn-sm btn-secondary" @click="selectRoom(room.id)">
-                  View Details
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <Pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :total-items="filteredRooms.length"
-        />
-      </div>
+      <DataTable
+        v-if="viewMode === 'table'"
+        :columns="roomColumns"
+        :data="filteredRooms"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="room-name-content">
+            <div class="room-icon-sm" :style="{ background: getRoomTypeColor(item.type) }">
+              {{ getRoomTypeIcon(item.type) }}
+            </div>
+            <div class="room-name">{{ item.name }}</div>
+          </div>
+        </template>
+        
+        <template #cell-type="{ item }">
+          <span class="badge badge-primary badge-sm">{{ formatRoomType(item.type) }}</span>
+        </template>
+        
+        <template #cell-equipment="{ item }">
+          <span v-if="item.equipment && item.equipment.length > 0" class="badge badge-success badge-sm">
+            {{ item.equipment.length }} item(s)
+          </span>
+          <span v-else class="text-secondary">None</span>
+        </template>
+        
+        <template #cell-usage="{ item }">
+          <div class="usage-indicator">
+            <div class="usage-bar-sm">
+              <div 
+                class="usage-fill-sm"
+                :style="{ 
+                  width: `${getRoomUsage(item.id)}%`,
+                  background: getRoomUsage(item.id) > 80 ? 'var(--error-color)' : 'var(--success-color)'
+                }"
+              ></div>
+            </div>
+            <span class="usage-text">{{ getRoomUsage(item.id).toFixed(0) }}%</span>
+          </div>
+        </template>
+        
+        <template #cell-events="{ item }">
+          <span class="event-count">{{ getRoomEvents(item.id).length }}</span>
+        </template>
+        
+        <template #cell-actions="{ item }">
+          <button class="btn btn-sm btn-secondary" @click.stop="selectRoom(item.id)">
+            View Details
+          </button>
+        </template>
+      </DataTable>
 
       <!-- Room Detail Modal -->
       <Teleport to="body">
@@ -298,7 +281,7 @@ import type { Room } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
-import Pagination from '@/components/Pagination.vue';
+import DataTable, { type Column } from '@/components/DataTable.vue';
 
 const store = useCampStore();
 const selectedRoomId = ref<string | null>(null);
@@ -313,7 +296,7 @@ const viewMode = ref<'grid' | 'table'>('grid');
 
 // Pagination state
 const currentPage = ref(1);
-const pageSize = ref(20);
+const pageSize = ref(10);
 
 const formData = ref<{
   name: string;
@@ -366,6 +349,17 @@ const selectedRoom = computed(() => {
   return store.getRoomById(selectedRoomId.value);
 });
 
+const roomColumns: Column[] = [
+  { key: 'name', label: 'Room Name', width: '200px' },
+  { key: 'type', label: 'Type', width: '120px' },
+  { key: 'capacity', label: 'Capacity', width: '100px' },
+  { key: 'location', label: 'Location', width: '180px' },
+  { key: 'equipment', label: 'Equipment', width: '120px' },
+  { key: 'usage', label: 'Usage', width: '140px' },
+  { key: 'events', label: 'Events', width: '100px' },
+  { key: 'actions', label: 'Actions', width: '140px' },
+];
+
 const filteredRooms = computed(() => {
   let rooms = store.rooms;
 
@@ -394,12 +388,6 @@ const filteredRooms = computed(() => {
   }
 
   return rooms;
-});
-
-const paginatedRooms = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return filteredRooms.value.slice(start, end);
 });
 
 // Reset to page 1 when filters change
@@ -670,50 +658,7 @@ const closeModal = () => {
 }
 
 /* Table View Styles */
-.rooms-table-container {
-  background: var(--card-background);
-  border-radius: var(--radius);
-  overflow-x: auto;
-  box-shadow: var(--shadow);
-}
-
-.rooms-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.rooms-table thead {
-  background: var(--background);
-  border-bottom: 2px solid var(--border-color);
-}
-
-.rooms-table th {
-  padding: 1rem;
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.rooms-table tbody tr {
-  border-bottom: 1px solid var(--border-color);
-  transition: all 0.15s ease;
-}
-
-.rooms-table tbody tr:hover {
-  background: var(--background);
-}
-
-.rooms-table td {
-  padding: 8px 16px;
-  font-size: 0.875rem;
-}
-
-.room-name-cell {
-  min-width: 200px;
-}
-
+/* Table cell custom styles */
 .room-name-content {
   display: flex;
   align-items: center;

@@ -88,81 +88,68 @@
       </div>
 
       <!-- Table View -->
-      <div v-if="viewMode === 'table'" class="cabins-table-container">
-        <table class="cabins-table">
-          <thead>
-            <tr>
-              <th>Cabin Name</th>
-              <th>Gender</th>
-              <th>Occupancy</th>
-              <th>Location</th>
-              <th>Supervisor</th>
-              <th>Amenities</th>
-              <th>Usage</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-              v-for="room in paginatedRooms"
-              :key="room.id"
-              class="table-row"
-            >
-              <td class="cabin-name-cell">
-                <div class="cabin-name-content">
-                  <div class="cabin-icon-sm" :style="{ background: getGenderColor(room.gender) }">
-                    {{ getGenderIcon(room.gender) }}
-                  </div>
-                  <div class="cabin-name">{{ room.name }}</div>
-                </div>
-              </td>
-              <td>
-                <span class="badge badge-primary badge-sm">{{ formatGender(room.gender) }}</span>
-              </td>
-              <td>
-                <span class="occupancy-badge">{{ getAssignedCount(room.id) }}/{{ room.capacity }}</span>
-              </td>
-              <td class="location-cell">
-                {{ room.building || '—' }}{{ room.floor ? `, Floor ${room.floor}` : '' }}
-              </td>
-              <td>
-                <span v-if="room.supervisorId">{{ getSupervisorName(room.supervisorId) }}</span>
-                <span v-else class="text-secondary">—</span>
-              </td>
-              <td>
-                <span v-if="room.amenities && room.amenities.length > 0" class="badge badge-success badge-sm">
-                  {{ room.amenities.length }} item(s)
-                </span>
-                <span v-else class="text-secondary">None</span>
-              </td>
-              <td>
-                <div class="usage-indicator">
-                  <div class="usage-bar-sm">
-                    <div 
-                      class="usage-fill-sm"
-                      :style="{ 
-                        width: `${getRoomOccupancy(room.id)}%`,
-                        background: getRoomOccupancy(room.id) >= 100 ? 'var(--error-color)' : 'var(--success-color)'
-                      }"
-                    ></div>
-                  </div>
-                  <span class="usage-text">{{ getRoomOccupancy(room.id).toFixed(0) }}%</span>
-                </div>
-              </td>
-              <td>
-                <button class="btn btn-sm btn-secondary" @click="selectRoom(room.id)">
-                  View Details
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <Pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :total-items="filteredRooms.length"
-        />
-      </div>
+      <DataTable
+        v-if="viewMode === 'table'"
+        :columns="roomColumns"
+        :data="filteredRooms"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="cabin-name-content">
+            <div class="cabin-icon-sm" :style="{ background: getGenderColor(item.gender) }">
+              {{ getGenderIcon(item.gender) }}
+            </div>
+            <div class="cabin-name">{{ item.name }}</div>
+          </div>
+        </template>
+        
+        <template #cell-gender="{ item }">
+          <span class="badge badge-primary badge-sm">{{ formatGender(item.gender) }}</span>
+        </template>
+        
+        <template #cell-occupancy="{ item }">
+          <span class="occupancy-badge">{{ getAssignedCount(item.id) }}/{{ item.capacity }}</span>
+        </template>
+        
+        <template #cell-location="{ item }">
+          {{ item.building || '—' }}{{ item.floor ? `, Floor ${item.floor}` : '' }}
+        </template>
+        
+        <template #cell-supervisor="{ item }">
+          <span v-if="item.supervisorId">{{ getSupervisorName(item.supervisorId) }}</span>
+          <span v-else class="text-secondary">—</span>
+        </template>
+        
+        <template #cell-amenities="{ item }">
+          <span v-if="item.amenities && item.amenities.length > 0" class="badge badge-success badge-sm">
+            {{ item.amenities.length }} item(s)
+          </span>
+          <span v-else class="text-secondary">None</span>
+        </template>
+        
+        <template #cell-usage="{ item }">
+          <div class="usage-indicator">
+            <div class="usage-bar-sm">
+              <div 
+                class="usage-fill-sm"
+                :style="{ 
+                  width: `${getRoomOccupancy(item.id)}%`,
+                  background: getRoomOccupancy(item.id) >= 100 ? 'var(--error-color)' : 'var(--success-color)'
+                }"
+              ></div>
+            </div>
+            <span class="usage-text">{{ getRoomOccupancy(item.id).toFixed(0) }}%</span>
+          </div>
+        </template>
+        
+        <template #cell-actions="{ item }">
+          <button class="btn btn-sm btn-secondary" @click.stop="selectRoom(item.id)">
+            View Details
+          </button>
+        </template>
+      </DataTable>
 
       <!-- Room Detail Modal -->
       <Teleport to="body">
@@ -356,7 +343,7 @@ import { useCampStore } from '@/stores/campStore';
 import type { SleepingRoom } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
-import Pagination from '@/components/Pagination.vue';
+import DataTable, { type Column } from '@/components/DataTable.vue';
 
 const store = useCampStore();
 const selectedRoomId = ref<string | null>(null);
@@ -375,7 +362,7 @@ const viewMode = ref<'grid' | 'table'>('grid');
 
 // Pagination state
 const currentPage = ref(1);
-const pageSize = ref(20);
+const pageSize = ref(10);
 
 const formData = ref<{
   name: string;
@@ -428,6 +415,17 @@ const selectedRoom = computed(() => {
   return store.getSleepingRoomById(selectedRoomId.value);
 });
 
+const roomColumns: Column[] = [
+  { key: 'name', label: 'Cabin Name', width: '200px' },
+  { key: 'gender', label: 'Gender', width: '100px' },
+  { key: 'occupancy', label: 'Occupancy', width: '120px' },
+  { key: 'location', label: 'Location', width: '200px' },
+  { key: 'supervisor', label: 'Supervisor', width: '180px' },
+  { key: 'amenities', label: 'Amenities', width: '120px' },
+  { key: 'usage', label: 'Usage', width: '140px' },
+  { key: 'actions', label: 'Actions', width: '140px' },
+];
+
 const filteredRooms = computed(() => {
   let rooms = store.sleepingRooms;
 
@@ -464,12 +462,6 @@ const filteredRooms = computed(() => {
   }
 
   return rooms;
-});
-
-const paginatedRooms = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return filteredRooms.value.slice(start, end);
 });
 
 // Reset to page 1 when filters change
@@ -782,50 +774,7 @@ const closeModal = () => {
 }
 
 /* Table View Styles */
-.cabins-table-container {
-  background: var(--card-background);
-  border-radius: var(--radius);
-  overflow-x: auto;
-  box-shadow: var(--shadow);
-}
-
-.cabins-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.cabins-table thead {
-  background: var(--background);
-  border-bottom: 2px solid var(--border-color);
-}
-
-.cabins-table th {
-  padding: 1rem;
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.cabins-table tbody tr {
-  border-bottom: 1px solid var(--border-color);
-  transition: all 0.15s ease;
-}
-
-.cabins-table tbody tr:hover {
-  background: var(--background);
-}
-
-.cabins-table td {
-  padding: 8px 16px;
-  font-size: 0.875rem;
-}
-
-.cabin-name-cell {
-  min-width: 200px;
-}
-
+/* Table cell custom styles */
 .cabin-name-content {
   display: flex;
   align-items: center;

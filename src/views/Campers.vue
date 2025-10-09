@@ -81,70 +81,51 @@
       </div>
 
       <!-- Table View -->
-      <div v-if="viewMode === 'table'" class="campers-table-container">
-        <table class="campers-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Age</th>
-              <th>Gender</th>
-              <th>Cabin</th>
-              <th>Parent Contact</th>
-              <th>Allergies</th>
-              <th>Today's Events</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-              v-for="camper in paginatedCampers"
-              :key="camper.id"
-              class="table-row"
-            >
-              <td class="camper-name-cell">
-                <div class="camper-name-content">
-                  <div class="camper-avatar-sm">
-                    {{ camper.firstName.charAt(0) }}{{ camper.lastName.charAt(0) }}
-                  </div>
-                  <div>
-                    <div class="camper-fullname">{{ camper.firstName }} {{ camper.lastName }}</div>
-                  </div>
-                </div>
-              </td>
-              <td>{{ camper.age }}</td>
-              <td>
-                <span class="badge badge-primary badge-sm">{{ formatGender(camper.gender) }}</span>
-              </td>
-              <td>
-                <span v-if="camper.sleepingRoomId" class="badge badge-primary badge-sm">
-                  {{ getSleepingRoomName(camper.sleepingRoomId) }}
-                </span>
-                <span v-else class="text-secondary">—</span>
-              </td>
-              <td class="contact-cell">{{ camper.parentContact }}</td>
-              <td>
-                <span v-if="camper.allergies && camper.allergies.length > 0" class="badge badge-warning badge-sm">
-                  {{ camper.allergies.length }} allergy(ies)
-                </span>
-                <span v-else class="text-secondary">None</span>
-              </td>
-              <td>
-                <span class="event-count">{{ getCamperTodayEvents(camper.id).length }}</span>
-              </td>
-              <td>
-                <button class="btn btn-sm btn-secondary" @click="selectCamper(camper.id)">
-                  View Details
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <Pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :total-items="filteredCampers.length"
-        />
-      </div>
+      <DataTable
+        v-if="viewMode === 'table'"
+        :columns="camperColumns"
+        :data="filteredCampers"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="camper-name-content">
+            <div class="camper-avatar-sm">
+              {{ item.firstName.charAt(0) }}{{ item.lastName.charAt(0) }}
+            </div>
+            <div class="camper-fullname">{{ item.firstName }} {{ item.lastName }}</div>
+          </div>
+        </template>
+        
+        <template #cell-gender="{ item }">
+          <span class="badge badge-primary badge-sm">{{ formatGender(item.gender) }}</span>
+        </template>
+        
+        <template #cell-cabin="{ item }">
+          <span v-if="item.sleepingRoomId" class="badge badge-primary badge-sm">
+            {{ getSleepingRoomName(item.sleepingRoomId) }}
+          </span>
+          <span v-else class="text-secondary">—</span>
+        </template>
+        
+        <template #cell-allergies="{ item }">
+          <span v-if="item.allergies && item.allergies.length > 0" class="badge badge-warning badge-sm">
+            {{ item.allergies.length }} allergy(ies)
+          </span>
+          <span v-else class="text-secondary">None</span>
+        </template>
+        
+        <template #cell-events="{ item }">
+          <span class="event-count">{{ getCamperTodayEvents(item.id).length }}</span>
+        </template>
+        
+        <template #cell-actions="{ item }">
+          <button class="btn btn-sm btn-secondary" @click.stop="selectCamper(item.id)">
+            View Details
+          </button>
+        </template>
+      </DataTable>
 
       <!-- Camper Detail Modal -->
       <Teleport to="body">
@@ -319,7 +300,7 @@ import type { Child } from '@/types/api';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
-import Pagination from '@/components/Pagination.vue';
+import DataTable, { type Column } from '@/components/DataTable.vue';
 
 const store = useCampStore();
 const selectedCamperId = ref<string | null>(null);
@@ -330,7 +311,7 @@ const viewMode = ref<'grid' | 'table'>('grid');
 
 // Pagination state
 const currentPage = ref(1);
-const pageSize = ref(20);
+const pageSize = ref(10);
 
 // Confirmation modal state
 const showConfirmModal = ref(false);
@@ -402,6 +383,17 @@ const selectedCamper = computed(() => {
   return store.getCamperById(selectedCamperId.value);
 });
 
+const camperColumns: Column[] = [
+  { key: 'name', label: 'Name', width: '200px' },
+  { key: 'age', label: 'Age', width: '80px' },
+  { key: 'gender', label: 'Gender', width: '100px' },
+  { key: 'cabin', label: 'Cabin', width: '120px' },
+  { key: 'parentContact', label: 'Parent Contact', width: '200px' },
+  { key: 'allergies', label: 'Allergies', width: '120px' },
+  { key: 'events', label: "Today's Events", width: '120px' },
+  { key: 'actions', label: 'Actions', width: '140px' },
+];
+
 const filteredCampers = computed(() => {
   let campers = store.campers;
 
@@ -438,12 +430,6 @@ const filteredCampers = computed(() => {
   }
 
   return campers;
-});
-
-const paginatedCampers = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return filteredCampers.value.slice(start, end);
 });
 
 // Reset to page 1 when filters change
@@ -698,50 +684,7 @@ const closeModal = () => {
 }
 
 /* Table View Styles */
-.campers-table-container {
-  background: var(--card-background);
-  border-radius: var(--radius);
-  overflow-x: auto;
-  box-shadow: var(--shadow);
-}
-
-.campers-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.campers-table thead {
-  background: var(--background);
-  border-bottom: 2px solid var(--border-color);
-}
-
-.campers-table th {
-  padding: 1rem;
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.campers-table tbody tr {
-  border-bottom: 1px solid var(--border-color);
-  transition: all 0.15s ease;
-}
-
-.campers-table tbody tr:hover {
-  background: var(--background);
-}
-
-.campers-table td {
-  padding: 8px 16px;
-  font-size: 0.875rem;
-}
-
-.camper-name-cell {
-  min-width: 200px;
-}
-
+/* Table cell custom styles */
 .camper-name-content {
   display: flex;
   align-items: center;
@@ -765,13 +708,6 @@ const closeModal = () => {
 .camper-fullname {
   font-weight: 500;
   color: var(--text-primary);
-}
-
-.contact-cell {
-  max-width: 250px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .event-count {

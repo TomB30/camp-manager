@@ -76,61 +76,44 @@
       </div>
 
       <!-- Table View -->
-      <div v-if="viewMode === 'table'" class="team-table-container">
-        <table class="team-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Role</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Certifications</th>
-              <th>Events</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-              v-for="member in paginatedMembers"
-              :key="member.id"
-              class="table-row"
-            >
-              <td class="member-name-cell">
-                <div class="member-name-content">
-                  <div class="member-avatar-sm" :style="{ background: getRoleColor(member.role) }">
-                    {{ member.firstName.charAt(0) }}{{ member.lastName.charAt(0) }}
-                  </div>
-                  <div class="member-fullname">{{ member.firstName }} {{ member.lastName }}</div>
-                </div>
-              </td>
-              <td>
-                <span class="badge badge-primary badge-sm">{{ formatRole(member.role) }}</span>
-              </td>
-              <td class="contact-cell">{{ member.email || '—' }}</td>
-              <td class="contact-cell">{{ member.phone || '—' }}</td>
-              <td>
-                <span v-if="member.certifications && member.certifications.length > 0" class="badge badge-success badge-sm">
-                  {{ member.certifications.length }} cert(s)
-                </span>
-                <span v-else class="text-secondary">None</span>
-              </td>
-              <td>
-                <span class="event-count">{{ getMemberEvents(member.id).length }}</span>
-              </td>
-              <td>
-                <button class="btn btn-sm btn-secondary" @click="selectMember(member.id)">
-                  View Details
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <Pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :total-items="filteredMembers.length"
-        />
-      </div>
+      <DataTable
+        v-if="viewMode === 'table'"
+        :columns="memberColumns"
+        :data="filteredMembers"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="member-name-content">
+            <div class="member-avatar-sm" :style="{ background: getRoleColor(item.role) }">
+              {{ item.firstName.charAt(0) }}{{ item.lastName.charAt(0) }}
+            </div>
+            <div class="member-fullname">{{ item.firstName }} {{ item.lastName }}</div>
+          </div>
+        </template>
+        
+        <template #cell-role="{ item }">
+          <span class="badge badge-primary badge-sm">{{ formatRole(item.role) }}</span>
+        </template>
+        
+        <template #cell-certifications="{ item }">
+          <span v-if="item.certifications && item.certifications.length > 0" class="badge badge-success badge-sm">
+            {{ item.certifications.length }} cert(s)
+          </span>
+          <span v-else class="text-secondary">None</span>
+        </template>
+        
+        <template #cell-events="{ item }">
+          <span class="event-count">{{ getMemberEvents(item.id).length }}</span>
+        </template>
+        
+        <template #cell-actions="{ item }">
+          <button class="btn btn-sm btn-secondary" @click.stop="selectMember(item.id)">
+            View Details
+          </button>
+        </template>
+      </DataTable>
 
       <!-- Member Detail Modal -->
       <Teleport to="body">
@@ -297,7 +280,7 @@ import type { TeamMember } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
-import Pagination from '@/components/Pagination.vue';
+import DataTable, { type Column } from '@/components/DataTable.vue';
 
 const store = useCampStore();
 const selectedMemberId = ref<string | null>(null);
@@ -309,7 +292,7 @@ const expandedMembers = ref<Set<string>>(new Set());
 
 // Pagination state
 const currentPage = ref(1);
-const pageSize = ref(20);
+const pageSize = ref(10);
 
 // Confirm modal state
 const showConfirmModal = ref(false);
@@ -380,6 +363,16 @@ const selectedMember = computed(() => {
   return store.getTeamMemberById(selectedMemberId.value);
 });
 
+const memberColumns: Column[] = [
+  { key: 'name', label: 'Name', width: '200px' },
+  { key: 'role', label: 'Role', width: '140px' },
+  { key: 'email', label: 'Email', width: '200px' },
+  { key: 'phone', label: 'Phone', width: '150px' },
+  { key: 'certifications', label: 'Certifications', width: '140px' },
+  { key: 'events', label: 'Events', width: '100px' },
+  { key: 'actions', label: 'Actions', width: '140px' },
+];
+
 const filteredMembers = computed(() => {
   let members = store.teamMembers;
 
@@ -407,12 +400,6 @@ const filteredMembers = computed(() => {
   }
 
   return members;
-});
-
-const paginatedMembers = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return filteredMembers.value.slice(start, end);
 });
 
 // Reset to page 1 when filters change
@@ -656,50 +643,7 @@ const closeModal = () => {
 }
 
 /* Table View Styles */
-.team-table-container {
-  background: var(--card-background);
-  border-radius: var(--radius);
-  overflow-x: auto;
-  box-shadow: var(--shadow);
-}
-
-.team-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.team-table thead {
-  background: var(--background);
-  border-bottom: 2px solid var(--border-color);
-}
-
-.team-table th {
-  padding: 1rem;
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.team-table tbody tr {
-  border-bottom: 1px solid var(--border-color);
-  transition: all 0.15s ease;
-}
-
-.team-table tbody tr:hover {
-  background: var(--background);
-}
-
-.team-table td {
-  padding: 8px 16px;
-  font-size: 0.875rem;
-}
-
-.member-name-cell {
-  min-width: 200px;
-}
-
+/* Table cell custom styles */
 .member-name-content {
   display: flex;
   align-items: center;
