@@ -19,33 +19,7 @@
         @clear="clearFilters"
       >
         <template #prepend>
-          <div class="view-toggle">
-            <button 
-              class="btn btn-sm" 
-              :class="{ 'btn-primary': viewMode === 'grid', 'btn-secondary': viewMode !== 'grid' }"
-              @click="viewMode = 'grid'"
-              title="Grid View"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7" />
-                <rect x="14" y="3" width="7" height="7" />
-                <rect x="3" y="14" width="7" height="7" />
-                <rect x="14" y="14" width="7" height="7" />
-              </svg>
-            </button>
-            <button 
-              class="btn btn-sm" 
-              :class="{ 'btn-primary': viewMode === 'table', 'btn-secondary': viewMode !== 'table' }"
-              @click="viewMode = 'table'"
-              title="Table View"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            </button>
-          </div>
+          <ViewToggle v-model="viewMode" />
         </template>
       </FilterBar>
 
@@ -281,6 +255,7 @@ import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
+import ViewToggle from '@/components/ViewToggle.vue';
 
 export default defineComponent({
   name: 'StaffMembers',
@@ -288,7 +263,8 @@ export default defineComponent({
     FilterBar,
     EventsByDate,
     ConfirmModal,
-    DataTable
+    DataTable,
+    ViewToggle
   },
   data() {
     return {
@@ -296,7 +272,7 @@ export default defineComponent({
       showModal: false,
       editingMemberId: null as string | null,
       certificationsInput: '',
-      viewMode: 'grid' as 'grid' | 'table' | 'org-chart',
+      viewMode: 'grid' as 'grid' | 'table',
       expandedMembers: new Set<string>(),
       currentPage: 1,
       pageSize: 10,
@@ -546,23 +522,6 @@ export default defineComponent({
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-
-.view-toggle {
-  display: flex;
-  gap: 0.25rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  padding: 2px;
-  background: var(--background);
-}
-
-.view-toggle .btn {
-  padding: 0.5rem;
-  border-radius: calc(var(--radius) - 2px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .staff-grid {

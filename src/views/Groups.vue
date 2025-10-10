@@ -13,10 +13,26 @@
         Use these groups to quickly assign multiple campers to events.
       </p>
 
-      <!-- Groups List -->
-      <div class="groups-grid">
+      <!-- Search and Filters -->
+      <FilterBar
+        v-model:searchQuery="searchQuery"
+        v-model:filterGender="filterGender"
+        v-model:filterAgeRange="filterAgeRange"
+        :filters="groupsFilters"
+        :filtered-count="filteredGroups.length"
+        :total-count="store.camperGroups.length"
+        search-placeholder="Search groups..."
+        @clear="clearFilters"
+      >
+        <template #prepend>
+          <ViewToggle v-model="viewMode" />
+        </template>
+      </FilterBar>
+
+      <!-- Grid View -->
+      <div v-if="viewMode === 'grid'" class="groups-grid">
         <div 
-          v-for="group in store.camperGroups"
+          v-for="group in filteredGroups"
           :key="group.id"
           class="group-card card"
           :style="{ borderLeft: `4px solid ${group.color || '#6366F1'}` }"
@@ -42,7 +58,7 @@
           </div>
         </div>
 
-        <div v-if="store.camperGroups.length === 0" class="empty-state">
+        <div v-if="filteredGroups.length === 0 && store.camperGroups.length === 0" class="empty-state">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
@@ -53,7 +69,63 @@
           <p>Create your first camper group to organize and manage campers more efficiently.</p>
           <button class="btn btn-primary" @click="showModal = true">Create Group</button>
         </div>
+
+        <div v-if="filteredGroups.length === 0 && store.camperGroups.length > 0" class="empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <h3>No Groups Found</h3>
+          <p>No groups match your current filters. Try adjusting your search criteria.</p>
+          <button class="btn btn-secondary" @click="clearFilters">Clear Filters</button>
+        </div>
       </div>
+
+      <!-- Table View -->
+      <DataTable
+        v-if="viewMode === 'table'"
+        :columns="groupColumns"
+        :data="filteredGroups"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="group-name-content">
+            <div class="color-indicator" :style="{ background: item.color || '#6366F1' }"></div>
+            <div class="group-name-text">{{ item.name }}</div>
+          </div>
+        </template>
+        
+        <template #cell-description="{ item }">
+          <span class="text-secondary">{{ item.description || 'No description' }}</span>
+        </template>
+        
+        <template #cell-criteria="{ item }">
+          <div class="criteria-tags">
+            <span v-if="item.filters.gender" class="badge badge-sm badge-primary">
+              {{ formatGender(item.filters.gender) }}
+            </span>
+            <span v-if="item.filters.ageMin !== undefined || item.filters.ageMax !== undefined" class="badge badge-sm badge-primary">
+              {{ formatAgeRange(item.filters.ageMin, item.filters.ageMax) }}
+            </span>
+            <span v-if="item.filters.hasAllergies !== undefined" class="badge badge-sm badge-warning">
+              {{ item.filters.hasAllergies ? 'Allergies' : 'No allergies' }}
+            </span>
+            <span v-if="!hasAnyFilters(item.filters)" class="text-secondary text-sm">All campers</span>
+          </div>
+        </template>
+        
+        <template #cell-campers="{ item }">
+          <span class="camper-count">{{ getCampersCount(item.id) }}</span>
+        </template>
+        
+        <template #cell-actions="{ item }">
+          <button class="btn btn-sm btn-secondary" @click.stop="selectGroup(item.id)">
+            View Details
+          </button>
+        </template>
+      </DataTable>
 
       <!-- Group Detail Modal -->
       <Teleport to="body">
@@ -245,12 +317,18 @@ import { format } from 'date-fns';
 import type { CamperGroup, CamperGroupFilter } from '@/types/api';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
+import FilterBar, { type Filter } from '@/components/FilterBar.vue';
+import DataTable from '@/components/DataTable.vue';
+import ViewToggle from '@/components/ViewToggle.vue';
 
 export default defineComponent({
   name: 'Groups',
   components: {
     ConfirmModal,
     ColorPicker,
+    FilterBar,
+    DataTable,
+    ViewToggle,
   },
   data() {
     return {
@@ -259,6 +337,12 @@ export default defineComponent({
       editingGroupId: null as string | null,
       showConfirmModal: false,
       groupToDelete: null as { id: string; name: string } | null,
+      searchQuery: '',
+      filterGender: '',
+      filterAgeRange: '',
+      viewMode: 'grid' as 'grid' | 'table',
+      currentPage: 1,
+      pageSize: 10,
       formData: {
         name: '',
         description: '',
@@ -270,12 +354,43 @@ export default defineComponent({
           hasAllergies: undefined as boolean | undefined,
         },
       },
+      groupColumns: [
+        { key: 'name', label: 'Group Name', width: '200px' },
+        { key: 'description', label: 'Description', width: '250px' },
+        { key: 'criteria', label: 'Filter Criteria', width: '250px' },
+        { key: 'campers', label: 'Campers', width: '100px' },
+        { key: 'actions', label: 'Actions', width: '140px' },
+      ]
     };
   },
 
   computed: {
     store() {
       return useCampStore();
+    },
+    groupsFilters(): Filter[] {
+      return [
+        {
+          model: 'filterGender',
+          value: this.filterGender,
+          placeholder: 'All Genders',
+          options: [
+            { label: 'Male', value: 'male' },
+            { label: 'Female', value: 'female' },
+          ],
+        },
+        {
+          model: 'filterAgeRange',
+          value: this.filterAgeRange,
+          placeholder: 'All Age Ranges',
+          options: [
+            { label: '6-8 years', value: '6-8' },
+            { label: '9-11 years', value: '9-11' },
+            { label: '12-14 years', value: '12-14' },
+            { label: '15+ years', value: '15+' },
+          ],
+        },
+      ];
     },
     selectedGroup() {
       if (!this.selectedGroupId) return null;
@@ -285,9 +400,49 @@ export default defineComponent({
       if (!this.selectedGroupId) return [];
       return this.store.getCampersInGroup(this.selectedGroupId);
     },
+    filteredGroups() {
+      let groups = this.store.camperGroups;
+
+      // Search filter
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        groups = groups.filter(group =>
+          group.name.toLowerCase().includes(query) ||
+          (group.description && group.description.toLowerCase().includes(query))
+        );
+      }
+
+      // Gender filter
+      if (this.filterGender) {
+        groups = groups.filter(group => 
+          group.filters.gender === this.filterGender
+        );
+      }
+
+      // Age range filter
+      if (this.filterAgeRange) {
+        const [min, max] = this.filterAgeRange === '15+' 
+          ? [15, 999] 
+          : this.filterAgeRange.split('-').map(Number);
+        
+        groups = groups.filter(group => {
+          // Check if the group's age range overlaps with the filter
+          const groupMin = group.filters.ageMin ?? 0;
+          const groupMax = group.filters.ageMax ?? 999;
+          return !(groupMax < min || groupMin > max);
+        });
+      }
+
+      return groups;
+    },
   },
 
   methods: {
+    clearFilters() {
+      this.searchQuery = '';
+      this.filterGender = '';
+      this.filterAgeRange = '';
+    },
     getCampersCount(groupId: string): number {
       return this.store.getCampersInGroup(groupId).length;
     },
@@ -647,6 +802,50 @@ export default defineComponent({
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+}
+
+/* Table View Styles */
+.group-name-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.color-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.group-name-text {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.criteria-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.badge-sm {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.camper-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
 }
 </style>
 

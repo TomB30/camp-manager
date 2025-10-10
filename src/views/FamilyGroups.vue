@@ -12,10 +12,25 @@
         Family groups are the fundamental organizational units. Each family group is assigned to a sleeping room and has staff members responsible for the group.
       </p>
 
-      <!-- Family Groups Grid -->
-      <div class="groups-grid">
+      <!-- Search and Filters -->
+      <FilterBar
+        v-model:searchQuery="searchQuery"
+        v-model:filterSleepingRoom="filterSleepingRoom"
+        :filters="familyGroupsFilters"
+        :filtered-count="filteredFamilyGroups.length"
+        :total-count="store.familyGroups.length"
+        search-placeholder="Search family groups..."
+        @clear="clearFilters"
+      >
+        <template #prepend>
+          <ViewToggle v-model="viewMode" />
+        </template>
+      </FilterBar>
+
+      <!-- Grid View -->
+      <div v-if="viewMode === 'grid'" class="groups-grid">
         <div 
-          v-for="group in store.familyGroups"
+          v-for="group in filteredFamilyGroups"
           :key="group.id"
           class="group-card card"
           :style="{ borderLeft: `4px solid ${group.color || '#6366F1'}` }"
@@ -46,12 +61,70 @@
           </div>
         </div>
 
-        <div v-if="store.familyGroups.length === 0" class="empty-state">
+        <div v-if="filteredFamilyGroups.length === 0 && store.familyGroups.length === 0" class="empty-state">
           <Bed :size="64" stroke-width="1.5" />
           <p>No family groups created yet</p>
           <button class="btn btn-primary" @click="showModal = true">Create First Group</button>
         </div>
+
+        <div v-if="filteredFamilyGroups.length === 0 && store.familyGroups.length > 0" class="empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <h3>No Family Groups Found</h3>
+          <p>No family groups match your current filters. Try adjusting your search criteria.</p>
+          <button class="btn btn-secondary" @click="clearFilters">Clear Filters</button>
+        </div>
       </div>
+
+      <!-- Table View -->
+      <DataTable
+        v-if="viewMode === 'table'"
+        :columns="familyGroupColumns"
+        :data="filteredFamilyGroups"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="group-name-content">
+            <div class="color-indicator" :style="{ background: item.color || '#6366F1' }"></div>
+            <div class="group-name-text">{{ item.name }}</div>
+          </div>
+        </template>
+        
+        <template #cell-dates="{ item }">
+          <div class="dates-content">
+            <div>{{ formatDate(item.startDate) }}</div>
+            <div class="text-xs text-secondary">to {{ formatDate(item.endDate) }}</div>
+          </div>
+        </template>
+        
+        <template #cell-room="{ item }">
+          <div class="room-content">
+            <Bed :size="14" />
+            <span>{{ getSleepingRoomName(item.sleepingRoomId) }}</span>
+          </div>
+        </template>
+        
+        <template #cell-staff="{ item }">
+          <div class="staff-content">
+            <Users :size="14" />
+            <span>{{ item.staffMemberIds.length }} staff</span>
+          </div>
+        </template>
+        
+        <template #cell-campers="{ item }">
+          <span class="camper-count">{{ getCampersCount(item.id) }}</span>
+        </template>
+        
+        <template #cell-actions="{ item }">
+          <button class="btn btn-sm btn-secondary" @click.stop="selectGroup(item.id)">
+            View Details
+          </button>
+        </template>
+      </DataTable>
 
       <!-- Family Group Detail Modal -->
       <Teleport to="body">
@@ -302,6 +375,9 @@ import { useCampStore } from '@/stores/campStore';
 import type { FamilyGroup } from '@/types/api';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
+import FilterBar, { type Filter } from '@/components/FilterBar.vue';
+import DataTable from '@/components/DataTable.vue';
+import ViewToggle from '@/components/ViewToggle.vue';
 import { Bed, Users } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -309,6 +385,9 @@ export default defineComponent({
   components: {
     ConfirmModal,
     ColorPicker,
+    FilterBar,
+    DataTable,
+    ViewToggle,
     Bed,
     Users,
   },
@@ -322,6 +401,11 @@ export default defineComponent({
       confirmModalMessage: '',
       confirmModalDetails: '',
       confirmAction: null as (() => void) | null,
+      searchQuery: '',
+      filterSleepingRoom: '',
+      viewMode: 'grid' as 'grid' | 'table',
+      currentPage: 1,
+      pageSize: 10,
       formData: {
         name: '',
         description: '',
@@ -333,11 +417,32 @@ export default defineComponent({
         color: '#6366F1',
       },
       selectedCamperToAdd: '',
+      familyGroupColumns: [
+        { key: 'name', label: 'Group Name', width: '180px' },
+        { key: 'dates', label: 'Dates', width: '200px' },
+        { key: 'room', label: 'Sleeping Room', width: '180px' },
+        { key: 'staff', label: 'Staff', width: '120px' },
+        { key: 'campers', label: 'Campers', width: '100px' },
+        { key: 'actions', label: 'Actions', width: '140px' },
+      ]
     };
   },
   computed: {
     store() {
       return useCampStore();
+    },
+    familyGroupsFilters(): Filter[] {
+      return [
+        {
+          model: 'filterSleepingRoom',
+          value: this.filterSleepingRoom,
+          placeholder: 'All Sleeping Rooms',
+          options: this.store.sleepingRooms.map(room => ({
+            label: room.name,
+            value: room.id,
+          })),
+        },
+      ];
     },
     selectedGroup() {
       if (!this.selectedGroupId) return null;
@@ -354,6 +459,27 @@ export default defineComponent({
     totalPeople() {
       return this.formData.camperIds.length + this.formData.staffMemberIds.length;
     },
+    filteredFamilyGroups() {
+      let groups = this.store.familyGroups;
+
+      // Search filter
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        groups = groups.filter(group =>
+          group.name.toLowerCase().includes(query) ||
+          (group.description && group.description.toLowerCase().includes(query))
+        );
+      }
+
+      // Sleeping room filter
+      if (this.filterSleepingRoom) {
+        groups = groups.filter(group => 
+          group.sleepingRoomId === this.filterSleepingRoom
+        );
+      }
+
+      return groups;
+    },
   },
   mounted() {
     // Check if there's a group ID in the query params
@@ -364,6 +490,10 @@ export default defineComponent({
     }
   },
   methods: {
+    clearFilters() {
+      this.searchQuery = '';
+      this.filterSleepingRoom = '';
+    },
     getCampersCount(groupId: string): number {
       return this.store.getCampersInFamilyGroup(groupId).length;
     },
@@ -853,6 +983,53 @@ export default defineComponent({
 
 .mb-2 {
   margin-bottom: 0.5rem;
+}
+
+/* Table View Styles */
+.group-name-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.color-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.group-name-text {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.dates-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.room-content,
+.staff-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.camper-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
 }
 </style>
 
