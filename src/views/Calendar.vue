@@ -361,6 +361,34 @@
                   This will automatically enroll {{ getTotalCampersFromRooms(newEvent.sleepingRoomIds) }} campers when the event is created.
                 </div>
               </div>
+
+              <div class="form-group">
+                <label class="form-label">Assign Camper Groups (Optional)</label>
+                <div class="sleeping-room-selector">
+                  <div v-for="group in store.camperGroups" :key="group.id" class="checkbox-item">
+                    <label class="checkbox-label">
+                      <input 
+                        type="checkbox" 
+                        :value="group.id" 
+                        v-model="newEvent.camperGroupIds"
+                        class="checkbox-input"
+                      />
+                      <span 
+                        class="group-label" 
+                        :style="{ borderLeft: `3px solid ${group.color || '#6366F1'}` }"
+                      >
+                        {{ group.name }} ({{ getGroupCamperCount(group.id) }} campers)
+                      </span>
+                    </label>
+                  </div>
+                  <div v-if="store.camperGroups.length === 0" class="text-secondary text-sm">
+                    No camper groups available. Create groups in the Groups section.
+                  </div>
+                </div>
+                <div v-if="newEvent.camperGroupIds.length > 0" class="text-xs text-secondary mt-1">
+                  This will automatically enroll {{ getTotalCampersFromGroups(newEvent.camperGroupIds) }} campers when the event is created.
+                </div>
+              </div>
             </form>
           </div>
           <div class="modal-footer">
@@ -429,6 +457,7 @@ export default defineComponent({
         type: 'activity' as Event['type'],
         color: '#3B82F6',
         sleepingRoomIds: [] as string[],
+        camperGroupIds: [] as string[],
       },
       filterEventType: '',
       filterRoom: '',
@@ -689,12 +718,28 @@ export default defineComponent({
       
       await this.store.addEvent(event);
       
-      // Enroll sleeping rooms if any were selected
-      if (this.newEvent.sleepingRoomIds.length > 0) {
+      // Enroll sleeping rooms and groups if any were selected
+      const hasAssignments = this.newEvent.sleepingRoomIds.length > 0 || this.newEvent.camperGroupIds.length > 0;
+      
+      if (hasAssignments) {
         const messages: string[] = [];
+        
+        // Enroll sleeping rooms
         for (const roomId of this.newEvent.sleepingRoomIds) {
           try {
             const result = await this.store.enrollSleepingRoom(event.id, roomId);
+            if (result.errors.length > 0) {
+              messages.push(result.message);
+            }
+          } catch (error: any) {
+            messages.push(error.message);
+          }
+        }
+        
+        // Enroll camper groups
+        for (const groupId of this.newEvent.camperGroupIds) {
+          try {
+            const result = await this.store.enrollCamperGroup(event.id, groupId);
             if (result.errors.length > 0) {
               messages.push(result.message);
             }
@@ -725,6 +770,7 @@ export default defineComponent({
         type: 'activity',
         color: '#3B82F6',
         sleepingRoomIds: [],
+        camperGroupIds: [],
       };
     },
     deleteEventConfirm() {
@@ -799,6 +845,11 @@ export default defineComponent({
     getTotalCampersFromRooms(roomIds: string[]): number {
       return roomIds.reduce((total, roomId) => {
         return total + this.getRoomCamperCount(roomId);
+      }, 0);
+    },
+    getTotalCampersFromGroups(groupIds: string[]): number {
+      return groupIds.reduce((total, groupId) => {
+        return total + this.getGroupCamperCount(groupId);
       }, 0);
     },
     async assignSleepingRoom() {
@@ -1232,6 +1283,11 @@ export default defineComponent({
   cursor: pointer;
   width: 16px;
   height: 16px;
+}
+
+.group-label {
+  padding-left: 0.5rem;
+  display: inline-block;
 }
 
 .bg-background {
