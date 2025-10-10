@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { Child, TeamMember, Room, SleepingRoom, Event, Conflict } from '@/types/api';
+import type { Camper, TeamMember, Room, SleepingRoom, Event, Conflict } from '@/types/api';
 import { storageService } from '@/services/storage';
 import { conflictDetector } from '@/services/conflicts';
 import { filterEventsByDate } from '@/utils/dateUtils';
 
 export const useCampStore = defineStore('camp', () => {
   // State
-  const campers = ref<Child[]>([]);
+  const campers = ref<Camper[]>([]);
   const teamMembers = ref<TeamMember[]>([]);
   const rooms = ref<Room[]>([]);
   const sleepingRooms = ref<SleepingRoom[]>([]);
@@ -99,13 +99,13 @@ export const useCampStore = defineStore('camp', () => {
   }
 
   // Campers actions
-  async function addCamper(camper: Child) {
+  async function addCamper(camper: Camper) {
     await storageService.saveCamper(camper);
     campers.value.push(camper);
     updateConflicts();
   }
 
-  async function updateCamper(camper: Child) {
+  async function updateCamper(camper: Camper) {
     await storageService.saveCamper(camper);
     const index = campers.value.findIndex(c => c.id === camper.id);
     if (index >= 0) {

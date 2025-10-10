@@ -12,7 +12,7 @@ export interface paths {
         /** @description Success */
         200: {
           content: {
-            "application/json": components["schemas"]["Child"][];
+            "application/json": components["schemas"]["Camper"][];
           };
         };
       };
@@ -21,7 +21,7 @@ export interface paths {
     post: {
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Child"];
+          "application/json": components["schemas"]["Camper"];
         };
       };
       responses: {
@@ -44,12 +44,12 @@ export interface paths {
         /** @description Success */
         200: {
           content: {
-            "application/json": components["schemas"]["Child"];
+            "application/json": components["schemas"]["Camper"];
           };
         };
       };
     };
-    /** Update child */
+    /** Update camper */
     put: {
       parameters: {
         path: {
@@ -58,7 +58,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Child"];
+          "application/json": components["schemas"]["Camper"];
         };
       };
       responses: {
@@ -68,7 +68,7 @@ export interface paths {
         };
       };
     };
-    /** Delete child */
+    /** Delete camper */
     delete: {
       parameters: {
         path: {
@@ -344,7 +344,7 @@ export interface paths {
     };
   };
   "/events/{id}/enroll": {
-    /** Enroll a child in an event */
+    /** Enroll a camper in an event */
     post: {
       parameters: {
         path: {
@@ -355,7 +355,7 @@ export interface paths {
         content: {
           "application/json": {
             /** Format: uuid */
-            childId?: string;
+            camperId?: string;
           };
         };
       };
@@ -379,7 +379,7 @@ export interface paths {
     };
   };
   "/events/{id}/unenroll": {
-    /** Unenroll a child from an event */
+    /** Unenroll a camper from an event */
     post: {
       parameters: {
         path: {
@@ -390,7 +390,7 @@ export interface paths {
         content: {
           "application/json": {
             /** Format: uuid */
-            childId?: string;
+            camperId?: string;
           };
         };
       };
@@ -509,7 +509,7 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    Child: {
+    Camper: {
       /** Format: uuid */
       id: string;
       firstName: string;
@@ -525,7 +525,7 @@ export interface components {
       registrationDate?: string;
       /**
        * Format: uuid
-       * @description ID of the sleeping room assigned to this child
+       * @description ID of the sleeping room assigned to this camper
        */
       sleepingRoomId?: string;
     };
@@ -617,7 +617,7 @@ export type external = Record<string, never>;
 export type operations = Record<string, never>;
 
 // Export commonly used types
-export type Child = components["schemas"]["Child"];
+export type Camper = components["schemas"]["Camper"];
 export type TeamMember = components["schemas"]["TeamMember"];
 export type Room = components["schemas"]["Room"];
 export type SleepingRoom = components["schemas"]["SleepingRoom"];

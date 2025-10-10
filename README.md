@@ -5,20 +5,20 @@ A comprehensive web application for managing summer camp operations, including c
 ## Features
 
 ### 🎯 Core Functionality
-- **Campers Management**: Track children information, allergies, medical notes, and parent contacts
+- **Campers Management**: Track camper information, allergies, medical notes, and parent contacts
 - **Team Management**: Manage staff members with roles, certifications, and contact information
 - **Room Management**: Organize rooms with capacity tracking and equipment lists
 - **Event Calendar**: Visual calendar with drag-and-drop functionality for scheduling
 - **Conflict Detection**: Automatic detection of scheduling conflicts including:
   - Room overcapacity
   - Event overcapacity
-  - Child double-booking
+  - Camper double-booking
   - Staff double-booking
   - Missing required certifications
 
 ### ✨ Key Features
 - **Drag & Drop Interface**: Easily move campers between events
-- **Real-time Validation**: Prevent conflicts when enrolling children in events
+- **Real-time Validation**: Prevent conflicts when enrolling campers in events
 - **Capacity Management**: Visual indicators for room and event capacity
 - **Responsive Design**: Works seamlessly on desktop and tablet devices
 - **Local Storage**: Data persists in browser (first version using mock backend)
@@ -73,7 +73,7 @@ camp-manager/
 │   ├── views/             # Page components
 │   │   ├── Dashboard.vue  # Overview and statistics
 │   │   ├── Calendar.vue   # Event calendar with drag-and-drop
-│   │   ├── Campers.vue   # Children management
+│   │   ├── Campers.vue   # Camper management
 │   │   ├── TeamMembers.vue # Staff management
 │   │   └── Rooms.vue      # Room management
 │   ├── stores/            # Pinia stores
@@ -100,7 +100,7 @@ camp-manager/
 ## Usage Guide
 
 ### Dashboard
-- View statistics for children, team members, rooms, and events
+- View statistics for campers, team members, rooms, and events
 - See today's schedule at a glance
 - Monitor scheduling conflicts
 - Quick access to recent enrollments and room capacity
@@ -109,16 +109,16 @@ camp-manager/
 - Visual timeline showing all events for a selected day
 - Navigate between days using Previous/Next buttons
 - Create new events with the "+ New Event" button
-- **Drag and drop children** from the sidebar to enroll them in events
+- **Drag and drop campers** from the sidebar to enroll them in events
 - **Drag and drop campers between events** to move them
 - Click on events to see details and manage enrollment
 - Real-time conflict detection prevents double-booking
 
 ### Campers Management
-- Add new children with medical information and allergies
+- Add new campers with medical information and allergies
 - View all enrolled campers in a card layout
-- Click on any child to see their schedule and details
-- Edit or delete child records
+- Click on any camper to see their schedule and details
+- Edit or delete camper records
 
 ### Team Management
 - Add team members with roles and certifications
@@ -134,7 +134,7 @@ camp-manager/
 
 ## Data Model
 
-### Child
+### Camper
 - Basic info: Name, age, parent contact
 - Medical: Allergies, medical notes
 - Registration date
@@ -153,7 +153,7 @@ camp-manager/
 - Title, description, time range
 - Room assignment
 - Capacity limits
-- Enrolled children
+- Enrolled campers
 - Assigned staff
 - Required certifications
 - Color coding for calendar
@@ -163,8 +163,8 @@ camp-manager/
 The system automatically detects and prevents:
 
 1. **Room Overcapacity**: Multiple overlapping events exceeding room capacity
-2. **Event Overcapacity**: More children enrolled than event capacity allows
-3. **Child Double-booking**: Child enrolled in overlapping events
+2. **Event Overcapacity**: More campers enrolled than event capacity allows
+3. **Camper Double-booking**: Camper enrolled in overlapping events
 4. **Staff Double-booking**: Staff assigned to overlapping events
 5. **Missing Certifications**: Events requiring certifications not held by assigned staff
 
@@ -197,10 +197,10 @@ The current version uses local storage with async functions to simulate a backen
 
 ### Mock Data
 The application comes pre-seeded with sample data including:
-- 8 children with various ages and allergies
-- 6 team members with different roles
-- 7 rooms of various types
-- Sample events for today's schedule
+- 48 campers with various ages and allergies
+- 8 team members with different roles
+- 10 rooms of various types
+- Sample events for a full week schedule
 
 ### Type Safety
 All data types are defined in the OpenAPI schema and automatically converted to TypeScript types, ensuring consistency when the backend is implemented.

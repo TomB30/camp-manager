@@ -1,4 +1,4 @@
-import type { Child, TeamMember, Room, SleepingRoom, Event } from '@/types/api';
+import type { Camper, TeamMember, Room, SleepingRoom, Event } from '@/types/api';
 
 // Generate consistent IDs
 const generateId = (prefix: string, index: number) => `${prefix}-${String(index).padStart(3, '0')}`;
@@ -77,8 +77,8 @@ const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', '
 
 const allergies = ['Peanuts', 'Tree nuts', 'Dairy', 'Eggs', 'Soy', 'Wheat', 'Fish', 'Shellfish'];
 
-const generateCampers = (count: number): Child[] => {
-  const campers: Child[] = [];
+const generateCampers = (count: number): Camper[] => {
+  const campers: Camper[] = [];
   let maleCount = 0;
   let femaleCount = 0;
   
@@ -100,7 +100,7 @@ const generateCampers = (count: number): Child[] => {
     const camperAllergies = hasAllergy ? [allergies[i % allergies.length]] : [];
     
     campers.push({
-      id: generateId('child', i),
+      id: generateId('camper', i),
       firstName,
       lastName,
       age,
@@ -116,7 +116,7 @@ const generateCampers = (count: number): Child[] => {
   return campers;
 };
 
-export const mockCampers: Child[] = generateCampers(48);
+export const mockCampers: Camper[] = generateCampers(48);
 
 export const mockTeamMembers: TeamMember[] = [
   {
@@ -337,14 +337,14 @@ const generateWeekEvents = (): Event[] => {
   const getRandomCampers = (count: number, startIdx: number = 0) => {
     const campers = [];
     for (let i = 0; i < count; i++) {
-      campers.push(generateId('child', startIdx + i + 1));
+      campers.push(generateId('camper', startIdx + i + 1));
     }
     return campers;
   };
   
   // Days of the week (0 = today through 6 = next week)
   for (let day = 0; day < 7; day++) {
-    const childOffset = (day * 8) % 40;
+    const camperOffset = (day * 8) % 40;
     
     // Morning Assembly (9:00-9:30) - Everyone
     events.push(createEvent(
@@ -357,7 +357,7 @@ const generateWeekEvents = (): Event[] => {
       50,
       'activity',
       [generateId('staff', 1), generateId('staff', 2)],
-      getRandomCampers(30, childOffset),
+      getRandomCampers(30, camperOffset),
       '#6366F1',
     ));
     
@@ -372,7 +372,7 @@ const generateWeekEvents = (): Event[] => {
       15,
       'activity',
       [generateId('staff', 3)],
-      getRandomCampers(12, childOffset),
+      getRandomCampers(12, camperOffset),
       '#A855F7',
     ));
     
@@ -386,7 +386,7 @@ const generateWeekEvents = (): Event[] => {
       20,
       'sports',
       [generateId('staff', 6), generateId('staff', 8)],
-      getRandomCampers(18, childOffset + 12),
+      getRandomCampers(18, camperOffset + 12),
       '#10B981',
     ));
     
@@ -401,7 +401,7 @@ const generateWeekEvents = (): Event[] => {
       60,
       'meal',
       [generateId('staff', 2), generateId('staff', 7)],
-      getRandomCampers(40, childOffset),
+      getRandomCampers(40, camperOffset),
       '#64748B',
     ));
     
@@ -416,7 +416,7 @@ const generateWeekEvents = (): Event[] => {
       20,
       'sports',
       [generateId('staff', 4)],
-      getRandomCampers(18, childOffset),
+      getRandomCampers(18, camperOffset),
       '#06B6D4',
       ['Lifeguard']
     ));
@@ -431,7 +431,7 @@ const generateWeekEvents = (): Event[] => {
       15,
       'activity',
       [generateId('staff', 3)],
-      getRandomCampers(12, childOffset + 18),
+      getRandomCampers(12, camperOffset + 18),
       '#F59E0B',
     ));
     
@@ -447,7 +447,7 @@ const generateWeekEvents = (): Event[] => {
         20,
         'sports',
         [generateId('staff', 6)],
-        getRandomCampers(16, childOffset),
+        getRandomCampers(16, camperOffset),
         '#EF4444',
       ));
       
@@ -461,7 +461,7 @@ const generateWeekEvents = (): Event[] => {
         20,
         'activity',
         [generateId('staff', 7)],
-        getRandomCampers(14, childOffset + 16),
+        getRandomCampers(14, camperOffset + 16),
         '#EC4899',
       ));
     } else {
@@ -475,7 +475,7 @@ const generateWeekEvents = (): Event[] => {
         30,
         'activity',
         [generateId('staff', 8), generateId('staff', 2)],
-        getRandomCampers(25, childOffset),
+        getRandomCampers(25, camperOffset),
         '#84CC16',
       ));
     }
@@ -491,7 +491,7 @@ const generateWeekEvents = (): Event[] => {
       60,
       'meal',
       [generateId('staff', 3), generateId('staff', 6)],
-      getRandomCampers(40, childOffset),
+      getRandomCampers(40, camperOffset),
       '#64748B',
     ));
     
@@ -507,7 +507,7 @@ const generateWeekEvents = (): Event[] => {
         40,
         'activity',
         [generateId('staff', 1), generateId('staff', 2), generateId('staff', 3)],
-        getRandomCampers(35, childOffset),
+        getRandomCampers(35, camperOffset),
         '#F97316',
       ));
     } else if (day === 6) {
@@ -521,7 +521,7 @@ const generateWeekEvents = (): Event[] => {
         25,
         'activity',
         [generateId('staff', 1), generateId('staff', 7)],
-        getRandomCampers(20, childOffset),
+        getRandomCampers(20, camperOffset),
         '#8B5CF6',
       ));
     }

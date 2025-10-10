@@ -296,7 +296,7 @@
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
-import type { Child } from '@/types/api';
+import type { Camper } from '@/types/api';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
@@ -515,8 +515,8 @@ export default defineComponent({
         .map(a => a.trim())
         .filter(a => a.length > 0);
 
-      const camperData: Child = {
-        id: this.editingCamperId || `child-${Date.now()}`,
+      const camperData: Camper = {
+        id: this.editingCamperId || `camper-${Date.now()}`,
         firstName: this.formData.firstName,
         lastName: this.formData.lastName,
         age: this.formData.age,

@@ -2,11 +2,11 @@ openapi: 3.0.3
 info:
   title: Summer Camp Manager API
   version: 1.0.0
-  description: API for managing summer camp operations including children, events, rooms, and team members
+  description: API for managing summer camp operations including campers, events, rooms, and team members
 
 components:
   schemas:
-    Child:
+    Camper:
       type: object
       required:
         - id
@@ -46,7 +46,7 @@ components:
         sleepingRoomId:
           type: string
           format: uuid
-          description: ID of the sleeping room assigned to this child
+          description: ID of the sleeping room assigned to this camper
 
     TeamMember:
       type: object
@@ -178,7 +178,7 @@ components:
           items:
             type: string
             format: uuid
-        enrolledChildrenIds:
+        enrolledCamperIds:
           type: array
           items:
             type: string
@@ -199,7 +199,7 @@ components:
       properties:
         type:
           type: string
-          enum: [room_overcapacity, event_overcapacity, child_double_booked, staff_double_booked, missing_certification]
+          enum: [room_overcapacity, event_overcapacity, camper_double_booked, staff_double_booked, missing_certification]
         message:
           type: string
         entityId:
@@ -210,9 +210,9 @@ components:
             type: string
 
 paths:
-  /children:
+  /campers:
     get:
-      summary: List all children
+      summary: List all campers
       responses:
         '200':
           description: Success
@@ -221,20 +221,20 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Child'
+                  $ref: '#/components/schemas/Camper'
     post:
-      summary: Create a new child
+      summary: Create a new camper
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Child'
+              $ref: '#/components/schemas/Camper'
       responses:
         '201':
           description: Created
 
-  /children/{id}:
+  /campers/{id}:
     parameters:
       - name: id
         in: path
@@ -242,27 +242,27 @@ paths:
         schema:
           type: string
     get:
-      summary: Get child by ID
+      summary: Get camper by ID
       responses:
         '200':
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Child'
+                $ref: '#/components/schemas/Camper'
     put:
-      summary: Update child
+      summary: Update camper
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Child'
+              $ref: '#/components/schemas/Camper'
       responses:
         '200':
           description: Updated
     delete:
-      summary: Delete child
+      summary: Delete camper
       responses:
         '204':
           description: Deleted
@@ -457,7 +457,7 @@ paths:
         schema:
           type: string
     post:
-      summary: Enroll a child in an event
+      summary: Enroll a camper in an event
       requestBody:
         required: true
         content:
@@ -465,7 +465,7 @@ paths:
             schema:
               type: object
               properties:
-                childId:
+                camperId:
                   type: string
                   format: uuid
       responses:
@@ -486,7 +486,7 @@ paths:
         schema:
           type: string
     post:
-      summary: Unenroll a child from an event
+      summary: Unenroll a camper from an event
       requestBody:
         required: true
         content:
@@ -494,7 +494,7 @@ paths:
             schema:
               type: object
               properties:
-                childId:
+                camperId:
                   type: string
                   format: uuid
       responses:

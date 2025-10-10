@@ -1,9 +1,9 @@
-import type { Conflict, Event, Child, TeamMember, Room } from '@/types/api';
+import type { Conflict, Event, Camper, TeamMember, Room } from '@/types/api';
 
 export class ConflictDetector {
   detectConflicts(
     events: Event[],
-    campers: Child[],
+    campers: Camper[],
     teamMembers: TeamMember[],
     rooms: Room[]
   ): Conflict[] {

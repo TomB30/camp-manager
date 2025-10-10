@@ -36,7 +36,7 @@ A comprehensive web application for managing summer camp operations, built with 
 
 ```
 Total Files: 15 source files
-- Views: 5 (Dashboard, Calendar, Children, Team, Rooms)
+- Views: 5 (Dashboard, Calendar, Campers, Team, Rooms)
 - Components: 1 (Header)
 - Services: 2 (Storage, Conflicts)
 - Stores: 1 (Camp Store)
@@ -81,8 +81,8 @@ camp-manager/
 ## 🎨 Key Features in Detail
 
 ### 1. Drag & Drop Event Management
-- **Enroll children** by dragging from sidebar to events
-- **Move children** between events with conflict validation
+- **Enroll campers** by dragging from sidebar to events
+- **Move campers** between events with conflict validation
 - **Visual feedback** during drag operations
 - **Automatic capacity checking**
 
@@ -90,7 +90,7 @@ camp-manager/
 The system prevents:
 - Room overcapacity (overlapping events)
 - Event capacity violations
-- Child double-booking
+- Camper double-booking
 - Staff scheduling conflicts
 - Missing required certifications
 
@@ -140,7 +140,7 @@ openapi-typescript  - Type generation from OpenAPI
 The project includes a complete OpenAPI 3.0 specification defining:
 
 **Entities:**
-- Child (with medical info)
+- Camper (with medical info)
 - TeamMember (with certifications)
 - Room (with capacity)
 - Event (with enrollments)
@@ -167,17 +167,17 @@ npm run dev
 # 4. Explore the app
 # - Check dashboard
 # - Create new events
-# - Drag children to events
+# - Drag campers to events
 # - Monitor conflicts
 ```
 
 ## 🎓 Sample Data
 
 Pre-loaded with realistic data:
-- **8 children** (ages 7-11, various allergies)
-- **6 team members** (different roles and certifications)
-- **7 rooms** (various types and capacities)
-- **7 events** (full day schedule for today)
+- **48 campers** (ages 6-15, various allergies)
+- **8 team members** (different roles and certifications)
+- **10 rooms** (various types and capacities)
+- **Multiple events** (full week schedule)
 
 All interconnected and demonstrating key features.
 

@@ -1,4 +1,4 @@
-import type { Child, TeamMember, Room, SleepingRoom, Event } from '@/types/api';
+import type { Camper, TeamMember, Room, SleepingRoom, Event } from '@/types/api';
 
 const STORAGE_KEYS = {
   CAMPERS: 'camp_campers',
@@ -13,19 +13,19 @@ const delay = (ms: number = 50) => new Promise(resolve => setTimeout(resolve, ms
 
 class StorageService {
   // Campers operations
-  async getCampers(): Promise<Child[]> {
+  async getCampers(): Promise<Camper[]> {
     await delay();
     const data = localStorage.getItem(STORAGE_KEYS.CAMPERS);
     return data ? JSON.parse(data) : [];
   }
 
-  async getCamper(id: string): Promise<Child | null> {
+  async getCamper(id: string): Promise<Camper | null> {
     await delay();
     const campers = await this.getCampers();
     return campers.find(c => c.id === id) || null;
   }
 
-  async saveCamper(camper: Child): Promise<Child> {
+  async saveCamper(camper: Camper): Promise<Camper> {
     await delay();
     const campers = await this.getCampers();
     const index = campers.findIndex(c => c.id === camper.id);
@@ -255,7 +255,7 @@ class StorageService {
   }
 
   async seedData(data: {
-    campers?: Child[];
+    campers?: Camper[];
     teamMembers?: TeamMember[];
     rooms?: Room[];
     sleepingRooms?: SleepingRoom[];
