@@ -11,7 +11,7 @@
 - ✅ OpenAPI schema definition
 - ✅ Drag-and-drop event management
 - ✅ Conflict detection system
-- ✅ Children, team, and room management
+- ✅ Children, staff, and room management
 - ✅ Calendar view with daily schedule
 - ✅ Dashboard with statistics
 - ✅ Mock data for demonstration
@@ -27,7 +27,7 @@
 - [ ] Search and filter functionality
   - Search children by name
   - Filter events by type
-  - Filter team by role
+  - Filter staff by role
   - Filter rooms by type
 
 - [ ] Advanced calendar features

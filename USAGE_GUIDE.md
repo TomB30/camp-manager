@@ -22,7 +22,7 @@ The application will automatically load with sample data including children, sta
 
 The dashboard provides an overview of your camp operations:
 
-- **Statistics Cards**: Quick view of total children, team members, rooms, and today's events
+- **Statistics Cards**: Quick view of total children, staff members, rooms, and today's events
 - **Conflicts Alert**: Shows any scheduling conflicts that need attention
 - **Today's Schedule**: Timeline view of all events happening today
 - **Quick Actions**: Fast navigation to key sections
@@ -124,13 +124,13 @@ Manage all registered children in your camp.
 
 **Important**: Children with allergies are marked with a warning badge. Always check medical notes before event assignment.
 
-### 4. Team Management (`/team`)
+### 4. Staff Management (`/staff`)
 
 Manage your camp staff and their assignments.
 
-#### Adding Team Members
+#### Adding Staff Members
 
-1. Click **"+ Add Team Member"**
+1. Click **"+ Add Staff Member"**
 2. Fill in details:
    - First and last name
    - Role (Counselor, Supervisor, Director, Nurse, Instructor)
@@ -160,7 +160,7 @@ The system can require specific certifications for events and will alert you if 
 
 #### Viewing Staff Schedule
 
-1. Click on a team member
+1. Click on a staff member
 2. See all assigned events
 3. Check for scheduling conflicts
 
@@ -273,7 +273,7 @@ To reset to the original sample data:
 2. Go to Application/Storage → Local Storage
 3. Copy the values for:
    - `camp_campers`
-   - `camp_team_members`
+   - `camp_staff_members`
    - `camp_rooms`
    - `camp_events`
 4. Save them in a text file
@@ -331,7 +331,7 @@ The application comes with pre-populated sample data:
 - Noah Brown (7), Ava Davis (11), Ethan Miller (8)
 - Sophia Wilson (9), Mason Moore (10)
 
-**6 Team Members**:
+**6 Staff Members**:
 - Sarah Anderson (Director)
 - Michael Taylor (Counselor)
 - Jessica Thomas (Counselor with Swimming cert)

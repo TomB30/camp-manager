@@ -562,7 +562,7 @@ export default defineComponent({
       return camper ? `${camper.firstName} ${camper.lastName}` : 'Unknown';
     },
     getStaffName(staffId: string): string {
-      const staff = this.store.getTeamMemberById(staffId);
+      const staff = this.store.getStaffMemberById(staffId);
       return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
     },
     getEventStyle(event: Event) {

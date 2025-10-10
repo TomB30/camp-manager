@@ -19,9 +19,9 @@
           <Users :size="20" class="nav-icon" />
           <span class="nav-text">Campers</span>
         </RouterLink>
-        <RouterLink to="/team" class="nav-link">
+        <RouterLink to="/staff" class="nav-link">
           <UsersRound :size="20" class="nav-icon" />
-          <span class="nav-text">Team</span>
+          <span class="nav-text">Staff</span>
         </RouterLink>
         <RouterLink to="/rooms" class="nav-link">
           <Home :size="20" class="nav-icon" />

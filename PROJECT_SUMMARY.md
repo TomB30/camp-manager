@@ -17,7 +17,7 @@ A comprehensive web application for managing summer camp operations, built with 
 1. **Dashboard** - Overview with statistics, conflicts, and today's schedule
 2. **Calendar View** - Visual timeline with drag-and-drop enrollment
 3. **Campers Management** - CRUD operations with medical info tracking
-4. **Team Management** - Staff management with roles and certifications
+4. **Staff Management** - Staff management with roles and certifications
 5. **Room Management** - Facility organization with capacity tracking
 6. **Conflict Detection** - Automatic validation preventing scheduling issues
 
@@ -36,7 +36,7 @@ A comprehensive web application for managing summer camp operations, built with 
 
 ```
 Total Files: 15 source files
-- Views: 5 (Dashboard, Calendar, Campers, Team, Rooms)
+- Views: 5 (Dashboard, Calendar, Campers, Staff, Rooms)
 - Components: 1 (Header)
 - Services: 2 (Storage, Conflicts)
 - Stores: 1 (Camp Store)
@@ -141,7 +141,7 @@ The project includes a complete OpenAPI 3.0 specification defining:
 
 **Entities:**
 - Camper (with medical info)
-- TeamMember (with certifications)
+- StaffMember (with certifications)
 - Room (with capacity)
 - Event (with enrollments)
 - Conflict (for validation)
@@ -175,7 +175,7 @@ npm run dev
 
 Pre-loaded with realistic data:
 - **48 campers** (ages 6-15, various allergies)
-- **8 team members** (different roles and certifications)
+- **8 staff members** (different roles and certifications)
 - **10 rooms** (various types and capacities)
 - **Multiple events** (full week schedule)
 

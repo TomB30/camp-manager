@@ -296,7 +296,7 @@
                   <label class="form-label">Supervisor</label>
                   <select v-model="formData.supervisorId" class="form-select">
                     <option value="">No supervisor assigned</option>
-                    <option v-for="member in store.teamMembers" :key="member.id" :value="member.id">
+                    <option v-for="member in store.staffMembers" :key="member.id" :value="member.id">
                       {{ member.firstName }} {{ member.lastName }} ({{ member.role }})
                     </option>
                   </select>
@@ -516,7 +516,7 @@ export default defineComponent({
       return (this.getAssignedCount(roomId) / room.capacity) * 100;
     },
     getSupervisorName(staffId: string): string {
-      const staff = this.store.getTeamMemberById(staffId);
+      const staff = this.store.getStaffMemberById(staffId);
       return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
     },
     getUnassignedCampers(gender: SleepingRoom['gender']) {

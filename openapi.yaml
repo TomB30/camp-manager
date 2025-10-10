@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Summer Camp Manager API
   version: 1.0.0
-  description: API for managing summer camp operations including campers, events, rooms, and team members
+  description: API for managing summer camp operations including campers, events, rooms, and staff members
 
 components:
   schemas:
@@ -48,7 +48,7 @@ components:
           format: uuid
           description: ID of the sleeping room assigned to this camper
 
-    TeamMember:
+    StaffMember:
       type: object
       required:
         - id
@@ -80,7 +80,7 @@ components:
         managerId:
           type: string
           format: uuid
-          description: ID of the team member who manages this person
+          description: ID of the staff member who manages this person
 
     Room:
       type: object
@@ -140,7 +140,7 @@ components:
         supervisorId:
           type: string
           format: uuid
-          description: Team member assigned as room supervisor
+          description: Staff member assigned as room supervisor
         notes:
           type: string
 
@@ -267,9 +267,9 @@ paths:
         '204':
           description: Deleted
 
-  /team-members:
+  /staff-members:
     get:
-      summary: List all team members
+      summary: List all staff members
       responses:
         '200':
           description: Success
@@ -278,20 +278,20 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TeamMember'
+                  $ref: '#/components/schemas/StaffMember'
     post:
-      summary: Create a new team member
+      summary: Create a new staff member
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TeamMember'
+              $ref: '#/components/schemas/StaffMember'
       responses:
         '201':
           description: Created
 
-  /team-members/{id}:
+  /staff-members/{id}:
     parameters:
       - name: id
         in: path
@@ -299,27 +299,27 @@ paths:
         schema:
           type: string
     get:
-      summary: Get team member by ID
+      summary: Get staff member by ID
       responses:
         '200':
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TeamMember'
+                $ref: '#/components/schemas/StaffMember'
     put:
-      summary: Update team member
+      summary: Update staff member
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TeamMember'
+              $ref: '#/components/schemas/StaffMember'
       responses:
         '200':
           description: Updated
     delete:
-      summary: Delete team member
+      summary: Delete staff member
       responses:
         '204':
           description: Deleted

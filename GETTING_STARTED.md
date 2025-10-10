@@ -49,7 +49,7 @@ Visit: **http://localhost:5173**
 ## 🎮 First Steps in the App
 
 ### 1. Explore the Dashboard
-- Look at the statistics (8 children, 6 team members, etc.)
+- Look at the statistics (8 children, 6 staff members, etc.)
 - Check today's schedule
 - Notice if there are any conflicts
 
@@ -86,8 +86,8 @@ Visit: **http://localhost:5173**
 3. See their allergies, medical notes, and enrolled events
 4. Try clicking **"Edit"** to modify information
 
-### 6. Explore Team & Rooms
-- **Team**: View staff members, their roles, and certifications
+### 6. Explore Staff & Rooms
+- **Staff**: View staff members, their roles, and certifications
 - **Rooms**: See all facilities and their capacity usage
 
 ---
@@ -133,7 +133,7 @@ The app comes pre-loaded with:
 - Some with allergies (peanuts, dairy, shellfish)
 - Already enrolled in various events
 
-### 6 Team Members
+### 6 Staff Members
 - Sarah Anderson (Director)
 - Michael Taylor (Counselor)
 - Jessica Thomas (Counselor with swimming cert)
@@ -208,7 +208,7 @@ npm install
 
 ### Icons
 - 👶 Children
-- 👥 Team Members
+- 👥 Staff Members
 - 🏠 Rooms
 - 📅 Events
 - ⚠️ Conflicts
@@ -294,7 +294,7 @@ Before you consider yourself "set up":
 
 - [ ] Application loads without errors
 - [ ] You can see the dashboard with statistics
-- [ ] You can navigate to all pages (Calendar, Children, Team, Rooms)
+- [ ] You can navigate to all pages (Calendar, Children, Staff, Rooms)
 - [ ] Drag-and-drop works (try moving a child)
 - [ ] You can create a new event
 - [ ] You can add a new child

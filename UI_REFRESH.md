@@ -98,7 +98,7 @@ Updated the Summer Camp Manager UI to be more modern, professional, and sophisti
 
 **Icon Colors**:
 - Children: Blue (#3B82F6)
-- Team: Green (#10B981)
+- Staff: Green (#10B981)
 - Rooms: Purple (#9333EA)
 - Events: Amber (#D97706)
 

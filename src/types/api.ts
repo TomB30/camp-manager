@@ -88,23 +88,23 @@ export interface paths {
       };
     };
   };
-  "/team-members": {
-    /** List all team members */
+  "/staff-members": {
+    /** List all staff members */
     get: {
       responses: {
         /** @description Success */
         200: {
           content: {
-            "application/json": components["schemas"]["TeamMember"][];
+            "application/json": components["schemas"]["StaffMember"][];
           };
         };
       };
     };
-    /** Create a new team member */
+    /** Create a new staff member */
     post: {
       requestBody: {
         content: {
-          "application/json": components["schemas"]["TeamMember"];
+          "application/json": components["schemas"]["StaffMember"];
         };
       };
       responses: {
@@ -115,8 +115,8 @@ export interface paths {
       };
     };
   };
-  "/team-members/{id}": {
-    /** Get team member by ID */
+  "/staff-members/{id}": {
+    /** Get staff member by ID */
     get: {
       parameters: {
         path: {
@@ -127,12 +127,12 @@ export interface paths {
         /** @description Success */
         200: {
           content: {
-            "application/json": components["schemas"]["TeamMember"];
+            "application/json": components["schemas"]["StaffMember"];
           };
         };
       };
     };
-    /** Update team member */
+    /** Update staff member */
     put: {
       parameters: {
         path: {
@@ -141,7 +141,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["TeamMember"];
+          "application/json": components["schemas"]["StaffMember"];
         };
       };
       responses: {
@@ -151,7 +151,7 @@ export interface paths {
         };
       };
     };
-    /** Delete team member */
+    /** Delete staff member */
     delete: {
       parameters: {
         path: {
@@ -529,7 +529,7 @@ export interface components {
        */
       sleepingRoomId?: string;
     };
-    TeamMember: {
+    StaffMember: {
       /** Format: uuid */
       id: string;
       firstName: string;
@@ -543,7 +543,7 @@ export interface components {
       photoUrl?: string;
       /**
        * Format: uuid
-       * @description ID of the team member who manages this person
+       * @description ID of the staff member who manages this person
        */
       managerId?: string;
     };
@@ -570,7 +570,7 @@ export interface components {
       amenities?: string[];
       /**
        * Format: uuid
-       * @description Team member assigned as room supervisor
+       * @description Staff member assigned as room supervisor
        */
       supervisorId?: string;
       notes?: string;
@@ -618,7 +618,7 @@ export type operations = Record<string, never>;
 
 // Export commonly used types
 export type Camper = components["schemas"]["Camper"];
-export type TeamMember = components["schemas"]["TeamMember"];
+export type StaffMember = components["schemas"]["StaffMember"];
 export type Room = components["schemas"]["Room"];
 export type SleepingRoom = components["schemas"]["SleepingRoom"];
 export type Event = components["schemas"]["Event"];

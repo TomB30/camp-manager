@@ -1,10 +1,10 @@
-import type { Conflict, Event, Camper, TeamMember, Room } from '@/types/api';
+import type { Conflict, Event, Camper, StaffMember, Room } from '@/types/api';
 
 export class ConflictDetector {
   detectConflicts(
     events: Event[],
     campers: Camper[],
-    teamMembers: TeamMember[],
+    staffMembers: StaffMember[],
     rooms: Room[]
   ): Conflict[] {
     const conflicts: Conflict[] = [];
@@ -100,7 +100,7 @@ export class ConflictDetector {
     });
 
     staffSchedules.forEach((staffEvents, staffId) => {
-      const staff = teamMembers.find(m => m.id === staffId);
+      const staff = staffMembers.find(m => m.id === staffId);
       if (!staff) return;
 
       for (let i = 0; i < staffEvents.length; i++) {
@@ -123,7 +123,7 @@ export class ConflictDetector {
         return;
       }
 
-      const assignedStaff = teamMembers.filter(m => 
+      const assignedStaff = staffMembers.filter(m => 
         event.assignedStaffIds?.includes(m.id)
       );
 

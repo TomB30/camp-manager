@@ -20,7 +20,7 @@ src/
 │   ├── Dashboard.vue          # Main overview
 │   ├── Calendar.vue           # Event calendar (drag-drop)
 │   ├── Campers.vue           # Children management
-│   ├── TeamMembers.vue        # Staff management
+│   ├── StaffMembers.vue        # Staff management
 │   └── Rooms.vue              # Room management
 ├── stores/campStore.ts        # State management (Pinia)
 ├── services/
@@ -38,7 +38,7 @@ const store = useCampStore()
 
 store.children          // All children
 store.events            // All events
-store.teamMembers       // All team members
+store.staffMembers       // All staff members
 store.rooms             // All rooms
 store.conflicts         // Current conflicts
 ```
@@ -66,7 +66,7 @@ await store.moveChild(fromEventId, toEventId, childId)
 // Get by ID
 store.getChildById(id)
 store.getEventById(id)
-store.getTeamMemberById(id)
+store.getStaffMemberById(id)
 store.getRoomById(id)
 
 // Filter
@@ -164,7 +164,7 @@ format(date, 'EEEE')             // Tuesday
 /              Dashboard
 /calendar      Event calendar
 /campers      Children list
-/team          Team members
+/staff          Staff members
 /rooms         Rooms
 ```
 
@@ -180,7 +180,7 @@ type EventType =
   | 'free-time'     // Unstructured time
 ```
 
-## 👥 Team Roles
+## 👥 Staff Roles
 
 ```typescript
 type Role = 
@@ -231,7 +231,7 @@ import {
 
 ```javascript
 camp_campers        // Children data
-camp_team_members    // Staff data
+camp_staff_members    // Staff data
 camp_rooms          // Room data
 camp_events         // Event data
 ```

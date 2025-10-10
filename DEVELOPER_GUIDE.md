@@ -31,7 +31,7 @@ camp-manager/
 │   │   ├── Dashboard.vue    # Main dashboard
 │   │   ├── Calendar.vue     # Event calendar
 │   │   ├── Campers.vue     # Children management
-│   │   ├── TeamMembers.vue  # Staff management
+│   │   ├── StaffMembers.vue  # Staff management
 │   │   └── Rooms.vue        # Room management
 │   │
 │   ├── stores/              # Pinia state management
@@ -73,7 +73,7 @@ The application uses a single Pinia store (`campStore`) that manages:
 ```typescript
 // State
 - children: Child[]
-- teamMembers: TeamMember[]
+- staffMembers: StaffMember[]
 - rooms: Room[]
 - events: Event[]
 - conflicts: Conflict[]
@@ -89,10 +89,10 @@ The application uses a single Pinia store (`campStore`) that manages:
 - updateChild()
 - deleteChild()
 
-// Team Members
-- addTeamMember()
-- updateTeamMember()
-- deleteTeamMember()
+// Staff Members
+- addStaffMember()
+- updateStaffMember()
+- deleteStaffMember()
 
 // Rooms
 - addRoom()
@@ -109,7 +109,7 @@ The application uses a single Pinia store (`campStore`) that manages:
 
 // Computed
 - getChildById()
-- getTeamMemberById()
+- getStaffMemberById()
 - getRoomById()
 - getEventById()
 - eventsForDate()
@@ -130,7 +130,7 @@ await storageService.saveChild(child)
 await storageService.deleteChild(id)
 
 // Similar patterns for:
-// - Team Members
+// - Staff Members
 // - Rooms
 // - Events
 
@@ -150,7 +150,7 @@ The `ConflictDetector` class provides:
 const conflicts = conflictDetector.detectConflicts(
   events, 
   children, 
-  teamMembers, 
+  staffMembers, 
   rooms
 )
 
@@ -203,7 +203,7 @@ function handleAction() {
 Always import types from the API schema:
 
 ```typescript
-import type { Child, Event, Room, TeamMember } from '@/types/api'
+import type { Child, Event, Room, StaffMember } from '@/types/api'
 ```
 
 ### Async Operations
@@ -429,7 +429,7 @@ describe('ConflictDetector', () => {
     const result = conflictDetector.detectConflicts(
       mockEvents,
       mockChildren,
-      mockTeamMembers,
+      mockStaffMembers,
       mockRooms
     )
     expect(result).toHaveLength(1)
@@ -547,7 +547,7 @@ console.warn('Potential conflict:', event)
 
 Open DevTools → Application → Local Storage:
 - `camp_campers`
-- `camp_team_members`
+- `camp_staff_members`
 - `camp_rooms`
 - `camp_events`
 

@@ -1,8 +1,8 @@
-import type { Camper, TeamMember, Room, SleepingRoom, Event, CamperGroup } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup } from '@/types/api';
 
 const STORAGE_KEYS = {
   CAMPERS: 'camp_campers',
-  TEAM_MEMBERS: 'camp_team_members',
+  STAFF_MEMBERS: 'camp_staff_members',
   ROOMS: 'camp_rooms',
   SLEEPING_ROOMS: 'camp_sleeping_rooms',
   EVENTS: 'camp_events',
@@ -56,22 +56,22 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(updatedEvents));
   }
 
-  // Team Members operations
-  async getTeamMembers(): Promise<TeamMember[]> {
+  // Staff Members operations
+  async getStaffMembers(): Promise<StaffMember[]> {
     await delay();
-    const data = localStorage.getItem(STORAGE_KEYS.TEAM_MEMBERS);
+    const data = localStorage.getItem(STORAGE_KEYS.STAFF_MEMBERS);
     return data ? JSON.parse(data) : [];
   }
 
-  async getTeamMember(id: string): Promise<TeamMember | null> {
+  async getStaffMember(id: string): Promise<StaffMember | null> {
     await delay();
-    const members = await this.getTeamMembers();
+    const members = await this.getStaffMembers();
     return members.find(m => m.id === id) || null;
   }
 
-  async saveTeamMember(member: TeamMember): Promise<TeamMember> {
+  async saveStaffMember(member: StaffMember): Promise<StaffMember> {
     await delay();
-    const members = await this.getTeamMembers();
+    const members = await this.getStaffMembers();
     const index = members.findIndex(m => m.id === member.id);
     
     if (index >= 0) {
@@ -80,15 +80,15 @@ class StorageService {
       members.push(member);
     }
     
-    localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(members));
+    localStorage.setItem(STORAGE_KEYS.STAFF_MEMBERS, JSON.stringify(members));
     return member;
   }
 
-  async deleteTeamMember(id: string): Promise<void> {
+  async deleteStaffMember(id: string): Promise<void> {
     await delay();
-    const members = await this.getTeamMembers();
+    const members = await this.getStaffMembers();
     const filtered = members.filter(m => m.id !== id);
-    localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(filtered));
+    localStorage.setItem(STORAGE_KEYS.STAFF_MEMBERS, JSON.stringify(filtered));
     
     // Also remove from all events
     const events = await this.getEvents();
@@ -292,7 +292,7 @@ class StorageService {
 
   async seedData(data: {
     campers?: Camper[];
-    teamMembers?: TeamMember[];
+    staffMembers?: StaffMember[];
     rooms?: Room[];
     sleepingRooms?: SleepingRoom[];
     events?: Event[];
@@ -302,8 +302,8 @@ class StorageService {
     if (data.campers) {
       localStorage.setItem(STORAGE_KEYS.CAMPERS, JSON.stringify(data.campers));
     }
-    if (data.teamMembers) {
-      localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(data.teamMembers));
+    if (data.staffMembers) {
+      localStorage.setItem(STORAGE_KEYS.STAFF_MEMBERS, JSON.stringify(data.staffMembers));
     }
     if (data.rooms) {
       localStorage.setItem(STORAGE_KEYS.ROOMS, JSON.stringify(data.rooms));

@@ -1,12 +1,12 @@
 # Summer Camp Manager
 
-A comprehensive web application for managing summer camp operations, including campers enrollment, team member scheduling, room management, and event planning.
+A comprehensive web application for managing summer camp operations, including campers enrollment, staff member scheduling, room management, and event planning.
 
 ## Features
 
 ### 🎯 Core Functionality
 - **Campers Management**: Track camper information, allergies, medical notes, and parent contacts
-- **Team Management**: Manage staff members with roles, certifications, and contact information
+- **Staff Management**: Manage staff members with roles, certifications, and contact information
 - **Room Management**: Organize rooms with capacity tracking and equipment lists
 - **Event Calendar**: Visual calendar with drag-and-drop functionality for scheduling
 - **Conflict Detection**: Automatic detection of scheduling conflicts including:
@@ -74,7 +74,7 @@ camp-manager/
 │   │   ├── Dashboard.vue  # Overview and statistics
 │   │   ├── Calendar.vue   # Event calendar with drag-and-drop
 │   │   ├── Campers.vue   # Camper management
-│   │   ├── TeamMembers.vue # Staff management
+│   │   ├── StaffMembers.vue # Staff management
 │   │   └── Rooms.vue      # Room management
 │   ├── stores/            # Pinia stores
 │   │   └── campStore.ts   # Main application state
@@ -100,7 +100,7 @@ camp-manager/
 ## Usage Guide
 
 ### Dashboard
-- View statistics for campers, team members, rooms, and events
+- View statistics for campers, staff members, rooms, and events
 - See today's schedule at a glance
 - Monitor scheduling conflicts
 - Quick access to recent enrollments and room capacity
@@ -120,10 +120,10 @@ camp-manager/
 - Click on any camper to see their schedule and details
 - Edit or delete camper records
 
-### Team Management
-- Add team members with roles and certifications
+### Staff Management
+- Add staff members with roles and certifications
 - Color-coded by role (Director, Supervisor, Counselor, Nurse, Instructor)
-- View assigned events for each team member
+- View assigned events for each staff member
 - Track certifications for compliance
 
 ### Room Management
@@ -139,7 +139,7 @@ camp-manager/
 - Medical: Allergies, medical notes
 - Registration date
 
-### Team Member
+### Staff Member
 - Basic info: Name, role, contact
 - Certifications
 - Assigned events
@@ -198,7 +198,7 @@ The current version uses local storage with async functions to simulate a backen
 ### Mock Data
 The application comes pre-seeded with sample data including:
 - 48 campers with various ages and allergies
-- 8 team members with different roles
+- 8 staff members with different roles
 - 10 rooms of various types
 - Sample events for a full week schedule
 

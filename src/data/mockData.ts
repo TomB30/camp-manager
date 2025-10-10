@@ -1,4 +1,4 @@
-import type { Camper, TeamMember, Room, SleepingRoom, Event, CamperGroup } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup } from '@/types/api';
 
 // Generate consistent IDs
 const generateId = (prefix: string, index: number) => `${prefix}-${String(index).padStart(3, '0')}`;
@@ -118,7 +118,7 @@ const generateCampers = (count: number): Camper[] => {
 
 export const mockCampers: Camper[] = generateCampers(48);
 
-export const mockTeamMembers: TeamMember[] = [
+export const mockStaffMembers: StaffMember[] = [
   {
     id: generateId('staff', 1),
     firstName: 'Sarah',
@@ -595,7 +595,7 @@ export const mockCamperGroups: CamperGroup[] = [
 // Export all mock data together for easy import
 export const mockData = {
   campers: mockCampers,
-  teamMembers: mockTeamMembers,
+  staffMembers: mockStaffMembers,
   rooms: mockRooms,
   sleepingRooms: mockSleepingRooms,
   events: mockEvents,

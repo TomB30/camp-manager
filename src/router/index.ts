@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Dashboard from '../views/Dashboard.vue';
 import Calendar from '../views/Calendar.vue';
 import Campers from '../views/Campers.vue';
-import TeamMembers from '../views/TeamMembers.vue';
+import StaffMembers from '../views/StaffMembers.vue';
 import Rooms from '../views/Rooms.vue';
 import SleepingRooms from '../views/SleepingRooms.vue';
 import Groups from '../views/Groups.vue';
@@ -26,9 +26,9 @@ const router = createRouter({
       component: Campers,
     },
     {
-      path: '/team',
-      name: 'team',
-      component: TeamMembers,
+      path: '/staff',
+      name: 'staff',
+      component: StaffMembers,
     },
     {
       path: '/rooms',

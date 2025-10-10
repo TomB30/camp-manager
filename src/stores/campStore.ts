@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { Camper, TeamMember, Room, SleepingRoom, Event, Conflict, CamperGroup, CamperGroupFilter } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, Conflict, CamperGroup, CamperGroupFilter } from '@/types/api';
 import { storageService } from '@/services/storage';
 import { conflictDetector } from '@/services/conflicts';
 import { filterEventsByDate } from '@/utils/dateUtils';
@@ -8,7 +8,7 @@ import { filterEventsByDate } from '@/utils/dateUtils';
 export const useCampStore = defineStore('camp', () => {
   // State
   const campers = ref<Camper[]>([]);
-  const teamMembers = ref<TeamMember[]>([]);
+  const staffMembers = ref<StaffMember[]>([]);
   const rooms = ref<Room[]>([]);
   const sleepingRooms = ref<SleepingRoom[]>([]);
   const events = ref<Event[]>([]);
@@ -22,8 +22,8 @@ export const useCampStore = defineStore('camp', () => {
     return (id: string) => campers.value.find(c => c.id === id);
   });
 
-  const getTeamMemberById = computed(() => {
-    return (id: string) => teamMembers.value.find(m => m.id === id);
+  const getStaffMemberById = computed(() => {
+    return (id: string) => staffMembers.value.find(m => m.id === id);
   });
 
   const getRoomById = computed(() => {
@@ -111,7 +111,7 @@ export const useCampStore = defineStore('camp', () => {
     try {
       const [campersData, membersData, roomsData, sleepingRoomsData, eventsData, groupsData] = await Promise.all([
         storageService.getCampers(),
-        storageService.getTeamMembers(),
+        storageService.getStaffMembers(),
         storageService.getRooms(),
         storageService.getSleepingRooms(),
         storageService.getEvents(),
@@ -119,7 +119,7 @@ export const useCampStore = defineStore('camp', () => {
       ]);
 
       campers.value = campersData;
-      teamMembers.value = membersData;
+      staffMembers.value = membersData;
       rooms.value = roomsData;
       sleepingRooms.value = sleepingRoomsData;
       events.value = eventsData;
@@ -135,7 +135,7 @@ export const useCampStore = defineStore('camp', () => {
     conflicts.value = conflictDetector.detectConflicts(
       events.value,
       campers.value,
-      teamMembers.value,
+      staffMembers.value,
       rooms.value
     );
   }
@@ -170,25 +170,25 @@ export const useCampStore = defineStore('camp', () => {
     updateConflicts();
   }
 
-  // Team member actions
-  async function addTeamMember(member: TeamMember) {
-    await storageService.saveTeamMember(member);
-    teamMembers.value.push(member);
+  // Staff member actions
+  async function addStaffMember(member: StaffMember) {
+    await storageService.saveStaffMember(member);
+    staffMembers.value.push(member);
     updateConflicts();
   }
 
-  async function updateTeamMember(member: TeamMember) {
-    await storageService.saveTeamMember(member);
-    const index = teamMembers.value.findIndex(m => m.id === member.id);
+  async function updateStaffMember(member: StaffMember) {
+    await storageService.saveStaffMember(member);
+    const index = staffMembers.value.findIndex(m => m.id === member.id);
     if (index >= 0) {
-      teamMembers.value[index] = member;
+      staffMembers.value[index] = member;
     }
     updateConflicts();
   }
 
-  async function deleteTeamMember(id: string) {
-    await storageService.deleteTeamMember(id);
-    teamMembers.value = teamMembers.value.filter(m => m.id !== id);
+  async function deleteStaffMember(id: string) {
+    await storageService.deleteStaffMember(id);
+    staffMembers.value = staffMembers.value.filter(m => m.id !== id);
     
     // Remove from events
     events.value.forEach(event => {
@@ -512,7 +512,7 @@ export const useCampStore = defineStore('camp', () => {
   return {
     // State
     campers,
-    teamMembers,
+    staffMembers,
     rooms,
     sleepingRooms,
     events,
@@ -523,7 +523,7 @@ export const useCampStore = defineStore('camp', () => {
     
     // Computed
     getCamperById,
-    getTeamMemberById,
+    getStaffMemberById,
     getRoomById,
     getSleepingRoomById,
     getEventById,
@@ -540,9 +540,9 @@ export const useCampStore = defineStore('camp', () => {
     addCamper,
     updateCamper,
     deleteCamper,
-    addTeamMember,
-    updateTeamMember,
-    deleteTeamMember,
+    addStaffMember,
+    updateStaffMember,
+    deleteStaffMember,
     addRoom,
     updateRoom,
     deleteRoom,

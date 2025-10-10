@@ -169,17 +169,17 @@ Steps:
 
 ### Scenario 2: Cabin Competition
 ```
-Goal: Create teams from different cabins for a competition
+Goal: Create groups from different cabins for a competition
 
 Groups:
-- "Team Red" (Cabins 1, 2)
-- "Team Blue" (Cabins 3, 4)
-- "Team Green" (Cabins 5, 6)
+- "Group Red" (Cabins 1, 2)
+- "Group Blue" (Cabins 3, 4)
+- "Group Green" (Cabins 5, 6)
 
 Steps:
 1. Create groups with selected cabins
 2. Create separate competition events
-3. Assign each team to their event
+3. Assign each group to their event
 ```
 
 ### Scenario 3: Special Dietary Needs
