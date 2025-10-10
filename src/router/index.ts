@@ -5,6 +5,7 @@ import Campers from '../views/Campers.vue';
 import TeamMembers from '../views/TeamMembers.vue';
 import Rooms from '../views/Rooms.vue';
 import SleepingRooms from '../views/SleepingRooms.vue';
+import Groups from '../views/Groups.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/sleeping-rooms',
       name: 'sleeping-rooms',
       component: SleepingRooms,
+    },
+    {
+      path: '/groups',
+      name: 'groups',
+      component: Groups,
     },
   ],
 });

@@ -179,6 +179,33 @@
                   <div class="text-sm text-secondary">Enrolled Campers</div>
                 </div>
 
+                <!-- Assign Group Section -->
+                <div class="mb-3 p-3 bg-background rounded border border-primary">
+                  <div class="text-sm font-medium mb-2">Quick Assign Camper Group</div>
+                  <div class="flex gap-2">
+                    <select v-model="groupToAssign" class="form-select flex-1">
+                      <option value="">Select a group...</option>
+                      <option 
+                        v-for="group in store.camperGroups"
+                        :key="group.id"
+                        :value="group.id"
+                      >
+                        {{ group.name }} ({{ getGroupCamperCount(group.id) }} campers)
+                      </option>
+                    </select>
+                    <button 
+                      class="btn btn-sm btn-primary"
+                      @click="assignGroup"
+                      :disabled="!groupToAssign"
+                    >
+                      Assign
+                    </button>
+                  </div>
+                  <div v-if="store.camperGroups.length === 0" class="text-xs text-secondary mt-2">
+                    No groups available. Create groups in the Groups section.
+                  </div>
+                </div>
+
                 <!-- Assign Sleeping Room Section -->
                 <div class="mb-3 p-3 bg-background rounded">
                   <div class="text-sm font-medium mb-2">Quick Assign Sleeping Room</div>
@@ -365,6 +392,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
+import { useToastStore } from '@/stores/toastStore';
 import { format, addDays, startOfWeek, addWeeks } from 'date-fns';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
@@ -404,12 +432,16 @@ export default defineComponent({
       },
       filterEventType: '',
       filterRoom: '',
-      sleepingRoomToAssign: ''
+      sleepingRoomToAssign: '',
+      groupToAssign: ''
     };
   },
   computed: {
     store() {
       return useCampStore();
+    },
+    toast() {
+      return useToastStore();
     },
     weekDays() {
       const start = startOfWeek(this.selectedDate);
@@ -672,7 +704,12 @@ export default defineComponent({
         }
         
         if (messages.length > 0) {
-          alert('Event created with some enrollment issues:\n' + messages.join('\n'));
+          this.toast.warning(
+            'Event created with some enrollment issues',
+            messages.join('\n')
+          );
+        } else {
+          this.toast.success('Event created successfully');
         }
       }
       
@@ -741,7 +778,7 @@ export default defineComponent({
           await this.store.enrollCamper(toEventId, this.draggedCamperId);
         }
       } catch (error: any) {
-        alert(error.message);
+        this.toast.error('Failed to move camper', error.message);
       }
       
       this.draggedCamperId = null;
@@ -772,16 +809,45 @@ export default defineComponent({
         
         if (result.errors.length > 0) {
           // Show detailed message about conflicts
-          const errorMsg = result.message + '\n\nConflicts:\n' + result.errors.join('\n');
-          alert(errorMsg);
+          this.toast.warning(
+            result.message,
+            'Conflicts:\n' + result.errors.join('\n'),
+            7000
+          );
         } else {
           // Show success message
-          alert(result.message);
+          this.toast.success(result.message);
         }
         
         this.sleepingRoomToAssign = '';
       } catch (error: any) {
-        alert('Error assigning sleeping room: ' + error.message);
+        this.toast.error('Error assigning sleeping room', error.message);
+      }
+    },
+    getGroupCamperCount(groupId: string): number {
+      return this.store.getCampersInGroup(groupId).length;
+    },
+    async assignGroup() {
+      if (!this.groupToAssign || !this.selectedEventId) return;
+      
+      try {
+        const result = await this.store.enrollCamperGroup(this.selectedEventId, this.groupToAssign);
+        
+        if (result.errors.length > 0) {
+          // Show detailed message about conflicts
+          this.toast.warning(
+            result.message,
+            'Conflicts:\n' + result.errors.join('\n'),
+            7000
+          );
+        } else {
+          // Show success message
+          this.toast.success(result.message);
+        }
+        
+        this.groupToAssign = '';
+      } catch (error: any) {
+        this.toast.error('Error assigning group', error.message);
       }
     }
   }

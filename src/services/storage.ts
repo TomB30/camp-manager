@@ -1,4 +1,4 @@
-import type { Camper, TeamMember, Room, SleepingRoom, Event } from '@/types/api';
+import type { Camper, TeamMember, Room, SleepingRoom, Event, CamperGroup } from '@/types/api';
 
 const STORAGE_KEYS = {
   CAMPERS: 'camp_campers',
@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   ROOMS: 'camp_rooms',
   SLEEPING_ROOMS: 'camp_sleeping_rooms',
   EVENTS: 'camp_events',
+  CAMPER_GROUPS: 'camp_camper_groups',
 } as const;
 
 // Simulate async operations to match future API
@@ -246,6 +247,41 @@ class StorageService {
     await this.saveEvent(event);
   }
 
+  // Camper Groups operations
+  async getCamperGroups(): Promise<CamperGroup[]> {
+    await delay();
+    const data = localStorage.getItem(STORAGE_KEYS.CAMPER_GROUPS);
+    return data ? JSON.parse(data) : [];
+  }
+
+  async getCamperGroup(id: string): Promise<CamperGroup | null> {
+    await delay();
+    const groups = await this.getCamperGroups();
+    return groups.find(g => g.id === id) || null;
+  }
+
+  async saveCamperGroup(group: CamperGroup): Promise<CamperGroup> {
+    await delay();
+    const groups = await this.getCamperGroups();
+    const index = groups.findIndex(g => g.id === group.id);
+    
+    if (index >= 0) {
+      groups[index] = { ...group, updatedAt: new Date().toISOString() };
+    } else {
+      groups.push(group);
+    }
+    
+    localStorage.setItem(STORAGE_KEYS.CAMPER_GROUPS, JSON.stringify(groups));
+    return groups[index >= 0 ? index : groups.length - 1];
+  }
+
+  async deleteCamperGroup(id: string): Promise<void> {
+    await delay();
+    const groups = await this.getCamperGroups();
+    const filtered = groups.filter(g => g.id !== id);
+    localStorage.setItem(STORAGE_KEYS.CAMPER_GROUPS, JSON.stringify(filtered));
+  }
+
   // Utility methods
   async clearAll(): Promise<void> {
     await delay();
@@ -260,6 +296,7 @@ class StorageService {
     rooms?: Room[];
     sleepingRooms?: SleepingRoom[];
     events?: Event[];
+    camperGroups?: CamperGroup[];
   }): Promise<void> {
     await delay();
     if (data.campers) {
@@ -276,6 +313,9 @@ class StorageService {
     }
     if (data.events) {
       localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(data.events));
+    }
+    if (data.camperGroups) {
+      localStorage.setItem(STORAGE_KEYS.CAMPER_GROUPS, JSON.stringify(data.camperGroups));
     }
   }
 }

@@ -1,4 +1,4 @@
-import type { Camper, TeamMember, Room, SleepingRoom, Event } from '@/types/api';
+import type { Camper, TeamMember, Room, SleepingRoom, Event, CamperGroup } from '@/types/api';
 
 // Generate consistent IDs
 const generateId = (prefix: string, index: number) => `${prefix}-${String(index).padStart(3, '0')}`;
@@ -532,6 +532,66 @@ const generateWeekEvents = (): Event[] => {
 
 export const mockEvents: Event[] = generateWeekEvents();
 
+// Example Camper Groups
+export const mockCamperGroups: CamperGroup[] = [
+  {
+    id: generateId('group', 1),
+    name: 'Junior Campers',
+    description: 'Campers ages 6-9 for age-appropriate activities',
+    color: '#10B981',
+    filters: {
+      ageMin: 6,
+      ageMax: 9,
+    },
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('group', 2),
+    name: 'Senior Campers',
+    description: 'Campers ages 13+ for advanced activities',
+    color: '#6366F1',
+    filters: {
+      ageMin: 13,
+    },
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('group', 3),
+    name: 'Eagles & Hawks',
+    description: 'Combined group from Cabin 1 and Cabin 2',
+    color: '#F59E0B',
+    filters: {
+      sleepingRoomIds: [generateId('sleeping', 1), generateId('sleeping', 2)],
+    },
+    createdAt: new Date(2025, 5, 2).toISOString(),
+    updatedAt: new Date(2025, 5, 2).toISOString(),
+  },
+  {
+    id: generateId('group', 4),
+    name: 'Girls Power',
+    description: 'All female campers for girls-only activities',
+    color: '#EC4899',
+    filters: {
+      gender: 'female',
+    },
+    createdAt: new Date(2025, 5, 2).toISOString(),
+    updatedAt: new Date(2025, 5, 2).toISOString(),
+  },
+  {
+    id: generateId('group', 5),
+    name: 'Allergy-Aware Group',
+    description: 'Campers with allergies for special meal planning',
+    color: '#EF4444',
+    filters: {
+      hasAllergies: true,
+    },
+    createdAt: new Date(2025, 5, 3).toISOString(),
+    updatedAt: new Date(2025, 5, 3).toISOString(),
+  },
+];
+
 // Export all mock data together for easy import
 export const mockData = {
   campers: mockCampers,
@@ -539,4 +599,5 @@ export const mockData = {
   rooms: mockRooms,
   sleepingRooms: mockSleepingRooms,
   events: mockEvents,
+  camperGroups: mockCamperGroups,
 };

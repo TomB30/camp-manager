@@ -4,12 +4,14 @@
     <main class="main-content">
       <RouterView />
     </main>
+    <Toast />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import Sidebar from './components/Sidebar.vue';
+import Toast from './components/Toast.vue';
 import { useCampStore } from './stores/campStore';
 import { storageService } from './services/storage';
 import { mockData } from './data/mockData';
@@ -17,7 +19,8 @@ import { mockData } from './data/mockData';
 export default defineComponent({
   name: 'App',
   components: {
-    Sidebar
+    Sidebar,
+    Toast
   },
   async mounted() {
     const store = useCampStore();

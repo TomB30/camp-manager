@@ -623,3 +623,22 @@ export type Room = components["schemas"]["Room"];
 export type SleepingRoom = components["schemas"]["SleepingRoom"];
 export type Event = components["schemas"]["Event"];
 export type Conflict = components["schemas"]["Conflict"];
+
+// Camper Group types for virtual groups
+export interface CamperGroupFilter {
+  ageMin?: number;
+  ageMax?: number;
+  gender?: 'male' | 'female';
+  sleepingRoomIds?: string[];
+  hasAllergies?: boolean;
+}
+
+export interface CamperGroup {
+  id: string;
+  name: string;
+  description?: string;
+  color?: string;
+  filters: CamperGroupFilter;
+  createdAt: string;
+  updatedAt: string;
+}

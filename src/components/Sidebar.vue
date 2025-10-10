@@ -31,6 +31,10 @@
           <Bed :size="20" class="nav-icon" />
           <span class="nav-text">Cabins</span>
         </RouterLink>
+        <RouterLink to="/groups" class="nav-link">
+          <FolderOpen :size="20" class="nav-icon" />
+          <span class="nav-text">Groups</span>
+        </RouterLink>
       </nav>
 
       <div v-if="store.conflicts.length > 0" class="conflicts-section">
@@ -56,6 +60,7 @@ import {
   UsersRound, 
   Home, 
   Bed, 
+  FolderOpen,
   AlertTriangle 
 } from 'lucide-vue-next';
 
@@ -69,6 +74,7 @@ export default defineComponent({
     UsersRound,
     Home,
     Bed,
+    FolderOpen,
     AlertTriangle
   },
   computed: {
