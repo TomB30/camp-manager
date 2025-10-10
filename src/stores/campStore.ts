@@ -262,6 +262,61 @@ export const useCampStore = defineStore('camp', () => {
     await enrollCamper(toEventId, camperId);
   }
 
+  async function enrollSleepingRoom(eventId: string, sleepingRoomId: string) {
+    const event = events.value.find(e => e.id === eventId);
+    if (!event) throw new Error('Event not found');
+
+    const sleepingRoom = sleepingRooms.value.find(r => r.id === sleepingRoomId);
+    if (!sleepingRoom) throw new Error('Sleeping room not found');
+
+    // Get all campers in this sleeping room
+    const roomCampers = campers.value.filter(c => c.sleepingRoomId === sleepingRoomId);
+    
+    if (roomCampers.length === 0) {
+      throw new Error('No campers assigned to this sleeping room');
+    }
+
+    // Try to enroll each camper
+    const errors: string[] = [];
+    const enrolled: string[] = [];
+
+    for (const camper of roomCampers) {
+      // Skip if already enrolled
+      if (event.enrolledCamperIds?.includes(camper.id)) {
+        continue;
+      }
+
+      try {
+        const validation = conflictDetector.canEnrollCamper(event, camper.id, events.value);
+        if (validation.canEnroll) {
+          await storageService.enrollCamper(eventId, camper.id);
+          
+          if (!event.enrolledCamperIds) {
+            event.enrolledCamperIds = [];
+          }
+          event.enrolledCamperIds.push(camper.id);
+          enrolled.push(`${camper.firstName} ${camper.lastName}`);
+        } else {
+          errors.push(`${camper.firstName} ${camper.lastName}: ${validation.reason}`);
+        }
+      } catch (error: any) {
+        errors.push(`${camper.firstName} ${camper.lastName}: ${error.message}`);
+      }
+    }
+
+    updateConflicts();
+
+    // Return summary of the operation
+    return {
+      enrolled: enrolled.length,
+      errors,
+      total: roomCampers.length,
+      message: errors.length > 0 
+        ? `Enrolled ${enrolled.length} of ${roomCampers.length} campers. ${errors.length} conflicts occurred.`
+        : `Successfully enrolled all ${enrolled.length} campers from ${sleepingRoom.name}.`
+    };
+  }
+
   return {
     // State
     campers,
@@ -305,6 +360,7 @@ export const useCampStore = defineStore('camp', () => {
     enrollCamper,
     unenrollCamper,
     moveCamper,
+    enrollSleepingRoom,
   };
 });
 

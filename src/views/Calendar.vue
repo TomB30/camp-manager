@@ -178,6 +178,31 @@
                 <div class="flex items-center justify-between mb-2">
                   <div class="text-sm text-secondary">Enrolled Campers</div>
                 </div>
+
+                <!-- Assign Sleeping Room Section -->
+                <div class="mb-3 p-3 bg-background rounded">
+                  <div class="text-sm font-medium mb-2">Quick Assign Sleeping Room</div>
+                  <div class="flex gap-2">
+                    <select v-model="sleepingRoomToAssign" class="form-select flex-1">
+                      <option value="">Select a sleeping room...</option>
+                      <option 
+                        v-for="room in store.sleepingRooms"
+                        :key="room.id"
+                        :value="room.id"
+                      >
+                        {{ room.name }} ({{ getRoomCamperCount(room.id) }} campers)
+                      </option>
+                    </select>
+                    <button 
+                      class="btn btn-sm btn-primary"
+                      @click="assignSleepingRoom"
+                      :disabled="!sleepingRoomToAssign"
+                    >
+                      Assign
+                    </button>
+                  </div>
+                </div>
+
                 <div 
                   class="enrolled-campers drop-zone"
                   :class="{ 'drag-over': isDragOver }"
@@ -286,6 +311,29 @@
                 <label class="form-label">Color</label>
                 <input v-model="newEvent.color" type="color" class="form-input" />
               </div>
+
+              <div class="form-group">
+                <label class="form-label">Assign Sleeping Rooms (Optional)</label>
+                <div class="sleeping-room-selector">
+                  <div v-for="room in store.sleepingRooms" :key="room.id" class="checkbox-item">
+                    <label class="checkbox-label">
+                      <input 
+                        type="checkbox" 
+                        :value="room.id" 
+                        v-model="newEvent.sleepingRoomIds"
+                        class="checkbox-input"
+                      />
+                      <span>{{ room.name }} ({{ getRoomCamperCount(room.id) }} campers)</span>
+                    </label>
+                  </div>
+                  <div v-if="store.sleepingRooms.length === 0" class="text-secondary text-sm">
+                    No sleeping rooms available
+                  </div>
+                </div>
+                <div v-if="newEvent.sleepingRoomIds.length > 0" class="text-xs text-secondary mt-1">
+                  This will automatically enroll {{ getTotalCampersFromRooms(newEvent.sleepingRoomIds) }} campers when the event is created.
+                </div>
+              </div>
             </form>
           </div>
           <div class="modal-footer">
@@ -352,9 +400,11 @@ export default defineComponent({
         capacity: 20,
         type: 'activity' as Event['type'],
         color: '#3B82F6',
+        sleepingRoomIds: [] as string[],
       },
       filterEventType: '',
-      filterRoom: ''
+      filterRoom: '',
+      sleepingRoomToAssign: ''
     };
   },
   computed: {
@@ -606,6 +656,26 @@ export default defineComponent({
       };
       
       await this.store.addEvent(event);
+      
+      // Enroll sleeping rooms if any were selected
+      if (this.newEvent.sleepingRoomIds.length > 0) {
+        const messages: string[] = [];
+        for (const roomId of this.newEvent.sleepingRoomIds) {
+          try {
+            const result = await this.store.enrollSleepingRoom(event.id, roomId);
+            if (result.errors.length > 0) {
+              messages.push(result.message);
+            }
+          } catch (error: any) {
+            messages.push(error.message);
+          }
+        }
+        
+        if (messages.length > 0) {
+          alert('Event created with some enrollment issues:\n' + messages.join('\n'));
+        }
+      }
+      
       this.showEventModal = false;
       
       // Reset form
@@ -617,6 +687,7 @@ export default defineComponent({
         capacity: 20,
         type: 'activity',
         color: '#3B82F6',
+        sleepingRoomIds: [],
       };
     },
     deleteEventConfirm() {
@@ -684,6 +755,34 @@ export default defineComponent({
         data: { eventId, camperId, camperName: `${camper?.firstName} ${camper?.lastName}`, eventName: event?.title }
       };
       this.showConfirmModal = true;
+    },
+    getRoomCamperCount(roomId: string): number {
+      return this.store.campers.filter(c => c.sleepingRoomId === roomId).length;
+    },
+    getTotalCampersFromRooms(roomIds: string[]): number {
+      return roomIds.reduce((total, roomId) => {
+        return total + this.getRoomCamperCount(roomId);
+      }, 0);
+    },
+    async assignSleepingRoom() {
+      if (!this.sleepingRoomToAssign || !this.selectedEventId) return;
+      
+      try {
+        const result = await this.store.enrollSleepingRoom(this.selectedEventId, this.sleepingRoomToAssign);
+        
+        if (result.errors.length > 0) {
+          // Show detailed message about conflicts
+          const errorMsg = result.message + '\n\nConflicts:\n' + result.errors.join('\n');
+          alert(errorMsg);
+        } else {
+          // Show success message
+          alert(result.message);
+        }
+        
+        this.sleepingRoomToAssign = '';
+      } catch (error: any) {
+        alert('Error assigning sleeping room: ' + error.message);
+      }
     }
   }
 });
@@ -1029,6 +1128,48 @@ export default defineComponent({
   .calendar-controls .flex {
     justify-content: center;
   }
+}
+
+.sleeping-room-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--background);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  transition: background-color 0.15s ease;
+  width: 100%;
+}
+
+.checkbox-label:hover {
+  background: var(--surface);
+}
+
+.checkbox-input {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.bg-background {
+  background: var(--background);
 }
 </style>
 
