@@ -36,9 +36,6 @@
             <span v-if="group.filters.ageMin !== undefined || group.filters.ageMax !== undefined" class="filter-tag">
               <strong>Age:</strong> {{ formatAgeRange(group.filters.ageMin, group.filters.ageMax) }}
             </span>
-            <span v-if="group.filters.sleepingRoomIds && group.filters.sleepingRoomIds.length > 0" class="filter-tag">
-              <strong>Cabins:</strong> {{ group.filters.sleepingRoomIds.length }} selected
-            </span>
             <span v-if="group.filters.hasAllergies !== undefined" class="filter-tag">
               <strong>Allergies:</strong> {{ group.filters.hasAllergies ? 'Has allergies' : 'No allergies' }}
             </span>
@@ -82,9 +79,6 @@
                     <span v-if="selectedGroup.filters.ageMin !== undefined || selectedGroup.filters.ageMax !== undefined" class="filter-tag">
                       <strong>Age:</strong> {{ formatAgeRange(selectedGroup.filters.ageMin, selectedGroup.filters.ageMax) }}
                     </span>
-                    <span v-if="selectedGroup.filters.sleepingRoomIds && selectedGroup.filters.sleepingRoomIds.length > 0" class="filter-tag">
-                      <strong>Cabins:</strong> {{ formatSleepingRooms(selectedGroup.filters.sleepingRoomIds) }}
-                    </span>
                     <span v-if="selectedGroup.filters.hasAllergies !== undefined" class="filter-tag">
                       <strong>Allergies:</strong> {{ selectedGroup.filters.hasAllergies ? 'Has allergies' : 'No allergies' }}
                     </span>
@@ -111,9 +105,6 @@
                         <div class="camper-name">{{ camper.firstName }} {{ camper.lastName }}</div>
                         <div class="camper-meta text-sm text-secondary">
                           Age {{ camper.age }} • {{ formatGender(camper.gender) }}
-                          <span v-if="camper.sleepingRoomId">
-                            • {{ getSleepingRoomName(camper.sleepingRoomId) }}
-                          </span>
                         </div>
                       </div>
                     </div>
@@ -166,10 +157,7 @@
 
                 <div class="form-group">
                   <label class="form-label">Color</label>
-                  <div class="color-picker">
-                    <input v-model="formData.color" type="color" class="form-input-color" />
-                    <input v-model="formData.color" type="text" class="form-input" placeholder="#6366F1" />
-                  </div>
+                  <ColorPicker v-model="formData.color" />
                 </div>
 
                 <div class="form-divider">
@@ -209,27 +197,6 @@
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                   </select>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Sleeping Rooms (Cabins)</label>
-                  <div class="checkbox-group">
-                    <label 
-                      v-for="room in store.sleepingRooms" 
-                      :key="room.id"
-                      class="checkbox-label"
-                    >
-                      <input 
-                        type="checkbox" 
-                        :value="room.id"
-                        v-model="formData.filters.sleepingRoomIds"
-                      />
-                      {{ room.name }} ({{ formatRoomGender(room.gender) }})
-                    </label>
-                    <div v-if="store.sleepingRooms.length === 0" class="text-sm text-secondary">
-                      No sleeping rooms available
-                    </div>
-                  </div>
                 </div>
 
                 <div class="form-group">
@@ -277,11 +244,13 @@ import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
 import type { CamperGroup, CamperGroupFilter } from '@/types/api';
 import ConfirmModal from '@/components/ConfirmModal.vue';
+import ColorPicker from '@/components/ColorPicker.vue';
 
 export default defineComponent({
   name: 'Groups',
   components: {
     ConfirmModal,
+    ColorPicker,
   },
   data() {
     return {
@@ -298,7 +267,6 @@ export default defineComponent({
           ageMin: undefined as number | undefined,
           ageMax: undefined as number | undefined,
           gender: '' as '' | 'male' | 'female',
-          sleepingRoomIds: [] as string[],
           hasAllergies: undefined as boolean | undefined,
         },
       },
@@ -326,9 +294,6 @@ export default defineComponent({
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
     },
-    formatRoomGender(gender: string): string {
-      return gender.charAt(0).toUpperCase() + gender.slice(1);
-    },
     formatAgeRange(min?: number, max?: number): string {
       if (min !== undefined && max !== undefined) {
         return `${min}-${max} years`;
@@ -339,15 +304,6 @@ export default defineComponent({
       }
       return 'Any age';
     },
-    formatSleepingRooms(roomIds: string[]): string {
-      return roomIds
-        .map(id => this.store.getSleepingRoomById(id)?.name || 'Unknown')
-        .join(', ');
-    },
-    getSleepingRoomName(roomId: string): string {
-      const room = this.store.getSleepingRoomById(roomId);
-      return room?.name || 'Unknown Room';
-    },
     formatDate(dateStr: string): string {
       return format(new Date(dateStr), 'MMMM d, yyyy h:mm a');
     },
@@ -356,7 +312,6 @@ export default defineComponent({
         filters.ageMin !== undefined ||
         filters.ageMax !== undefined ||
         filters.gender ||
-        (filters.sleepingRoomIds && filters.sleepingRoomIds.length > 0) ||
         filters.hasAllergies !== undefined
       );
     },
@@ -366,9 +321,6 @@ export default defineComponent({
         ageMin: this.formData.filters.ageMin,
         ageMax: this.formData.filters.ageMax,
         gender: this.formData.filters.gender || undefined,
-        sleepingRoomIds: this.formData.filters.sleepingRoomIds.length > 0 
-          ? this.formData.filters.sleepingRoomIds 
-          : undefined,
         hasAllergies: this.formData.filters.hasAllergies,
       };
 
@@ -377,11 +329,6 @@ export default defineComponent({
         if (filters.ageMin !== undefined && camper.age < filters.ageMin) return false;
         if (filters.ageMax !== undefined && camper.age > filters.ageMax) return false;
         if (filters.gender && camper.gender !== filters.gender) return false;
-        if (filters.sleepingRoomIds && filters.sleepingRoomIds.length > 0) {
-          if (!camper.sleepingRoomId || !filters.sleepingRoomIds.includes(camper.sleepingRoomId)) {
-            return false;
-          }
-        }
         if (filters.hasAllergies !== undefined) {
           const hasAllergies = camper.allergies && camper.allergies.length > 0;
           if (filters.hasAllergies !== hasAllergies) return false;
@@ -404,7 +351,6 @@ export default defineComponent({
           ageMin: this.selectedGroup.filters.ageMin,
           ageMax: this.selectedGroup.filters.ageMax,
           gender: this.selectedGroup.filters.gender || '',
-          sleepingRoomIds: [...(this.selectedGroup.filters.sleepingRoomIds || [])],
           hasAllergies: this.selectedGroup.filters.hasAllergies,
         },
       };
@@ -417,9 +363,6 @@ export default defineComponent({
         ageMin: this.formData.filters.ageMin,
         ageMax: this.formData.filters.ageMax,
         gender: this.formData.filters.gender || undefined,
-        sleepingRoomIds: this.formData.filters.sleepingRoomIds.length > 0 
-          ? this.formData.filters.sleepingRoomIds 
-          : undefined,
         hasAllergies: this.formData.filters.hasAllergies,
       };
 
@@ -477,7 +420,6 @@ export default defineComponent({
           ageMin: undefined,
           ageMax: undefined,
           gender: '',
-          sleepingRoomIds: [],
           hasAllergies: undefined,
         },
       };
@@ -669,13 +611,6 @@ export default defineComponent({
   align-items: center;
 }
 
-.form-input-color {
-  width: 60px;
-  height: 40px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  cursor: pointer;
-}
 
 .checkbox-group {
   display: flex;

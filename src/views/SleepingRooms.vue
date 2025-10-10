@@ -11,9 +11,7 @@
       <!-- Search and Filters -->
       <FilterBar
         v-model:searchQuery="searchQuery"
-        v-model:filterGender="filterGender"
-        v-model:filterOccupancy="filterOccupancy"
-        :filters="sleepingRoomFilters"
+        :filters="[]"
         :filtered-count="filteredRooms.length"
         :total-count="store.sleepingRooms.length"
         @clear="clearFilters"
@@ -57,33 +55,31 @@
           class="room-card card"
           @click="selectRoom(room.id)"
         >
-          <div class="room-icon" :style="{ background: getGenderColor(room.gender) }">
-            <component :is="GenderIcon(room.gender)" :size="24" :stroke-width="2" />
+          <div class="room-icon">
+            <Bed :size="32" :stroke-width="2" />
           </div>
           <div class="room-details">
             <h4>{{ room.name }}</h4>
             <div class="room-meta">
-              <span class="badge badge-primary">{{ formatGender(room.gender) }}</span>
-              <span class="badge badge-success">{{ getAssignedCount(room.id) }}/{{ room.capacity }} beds</span>
+              <span class="badge badge-primary">{{ room.beds }} beds</span>
+              <span v-if="room.location" class="text-sm text-secondary">
+                <MapPin :size="14" class="inline" />
+                {{ room.location }}
+              </span>
             </div>
-            <div v-if="room.building" class="room-location text-sm text-secondary mt-1">
-              <Building2 :size="14" class="inline" />
-              {{ room.building }}{{ room.floor ? ` - Floor ${room.floor}` : '' }}
-            </div>
-            <div class="room-usage mt-2">
-              <div class="usage-bar">
-                <div 
-                  class="usage-fill"
-                  :style="{ 
-                    width: `${getRoomOccupancy(room.id)}%`,
-                    background: getRoomOccupancy(room.id) >= 100 ? 'var(--error-color)' : 'var(--success-color)'
-                  }"
-                ></div>
-              </div>
-              <div class="text-xs text-secondary mt-1">
-                {{ getRoomOccupancy(room.id).toFixed(0) }}% occupied
+            <div v-if="getFamilyGroupsForRoom(room.id).length > 0" class="assigned-groups mt-2">
+              <div class="text-xs text-secondary mb-1">Family Groups:</div>
+              <div class="flex gap-1 flex-wrap">
+                <span 
+                  v-for="familyGroup in getFamilyGroupsForRoom(room.id)" 
+                  :key="familyGroup.id" 
+                  class="badge badge-success badge-sm"
+                >
+                  {{ familyGroup.name }}
+                </span>
               </div>
             </div>
+            <div v-else class="text-xs text-secondary mt-2">No family groups assigned</div>
           </div>
         </div>
       </div>
@@ -99,50 +95,32 @@
       >
         <template #cell-name="{ item }">
           <div class="cabin-name-content">
-            <div class="cabin-icon-sm" :style="{ background: getGenderColor(item.gender) }">
-              <component :is="GenderIcon(item.gender)" :size="18" :stroke-width="2" />
+            <div class="cabin-icon-sm">
+              <Bed :size="18" :stroke-width="2" />
             </div>
             <div class="cabin-name">{{ item.name }}</div>
           </div>
         </template>
         
-        <template #cell-gender="{ item }">
-          <span class="badge badge-primary badge-sm">{{ formatGender(item.gender) }}</span>
-        </template>
-        
-        <template #cell-occupancy="{ item }">
-          <span class="occupancy-badge">{{ getAssignedCount(item.id) }}/{{ item.capacity }}</span>
+        <template #cell-beds="{ item }">
+          <span class="badge badge-primary badge-sm">{{ item.beds }} beds</span>
         </template>
         
         <template #cell-location="{ item }">
-          {{ item.building || '—' }}{{ item.floor ? `, Floor ${item.floor}` : '' }}
+          {{ item.location || '—' }}
         </template>
         
-        <template #cell-supervisor="{ item }">
-          <span v-if="item.supervisorId">{{ getSupervisorName(item.supervisorId) }}</span>
-          <span v-else class="text-secondary">—</span>
-        </template>
-        
-        <template #cell-amenities="{ item }">
-          <span v-if="item.amenities && item.amenities.length > 0" class="badge badge-success badge-sm">
-            {{ item.amenities.length }} item(s)
-          </span>
-          <span v-else class="text-secondary">None</span>
-        </template>
-        
-        <template #cell-usage="{ item }">
-          <div class="usage-indicator">
-            <div class="usage-bar-sm">
-              <div 
-                class="usage-fill-sm"
-                :style="{ 
-                  width: `${getRoomOccupancy(item.id)}%`,
-                  background: getRoomOccupancy(item.id) >= 100 ? 'var(--error-color)' : 'var(--success-color)'
-                }"
-              ></div>
-            </div>
-            <span class="usage-text">{{ getRoomOccupancy(item.id).toFixed(0) }}%</span>
+        <template #cell-groups="{ item }">
+          <div v-if="getFamilyGroupsForRoom(item.id).length > 0" class="flex gap-1 flex-wrap">
+            <span 
+              v-for="familyGroup in getFamilyGroupsForRoom(item.id)" 
+              :key="familyGroup.id" 
+              class="badge badge-success badge-sm"
+            >
+              {{ familyGroup.name }}
+            </span>
           </div>
+          <span v-else class="text-secondary">None</span>
         </template>
         
         <template #cell-actions="{ item }">
@@ -155,7 +133,7 @@
       <!-- Room Detail Modal -->
       <Teleport to="body">
         <div v-if="selectedRoomId" class="modal-overlay" @click.self="selectedRoomId = null">
-          <div class="modal">
+          <div class="modal modal-lg">
             <div class="modal-header">
               <h3>{{ selectedRoom?.name }}</h3>
               <button class="btn btn-icon btn-secondary" @click="selectedRoomId = null">✕</button>
@@ -163,82 +141,50 @@
             <div class="modal-body">
               <div v-if="selectedRoom">
                 <div class="detail-section">
-                  <div class="detail-label">Gender</div>
+                  <div class="detail-label">Beds</div>
                   <div>
-                    <span class="badge badge-primary">{{ formatGender(selectedRoom.gender) }}</span>
+                    <span class="badge badge-primary">{{ selectedRoom.beds }} beds</span>
                   </div>
                 </div>
 
-                <div class="detail-section">
-                  <div class="detail-label">Capacity</div>
-                  <div>{{ getAssignedCount(selectedRoom.id) }}/{{ selectedRoom.capacity }} beds occupied</div>
-                </div>
-
-                <div v-if="selectedRoom.building" class="detail-section">
+                <div v-if="selectedRoom.location" class="detail-section">
                   <div class="detail-label">Location</div>
-                  <div>{{ selectedRoom.building }}{{ selectedRoom.floor ? `, Floor ${selectedRoom.floor}` : '' }}</div>
-                </div>
-
-                <div v-if="selectedRoom.supervisorId" class="detail-section">
-                  <div class="detail-label">Supervisor</div>
-                  <div>{{ getSupervisorName(selectedRoom.supervisorId) }}</div>
-                </div>
-
-                <div v-if="selectedRoom.amenities && selectedRoom.amenities.length > 0" class="detail-section">
-                  <div class="detail-label">Amenities</div>
-                  <div class="flex gap-1 flex-wrap">
-                    <span v-for="item in selectedRoom.amenities" :key="item" class="badge badge-success">
-                      {{ item }}
-                    </span>
-                  </div>
-                </div>
-
-                <div v-if="selectedRoom.notes" class="detail-section">
-                  <div class="detail-label">Notes</div>
-                  <div>{{ selectedRoom.notes }}</div>
+                  <div>{{ selectedRoom.location }}</div>
                 </div>
 
                 <div class="detail-section">
-                  <div class="detail-label">Assigned Campers</div>
-                  <div v-if="getRoomCampers(selectedRoom.id).length > 0" class="campers-list">
-                    <div 
-                      v-for="camper in getRoomCampers(selectedRoom.id)"
-                      :key="camper.id"
-                      class="camper-item"
-                    >
-                      <div class="camper-info">
-                        <div class="font-medium">
-                          {{ camper.firstName }} {{ camper.lastName }}
-                        </div>
-                        <div class="text-xs text-secondary">Age {{ camper.age }}</div>
-                      </div>
-                      <button 
-                        class="btn btn-sm btn-secondary"
-                        @click="unassignCamper(camper.id)"
+                  <div class="detail-label">Family Groups</div>
+                  <div v-if="getFamilyGroupsForRoom(selectedRoom.id).length > 0">
+                    <div class="groups-list">
+                      <div 
+                        v-for="familyGroup in getFamilyGroupsForRoom(selectedRoom.id)"
+                        :key="familyGroup.id"
+                        class="group-assignment-item"
                       >
-                        Unassign
-                      </button>
+                        <div class="group-info">
+                          <div class="font-medium">
+                            {{ familyGroup.name }}
+                          </div>
+                          <div class="text-xs text-secondary">
+                            {{ getCampersInFamilyGroup(familyGroup.id).length }} campers
+                            <span v-if="familyGroup.staffMemberIds.length > 0">
+                              • {{ familyGroup.staffMemberIds.length }} staff
+                            </span>
+                          </div>
+                          <div v-if="familyGroup.description" class="text-xs text-secondary mt-1">
+                            {{ familyGroup.description }}
+                          </div>
+                        </div>
+                        <button 
+                          class="btn btn-sm btn-secondary"
+                          @click="viewFamilyGroup(familyGroup.id)"
+                        >
+                          View Details
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div v-else class="text-secondary">No campers assigned</div>
-                </div>
-
-                <!-- Assign campers -->
-                <div v-if="getAssignedCount(selectedRoom.id) < selectedRoom.capacity" class="detail-section">
-                  <div class="detail-label">Assign Camper</div>
-                  <select v-model="camperToAssign" class="form-select" @change="assignCamper">
-                    <option value="">Select a camper...</option>
-                    <option 
-                      v-for="camper in getUnassignedCampers(selectedRoom.gender)"
-                      :key="camper.id"
-                      :value="camper.id"
-                    >
-                      {{ camper.firstName }} {{ camper.lastName }} (Age {{ camper.age }})
-                    </option>
-                  </select>
-                </div>
-                <div v-else class="detail-section">
-                  <div class="badge badge-error">Room is at full capacity</div>
+                  <div v-else class="text-secondary">No family groups assigned to this room</div>
                 </div>
               </div>
             </div>
@@ -264,52 +210,14 @@
                   <input v-model="formData.name" type="text" class="form-input" required />
                 </div>
 
-                <div class="grid grid-cols-2">
-                  <div class="form-group">
-                    <label class="form-label">Gender</label>
-                    <select v-model="formData.gender" class="form-select" required>
-                      <option value="boys">Boys</option>
-                      <option value="girls">Girls</option>
-                      <option value="mixed">Mixed</option>
-                    </select>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Capacity (Beds)</label>
-                    <input v-model.number="formData.capacity" type="number" min="1" max="20" class="form-input" required />
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-2">
-                  <div class="form-group">
-                    <label class="form-label">Building</label>
-                    <input v-model="formData.building" type="text" class="form-input" />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Floor</label>
-                    <input v-model.number="formData.floor" type="number" min="1" class="form-input" />
-                  </div>
+                <div class="form-group">
+                  <label class="form-label">Number of Beds</label>
+                  <input v-model.number="formData.beds" type="number" min="1" max="50" class="form-input" required />
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label">Supervisor</label>
-                  <select v-model="formData.supervisorId" class="form-select">
-                    <option value="">No supervisor assigned</option>
-                    <option v-for="member in store.staffMembers" :key="member.id" :value="member.id">
-                      {{ member.firstName }} {{ member.lastName }} ({{ member.role }})
-                    </option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Amenities (comma-separated)</label>
-                  <input v-model="amenitiesInput" type="text" class="form-input" placeholder="e.g., Bathroom, Closet, Window" />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Notes</label>
-                  <textarea v-model="formData.notes" class="form-textarea"></textarea>
+                  <label class="form-label">Location</label>
+                  <input v-model="formData.location" type="text" class="form-input" placeholder="e.g., North Wing, Floor 1" />
                 </div>
               </form>
             </div>
@@ -342,10 +250,10 @@
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { SleepingRoom } from '@/types/api';
-import FilterBar, { type Filter } from '@/components/FilterBar.vue';
+import FilterBar from '@/components/FilterBar.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
-import { UserRound, Users, Bed, Building2, Mars, Venus } from 'lucide-vue-next';
+import { Bed, MapPin } from 'lucide-vue-next';
 
 export default defineComponent({
   name: 'SleepingRooms',
@@ -353,12 +261,8 @@ export default defineComponent({
     FilterBar,
     ConfirmModal,
     DataTable,
-    UserRound,
-    Users,
     Bed,
-    Building2,
-    Mars,
-    Venus
+    MapPin
   },
   data() {
     return {
@@ -370,32 +274,20 @@ export default defineComponent({
       confirmModalMessage: '',
       confirmModalDetails: '',
       confirmAction: null as (() => void) | null,
-      amenitiesInput: '',
-      camperToAssign: '',
       viewMode: 'grid' as 'grid' | 'table',
       currentPage: 1,
       pageSize: 10,
       formData: {
         name: '',
-        gender: 'boys' as SleepingRoom['gender'],
-        capacity: 4,
-        building: '',
-        floor: undefined as number | undefined,
-        supervisorId: '',
-        amenities: [] as string[],
-        notes: '',
+        beds: 4,
+        location: '',
       },
       searchQuery: '',
-      filterGender: '',
-      filterOccupancy: '',
       roomColumns: [
-        { key: 'name', label: 'Cabin Name', width: '200px' },
-        { key: 'gender', label: 'Gender', width: '100px' },
-        { key: 'occupancy', label: 'Occupancy', width: '120px' },
-        { key: 'location', label: 'Location', width: '200px' },
-        { key: 'supervisor', label: 'Supervisor', width: '180px' },
-        { key: 'amenities', label: 'Amenities', width: '120px' },
-        { key: 'usage', label: 'Usage', width: '140px' },
+        { key: 'name', label: 'Cabin Name', width: '250px' },
+        { key: 'beds', label: 'Beds', width: '100px' },
+        { key: 'location', label: 'Location', width: '250px' },
+        { key: 'groups', label: 'Family Groups', width: '250px' },
         { key: 'actions', label: 'Actions', width: '140px' },
       ]
     };
@@ -403,28 +295,6 @@ export default defineComponent({
   computed: {
     store() {
       return useCampStore();
-    },
-    sleepingRoomFilters(): Filter[] {
-      return [
-        {
-          model: 'filterGender',
-          value: this.filterGender,
-          placeholder: 'All Genders',
-          options: [
-            { label: 'Male', value: 'male' },
-            { label: 'Female', value: 'female' },
-          ],
-        },
-        {
-          model: 'filterOccupancy',
-          value: this.filterOccupancy,
-          placeholder: 'All Occupancy',
-          options: [
-            { label: 'Available (< 100%)', value: 'available' },
-            { label: 'Full (100%)', value: 'full' },
-          ],
-        },
-      ];
     },
     selectedRoom() {
       if (!this.selectedRoomId) return null;
@@ -438,31 +308,8 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         rooms = rooms.filter(room =>
           room.name.toLowerCase().includes(query) ||
-          (room.building && room.building.toLowerCase().includes(query))
+          (room.location && room.location.toLowerCase().includes(query))
         );
-      }
-
-      // Gender filter
-      if (this.filterGender) {
-        // Map "male" to "boys" and "female" to "girls"
-        const genderMap: Record<string, SleepingRoom['gender']> = {
-          'male': 'boys',
-          'female': 'girls'
-        };
-        const mappedGender = genderMap[this.filterGender];
-        if (mappedGender) {
-          rooms = rooms.filter(room => room.gender === mappedGender);
-        }
-      }
-
-      // Occupancy filter
-      if (this.filterOccupancy) {
-        rooms = rooms.filter(room => {
-          const occupancy = this.getRoomOccupancy(room.id);
-          if (this.filterOccupancy === 'available') return occupancy < 100;
-          if (this.filterOccupancy === 'full') return occupancy >= 100;
-          return true;
-        });
       }
 
       return rooms;
@@ -471,87 +318,28 @@ export default defineComponent({
   watch: {
     searchQuery() {
       this.currentPage = 1;
-    },
-    filterGender() {
-      this.currentPage = 1;
-    },
-    filterOccupancy() {
-      this.currentPage = 1;
     }
   },
   methods: {
     clearFilters() {
       this.searchQuery = '';
-      this.filterGender = '';
-      this.filterOccupancy = '';
     },
-    formatGender(gender: string): string {
-      return gender.charAt(0).toUpperCase() + gender.slice(1);
+    getFamilyGroupsForRoom(roomId: string) {
+      return this.store.getFamilyGroupsInRoom(roomId);
     },
-    GenderIcon(gender: SleepingRoom['gender']) {
-      const iconMap: Record<SleepingRoom['gender'], any> = {
-        boys: Mars,
-        girls: Venus,
-        mixed: Users,
-      };
-      return iconMap[gender] || Bed;
+    getCampersInFamilyGroup(familyGroupId: string) {
+      return this.store.getCampersInFamilyGroup(familyGroupId);
     },
-    getGenderColor(gender: SleepingRoom['gender']): string {
-      const colors: Record<SleepingRoom['gender'], string> = {
-        boys: '#3B82F6',
-        girls: '#EC4899',
-        mixed: '#8B5CF6',
-      };
-      return colors[gender] || '#64748B';
+    viewFamilyGroup(familyGroupId: string) {
+      // Navigate to family groups view (we'll implement this)
+      this.$router.push(`/family-groups?id=${familyGroupId}`);
     },
-    getRoomCampers(roomId: string) {
-      return this.store.campers.filter(camper => camper.sleepingRoomId === roomId);
-    },
-    getAssignedCount(roomId: string): number {
-      return this.getRoomCampers(roomId).length;
-    },
-    getRoomOccupancy(roomId: string): number {
-      const room = this.store.getSleepingRoomById(roomId);
-      if (!room) return 0;
-      return (this.getAssignedCount(roomId) / room.capacity) * 100;
-    },
-    getSupervisorName(staffId: string): string {
-      const staff = this.store.getStaffMemberById(staffId);
-      return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
-    },
-    getUnassignedCampers(gender: SleepingRoom['gender']) {
-      return this.store.campers.filter(camper => {
-        // Not assigned to any room
-        if (camper.sleepingRoomId) return false;
-        
-        // Gender restriction (mixed rooms accept all)
-        if (gender === 'mixed') return true;
-        
-        // Simple age-based gender assumption (in real app, would have gender field)
-        // For demo, we'll allow all unassigned campers
-        return true;
-      });
+    formatDate(dateString: string): string {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     },
     selectRoom(roomId: string) {
       this.selectedRoomId = roomId;
-      this.camperToAssign = '';
-    },
-    async assignCamper() {
-      if (!this.camperToAssign || !this.selectedRoomId) return;
-      
-      const camper = this.store.getCamperById(this.camperToAssign);
-      if (!camper) return;
-      
-      camper.sleepingRoomId = this.selectedRoomId;
-      await this.store.updateCamper(camper);
-      this.camperToAssign = '';
-    },
-    async unassignCamper(camperId: string) {
-      const camper = this.store.getCamperById(camperId);
-      if (!camper) return;
-      
-      camper.sleepingRoomId = undefined;
-      await this.store.updateCamper(camper);
     },
     editRoom() {
       if (!this.selectedRoom) return;
@@ -559,35 +347,19 @@ export default defineComponent({
       this.editingRoomId = this.selectedRoom.id;
       this.formData = {
         name: this.selectedRoom.name,
-        gender: this.selectedRoom.gender,
-        capacity: this.selectedRoom.capacity,
-        building: this.selectedRoom.building || '',
-        floor: this.selectedRoom.floor,
-        supervisorId: this.selectedRoom.supervisorId || '',
-        amenities: this.selectedRoom.amenities || [],
-        notes: this.selectedRoom.notes || '',
+        beds: this.selectedRoom.beds,
+        location: this.selectedRoom.location || '',
       };
-      this.amenitiesInput = (this.selectedRoom.amenities || []).join(', ');
       
       this.selectedRoomId = null;
       this.showModal = true;
     },
     async saveRoom() {
-      const amenities = this.amenitiesInput
-        .split(',')
-        .map(a => a.trim())
-        .filter(a => a.length > 0);
-
       const roomData: SleepingRoom = {
         id: this.editingRoomId || `sleeping-${Date.now()}`,
         name: this.formData.name,
-        gender: this.formData.gender,
-        capacity: this.formData.capacity,
-        building: this.formData.building,
-        floor: this.formData.floor,
-        supervisorId: this.formData.supervisorId || undefined,
-        amenities,
-        notes: this.formData.notes,
+        beds: this.formData.beds,
+        location: this.formData.location || undefined,
       };
 
       if (this.editingRoomId) {
@@ -601,13 +373,13 @@ export default defineComponent({
     deleteRoomConfirm() {
       if (!this.selectedRoomId) return;
       
-      const camperCount = this.getAssignedCount(this.selectedRoomId);
+      const familyGroupCount = this.getFamilyGroupsForRoom(this.selectedRoomId).length;
       
       // Setup the confirm modal
       this.confirmModalTitle = 'Delete Sleeping Room';
       this.confirmModalMessage = 'Are you sure you want to delete this sleeping room?';
-      this.confirmModalDetails = camperCount > 0 
-        ? `This room has ${camperCount} campers assigned. They will be unassigned.`
+      this.confirmModalDetails = familyGroupCount > 0 
+        ? `This room has ${familyGroupCount} family group(s) assigned. You will need to reassign them to another room.`
         : '';
       
       this.confirmAction = async () => {
@@ -635,15 +407,9 @@ export default defineComponent({
       this.editingRoomId = null;
       this.formData = {
         name: '',
-        gender: 'boys',
-        capacity: 4,
-        building: '',
-        floor: undefined,
-        supervisorId: '',
-        amenities: [],
-        notes: '',
+        beds: 4,
+        location: '',
       };
-      this.amenitiesInput = '';
     }
   }
 });
@@ -709,11 +475,11 @@ export default defineComponent({
   width: 60px;
   height: 60px;
   border-radius: var(--radius-lg);
+  background: var(--primary-color);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
   flex-shrink: 0;
 }
 
@@ -728,21 +494,13 @@ export default defineComponent({
 
 .room-meta {
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.5rem;
 }
 
-.usage-bar {
-  height: 8px;
-  background: var(--border-color);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.usage-fill {
-  height: 100%;
-  transition: width 0.3s, background 0.3s;
+.assigned-groups {
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.5rem;
 }
 
 .detail-section {
@@ -756,23 +514,27 @@ export default defineComponent({
   margin-bottom: 0.5rem;
 }
 
-.campers-list {
+.groups-list {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.camper-item {
+.group-assignment-item {
   padding: 0.75rem;
   background: var(--background);
   border-radius: var(--radius);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border: 1px solid var(--border-color);
+}
+
+.group-info {
+  flex: 1;
 }
 
 /* Table View Styles */
-/* Table cell custom styles */
 .cabin-name-content {
   display: flex;
   align-items: center;
@@ -783,11 +545,11 @@ export default defineComponent({
   width: 32px;
   height: 32px;
   border-radius: var(--radius);
+  background: var(--primary-color);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
   flex-shrink: 0;
 }
 
@@ -796,52 +558,13 @@ export default defineComponent({
   color: var(--text-primary);
 }
 
-.location-cell {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.occupancy-badge {
-  display: inline-flex;
-  padding: 0.25rem 0.5rem;
-  background: var(--background);
-  border-radius: var(--radius);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.usage-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.usage-bar-sm {
-  flex: 1;
-  height: 6px;
-  background: var(--border-color);
-  border-radius: 999px;
-  overflow: hidden;
-  min-width: 60px;
-}
-
-.usage-fill-sm {
-  height: 100%;
-  transition: width 0.3s, background 0.3s;
-}
-
-.usage-text {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
 .badge-sm {
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
+}
+
+.modal-lg {
+  max-width: 800px;
 }
 </style>
 

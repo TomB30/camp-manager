@@ -13,7 +13,6 @@
         v-model:searchQuery="searchQuery"
         v-model:filterGender="filterGender"
         v-model:filterAge="filterAge"
-        v-model:filterSleepingRoom="filterSleepingRoom"
         :filters="campersFilters"
         :filtered-count="filteredCampers.length"
         :total-count="store.campers.length"
@@ -102,13 +101,6 @@
           <span class="badge badge-primary badge-sm">{{ formatGender(item.gender) }}</span>
         </template>
         
-        <template #cell-cabin="{ item }">
-          <span v-if="item.sleepingRoomId" class="badge badge-primary badge-sm">
-            {{ getSleepingRoomName(item.sleepingRoomId) }}
-          </span>
-          <span v-else class="text-secondary">—</span>
-        </template>
-        
         <template #cell-allergies="{ item }">
           <span v-if="item.allergies && item.allergies.length > 0" class="badge badge-warning badge-sm">
             {{ item.allergies.length }} allergy(ies)
@@ -174,11 +166,18 @@
                 </div>
 
                 <div class="detail-section">
-                  <div class="detail-label">Sleeping Room Assignment</div>
-                  <div v-if="selectedCamper.sleepingRoomId">
-                    <span class="badge badge-primary">{{ getSleepingRoomName(selectedCamper.sleepingRoomId) }}</span>
+                  <div class="detail-label">Family Group</div>
+                  <div v-if="selectedCamper.familyGroupId && getFamilyGroup(selectedCamper.familyGroupId)">
+                    <div class="family-group-info">
+                      <span class="badge" :style="{ background: getFamilyGroup(selectedCamper.familyGroupId)?.color || '#6366F1' }">
+                        {{ getFamilyGroup(selectedCamper.familyGroupId)?.name }}
+                      </span>
+                      <div v-if="getFamilyGroup(selectedCamper.familyGroupId)?.sleepingRoomId" class="text-xs text-secondary mt-1">
+                        Room: {{ getSleepingRoomName(getFamilyGroup(selectedCamper.familyGroupId)!.sleepingRoomId) }}
+                      </div>
+                    </div>
                   </div>
-                  <div v-else class="text-secondary">Not assigned to a cabin</div>
+                  <div v-else class="text-secondary">Not assigned to a family group</div>
                 </div>
 
                 <div class="detail-section">
@@ -240,6 +239,20 @@
                 </div>
 
                 <div class="form-group">
+                  <label class="form-label">Family Group</label>
+                  <select v-model="formData.familyGroupId" class="form-select" required>
+                    <option value="">Select a family group...</option>
+                    <option 
+                      v-for="group in store.familyGroups"
+                      :key="group.id"
+                      :value="group.id"
+                    >
+                      {{ group.name }} - {{ getSleepingRoomName(group.sleepingRoomId) }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
                   <label class="form-label">Allergies (comma-separated)</label>
                   <input v-model="allergiesInput" type="text" class="form-input" placeholder="e.g., Peanuts, Dairy" />
                 </div>
@@ -247,23 +260,6 @@
                 <div class="form-group">
                   <label class="form-label">Medical Notes</label>
                   <textarea v-model="formData.medicalNotes" class="form-textarea"></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Sleeping Room (Cabin)</label>
-                  <select v-model="formData.sleepingRoomId" class="form-select">
-                    <option value="">Not assigned</option>
-                    <option 
-                      v-for="room in getAvailableSleepingRooms(formData.gender)" 
-                      :key="room.id" 
-                      :value="room.id"
-                    >
-                      {{ room.name }} ({{ formatRoomGender(room.gender) }})
-                    </option>
-                  </select>
-                  <div v-if="formData.gender && getAvailableSleepingRooms(formData.gender).length === 0" class="text-xs text-secondary mt-1">
-                    No cabins available for {{ formData.gender === 'male' ? 'boys' : 'girls' }}
-                  </div>
                 </div>
               </form>
             </div>
@@ -329,18 +325,16 @@ export default defineComponent({
         parentContact: '',
         allergies: [] as string[],
         medicalNotes: '',
-        sleepingRoomId: '',
+        familyGroupId: '' as string | undefined,
       },
       searchQuery: '',
       filterGender: '',
       filterAge: '',
-      filterSleepingRoom: '',
       camperColumns: [
         { key: 'name', label: 'Name', width: '200px' },
         { key: 'age', label: 'Age', width: '80px' },
         { key: 'gender', label: 'Gender', width: '100px' },
-        { key: 'cabin', label: 'Cabin', width: '120px' },
-        { key: 'parentContact', label: 'Parent Contact', width: '200px' },
+        { key: 'parentContact', label: 'Parent Contact', width: '250px' },
         { key: 'allergies', label: 'Allergies', width: '120px' },
         { key: 'events', label: "Today's Events", width: '120px' },
         { key: 'actions', label: 'Actions', width: '140px' },
@@ -372,18 +366,6 @@ export default defineComponent({
             { label: '9-11 years', value: '9-11' },
             { label: '12-14 years', value: '12-14' },
             { label: '15+ years', value: '15+' },
-          ],
-        },
-        {
-          model: 'filterSleepingRoom',
-          value: this.filterSleepingRoom,
-          placeholder: 'All Cabins',
-          options: [
-            { label: 'Unassigned', value: 'unassigned' },
-            ...this.store.sleepingRooms.map(room => ({
-              label: room.name,
-              value: room.id,
-            })),
           ],
         },
       ];
@@ -418,15 +400,6 @@ export default defineComponent({
         campers = campers.filter(camper => camper.age >= min && (max ? camper.age <= max : true));
       }
 
-      // Sleeping room filter
-      if (this.filterSleepingRoom) {
-        if (this.filterSleepingRoom === 'unassigned') {
-          campers = campers.filter(camper => !camper.sleepingRoomId);
-        } else {
-          campers = campers.filter(camper => camper.sleepingRoomId === this.filterSleepingRoom);
-        }
-      }
-
       return campers;
     }
   },
@@ -439,9 +412,6 @@ export default defineComponent({
     },
     filterAge() {
       this.currentPage = 1;
-    },
-    filterSleepingRoom() {
-      this.currentPage = 1;
     }
   },
 
@@ -450,7 +420,6 @@ export default defineComponent({
       this.searchQuery = '';
       this.filterGender = '';
       this.filterAge = '';
-      this.filterSleepingRoom = '';
     },
     getCamperTodayEvents(camperId: string) {
       const today = new Date();
@@ -469,23 +438,11 @@ export default defineComponent({
       const room = this.store.getSleepingRoomById(roomId);
       return room?.name || 'Unknown Room';
     },
+    getFamilyGroup(familyGroupId: string) {
+      return this.store.getFamilyGroupById(familyGroupId);
+    },
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
-    },
-    formatRoomGender(gender: string): string {
-      return gender.charAt(0).toUpperCase() + gender.slice(1);
-    },
-    getAvailableSleepingRooms(camperGender: 'male' | 'female') {
-      return this.store.sleepingRooms.filter(room => {
-        // Mixed rooms accept all
-        if (room.gender === 'mixed') return true;
-        
-        // Match room gender with camper gender
-        if (camperGender === 'male' && room.gender === 'boys') return true;
-        if (camperGender === 'female' && room.gender === 'girls') return true;
-        
-        return false;
-      });
     },
     selectCamper(camperId: string) {
       this.selectedCamperId = camperId;
@@ -502,7 +459,7 @@ export default defineComponent({
         parentContact: this.selectedCamper.parentContact,
         allergies: this.selectedCamper.allergies || [],
         medicalNotes: this.selectedCamper.medicalNotes || '',
-        sleepingRoomId: this.selectedCamper.sleepingRoomId || '',
+        familyGroupId: this.selectedCamper.familyGroupId,
       };
       this.allergiesInput = (this.selectedCamper.allergies || []).join(', ');
       
@@ -524,7 +481,7 @@ export default defineComponent({
         parentContact: this.formData.parentContact,
         allergies,
         medicalNotes: this.formData.medicalNotes,
-        sleepingRoomId: this.formData.sleepingRoomId || undefined,
+        familyGroupId: this.formData.familyGroupId || undefined,
         registrationDate: this.editingCamperId 
           ? this.store.getCamperById(this.editingCamperId)?.registrationDate 
           : new Date().toISOString(),
@@ -572,7 +529,7 @@ export default defineComponent({
         parentContact: '',
         allergies: [],
         medicalNotes: '',
-        sleepingRoomId: '',
+        familyGroupId: '',
       };
       this.allergiesInput = '';
     }

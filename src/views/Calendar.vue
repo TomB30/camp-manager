@@ -207,29 +207,6 @@
                 </div>
 
                 <!-- Assign Sleeping Room Section -->
-                <div class="mb-3 p-3 bg-background rounded">
-                  <div class="text-sm font-medium mb-2">Quick Assign Sleeping Room</div>
-                  <div class="flex gap-2">
-                    <select v-model="sleepingRoomToAssign" class="form-select flex-1">
-                      <option value="">Select a sleeping room...</option>
-                      <option 
-                        v-for="room in store.sleepingRooms"
-                        :key="room.id"
-                        :value="room.id"
-                      >
-                        {{ room.name }} ({{ getRoomCamperCount(room.id) }} campers)
-                      </option>
-                    </select>
-                    <button 
-                      class="btn btn-sm btn-primary"
-                      @click="assignSleepingRoom"
-                      :disabled="!sleepingRoomToAssign"
-                    >
-                      Assign
-                    </button>
-                  </div>
-                </div>
-
                 <div 
                   class="enrolled-campers drop-zone"
                   :class="{ 'drag-over': isDragOver }"
@@ -336,30 +313,7 @@
 
               <div class="form-group">
                 <label class="form-label">Color</label>
-                <input v-model="newEvent.color" type="color" class="form-input" />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Assign Sleeping Rooms (Optional)</label>
-                <div class="sleeping-room-selector">
-                  <div v-for="room in store.sleepingRooms" :key="room.id" class="checkbox-item">
-                    <label class="checkbox-label">
-                      <input 
-                        type="checkbox" 
-                        :value="room.id" 
-                        v-model="newEvent.sleepingRoomIds"
-                        class="checkbox-input"
-                      />
-                      <span>{{ room.name }} ({{ getRoomCamperCount(room.id) }} campers)</span>
-                    </label>
-                  </div>
-                  <div v-if="store.sleepingRooms.length === 0" class="text-secondary text-sm">
-                    No sleeping rooms available
-                  </div>
-                </div>
-                <div v-if="newEvent.sleepingRoomIds.length > 0" class="text-xs text-secondary mt-1">
-                  This will automatically enroll {{ getTotalCampersFromRooms(newEvent.sleepingRoomIds) }} campers when the event is created.
-                </div>
+                <ColorPicker v-model="newEvent.color" />
               </div>
 
               <div class="form-group">
@@ -424,6 +378,7 @@ import { useToastStore } from '@/stores/toastStore';
 import { format, addDays, startOfWeek, addWeeks } from 'date-fns';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
+import ColorPicker from '@/components/ColorPicker.vue';
 import { filterEventsByDateAndHour } from '@/utils/dateUtils';
 import type { Event } from '@/types/api';
 
@@ -431,7 +386,8 @@ export default defineComponent({
   name: 'Calendar',
   components: {
     ConfirmModal,
-    FilterBar
+    FilterBar,
+    ColorPicker,
   },
   data() {
     return {
@@ -456,7 +412,6 @@ export default defineComponent({
         capacity: 20,
         type: 'activity' as Event['type'],
         color: '#3B82F6',
-        sleepingRoomIds: [] as string[],
         camperGroupIds: [] as string[],
       },
       filterEventType: '',
@@ -718,23 +673,9 @@ export default defineComponent({
       
       await this.store.addEvent(event);
       
-      // Enroll sleeping rooms and groups if any were selected
-      const hasAssignments = this.newEvent.sleepingRoomIds.length > 0 || this.newEvent.camperGroupIds.length > 0;
-      
-      if (hasAssignments) {
+      // Enroll camper groups if any were selected
+      if (this.newEvent.camperGroupIds.length > 0) {
         const messages: string[] = [];
-        
-        // Enroll sleeping rooms
-        for (const roomId of this.newEvent.sleepingRoomIds) {
-          try {
-            const result = await this.store.enrollSleepingRoom(event.id, roomId);
-            if (result.errors.length > 0) {
-              messages.push(result.message);
-            }
-          } catch (error: any) {
-            messages.push(error.message);
-          }
-        }
         
         // Enroll camper groups
         for (const groupId of this.newEvent.camperGroupIds) {
@@ -769,7 +710,6 @@ export default defineComponent({
         capacity: 20,
         type: 'activity',
         color: '#3B82F6',
-        sleepingRoomIds: [],
         camperGroupIds: [],
       };
     },
@@ -839,41 +779,10 @@ export default defineComponent({
       };
       this.showConfirmModal = true;
     },
-    getRoomCamperCount(roomId: string): number {
-      return this.store.campers.filter(c => c.sleepingRoomId === roomId).length;
-    },
-    getTotalCampersFromRooms(roomIds: string[]): number {
-      return roomIds.reduce((total, roomId) => {
-        return total + this.getRoomCamperCount(roomId);
-      }, 0);
-    },
     getTotalCampersFromGroups(groupIds: string[]): number {
       return groupIds.reduce((total, groupId) => {
         return total + this.getGroupCamperCount(groupId);
       }, 0);
-    },
-    async assignSleepingRoom() {
-      if (!this.sleepingRoomToAssign || !this.selectedEventId) return;
-      
-      try {
-        const result = await this.store.enrollSleepingRoom(this.selectedEventId, this.sleepingRoomToAssign);
-        
-        if (result.errors.length > 0) {
-          // Show detailed message about conflicts
-          this.toast.warning(
-            result.message,
-            'Conflicts:\n' + result.errors.join('\n'),
-            7000
-          );
-        } else {
-          // Show success message
-          this.toast.success(result.message);
-        }
-        
-        this.sleepingRoomToAssign = '';
-      } catch (error: any) {
-        this.toast.error('Error assigning sleeping room', error.message);
-      }
     },
     getGroupCamperCount(groupId: string): number {
       return this.store.getCampersInGroup(groupId).length;

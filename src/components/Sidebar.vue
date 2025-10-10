@@ -31,9 +31,13 @@
           <Bed :size="20" class="nav-icon" />
           <span class="nav-text">Cabins</span>
         </RouterLink>
+        <RouterLink to="/family-groups" class="nav-link">
+          <UsersRound :size="20" class="nav-icon" />
+          <span class="nav-text">Family Groups</span>
+        </RouterLink>
         <RouterLink to="/groups" class="nav-link">
           <FolderOpen :size="20" class="nav-icon" />
-          <span class="nav-text">Groups</span>
+          <span class="nav-text">Camper Groups</span>
         </RouterLink>
       </nav>
 

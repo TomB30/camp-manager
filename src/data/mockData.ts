@@ -1,4 +1,4 @@
-import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup } from '@/types/api';
 
 // Generate consistent IDs
 const generateId = (prefix: string, index: number) => `${prefix}-${String(index).padStart(3, '0')}`;
@@ -8,62 +8,114 @@ export const mockSleepingRooms: SleepingRoom[] = [
   {
     id: generateId('sleeping', 1),
     name: 'Cabin 1 - Eagles',
-    capacity: 8,
-    gender: 'boys',
-    building: 'North Wing',
-    floor: 1,
-    amenities: ['Bathroom', 'Closet', 'Window'],
-    supervisorId: generateId('staff', 2),
+    beds: 8,
+    location: 'North Wing, Floor 1',
   },
   {
     id: generateId('sleeping', 2),
     name: 'Cabin 2 - Hawks',
-    capacity: 8,
-    gender: 'boys',
-    building: 'North Wing',
-    floor: 1,
-    amenities: ['Bathroom', 'Closet', 'Window'],
-    supervisorId: generateId('staff', 6),
+    beds: 8,
+    location: 'North Wing, Floor 1',
   },
   {
     id: generateId('sleeping', 3),
     name: 'Cabin 3 - Wolves',
-    capacity: 8,
-    gender: 'boys',
-    building: 'North Wing',
-    floor: 2,
-    amenities: ['Bathroom', 'Closet', 'Window', 'Balcony'],
-    supervisorId: generateId('staff', 8),
+    beds: 8,
+    location: 'North Wing, Floor 2',
   },
   {
     id: generateId('sleeping', 4),
     name: 'Cabin 4 - Butterflies',
-    capacity: 8,
-    gender: 'girls',
-    building: 'South Wing',
-    floor: 1,
-    amenities: ['Bathroom', 'Closet', 'Window', 'Mirror'],
-    supervisorId: generateId('staff', 3),
+    beds: 8,
+    location: 'South Wing, Floor 1',
   },
   {
     id: generateId('sleeping', 5),
     name: 'Cabin 5 - Fireflies',
-    capacity: 8,
-    gender: 'girls',
-    building: 'South Wing',
-    floor: 1,
-    amenities: ['Bathroom', 'Closet', 'Window', 'Mirror'],
-    supervisorId: generateId('staff', 4),
+    beds: 8,
+    location: 'South Wing, Floor 1',
   },
   {
     id: generateId('sleeping', 6),
     name: 'Cabin 6 - Dolphins',
-    capacity: 8,
-    gender: 'girls',
-    building: 'South Wing',
-    floor: 2,
-    amenities: ['Bathroom', 'Closet', 'Window', 'Mirror', 'Balcony'],
-    supervisorId: generateId('staff', 7),
+    beds: 8,
+    location: 'South Wing, Floor 2',
+  },
+];
+
+// Family Groups - fundamental organizational units
+export const mockFamilyGroups: FamilyGroup[] = [
+  {
+    id: generateId('family', 1),
+    name: 'Eagles Family',
+    description: 'Family group for Cabin 1',
+    sleepingRoomId: generateId('sleeping', 1),
+    staffMemberIds: [generateId('staff', 2), generateId('staff', 6)],
+    startDate: new Date('2024-06-10').toISOString(),
+    endDate: new Date('2024-06-17').toISOString(),
+    color: '#3B82F6',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('family', 2),
+    name: 'Hawks Family',
+    description: 'Family group for Cabin 2',
+    sleepingRoomId: generateId('sleeping', 2),
+    staffMemberIds: [generateId('staff', 8)],
+    startDate: new Date('2024-06-10').toISOString(),
+    endDate: new Date('2024-06-17').toISOString(),
+    color: '#10B981',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('family', 3),
+    name: 'Wolves Family',
+    description: 'Family group for Cabin 3',
+    sleepingRoomId: generateId('sleeping', 3),
+    staffMemberIds: [generateId('staff', 2)],
+    startDate: new Date('2024-06-17').toISOString(),
+    endDate: new Date('2024-06-24').toISOString(),
+    color: '#6366F1',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('family', 4),
+    name: 'Butterflies Family',
+    description: 'Family group for Cabin 4',
+    sleepingRoomId: generateId('sleeping', 4),
+    staffMemberIds: [generateId('staff', 3), generateId('staff', 7)],
+    startDate: new Date('2024-06-17').toISOString(),
+    endDate: new Date('2024-06-24').toISOString(),
+    color: '#EC4899',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('family', 5),
+    name: 'Fireflies Family',
+    description: 'Family group for Cabin 5',
+    sleepingRoomId: generateId('sleeping', 5),
+    staffMemberIds: [generateId('staff', 4)],
+    startDate: new Date('2024-06-24').toISOString(),
+    endDate: new Date('2024-07-01').toISOString(),
+    color: '#F59E0B',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('family', 6),
+    name: 'Dolphins Family',
+    description: 'Family group for Cabin 6',
+    sleepingRoomId: generateId('sleeping', 6),
+    staffMemberIds: [generateId('staff', 3)],
+    startDate: new Date('2024-06-24').toISOString(),
+    endDate: new Date('2024-07-01').toISOString(),
+    color: '#06B6D4',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
   },
 ];
 
@@ -90,10 +142,9 @@ const generateCampers = (count: number): Camper[] => {
     const lastName = lastNames[(i - 1) % lastNames.length];
     const age = 6 + (i % 10); // Ages 6-15
     
-    // Assign to sleeping rooms (8 per room, 3 boys rooms, 3 girls rooms)
-    const roomsForGender = 3;
-    const roomOffset = gender === 'male' ? 1 : 4;
-    const roomNumber = roomOffset + Math.floor((nameIndex) / 8) % roomsForGender;
+    // Assign to family groups (6 campers per family group, 6 family groups)
+    const familyGroupIndex = Math.floor((i - 1) / 6) % 6;
+    const familyGroupId = generateId('family', familyGroupIndex + 1);
     
     // 25% chance of having an allergy
     const hasAllergy = Math.random() < 0.25;
@@ -108,15 +159,15 @@ const generateCampers = (count: number): Camper[] => {
       parentContact: `parent${i}@example.com`,
       allergies: camperAllergies,
       medicalNotes: hasAllergy ? `Please avoid ${camperAllergies[0]}` : undefined,
-      sleepingRoomId: generateId('sleeping', roomNumber),
       registrationDate: new Date(2025, 5, 1 + (i % 7)).toISOString(),
+      familyGroupId,
     });
   }
   
   return campers;
 };
 
-export const mockCampers: Camper[] = generateCampers(48);
+export const mockCampers: Camper[] = generateCampers(36);
 
 export const mockStaffMembers: StaffMember[] = [
   {
@@ -559,11 +610,12 @@ export const mockCamperGroups: CamperGroup[] = [
   },
   {
     id: generateId('group', 3),
-    name: 'Eagles & Hawks',
-    description: 'Combined group from Cabin 1 and Cabin 2',
+    name: 'Middle Age Campers',
+    description: 'Campers ages 10-12 for age-appropriate activities',
     color: '#F59E0B',
     filters: {
-      sleepingRoomIds: [generateId('sleeping', 1), generateId('sleeping', 2)],
+      ageMin: 10,
+      ageMax: 12,
     },
     createdAt: new Date(2025, 5, 2).toISOString(),
     updatedAt: new Date(2025, 5, 2).toISOString(),
@@ -600,4 +652,5 @@ export const mockData = {
   sleepingRooms: mockSleepingRooms,
   events: mockEvents,
   camperGroups: mockCamperGroups,
+  familyGroups: mockFamilyGroups,
 };

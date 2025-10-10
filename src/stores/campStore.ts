@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { Camper, StaffMember, Room, SleepingRoom, Event, Conflict, CamperGroup, CamperGroupFilter } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, Conflict, CamperGroup, CamperGroupFilter, FamilyGroup } from '@/types/api';
 import { storageService } from '@/services/storage';
 import { conflictDetector } from '@/services/conflicts';
 import { filterEventsByDate } from '@/utils/dateUtils';
@@ -14,6 +14,7 @@ export const useCampStore = defineStore('camp', () => {
   const events = ref<Event[]>([]);
   const conflicts = ref<Conflict[]>([]);
   const camperGroups = ref<CamperGroup[]>([]);
+  const familyGroups = ref<FamilyGroup[]>([]);
   const loading = ref(false);
   const selectedDate = ref(new Date());
 
@@ -70,6 +71,22 @@ export const useCampStore = defineStore('camp', () => {
     return (id: string) => camperGroups.value.find(g => g.id === id);
   });
 
+  const getFamilyGroupById = computed(() => {
+    return (id: string) => familyGroups.value.find(g => g.id === id);
+  });
+
+  const getCampersInFamilyGroup = computed(() => {
+    return (familyGroupId: string): Camper[] => {
+      return campers.value.filter(c => c.familyGroupId === familyGroupId);
+    };
+  });
+
+  const getFamilyGroupsInRoom = computed(() => {
+    return (sleepingRoomId: string): FamilyGroup[] => {
+      return familyGroups.value.filter(g => g.sleepingRoomId === sleepingRoomId);
+    };
+  });
+
   // Helper function to filter campers by group criteria
   const filterCampersByGroup = (filters: CamperGroupFilter): Camper[] => {
     return campers.value.filter(camper => {
@@ -79,13 +96,6 @@ export const useCampStore = defineStore('camp', () => {
       
       // Gender filter
       if (filters.gender && camper.gender !== filters.gender) return false;
-      
-      // Sleeping room filter
-      if (filters.sleepingRoomIds && filters.sleepingRoomIds.length > 0) {
-        if (!camper.sleepingRoomId || !filters.sleepingRoomIds.includes(camper.sleepingRoomId)) {
-          return false;
-        }
-      }
       
       // Allergies filter
       if (filters.hasAllergies !== undefined) {
@@ -109,13 +119,14 @@ export const useCampStore = defineStore('camp', () => {
   async function loadAll() {
     loading.value = true;
     try {
-      const [campersData, membersData, roomsData, sleepingRoomsData, eventsData, groupsData] = await Promise.all([
+      const [campersData, membersData, roomsData, sleepingRoomsData, eventsData, groupsData, familyGroupsData] = await Promise.all([
         storageService.getCampers(),
         storageService.getStaffMembers(),
         storageService.getRooms(),
         storageService.getSleepingRooms(),
         storageService.getEvents(),
         storageService.getCamperGroups(),
+        storageService.getFamilyGroups(),
       ]);
 
       campers.value = campersData;
@@ -124,6 +135,7 @@ export const useCampStore = defineStore('camp', () => {
       sleepingRooms.value = sleepingRoomsData;
       events.value = eventsData;
       camperGroups.value = groupsData;
+      familyGroups.value = familyGroupsData;
 
       updateConflicts();
     } finally {
@@ -239,13 +251,6 @@ export const useCampStore = defineStore('camp', () => {
   async function deleteSleepingRoom(id: string) {
     await storageService.deleteSleepingRoom(id);
     sleepingRooms.value = sleepingRooms.value.filter(r => r.id !== id);
-    
-    // Update campers who were assigned to this room
-    campers.value.forEach(camper => {
-      if (camper.sleepingRoomId === id) {
-        camper.sleepingRoomId = undefined;
-      }
-    });
   }
 
   // Event actions
@@ -304,99 +309,6 @@ export const useCampStore = defineStore('camp', () => {
     await enrollCamper(toEventId, camperId);
   }
 
-  async function enrollSleepingRoom(eventId: string, sleepingRoomId: string) {
-    const event = events.value.find(e => e.id === eventId);
-    if (!event) throw new Error('Event not found');
-
-    const sleepingRoom = sleepingRooms.value.find(r => r.id === sleepingRoomId);
-    if (!sleepingRoom) throw new Error('Sleeping room not found');
-
-    // Get all campers in this sleeping room
-    const roomCampers = campers.value.filter(c => c.sleepingRoomId === sleepingRoomId);
-    
-    if (roomCampers.length === 0) {
-      throw new Error('No campers assigned to this sleeping room');
-    }
-
-    // Initialize enrolledCamperIds if needed
-    if (!event.enrolledCamperIds) {
-      event.enrolledCamperIds = [];
-    }
-
-    // Filter out already enrolled campers
-    const campersToEnroll = roomCampers.filter(
-      camper => !event.enrolledCamperIds?.includes(camper.id)
-    );
-
-    if (campersToEnroll.length === 0) {
-      return {
-        enrolled: 0,
-        errors: [],
-        total: roomCampers.length,
-        message: 'All campers from this sleeping room are already enrolled in this event.'
-      };
-    }
-
-    // Process all campers in parallel
-    const enrollmentPromises = campersToEnroll.map(async (camper) => {
-      const validation = conflictDetector.canEnrollCamper(event, camper.id, events.value);
-      
-      if (!validation.canEnroll) {
-        return {
-          status: 'rejected' as const,
-          camper,
-          reason: validation.reason
-        };
-      }
-
-      try {
-        await storageService.enrollCamper(eventId, camper.id);
-        return {
-          status: 'fulfilled' as const,
-          camper
-        };
-      } catch (error: any) {
-        return {
-          status: 'rejected' as const,
-          camper,
-          reason: error.message
-        };
-      }
-    });
-
-    // Wait for all enrollments to complete
-    const results = await Promise.all(enrollmentPromises);
-
-    // Process results
-    const errors: string[] = [];
-    const enrolled: string[] = [];
-    const enrolledIds: string[] = [];
-
-    results.forEach(result => {
-      if (result.status === 'fulfilled') {
-        enrolled.push(`${result.camper.firstName} ${result.camper.lastName}`);
-        enrolledIds.push(result.camper.id);
-      } else {
-        errors.push(`${result.camper.firstName} ${result.camper.lastName}: ${result.reason}`);
-      }
-    });
-
-    // Update event with all successfully enrolled campers at once
-    event.enrolledCamperIds.push(...enrolledIds);
-
-    updateConflicts();
-
-    // Return summary of the operation
-    return {
-      enrolled: enrolled.length,
-      errors,
-      total: roomCampers.length,
-      message: errors.length > 0 
-        ? `Enrolled ${enrolled.length} of ${roomCampers.length} campers. ${errors.length} conflicts occurred.`
-        : `Successfully enrolled all ${enrolled.length} campers from ${sleepingRoom.name}.`
-    };
-  }
-
   // Camper Group actions
   async function addCamperGroup(group: CamperGroup) {
     await storageService.saveCamperGroup(group);
@@ -414,6 +326,25 @@ export const useCampStore = defineStore('camp', () => {
   async function deleteCamperGroup(id: string) {
     await storageService.deleteCamperGroup(id);
     camperGroups.value = camperGroups.value.filter(g => g.id !== id);
+  }
+
+  // Family Group actions
+  async function addFamilyGroup(group: FamilyGroup) {
+    await storageService.saveFamilyGroup(group);
+    familyGroups.value.push(group);
+  }
+
+  async function updateFamilyGroup(group: FamilyGroup) {
+    await storageService.saveFamilyGroup(group);
+    const index = familyGroups.value.findIndex(g => g.id === group.id);
+    if (index >= 0) {
+      familyGroups.value[index] = group;
+    }
+  }
+
+  async function deleteFamilyGroup(id: string) {
+    await storageService.deleteFamilyGroup(id);
+    familyGroups.value = familyGroups.value.filter(g => g.id !== id);
   }
 
   async function enrollCamperGroup(eventId: string, groupId: string) {
@@ -518,6 +449,7 @@ export const useCampStore = defineStore('camp', () => {
     events,
     conflicts,
     camperGroups,
+    familyGroups,
     loading,
     selectedDate,
     
@@ -533,6 +465,9 @@ export const useCampStore = defineStore('camp', () => {
     roomEvents,
     getCamperGroupById,
     getCampersInGroup,
+    getFamilyGroupById,
+    getCampersInFamilyGroup,
+    getFamilyGroupsInRoom,
     
     // Actions
     loadAll,
@@ -555,11 +490,13 @@ export const useCampStore = defineStore('camp', () => {
     enrollCamper,
     unenrollCamper,
     moveCamper,
-    enrollSleepingRoom,
     addCamperGroup,
     updateCamperGroup,
     deleteCamperGroup,
     enrollCamperGroup,
+    addFamilyGroup,
+    updateFamilyGroup,
+    deleteFamilyGroup,
   };
 });
 

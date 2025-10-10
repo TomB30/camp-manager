@@ -7,8 +7,12 @@ A comprehensive web application for managing summer camp operations, including c
 ### 🎯 Core Functionality
 - **Campers Management**: Track camper information, allergies, medical notes, and parent contacts
 - **Staff Management**: Manage staff members with roles, certifications, and contact information
-- **Room Management**: Organize rooms with capacity tracking and equipment lists
+- **Family Groups**: Organize campers into family groups with assigned sleeping rooms and staff
+- **Room Management**: 
+  - **Activity Rooms**: Organize rooms with capacity tracking and equipment lists
+  - **Sleeping Rooms (Cabins)**: Manage sleeping accommodations for family groups
 - **Event Calendar**: Visual calendar with drag-and-drop functionality for scheduling
+- **Dynamic Camper Groups**: Create filtered groups based on age, gender, allergies, and more
 - **Conflict Detection**: Automatic detection of scheduling conflicts including:
   - Room overcapacity
   - Event overcapacity
@@ -116,9 +120,18 @@ camp-manager/
 
 ### Campers Management
 - Add new campers with medical information and allergies
+- Assign campers to family groups (required)
 - View all enrolled campers in a card layout
-- Click on any camper to see their schedule and details
+- Click on any camper to see their schedule, family group, and details
 - Edit or delete camper records
+
+### Family Groups Management
+- Create and manage family groups as the base organizational unit
+- Assign family groups to sleeping rooms (cabins)
+- Associate staff members with each family group
+- View all campers within each family group
+- Color-code groups for easy visual identification
+- Track family group statistics and assignments
 
 ### Staff Management
 - Add staff members with roles and certifications
@@ -127,10 +140,18 @@ camp-manager/
 - Track certifications for compliance
 
 ### Room Management
+
+#### Activity Rooms
 - Manage rooms with capacity and equipment tracking
 - Visual indicators for room usage
 - See all events scheduled in each room
 - Categorized by type (Classroom, Activity, Sports, Dining, Outdoor, Arts)
+
+#### Sleeping Rooms (Cabins)
+- Simple room management with name, bed count, and location
+- View family groups assigned to each room
+- Track room capacity and occupancy through family groups
+- Assignment is permanent through family groups (no temporary assignments)
 
 ## Data Model
 
@@ -138,16 +159,30 @@ camp-manager/
 - Basic info: Name, age, parent contact
 - Medical: Allergies, medical notes
 - Registration date
+- **Family group assignment** (required)
+
+### Family Group
+- Name and description
+- **Assigned sleeping room** (required)
+- **Assigned staff members** (array)
+- Color for visual identification
+- List of campers in the group
 
 ### Staff Member
 - Basic info: Name, role, contact
 - Certifications
 - Assigned events
+- Associated family groups
 
-### Room
+### Activity Room
 - Name, type, capacity
 - Location, equipment
 - Usage tracking
+
+### Sleeping Room (Cabin)
+- Name, number of beds
+- Location (free text)
+- Assigned family groups (permanent through family group relationships)
 
 ### Event
 - Title, description, time range
@@ -157,6 +192,12 @@ camp-manager/
 - Assigned staff
 - Required certifications
 - Color coding for calendar
+
+### Camper Group (Dynamic)
+- Name and description
+- Filters: age range, gender, allergies, medical notes
+- Color for visual identification
+- Automatically populated based on filters
 
 ## Conflict Detection
 
@@ -199,8 +240,11 @@ The current version uses local storage with async functions to simulate a backen
 The application comes pre-seeded with sample data including:
 - 48 campers with various ages and allergies
 - 8 staff members with different roles
-- 10 rooms of various types
+- 10 activity rooms of various types
+- 6 sleeping rooms (cabins)
+- 4 family groups assigned to cabins
 - Sample events for a full week schedule
+- Dynamic camper groups with various filters
 
 ### Type Safety
 All data types are defined in the OpenAPI schema and automatically converted to TypeScript types, ensuring consistency when the backend is implemented.

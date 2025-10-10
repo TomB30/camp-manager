@@ -525,9 +525,9 @@ export interface components {
       registrationDate?: string;
       /**
        * Format: uuid
-       * @description ID of the sleeping room assigned to this camper
+       * @description ID of the family group this camper belongs to
        */
-      sleepingRoomId?: string;
+      familyGroupId?: string;
     };
     StaffMember: {
       /** Format: uuid */
@@ -562,18 +562,8 @@ export interface components {
       /** Format: uuid */
       id: string;
       name: string;
-      capacity: number;
-      /** @enum {string} */
-      gender: "boys" | "girls" | "mixed";
-      building?: string;
-      floor?: number;
-      amenities?: string[];
-      /**
-       * Format: uuid
-       * @description Staff member assigned as room supervisor
-       */
-      supervisorId?: string;
-      notes?: string;
+      beds: number;
+      location?: string;
     };
     Event: {
       /** Format: uuid */
@@ -629,7 +619,6 @@ export interface CamperGroupFilter {
   ageMin?: number;
   ageMax?: number;
   gender?: 'male' | 'female';
-  sleepingRoomIds?: string[];
   hasAllergies?: boolean;
 }
 
@@ -639,6 +628,20 @@ export interface CamperGroup {
   description?: string;
   color?: string;
   filters: CamperGroupFilter;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Family Group - fundamental organizational unit
+export interface FamilyGroup {
+  id: string;
+  name: string;
+  description?: string;
+  sleepingRoomId: string; // Required - each family group must be assigned to a room
+  staffMemberIds: string[]; // Staff members assigned to this family group
+  startDate: string; // ISO date string - when the group starts
+  endDate: string; // ISO date string - when the group ends
+  color?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -6,6 +6,7 @@ import StaffMembers from '../views/StaffMembers.vue';
 import Rooms from '../views/Rooms.vue';
 import SleepingRooms from '../views/SleepingRooms.vue';
 import Groups from '../views/Groups.vue';
+import FamilyGroups from '../views/FamilyGroups.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -44,6 +45,11 @@ const router = createRouter({
       path: '/groups',
       name: 'groups',
       component: Groups,
+    },
+    {
+      path: '/family-groups',
+      name: 'family-groups',
+      component: FamilyGroups,
     },
   ],
 });

@@ -1,4 +1,4 @@
-import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup } from '@/types/api';
 
 const STORAGE_KEYS = {
   CAMPERS: 'camp_campers',
@@ -7,6 +7,7 @@ const STORAGE_KEYS = {
   SLEEPING_ROOMS: 'camp_sleeping_rooms',
   EVENTS: 'camp_events',
   CAMPER_GROUPS: 'camp_camper_groups',
+  FAMILY_GROUPS: 'camp_family_groups',
 } as const;
 
 // Simulate async operations to match future API
@@ -167,14 +168,6 @@ class StorageService {
     const rooms = await this.getSleepingRooms();
     const filtered = rooms.filter(r => r.id !== id);
     localStorage.setItem(STORAGE_KEYS.SLEEPING_ROOMS, JSON.stringify(filtered));
-    
-    // Also remove from campers assignments
-    const campers = await this.getCampers();
-    const updatedCampers = campers.map(camper => ({
-      ...camper,
-      sleepingRoomId: camper.sleepingRoomId === id ? undefined : camper.sleepingRoomId,
-    }));
-    localStorage.setItem(STORAGE_KEYS.CAMPERS, JSON.stringify(updatedCampers));
   }
 
   // Events operations
@@ -282,6 +275,41 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.CAMPER_GROUPS, JSON.stringify(filtered));
   }
 
+  // Family Groups operations
+  async getFamilyGroups(): Promise<FamilyGroup[]> {
+    await delay();
+    const data = localStorage.getItem(STORAGE_KEYS.FAMILY_GROUPS);
+    return data ? JSON.parse(data) : [];
+  }
+
+  async getFamilyGroup(id: string): Promise<FamilyGroup | null> {
+    await delay();
+    const groups = await this.getFamilyGroups();
+    return groups.find(g => g.id === id) || null;
+  }
+
+  async saveFamilyGroup(group: FamilyGroup): Promise<FamilyGroup> {
+    await delay();
+    const groups = await this.getFamilyGroups();
+    const index = groups.findIndex(g => g.id === group.id);
+    
+    if (index >= 0) {
+      groups[index] = { ...group, updatedAt: new Date().toISOString() };
+    } else {
+      groups.push(group);
+    }
+    
+    localStorage.setItem(STORAGE_KEYS.FAMILY_GROUPS, JSON.stringify(groups));
+    return groups[index >= 0 ? index : groups.length - 1];
+  }
+
+  async deleteFamilyGroup(id: string): Promise<void> {
+    await delay();
+    const groups = await this.getFamilyGroups();
+    const filtered = groups.filter(g => g.id !== id);
+    localStorage.setItem(STORAGE_KEYS.FAMILY_GROUPS, JSON.stringify(filtered));
+  }
+
   // Utility methods
   async clearAll(): Promise<void> {
     await delay();
@@ -297,6 +325,7 @@ class StorageService {
     sleepingRooms?: SleepingRoom[];
     events?: Event[];
     camperGroups?: CamperGroup[];
+    familyGroups?: FamilyGroup[];
   }): Promise<void> {
     await delay();
     if (data.campers) {
@@ -316,6 +345,9 @@ class StorageService {
     }
     if (data.camperGroups) {
       localStorage.setItem(STORAGE_KEYS.CAMPER_GROUPS, JSON.stringify(data.camperGroups));
+    }
+    if (data.familyGroups) {
+      localStorage.setItem(STORAGE_KEYS.FAMILY_GROUPS, JSON.stringify(data.familyGroups));
     }
   }
 }
