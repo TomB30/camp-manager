@@ -90,141 +90,60 @@
       </DataTable>
 
       <!-- Member Detail Modal -->
-      <Teleport to="body">
-        <div v-if="selectedMemberId" class="modal-overlay" @click.self="selectedMemberId = null">
-          <div class="modal">
-            <div class="modal-header">
-              <h3>{{ selectedMember?.firstName }} {{ selectedMember?.lastName }}</h3>
-              <button class="btn btn-icon btn-secondary" @click="selectedMemberId = null">✕</button>
-            </div>
-            <div class="modal-body">
-              <div v-if="selectedMember">
-                <div class="detail-section">
-                  <div class="detail-label">Role</div>
-                  <div>
-                    <span class="badge badge-primary">{{ formatRole(selectedMember.role) }}</span>
-                  </div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">Manager</div>
-                  <div>
-                    <span class="badge badge-success">{{ getManagerName(selectedMember.managerId) }}</span>
-                  </div>
-                </div>
-
-                <div v-if="getDirectReports(selectedMember.id).length > 0" class="detail-section">
-                  <div class="detail-label">Direct Reports</div>
-                  <div class="flex gap-1 flex-wrap">
-                    <span v-for="report in getDirectReports(selectedMember.id)" :key="report.id" class="badge badge-primary">
-                      {{ report.firstName }} {{ report.lastName }}
-                    </span>
-                  </div>
-                </div>
-
-                <div v-if="selectedMember.email" class="detail-section">
-                  <div class="detail-label">Email</div>
-                  <div>{{ selectedMember.email }}</div>
-                </div>
-
-                <div v-if="selectedMember.phone" class="detail-section">
-                  <div class="detail-label">Phone</div>
-                  <div>{{ selectedMember.phone }}</div>
-                </div>
-
-                <div v-if="selectedMember.certifications && selectedMember.certifications.length > 0" class="detail-section">
-                  <div class="detail-label">Certifications</div>
-                  <div class="flex gap-1 flex-wrap">
-                    <span v-for="cert in selectedMember.certifications" :key="cert" class="badge badge-success">
-                      {{ cert }}
-                    </span>
-                  </div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">Assigned Events</div>
-                  <EventsByDate 
-                    :events="getMemberEvents(selectedMember.id)"
-                    :show-room="true"
-                    :get-room-name="getRoomName"
-                    empty-message="No events assigned"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-error" @click="deleteMemberConfirm">Delete Member</button>
-              <button class="btn btn-secondary" @click="editMember">Edit</button>
-              <button class="btn btn-secondary" @click="selectedMemberId = null">Close</button>
-            </div>
+      <StaffMemberDetailModal
+        :show="!!selectedMemberId"
+        :member="selectedMember"
+        @close="selectedMemberId = null"
+        @edit="editMember"
+        @delete="deleteMemberConfirm"
+      >
+        <template #manager-info>
+          <div>
+            <span class="badge badge-success">{{ selectedMember ? getManagerName(selectedMember.managerId) : '' }}</span>
           </div>
-        </div>
-
-        <!-- Add/Edit Member Modal -->
-        <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
-          <div class="modal">
-            <div class="modal-header">
-              <h3>{{ editingMemberId ? 'Edit Staff Member' : 'Add New Staff Member' }}</h3>
-              <button class="btn btn-icon btn-secondary" @click="closeModal">✕</button>
-            </div>
-            <div class="modal-body">
-              <form @submit.prevent="saveMember">
-                <div class="grid grid-cols-2">
-                  <div class="form-group">
-                    <label class="form-label">First Name</label>
-                    <input v-model="formData.firstName" type="text" class="form-input" required />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Last Name</label>
-                    <input v-model="formData.lastName" type="text" class="form-input" required />
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Role</label>
-                  <Autocomplete
-                    v-model="formData.role"
-                    :options="roleOptions"
-                    placeholder="Select role..."
-                    :required="true"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Manager</label>
-                  <Autocomplete
-                    v-model="formData.managerId"
-                    :options="managerOptions"
-                    placeholder="No Manager (Top Level)"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Email</label>
-                  <input v-model="formData.email" type="email" class="form-input" />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Phone</label>
-                  <input v-model="formData.phone" type="tel" class="form-input" />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Certifications (comma-separated)</label>
-                  <input v-model="certificationsInput" type="text" class="form-input" placeholder="e.g., CPR, First Aid" />
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-secondary" @click="closeModal">Cancel</button>
-              <button class="btn btn-primary" @click="saveMember">
-                {{ editingMemberId ? 'Update' : 'Add' }} Member
-              </button>
-            </div>
+        </template>
+        <template #direct-reports>
+          <div v-if="selectedMember && getDirectReports(selectedMember.id).length > 0" class="flex gap-1 flex-wrap">
+            <span v-for="report in getDirectReports(selectedMember.id)" :key="report.id" class="badge badge-primary">
+              {{ report.firstName }} {{ report.lastName }}
+            </span>
           </div>
-        </div>
-      </Teleport>
+          <div v-else class="text-secondary">No direct reports</div>
+        </template>
+        <template #events-list>
+          <EventsByDate 
+            :events="selectedMember ? getMemberEvents(selectedMember.id) : []"
+            :show-room="true"
+            :get-room-name="getRoomName"
+            empty-message="No events assigned"
+          />
+        </template>
+      </StaffMemberDetailModal>
+
+      <!-- Add/Edit Member Modal -->
+      <StaffMemberFormModal
+        :show="showModal"
+        :is-editing="!!editingMemberId"
+        :form-data="formData"
+        @close="closeModal"
+        @save="saveMember"
+      >
+        <template #role-select>
+          <Autocomplete
+            v-model="formData.role"
+            :options="roleOptions"
+            placeholder="Select role..."
+            :required="true"
+          />
+        </template>
+        <template #manager-select>
+          <Autocomplete
+            v-model="formData.managerId"
+            :options="managerOptions"
+            placeholder="No Manager (Top Level)"
+          />
+        </template>
+      </StaffMemberFormModal>
 
       <!-- Confirm Delete Modal -->
       <ConfirmModal
@@ -251,6 +170,8 @@ import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
 import Autocomplete from '@/components/Autocomplete.vue';
+import StaffMemberDetailModal from '@/components/modals/StaffMemberDetailModal.vue';
+import StaffMemberFormModal from '@/components/modals/StaffMemberFormModal.vue';
 
 export default defineComponent({
   name: 'StaffMembers',
@@ -260,7 +181,9 @@ export default defineComponent({
     ConfirmModal,
     DataTable,
     ViewToggle,
-    Autocomplete
+    Autocomplete,
+    StaffMemberDetailModal,
+    StaffMemberFormModal
   },
   data() {
     return {
@@ -456,21 +379,16 @@ export default defineComponent({
       this.selectedMemberId = null;
       this.showModal = true;
     },
-    async saveMember() {
-      const certifications = this.certificationsInput
-        .split(',')
-        .map(c => c.trim())
-        .filter(c => c.length > 0);
-
+    async saveMember(formData: typeof this.formData & { certifications: string[] }) {
       const memberData: StaffMember = {
         id: this.editingMemberId || `staff-${Date.now()}`,
-        firstName: this.formData.firstName,
-        lastName: this.formData.lastName,
-        role: this.formData.role,
-        email: this.formData.email,
-        phone: this.formData.phone,
-        certifications,
-        managerId: this.formData.managerId || undefined,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        role: formData.role,
+        email: formData.email,
+        phone: formData.phone,
+        certifications: formData.certifications,
+        managerId: formData.managerId || undefined,
       };
 
       if (this.editingMemberId) {

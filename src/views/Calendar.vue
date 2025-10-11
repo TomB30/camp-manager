@@ -142,209 +142,150 @@
     </div>
 
     <!-- Event Detail Modal -->
-    <Teleport to="body">
-      <div v-if="selectedEventId" class="modal-overlay" @click.self="selectedEventId = null">
-        <div class="modal">
-          <div class="modal-header">
-            <h3>{{ selectedEvent?.title }}</h3>
-            <button class="btn btn-icon btn-secondary" @click="selectedEventId = null">✕</button>
+    <EventDetailModal
+      :show="!!selectedEventId"
+      :event="selectedEvent"
+      @close="selectedEventId = null"
+      @delete="deleteEventConfirm"
+    >
+      <template #time>
+        <div v-if="selectedEvent">{{ formatTime(selectedEvent.startTime) }} - {{ formatTime(selectedEvent.endTime) }}</div>
+      </template>
+      <template #room>
+        <div v-if="selectedEvent">{{ getRoomName(selectedEvent.roomId) }}</div>
+      </template>
+      <template #capacity>
+        <div v-if="selectedEvent">
+          {{ selectedEvent.enrolledCamperIds?.length || 0 }}/{{ selectedEvent.capacity }}
+          <span 
+            v-if="(selectedEvent.enrolledCamperIds?.length || 0) >= selectedEvent.capacity"
+            class="badge badge-error ml-2"
+          >
+            Full
+          </span>
+        </div>
+      </template>
+      <template #quick-assign-group>
+        <div class="mb-3 p-3 bg-background rounded border border-primary">
+          <div class="text-sm font-medium mb-2">Quick Assign Camper Group</div>
+          <div class="flex gap-2">
+            <Autocomplete
+              v-model="groupToAssign"
+              :options="groupAssignOptions"
+              placeholder="Select a group..."
+              class="flex-1"
+            />
+            <button 
+              class="btn btn-sm btn-primary"
+              @click="assignGroup"
+              :disabled="!groupToAssign"
+            >
+              Assign
+            </button>
           </div>
-          <div class="modal-body">
-            <div v-if="selectedEvent">
-              <div class="mb-3">
-                <div class="text-sm text-secondary mb-1">Time</div>
-                <div>{{ formatTime(selectedEvent.startTime) }} - {{ formatTime(selectedEvent.endTime) }}</div>
-              </div>
-
-              <div class="mb-3">
-                <div class="text-sm text-secondary mb-1">Room</div>
-                <div>{{ getRoomName(selectedEvent.roomId) }}</div>
-              </div>
-
-              <div class="mb-3">
-                <div class="text-sm text-secondary mb-1">Capacity</div>
-                <div>
-                  {{ selectedEvent.enrolledCamperIds?.length || 0 }}/{{ selectedEvent.capacity }}
-                  <span 
-                    v-if="(selectedEvent.enrolledCamperIds?.length || 0) >= selectedEvent.capacity"
-                    class="badge badge-error ml-2"
-                  >
-                    Full
-                  </span>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <div class="flex items-center justify-between mb-2">
-                  <div class="text-sm text-secondary">Enrolled Campers</div>
-                </div>
-
-                <!-- Assign Group Section -->
-                <div class="mb-3 p-3 bg-background rounded border border-primary">
-                  <div class="text-sm font-medium mb-2">Quick Assign Camper Group</div>
-                  <div class="flex gap-2">
-                    <Autocomplete
-                      v-model="groupToAssign"
-                      :options="groupAssignOptions"
-                      placeholder="Select a group..."
-                      class="flex-1"
-                    />
-                    <button 
-                      class="btn btn-sm btn-primary"
-                      @click="assignGroup"
-                      :disabled="!groupToAssign"
-                    >
-                      Assign
-                    </button>
-                  </div>
-                  <div v-if="store.camperGroups.length === 0" class="text-xs text-secondary mt-2">
-                    No groups available. Create groups in the Groups section.
-                  </div>
-                </div>
-
-                <!-- Assign Sleeping Room Section -->
-                <div 
-                  class="enrolled-campers drop-zone"
-                  :class="{ 'drag-over': isDragOver }"
-                  @drop="onDrop($event, selectedEvent.id)"
-                  @dragover.prevent="isDragOver = true"
-                  @dragleave="isDragOver = false"
-                >
-                  <div
-                    v-for="camperId in selectedEvent.enrolledCamperIds"
-                    :key="camperId"
-                    class="enrolled-camper draggable"
-                    :draggable="true"
-                    @dragstart="onDragStart($event, camperId, selectedEvent.id)"
-                    @dragend="onDragEnd"
-                  >
-                    <div class="camper-info">
-                      <div class="font-medium">
-                        {{ getCamperName(camperId) }}
-                      </div>
-                    </div>
-                    <button 
-                      class="btn btn-sm btn-error"
-                      @click="unenrollCamperFromEvent(selectedEvent.id, camperId)"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                  <div v-if="!selectedEvent.enrolledCamperIds?.length" class="empty-state">
-                    <p class="text-secondary text-sm">No campers enrolled. Drag and drop to enroll.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <div class="text-sm text-secondary mb-1">Assigned Staff</div>
-                <div v-if="selectedEvent.assignedStaffIds?.length" class="flex flex-col gap-1">
-                  <span v-for="staffId in selectedEvent.assignedStaffIds" :key="staffId" class="badge badge-primary">
-                    {{ getStaffName(staffId) }}
-                  </span>
-                </div>
-                <div v-else class="text-secondary">No staff assigned</div>
+          <div v-if="store.camperGroups.length === 0" class="text-xs text-secondary mt-2">
+            No groups available. Create groups in the Groups section.
+          </div>
+        </div>
+      </template>
+      <template #enrolled-campers>
+        <div 
+          v-if="selectedEvent"
+          class="enrolled-campers drop-zone"
+          :class="{ 'drag-over': isDragOver }"
+          @drop="onDrop($event, selectedEvent.id)"
+          @dragover.prevent="isDragOver = true"
+          @dragleave="isDragOver = false"
+        >
+          <div
+            v-for="camperId in selectedEvent.enrolledCamperIds"
+            :key="camperId"
+            class="enrolled-camper draggable"
+            :draggable="true"
+            @dragstart="onDragStart($event, camperId, selectedEvent.id)"
+            @dragend="onDragEnd"
+          >
+            <div class="camper-info">
+              <div class="font-medium">
+                {{ getCamperName(camperId) }}
               </div>
             </div>
+            <button 
+              class="btn btn-sm btn-error"
+              @click="unenrollCamperFromEvent(selectedEvent.id, camperId)"
+            >
+              Remove
+            </button>
           </div>
-          <div class="modal-footer">
-            <button class="btn btn-error" @click="deleteEventConfirm">Delete Event</button>
-            <button class="btn btn-secondary" @click="selectedEventId = null">Close</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Create Event Modal -->
-      <div v-if="showEventModal" class="modal-overlay" @click.self="showEventModal = false">
-        <div class="modal">
-          <div class="modal-header">
-            <h3>Create New Event</h3>
-            <button class="btn btn-icon btn-secondary" @click="showEventModal = false">✕</button>
-          </div>
-          <div class="modal-body">
-            <form @submit.prevent="createEvent">
-              <div class="form-group">
-                <label class="form-label">Title</label>
-                <input v-model="newEvent.title" type="text" class="form-input" required />
-              </div>
-
-              <div class="grid grid-cols-2">
-                <div class="form-group">
-                  <label class="form-label">Start Time</label>
-                  <input v-model="newEvent.startTime" type="time" class="form-input" required />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">End Time</label>
-                  <input v-model="newEvent.endTime" type="time" class="form-input" required />
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Room</label>
-                <Autocomplete
-                  v-model="newEvent.roomId"
-                  :options="roomOptions"
-                  placeholder="Select a room"
-                  :required="true"
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Capacity</label>
-                <input v-model.number="newEvent.capacity" type="number" min="1" class="form-input" required />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Type</label>
-                <Autocomplete
-                  v-model="newEvent.type"
-                  :options="eventTypeOptions"
-                  placeholder="Select event type"
-                />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Color</label>
-                <ColorPicker v-model="newEvent.color" />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Assign Camper Groups (Optional)</label>
-                <div class="sleeping-room-selector">
-                  <div v-for="group in store.camperGroups" :key="group.id" class="checkbox-item">
-                    <label class="checkbox-label">
-                      <input 
-                        type="checkbox" 
-                        :value="group.id" 
-                        v-model="newEvent.camperGroupIds"
-                        class="checkbox-input"
-                      />
-                      <span 
-                        class="group-label" 
-                        :style="{ borderLeft: `3px solid ${group.color || '#6366F1'}` }"
-                      >
-                        {{ group.name }} ({{ getGroupCamperCount(group.id) }} campers)
-                      </span>
-                    </label>
-                  </div>
-                  <div v-if="store.camperGroups.length === 0" class="text-secondary text-sm">
-                    No camper groups available. Create groups in the Groups section.
-                  </div>
-                </div>
-                <div v-if="newEvent.camperGroupIds.length > 0" class="text-xs text-secondary mt-1">
-                  This will automatically enroll {{ getTotalCampersFromGroups(newEvent.camperGroupIds) }} campers when the event is created.
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" @click="showEventModal = false">Cancel</button>
-            <button class="btn btn-primary" @click="createEvent">Create Event</button>
+          <div v-if="!selectedEvent.enrolledCamperIds?.length" class="empty-state">
+            <p class="text-secondary text-sm">No campers enrolled. Drag and drop to enroll.</p>
           </div>
         </div>
-      </div>
-    </Teleport>
+      </template>
+      <template #assigned-staff>
+        <div v-if="selectedEvent && selectedEvent.assignedStaffIds?.length" class="flex flex-col gap-1">
+          <span v-for="staffId in selectedEvent.assignedStaffIds" :key="staffId" class="badge badge-primary">
+            {{ getStaffName(staffId) }}
+          </span>
+        </div>
+        <div v-else class="text-secondary">No staff assigned</div>
+      </template>
+    </EventDetailModal>
+
+    <!-- Create Event Modal -->
+    <EventFormModal
+      :show="showEventModal"
+      :form-data="newEvent"
+      @close="showEventModal = false"
+      @save="createEvent"
+    >
+      <template #room-select>
+        <Autocomplete
+          v-model="newEvent.roomId"
+          :options="roomOptions"
+          placeholder="Select a room"
+          :required="true"
+        />
+      </template>
+      <template #type-select>
+        <Autocomplete
+          v-model="newEvent.type"
+          :options="eventTypeOptions"
+          placeholder="Select event type"
+        />
+      </template>
+      <template #color-picker>
+        <ColorPicker v-model="newEvent.color" />
+      </template>
+      <template #camper-groups-selection>
+        <div class="sleeping-room-selector">
+          <div v-for="group in store.camperGroups" :key="group.id" class="checkbox-item">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                :value="group.id" 
+                v-model="newEvent.camperGroupIds"
+                class="checkbox-input"
+              />
+              <span 
+                class="group-label" 
+                :style="{ borderLeft: `3px solid ${group.color || '#6366F1'}` }"
+              >
+                {{ group.name }} ({{ getGroupCamperCount(group.id) }} campers)
+              </span>
+            </label>
+          </div>
+          <div v-if="store.camperGroups.length === 0" class="text-secondary text-sm">
+            No camper groups available. Create groups in the Groups section.
+          </div>
+        </div>
+      </template>
+      <template #camper-groups-preview>
+        <div v-if="newEvent.camperGroupIds.length > 0" class="text-xs text-secondary mt-1">
+          This will automatically enroll {{ getTotalCampersFromGroups(newEvent.camperGroupIds) }} campers when the event is created.
+        </div>
+      </template>
+    </EventFormModal>
 
     <!-- Confirmation Modal -->
     <ConfirmModal
@@ -373,6 +314,8 @@ import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import Autocomplete from '@/components/Autocomplete.vue';
+import EventDetailModal from '@/components/modals/EventDetailModal.vue';
+import EventFormModal from '@/components/modals/EventFormModal.vue';
 import { filterEventsByDateAndHour } from '@/utils/dateUtils';
 import type { Event } from '@/types/api';
 
@@ -383,6 +326,8 @@ export default defineComponent({
     FilterBar,
     ColorPicker,
     Autocomplete,
+    EventDetailModal,
+    EventFormModal,
   },
   data() {
     return {

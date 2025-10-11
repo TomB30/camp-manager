@@ -118,120 +118,39 @@
       </DataTable>
 
       <!-- Room Detail Modal -->
-      <Teleport to="body">
-        <div v-if="selectedRoomId" class="modal-overlay" @click.self="selectedRoomId = null">
-          <div class="modal">
-            <div class="modal-header">
-              <h3>{{ selectedRoom?.name }}</h3>
-              <button class="btn btn-icon btn-secondary" @click="selectedRoomId = null">✕</button>
-            </div>
-            <div class="modal-body">
-              <div v-if="selectedRoom">
-                <div class="detail-section">
-                  <div class="detail-label">Type</div>
-                  <div>
-                    <span class="badge badge-primary">{{ formatRoomType(selectedRoom.type) }}</span>
-                  </div>
-                </div>
+      <RoomDetailModal
+        :show="!!selectedRoomId"
+        :room="selectedRoom"
+        @close="selectedRoomId = null"
+        @edit="editRoom"
+        @delete="deleteRoomConfirm"
+      >
+        <template #events-list>
+          <EventsByDate 
+            :events="selectedRoom ? getRoomEvents(selectedRoom.id) : []"
+            :show-enrollment="true"
+            empty-message="No events scheduled"
+          />
+        </template>
+      </RoomDetailModal>
 
-                <div class="detail-section">
-                  <div class="detail-label">Capacity</div>
-                  <div>{{ selectedRoom.capacity }} people</div>
-                </div>
-
-                <div v-if="selectedRoom.location" class="detail-section">
-                  <div class="detail-label">Location</div>
-                  <div>{{ selectedRoom.location }}</div>
-                </div>
-
-                <div v-if="selectedRoom.equipment && selectedRoom.equipment.length > 0" class="detail-section">
-                  <div class="detail-label">Equipment</div>
-                  <div class="flex gap-1 flex-wrap">
-                    <span v-for="item in selectedRoom.equipment" :key="item" class="badge badge-success">
-                      {{ item }}
-                    </span>
-                  </div>
-                </div>
-
-                <div v-if="selectedRoom.notes" class="detail-section">
-                  <div class="detail-label">Notes</div>
-                  <div>{{ selectedRoom.notes }}</div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">Scheduled Events</div>
-                  <EventsByDate 
-                    :events="getRoomEvents(selectedRoom.id)"
-                    :show-enrollment="true"
-                    empty-message="No events scheduled"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-error" @click="deleteRoomConfirm">Delete Room</button>
-              <button class="btn btn-secondary" @click="editRoom">Edit</button>
-              <button class="btn btn-secondary" @click="selectedRoomId = null">Close</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Add/Edit Room Modal -->
-        <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
-          <div class="modal">
-            <div class="modal-header">
-              <h3>{{ editingRoomId ? 'Edit Room' : 'Add New Room' }}</h3>
-              <button class="btn btn-icon btn-secondary" @click="closeModal">✕</button>
-            </div>
-            <div class="modal-body">
-              <form @submit.prevent="saveRoom">
-                <div class="form-group">
-                  <label class="form-label">Room Name</label>
-                  <input v-model="formData.name" type="text" class="form-input" required />
-                </div>
-
-                <div class="grid grid-cols-2">
-                  <div class="form-group">
-                    <label class="form-label">Type</label>
-                    <Autocomplete
-                      v-model="formData.type"
-                      :options="roomTypeOptions"
-                      placeholder="Select room type..."
-                      :required="true"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Capacity</label>
-                    <input v-model.number="formData.capacity" type="number" min="1" class="form-input" required />
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Location</label>
-                  <input v-model="formData.location" type="text" class="form-input" />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Equipment (comma-separated)</label>
-                  <input v-model="equipmentInput" type="text" class="form-input" placeholder="e.g., Projector, Tables, Chairs" />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Notes</label>
-                  <textarea v-model="formData.notes" class="form-textarea"></textarea>
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-secondary" @click="closeModal">Cancel</button>
-              <button class="btn btn-primary" @click="saveRoom">
-                {{ editingRoomId ? 'Update' : 'Add' }} Room
-              </button>
-            </div>
-          </div>
-        </div>
-      </Teleport>
+      <!-- Add/Edit Room Modal -->
+      <RoomFormModal
+        :show="showModal"
+        :is-editing="!!editingRoomId"
+        :form-data="formData"
+        @close="closeModal"
+        @save="saveRoom"
+      >
+        <template #type-select>
+          <Autocomplete
+            v-model="formData.type"
+            :options="roomTypeOptions"
+            placeholder="Select room type..."
+            :required="true"
+          />
+        </template>
+      </RoomFormModal>
 
       <!-- Confirm Delete Modal -->
       <ConfirmModal
@@ -257,6 +176,8 @@ import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
 import Autocomplete from '@/components/Autocomplete.vue';
+import RoomDetailModal from '@/components/modals/RoomDetailModal.vue';
+import RoomFormModal from '@/components/modals/RoomFormModal.vue';
 import { 
   BookOpen, 
   Target, 
@@ -277,6 +198,8 @@ export default defineComponent({
     DataTable,
     ViewToggle,
     Autocomplete,
+    RoomDetailModal,
+    RoomFormModal,
     BookOpen,
     Target,
     Dumbbell,
@@ -473,20 +396,15 @@ export default defineComponent({
       this.selectedRoomId = null;
       this.showModal = true;
     },
-    async saveRoom() {
-      const equipment = this.equipmentInput
-        .split(',')
-        .map(e => e.trim())
-        .filter(e => e.length > 0);
-
+    async saveRoom(formData: typeof this.formData & { equipment: string[] }) {
       const roomData: Room = {
         id: this.editingRoomId || `room-${Date.now()}`,
-        name: this.formData.name,
-        type: this.formData.type,
-        capacity: this.formData.capacity,
-        location: this.formData.location,
-        equipment,
-        notes: this.formData.notes,
+        name: formData.name,
+        type: formData.type,
+        capacity: formData.capacity,
+        location: formData.location,
+        equipment: formData.equipment,
+        notes: formData.notes,
       };
 
       if (this.editingRoomId) {

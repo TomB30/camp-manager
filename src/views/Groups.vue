@@ -128,172 +128,65 @@
       </DataTable>
 
       <!-- Group Detail Modal -->
-      <Teleport to="body">
-        <div v-if="selectedGroupId" class="modal-overlay" @click.self="selectedGroupId = null">
-          <div class="modal modal-large">
-            <div class="modal-header">
-              <div>
-                <h3>{{ selectedGroup?.name }}</h3>
-                <p v-if="selectedGroup?.description" class="text-secondary text-sm">
-                  {{ selectedGroup.description }}
-                </p>
+      <GroupDetailModal
+        :show="!!selectedGroupId"
+        :group="selectedGroup"
+        :campers="groupCampers"
+        @close="selectedGroupId = null"
+        @edit="editGroup"
+        @delete="deleteGroupConfirm"
+      >
+        <template #campers-list>
+          <div v-if="groupCampers.length > 0" class="campers-list">
+            <div 
+              v-for="camper in groupCampers" 
+              :key="camper.id"
+              class="camper-item"
+            >
+              <div class="camper-avatar-sm">
+                {{ camper.firstName.charAt(0) }}{{ camper.lastName.charAt(0) }}
               </div>
-              <button class="btn btn-icon btn-secondary" @click="selectedGroupId = null">✕</button>
-            </div>
-            <div class="modal-body">
-              <div v-if="selectedGroup">
-                <div class="detail-section">
-                  <div class="detail-label">Filter Criteria</div>
-                  <div class="group-filters">
-                    <span v-if="selectedGroup.filters.gender" class="filter-tag">
-                      <strong>Gender:</strong> {{ formatGender(selectedGroup.filters.gender) }}
-                    </span>
-                    <span v-if="selectedGroup.filters.ageMin !== undefined || selectedGroup.filters.ageMax !== undefined" class="filter-tag">
-                      <strong>Age:</strong> {{ formatAgeRange(selectedGroup.filters.ageMin, selectedGroup.filters.ageMax) }}
-                    </span>
-                    <span v-if="selectedGroup.filters.hasAllergies !== undefined" class="filter-tag">
-                      <strong>Allergies:</strong> {{ selectedGroup.filters.hasAllergies ? 'Has allergies' : 'No allergies' }}
-                    </span>
-                    <span v-if="!hasAnyFilters(selectedGroup.filters)" class="text-secondary">
-                      No filters applied (all campers)
-                    </span>
-                  </div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">
-                    Matching Campers ({{ groupCampers.length }})
-                  </div>
-                  <div v-if="groupCampers.length > 0" class="campers-list">
-                    <div 
-                      v-for="camper in groupCampers" 
-                      :key="camper.id"
-                      class="camper-item"
-                    >
-                      <div class="camper-avatar-sm">
-                        {{ camper.firstName.charAt(0) }}{{ camper.lastName.charAt(0) }}
-                      </div>
-                      <div class="camper-info">
-                        <div class="camper-name">{{ camper.firstName }} {{ camper.lastName }}</div>
-                        <div class="camper-meta text-sm text-secondary">
-                          Age {{ camper.age }} • {{ formatGender(camper.gender) }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div v-else class="text-secondary">
-                    No campers match the current filter criteria.
-                  </div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">Metadata</div>
-                  <div class="text-sm text-secondary">
-                    <div>Created: {{ formatDate(selectedGroup.createdAt) }}</div>
-                    <div>Last Updated: {{ formatDate(selectedGroup.updatedAt) }}</div>
-                  </div>
+              <div class="camper-info">
+                <div class="camper-name">{{ camper.firstName }} {{ camper.lastName }}</div>
+                <div class="camper-meta text-sm text-secondary">
+                  Age {{ camper.age }} • {{ formatGender(camper.gender) }}
                 </div>
               </div>
             </div>
-            <div class="modal-footer">
-              <button class="btn btn-error" @click="deleteGroupConfirm">Delete Group</button>
-              <button class="btn btn-secondary" @click="editGroup">Edit</button>
-              <button class="btn btn-secondary" @click="selectedGroupId = null">Close</button>
-            </div>
           </div>
-        </div>
-
-        <!-- Add/Edit Group Modal -->
-        <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
-          <div class="modal modal-large">
-            <div class="modal-header">
-              <h3>{{ editingGroupId ? 'Edit Group' : 'Create New Group' }}</h3>
-              <button class="btn btn-icon btn-secondary" @click="closeModal">✕</button>
-            </div>
-            <div class="modal-body">
-              <form @submit.prevent="saveGroup">
-                <div class="form-group">
-                  <label class="form-label">Group Name *</label>
-                  <input v-model="formData.name" type="text" class="form-input" required placeholder="e.g., Junior Campers" />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Description</label>
-                  <textarea 
-                    v-model="formData.description" 
-                    class="form-textarea" 
-                    rows="2"
-                    placeholder="Optional description of this group"
-                  ></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Color</label>
-                  <ColorPicker v-model="formData.color" />
-                </div>
-
-                <div class="form-divider">
-                  <span>Filter Criteria</span>
-                </div>
-
-                <div class="grid grid-cols-2">
-                  <div class="form-group">
-                    <label class="form-label">Minimum Age</label>
-                    <input 
-                      v-model.number="formData.filters.ageMin" 
-                      type="number" 
-                      min="5" 
-                      max="18" 
-                      class="form-input"
-                      placeholder="No minimum"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Maximum Age</label>
-                    <input 
-                      v-model.number="formData.filters.ageMax" 
-                      type="number" 
-                      min="5" 
-                      max="18" 
-                      class="form-input"
-                      placeholder="No maximum"
-                    />
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Gender</label>
-                  <Autocomplete
-                    v-model="formData.filters.gender"
-                    :options="genderFilterOptions"
-                    placeholder="Any gender"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Allergies</label>
-                  <Autocomplete
-                    v-model="formData.filters.hasAllergies"
-                    :options="allergiesFilterOptions"
-                    placeholder="Any (with or without allergies)"
-                  />
-                </div>
-
-                <div class="form-info">
-                  <strong>Preview:</strong> {{ getPreviewCount() }} campers match these criteria
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-secondary" @click="closeModal">Cancel</button>
-              <button class="btn btn-primary" @click="saveGroup">
-                {{ editingGroupId ? 'Update' : 'Create' }} Group
-              </button>
-            </div>
+          <div v-else class="text-secondary">
+            No campers match the current filter criteria.
           </div>
-        </div>
-      </Teleport>
+        </template>
+      </GroupDetailModal>
+
+      <!-- Add/Edit Group Modal -->
+      <GroupFormModal
+        :show="showModal"
+        :is-editing="!!editingGroupId"
+        :form-data="formData"
+        :preview-count="getPreviewCount()"
+        @close="closeModal"
+        @save="saveGroup"
+      >
+        <template #color-picker>
+          <ColorPicker v-model="formData.color" />
+        </template>
+        <template #gender-select>
+          <Autocomplete
+            v-model="formData.filters.gender"
+            :options="genderFilterOptions"
+            placeholder="Any gender"
+          />
+        </template>
+        <template #allergies-select>
+          <Autocomplete
+            v-model="formData.filters.hasAllergies"
+            :options="allergiesFilterOptions"
+            placeholder="Any (with or without allergies)"
+          />
+        </template>
+      </GroupFormModal>
 
       <!-- Confirmation Modal -->
       <ConfirmModal
@@ -321,6 +214,8 @@ import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
 import Autocomplete from '@/components/Autocomplete.vue';
+import GroupDetailModal from '@/components/modals/GroupDetailModal.vue';
+import GroupFormModal from '@/components/modals/GroupFormModal.vue';
 
 export default defineComponent({
   name: 'Groups',
@@ -331,6 +226,8 @@ export default defineComponent({
     DataTable,
     ViewToggle,
     Autocomplete,
+    GroupDetailModal,
+    GroupFormModal,
   },
   data() {
     return {
@@ -529,19 +426,19 @@ export default defineComponent({
       this.selectedGroupId = null;
       this.showModal = true;
     },
-    async saveGroup() {
+    async saveGroup(formData: typeof this.formData) {
       const filters: CamperGroupFilter = {
-        ageMin: this.formData.filters.ageMin,
-        ageMax: this.formData.filters.ageMax,
-        gender: this.formData.filters.gender || undefined,
-        hasAllergies: this.formData.filters.hasAllergies,
+        ageMin: formData.filters.ageMin,
+        ageMax: formData.filters.ageMax,
+        gender: formData.filters.gender || undefined,
+        hasAllergies: formData.filters.hasAllergies,
       };
 
       const groupData: CamperGroup = {
         id: this.editingGroupId || `group-${Date.now()}`,
-        name: this.formData.name,
-        description: this.formData.description || undefined,
-        color: this.formData.color || '#6366F1',
+        name: formData.name,
+        description: formData.description || undefined,
+        color: formData.color || '#6366F1',
         filters,
         createdAt: this.editingGroupId 
           ? this.store.getCamperGroupById(this.editingGroupId)?.createdAt || new Date().toISOString()

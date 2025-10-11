@@ -127,222 +127,154 @@
       </DataTable>
 
       <!-- Family Group Detail Modal -->
-      <Teleport to="body">
-        <div v-if="selectedGroupId" class="modal-overlay" @click.self="selectedGroupId = null">
-          <div class="modal modal-lg">
-            <div class="modal-header">
-              <h3>{{ selectedGroup?.name }}</h3>
-              <button class="btn btn-icon btn-secondary" @click="selectedGroupId = null">✕</button>
+      <FamilyGroupDetailModal
+        :show="!!selectedGroupId"
+        :group="selectedGroup"
+        :campers="groupCampers"
+        @close="selectedGroupId = null"
+        @edit="editGroup"
+        @delete="deleteGroupConfirm"
+      >
+        <template #sleeping-room>
+          <span class="badge badge-primary">{{ selectedGroup ? getSleepingRoomName(selectedGroup.sleepingRoomId) : '' }}</span>
+        </template>
+        <template #staff-members>
+          <div v-if="selectedGroup && selectedGroup.staffMemberIds.length > 0">
+            <div class="flex gap-2 flex-wrap">
+              <span 
+                v-for="staffId in selectedGroup.staffMemberIds" 
+                :key="staffId" 
+                class="badge badge-success"
+              >
+                {{ getStaffMemberName(staffId) }}
+              </span>
             </div>
-            <div class="modal-body">
-              <div v-if="selectedGroup">
-                <div class="detail-section">
-                  <div class="detail-label">Description</div>
-                  <div>{{ selectedGroup.description || 'No description provided' }}</div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">Dates</div>
-                  <div>
-                    <span class="badge badge-primary">
-                      {{ formatDate(selectedGroup.startDate) }} - {{ formatDate(selectedGroup.endDate) }}
-                    </span>
-                    <div class="text-xs text-secondary mt-1">
-                      {{ getDayCount(selectedGroup.startDate, selectedGroup.endDate) }} days
-                    </div>
-                  </div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">Sleeping Room</div>
-                  <div>
-                    <span class="badge badge-primary">{{ getSleepingRoomName(selectedGroup.sleepingRoomId) }}</span>
-                  </div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">Staff Members</div>
-                  <div v-if="selectedGroup.staffMemberIds.length > 0">
-                    <div class="flex gap-2 flex-wrap">
-                      <span 
-                        v-for="staffId in selectedGroup.staffMemberIds" 
-                        :key="staffId" 
-                        class="badge badge-success"
-                      >
-                        {{ getStaffMemberName(staffId) }}
-                      </span>
-                    </div>
-                  </div>
-                  <div v-else class="text-secondary">No staff members assigned</div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">Campers ({{ groupCampers.length }})</div>
-                  <div v-if="groupCampers.length > 0" class="campers-list">
-                    <div 
-                      v-for="camper in groupCampers" 
-                      :key="camper.id"
-                      class="camper-item"
-                    >
-                      <div class="camper-avatar-sm">
-                        {{ camper.firstName.charAt(0) }}{{ camper.lastName.charAt(0) }}
-                      </div>
-                      <div class="camper-info">
-                        <div class="camper-name">{{ camper.firstName }} {{ camper.lastName }}</div>
-                        <div class="camper-meta text-sm text-secondary">
-                          Age {{ camper.age }} • {{ formatGender(camper.gender) }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div v-else class="text-secondary">
-                    No campers in this family group yet.
-                  </div>
+          </div>
+          <div v-else class="text-secondary">No staff members assigned</div>
+        </template>
+        <template #campers-list>
+          <div v-if="groupCampers.length > 0" class="campers-list">
+            <div 
+              v-for="camper in groupCampers" 
+              :key="camper.id"
+              class="camper-item"
+            >
+              <div class="camper-avatar-sm">
+                {{ camper.firstName.charAt(0) }}{{ camper.lastName.charAt(0) }}
+              </div>
+              <div class="camper-info">
+                <div class="camper-name">{{ camper.firstName }} {{ camper.lastName }}</div>
+                <div class="camper-meta text-sm text-secondary">
+                  Age {{ camper.age }} • {{ formatGender(camper.gender) }}
                 </div>
               </div>
             </div>
-            <div class="modal-footer">
-              <button class="btn btn-error" @click="deleteGroupConfirm">Delete Group</button>
-              <button class="btn btn-secondary" @click="editGroup">Edit</button>
-              <button class="btn btn-secondary" @click="selectedGroupId = null">Close</button>
-            </div>
           </div>
-        </div>
+          <div v-else class="text-secondary">
+            No campers in this family group yet.
+          </div>
+        </template>
+      </FamilyGroupDetailModal>
 
-        <!-- Add/Edit Family Group Modal -->
-        <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
-          <div class="modal">
-            <div class="modal-header">
-              <h3>{{ editingGroupId ? 'Edit Family Group' : 'Create New Family Group' }}</h3>
-              <button class="btn btn-icon btn-secondary" @click="closeModal">✕</button>
+      <!-- Add/Edit Family Group Modal -->
+      <FamilyGroupFormModal
+        :show="showModal"
+        :is-editing="!!editingGroupId"
+        :form-data="formData"
+        @close="closeModal"
+        @save="saveGroup"
+      >
+        <template #campers-selection>
+          <div class="campers-selection">
+            <div v-if="formData.camperIds.length > 0" class="selected-campers">
+              <div 
+                v-for="camperId in formData.camperIds"
+                :key="camperId"
+                class="selected-camper-item"
+              >
+                <div class="camper-info-sm">
+                  <div class="camper-avatar-xs">
+                    {{ getCamperInitials(camperId) }}
+                  </div>
+                  <span>{{ getCamperFullName(camperId) }}</span>
+                </div>
+                <button 
+                  type="button"
+                  class="btn-remove"
+                  @click="removeCamper(camperId)"
+                  title="Remove camper"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
-            <div class="modal-body">
-              <form @submit.prevent="saveGroup">
-                <div class="form-group">
-                  <label class="form-label">Group Name</label>
-                  <input v-model="formData.name" type="text" class="form-input" required placeholder="e.g., Eagles Family" />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Description</label>
-                  <textarea v-model="formData.description" class="form-textarea" placeholder="Optional description..."></textarea>
-                </div>
-
-                <div class="grid grid-cols-2">
-                  <div class="form-group">
-                    <label class="form-label">Start Date</label>
-                    <input v-model="formData.startDate" type="date" class="form-input" required />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">End Date</label>
-                    <input v-model="formData.endDate" type="date" class="form-input" required />
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Campers in this Group</label>
-                  <div class="campers-selection">
-                    <div v-if="formData.camperIds.length > 0" class="selected-campers">
-                      <div 
-                        v-for="camperId in formData.camperIds"
-                        :key="camperId"
-                        class="selected-camper-item"
-                      >
-                        <div class="camper-info-sm">
-                          <div class="camper-avatar-xs">
-                            {{ getCamperInitials(camperId) }}
-                          </div>
-                          <span>{{ getCamperFullName(camperId) }}</span>
-                        </div>
-                        <button 
-                          type="button"
-                          class="btn-remove"
-                          @click="removeCamper(camperId)"
-                          title="Remove camper"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    </div>
-                    <div v-else class="text-sm text-secondary mb-2">
-                      No campers assigned yet
-                    </div>
-                    
-                    <div class="add-camper-section">
-                      <Autocomplete
-                        v-model="selectedCamperToAdd"
-                        :options="availableCampersOptions"
-                        placeholder="Add a camper..."
-                      />
-                      <button 
-                        type="button"
-                        class="btn btn-sm btn-primary"
-                        @click="addCamper"
-                        :disabled="!selectedCamperToAdd"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Staff Members</label>
-                  <div class="checkbox-group">
-                    <label 
-                      v-for="staff in store.staffMembers" 
-                      :key="staff.id"
-                      class="checkbox-label"
-                    >
-                      <input 
-                        type="checkbox" 
-                        :value="staff.id"
-                        v-model="formData.staffMemberIds"
-                        class="checkbox-input"
-                      />
-                      <span>{{ staff.firstName }} {{ staff.lastName }} ({{ staff.role }})</span>
-                    </label>
-                    <div v-if="store.staffMembers.length === 0" class="text-sm text-secondary">
-                      No staff members available
-                    </div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Sleeping Room</label>
-                  <div v-if="totalPeople > 0" class="capacity-info mb-2">
-                    <span class="badge badge-primary">
-                      {{ totalPeople }} {{ totalPeople === 1 ? 'person' : 'people' }} 
-                      ({{ formData.camperIds.length }} {{ formData.camperIds.length === 1 ? 'camper' : 'campers' }}
-                      + {{ formData.staffMemberIds.length }} staff)
-                    </span>
-                  </div>
-                  <Autocomplete
-                    v-model="formData.sleepingRoomId"
-                    :options="sleepingRoomOptions"
-                    placeholder="Select a sleeping room..."
-                    :required="true"
-                  />
-                  <div v-if="formData.sleepingRoomId && getSelectedRoom() && !canFitInRoom(getSelectedRoom())" class="capacity-warning">
-                    ⚠️ This room may not have enough beds for all campers and staff
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Group Color</label>
-                  <ColorPicker v-model="formData.color" />
-                </div>
-              </form>
+            <div v-else class="text-sm text-secondary mb-2">
+              No campers assigned yet
             </div>
-            <div class="modal-footer">
-              <button class="btn btn-secondary" @click="closeModal">Cancel</button>
-              <button class="btn btn-primary" @click="saveGroup">
-                {{ editingGroupId ? 'Update' : 'Create' }} Group
+            
+            <div class="add-camper-section">
+              <Autocomplete
+                v-model="selectedCamperToAdd"
+                :options="availableCampersOptions"
+                placeholder="Add a camper..."
+              />
+              <button 
+                type="button"
+                class="btn btn-sm btn-primary"
+                @click="addCamper"
+                :disabled="!selectedCamperToAdd"
+              >
+                Add
               </button>
             </div>
           </div>
-        </div>
-      </Teleport>
+        </template>
+        <template #staff-selection>
+          <div class="checkbox-group">
+            <label 
+              v-for="staff in store.staffMembers" 
+              :key="staff.id"
+              class="checkbox-label"
+            >
+              <input 
+                type="checkbox" 
+                :value="staff.id"
+                v-model="formData.staffMemberIds"
+                class="checkbox-input"
+              />
+              <span>{{ staff.firstName }} {{ staff.lastName }} ({{ staff.role }})</span>
+            </label>
+            <div v-if="store.staffMembers.length === 0" class="text-sm text-secondary">
+              No staff members available
+            </div>
+          </div>
+        </template>
+        <template #room-info>
+          <div v-if="totalPeople > 0" class="capacity-info mb-2">
+            <span class="badge badge-primary">
+              {{ totalPeople }} {{ totalPeople === 1 ? 'person' : 'people' }} 
+              ({{ formData.camperIds.length }} {{ formData.camperIds.length === 1 ? 'camper' : 'campers' }}
+              + {{ formData.staffMemberIds.length }} staff)
+            </span>
+          </div>
+        </template>
+        <template #room-select>
+          <Autocomplete
+            v-model="formData.sleepingRoomId"
+            :options="sleepingRoomOptions"
+            placeholder="Select a sleeping room..."
+            :required="true"
+          />
+        </template>
+        <template #capacity-warning>
+          <div v-if="formData.sleepingRoomId && getSelectedRoom() && !canFitInRoom(getSelectedRoom())" class="capacity-warning">
+            ⚠️ This room may not have enough beds for all campers and staff
+          </div>
+        </template>
+        <template #color-picker>
+          <ColorPicker v-model="formData.color" />
+        </template>
+      </FamilyGroupFormModal>
 
       <!-- Confirm Delete Modal -->
       <ConfirmModal
@@ -369,6 +301,8 @@ import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
 import Autocomplete from '@/components/Autocomplete.vue';
+import FamilyGroupDetailModal from '@/components/modals/FamilyGroupDetailModal.vue';
+import FamilyGroupFormModal from '@/components/modals/FamilyGroupFormModal.vue';
 import { Bed, Users } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -380,6 +314,8 @@ export default defineComponent({
     DataTable,
     ViewToggle,
     Autocomplete,
+    FamilyGroupDetailModal,
+    FamilyGroupFormModal,
     Bed,
     Users,
   },
@@ -575,16 +511,16 @@ export default defineComponent({
       this.selectedGroupId = null;
       this.showModal = true;
     },
-    async saveGroup() {
+    async saveGroup(formData: typeof this.formData) {
       const groupData: FamilyGroup = {
         id: this.editingGroupId || `family-${Date.now()}`,
-        name: this.formData.name,
-        description: this.formData.description || undefined,
-        startDate: new Date(this.formData.startDate).toISOString(),
-        endDate: new Date(this.formData.endDate).toISOString(),
-        sleepingRoomId: this.formData.sleepingRoomId,
-        staffMemberIds: this.formData.staffMemberIds,
-        color: this.formData.color,
+        name: formData.name,
+        description: formData.description || undefined,
+        startDate: new Date(formData.startDate).toISOString(),
+        endDate: new Date(formData.endDate).toISOString(),
+        sleepingRoomId: formData.sleepingRoomId,
+        staffMemberIds: formData.staffMemberIds,
+        color: formData.color,
         createdAt: this.editingGroupId 
           ? this.store.getFamilyGroupById(this.editingGroupId)?.createdAt || new Date().toISOString()
           : new Date().toISOString(),
@@ -600,10 +536,10 @@ export default defineComponent({
         const currentCamperIds = currentCampers.map(c => c.id);
         
         // Find campers to remove (were in group, but not in formData)
-        const campersToRemove = currentCamperIds.filter(id => !this.formData.camperIds.includes(id));
+        const campersToRemove = currentCamperIds.filter(id => !formData.camperIds.includes(id));
         
         // Find campers to add (in formData, but not currently in group)
-        const campersToAdd = this.formData.camperIds.filter(id => !currentCamperIds.includes(id));
+        const campersToAdd = formData.camperIds.filter(id => !currentCamperIds.includes(id));
         
         // Remove campers from this group (unassign them)
         for (const camperId of campersToRemove) {
@@ -631,7 +567,7 @@ export default defineComponent({
         await this.store.addFamilyGroup(groupData);
         
         // Assign all selected campers to the new group
-        for (const camperId of this.formData.camperIds) {
+        for (const camperId of formData.camperIds) {
           const camper = this.store.getCamperById(camperId);
           if (camper) {
             await this.store.updateCamper({

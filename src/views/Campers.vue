@@ -94,156 +94,59 @@
       </DataTable>
 
       <!-- Camper Detail Modal -->
-      <Teleport to="body">
-        <div v-if="selectedCamperId" class="modal-overlay" @click.self="selectedCamperId = null">
-          <div class="modal">
-            <div class="modal-header">
-              <h3>{{ selectedCamper?.firstName }} {{ selectedCamper?.lastName }}</h3>
-              <button class="btn btn-icon btn-secondary" @click="selectedCamperId = null">✕</button>
-            </div>
-            <div class="modal-body">
-              <div v-if="selectedCamper">
-                <div class="detail-section">
-                  <div class="detail-label">Age</div>
-                  <div>{{ selectedCamper.age }} years old</div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">Parent Contact</div>
-                  <div>{{ selectedCamper.parentContact }}</div>
-                </div>
-
-                <div v-if="selectedCamper.allergies && selectedCamper.allergies.length > 0" class="detail-section">
-                  <div class="detail-label">Allergies</div>
-                  <div class="flex gap-1 flex-wrap">
-                    <span v-for="allergy in selectedCamper.allergies" :key="allergy" class="badge badge-warning">
-                      {{ allergy }}
-                    </span>
-                  </div>
-                </div>
-
-                <div v-if="selectedCamper.medicalNotes" class="detail-section">
-                  <div class="detail-label">Medical Notes</div>
-                  <div>{{ selectedCamper.medicalNotes }}</div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">Gender</div>
-                  <div>
-                    <span class="badge badge-primary">{{ formatGender(selectedCamper.gender) }}</span>
-                  </div>
-                </div>
-
-                <div v-if="selectedCamper.registrationDate" class="detail-section">
-                  <div class="detail-label">Registration Date</div>
-                  <div>{{ formatDate(selectedCamper.registrationDate) }}</div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">Family Group</div>
-                  <div v-if="selectedCamper.familyGroupId && getFamilyGroup(selectedCamper.familyGroupId)">
-                    <div class="family-group-info">
-                      <span class="badge" :style="{ background: getFamilyGroup(selectedCamper.familyGroupId)?.color || '#6366F1' }">
-                        {{ getFamilyGroup(selectedCamper.familyGroupId)?.name }}
-                      </span>
-                      <div v-if="getFamilyGroup(selectedCamper.familyGroupId)?.sleepingRoomId" class="text-xs text-secondary mt-1">
-                        Room: {{ getSleepingRoomName(getFamilyGroup(selectedCamper.familyGroupId)?.sleepingRoomId || '') }}
-                      </div>
-                    </div>
-                  </div>
-                  <div v-else class="text-secondary">Not assigned to a family group</div>
-                </div>
-
-                <div class="detail-section">
-                  <div class="detail-label">Enrolled Events</div>
-                  <EventsByDate 
-                    :events="getCamperEvents(selectedCamper.id)"
-                    empty-message="No events enrolled"
-                  />
-                </div>
+      <CamperDetailModal
+        :show="!!selectedCamperId"
+        :camper="selectedCamper"
+        @close="selectedCamperId = null"
+        @edit="editCamper"
+        @delete="deleteCamperConfirm"
+      >
+        <template #family-group>
+          <div v-if="selectedCamper?.familyGroupId && getFamilyGroup(selectedCamper.familyGroupId)">
+            <div class="family-group-info">
+              <span class="badge" :style="{ background: getFamilyGroup(selectedCamper.familyGroupId)?.color || '#6366F1' }">
+                {{ getFamilyGroup(selectedCamper.familyGroupId)?.name }}
+              </span>
+              <div v-if="getFamilyGroup(selectedCamper.familyGroupId)?.sleepingRoomId" class="text-xs text-secondary mt-1">
+                Room: {{ getSleepingRoomName(getFamilyGroup(selectedCamper.familyGroupId)?.sleepingRoomId || '') }}
               </div>
             </div>
-            <div class="modal-footer">
-              <button class="btn btn-error" @click="deleteCamperConfirm">Delete Camper</button>
-              <button class="btn btn-secondary" @click="editCamper">Edit</button>
-              <button class="btn btn-secondary" @click="selectedCamperId = null">Close</button>
-            </div>
           </div>
-        </div>
+          <div v-else class="text-secondary">Not assigned to a family group</div>
+        </template>
+        <template #events>
+          <EventsByDate 
+            :events="selectedCamper ? getCamperEvents(selectedCamper.id) : []"
+            empty-message="No events enrolled"
+          />
+        </template>
+      </CamperDetailModal>
 
-        <!-- Add/Edit Camper Modal -->
-        <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
-          <div class="modal">
-            <div class="modal-header">
-              <h3>{{ editingCamperId ? 'Edit Camper' : 'Add New Camper' }}</h3>
-              <button class="btn btn-icon btn-secondary" @click="closeModal">✕</button>
-            </div>
-            <div class="modal-body">
-              <form @submit.prevent="saveCamper">
-                <div class="grid grid-cols-2">
-                  <div class="form-group">
-                    <label class="form-label">First Name</label>
-                    <input v-model="formData.firstName" type="text" class="form-input" required />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Last Name</label>
-                    <input v-model="formData.lastName" type="text" class="form-input" required />
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-2">
-                  <div class="form-group">
-                    <label class="form-label">Age</label>
-                    <input v-model.number="formData.age" type="number" min="5" max="18" class="form-input" required />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Gender</label>
-                    <Autocomplete
-                      v-model="formData.gender"
-                      :options="genderOptions"
-                      placeholder="Select gender..."
-                      :required="true"
-                    />
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Parent Contact (Email/Phone)</label>
-                  <input v-model="formData.parentContact" type="text" class="form-input" required />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Family Group</label>
-                  <Autocomplete
-                    v-model="formData.familyGroupId"
-                    :options="familyGroupOptions"
-                    placeholder="Select a family group..."
-                    :required="true"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Allergies (comma-separated)</label>
-                  <input v-model="allergiesInput" type="text" class="form-input" placeholder="e.g., Peanuts, Dairy" />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Medical Notes</label>
-                  <textarea v-model="formData.medicalNotes" class="form-textarea"></textarea>
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button class="btn btn-secondary" @click="closeModal">Cancel</button>
-              <button class="btn btn-primary" @click="saveCamper">
-                {{ editingCamperId ? 'Update' : 'Add' }} Camper
-              </button>
-            </div>
-          </div>
-        </div>
-      </Teleport>
+      <!-- Add/Edit Camper Modal -->
+      <CamperFormModal
+        :show="showModal"
+        :is-editing="!!editingCamperId"
+        :form-data="formData"
+        @close="closeModal"
+        @save="saveCamper"
+      >
+        <template #gender-select>
+          <Autocomplete
+            v-model="formData.gender"
+            :options="genderOptions"
+            placeholder="Select gender..."
+            :required="true"
+          />
+        </template>
+        <template #family-group-select>
+          <Autocomplete
+            v-model="formData.familyGroupId"
+            :options="familyGroupOptions"
+            placeholder="Select a family group..."
+            :required="true"
+          />
+        </template>
+      </CamperFormModal>
 
       <!-- Confirmation Modal -->
       <ConfirmModal
@@ -271,6 +174,8 @@ import EventsByDate from '@/components/EventsByDate.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
 import Autocomplete from '@/components/Autocomplete.vue';
+import CamperDetailModal from '@/components/modals/CamperDetailModal.vue';
+import CamperFormModal from '@/components/modals/CamperFormModal.vue';
 
 export default defineComponent({
   name: 'Campers',
@@ -280,7 +185,9 @@ export default defineComponent({
     EventsByDate,
     DataTable,
     ViewToggle,
-    Autocomplete
+    Autocomplete,
+    CamperDetailModal,
+    CamperFormModal
   },
   data() {
     return {
@@ -454,22 +361,17 @@ export default defineComponent({
       this.selectedCamperId = null;
       this.showModal = true;
     },
-    async saveCamper() {
-      const allergies = this.allergiesInput
-        .split(',')
-        .map(a => a.trim())
-        .filter(a => a.length > 0);
-
+    async saveCamper(formData: typeof this.formData & { allergies: string[] }) {
       const camperData: Camper = {
         id: this.editingCamperId || `camper-${Date.now()}`,
-        firstName: this.formData.firstName,
-        lastName: this.formData.lastName,
-        age: this.formData.age,
-        gender: this.formData.gender,
-        parentContact: this.formData.parentContact,
-        allergies,
-        medicalNotes: this.formData.medicalNotes,
-        familyGroupId: this.formData.familyGroupId || undefined,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        age: formData.age,
+        gender: formData.gender,
+        parentContact: formData.parentContact,
+        allergies: formData.allergies,
+        medicalNotes: formData.medicalNotes,
+        familyGroupId: formData.familyGroupId || undefined,
         registrationDate: this.editingCamperId 
           ? this.store.getCamperById(this.editingCamperId)?.registrationDate 
           : new Date().toISOString(),
@@ -591,21 +493,10 @@ export default defineComponent({
   flex-wrap: wrap;
 }
 
-.detail-section {
-  margin-bottom: 1.5rem;
-}
-
-.detail-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
-}
-
-.events-list {
+.family-group-info {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 /* Table View Styles */
