@@ -15,10 +15,38 @@
           <Calendar :size="20" class="nav-icon" />
           <span class="nav-text">Calendar</span>
         </RouterLink>
-        <RouterLink to="/campers" class="nav-link">
-          <Users :size="20" class="nav-icon" />
-          <span class="nav-text">Campers</span>
-        </RouterLink>
+        
+        <!-- Collapsible Campers Section -->
+        <div class="nav-section">
+          <button 
+            class="nav-section-header" 
+            @click="toggleCampersSection"
+            type="button"
+          >
+            <Users :size="20" class="nav-icon" />
+            <span class="nav-text">Campers</span>
+            <ChevronRight 
+              :size="16" 
+              class="nav-chevron"
+              :class="{ 'nav-chevron-expanded': isCampersSectionExpanded }"
+            />
+          </button>
+          <div v-if="isCampersSectionExpanded" class="nav-subsection">
+            <RouterLink to="/campers" class="nav-link nav-sublink">
+              <Users :size="18" class="nav-icon" />
+              <span class="nav-text">All Campers</span>
+            </RouterLink>
+            <RouterLink to="/groups" class="nav-link nav-sublink">
+              <FolderOpen :size="18" class="nav-icon" />
+              <span class="nav-text">Camper Groups</span>
+            </RouterLink>
+            <RouterLink to="/family-groups" class="nav-link nav-sublink">
+              <UsersRound :size="18" class="nav-icon" />
+              <span class="nav-text">Family Groups</span>
+            </RouterLink>
+          </div>
+        </div>
+        
         <RouterLink to="/staff" class="nav-link">
           <UsersRound :size="20" class="nav-icon" />
           <span class="nav-text">Staff</span>
@@ -30,14 +58,6 @@
         <RouterLink to="/sleeping-rooms" class="nav-link">
           <Bed :size="20" class="nav-icon" />
           <span class="nav-text">Cabins</span>
-        </RouterLink>
-        <RouterLink to="/family-groups" class="nav-link">
-          <UsersRound :size="20" class="nav-icon" />
-          <span class="nav-text">Family Groups</span>
-        </RouterLink>
-        <RouterLink to="/groups" class="nav-link">
-          <FolderOpen :size="20" class="nav-icon" />
-          <span class="nav-text">Camper Groups</span>
         </RouterLink>
       </nav>
 
@@ -65,6 +85,7 @@ import {
   Home, 
   Bed, 
   FolderOpen,
+  ChevronRight,
   AlertTriangle 
 } from 'lucide-vue-next';
 
@@ -79,11 +100,22 @@ export default defineComponent({
     Home,
     Bed,
     FolderOpen,
+    ChevronRight,
     AlertTriangle
+  },
+  data() {
+    return {
+      isCampersSectionExpanded: true
+    };
   },
   computed: {
     store() {
       return useCampStore();
+    }
+  },
+  methods: {
+    toggleCampersSection() {
+      this.isCampersSectionExpanded = !this.isCampersSectionExpanded;
     }
   }
 });
@@ -171,6 +203,65 @@ export default defineComponent({
   background: #EFF6FF;
 }
 
+/* Collapsible Section Styles */
+.nav-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius);
+  transition: all 0.15s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-section-header:hover {
+  color: var(--text-primary);
+  background: var(--surface-secondary);
+}
+
+.nav-chevron {
+  margin-left: auto;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.nav-chevron-expanded {
+  transform: rotate(90deg);
+}
+
+.nav-subsection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+  margin-left: 0.5rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--border-light);
+}
+
+.nav-sublink {
+  font-size: 0.8125rem;
+  padding: 0.625rem 0.875rem;
+}
+
+.nav-sublink .nav-icon {
+  opacity: 0.7;
+}
+
 .conflicts-section {
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--border-light);
@@ -222,6 +313,38 @@ export default defineComponent({
 
   .nav-text {
     font-size: 0.75rem;
+  }
+
+  .nav-section {
+    min-width: auto;
+  }
+
+  .nav-section-header {
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 80px;
+    text-align: center;
+    padding: 0.5rem;
+  }
+
+  .nav-chevron {
+    margin-left: 0;
+  }
+
+  .nav-subsection {
+    flex-direction: row;
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+    gap: 0;
+  }
+
+  .nav-sublink {
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 80px;
+    text-align: center;
+    padding: 0.5rem;
   }
 
   .conflicts-section {
