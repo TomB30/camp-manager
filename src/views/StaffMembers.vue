@@ -183,27 +183,21 @@
 
                 <div class="form-group">
                   <label class="form-label">Role</label>
-                  <select v-model="formData.role" class="form-select" required>
-                    <option value="counselor">Counselor</option>
-                    <option value="supervisor">Supervisor</option>
-                    <option value="director">Director</option>
-                    <option value="nurse">Nurse</option>
-                    <option value="instructor">Instructor</option>
-                  </select>
+                  <Autocomplete
+                    v-model="formData.role"
+                    :options="roleOptions"
+                    placeholder="Select role..."
+                    :required="true"
+                  />
                 </div>
 
                 <div class="form-group">
                   <label class="form-label">Manager</label>
-                  <select v-model="formData.managerId" class="form-select">
-                    <option value="">No Manager (Top Level)</option>
-                    <option 
-                      v-for="member in store.staffMembers.filter(m => m.id !== editingMemberId)" 
-                      :key="member.id" 
-                      :value="member.id"
-                    >
-                      {{ member.firstName }} {{ member.lastName }} ({{ formatRole(member.role) }})
-                    </option>
-                  </select>
+                  <Autocomplete
+                    v-model="formData.managerId"
+                    :options="managerOptions"
+                    placeholder="No Manager (Top Level)"
+                  />
                 </div>
 
                 <div class="form-group">
@@ -256,6 +250,7 @@ import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
+import Autocomplete from '@/components/Autocomplete.vue';
 
 export default defineComponent({
   name: 'StaffMembers',
@@ -264,7 +259,8 @@ export default defineComponent({
     EventsByDate,
     ConfirmModal,
     DataTable,
-    ViewToggle
+    ViewToggle,
+    Autocomplete
   },
   data() {
     return {
@@ -304,6 +300,27 @@ export default defineComponent({
   computed: {
     store() {
       return useCampStore();
+    },
+    roleOptions() {
+      return [
+        { label: 'Counselor', value: 'counselor' },
+        { label: 'Supervisor', value: 'supervisor' },
+        { label: 'Director', value: 'director' },
+        { label: 'Nurse', value: 'nurse' },
+        { label: 'Instructor', value: 'instructor' }
+      ];
+    },
+    managerOptions() {
+      const options = [
+        { label: 'No Manager (Top Level)', value: '' }
+      ];
+      const managers = this.store.staffMembers
+        .filter(m => m.id !== this.editingMemberId)
+        .map(member => ({
+          label: `${member.firstName} ${member.lastName} (${this.formatRole(member.role)})`,
+          value: member.id
+        }));
+      return [...options, ...managers];
     },
     staffFilters(): Filter[] {
       return [

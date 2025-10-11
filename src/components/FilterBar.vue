@@ -9,7 +9,7 @@
         </svg>
         <input 
           :value="searchQuery"
-          @input="$emit('update:searchQuery', ($event.target as HTMLInputElement).value)"
+          @input="handleSearchInput"
           type="text"
           :placeholder="searchPlaceholder"
           class="form-input form-input-sm"
@@ -18,22 +18,15 @@
 
       <!-- Filter Dropdowns -->
       <div class="filters-group">
-        <select
+        <Autocomplete
           v-for="(filter, index) in filters"
           :key="index"
-          :value="filter.value"
-          @change="handleFilterChange(filter.model, $event)"
-          class="form-select form-select-sm"
-        >
-          <option value="">{{ filter.placeholder }}</option>
-          <option
-            v-for="option in filter.options"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
-        </select>
+          :model-value="filter.value"
+          @update:model-value="(value) => handleFilterChange(filter.model, value)"
+          :options="getFilterOptions(filter)"
+          :placeholder="filter.placeholder"
+          class="filter-autocomplete"
+        />
       </div>
 
       <!-- Actions -->
@@ -59,6 +52,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
+import Autocomplete from './Autocomplete.vue';
 
 export interface FilterOption {
   label: string;
@@ -74,6 +68,9 @@ export interface Filter {
 
 export default defineComponent({
   name: 'FilterBar',
+  components: {
+    Autocomplete
+  },
   props: {
     showSearch: {
       type: Boolean,
@@ -111,10 +108,19 @@ export default defineComponent({
     }
   },
   methods: {
-    handleFilterChange(model: string, event: Event) {
-      const target = event.target as HTMLSelectElement | null;
-      if (!target) return;
-      this.$emit(`update:${model}` as any, target.value);
+    getFilterOptions(filter: Filter) {
+      // Add empty option for placeholder behavior
+      return [
+        { label: filter.placeholder, value: '' },
+        ...filter.options
+      ];
+    },
+    handleSearchInput(event: Event) {
+      const target = event.target as HTMLInputElement;
+      this.$emit('update:searchQuery', target.value);
+    },
+    handleFilterChange(model: string, value: string) {
+      this.$emit(`update:${model}` as any, value);
     }
   }
 });
@@ -161,9 +167,14 @@ export default defineComponent({
   flex: 1;
 }
 
-.form-select {
-  min-width: 120px;
-  max-width: 160px;
+.filter-autocomplete {
+  min-width: 150px;
+  max-width: 180px;
+}
+
+.filter-autocomplete :deep(.autocomplete-input) {
+  padding: 0.375rem 2.5rem 0.375rem 0.625rem;
+  font-size: 0.875rem;
 }
 
 .form-input-sm,

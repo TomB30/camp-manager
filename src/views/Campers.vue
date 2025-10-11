@@ -200,10 +200,12 @@
 
                   <div class="form-group">
                     <label class="form-label">Gender</label>
-                    <select v-model="formData.gender" class="form-select" required>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                    </select>
+                    <Autocomplete
+                      v-model="formData.gender"
+                      :options="genderOptions"
+                      placeholder="Select gender..."
+                      :required="true"
+                    />
                   </div>
                 </div>
 
@@ -214,16 +216,12 @@
 
                 <div class="form-group">
                   <label class="form-label">Family Group</label>
-                  <select v-model="formData.familyGroupId" class="form-select" required>
-                    <option value="">Select a family group...</option>
-                    <option 
-                      v-for="group in store.familyGroups"
-                      :key="group.id"
-                      :value="group.id"
-                    >
-                      {{ group.name }} - {{ getSleepingRoomName(group.sleepingRoomId) }}
-                    </option>
-                  </select>
+                  <Autocomplete
+                    v-model="formData.familyGroupId"
+                    :options="familyGroupOptions"
+                    placeholder="Select a family group..."
+                    :required="true"
+                  />
                 </div>
 
                 <div class="form-group">
@@ -272,6 +270,7 @@ import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
+import Autocomplete from '@/components/Autocomplete.vue';
 
 export default defineComponent({
   name: 'Campers',
@@ -280,7 +279,8 @@ export default defineComponent({
     FilterBar,
     EventsByDate,
     DataTable,
-    ViewToggle
+    ViewToggle,
+    Autocomplete
   },
   data() {
     return {
@@ -321,6 +321,18 @@ export default defineComponent({
   computed: {
     store() {
       return useCampStore();
+    },
+    genderOptions() {
+      return [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' }
+      ];
+    },
+    familyGroupOptions() {
+      return this.store.familyGroups.map(group => ({
+        label: `${group.name} - ${this.getSleepingRoomName(group.sleepingRoomId)}`,
+        value: group.id
+      }));
     },
     campersFilters(): Filter[] {
       return [

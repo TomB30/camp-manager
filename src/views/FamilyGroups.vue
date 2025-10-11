@@ -269,16 +269,11 @@
                     </div>
                     
                     <div class="add-camper-section">
-                      <select v-model="selectedCamperToAdd" class="form-select">
-                        <option value="">Add a camper...</option>
-                        <option 
-                          v-for="camper in availableCampers"
-                          :key="camper.id"
-                          :value="camper.id"
-                        >
-                          {{ camper.firstName }} {{ camper.lastName }} (Age {{ camper.age }})
-                        </option>
-                      </select>
+                      <Autocomplete
+                        v-model="selectedCamperToAdd"
+                        :options="availableCampersOptions"
+                        placeholder="Add a camper..."
+                      />
                       <button 
                         type="button"
                         class="btn btn-sm btn-primary"
@@ -322,17 +317,12 @@
                       + {{ formData.staffMemberIds.length }} staff)
                     </span>
                   </div>
-                  <select v-model="formData.sleepingRoomId" class="form-select" required>
-                    <option value="">Select a sleeping room...</option>
-                    <option 
-                      v-for="room in store.sleepingRooms"
-                      :key="room.id"
-                      :value="room.id"
-                      :disabled="!canFitInRoom(room)"
-                    >
-                      {{ room.name }} ({{ room.beds }} beds){{ canFitInRoom(room) ? '' : ' - Not enough beds' }}
-                    </option>
-                  </select>
+                  <Autocomplete
+                    v-model="formData.sleepingRoomId"
+                    :options="sleepingRoomOptions"
+                    placeholder="Select a sleeping room..."
+                    :required="true"
+                  />
                   <div v-if="formData.sleepingRoomId && getSelectedRoom() && !canFitInRoom(getSelectedRoom())" class="capacity-warning">
                     ⚠️ This room may not have enough beds for all campers and staff
                   </div>
@@ -378,6 +368,7 @@ import ColorPicker from '@/components/ColorPicker.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
+import Autocomplete from '@/components/Autocomplete.vue';
 import { Bed, Users } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -388,6 +379,7 @@ export default defineComponent({
     FilterBar,
     DataTable,
     ViewToggle,
+    Autocomplete,
     Bed,
     Users,
   },
@@ -430,6 +422,19 @@ export default defineComponent({
   computed: {
     store() {
       return useCampStore();
+    },
+    availableCampersOptions() {
+      return this.availableCampers.map(camper => ({
+        label: `${camper.firstName} ${camper.lastName} (Age ${camper.age})`,
+        value: camper.id
+      }));
+    },
+    sleepingRoomOptions() {
+      return this.store.sleepingRooms.map(room => ({
+        label: `${room.name} (${room.beds} beds)${this.canFitInRoom(room) ? '' : ' - Not enough beds'}`,
+        value: room.id,
+        disabled: !this.canFitInRoom(room)
+      }));
     },
     familyGroupsFilters(): Filter[] {
       return [

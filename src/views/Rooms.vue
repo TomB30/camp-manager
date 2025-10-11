@@ -193,14 +193,12 @@
                 <div class="grid grid-cols-2">
                   <div class="form-group">
                     <label class="form-label">Type</label>
-                    <select v-model="formData.type" class="form-select" required>
-                      <option value="classroom">Classroom</option>
-                      <option value="activity">Activity</option>
-                      <option value="sports">Sports</option>
-                      <option value="dining">Dining</option>
-                      <option value="outdoor">Outdoor</option>
-                      <option value="arts">Arts</option>
-                    </select>
+                    <Autocomplete
+                      v-model="formData.type"
+                      :options="roomTypeOptions"
+                      placeholder="Select room type..."
+                      :required="true"
+                    />
                   </div>
 
                   <div class="form-group">
@@ -258,6 +256,7 @@ import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
+import Autocomplete from '@/components/Autocomplete.vue';
 import { 
   BookOpen, 
   Target, 
@@ -277,6 +276,7 @@ export default defineComponent({
     ConfirmModal,
     DataTable,
     ViewToggle,
+    Autocomplete,
     BookOpen,
     Target,
     Dumbbell,
@@ -323,6 +323,16 @@ export default defineComponent({
   computed: {
     store() {
       return useCampStore();
+    },
+    roomTypeOptions() {
+      return [
+        { label: 'Classroom', value: 'classroom' },
+        { label: 'Activity', value: 'activity' },
+        { label: 'Sports', value: 'sports' },
+        { label: 'Dining', value: 'dining' },
+        { label: 'Outdoor', value: 'outdoor' },
+        { label: 'Arts', value: 'arts' }
+      ];
     },
     roomFilters(): Filter[] {
       return [

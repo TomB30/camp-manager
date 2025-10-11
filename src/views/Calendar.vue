@@ -183,16 +183,12 @@
                 <div class="mb-3 p-3 bg-background rounded border border-primary">
                   <div class="text-sm font-medium mb-2">Quick Assign Camper Group</div>
                   <div class="flex gap-2">
-                    <select v-model="groupToAssign" class="form-select flex-1">
-                      <option value="">Select a group...</option>
-                      <option 
-                        v-for="group in store.camperGroups"
-                        :key="group.id"
-                        :value="group.id"
-                      >
-                        {{ group.name }} ({{ getGroupCamperCount(group.id) }} campers)
-                      </option>
-                    </select>
+                    <Autocomplete
+                      v-model="groupToAssign"
+                      :options="groupAssignOptions"
+                      placeholder="Select a group..."
+                      class="flex-1"
+                    />
                     <button 
                       class="btn btn-sm btn-primary"
                       @click="assignGroup"
@@ -286,12 +282,12 @@
 
               <div class="form-group">
                 <label class="form-label">Room</label>
-                <select v-model="newEvent.roomId" class="form-select" required>
-                  <option value="">Select a room</option>
-                  <option v-for="room in store.rooms" :key="room.id" :value="room.id">
-                    {{ room.name }} ({{ room.type }})
-                  </option>
-                </select>
+                <Autocomplete
+                  v-model="newEvent.roomId"
+                  :options="roomOptions"
+                  placeholder="Select a room"
+                  :required="true"
+                />
               </div>
 
               <div class="form-group">
@@ -301,14 +297,11 @@
 
               <div class="form-group">
                 <label class="form-label">Type</label>
-                <select v-model="newEvent.type" class="form-select">
-                  <option value="activity">Activity</option>
-                  <option value="sports">Sports</option>
-                  <option value="arts">Arts</option>
-                  <option value="education">Education</option>
-                  <option value="meal">Meal</option>
-                  <option value="free-time">Free Time</option>
-                </select>
+                <Autocomplete
+                  v-model="newEvent.type"
+                  :options="eventTypeOptions"
+                  placeholder="Select event type"
+                />
               </div>
 
               <div class="form-group">
@@ -379,6 +372,7 @@ import { format, addDays, startOfWeek, addWeeks } from 'date-fns';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
+import Autocomplete from '@/components/Autocomplete.vue';
 import { filterEventsByDateAndHour } from '@/utils/dateUtils';
 import type { Event } from '@/types/api';
 
@@ -388,6 +382,7 @@ export default defineComponent({
     ConfirmModal,
     FilterBar,
     ColorPicker,
+    Autocomplete,
   },
   data() {
     return {
@@ -430,6 +425,28 @@ export default defineComponent({
     weekDays() {
       const start = startOfWeek(this.selectedDate);
       return Array.from({ length: 7 }, (_, i) => addDays(start, i));
+    },
+    groupAssignOptions() {
+      return this.store.camperGroups.map(group => ({
+        label: `${group.name} (${this.getGroupCamperCount(group.id)} campers)`,
+        value: group.id
+      }));
+    },
+    roomOptions() {
+      return this.store.rooms.map(room => ({
+        label: `${room.name} (${room.type})`,
+        value: room.id
+      }));
+    },
+    eventTypeOptions() {
+      return [
+        { label: 'Activity', value: 'activity' },
+        { label: 'Sports', value: 'sports' },
+        { label: 'Arts', value: 'arts' },
+        { label: 'Education', value: 'education' },
+        { label: 'Meal', value: 'meal' },
+        { label: 'Free Time', value: 'free-time' }
+      ];
     },
     eventFilters(): Filter[] {
       return [

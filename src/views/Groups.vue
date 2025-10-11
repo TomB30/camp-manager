@@ -264,20 +264,20 @@
 
                 <div class="form-group">
                   <label class="form-label">Gender</label>
-                  <select v-model="formData.filters.gender" class="form-select">
-                    <option value="">Any gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                  </select>
+                  <Autocomplete
+                    v-model="formData.filters.gender"
+                    :options="genderFilterOptions"
+                    placeholder="Any gender"
+                  />
                 </div>
 
                 <div class="form-group">
                   <label class="form-label">Allergies</label>
-                  <select v-model="formData.filters.hasAllergies" class="form-select">
-                    <option :value="undefined">Any (with or without allergies)</option>
-                    <option :value="true">Has allergies</option>
-                    <option :value="false">No allergies</option>
-                  </select>
+                  <Autocomplete
+                    v-model="formData.filters.hasAllergies"
+                    :options="allergiesFilterOptions"
+                    placeholder="Any (with or without allergies)"
+                  />
                 </div>
 
                 <div class="form-info">
@@ -320,6 +320,7 @@ import ColorPicker from '@/components/ColorPicker.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
+import Autocomplete from '@/components/Autocomplete.vue';
 
 export default defineComponent({
   name: 'Groups',
@@ -329,6 +330,7 @@ export default defineComponent({
     FilterBar,
     DataTable,
     ViewToggle,
+    Autocomplete,
   },
   data() {
     return {
@@ -367,6 +369,20 @@ export default defineComponent({
   computed: {
     store() {
       return useCampStore();
+    },
+    genderFilterOptions() {
+      return [
+        { label: 'Any gender', value: '' },
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' }
+      ];
+    },
+    allergiesFilterOptions() {
+      return [
+        { label: 'Any (with or without allergies)', value: undefined },
+        { label: 'Has allergies', value: true },
+        { label: 'No allergies', value: false }
+      ];
     },
     groupsFilters(): Filter[] {
       return [
