@@ -9,7 +9,7 @@ import Groups from '../views/Groups.vue';
 import FamilyGroups from '../views/FamilyGroups.vue';
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
