@@ -26,6 +26,21 @@
           </div>
         </div>
 
+        <div v-if="group.familyGroupIds && group.familyGroupIds.length > 0" class="detail-section">
+          <div class="detail-label">Included Family Groups</div>
+          <slot name="family-groups-list">
+            <div class="group-filters">
+              <span 
+                v-for="familyGroupId in group.familyGroupIds" 
+                :key="familyGroupId" 
+                class="filter-tag"
+              >
+                {{ getFamilyGroupName(familyGroupId) }}
+              </span>
+            </div>
+          </slot>
+        </div>
+
         <div class="detail-section">
           <div class="detail-label">
             Matching Campers ({{ campers.length }})
@@ -58,6 +73,7 @@ import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import type { CamperGroup, CamperGroupFilter, Camper } from '@/types/api';
 import { format } from 'date-fns';
+import { useCampStore } from '@/stores/campStore';
 
 export default defineComponent({
   name: 'GroupDetailModal',
@@ -79,6 +95,11 @@ export default defineComponent({
     }
   },
   emits: ['close', 'edit', 'delete'],
+  computed: {
+    store() {
+      return useCampStore();
+    }
+  },
   methods: {
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
@@ -103,6 +124,10 @@ export default defineComponent({
         filters.gender ||
         filters.hasAllergies !== undefined
       );
+    },
+    getFamilyGroupName(familyGroupId: string): string {
+      const familyGroup = this.store.getFamilyGroupById(familyGroupId);
+      return familyGroup ? familyGroup.name : 'Unknown Family Group';
     }
   }
 });

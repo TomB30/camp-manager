@@ -67,6 +67,16 @@
           <slot name="allergies-select"></slot>
         </div>
 
+        <div class="form-divider">
+          <span>Family Groups (Optional)</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Include Family Groups</label>
+          <p class="form-help-text">Select family groups to include all their campers in this virtual group</p>
+          <slot name="family-groups-select"></slot>
+        </div>
+
         <div class="form-info">
           <strong>Preview:</strong> {{ previewCount }} campers match these criteria
         </div>
@@ -182,6 +192,12 @@ export default defineComponent({
 
 .modal-large {
   max-width: 700px;
+}
+
+.form-help-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
 }
 </style>
 

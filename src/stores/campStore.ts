@@ -106,8 +106,21 @@ export const useCampStore = defineStore('camp', {
         const group = state.camperGroups.find(g => g.id === groupId);
         if (!group) return [];
         
-        // Filter campers by group criteria
-        return state.campers.filter(camper => {
+        // Determine base set of campers to filter
+        let baseCampers: Camper[];
+        
+        if (group.familyGroupIds && group.familyGroupIds.length > 0) {
+          // If family groups are selected, only consider campers from those family groups
+          baseCampers = state.campers.filter(c => 
+            c.familyGroupId && group.familyGroupIds!.includes(c.familyGroupId)
+          );
+        } else {
+          // If no family groups selected, consider all campers
+          baseCampers = state.campers;
+        }
+        
+        // Apply filters to the base set of campers
+        return baseCampers.filter(camper => {
           // Age filter
           if (group.filters.ageMin !== undefined && camper.age < group.filters.ageMin) return false;
           if (group.filters.ageMax !== undefined && camper.age > group.filters.ageMax) return false;
@@ -366,23 +379,8 @@ export const useCampStore = defineStore('camp', {
       const group = this.camperGroups.find(g => g.id === groupId);
       if (!group) throw new Error('Group not found');
 
-      // Get all campers matching the group criteria
-      const groupCampers = this.campers.filter(camper => {
-        // Age filter
-        if (group.filters.ageMin !== undefined && camper.age < group.filters.ageMin) return false;
-        if (group.filters.ageMax !== undefined && camper.age > group.filters.ageMax) return false;
-        
-        // Gender filter
-        if (group.filters.gender && camper.gender !== group.filters.gender) return false;
-        
-        // Allergies filter
-        if (group.filters.hasAllergies !== undefined) {
-          const hasAllergies = camper.allergies && camper.allergies.length > 0;
-          if (group.filters.hasAllergies !== hasAllergies) return false;
-        }
-        
-        return true;
-      });
+      // Use the getter to get all campers in the group (includes family groups and filters)
+      const groupCampers = this.getCampersInGroup(groupId);
       
       if (groupCampers.length === 0) {
         throw new Error('No campers match this group criteria');

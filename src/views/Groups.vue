@@ -186,6 +186,26 @@
             placeholder="Any (with or without allergies)"
           />
         </template>
+        <template #family-groups-select>
+          <div class="checkbox-group">
+            <label 
+              v-for="familyGroup in store.familyGroups" 
+              :key="familyGroup.id"
+              class="checkbox-label"
+            >
+              <input 
+                type="checkbox" 
+                :value="familyGroup.id"
+                v-model="formData.familyGroupIds"
+                class="checkbox-input"
+              />
+              <span>{{ familyGroup.name }} ({{ store.getCampersInFamilyGroup(familyGroup.id).length }} campers)</span>
+            </label>
+            <div v-if="store.familyGroups.length === 0" class="text-sm text-secondary">
+              No family groups available
+            </div>
+          </div>
+        </template>
       </GroupFormModal>
 
       <!-- Confirmation Modal -->
@@ -252,6 +272,7 @@ export default defineComponent({
           gender: '' as '' | 'male' | 'female',
           hasAllergies: undefined as boolean | undefined,
         },
+        familyGroupIds: [] as string[],
       },
       groupColumns: [
         { key: 'name', label: 'Group Name', width: '200px' },
@@ -384,6 +405,19 @@ export default defineComponent({
       );
     },
     getPreviewCount(): number {
+      // Determine base set of campers to filter
+      let baseCampers: Camper[];
+      
+      if (this.formData.familyGroupIds && this.formData.familyGroupIds.length > 0) {
+        // If family groups are selected, only consider campers from those family groups
+        baseCampers = this.store.campers.filter(camper => 
+          camper.familyGroupId && this.formData.familyGroupIds.includes(camper.familyGroupId)
+        );
+      } else {
+        // If no family groups selected, consider all campers
+        baseCampers = this.store.campers;
+      }
+
       // Create a temporary filter to preview count
       const filters: CamperGroupFilter = {
         ageMin: this.formData.filters.ageMin,
@@ -392,8 +426,8 @@ export default defineComponent({
         hasAllergies: this.formData.filters.hasAllergies,
       };
 
-      // Use the store's filter logic
-      return this.store.campers.filter(camper => {
+      // Apply filters to the base set of campers
+      return baseCampers.filter(camper => {
         if (filters.ageMin !== undefined && camper.age < filters.ageMin) return false;
         if (filters.ageMax !== undefined && camper.age > filters.ageMax) return false;
         if (filters.gender && camper.gender !== filters.gender) return false;
@@ -421,6 +455,7 @@ export default defineComponent({
           gender: this.selectedGroup.filters.gender || '',
           hasAllergies: this.selectedGroup.filters.hasAllergies,
         },
+        familyGroupIds: this.selectedGroup.familyGroupIds || [],
       };
       
       this.selectedGroupId = null;
@@ -440,6 +475,7 @@ export default defineComponent({
         description: formData.description || undefined,
         color: formData.color || '#6366F1',
         filters,
+        familyGroupIds: formData.familyGroupIds.length > 0 ? formData.familyGroupIds : undefined,
         createdAt: this.editingGroupId 
           ? this.store.getCamperGroupById(this.editingGroupId)?.createdAt || new Date().toISOString()
           : new Date().toISOString(),
@@ -490,6 +526,7 @@ export default defineComponent({
           gender: '',
           hasAllergies: undefined,
         },
+        familyGroupIds: [],
       };
     }
   }

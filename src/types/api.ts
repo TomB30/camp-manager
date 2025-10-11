@@ -628,6 +628,7 @@ export interface CamperGroup {
   description?: string;
   color?: string;
   filters: CamperGroupFilter;
+  familyGroupIds?: string[]; // Optional array of family group IDs to include
   createdAt: string;
   updatedAt: string;
 }
