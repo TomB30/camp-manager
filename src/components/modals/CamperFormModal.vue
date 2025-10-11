@@ -117,7 +117,7 @@ export default defineComponent({
     }
   },
   methods: {
-    handleSave() {
+    handleSave(): void {
       const allergies = this.allergiesInput
         .split(',')
         .map(a => a.trim())

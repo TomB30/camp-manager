@@ -56,12 +56,12 @@ import Autocomplete from './Autocomplete.vue';
 
 export interface FilterOption {
   label: string;
-  value: string;
+  value: string | number | boolean | null;
 }
 
 export interface Filter {
   model: string;
-  value: string;
+  value: string | number | boolean | null;
   placeholder: string;
   options: FilterOption[];
 }
@@ -108,18 +108,18 @@ export default defineComponent({
     }
   },
   methods: {
-    getFilterOptions(filter: Filter) {
+    getFilterOptions(filter: Filter): Array<FilterOption> {
       // Add empty option for placeholder behavior
       return [
         { label: filter.placeholder, value: '' },
         ...filter.options
       ];
     },
-    handleSearchInput(event: Event) {
+    handleSearchInput(event: Event): void {
       const target = event.target as HTMLInputElement;
       this.$emit('update:searchQuery', target.value);
     },
-    handleFilterChange(model: string, value: string) {
+    handleFilterChange(model: string, value: string | number | boolean | null): void {
       this.$emit(`update:${model}` as any, value);
     }
   }

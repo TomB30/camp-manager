@@ -167,13 +167,13 @@
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
-import type { Camper } from '@/types/api';
+import type { Camper, FamilyGroup, Event } from '@/types/api';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
-import Autocomplete from '@/components/Autocomplete.vue';
+import Autocomplete, { AutocompleteOption } from '@/components/Autocomplete.vue';
 import CamperDetailModal from '@/components/modals/CamperDetailModal.vue';
 import CamperFormModal from '@/components/modals/CamperFormModal.vue';
 
@@ -224,18 +224,17 @@ export default defineComponent({
       ]
     };
   },
-
   computed: {
-    store() {
+    store(): ReturnType<typeof useCampStore> {
       return useCampStore();
     },
-    genderOptions() {
+    genderOptions(): Array<AutocompleteOption> {
       return [
         { label: 'Male', value: 'male' },
         { label: 'Female', value: 'female' }
       ];
     },
-    familyGroupOptions() {
+    familyGroupOptions(): Array<AutocompleteOption> {
       return this.store.familyGroups.map(group => ({
         label: `${group.name} - ${this.getSleepingRoomName(group.sleepingRoomId)}`,
         value: group.id
@@ -265,17 +264,17 @@ export default defineComponent({
         },
       ];
     },
-    selectedCamper() {
+    selectedCamper(): Camper | null {
       if (!this.selectedCamperId) return null;
-      return this.store.getCamperById(this.selectedCamperId);
+      return this.store.getCamperById(this.selectedCamperId) || null;
     },
-    filteredCampers() {
-      let campers = this.store.campers;
+    filteredCampers(): Camper[] {
+      let campers: Camper[] = this.store.campers;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        campers = campers.filter(camper =>
+        campers = campers.filter((camper: Camper) =>
           camper.firstName.toLowerCase().includes(query) ||
           camper.lastName.toLowerCase().includes(query) ||
           `${camper.firstName} ${camper.lastName}`.toLowerCase().includes(query)
@@ -284,7 +283,7 @@ export default defineComponent({
 
       // Gender filter
       if (this.filterGender) {
-        campers = campers.filter(camper => camper.gender === this.filterGender);
+        campers = campers.filter((camper: Camper) => camper.gender === this.filterGender);
       }
 
       // Age filter
@@ -292,38 +291,26 @@ export default defineComponent({
         const [min, max] = this.filterAge === '15+' 
           ? [15, 999] 
           : this.filterAge.split('-').map(Number);
-        campers = campers.filter(camper => camper.age >= min && (max ? camper.age <= max : true));
+        campers = campers.filter((camper: Camper) => camper.age >= min && (max ? camper.age <= max : true));
       }
 
       return campers;
     }
   },
-  watch: {
-    searchQuery() {
-      this.currentPage = 1;
-    },
-    filterGender() {
-      this.currentPage = 1;
-    },
-    filterAge() {
-      this.currentPage = 1;
-    }
-  },
-
   methods: {
-    clearFilters() {
+    clearFilters(): void {
       this.searchQuery = '';
       this.filterGender = '';
       this.filterAge = '';
     },
-    getCamperTodayEvents(camperId: string) {
+    getCamperTodayEvents(camperId: string): Event[] {
       const today = new Date();
       return this.store.camperEvents(camperId).filter(event => {
         const eventDate = new Date(event.startTime);
         return eventDate.toDateString() === today.toDateString();
       });
     },
-    getCamperEvents(camperId: string) {
+    getCamperEvents(camperId: string): Event[] {
       return this.store.camperEvents(camperId);
     },
     formatDate(dateStr: string): string {
@@ -333,16 +320,16 @@ export default defineComponent({
       const room = this.store.getSleepingRoomById(roomId);
       return room?.name || 'Unknown Room';
     },
-    getFamilyGroup(familyGroupId: string) {
+    getFamilyGroup(familyGroupId: string): FamilyGroup | null | undefined {
       return this.store.getFamilyGroupById(familyGroupId);
     },
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
     },
-    selectCamper(camperId: string) {
+    selectCamper(camperId: string): void {
       this.selectedCamperId = camperId;
     },
-    editCamper() {
+    editCamper(): void {
       if (!this.selectedCamper) return;
       
       this.editingCamperId = this.selectedCamper.id;
@@ -361,7 +348,7 @@ export default defineComponent({
       this.selectedCamperId = null;
       this.showModal = true;
     },
-    async saveCamper(formData: typeof this.formData & { allergies: string[] }) {
+    async saveCamper(formData: typeof this.formData & { allergies: string[] }): Promise<void> {
       const camperData: Camper = {
         id: this.editingCamperId || `camper-${Date.now()}`,
         firstName: formData.firstName,
@@ -385,7 +372,7 @@ export default defineComponent({
 
       this.closeModal();
     },
-    deleteCamperConfirm() {
+    deleteCamperConfirm(): void {
       if (!this.selectedCamperId) return;
       const camper = this.store.getCamperById(this.selectedCamperId);
       if (!camper) return;
@@ -396,7 +383,7 @@ export default defineComponent({
       };
       this.showConfirmModal = true;
     },
-    async handleConfirmDelete() {
+    async handleConfirmDelete(): Promise<void> {
       if (!this.camperToDelete) return;
       
       await this.store.deleteCamper(this.camperToDelete.id);
@@ -404,11 +391,11 @@ export default defineComponent({
       this.showConfirmModal = false;
       this.camperToDelete = null;
     },
-    handleCancelDelete() {
+    handleCancelDelete(): void {
       this.showConfirmModal = false;
       this.camperToDelete = null;
     },
-    closeModal() {
+    closeModal(): void {
       this.showModal = false;
       this.editingCamperId = null;
       this.formData = {
@@ -422,6 +409,17 @@ export default defineComponent({
         familyGroupId: '',
       };
       this.allergiesInput = '';
+    }
+  },
+  watch: {
+    searchQuery() {
+      this.currentPage = 1;
+    },
+    filterGender() {
+      this.currentPage = 1;
+    },
+    filterAge() {
+      this.currentPage = 1;
     }
   }
 });

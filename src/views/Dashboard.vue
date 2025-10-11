@@ -150,6 +150,8 @@ import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
 import { Calendar, Users, UsersRound } from 'lucide-vue-next';
+import type { Event } from '@/types/api';
+import type { Camper } from '@/types/api';
 
 export default defineComponent({
   name: 'Dashboard',
@@ -159,19 +161,19 @@ export default defineComponent({
     UsersRound
   },
   computed: {
-    store() {
+    store(): ReturnType<typeof useCampStore> {
       return useCampStore();
     },
-    todayEvents() {
+    todayEvents(): Event[] {
       const today = new Date();
       return this.store.eventsForDate(today);
     },
-    sortedTodayEvents() {
+    sortedTodayEvents(): Event[] {
       return [...this.todayEvents].sort((a, b) => 
         new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
       );
     },
-    recentCampers() {
+    recentCampers(): Camper[] {
       return [...this.store.campers]
         .sort((a, b) => {
           const dateA = a.registrationDate ? new Date(a.registrationDate).getTime() : 0;
@@ -182,14 +184,14 @@ export default defineComponent({
     }
   },
   methods: {
-    formatTime(dateStr: string): string {
+    formatTime(dateStr: Date): string {
       return format(new Date(dateStr), 'h:mm a');
     },
     formatConflictType(type?: string): string {
       if (!type) return 'Unknown';
       return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     },
-    getRoomName(roomId: string): string {
+    getRoomName(roomId: string): string | null | undefined {
       const room = this.store.getRoomById(roomId);
       return room?.name || 'Unknown Room';
     },

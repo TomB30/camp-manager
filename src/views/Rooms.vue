@@ -283,17 +283,17 @@ export default defineComponent({
         },
       ];
     },
-    selectedRoom() {
+    selectedRoom(): Room | null {
       if (!this.selectedRoomId) return null;
-      return this.store.getRoomById(this.selectedRoomId);
+      return this.store.getRoomById(this.selectedRoomId) || null;
     },
-    filteredRooms() {
-      let rooms = this.store.rooms;
+    filteredRooms(): Room[] {
+      let rooms: Room[] = this.store.rooms;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        rooms = rooms.filter(room =>
+        rooms = rooms.filter((room: Room) =>
           room.name.toLowerCase().includes(query) ||
           (room.location && room.location.toLowerCase().includes(query))
         );
@@ -301,12 +301,12 @@ export default defineComponent({
 
       // Type filter
       if (this.filterType) {
-        rooms = rooms.filter(room => room.type === this.filterType);
+        rooms = rooms.filter((room: Room) => room.type === this.filterType);
       }
 
       // Capacity filter
       if (this.filterCapacity) {
-        rooms = rooms.filter(room => {
+        rooms = rooms.filter((room: Room) => {
           if (this.filterCapacity === 'small') return room.capacity < 15;
           if (this.filterCapacity === 'medium') return room.capacity >= 15 && room.capacity <= 30;
           if (this.filterCapacity === 'large') return room.capacity > 30;

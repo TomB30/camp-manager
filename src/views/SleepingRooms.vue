@@ -142,7 +142,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { SleepingRoom } from '@/types/api';
+import type { SleepingRoom, FamilyGroup, Camper } from '@/types/api';
 import FilterBar from '@/components/FilterBar.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
@@ -192,20 +192,20 @@ export default defineComponent({
     };
   },
   computed: {
-    store() {
+    store(): ReturnType<typeof useCampStore> {
       return useCampStore();
     },
-    selectedRoom() {
+    selectedRoom(): SleepingRoom | null {
       if (!this.selectedRoomId) return null;
-      return this.store.getSleepingRoomById(this.selectedRoomId);
+      return this.store.getSleepingRoomById(this.selectedRoomId) || null;
     },
-    filteredRooms() {
-      let rooms = this.store.sleepingRooms;
+    filteredRooms(): SleepingRoom[] {
+      let rooms: SleepingRoom[] = this.store.sleepingRooms;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        rooms = rooms.filter(room =>
+        rooms = rooms.filter((room: SleepingRoom) =>
           room.name.toLowerCase().includes(query) ||
           (room.location && room.location.toLowerCase().includes(query))
         );
@@ -213,9 +213,9 @@ export default defineComponent({
 
       return rooms;
     },
-    selectedRoomFamilyGroups() {
+    selectedRoomFamilyGroups(): Array<FamilyGroup> {
       if (!this.selectedRoomId) return [];
-      return this.getFamilyGroupsForRoom(this.selectedRoomId).map(fg => ({
+      return this.getFamilyGroupsForRoom(this.selectedRoomId).map((fg: FamilyGroup) => ({
         id: fg.id,
         name: fg.name,
         description: fg.description,
@@ -224,22 +224,17 @@ export default defineComponent({
       }));
     }
   },
-  watch: {
-    searchQuery() {
-      this.currentPage = 1;
-    }
-  },
   methods: {
-    clearFilters() {
+    clearFilters(): void {
       this.searchQuery = '';
     },
-    getFamilyGroupsForRoom(roomId: string) {
+    getFamilyGroupsForRoom(roomId: string): FamilyGroup[] {
       return this.store.getFamilyGroupsInRoom(roomId);
     },
-    getCampersInFamilyGroup(familyGroupId: string) {
+    getCampersInFamilyGroup(familyGroupId: string): Camper[] {
       return this.store.getCampersInFamilyGroup(familyGroupId);
     },
-    viewFamilyGroup(familyGroupId: string) {
+    viewFamilyGroup(familyGroupId: string): void {
       // Navigate to family groups view (we'll implement this)
       this.$router.push(`/family-groups?id=${familyGroupId}`);
     },
@@ -247,10 +242,10 @@ export default defineComponent({
       const date = new Date(dateString);
       return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     },
-    selectRoom(roomId: string) {
+    selectRoom(roomId: string): void {
       this.selectedRoomId = roomId;
     },
-    editRoom() {
+    editRoom(): void {
       if (!this.selectedRoom) return;
       
       this.editingRoomId = this.selectedRoom.id;
@@ -263,7 +258,7 @@ export default defineComponent({
       this.selectedRoomId = null;
       this.showModal = true;
     },
-    async saveRoom(formData: typeof this.formData) {
+    async saveRoom(formData: typeof this.formData): Promise<void> {
       const roomData: SleepingRoom = {
         id: this.editingRoomId || `sleeping-${Date.now()}`,
         name: formData.name,
@@ -279,7 +274,7 @@ export default defineComponent({
 
       this.closeModal();
     },
-    deleteRoomConfirm() {
+    deleteRoomConfirm(): void {
       if (!this.selectedRoomId) return;
       
       const familyGroupCount = this.getFamilyGroupsForRoom(this.selectedRoomId).length;
@@ -300,18 +295,18 @@ export default defineComponent({
       
       this.showConfirmModal = true;
     },
-    async handleConfirmAction() {
+    async handleConfirmAction(): Promise<void> {
       if (this.confirmAction) {
         await this.confirmAction();
       }
       this.showConfirmModal = false;
       this.confirmAction = null;
     },
-    handleCancelConfirm() {
+    handleCancelConfirm(): void {
       this.showConfirmModal = false;
       this.confirmAction = null;
     },
-    closeModal() {
+    closeModal(): void {
       this.showModal = false;
       this.editingRoomId = null;
       this.formData = {

@@ -207,13 +207,13 @@
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
-import type { CamperGroup, CamperGroupFilter } from '@/types/api';
+import type { CamperGroup, CamperGroupFilter, Camper } from '@/types/api';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
-import Autocomplete from '@/components/Autocomplete.vue';
+import Autocomplete, { AutocompleteOption } from '@/components/Autocomplete.vue';
 import GroupDetailModal from '@/components/modals/GroupDetailModal.vue';
 import GroupFormModal from '@/components/modals/GroupFormModal.vue';
 
@@ -264,17 +264,17 @@ export default defineComponent({
   },
 
   computed: {
-    store() {
+    store(): ReturnType<typeof useCampStore> {
       return useCampStore();
     },
-    genderFilterOptions() {
+    genderFilterOptions(): Array<AutocompleteOption> {
       return [
         { label: 'Any gender', value: '' },
         { label: 'Male', value: 'male' },
         { label: 'Female', value: 'female' }
       ];
     },
-    allergiesFilterOptions() {
+    allergiesFilterOptions(): Array<AutocompleteOption> {
       return [
         { label: 'Any (with or without allergies)', value: undefined },
         { label: 'Has allergies', value: true },
@@ -305,21 +305,21 @@ export default defineComponent({
         },
       ];
     },
-    selectedGroup() {
+    selectedGroup(): CamperGroup | null {
       if (!this.selectedGroupId) return null;
-      return this.store.getCamperGroupById(this.selectedGroupId);
+      return this.store.getCamperGroupById(this.selectedGroupId) || null;
     },
-    groupCampers() {
+    groupCampers(): Camper[] {
       if (!this.selectedGroupId) return [];
       return this.store.getCampersInGroup(this.selectedGroupId);
     },
-    filteredGroups() {
-      let groups = this.store.camperGroups;
+    filteredGroups(): CamperGroup[] {
+      let groups: CamperGroup[] = this.store.camperGroups;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        groups = groups.filter(group =>
+        groups = groups.filter((group: CamperGroup) =>
           group.name.toLowerCase().includes(query) ||
           (group.description && group.description.toLowerCase().includes(query))
         );
@@ -327,7 +327,7 @@ export default defineComponent({
 
       // Gender filter
       if (this.filterGender) {
-        groups = groups.filter(group => 
+        groups = groups.filter((group: CamperGroup) => 
           group.filters.gender === this.filterGender
         );
       }
@@ -338,7 +338,7 @@ export default defineComponent({
           ? [15, 999] 
           : this.filterAgeRange.split('-').map(Number);
         
-        groups = groups.filter(group => {
+        groups = groups.filter((group: CamperGroup) => {
           // Check if the group's age range overlaps with the filter
           const groupMin = group.filters.ageMin ?? 0;
           const groupMax = group.filters.ageMax ?? 999;
@@ -351,7 +351,7 @@ export default defineComponent({
   },
 
   methods: {
-    clearFilters() {
+    clearFilters(): void {
       this.searchQuery = '';
       this.filterGender = '';
       this.filterAgeRange = '';
@@ -404,10 +404,10 @@ export default defineComponent({
         return true;
       }).length;
     },
-    selectGroup(groupId: string) {
+    selectGroup(groupId: string): void {
       this.selectedGroupId = groupId;
     },
-    editGroup() {
+    editGroup(): void {
       if (!this.selectedGroup) return;
       
       this.editingGroupId = this.selectedGroup.id;
@@ -426,7 +426,7 @@ export default defineComponent({
       this.selectedGroupId = null;
       this.showModal = true;
     },
-    async saveGroup(formData: typeof this.formData) {
+    async saveGroup(formData: typeof this.formData): Promise<void> {
       const filters: CamperGroupFilter = {
         ageMin: formData.filters.ageMin,
         ageMax: formData.filters.ageMax,
@@ -454,7 +454,7 @@ export default defineComponent({
 
       this.closeModal();
     },
-    deleteGroupConfirm() {
+    deleteGroupConfirm(): void {
       if (!this.selectedGroupId) return;
       const group = this.store.getCamperGroupById(this.selectedGroupId);
       if (!group) return;
@@ -465,7 +465,7 @@ export default defineComponent({
       };
       this.showConfirmModal = true;
     },
-    async handleConfirmDelete() {
+    async handleConfirmDelete(): Promise<void> {
       if (!this.groupToDelete) return;
       
       await this.store.deleteCamperGroup(this.groupToDelete.id);
@@ -473,11 +473,11 @@ export default defineComponent({
       this.showConfirmModal = false;
       this.groupToDelete = null;
     },
-    handleCancelDelete() {
+    handleCancelDelete(): void {
       this.showConfirmModal = false;
       this.groupToDelete = null;
     },
-    closeModal() {
+    closeModal(): void {
       this.showModal = false;
       this.editingGroupId = null;
       this.formData = {

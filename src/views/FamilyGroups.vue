@@ -294,13 +294,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { FamilyGroup } from '@/types/api';
+import type { FamilyGroup, Camper, SleepingRoom } from '@/types/api';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
-import Autocomplete from '@/components/Autocomplete.vue';
+import Autocomplete, { AutocompleteOption } from '@/components/Autocomplete.vue';
 import FamilyGroupDetailModal from '@/components/modals/FamilyGroupDetailModal.vue';
 import FamilyGroupFormModal from '@/components/modals/FamilyGroupFormModal.vue';
 import { Bed, Users } from 'lucide-vue-next';
@@ -356,16 +356,16 @@ export default defineComponent({
     };
   },
   computed: {
-    store() {
+    store(): ReturnType<typeof useCampStore> {
       return useCampStore();
     },
-    availableCampersOptions() {
+    availableCampersOptions(): Array<AutocompleteOption> {
       return this.availableCampers.map(camper => ({
         label: `${camper.firstName} ${camper.lastName} (Age ${camper.age})`,
         value: camper.id
       }));
     },
-    sleepingRoomOptions() {
+    sleepingRoomOptions(): Array<AutocompleteOption> {
       return this.store.sleepingRooms.map(room => ({
         label: `${room.name} (${room.beds} beds)${this.canFitInRoom(room) ? '' : ' - Not enough beds'}`,
         value: room.id,
@@ -385,28 +385,28 @@ export default defineComponent({
         },
       ];
     },
-    selectedGroup() {
+    selectedGroup(): FamilyGroup | null {
       if (!this.selectedGroupId) return null;
-      return this.store.getFamilyGroupById(this.selectedGroupId);
+      return this.store.getFamilyGroupById(this.selectedGroupId) || null;
     },
-    groupCampers() {
+    groupCampers(): Camper[] {
       if (!this.selectedGroupId) return [];
       return this.store.getCampersInFamilyGroup(this.selectedGroupId);
     },
-    availableCampers() {
+    availableCampers(): Camper[] {
       // Get campers not already in the form's camper list
       return this.store.campers.filter(c => !this.formData.camperIds.includes(c.id));
     },
-    totalPeople() {
+    totalPeople(): number {
       return this.formData.camperIds.length + this.formData.staffMemberIds.length;
     },
-    filteredFamilyGroups() {
-      let groups = this.store.familyGroups;
+    filteredFamilyGroups(): FamilyGroup[] {
+      let groups: FamilyGroup[] = this.store.familyGroups;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        groups = groups.filter(group =>
+        groups = groups.filter((group: FamilyGroup) =>
           group.name.toLowerCase().includes(query) ||
           (group.description && group.description.toLowerCase().includes(query))
         );
@@ -414,7 +414,7 @@ export default defineComponent({
 
       // Sleeping room filter
       if (this.filterSleepingRoom) {
-        groups = groups.filter(group => 
+        groups = groups.filter((group: FamilyGroup) => 
           group.sleepingRoomId === this.filterSleepingRoom
         );
       }
@@ -431,7 +431,7 @@ export default defineComponent({
     }
   },
   methods: {
-    clearFilters() {
+    clearFilters(): void {
       this.searchQuery = '';
       this.filterSleepingRoom = '';
     },
@@ -468,29 +468,29 @@ export default defineComponent({
       const camper = this.store.getCamperById(camperId);
       return camper ? `${camper.firstName.charAt(0)}${camper.lastName.charAt(0)}` : '??';
     },
-    addCamper() {
+    addCamper(): void {
       if (this.selectedCamperToAdd && !this.formData.camperIds.includes(this.selectedCamperToAdd)) {
         this.formData.camperIds.push(this.selectedCamperToAdd);
         this.selectedCamperToAdd = '';
       }
     },
-    removeCamper(camperId: string) {
+    removeCamper(camperId: string): void {
       const index = this.formData.camperIds.indexOf(camperId);
       if (index > -1) {
         this.formData.camperIds.splice(index, 1);
       }
     },
-    canFitInRoom(room: any) {
+    canFitInRoom(room: SleepingRoom | null | undefined): boolean {
       if (!room) return false;
       return room.beds >= this.totalPeople;
     },
-    getSelectedRoom() {
+    getSelectedRoom(): SleepingRoom | null | undefined {
       return this.store.getSleepingRoomById(this.formData.sleepingRoomId);
     },
-    selectGroup(groupId: string) {
+    selectGroup(groupId: string): void {
       this.selectedGroupId = groupId;
     },
-    editGroup() {
+    editGroup(): void {
       if (!this.selectedGroup) return;
       
       // Get current campers in this family group
@@ -511,7 +511,7 @@ export default defineComponent({
       this.selectedGroupId = null;
       this.showModal = true;
     },
-    async saveGroup(formData: typeof this.formData) {
+    async saveGroup(formData: typeof this.formData): Promise<void> {
       const groupData: FamilyGroup = {
         id: this.editingGroupId || `family-${Date.now()}`,
         name: formData.name,
@@ -580,7 +580,7 @@ export default defineComponent({
 
       this.closeModal();
     },
-    deleteGroupConfirm() {
+    deleteGroupConfirm(): void {
       if (!this.selectedGroupId) return;
       
       const camperCount = this.getCampersCount(this.selectedGroupId);
@@ -600,18 +600,18 @@ export default defineComponent({
       
       this.showConfirmModal = true;
     },
-    async handleConfirmAction() {
+    async handleConfirmAction(): Promise<void> {
       if (this.confirmAction) {
         await this.confirmAction();
       }
       this.showConfirmModal = false;
       this.confirmAction = null;
     },
-    handleCancelConfirm() {
+    handleCancelConfirm(): void {
       this.showConfirmModal = false;
       this.confirmAction = null;
     },
-    closeModal() {
+    closeModal(): void {
       this.showModal = false;
       this.editingGroupId = null;
       this.selectedCamperToAdd = '';

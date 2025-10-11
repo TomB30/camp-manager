@@ -163,13 +163,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { StaffMember } from '@/types/api';
+import type { StaffMember, Event } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
-import Autocomplete from '@/components/Autocomplete.vue';
+import Autocomplete, { AutocompleteOption } from '@/components/Autocomplete.vue';
 import StaffMemberDetailModal from '@/components/modals/StaffMemberDetailModal.vue';
 import StaffMemberFormModal from '@/components/modals/StaffMemberFormModal.vue';
 
@@ -221,10 +221,10 @@ export default defineComponent({
     };
   },
   computed: {
-    store() {
+    store(): ReturnType<typeof useCampStore> {
       return useCampStore();
     },
-    roleOptions() {
+    roleOptions(): Array<AutocompleteOption> {
       return [
         { label: 'Counselor', value: 'counselor' },
         { label: 'Supervisor', value: 'supervisor' },
@@ -233,13 +233,13 @@ export default defineComponent({
         { label: 'Instructor', value: 'instructor' }
       ];
     },
-    managerOptions() {
+    managerOptions(): Array<AutocompleteOption> {
       const options = [
         { label: 'No Manager (Top Level)', value: '' }
       ];
-      const managers = this.store.staffMembers
+      const managers: Array<AutocompleteOption> = this.store.staffMembers
         .filter(m => m.id !== this.editingMemberId)
-        .map(member => ({
+        .map((member: StaffMember) => ({
           label: `${member.firstName} ${member.lastName} (${this.formatRole(member.role)})`,
           value: member.id
         }));
@@ -272,17 +272,17 @@ export default defineComponent({
         },
       ];
     },
-    selectedMember() {
+    selectedMember(): StaffMember | null {
       if (!this.selectedMemberId) return null;
-      return this.store.getStaffMemberById(this.selectedMemberId);
+      return this.store.getStaffMemberById(this.selectedMemberId) || null;
     },
-    filteredMembers() {
-      let members = this.store.staffMembers;
+    filteredMembers(): StaffMember[] {
+      let members: StaffMember[] = this.store.staffMembers;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        members = members.filter(member =>
+        members = members.filter((member: StaffMember) =>
           member.firstName.toLowerCase().includes(query) ||
           member.lastName.toLowerCase().includes(query) ||
           `${member.firstName} ${member.lastName}`.toLowerCase().includes(query) ||
@@ -292,12 +292,12 @@ export default defineComponent({
 
       // Role filter
       if (this.filterRole) {
-        members = members.filter(member => member.role === this.filterRole);
+        members = members.filter((member: StaffMember) => member.role === this.filterRole);
       }
 
       // Certification filter
       if (this.filterCertification) {
-        members = members.filter(member =>
+        members = members.filter((member: StaffMember) =>
           member.certifications && member.certifications.includes(this.filterCertification)
         );
       }
@@ -325,12 +325,12 @@ export default defineComponent({
     });
   },
   methods: {
-    clearFilters() {
+    clearFilters(): void {
       this.searchQuery = '';
       this.filterRole = '';
       this.filterCertification = '';
     },
-    getDirectReports(managerId: string) {
+    getDirectReports(managerId: string): StaffMember[] {
       return this.filteredMembers.filter(member => member.managerId === managerId);
     },
     getManagerName(managerId: string | undefined): string {
@@ -351,17 +351,17 @@ export default defineComponent({
       };
       return colors[role] || '#757575';
     },
-    getMemberEvents(memberId: string) {
+    getMemberEvents(memberId: string): Event[] {
       return this.store.staffEvents(memberId);
     },
-    getRoomName(roomId: string): string {
+    getRoomName(roomId: string): string | null | undefined {
       const room = this.store.getRoomById(roomId);
       return room?.name || 'Unknown Room';
     },
-    selectMember(memberId: string) {
+    selectMember(memberId: string): void {
       this.selectedMemberId = memberId;
     },
-    editMember() {
+    editMember(): void {
       if (!this.selectedMember) return;
       
       this.editingMemberId = this.selectedMember.id;
@@ -379,7 +379,7 @@ export default defineComponent({
       this.selectedMemberId = null;
       this.showModal = true;
     },
-    async saveMember(formData: typeof this.formData & { certifications: string[] }) {
+    async saveMember(formData: typeof this.formData & { certifications: string[] }): Promise<void> {
       const memberData: StaffMember = {
         id: this.editingMemberId || `staff-${Date.now()}`,
         firstName: formData.firstName,
@@ -399,7 +399,7 @@ export default defineComponent({
 
       this.closeModal();
     },
-    deleteMemberConfirm() {
+    deleteMemberConfirm(): void {
       if (!this.selectedMemberId) return;
       this.confirmAction = async () => {
         if (this.selectedMemberId) {
@@ -409,18 +409,18 @@ export default defineComponent({
       };
       this.showConfirmModal = true;
     },
-    async handleConfirmAction() {
+    async handleConfirmAction(): Promise<void> {
       if (this.confirmAction) {
         await this.confirmAction();
       }
       this.showConfirmModal = false;
       this.confirmAction = null;
     },
-    handleCancelConfirm() {
+    handleCancelConfirm(): void {
       this.showConfirmModal = false;
       this.confirmAction = null;
     },
-    closeModal() {
+    closeModal(): void {
       this.showModal = false;
       this.editingMemberId = null;
       this.formData = {

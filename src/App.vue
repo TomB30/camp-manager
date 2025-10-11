@@ -22,7 +22,7 @@ export default defineComponent({
     Sidebar,
     Toast
   },
-  async mounted() {
+  async mounted(): Promise<void> {
     const store = useCampStore();
     
     // Check if we have data, if not, seed with mock data
