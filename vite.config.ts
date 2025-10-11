@@ -2,13 +2,13 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [vue()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base: '/camp-manager/',
-})
+  base: mode === 'production' ? '/camp-manager/' : '/',
+}))
 
