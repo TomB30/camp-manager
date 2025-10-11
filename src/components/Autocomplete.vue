@@ -29,18 +29,22 @@
         >
           <X :size="14" />
         </button>
-        <ChevronDown v-if="!isOpen" :size="16" class="autocomplete-arrow" />
-        <ChevronUp v-else :size="16" class="autocomplete-arrow" />
+        <ChevronDown 
+          :size="16" 
+          class="autocomplete-arrow" 
+          :class="{ 'is-open': isOpen }"
+        />
       </div>
     </div>
     
     <Teleport to="body">
-      <div
-        v-if="isOpen && filteredOptions.length > 0"
-        class="autocomplete-dropdown"
-        :style="dropdownStyle"
-        @mousedown.prevent
-      >
+      <Transition name="dropdown-fade">
+        <div
+          v-if="isOpen && filteredOptions.length > 0"
+          class="autocomplete-dropdown"
+          :style="dropdownStyle"
+          @mousedown.prevent
+        >
         <div class="autocomplete-options">
           <div
             v-for="(option, index) in filteredOptions"
@@ -63,14 +67,15 @@
         <div v-if="filteredOptions.length === 0 && searchQuery" class="autocomplete-empty">
           No matches found
         </div>
-      </div>
+        </div>
+      </Transition>
     </Teleport>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed, watch, nextTick, onMounted, onUnmounted, type PropType } from 'vue';
-import { ChevronDown, ChevronUp, X } from 'lucide-vue-next';
+import { ChevronDown, X } from 'lucide-vue-next';
 
 export interface AutocompleteOption {
   label: string;
@@ -83,7 +88,6 @@ export default defineComponent({
   name: 'Autocomplete',
   components: {
     ChevronDown,
-    ChevronUp,
     X
   },
   props: {
@@ -459,9 +463,32 @@ export default defineComponent({
 
 .autocomplete-arrow {
   color: var(--text-secondary);
-  transition: all 0.15s ease;
+  transition: transform 0.2s ease;
   pointer-events: none;
   flex-shrink: 0;
+}
+
+.autocomplete-arrow.is-open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown fade animation */
+.dropdown-fade-enter-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.dropdown-fade-leave-active {
+  transition: opacity 0.1s ease, transform 0.1s ease;
+}
+
+.dropdown-fade-enter-from {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.dropdown-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 
 .autocomplete-dropdown {
