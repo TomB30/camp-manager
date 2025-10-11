@@ -354,7 +354,7 @@ export default defineComponent({
     getMemberEvents(memberId: string): Event[] {
       return this.store.staffEvents(memberId);
     },
-    getRoomName(roomId: string): string | null | undefined {
+    getRoomName(roomId: string): string {
       const room = this.store.getRoomById(roomId);
       return room?.name || 'Unknown Room';
     },

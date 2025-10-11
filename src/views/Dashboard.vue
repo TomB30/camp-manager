@@ -184,7 +184,7 @@ export default defineComponent({
     }
   },
   methods: {
-    formatTime(dateStr: Date): string {
+    formatTime(dateStr: string): string {
       return format(new Date(dateStr), 'h:mm a');
     },
     formatConflictType(type?: string): string {

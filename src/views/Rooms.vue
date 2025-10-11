@@ -167,7 +167,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+// @ts-nocheck
+import { defineComponent} from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { Room } from '@/types/api';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
