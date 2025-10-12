@@ -2,15 +2,16 @@
   <div class="container">
     <div class="family-groups-view">
       <div class="view-header">
-        <h2>Family Groups</h2>
+        <div class="view-title">
+          <h2>Family Groups</h2>
+          <InfoTooltip>
+            Family groups are the fundamental organizational units. Each family group is assigned to a sleeping room and has staff members responsible for the group.
+          </InfoTooltip>
+        </div>
         <div class="header-actions">
           <button class="btn btn-primary" @click="showModal = true">+ Create Family Group</button>
         </div>
       </div>
-
-      <p class="view-description">
-        Family groups are the fundamental organizational units. Each family group is assigned to a sleeping room and has staff members responsible for the group.
-      </p>
 
       <!-- Search and Filters -->
       <FilterBar
@@ -212,6 +213,7 @@ import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
+import InfoTooltip from '@/components/InfoTooltip.vue';
 import FamilyGroupDetailModal from '@/components/modals/FamilyGroupDetailModal.vue';
 import FamilyGroupFormModal from '@/components/modals/FamilyGroupFormModal.vue';
 import { Bed, Users } from 'lucide-vue-next';
@@ -223,6 +225,7 @@ export default defineComponent({
     FilterBar,
     DataTable,
     ViewToggle,
+    InfoTooltip,
     FamilyGroupDetailModal,
     FamilyGroupFormModal,
     Bed,
@@ -508,18 +511,19 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+
+.view-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-
-.view-description {
-  color: var(--text-secondary);
-  margin-bottom: 2rem;
 }
 
 .groups-grid {

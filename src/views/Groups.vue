@@ -2,16 +2,17 @@
   <div class="container">
     <div class="groups-view">
       <div class="view-header">
-        <h2>Camper Groups</h2>
+        <div class="view-title">
+          <h2>Camper Groups</h2>
+          <InfoTooltip>
+            Create virtual groups of campers based on criteria like age, gender, or cabin. 
+            Use these groups to quickly assign multiple campers to events.
+          </InfoTooltip>
+        </div>
         <div class="header-actions">
           <button class="btn btn-primary" @click="showModal = true">+ Create Group</button>
         </div>
       </div>
-
-      <p class="view-description">
-        Create virtual groups of campers based on criteria like age, gender, or cabin. 
-        Use these groups to quickly assign multiple campers to events.
-      </p>
 
       <!-- Search and Filters -->
       <FilterBar
@@ -198,6 +199,7 @@ import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
 import Autocomplete from '@/components/Autocomplete.vue';
+import InfoTooltip from '@/components/InfoTooltip.vue';
 import GroupDetailModal from '@/components/modals/GroupDetailModal.vue';
 import GroupFormModal from '@/components/modals/GroupFormModal.vue';
 
@@ -210,6 +212,7 @@ export default defineComponent({
     DataTable,
     ViewToggle,
     Autocomplete,
+    InfoTooltip,
     GroupDetailModal,
     GroupFormModal,
   },
@@ -493,12 +496,13 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
-.view-description {
-  margin-bottom: 2rem;
-  color: var(--text-secondary);
+.view-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .groups-grid {

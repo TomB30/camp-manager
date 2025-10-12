@@ -18,16 +18,17 @@
       <!-- Programs List View -->
       <div v-if="!selectedProgramId">
         <div class="view-header">
-          <h2>Programs</h2>
+          <div class="view-title">
+            <h2>Programs</h2>
+            <InfoTooltip>
+              Programs are collections of activities, staff members, and locations. 
+              Create programs to organize your camp's offerings like "Watersports", "Arts & Crafts", or "Adventure Sports".
+            </InfoTooltip>
+          </div>
           <div class="header-actions">
             <button class="btn btn-primary" @click="showProgramModal = true">+ Create Program</button>
           </div>
         </div>
-
-        <p class="view-description">
-          Programs are collections of activities, staff members, and locations. 
-          Create programs to organize your camp's offerings like "Watersports", "Arts & Crafts", or "Adventure Sports".
-        </p>
 
         <!-- Search and Filters -->
         <FilterBar
@@ -409,6 +410,7 @@ import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar from '@/components/FilterBar.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
 import DataTable from '@/components/DataTable.vue';
+import InfoTooltip from '@/components/InfoTooltip.vue';
 import ProgramFormModal from '@/components/modals/ProgramFormModal.vue';
 import ActivityFormModal from '@/components/modals/ActivityFormModal.vue';
 import ActivityDetailModal from '@/components/modals/ActivityDetailModal.vue';
@@ -428,6 +430,7 @@ export default defineComponent({
     FilterBar,
     ViewToggle,
     DataTable,
+    InfoTooltip,
     ProgramFormModal,
     ActivityFormModal,
     ActivityDetailModal,
@@ -753,7 +756,13 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.view-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .view-header h2 {
@@ -766,12 +775,6 @@ export default defineComponent({
 .header-actions {
   display: flex;
   gap: 0.75rem;
-}
-
-.view-description {
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
 }
 
 /* Table View Styles */
