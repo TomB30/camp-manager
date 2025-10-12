@@ -645,7 +645,7 @@ export default defineComponent({
 
 <style scoped>
 .programs-view {
-  padding: 2rem 0;
+  padding: 0;
 }
 
 /* Breadcrumbs */
@@ -653,7 +653,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   font-size: 0.875rem;
 }
 
@@ -691,7 +691,7 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .view-header h2 {
@@ -708,13 +708,13 @@ export default defineComponent({
 
 .view-description {
   color: var(--text-secondary);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   line-height: 1.6;
 }
 
 /* Search Bar */
 .search-bar {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .search-bar .form-input {
@@ -799,8 +799,8 @@ export default defineComponent({
   background: var(--surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  padding: 2rem;
-  margin-bottom: 2rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
   box-shadow: var(--shadow);
 }
 
