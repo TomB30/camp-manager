@@ -150,6 +150,7 @@
       :show="!!selectedEventId"
       :event="selectedEvent"
       @close="selectedEventId = null"
+      @edit="editEvent"
       @delete="deleteEventConfirm"
     >
       <template #time>
@@ -236,15 +237,16 @@
       </template>
     </EventDetailModal>
 
-    <!-- Create Event Modal -->
+    <!-- Create/Edit Event Modal -->
     <EventFormModal
       :show="showEventModal"
-      :form-data="newEvent"
+      :is-editing="!!editingEventId"
+      :form-data="eventFormData"
       :rooms="store.rooms"
       :camper-groups="store.camperGroups"
       :campers="store.campers"
-      @close="showEventModal = false"
-      @save="createEvent"
+      @close="closeEventModal"
+      @save="saveEvent"
     />
 
     <!-- Confirmation Modal -->
@@ -293,6 +295,7 @@ export default defineComponent({
     return {
       selectedDate: new Date(),
       selectedEventId: null as string | null,
+      editingEventId: null as string | null,
       showEventModal: false,
       isDragOver: false,
       draggedCamperId: null as string | null,
@@ -304,7 +307,7 @@ export default defineComponent({
         data?: any;
       } | null,
       hours: Array.from({ length: 14 }, (_, i) => i + 7),
-      newEvent: {
+      eventFormData: {
         title: '',
         startTime: '09:00',
         endTime: '10:00',
@@ -554,63 +557,32 @@ export default defineComponent({
     selectEvent(event: Event) {
       this.selectedEventId = event.id;
     },
-    async createEvent(formData: any) {
-      const [startHour, startMinute] = formData.startTime.split(':').map(Number);
-      const [endHour, endMinute] = formData.endTime.split(':').map(Number);
+    editEvent() {
+      if (!this.selectedEvent) return;
       
-      const startTime = new Date(this.selectedDate);
-      startTime.setHours(startHour, startMinute, 0, 0);
+      // Extract time from ISO date strings
+      const startTime = new Date(this.selectedEvent.startTime);
+      const endTime = new Date(this.selectedEvent.endTime);
       
-      const endTime = new Date(this.selectedDate);
-      endTime.setHours(endHour, endMinute, 0, 0);
-      
-      const event: Event = {
-        id: `event-${Date.now()}`,
-        title: formData.title,
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString(),
-        roomId: formData.roomId,
-        capacity: formData.capacity,
-        type: formData.type,
-        color: formData.color,
-        enrolledCamperIds: [],
-        assignedStaffIds: [],
+      this.editingEventId = this.selectedEvent.id;
+      this.eventFormData = {
+        title: this.selectedEvent.title,
+        startTime: `${String(startTime.getHours()).padStart(2, '0')}:${String(startTime.getMinutes()).padStart(2, '0')}`,
+        endTime: `${String(endTime.getHours()).padStart(2, '0')}:${String(endTime.getMinutes()).padStart(2, '0')}`,
+        roomId: this.selectedEvent.roomId,
+        capacity: this.selectedEvent.capacity,
+        type: this.selectedEvent.type,
+        color: this.selectedEvent.color || '#3B82F6',
+        camperGroupIds: [],
       };
       
-      await this.store.addEvent(event);
-      
-      // Enroll camper groups if any were selected
-      if (formData.camperGroupIds && formData.camperGroupIds.length > 0) {
-        const messages: string[] = [];
-        
-        // Enroll camper groups
-        for (const groupId of formData.camperGroupIds) {
-          try {
-            const result = await this.store.enrollCamperGroup(event.id, groupId);
-            if (result.errors.length > 0) {
-              messages.push(result.message);
-            }
-          } catch (error: any) {
-            messages.push(error.message);
-          }
-        }
-        
-        if (messages.length > 0) {
-          this.toast.warning(
-            'Event created with some enrollment issues',
-            messages.join('\n')
-          );
-        } else {
-          this.toast.success('Event created successfully');
-        }
-      } else {
-        this.toast.success('Event created successfully');
-      }
-      
+      this.selectedEventId = null;
+      this.showEventModal = true;
+    },
+    closeEventModal() {
       this.showEventModal = false;
-      
-      // Reset form
-      this.newEvent = {
+      this.editingEventId = null;
+      this.eventFormData = {
         title: '',
         startTime: '09:00',
         endTime: '10:00',
@@ -620,6 +592,91 @@ export default defineComponent({
         color: '#3B82F6',
         camperGroupIds: [],
       };
+    },
+    async saveEvent(formData: any) {
+      const [startHour, startMinute] = formData.startTime.split(':').map(Number);
+      const [endHour, endMinute] = formData.endTime.split(':').map(Number);
+      
+      // Use selected date or existing event's date
+      let eventDate = this.selectedDate;
+      if (this.editingEventId) {
+        const existingEvent = this.store.getEventById(this.editingEventId);
+        if (existingEvent) {
+          eventDate = new Date(existingEvent.startTime);
+        }
+      }
+      
+      const startTime = new Date(eventDate);
+      startTime.setHours(startHour, startMinute, 0, 0);
+      
+      const endTime = new Date(eventDate);
+      endTime.setHours(endHour, endMinute, 0, 0);
+      
+      if (this.editingEventId) {
+        // Update existing event
+        const existingEvent = this.store.getEventById(this.editingEventId);
+        if (existingEvent) {
+          const updatedEvent: Event = {
+            ...existingEvent,
+            title: formData.title,
+            startTime: startTime.toISOString(),
+            endTime: endTime.toISOString(),
+            roomId: formData.roomId,
+            capacity: formData.capacity,
+            type: formData.type,
+            color: formData.color,
+          };
+          
+          await this.store.updateEvent(updatedEvent);
+          this.toast.success('Event updated successfully');
+        }
+      } else {
+        // Create new event
+        const event: Event = {
+          id: `event-${Date.now()}`,
+          title: formData.title,
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+          roomId: formData.roomId,
+          capacity: formData.capacity,
+          type: formData.type,
+          color: formData.color,
+          enrolledCamperIds: [],
+          assignedStaffIds: [],
+        };
+        
+        await this.store.addEvent(event);
+        
+        // Enroll camper groups if any were selected
+        if (formData.camperGroupIds && formData.camperGroupIds.length > 0) {
+          const messages: string[] = [];
+          
+          // Enroll camper groups
+          for (const groupId of formData.camperGroupIds) {
+            try {
+              const result = await this.store.enrollCamperGroup(event.id, groupId);
+              if (result.errors.length > 0) {
+                messages.push(result.message);
+              }
+            } catch (error: any) {
+              messages.push(error.message);
+            }
+          }
+          
+          if (messages.length > 0) {
+            this.toast.warning(
+              'Event created with some enrollment issues',
+              messages.join('\n')
+            );
+          } else {
+            this.toast.success('Event created successfully');
+          }
+        } else {
+          this.toast.success('Event created successfully');
+        }
+      }
+      
+      this.closeEventModal();
     },
     deleteEventConfirm() {
       if (!this.selectedEventId) return;

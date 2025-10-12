@@ -42,6 +42,7 @@
 
     <template #footer>
       <button class="btn btn-error" @click="$emit('delete')">Delete Event</button>
+      <button class="btn btn-secondary" @click="$emit('edit')">Edit</button>
       <button class="btn btn-secondary" @click="$emit('close')">Close</button>
     </template>
   </BaseModal>
@@ -67,7 +68,7 @@ export default defineComponent({
       default: null,
     },
   },
-  emits: ['close', 'delete'],
+  emits: ['close', 'edit', 'delete'],
 });
 </script>
 

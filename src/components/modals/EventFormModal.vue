@@ -1,7 +1,7 @@
 <template>
   <BaseModal
     :show="show"
-    title="Create New Event"
+    :title="isEditing ? 'Edit Event' : 'Create New Event'"
     @close="$emit('close')"
   >
     <template #body>
@@ -84,7 +84,7 @@
 
     <template #footer>
       <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
-      <button class="btn btn-primary" @click="handleSave">Create Event</button>
+      <button class="btn btn-primary" @click="handleSave">{{ isEditing ? 'Save Changes' : 'Create Event' }}</button>
     </template>
   </BaseModal>
 </template>
@@ -118,6 +118,10 @@ export default defineComponent({
     show: {
       type: Boolean,
       required: true,
+    },
+    isEditing: {
+      type: Boolean,
+      default: false,
     },
     formData: {
       type: Object as PropType<EventFormData>,
