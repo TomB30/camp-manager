@@ -28,31 +28,35 @@
         <div class="nav-section">
           <button 
             class="nav-section-header" 
+            :class="{ 'has-active-route': isCampersRouteActiveWhileCollapsed }"
             @click="toggleCampersSection"
             type="button"
           >
             <Users :size="20" class="nav-icon" />
             <span class="nav-text">Campers</span>
+            <span v-if="isCampersRouteActiveWhileCollapsed" class="active-indicator"></span>
             <ChevronRight 
               :size="16" 
               class="nav-chevron"
               :class="{ 'nav-chevron-expanded': isCampersSectionExpanded }"
             />
           </button>
-          <div v-if="isCampersSectionExpanded" class="nav-subsection">
-            <RouterLink to="/campers" class="nav-link nav-sublink" @click="handleNavClick">
-              <Users :size="18" class="nav-icon" />
-              <span class="nav-text">All Campers</span>
-            </RouterLink>
-            <RouterLink to="/groups" class="nav-link nav-sublink" @click="handleNavClick">
-              <FolderOpen :size="18" class="nav-icon" />
-              <span class="nav-text">Camper Groups</span>
-            </RouterLink>
-            <RouterLink to="/family-groups" class="nav-link nav-sublink" @click="handleNavClick">
-              <UsersRound :size="18" class="nav-icon" />
-              <span class="nav-text">Family Groups</span>
-            </RouterLink>
-          </div>
+          <Transition name="expand">
+            <div v-if="isCampersSectionExpanded" class="nav-subsection">
+              <RouterLink to="/campers" class="nav-link nav-sublink" @click="handleNavClick">
+                <Users :size="18" class="nav-icon" />
+                <span class="nav-text">All Campers</span>
+              </RouterLink>
+              <RouterLink to="/groups" class="nav-link nav-sublink" @click="handleNavClick">
+                <FolderOpen :size="18" class="nav-icon" />
+                <span class="nav-text">Camper Groups</span>
+              </RouterLink>
+              <RouterLink to="/family-groups" class="nav-link nav-sublink" @click="handleNavClick">
+                <UsersRound :size="18" class="nav-icon" />
+                <span class="nav-text">Family Groups</span>
+              </RouterLink>
+            </div>
+          </Transition>
         </div>
         
 
@@ -61,35 +65,39 @@
         <div class="nav-section">
           <button 
             class="nav-section-header" 
+            :class="{ 'has-active-route': isCampInfoRouteActiveWhileCollapsed }"
             @click="toggleCampInfoSection"
             type="button"
           >
             <Settings :size="20" class="nav-icon" />
             <span class="nav-text">Camp Info</span>
+            <span v-if="isCampInfoRouteActiveWhileCollapsed" class="active-indicator"></span>
             <ChevronRight 
               :size="16" 
               class="nav-chevron"
               :class="{ 'nav-chevron-expanded': isCampInfoSectionExpanded }"
             />
           </button>
-          <div v-if="isCampInfoSectionExpanded" class="nav-subsection">
-            <RouterLink to="/locations" class="nav-link nav-sublink" @click="handleNavClick">
-              <MapPin :size="18" class="nav-icon" />
-              <span class="nav-text">Locations</span>
-            </RouterLink>
-            <RouterLink to="/rooms" class="nav-link nav-sublink" @click="handleNavClick">
-              <Home :size="18" class="nav-icon" />
-              <span class="nav-text">Activity Rooms</span>
-            </RouterLink>
-            <RouterLink to="/sleeping-rooms" class="nav-link nav-sublink" @click="handleNavClick">
-              <Bed :size="18" class="nav-icon" />
-              <span class="nav-text">Cabins</span>
-            </RouterLink>
-            <RouterLink to="/certifications" class="nav-link nav-sublink" @click="handleNavClick">
-              <Award :size="18" class="nav-icon" />
-              <span class="nav-text">Certifications</span>
-            </RouterLink>
-          </div>
+          <Transition name="expand">
+            <div v-if="isCampInfoSectionExpanded" class="nav-subsection">
+              <RouterLink to="/locations" class="nav-link nav-sublink" @click="handleNavClick">
+                <MapPin :size="18" class="nav-icon" />
+                <span class="nav-text">Locations</span>
+              </RouterLink>
+              <RouterLink to="/rooms" class="nav-link nav-sublink" @click="handleNavClick">
+                <Home :size="18" class="nav-icon" />
+                <span class="nav-text">Activity Rooms</span>
+              </RouterLink>
+              <RouterLink to="/sleeping-rooms" class="nav-link nav-sublink" @click="handleNavClick">
+                <Bed :size="18" class="nav-icon" />
+                <span class="nav-text">Cabins</span>
+              </RouterLink>
+              <RouterLink to="/certifications" class="nav-link nav-sublink" @click="handleNavClick">
+                <Award :size="18" class="nav-icon" />
+                <span class="nav-text">Certifications</span>
+              </RouterLink>
+            </div>
+          </Transition>
         </div>
       </nav>
 
@@ -159,9 +167,34 @@ export default defineComponent({
   computed: {
     store() {
       return useCampStore();
+    },
+    isCampersRouteActiveWhileCollapsed() {
+      const campersRoutes = ['/campers', '/groups', '/family-groups'];
+      return !this.isCampersSectionExpanded && campersRoutes.includes(this.$route.path);
+    },
+    isCampInfoRouteActiveWhileCollapsed() {
+      const campInfoRoutes = ['/locations', '/rooms', '/sleeping-rooms', '/certifications'];
+      return !this.isCampInfoSectionExpanded && campInfoRoutes.includes(this.$route.path);
+    }
+  },
+  watch: {
+    '$route.path': {
+      immediate: true,
+      handler(path: string) {
+        this.updateExpandedSections(path);
+      }
     }
   },
   methods: {
+    updateExpandedSections(path: string) {
+      // Define routes for each section
+      const campersRoutes = ['/campers', '/groups', '/family-groups'];
+      const campInfoRoutes = ['/locations', '/rooms', '/sleeping-rooms', '/certifications'];
+      
+      // Set expanded state based on current route
+      this.isCampersSectionExpanded = campersRoutes.includes(path);
+      this.isCampInfoSectionExpanded = campInfoRoutes.includes(path);
+    },
     toggleCampersSection() {
       this.isCampersSectionExpanded = !this.isCampersSectionExpanded;
     },
@@ -290,6 +323,31 @@ export default defineComponent({
   background: var(--surface-secondary);
 }
 
+.nav-section-header.has-active-route {
+  color: var(--accent-color);
+  background: #EFF6FF;
+}
+
+.active-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  margin-left: auto;
+  margin-right: 0.25rem;
+  flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 .nav-chevron {
   margin-left: auto;
   transition: transform 0.2s ease;
@@ -317,6 +375,27 @@ export default defineComponent({
 
 .nav-sublink .nav-icon {
   opacity: 0.7;
+}
+
+/* Expand/Collapse Animation */
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
+}
+
+.expand-enter-to,
+.expand-leave-from {
+  opacity: 1;
+  max-height: 500px;
+  margin-top: 0.25rem;
 }
 
 .conflicts-section {
