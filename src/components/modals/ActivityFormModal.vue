@@ -21,7 +21,7 @@
           <label class="form-label">Description</label>
           <textarea
             v-model="localFormData.description"
-            class="form-input"
+            class="form-textarea"
             rows="3"
             placeholder="Describe this activity..."
           ></textarea>
@@ -61,9 +61,9 @@
 
         <div class="form-group">
           <label class="form-label">Staff Requirements</label>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-2">
             <div>
-              <label class="form-label-sm">Minimum Staff</label>
+              <label class="form-label text-xs">Minimum Staff</label>
               <input 
                 v-model.number="localFormData.minStaff" 
                 type="number" 
@@ -73,7 +73,7 @@
               />
             </div>
             <div>
-              <label class="form-label-sm">Maximum Staff</label>
+              <label class="form-label text-xs">Maximum Staff</label>
               <input 
                 v-model.number="localFormData.maxStaff" 
                 type="number" 
@@ -276,65 +276,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group:last-child {
-  margin-bottom: 0;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  font-size: 0.875rem;
-}
-
-.form-label-sm {
-  display: block;
-  margin-bottom: 0.375rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  font-size: 0.75rem;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 0.875rem;
-  transition: all 0.2s;
-  background: var(--surface);
-  color: var(--text-primary);
-  font-family: inherit;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px var(--accent-light);
-}
-
-textarea.form-input {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.grid {
-  display: grid;
-}
-
-.grid-cols-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.gap-4 {
-  gap: 1rem;
-}
-
+/* Only custom styles for this component */
 .certifications-input {
   display: flex;
   flex-direction: column;

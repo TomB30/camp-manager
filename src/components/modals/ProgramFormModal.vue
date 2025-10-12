@@ -21,7 +21,7 @@
           <label class="form-label">Description</label>
           <textarea
             v-model="localFormData.description"
-            class="form-input"
+            class="form-textarea"
             rows="3"
             placeholder="Describe this program..."
           ></textarea>
@@ -141,44 +141,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group:last-child {
-  margin-bottom: 0;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  font-size: 0.875rem;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 0.875rem;
-  transition: all 0.2s;
-  background: var(--surface);
-  color: var(--text-primary);
-  font-family: inherit;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px var(--accent-light);
-}
-
-textarea.form-input {
-  resize: vertical;
-  min-height: 80px;
-}
-</style>
 
