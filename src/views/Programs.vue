@@ -30,18 +30,22 @@
           Create programs to organize your camp's offerings like "Watersports", "Arts & Crafts", or "Adventure Sports".
         </p>
 
-        <!-- Search Bar -->
-        <div class="search-bar">
-          <input
-            v-model="searchQuery"
-            type="text"
-            class="form-input"
-            placeholder="Search programs..."
-          />
-        </div>
+        <!-- Search and Filters -->
+        <FilterBar
+          v-model:searchQuery="searchQuery"
+          :filters="[]"
+          :filtered-count="filteredPrograms.length"
+          :total-count="store.programs.length"
+          search-placeholder="Search programs..."
+          @clear="clearFilters"
+        >
+          <template #prepend>
+            <ViewToggle v-model="viewMode" />
+          </template>
+        </FilterBar>
 
-        <!-- Programs Grid -->
-        <div class="programs-grid">
+        <!-- Grid View -->
+        <div v-if="viewMode === 'grid'" class="programs-grid">
           <div 
             v-for="program in filteredPrograms"
             :key="program.id"
@@ -89,9 +93,48 @@
             </svg>
             <h3>No Programs Found</h3>
             <p>No programs match your search query.</p>
-            <button class="btn btn-secondary" @click="searchQuery = ''">Clear Search</button>
+            <button class="btn btn-secondary" @click="clearFilters">Clear Filters</button>
           </div>
         </div>
+
+        <!-- Table View -->
+        <DataTable
+          v-if="viewMode === 'table'"
+          :columns="programColumns"
+          :data="filteredPrograms"
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          row-key="id"
+        >
+          <template #cell-name="{ item }">
+            <div class="program-name-content">
+              <div class="color-indicator" :style="{ background: item.color || '#6366F1' }"></div>
+              <div class="program-name-text">{{ item.name }}</div>
+            </div>
+          </template>
+          
+          <template #cell-description="{ item }">
+            <span class="text-secondary">{{ item.description || 'No description' }}</span>
+          </template>
+          
+          <template #cell-activities="{ item }">
+            <span class="badge badge-sm badge-primary">{{ getActivitiesCount(item.id) }} activities</span>
+          </template>
+          
+          <template #cell-staff="{ item }">
+            <span>{{ getStaffCount(item.id) }} staff</span>
+          </template>
+          
+          <template #cell-locations="{ item }">
+            <span>{{ getLocationsCount(item.id) }} locations</span>
+          </template>
+          
+          <template #cell-actions="{ item }">
+            <button class="btn btn-sm btn-secondary" @click.stop="selectProgram(item.id)">
+              View Details
+            </button>
+          </template>
+        </DataTable>
       </div>
 
       <!-- Program Detail View -->
@@ -364,6 +407,9 @@ import type { Program, Activity } from '@/types/api';
 import { Users, UsersRound, Home, Clock, Edit, Trash2, ListChecks } from 'lucide-vue-next';
 import BaseModal from '@/components/BaseModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
+import FilterBar from '@/components/FilterBar.vue';
+import ViewToggle from '@/components/ViewToggle.vue';
+import DataTable from '@/components/DataTable.vue';
 import ProgramFormModal from '@/components/modals/ProgramFormModal.vue';
 import ActivityFormModal from '@/components/modals/ActivityFormModal.vue';
 import ActivityDetailModal from '@/components/modals/ActivityDetailModal.vue';
@@ -380,6 +426,9 @@ export default defineComponent({
     ListChecks,
     BaseModal,
     ConfirmModal,
+    FilterBar,
+    ViewToggle,
+    DataTable,
     ProgramFormModal,
     ActivityFormModal,
     ActivityDetailModal,
@@ -387,6 +436,9 @@ export default defineComponent({
   data() {
     return {
       searchQuery: '',
+      viewMode: 'grid' as 'grid' | 'table',
+      currentPage: 1,
+      pageSize: 10,
       selectedProgramId: null as string | null,
       selectedActivityId: null as string | null,
       showProgramModal: false,
@@ -397,6 +449,14 @@ export default defineComponent({
       editingProgram: null as Program | null,
       editingActivity: null as Activity | null,
       deleteTarget: null as { type: 'program' | 'activity'; id: string } | null,
+      programColumns: [
+        { key: 'name', label: 'Program Name', width: '200px' },
+        { key: 'description', label: 'Description', width: '250px' },
+        { key: 'activities', label: 'Activities', width: '120px' },
+        { key: 'staff', label: 'Staff', width: '100px' },
+        { key: 'locations', label: 'Locations', width: '100px' },
+        { key: 'actions', label: 'Actions', width: '140px' },
+      ]
     };
   },
   computed: {
@@ -472,6 +532,9 @@ export default defineComponent({
     },
   },
   methods: {
+    clearFilters() {
+      this.searchQuery = '';
+    },
     selectProgram(id: string) {
       this.selectedProgramId = id;
     },
@@ -712,14 +775,22 @@ export default defineComponent({
   line-height: 1.6;
 }
 
-/* Search Bar */
-.search-bar {
-  margin-bottom: 1.5rem;
+/* Table View Styles */
+.program-name-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-.search-bar .form-input {
-  width: 100%;
-  max-width: 400px;
+.color-indicator {
+  width: 4px;
+  height: 24px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.program-name-text {
+  font-weight: 500;
 }
 
 /* Programs Grid */
