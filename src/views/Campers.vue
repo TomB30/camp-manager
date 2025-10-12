@@ -1,12 +1,11 @@
 <template>
   <div class="container">
     <div class="campers-view">
-      <div class="view-header">
-        <h2>Campers Management</h2>
-        <div class="header-actions">
+      <ViewHeader title="Campers Management">
+        <template #actions>
           <button class="btn btn-primary" @click="showModal = true">+ Add Camper</button>
-        </div>
-      </div>
+        </template>
+      </ViewHeader>
 
       <!-- Search and Filters -->
       <FilterBar
@@ -25,32 +24,14 @@
 
       <!-- Grid View -->
       <div v-if="viewMode === 'grid'" class="campers-grid">
-        <div 
+        <CamperCard
           v-for="camper in filteredCampers"
           :key="camper.id"
-          class="camper-card card"
+          :camper="camper"
+          :formatted-gender="formatGender(camper.gender)"
+          :today-events-count="getCamperTodayEvents(camper.id).length"
           @click="selectCamper(camper.id)"
-        >
-          <div class="camper-avatar">
-            {{ camper.firstName.charAt(0) }}{{ camper.lastName.charAt(0) }}
-          </div>
-          <div class="camper-details">
-            <h4>{{ camper.firstName }} {{ camper.lastName }}</h4>
-            <div class="camper-meta">
-              <span class="badge badge-primary">Age {{ camper.age }}</span>
-              <span class="badge badge-primary">{{ formatGender(camper.gender) }}</span>
-              <span v-if="camper.allergies && camper.allergies.length > 0" class="badge badge-warning">
-                {{ camper.allergies.length }} Allergy(ies)
-              </span>
-            </div>
-            <div class="camper-contact text-sm text-secondary mt-1">
-              {{ camper.parentContact }}
-            </div>
-            <div class="camper-events text-sm mt-2">
-              <strong>Today's Events:</strong> {{ getCamperTodayEvents(camper.id).length }}
-            </div>
-          </div>
-        </div>
+        />
       </div>
 
       <!-- Table View -->
@@ -64,9 +45,11 @@
       >
         <template #cell-name="{ item }">
           <div class="camper-name-content">
-            <div class="camper-avatar-sm">
-              {{ item.firstName.charAt(0) }}{{ item.lastName.charAt(0) }}
-            </div>
+            <AvatarInitials
+              :first-name="item.firstName"
+              :last-name="item.lastName"
+              size="sm"
+            />
             <div class="camper-fullname">{{ item.firstName }} {{ item.lastName }}</div>
           </div>
         </template>
@@ -152,6 +135,9 @@ import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
 import type { Camper, FamilyGroup, Event } from '@/types/api';
+import ViewHeader from '@/components/ViewHeader.vue';
+import AvatarInitials from '@/components/AvatarInitials.vue';
+import CamperCard from '@/components/cards/CamperCard.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
@@ -164,6 +150,9 @@ import CamperFormModal from '@/components/modals/CamperFormModal.vue';
 export default defineComponent({
   name: 'Campers',
   components: {
+    ViewHeader,
+    AvatarInitials,
+    CamperCard,
     ConfirmModal,
     FilterBar,
     EventsByDate,
@@ -403,64 +392,10 @@ export default defineComponent({
   margin: 0 auto;
 }
 
-.view-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
 .campers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
-}
-
-.camper-card {
-  cursor: pointer;
-  transition: all 0.15s ease;
-  display: flex;
-  gap: 1rem;
-}
-
-.camper-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.camper-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.camper-details {
-  flex: 1;
-  min-width: 0;
-}
-
-.camper-details h4 {
-  margin-bottom: 0.5rem;
-}
-
-.camper-meta {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
 }
 
 .family-group-info {

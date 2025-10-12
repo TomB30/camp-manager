@@ -1,17 +1,14 @@
 <template>
   <div class="container">
     <div class="family-groups-view">
-      <div class="view-header">
-        <div class="view-title">
-          <h2>Family Groups</h2>
-          <InfoTooltip>
-            Family groups are the fundamental organizational units. Each family group is assigned to a sleeping room and has staff members responsible for the group.
-          </InfoTooltip>
-        </div>
-        <div class="header-actions">
+      <ViewHeader 
+        title="Family Groups" 
+        tooltip="Family groups are the fundamental organizational units. Each family group is assigned to a sleeping room and has staff members responsible for the group."
+      >
+        <template #actions>
           <button class="btn btn-primary" @click="showModal = true">+ Create Family Group</button>
-        </div>
-      </div>
+        </template>
+      </ViewHeader>
 
       <!-- Search and Filters -->
       <FilterBar
@@ -30,53 +27,37 @@
 
       <!-- Grid View -->
       <div v-if="viewMode === 'grid'" class="groups-grid">
-        <div 
+        <FamilyGroupCard
           v-for="group in filteredFamilyGroups"
           :key="group.id"
-          class="group-card card"
-          :style="{ borderLeft: `4px solid ${group.color || '#6366F1'}` }"
+          :group="group"
+          :campers-count="getCampersCount(group.id)"
+          :formatted-date-range="`${formatDate(group.startDate)} - ${formatDate(group.endDate)}`"
+          :sleeping-room-name="getSleepingRoomName(group.sleepingRoomId)"
           @click="selectGroup(group.id)"
+        />
+
+        <EmptyState
+          v-if="filteredFamilyGroups.length === 0 && store.familyGroups.length === 0"
+          type="empty"
+          message="No family groups created yet"
+          action-text="Create First Group"
+          @action="showModal = true"
         >
-          <div class="group-header">
-            <h4>{{ group.name }}</h4>
-            <span class="badge badge-primary">{{ getCampersCount(group.id) }} campers</span>
-          </div>
-          
-          <p v-if="group.description" class="group-description">{{ group.description }}</p>
-          
-          <div class="group-dates">
-            <span class="text-xs text-secondary">
-              📅 {{ formatDate(group.startDate) }} - {{ formatDate(group.endDate) }}
-            </span>
-          </div>
-          
-          <div class="group-info mt-2">
-            <div class="info-row">
-              <Bed :size="16" />
-              <span>{{ getSleepingRoomName(group.sleepingRoomId) }}</span>
-            </div>
-            <div v-if="group.staffMemberIds.length > 0" class="info-row">
-              <Users :size="16" />
-              <span>{{ group.staffMemberIds.length }} staff member(s)</span>
-            </div>
-          </div>
-        </div>
+          <template #icon>
+            <Bed :size="64" stroke-width="1.5" />
+          </template>
+        </EmptyState>
 
-        <div v-if="filteredFamilyGroups.length === 0 && store.familyGroups.length === 0" class="empty-state">
-          <Bed :size="64" stroke-width="1.5" />
-          <p>No family groups created yet</p>
-          <button class="btn btn-primary" @click="showModal = true">Create First Group</button>
-        </div>
-
-        <div v-if="filteredFamilyGroups.length === 0 && store.familyGroups.length > 0" class="empty-state">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
-          </svg>
-          <h3>No Family Groups Found</h3>
-          <p>No family groups match your current filters. Try adjusting your search criteria.</p>
-          <button class="btn btn-secondary" @click="clearFilters">Clear Filters</button>
-        </div>
+        <EmptyState
+          v-if="filteredFamilyGroups.length === 0 && store.familyGroups.length > 0"
+          type="no-results"
+          title="No Family Groups Found"
+          message="No family groups match your current filters. Try adjusting your search criteria."
+          action-text="Clear Filters"
+          action-button-class="btn-secondary"
+          @action="clearFilters"
+        />
       </div>
 
       <!-- Table View -->
@@ -90,7 +71,7 @@
       >
         <template #cell-name="{ item }">
           <div class="group-name-content">
-            <div class="color-indicator" :style="{ background: item.color || '#6366F1' }"></div>
+            <ColorIndicator :color="item.color || '#6366F1'" type="dot" size="md" />
             <div class="group-name-text">{{ item.name }}</div>
           </div>
         </template>
@@ -209,6 +190,10 @@
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { FamilyGroup, Camper } from '@/types/api';
+import ViewHeader from '@/components/ViewHeader.vue';
+import EmptyState from '@/components/EmptyState.vue';
+import ColorIndicator from '@/components/ColorIndicator.vue';
+import FamilyGroupCard from '@/components/cards/FamilyGroupCard.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import DataTable from '@/components/DataTable.vue';
@@ -221,6 +206,10 @@ import { Bed, Users } from 'lucide-vue-next';
 export default defineComponent({
   name: 'FamilyGroups',
   components: {
+    ViewHeader,
+    EmptyState,
+    ColorIndicator,
+    FamilyGroupCard,
     ConfirmModal,
     FilterBar,
     DataTable,
@@ -507,77 +496,10 @@ export default defineComponent({
   margin: 0 auto;
 }
 
-.view-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.view-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
 .groups-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
-}
-
-.group-card {
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.group-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.group-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  margin-bottom: 0.75rem;
-}
-
-.group-header h4 {
-  margin: 0;
-}
-
-.group-description {
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  line-height: 1.4;
-  margin: 0;
-}
-
-.group-dates {
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.group-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.info-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
 }
 
 .empty-state {

@@ -1,12 +1,11 @@
 <template>
   <div class="container">
     <div class="sleeping-rooms-view">
-      <div class="view-header">
-        <h2>Cabins (Sleeping Rooms)</h2>
-        <div class="header-actions">
+      <ViewHeader title="Cabins (Sleeping Rooms)">
+        <template #actions>
           <button class="btn btn-primary" @click="showModal = true">+ Add Cabin</button>
-        </div>
-      </div>
+        </template>
+      </ViewHeader>
 
       <!-- Search and Filters -->
       <FilterBar
@@ -23,39 +22,13 @@
 
       <!-- Grid View -->
       <div v-if="viewMode === 'grid'" class="rooms-grid">
-        <div 
+        <SleepingRoomCard
           v-for="room in filteredRooms"
           :key="room.id"
-          class="room-card card"
+          :room="room"
+          :family-groups="getFamilyGroupsForRoom(room.id)"
           @click="selectRoom(room.id)"
-        >
-          <div class="room-icon">
-            <Bed :size="32" :stroke-width="2" />
-          </div>
-          <div class="room-details">
-            <h4>{{ room.name }}</h4>
-            <div class="room-meta">
-              <span class="badge badge-primary">{{ room.beds }} beds</span>
-              <span v-if="room.location" class="text-sm text-secondary">
-                <MapPin :size="14" class="inline" />
-                {{ room.location }}
-              </span>
-            </div>
-            <div v-if="getFamilyGroupsForRoom(room.id).length > 0" class="assigned-groups mt-2">
-              <div class="text-xs text-secondary mb-1">Family Groups:</div>
-              <div class="flex gap-1 flex-wrap">
-                <span 
-                  v-for="familyGroup in getFamilyGroupsForRoom(room.id)" 
-                  :key="familyGroup.id" 
-                  class="badge badge-success badge-sm"
-                >
-                  {{ familyGroup.name }}
-                </span>
-              </div>
-            </div>
-            <div v-else class="text-xs text-secondary mt-2">No family groups assigned</div>
-          </div>
-        </div>
+        />
       </div>
 
       <!-- Table View -->
@@ -144,6 +117,8 @@
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { SleepingRoom, FamilyGroup, Camper } from '@/types/api';
+import ViewHeader from '@/components/ViewHeader.vue';
+import SleepingRoomCard from '@/components/cards/SleepingRoomCard.vue';
 import FilterBar from '@/components/FilterBar.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
@@ -155,6 +130,8 @@ import { Bed, MapPin } from 'lucide-vue-next';
 export default defineComponent({
   name: 'SleepingRooms',
   components: {
+    ViewHeader,
+    SleepingRoomCard,
     FilterBar,
     ConfirmModal,
     DataTable,
@@ -328,67 +305,10 @@ export default defineComponent({
   margin: 0 auto;
 }
 
-.view-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
 .rooms-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
-}
-
-.room-card {
-  cursor: pointer;
-  transition: all 0.15s ease;
-  display: flex;
-  gap: 1rem;
-}
-
-.room-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.room-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: var(--radius-lg);
-  background: var(--primary-color);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.room-details {
-  flex: 1;
-  min-width: 0;
-}
-
-.room-details h4 {
-  margin-bottom: 0.5rem;
-}
-
-.room-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.assigned-groups {
-  border-top: 1px solid var(--border-color);
-  padding-top: 0.5rem;
 }
 
 /* Table View Styles */

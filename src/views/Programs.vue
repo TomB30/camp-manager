@@ -17,18 +17,14 @@
 
       <!-- Programs List View -->
       <div v-if="!selectedProgramId">
-        <div class="view-header">
-          <div class="view-title">
-            <h2>Programs</h2>
-            <InfoTooltip>
-              Programs are collections of activities, staff members, and locations. 
-              Create programs to organize your camp's offerings like "Watersports", "Arts & Crafts", or "Adventure Sports".
-            </InfoTooltip>
-          </div>
-          <div class="header-actions">
+        <ViewHeader 
+          title="Programs" 
+          tooltip="Programs are collections of activities, staff members, and locations. Create programs to organize your camp's offerings like 'Watersports', 'Arts & Crafts', or 'Adventure Sports'."
+        >
+          <template #actions>
             <button class="btn btn-primary" @click="showProgramModal = true">+ Create Program</button>
-          </div>
-        </div>
+          </template>
+        </ViewHeader>
 
         <!-- Search and Filters -->
         <FilterBar
@@ -46,55 +42,34 @@
 
         <!-- Grid View -->
         <div v-if="viewMode === 'grid'" class="programs-grid">
-          <div 
+          <ProgramCard
             v-for="program in filteredPrograms"
             :key="program.id"
-            class="program-card card"
-            :style="{ borderLeft: `4px solid ${program.color || '#6366F1'}` }"
+            :program="program"
+            :activities-count="getActivitiesCount(program.id)"
+            :staff-count="getStaffCount(program.id)"
+            :locations-count="getLocationsCount(program.id)"
             @click="selectProgram(program.id)"
-          >
-            <div class="program-header">
-              <h4>{{ program.name }}</h4>
-              <div class="program-badge">
-                <span class="badge badge-primary">{{ getActivitiesCount(program.id) }} activities</span>
-              </div>
-            </div>
-            
-            <p v-if="program.description" class="program-description">{{ program.description }}</p>
-            
-            <div class="program-stats">
-              <span class="stat-item">
-                <Users :size="16" />
-                {{ getStaffCount(program.id) }} staff
-              </span>
-              <span class="stat-item">
-                <Home :size="16" />
-                {{ getLocationsCount(program.id) }} locations
-              </span>
-            </div>
-          </div>
+          />
 
-          <div v-if="filteredPrograms.length === 0 && store.programs.length === 0" class="empty-state">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-            <h3>No Programs Yet</h3>
-            <p>Create your first program to organize activities, staff, and locations.</p>
-            <button class="btn btn-primary" @click="showProgramModal = true">Create Program</button>
-          </div>
+          <EmptyState
+            v-if="filteredPrograms.length === 0 && store.programs.length === 0"
+            type="empty"
+            title="No Programs Yet"
+            message="Create your first program to organize activities, staff, and locations."
+            action-text="Create Program"
+            @action="showProgramModal = true"
+          />
 
-          <div v-if="filteredPrograms.length === 0 && store.programs.length > 0" class="empty-state">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.35-4.35"></path>
-            </svg>
-            <h3>No Programs Found</h3>
-            <p>No programs match your search query.</p>
-            <button class="btn btn-secondary" @click="clearFilters">Clear Filters</button>
-          </div>
+          <EmptyState
+            v-if="filteredPrograms.length === 0 && store.programs.length > 0"
+            type="no-results"
+            title="No Programs Found"
+            message="No programs match your search query."
+            action-text="Clear Filters"
+            action-button-class="btn-secondary"
+            @action="clearFilters"
+          />
         </div>
 
         <!-- Table View -->
@@ -157,7 +132,7 @@
               <Edit :size="18" />
               Edit Program
             </button>
-            <button class="btn btn-danger" @click="deleteProgramConfirm(selectedProgram)">
+            <button class="btn btn-danger-outline" @click="deleteProgramConfirm(selectedProgram)">
               <Trash2 :size="18" />
               Delete
             </button>
@@ -222,18 +197,18 @@
           </div>
           
           <div v-if="programStaff.length > 0" class="staff-list">
-            <div 
+            <EntityListItem
               v-for="staff in programStaff"
               :key="staff.id"
-              class="staff-item"
+              :first-name="staff.firstName"
+              :last-name="staff.lastName"
+              :title="`${staff.firstName} ${staff.lastName}`"
+              :subtitle="formatRole(staff.role)"
+              :removable="true"
+              @remove="confirmRemoveStaff(staff.id)"
             >
-              <div class="staff-avatar">
-                {{ staff.firstName.charAt(0) }}{{ staff.lastName.charAt(0) }}
-              </div>
-              <div class="staff-info">
-                <div class="staff-name">{{ staff.firstName }} {{ staff.lastName }}</div>
-                <div class="staff-role text-secondary">{{ formatRole(staff.role) }}</div>
-                <div v-if="staff.certifications && staff.certifications.length > 0" class="staff-certifications">
+              <template v-if="staff.certifications && staff.certifications.length > 0" #metadata>
+                <div class="staff-certifications">
                   <span 
                     v-for="cert in staff.certifications" 
                     :key="cert"
@@ -242,14 +217,8 @@
                     {{ cert }}
                   </span>
                 </div>
-              </div>
-              <button 
-                class="btn btn-sm btn-danger-outline"
-                @click.stop="removeStaffFromProgram(staff.id)"
-              >
-                Remove
-              </button>
-            </div>
+              </template>
+            </EntityListItem>
           </div>
           
           <div v-else class="empty-section">
@@ -270,27 +239,27 @@
           </div>
           
           <div v-if="programLocations.length > 0" class="locations-list">
-            <div 
+            <EntityListItem
               v-for="room in programLocations"
               :key="room.id"
-              class="location-item"
+              :title="room.name"
+              :removable="true"
+              @remove="confirmRemoveLocation(room.id)"
             >
-              <div class="location-info">
-                <div class="location-name">{{ room.name }}</div>
+              <template #avatar>
+                <div class="location-icon">
+                  <Home :size="24" />
+                </div>
+              </template>
+              <template #metadata>
                 <div class="location-meta text-secondary">
                   <span>{{ formatRoomType(room.type) }}</span>
                   <span>•</span>
                   <span>Capacity: {{ room.capacity }}</span>
                   <span v-if="room.location">• {{ room.location }}</span>
                 </div>
-              </div>
-              <button 
-                class="btn btn-sm btn-danger-outline"
-                @click.stop="removeLocationFromProgram(room.id)"
-              >
-                Remove
-              </button>
-            </div>
+              </template>
+            </EntityListItem>
           </div>
           
           <div v-else class="empty-section">
@@ -405,6 +374,10 @@ import { useCampStore } from '@/stores/campStore';
 import { useToast } from '@/composables/useToast';
 import type { Program, Activity } from '@/types/api';
 import { Users, UsersRound, Home, Clock, Edit, Trash2, ListChecks } from 'lucide-vue-next';
+import ViewHeader from '@/components/ViewHeader.vue';
+import EmptyState from '@/components/EmptyState.vue';
+import EntityListItem from '@/components/EntityListItem.vue';
+import ProgramCard from '@/components/cards/ProgramCard.vue';
 import BaseModal from '@/components/BaseModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar from '@/components/FilterBar.vue';
@@ -418,6 +391,10 @@ import ActivityDetailModal from '@/components/modals/ActivityDetailModal.vue';
 export default defineComponent({
   name: 'Programs',
   components: {
+    ViewHeader,
+    EmptyState,
+    EntityListItem,
+    ProgramCard,
     Users,
     UsersRound,
     Home,
@@ -450,7 +427,7 @@ export default defineComponent({
       showDeleteConfirm: false,
       editingProgram: null as Program | null,
       editingActivity: null as Activity | null,
-      deleteTarget: null as { type: 'program' | 'activity'; id: string } | null,
+      deleteTarget: null as { type: 'program' | 'activity' | 'staff' | 'location'; id: string } | null,
       programColumns: [
         { key: 'name', label: 'Program Name', width: '200px' },
         { key: 'description', label: 'Description', width: '250px' },
@@ -518,19 +495,35 @@ export default defineComponent({
     },
     deleteConfirmTitle() {
       if (!this.deleteTarget) return '';
-      return this.deleteTarget.type === 'program' 
-        ? 'Delete Program?' 
-        : 'Delete Activity?';
+      switch (this.deleteTarget.type) {
+        case 'program':
+          return 'Delete Program?';
+        case 'activity':
+          return 'Delete Activity?';
+        case 'staff':
+          return 'Remove Staff Member?';
+        case 'location':
+          return 'Remove Location?';
+        default:
+          return '';
+      }
     },
     deleteConfirmMessage() {
       if (!this.deleteTarget) return '';
       if (this.deleteTarget.type === 'program') {
         const program = this.store.getProgramById(this.deleteTarget.id);
         return `Are you sure you want to delete "${program?.name}"? This will also delete all activities in this program. This action cannot be undone.`;
-      } else {
+      } else if (this.deleteTarget.type === 'activity') {
         const activity = this.store.getActivityById(this.deleteTarget.id);
         return `Are you sure you want to delete "${activity?.name}"? This action cannot be undone.`;
+      } else if (this.deleteTarget.type === 'staff') {
+        const staff = this.store.getStaffMemberById(this.deleteTarget.id);
+        return `Are you sure you want to remove "${staff?.firstName} ${staff?.lastName}" from this program?`;
+      } else if (this.deleteTarget.type === 'location') {
+        const room = this.store.getRoomById(this.deleteTarget.id);
+        return `Are you sure you want to remove "${room?.name}" from this program?`;
       }
+      return '';
     },
   },
   methods: {
@@ -620,6 +613,14 @@ export default defineComponent({
       this.showDeleteConfirm = true;
       this.selectedActivityId = null;
     },
+    confirmRemoveStaff(staffId: string) {
+      this.deleteTarget = { type: 'staff', id: staffId };
+      this.showDeleteConfirm = true;
+    },
+    confirmRemoveLocation(roomId: string) {
+      this.deleteTarget = { type: 'location', id: roomId };
+      this.showDeleteConfirm = true;
+    },
     async addStaffToProgram(staffId: string) {
       if (!this.selectedProgram) return;
       
@@ -690,9 +691,13 @@ export default defineComponent({
           await this.store.deleteProgram(this.deleteTarget.id);
           this.toast.success('Program deleted successfully');
           this.selectedProgramId = null;
-        } else {
+        } else if (this.deleteTarget.type === 'activity') {
           await this.store.deleteActivity(this.deleteTarget.id);
           this.toast.success('Activity deleted successfully');
+        } else if (this.deleteTarget.type === 'staff') {
+          await this.removeStaffFromProgram(this.deleteTarget.id);
+        } else if (this.deleteTarget.type === 'location') {
+          await this.removeLocationFromProgram(this.deleteTarget.id);
         }
       } catch (error: any) {
         this.toast.error(error.message || 'Failed to delete');
@@ -752,29 +757,6 @@ export default defineComponent({
 }
 
 /* View Header */
-.view-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.view-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.view-header h2 {
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.header-actions {
-  display: flex;
-  gap: 0.75rem;
-}
-
 /* Table View Styles */
 .program-name-content {
   display: flex;
@@ -798,56 +780,6 @@ export default defineComponent({
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
-}
-
-.program-card {
-  cursor: pointer;
-  transition: all 0.2s ease;
-  padding: 1.5rem;
-}
-
-.program-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.program-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  margin-bottom: 1rem;
-}
-
-.program-header h4 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 0;
-  color: var(--text-primary);
-}
-
-.program-badge {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.program-description {
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
-  line-height: 1.5;
-}
-
-.program-stats {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.stat-item {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
 }
 
 /* Program Detail View */
@@ -983,49 +915,6 @@ export default defineComponent({
   gap: 1rem;
 }
 
-.staff-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: var(--surface-secondary);
-  border-radius: var(--radius);
-  transition: all 0.2s ease;
-}
-
-.staff-item:hover {
-  background: var(--surface-hover);
-}
-
-.staff-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--accent-color);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.staff-info {
-  flex: 1;
-}
-
-.staff-name {
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
-}
-
-.staff-role {
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-}
-
 .staff-certifications {
   display: flex;
   flex-wrap: wrap;
@@ -1035,8 +924,9 @@ export default defineComponent({
 .certification-badge {
   display: inline-block;
   padding: 0.125rem 0.5rem;
-  background: var(--accent-light);
-  color: var(--accent-color);
+  background: white;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   font-size: 0.75rem;
   font-weight: 500;
@@ -1048,28 +938,16 @@ export default defineComponent({
   gap: 1rem;
 }
 
-.location-item {
+.location-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--surface-secondary);
+  color: var(--accent-color);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-  background: var(--surface-secondary);
-  border-radius: var(--radius);
-  transition: all 0.2s ease;
-}
-
-.location-item:hover {
-  background: var(--surface-hover);
-}
-
-.location-info {
-  flex: 1;
-}
-
-.location-name {
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .location-meta {

@@ -1,18 +1,14 @@
 <template>
   <div class="container">
     <div class="groups-view">
-      <div class="view-header">
-        <div class="view-title">
-          <h2>Camper Groups</h2>
-          <InfoTooltip>
-            Create virtual groups of campers based on criteria like age, gender, or cabin. 
-            Use these groups to quickly assign multiple campers to events.
-          </InfoTooltip>
-        </div>
-        <div class="header-actions">
+      <ViewHeader 
+        title="Camper Groups" 
+        tooltip="Create virtual groups of campers based on criteria like age, gender, or cabin. Use these groups to quickly assign multiple campers to events."
+      >
+        <template #actions>
           <button class="btn btn-primary" @click="showModal = true">+ Create Group</button>
-        </div>
-      </div>
+        </template>
+      </ViewHeader>
 
       <!-- Search and Filters -->
       <FilterBar
@@ -32,21 +28,14 @@
 
       <!-- Grid View -->
       <div v-if="viewMode === 'grid'" class="groups-grid">
-        <div 
+        <GroupCard
           v-for="group in filteredGroups"
           :key="group.id"
-          class="group-card card"
-          :style="{ borderLeft: `4px solid ${group.color || '#6366F1'}` }"
+          :group="group"
+          :campers-count="getCampersCount(group.id)"
           @click="selectGroup(group.id)"
         >
-          <div class="group-header">
-            <h4>{{ group.name }}</h4>
-            <span class="badge badge-primary">{{ getCampersCount(group.id) }} campers</span>
-          </div>
-          
-          <p v-if="group.description" class="group-description">{{ group.description }}</p>
-          
-          <div class="group-filters">
+          <template #filters>
             <span v-if="group.filters.gender" class="filter-tag">
               <strong>Gender:</strong> {{ formatGender(group.filters.gender) }}
             </span>
@@ -56,30 +45,36 @@
             <span v-if="group.filters.hasAllergies !== undefined" class="filter-tag">
               <strong>Allergies:</strong> {{ group.filters.hasAllergies ? 'Has allergies' : 'No allergies' }}
             </span>
-          </div>
-        </div>
+          </template>
+        </GroupCard>
 
-        <div v-if="filteredGroups.length === 0 && store.camperGroups.length === 0" class="empty-state">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-          </svg>
-          <h3>No Groups Yet</h3>
-          <p>Create your first camper group to organize and manage campers more efficiently.</p>
-          <button class="btn btn-primary" @click="showModal = true">Create Group</button>
-        </div>
+        <EmptyState
+          v-if="filteredGroups.length === 0 && store.camperGroups.length === 0"
+          type="empty"
+          title="No Groups Yet"
+          message="Create your first camper group to organize and manage campers more efficiently."
+          action-text="Create Group"
+          @action="showModal = true"
+        >
+          <template #icon>
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </template>
+        </EmptyState>
 
-        <div v-if="filteredGroups.length === 0 && store.camperGroups.length > 0" class="empty-state">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
-          </svg>
-          <h3>No Groups Found</h3>
-          <p>No groups match your current filters. Try adjusting your search criteria.</p>
-          <button class="btn btn-secondary" @click="clearFilters">Clear Filters</button>
-        </div>
+        <EmptyState
+          v-if="filteredGroups.length === 0 && store.camperGroups.length > 0"
+          type="no-results"
+          title="No Groups Found"
+          message="No groups match your current filters. Try adjusting your search criteria."
+          action-text="Clear Filters"
+          action-button-class="btn-secondary"
+          @action="clearFilters"
+        />
       </div>
 
       <!-- Table View -->
@@ -93,7 +88,7 @@
       >
         <template #cell-name="{ item }">
           <div class="group-name-content">
-            <div class="color-indicator" :style="{ background: item.color || '#6366F1' }"></div>
+            <ColorIndicator :color="item.color || '#6366F1'" type="dot" size="md" />
             <div class="group-name-text">{{ item.name }}</div>
           </div>
         </template>
@@ -193,6 +188,10 @@ import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
 import type { CamperGroup, CamperGroupFilter, Camper } from '@/types/api';
+import ViewHeader from '@/components/ViewHeader.vue';
+import EmptyState from '@/components/EmptyState.vue';
+import ColorIndicator from '@/components/ColorIndicator.vue';
+import GroupCard from '@/components/cards/GroupCard.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
@@ -206,6 +205,10 @@ import GroupFormModal from '@/components/modals/GroupFormModal.vue';
 export default defineComponent({
   name: 'Groups',
   components: {
+    ViewHeader,
+    EmptyState,
+    ColorIndicator,
+    GroupCard,
     ConfirmModal,
     ColorPicker,
     FilterBar,
@@ -492,57 +495,10 @@ export default defineComponent({
   margin: 0 auto;
 }
 
-.view-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.view-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 .groups-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 1.5rem;
-}
-
-.group-card {
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.group-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.group-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  margin-bottom: 0.75rem;
-}
-
-.group-header h4 {
-  margin: 0;
-  flex: 1;
-}
-
-.group-description {
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
-}
-
-.group-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
 }
 
 .filter-tag {

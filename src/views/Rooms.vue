@@ -1,12 +1,11 @@
 <template>
   <div class="container">
     <div class="rooms-view">
-      <div class="view-header">
-        <h2>Room Management</h2>
-        <div class="header-actions">
+      <ViewHeader title="Room Management">
+        <template #actions>
           <button class="btn btn-primary" @click="showModal = true">+ Add Room</button>
-        </div>
-      </div>
+        </template>
+      </ViewHeader>
 
       <!-- Search and Filters -->
       <FilterBar
@@ -25,41 +24,19 @@
 
       <!-- Grid View -->
       <div v-if="viewMode === 'grid'" class="rooms-grid">
-        <div 
+        <RoomCard
           v-for="room in filteredRooms"
           :key="room.id"
-          class="room-card card"
+          :room="room"
+          :formatted-type="formatRoomType(room.type)"
+          :icon-color="getRoomTypeColor(room.type)"
+          :usage-percent="getRoomUsage(room.id)"
           @click="selectRoom(room.id)"
         >
-          <div class="room-icon" :style="{ background: getRoomTypeColor(room.type) }">
+          <template #icon>
             <component :is="RoomTypeIcon(room.type)" :size="24" :stroke-width="2" />
-          </div>
-          <div class="room-details">
-            <h4>{{ room.name }}</h4>
-            <div class="room-type">
-              <span class="badge badge-primary">{{ formatRoomType(room.type) }}</span>
-              <span class="badge badge-success">Capacity: {{ room.capacity }}</span>
-            </div>
-            <div v-if="room.location" class="room-location text-sm text-secondary mt-1">
-              <MapPin :size="14" class="inline" />
-              {{ room.location }}
-            </div>
-            <div class="room-usage mt-2">
-              <div class="usage-bar">
-                <div 
-                  class="usage-fill"
-                  :style="{ 
-                    width: `${getRoomUsage(room.id)}%`,
-                    background: getRoomUsage(room.id) > 80 ? 'var(--error-color)' : 'var(--success-color)'
-                  }"
-                ></div>
-              </div>
-              <div class="text-xs text-secondary mt-1">
-                {{ getRoomUsage(room.id).toFixed(0) }}% average usage
-              </div>
-            </div>
-          </div>
-        </div>
+          </template>
+        </RoomCard>
       </div>
 
       <!-- Table View -->
@@ -162,6 +139,8 @@
 import { defineComponent} from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { Room } from '@/types/api';
+import ViewHeader from '@/components/ViewHeader.vue';
+import RoomCard from '@/components/cards/RoomCard.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
@@ -184,6 +163,8 @@ import {
 export default defineComponent({
   name: 'Rooms',
   components: {
+    ViewHeader,
+    RoomCard,
     FilterBar,
     EventsByDate,
     ConfirmModal,
@@ -442,75 +423,10 @@ export default defineComponent({
   margin: 0 auto;
 }
 
-.view-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
 .rooms-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
-}
-
-.room-card {
-  cursor: pointer;
-  transition: all 0.15s ease;
-  display: flex;
-  gap: 1rem;
-}
-
-.room-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.room-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: var(--radius-lg);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  flex-shrink: 0;
-}
-
-.room-details {
-  flex: 1;
-  min-width: 0;
-}
-
-.room-details h4 {
-  margin-bottom: 0.5rem;
-}
-
-.room-type {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.5rem;
-}
-
-.usage-bar {
-  height: 8px;
-  background: var(--border-color);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.usage-fill {
-  height: 100%;
-  transition: width 0.3s, background 0.3s;
 }
 
 .detail-section {

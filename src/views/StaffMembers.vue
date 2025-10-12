@@ -1,12 +1,11 @@
 <template>
   <div class="container">
     <div class="staff-view">
-      <div class="view-header">
-        <h2>Staff Management</h2>
-        <div class="header-actions">
+      <ViewHeader title="Staff Management">
+        <template #actions>
           <button class="btn btn-primary" @click="showModal = true">+ Add Staff Member</button>
-        </div>
-      </div>
+        </template>
+      </ViewHeader>
 
       <!-- Search and Filters -->
       <FilterBar
@@ -25,28 +24,14 @@
 
       <!-- Grid View -->
       <div v-if="viewMode === 'grid'" class="staff-grid">
-        <div 
+        <StaffCard
           v-for="member in filteredMembers"
           :key="member.id"
-          class="staff-card card"
+          :member="member"
+          :formatted-role="formatRole(member.role)"
+          :role-color="getRoleColor(member.role)"
           @click="selectMember(member.id)"
-        >
-          <div class="member-avatar" :style="{ background: getRoleColor(member.role) }">
-            {{ member.firstName.charAt(0) }}{{ member.lastName.charAt(0) }}
-          </div>
-          <div class="member-details">
-            <h4>{{ member.firstName }} {{ member.lastName }}</h4>
-            <div class="member-role">
-              <span class="badge badge-primary">{{ formatRole(member.role) }}</span>
-            </div>
-            <div v-if="member.email" class="member-contact text-sm text-secondary mt-1">
-              {{ member.email }}
-            </div>
-            <div v-if="member.certifications && member.certifications.length > 0" class="member-certs text-xs mt-2">
-              {{ member.certifications.length }} Certification(s)
-            </div>
-          </div>
-        </div>
+        />
       </div>
 
       <!-- Table View -->
@@ -60,9 +45,12 @@
       >
         <template #cell-name="{ item }">
           <div class="member-name-content">
-            <div class="member-avatar-sm" :style="{ background: getRoleColor(item.role) }">
-              {{ item.firstName.charAt(0) }}{{ item.lastName.charAt(0) }}
-            </div>
+            <AvatarInitials
+              :first-name="item.firstName"
+              :last-name="item.lastName"
+              :color="getRoleColor(item.role)"
+              size="sm"
+            />
             <div class="member-fullname">{{ item.firstName }} {{ item.lastName }}</div>
           </div>
         </template>
@@ -150,6 +138,9 @@
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { StaffMember, Event } from '@/types/api';
+import ViewHeader from '@/components/ViewHeader.vue';
+import AvatarInitials from '@/components/AvatarInitials.vue';
+import StaffCard from '@/components/cards/StaffCard.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
@@ -162,6 +153,9 @@ import StaffMemberFormModal from '@/components/modals/StaffMemberFormModal.vue';
 export default defineComponent({
   name: 'StaffMembers',
   components: {
+    ViewHeader,
+    AvatarInitials,
+    StaffCard,
     FilterBar,
     EventsByDate,
     ConfirmModal,
@@ -432,57 +426,10 @@ export default defineComponent({
   margin: 0 auto;
 }
 
-.view-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
 .staff-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
-}
-
-.staff-card {
-  cursor: pointer;
-  transition: all 0.15s ease;
-  display: flex;
-  gap: 1rem;
-}
-
-.staff-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.member-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.member-details {
-  flex: 1;
-  min-width: 0;
-}
-
-.member-details h4 {
-  margin-bottom: 0.5rem;
 }
 
 .detail-section {
@@ -520,19 +467,6 @@ export default defineComponent({
   display: flex;
   align-items: center;
   gap: 0.75rem;
-}
-
-.member-avatar-sm {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 600;
-  flex-shrink: 0;
 }
 
 .member-fullname {
@@ -674,32 +608,6 @@ export default defineComponent({
 
 .expand-btn svg {
   transition: transform 0.2s ease;
-}
-
-.tree-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.125rem;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.tree-avatar-sm {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 600;
-  flex-shrink: 0;
 }
 
 .tree-info {

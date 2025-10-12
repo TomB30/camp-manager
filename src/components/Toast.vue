@@ -159,7 +159,7 @@ export default defineComponent({
   border: none;
   padding: 0.25rem;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: var(--error-color);
   border-radius: 4px;
   transition: all 0.15s ease;
   display: flex;
@@ -168,8 +168,8 @@ export default defineComponent({
 }
 
 .toast-close:hover {
-  background: var(--background-secondary);
-  color: var(--text-primary);
+  background: #FEF2F2;
+  color: #DC2626;
 }
 
 /* Toast animations */

@@ -77,8 +77,8 @@
 
     <template #footer>
       <button class="btn btn-secondary" @click="$emit('close')">Close</button>
-      <button class="btn btn-primary" @click="$emit('edit', activity)">Edit Activity</button>
-      <button class="btn btn-danger" @click="$emit('delete', activity)">Delete Activity</button>
+      <button class="btn btn-primary-outline" @click="$emit('edit', activity)">Edit Activity</button>
+      <button class="btn btn-danger-outline" @click="$emit('delete', activity)">Delete Activity</button>
     </template>
   </BaseModal>
 </template>
@@ -190,8 +190,9 @@ export default defineComponent({
 .certification-badge {
   display: inline-block;
   padding: 0.375rem 0.75rem;
-  background: var(--accent-light);
-  color: var(--accent-color);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius);
   font-size: 0.875rem;
   font-weight: 500;
