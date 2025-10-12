@@ -141,16 +141,7 @@
         :form-data="formData"
         @close="closeModal"
         @save="saveRoom"
-      >
-        <template #type-select>
-          <Autocomplete
-            v-model="formData.type"
-            :options="roomTypeOptions"
-            placeholder="Select room type..."
-            :required="true"
-          />
-        </template>
-      </RoomFormModal>
+      />
 
       <!-- Confirm Delete Modal -->
       <ConfirmModal
@@ -247,16 +238,6 @@ export default defineComponent({
   computed: {
     store() {
       return useCampStore();
-    },
-    roomTypeOptions() {
-      return [
-        { label: 'Classroom', value: 'classroom' },
-        { label: 'Activity', value: 'activity' },
-        { label: 'Sports', value: 'sports' },
-        { label: 'Dining', value: 'dining' },
-        { label: 'Outdoor', value: 'outdoor' },
-        { label: 'Arts', value: 'arts' }
-      ];
     },
     roomFilters(): Filter[] {
       return [

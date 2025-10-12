@@ -14,7 +14,12 @@
         <div class="grid grid-cols-2">
           <div class="form-group">
             <label class="form-label">Type</label>
-            <slot name="type-select"></slot>
+            <Autocomplete
+              v-model="localFormData.type"
+              :options="roomTypeOptions"
+              placeholder="Select room type..."
+              :required="true"
+            />
           </div>
 
           <div class="form-group">
@@ -52,6 +57,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
+import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import type { Room } from '@/types/api';
 
 interface RoomFormData {
@@ -66,7 +72,8 @@ interface RoomFormData {
 export default defineComponent({
   name: 'RoomFormModal',
   components: {
-    BaseModal
+    BaseModal,
+    Autocomplete
   },
   props: {
     show: {
@@ -86,7 +93,15 @@ export default defineComponent({
   data() {
     return {
       localFormData: JSON.parse(JSON.stringify(this.formData)),
-      equipmentInput: this.formData.equipment.join(', ')
+      equipmentInput: this.formData.equipment.join(', '),
+      roomTypeOptions: [
+        { label: 'Classroom', value: 'classroom' },
+        { label: 'Activity', value: 'activity' },
+        { label: 'Sports', value: 'sports' },
+        { label: 'Dining', value: 'dining' },
+        { label: 'Outdoor', value: 'outdoor' },
+        { label: 'Arts', value: 'arts' }
+      ] as AutocompleteOption[]
     };
   },
   watch: {

@@ -127,26 +127,10 @@
         :show="showModal"
         :is-editing="!!editingCamperId"
         :form-data="formData"
+        :family-groups="store.familyGroups"
         @close="closeModal"
         @save="saveCamper"
-      >
-        <template #gender-select>
-          <Autocomplete
-            v-model="formData.gender"
-            :options="genderOptions"
-            placeholder="Select gender..."
-            :required="true"
-          />
-        </template>
-        <template #family-group-select>
-          <Autocomplete
-            v-model="formData.familyGroupId"
-            :options="familyGroupOptions"
-            placeholder="Select a family group..."
-            :required="true"
-          />
-        </template>
-      </CamperFormModal>
+      />
 
       <!-- Confirmation Modal -->
       <ConfirmModal
@@ -173,7 +157,7 @@ import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
-import Autocomplete, { AutocompleteOption } from '@/components/Autocomplete.vue';
+import Autocomplete from '@/components/Autocomplete.vue';
 import CamperDetailModal from '@/components/modals/CamperDetailModal.vue';
 import CamperFormModal from '@/components/modals/CamperFormModal.vue';
 
@@ -227,18 +211,6 @@ export default defineComponent({
   computed: {
     store(): ReturnType<typeof useCampStore> {
       return useCampStore();
-    },
-    genderOptions(): Array<AutocompleteOption> {
-      return [
-        { label: 'Male', value: 'male' },
-        { label: 'Female', value: 'female' }
-      ];
-    },
-    familyGroupOptions(): Array<AutocompleteOption> {
-      return this.store.familyGroups.map(group => ({
-        label: `${group.name} - ${this.getSleepingRoomName(group.sleepingRoomId)}`,
-        value: group.id
-      }));
     },
     campersFilters(): Filter[] {
       return [

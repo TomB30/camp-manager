@@ -181,100 +181,12 @@
         :show="showModal"
         :is-editing="!!editingGroupId"
         :form-data="formData"
+        :campers="store.campers"
+        :staff-members="store.staffMembers"
+        :sleeping-rooms="store.sleepingRooms"
         @close="closeModal"
         @save="saveGroup"
-      >
-        <template #campers-selection>
-          <div class="campers-selection">
-            <div v-if="formData.camperIds.length > 0" class="selected-campers">
-              <div 
-                v-for="camperId in formData.camperIds"
-                :key="camperId"
-                class="selected-camper-item"
-              >
-                <div class="camper-info-sm">
-                  <div class="camper-avatar-xs">
-                    {{ getCamperInitials(camperId) }}
-                  </div>
-                  <span>{{ getCamperFullName(camperId) }}</span>
-                </div>
-                <button 
-                  type="button"
-                  class="btn-remove"
-                  @click="removeCamper(camperId)"
-                  title="Remove camper"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-            <div v-else class="text-sm text-secondary mb-2">
-              No campers assigned yet
-            </div>
-            
-            <div class="add-camper-section">
-              <Autocomplete
-                v-model="selectedCamperToAdd"
-                :options="availableCampersOptions"
-                placeholder="Add a camper..."
-              />
-              <button 
-                type="button"
-                class="btn btn-sm btn-primary"
-                @click="addCamper"
-                :disabled="!selectedCamperToAdd"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-        </template>
-        <template #staff-selection>
-          <div class="checkbox-group">
-            <label 
-              v-for="staff in store.staffMembers" 
-              :key="staff.id"
-              class="checkbox-label"
-            >
-              <input 
-                type="checkbox" 
-                :value="staff.id"
-                v-model="formData.staffMemberIds"
-                class="checkbox-input"
-              />
-              <span>{{ staff.firstName }} {{ staff.lastName }} ({{ staff.role }})</span>
-            </label>
-            <div v-if="store.staffMembers.length === 0" class="text-sm text-secondary">
-              No staff members available
-            </div>
-          </div>
-        </template>
-        <template #room-info>
-          <div v-if="totalPeople > 0" class="capacity-info mb-2">
-            <span class="badge badge-primary">
-              {{ totalPeople }} {{ totalPeople === 1 ? 'person' : 'people' }} 
-              ({{ formData.camperIds.length }} {{ formData.camperIds.length === 1 ? 'camper' : 'campers' }}
-              + {{ formData.staffMemberIds.length }} staff)
-            </span>
-          </div>
-        </template>
-        <template #room-select>
-          <Autocomplete
-            v-model="formData.sleepingRoomId"
-            :options="sleepingRoomOptions"
-            placeholder="Select a sleeping room..."
-            :required="true"
-          />
-        </template>
-        <template #capacity-warning>
-          <div v-if="formData.sleepingRoomId && getSelectedRoom() && !canFitInRoom(getSelectedRoom())" class="capacity-warning">
-            ⚠️ This room may not have enough beds for all campers and staff
-          </div>
-        </template>
-        <template #color-picker>
-          <ColorPicker v-model="formData.color" />
-        </template>
-      </FamilyGroupFormModal>
+      />
 
       <!-- Confirm Delete Modal -->
       <ConfirmModal
@@ -295,13 +207,11 @@
 // @ts-nocheck
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { FamilyGroup, Camper, SleepingRoom } from '@/types/api';
+import type { FamilyGroup, Camper } from '@/types/api';
 import ConfirmModal from '@/components/ConfirmModal.vue';
-import ColorPicker from '@/components/ColorPicker.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
-import Autocomplete, { AutocompleteOption } from '@/components/Autocomplete.vue';
 import FamilyGroupDetailModal from '@/components/modals/FamilyGroupDetailModal.vue';
 import FamilyGroupFormModal from '@/components/modals/FamilyGroupFormModal.vue';
 import { Bed, Users } from 'lucide-vue-next';
@@ -310,11 +220,9 @@ export default defineComponent({
   name: 'FamilyGroups',
   components: {
     ConfirmModal,
-    ColorPicker,
     FilterBar,
     DataTable,
     ViewToggle,
-    Autocomplete,
     FamilyGroupDetailModal,
     FamilyGroupFormModal,
     Bed,
@@ -345,7 +253,6 @@ export default defineComponent({
         camperIds: [] as string[],
         color: '#6366F1',
       },
-      selectedCamperToAdd: '',
       familyGroupColumns: [
         { key: 'name', label: 'Group Name', width: '180px' },
         { key: 'dates', label: 'Dates', width: '200px' },
@@ -359,19 +266,6 @@ export default defineComponent({
   computed: {
     store(): ReturnType<typeof useCampStore> {
       return useCampStore();
-    },
-    availableCampersOptions(): Array<AutocompleteOption> {
-      return this.availableCampers.map(camper => ({
-        label: `${camper.firstName} ${camper.lastName} (Age ${camper.age})`,
-        value: camper.id
-      }));
-    },
-    sleepingRoomOptions(): Array<AutocompleteOption> {
-      return this.store.sleepingRooms.map(room => ({
-        label: `${room.name} (${room.beds} beds)${this.canFitInRoom(room) ? '' : ' - Not enough beds'}`,
-        value: room.id,
-        disabled: !this.canFitInRoom(room)
-      }));
     },
     familyGroupsFilters(): Filter[] {
       return [
@@ -393,13 +287,6 @@ export default defineComponent({
     groupCampers(): Camper[] {
       if (!this.selectedGroupId) return [];
       return this.store.getCampersInFamilyGroup(this.selectedGroupId);
-    },
-    availableCampers(): Camper[] {
-      // Get campers not already in the form's camper list
-      return this.store.campers.filter(c => !this.formData.camperIds.includes(c.id));
-    },
-    totalPeople(): number {
-      return this.formData.camperIds.length + this.formData.staffMemberIds.length;
     },
     filteredFamilyGroups(): FamilyGroup[] {
       let groups: FamilyGroup[] = this.store.familyGroups;
@@ -468,25 +355,6 @@ export default defineComponent({
     getCamperInitials(camperId: string): string {
       const camper = this.store.getCamperById(camperId);
       return camper ? `${camper.firstName.charAt(0)}${camper.lastName.charAt(0)}` : '??';
-    },
-    addCamper(): void {
-      if (this.selectedCamperToAdd && !this.formData.camperIds.includes(this.selectedCamperToAdd)) {
-        this.formData.camperIds.push(this.selectedCamperToAdd);
-        this.selectedCamperToAdd = '';
-      }
-    },
-    removeCamper(camperId: string): void {
-      const index = this.formData.camperIds.indexOf(camperId);
-      if (index > -1) {
-        this.formData.camperIds.splice(index, 1);
-      }
-    },
-    canFitInRoom(room: SleepingRoom | null | undefined): boolean {
-      if (!room) return false;
-      return room.beds >= this.totalPeople;
-    },
-    getSelectedRoom(): SleepingRoom | null | undefined {
-      return this.store.getSleepingRoomById(this.formData.sleepingRoomId);
     },
     selectGroup(groupId: string): void {
       this.selectedGroupId = groupId;
@@ -615,7 +483,6 @@ export default defineComponent({
     closeModal(): void {
       this.showModal = false;
       this.editingGroupId = null;
-      this.selectedCamperToAdd = '';
       this.formData = {
         name: '',
         description: '',
@@ -783,148 +650,6 @@ export default defineComponent({
 .camper-meta {
   font-size: 0.875rem;
   color: var(--text-secondary);
-}
-
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-height: 200px;
-  overflow-y: auto;
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: var(--radius);
-  transition: background 0.15s ease;
-}
-
-.checkbox-label:hover {
-  background: var(--background);
-}
-
-.checkbox-input {
-  cursor: pointer;
-}
-
-.modal-lg {
-  max-width: 800px;
-}
-
-.campers-selection {
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  padding: 0.75rem;
-  background: var(--background);
-}
-
-.selected-campers {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.selected-camper-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  background: white;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  transition: background 0.15s ease;
-}
-
-.selected-camper-item:hover {
-  background: var(--surface);
-}
-
-.camper-info-sm {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex: 1;
-}
-
-.camper-avatar-xs {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.75rem;
-  flex-shrink: 0;
-}
-
-.btn-remove {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: none;
-  background: var(--error-color, #ef4444);
-  color: white;
-  font-size: 0.875rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s ease;
-  padding: 0;
-  line-height: 1;
-}
-
-.btn-remove:hover {
-  background: #dc2626;
-  transform: scale(1.1);
-}
-
-.add-camper-section {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.add-camper-section .form-select {
-  flex: 1;
-}
-
-.add-camper-section .btn {
-  flex-shrink: 0;
-}
-
-.capacity-info {
-  margin-bottom: 0.5rem;
-}
-
-.capacity-warning {
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  background: #FEF3C7;
-  border: 1px solid #FCD34D;
-  border-radius: var(--radius);
-  color: #92400E;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.mb-2 {
-  margin-bottom: 0.5rem;
 }
 
 /* Table View Styles */

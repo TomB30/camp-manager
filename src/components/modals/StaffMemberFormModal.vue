@@ -20,12 +20,21 @@
 
         <div class="form-group">
           <label class="form-label">Role</label>
-          <slot name="role-select"></slot>
+          <Autocomplete
+            v-model="localFormData.role"
+            :options="roleOptions"
+            placeholder="Select role..."
+            :required="true"
+          />
         </div>
 
         <div class="form-group">
           <label class="form-label">Manager</label>
-          <slot name="manager-select"></slot>
+          <Autocomplete
+            v-model="localFormData.managerId"
+            :options="managerOptions"
+            placeholder="No Manager (Top Level)"
+          />
         </div>
 
         <div class="form-group">
@@ -57,6 +66,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
+import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import type { StaffMember } from '@/types/api';
 
 interface StaffMemberFormData {
@@ -72,7 +82,8 @@ interface StaffMemberFormData {
 export default defineComponent({
   name: 'StaffMemberFormModal',
   components: {
-    BaseModal
+    BaseModal,
+    Autocomplete
   },
   props: {
     show: {
@@ -86,14 +97,40 @@ export default defineComponent({
     formData: {
       type: Object as PropType<StaffMemberFormData>,
       required: true
+    },
+    staffMembers: {
+      type: Array as PropType<StaffMember[]>,
+      required: true
+    },
+    currentMemberId: {
+      type: String,
+      default: ''
     }
   },
   emits: ['close', 'save'],
   data() {
     return {
       localFormData: JSON.parse(JSON.stringify(this.formData)),
-      certificationsInput: this.formData.certifications.join(', ')
+      certificationsInput: this.formData.certifications.join(', '),
+      roleOptions: [
+        { label: 'Counselor', value: 'counselor' },
+        { label: 'Supervisor', value: 'supervisor' },
+        { label: 'Director', value: 'director' },
+        { label: 'Nurse', value: 'nurse' },
+        { label: 'Instructor', value: 'instructor' }
+      ] as AutocompleteOption[]
     };
+  },
+  computed: {
+    managerOptions(): AutocompleteOption[] {
+      // Filter out the current member to prevent self-assignment
+      return this.staffMembers
+        .filter(m => m.id !== this.currentMemberId)
+        .map(member => ({
+          label: `${member.firstName} ${member.lastName} (${member.role})`,
+          value: member.id
+        }));
+    }
   },
   watch: {
     formData: {

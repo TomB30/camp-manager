@@ -24,7 +24,7 @@
 
         <div class="form-group">
           <label class="form-label">Color</label>
-          <slot name="color-picker"></slot>
+          <ColorPicker v-model="localFormData.color" />
         </div>
 
         <div class="form-divider">
@@ -59,12 +59,20 @@
 
         <div class="form-group">
           <label class="form-label">Gender</label>
-          <slot name="gender-select"></slot>
+          <Autocomplete
+            v-model="localFormData.filters.gender"
+            :options="genderFilterOptions"
+            placeholder="Any gender"
+          />
         </div>
 
         <div class="form-group">
           <label class="form-label">Allergies</label>
-          <slot name="allergies-select"></slot>
+          <Autocomplete
+            v-model="localFormData.filters.hasAllergies"
+            :options="allergiesFilterOptions"
+            placeholder="Any (with or without allergies)"
+          />
         </div>
 
         <div class="form-divider">
@@ -74,7 +82,24 @@
         <div class="form-group">
           <label class="form-label">Include Family Groups</label>
           <p class="form-help-text">Select family groups to include all their campers in this virtual group</p>
-          <slot name="family-groups-select"></slot>
+          <div class="checkbox-group">
+            <label 
+              v-for="familyGroup in familyGroups" 
+              :key="familyGroup.id"
+              class="checkbox-label"
+            >
+              <input 
+                type="checkbox" 
+                :value="familyGroup.id"
+                v-model="localFormData.familyGroupIds"
+                class="checkbox-input"
+              />
+              <span>{{ familyGroup.name }} ({{ getCampersInFamilyGroup(familyGroup.id) }} campers)</span>
+            </label>
+            <div v-if="familyGroups.length === 0" class="text-sm text-secondary">
+              No family groups available
+            </div>
+          </div>
         </div>
 
         <div class="form-info">
@@ -95,6 +120,9 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
+import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
+import ColorPicker from '@/components/ColorPicker.vue';
+import type { FamilyGroup, Camper } from '@/types/api';
 
 interface GroupFilters {
   ageMin?: number;
@@ -108,12 +136,15 @@ interface GroupFormData {
   description: string;
   color: string;
   filters: GroupFilters;
+  familyGroupIds?: string[];
 }
 
 export default defineComponent({
   name: 'GroupFormModal',
   components: {
-    BaseModal
+    BaseModal,
+    Autocomplete,
+    ColorPicker
   },
   props: {
     show: {
@@ -131,12 +162,30 @@ export default defineComponent({
     previewCount: {
       type: Number,
       default: 0
+    },
+    familyGroups: {
+      type: Array as PropType<FamilyGroup[]>,
+      required: true
+    },
+    campers: {
+      type: Array as PropType<Camper[]>,
+      required: true
     }
   },
   emits: ['close', 'save'],
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData))
+      localFormData: JSON.parse(JSON.stringify(this.formData)),
+      genderFilterOptions: [
+        { label: 'Any Gender', value: '' },
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' }
+      ] as AutocompleteOption[],
+      allergiesFilterOptions: [
+        { label: 'Any (with or without allergies)', value: undefined },
+        { label: 'Has Allergies', value: true },
+        { label: 'No Allergies', value: false }
+      ] as AutocompleteOption[]
     };
   },
   watch: {
@@ -148,6 +197,9 @@ export default defineComponent({
     }
   },
   methods: {
+    getCampersInFamilyGroup(familyGroupId: string): number {
+      return this.campers.filter(c => c.familyGroupId === familyGroupId).length;
+    },
     handleSave() {
       this.$emit('save', this.localFormData);
     }
@@ -198,6 +250,35 @@ export default defineComponent({
   font-size: 0.875rem;
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  transition: background 0.15s ease;
+}
+
+.checkbox-label:hover {
+  background: var(--background);
+}
+
+.checkbox-input {
+  cursor: pointer;
 }
 </style>
 

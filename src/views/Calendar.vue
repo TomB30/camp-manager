@@ -236,56 +236,12 @@
     <EventFormModal
       :show="showEventModal"
       :form-data="newEvent"
+      :rooms="store.rooms"
+      :camper-groups="store.camperGroups"
+      :campers="store.campers"
       @close="showEventModal = false"
       @save="createEvent"
-    >
-      <template #room-select>
-        <Autocomplete
-          v-model="newEvent.roomId"
-          :options="roomOptions"
-          placeholder="Select a room"
-          :required="true"
-        />
-      </template>
-      <template #type-select>
-        <Autocomplete
-          v-model="newEvent.type"
-          :options="eventTypeOptions"
-          placeholder="Select event type"
-        />
-      </template>
-      <template #color-picker>
-        <ColorPicker v-model="newEvent.color" />
-      </template>
-      <template #camper-groups-selection>
-        <div class="sleeping-room-selector">
-          <div v-for="group in store.camperGroups" :key="group.id" class="checkbox-item">
-            <label class="checkbox-label">
-              <input 
-                type="checkbox" 
-                :value="group.id" 
-                v-model="newEvent.camperGroupIds"
-                class="checkbox-input"
-              />
-              <span 
-                class="group-label" 
-                :style="{ borderLeft: `3px solid ${group.color || '#6366F1'}` }"
-              >
-                {{ group.name }} ({{ getGroupCamperCount(group.id) }} campers)
-              </span>
-            </label>
-          </div>
-          <div v-if="store.camperGroups.length === 0" class="text-secondary text-sm">
-            No camper groups available. Create groups in the Groups section.
-          </div>
-        </div>
-      </template>
-      <template #camper-groups-preview>
-        <div v-if="newEvent.camperGroupIds.length > 0" class="text-xs text-secondary mt-1">
-          This will automatically enroll {{ getTotalCampersFromGroups(newEvent.camperGroupIds) }} campers when the event is created.
-        </div>
-      </template>
-    </EventFormModal>
+    />
 
     <!-- Confirmation Modal -->
     <ConfirmModal
@@ -376,22 +332,6 @@ export default defineComponent({
         label: `${group.name} (${this.getGroupCamperCount(group.id)} campers)`,
         value: group.id
       }));
-    },
-    roomOptions() {
-      return this.store.rooms.map(room => ({
-        label: `${room.name} (${room.type})`,
-        value: room.id
-      }));
-    },
-    eventTypeOptions() {
-      return [
-        { label: 'Activity', value: 'activity' },
-        { label: 'Sports', value: 'sports' },
-        { label: 'Arts', value: 'arts' },
-        { label: 'Education', value: 'education' },
-        { label: 'Meal', value: 'meal' },
-        { label: 'Free Time', value: 'free-time' }
-      ];
     },
     eventFilters(): Filter[] {
       return [
@@ -610,9 +550,9 @@ export default defineComponent({
     selectEvent(event: Event) {
       this.selectedEventId = event.id;
     },
-    async createEvent() {
-      const [startHour, startMinute] = this.newEvent.startTime.split(':').map(Number);
-      const [endHour, endMinute] = this.newEvent.endTime.split(':').map(Number);
+    async createEvent(formData: any) {
+      const [startHour, startMinute] = formData.startTime.split(':').map(Number);
+      const [endHour, endMinute] = formData.endTime.split(':').map(Number);
       
       const startTime = new Date(this.selectedDate);
       startTime.setHours(startHour, startMinute, 0, 0);
@@ -622,13 +562,13 @@ export default defineComponent({
       
       const event: Event = {
         id: `event-${Date.now()}`,
-        title: this.newEvent.title,
+        title: formData.title,
         startTime: startTime.toISOString(),
         endTime: endTime.toISOString(),
-        roomId: this.newEvent.roomId,
-        capacity: this.newEvent.capacity,
-        type: this.newEvent.type,
-        color: this.newEvent.color,
+        roomId: formData.roomId,
+        capacity: formData.capacity,
+        type: formData.type,
+        color: formData.color,
         enrolledCamperIds: [],
         assignedStaffIds: [],
       };
@@ -636,11 +576,11 @@ export default defineComponent({
       await this.store.addEvent(event);
       
       // Enroll camper groups if any were selected
-      if (this.newEvent.camperGroupIds.length > 0) {
+      if (formData.camperGroupIds && formData.camperGroupIds.length > 0) {
         const messages: string[] = [];
         
         // Enroll camper groups
-        for (const groupId of this.newEvent.camperGroupIds) {
+        for (const groupId of formData.camperGroupIds) {
           try {
             const result = await this.store.enrollCamperGroup(event.id, groupId);
             if (result.errors.length > 0) {
@@ -659,6 +599,8 @@ export default defineComponent({
         } else {
           this.toast.success('Event created successfully');
         }
+      } else {
+        this.toast.success('Event created successfully');
       }
       
       this.showEventModal = false;

@@ -26,12 +26,12 @@
 
           <div class="form-group">
             <label class="form-label">Gender</label>
-            <slot name="gender-select">
-              <select v-model="localFormData.gender" class="form-input" required>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-            </slot>
+            <Autocomplete
+              v-model="localFormData.gender"
+              :options="genderOptions"
+              placeholder="Select gender..."
+              :required="true"
+            />
           </div>
         </div>
 
@@ -42,7 +42,12 @@
 
         <div class="form-group">
           <label class="form-label">Family Group</label>
-          <slot name="family-group-select"></slot>
+          <Autocomplete
+            v-model="localFormData.familyGroupId"
+            :options="familyGroupOptions"
+            placeholder="Select a family group..."
+            :required="true"
+          />
         </div>
 
         <div class="form-group">
@@ -69,6 +74,8 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
+import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
+import type { FamilyGroup } from '@/types/api';
 
 interface CamperFormData {
   firstName: string;
@@ -84,7 +91,8 @@ interface CamperFormData {
 export default defineComponent({
   name: 'CamperFormModal',
   components: {
-    BaseModal
+    BaseModal,
+    Autocomplete
   },
   props: {
     show: {
@@ -98,14 +106,30 @@ export default defineComponent({
     formData: {
       type: Object as PropType<CamperFormData>,
       required: true
+    },
+    familyGroups: {
+      type: Array as PropType<FamilyGroup[]>,
+      required: true
     }
   },
   emits: ['close', 'save'],
   data() {
     return {
       localFormData: { ...this.formData },
-      allergiesInput: this.formData.allergies.join(', ')
+      allergiesInput: this.formData.allergies.join(', '),
+      genderOptions: [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' }
+      ] as AutocompleteOption[]
     };
+  },
+  computed: {
+    familyGroupOptions(): AutocompleteOption[] {
+      return this.familyGroups.map(group => ({
+        label: group.name,
+        value: group.id
+      }));
+    }
   },
   watch: {
     formData: {

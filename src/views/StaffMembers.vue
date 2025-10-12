@@ -125,25 +125,11 @@
         :show="showModal"
         :is-editing="!!editingMemberId"
         :form-data="formData"
+        :staff-members="store.staffMembers"
+        :current-member-id="editingMemberId || ''"
         @close="closeModal"
         @save="saveMember"
-      >
-        <template #role-select>
-          <Autocomplete
-            v-model="formData.role"
-            :options="roleOptions"
-            placeholder="Select role..."
-            :required="true"
-          />
-        </template>
-        <template #manager-select>
-          <Autocomplete
-            v-model="formData.managerId"
-            :options="managerOptions"
-            placeholder="No Manager (Top Level)"
-          />
-        </template>
-      </StaffMemberFormModal>
+      />
 
       <!-- Confirm Delete Modal -->
       <ConfirmModal

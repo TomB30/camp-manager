@@ -166,47 +166,11 @@
         :is-editing="!!editingGroupId"
         :form-data="formData"
         :preview-count="getPreviewCount()"
+        :family-groups="store.familyGroups"
+        :campers="store.campers"
         @close="closeModal"
         @save="saveGroup"
-      >
-        <template #color-picker>
-          <ColorPicker v-model="formData.color" />
-        </template>
-        <template #gender-select>
-          <Autocomplete
-            v-model="formData.filters.gender"
-            :options="genderFilterOptions"
-            placeholder="Any gender"
-          />
-        </template>
-        <template #allergies-select>
-          <Autocomplete
-            v-model="formData.filters.hasAllergies"
-            :options="allergiesFilterOptions"
-            placeholder="Any (with or without allergies)"
-          />
-        </template>
-        <template #family-groups-select>
-          <div class="checkbox-group">
-            <label 
-              v-for="familyGroup in store.familyGroups" 
-              :key="familyGroup.id"
-              class="checkbox-label"
-            >
-              <input 
-                type="checkbox" 
-                :value="familyGroup.id"
-                v-model="formData.familyGroupIds"
-                class="checkbox-input"
-              />
-              <span>{{ familyGroup.name }} ({{ store.getCampersInFamilyGroup(familyGroup.id).length }} campers)</span>
-            </label>
-            <div v-if="store.familyGroups.length === 0" class="text-sm text-secondary">
-              No family groups available
-            </div>
-          </div>
-        </template>
-      </GroupFormModal>
+      />
 
       <!-- Confirmation Modal -->
       <ConfirmModal
@@ -233,7 +197,7 @@ import ColorPicker from '@/components/ColorPicker.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
-import Autocomplete, { AutocompleteOption } from '@/components/Autocomplete.vue';
+import Autocomplete from '@/components/Autocomplete.vue';
 import GroupDetailModal from '@/components/modals/GroupDetailModal.vue';
 import GroupFormModal from '@/components/modals/GroupFormModal.vue';
 
@@ -287,20 +251,6 @@ export default defineComponent({
   computed: {
     store(): ReturnType<typeof useCampStore> {
       return useCampStore();
-    },
-    genderFilterOptions(): Array<AutocompleteOption> {
-      return [
-        { label: 'Any gender', value: '' },
-        { label: 'Male', value: 'male' },
-        { label: 'Female', value: 'female' }
-      ];
-    },
-    allergiesFilterOptions(): Array<AutocompleteOption> {
-      return [
-        { label: 'Any (with or without allergies)', value: undefined },
-        { label: 'Has allergies', value: true },
-        { label: 'No allergies', value: false }
-      ];
     },
     groupsFilters(): Filter[] {
       return [
