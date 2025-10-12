@@ -1,5 +1,5 @@
 <template>
-  <aside class="sidebar">
+  <aside class="sidebar" :class="{ 'sidebar-mobile-open': isMobileOpen }">
     <div class="sidebar-content">
       <div class="logo">
         <Sun :size="20" class="logo-icon" />
@@ -7,11 +7,11 @@
       </div>
       
       <nav class="nav">
-        <RouterLink to="/" class="nav-link">
+        <RouterLink to="/" class="nav-link" @click="handleNavClick">
           <LayoutDashboard :size="20" class="nav-icon" />
           <span class="nav-text">Dashboard</span>
         </RouterLink>
-        <RouterLink to="/calendar" class="nav-link">
+        <RouterLink to="/calendar" class="nav-link" @click="handleNavClick">
           <Calendar :size="20" class="nav-icon" />
           <span class="nav-text">Calendar</span>
         </RouterLink>
@@ -32,34 +32,34 @@
             />
           </button>
           <div v-if="isCampersSectionExpanded" class="nav-subsection">
-            <RouterLink to="/campers" class="nav-link nav-sublink">
+            <RouterLink to="/campers" class="nav-link nav-sublink" @click="handleNavClick">
               <Users :size="18" class="nav-icon" />
               <span class="nav-text">All Campers</span>
             </RouterLink>
-            <RouterLink to="/groups" class="nav-link nav-sublink">
+            <RouterLink to="/groups" class="nav-link nav-sublink" @click="handleNavClick">
               <FolderOpen :size="18" class="nav-icon" />
               <span class="nav-text">Camper Groups</span>
             </RouterLink>
-            <RouterLink to="/family-groups" class="nav-link nav-sublink">
+            <RouterLink to="/family-groups" class="nav-link nav-sublink" @click="handleNavClick">
               <UsersRound :size="18" class="nav-icon" />
               <span class="nav-text">Family Groups</span>
             </RouterLink>
           </div>
         </div>
         
-        <RouterLink to="/staff" class="nav-link">
+        <RouterLink to="/staff" class="nav-link" @click="handleNavClick">
           <UsersRound :size="20" class="nav-icon" />
           <span class="nav-text">Staff</span>
         </RouterLink>
-        <RouterLink to="/rooms" class="nav-link">
+        <RouterLink to="/rooms" class="nav-link" @click="handleNavClick">
           <Home :size="20" class="nav-icon" />
           <span class="nav-text">Activity Rooms</span>
         </RouterLink>
-        <RouterLink to="/sleeping-rooms" class="nav-link">
+        <RouterLink to="/sleeping-rooms" class="nav-link" @click="handleNavClick">
           <Bed :size="20" class="nav-icon" />
           <span class="nav-text">Cabins</span>
         </RouterLink>
-        <RouterLink to="/programs" class="nav-link">
+        <RouterLink to="/programs" class="nav-link" @click="handleNavClick">
           <Boxes :size="20" class="nav-icon" />
           <span class="nav-text">Programs</span>
         </RouterLink>
@@ -109,6 +109,13 @@ export default defineComponent({
     AlertTriangle,
     Boxes
   },
+  props: {
+    isMobileOpen: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ['close'],
   data() {
     return {
       isCampersSectionExpanded: true
@@ -122,6 +129,12 @@ export default defineComponent({
   methods: {
     toggleCampersSection() {
       this.isCampersSectionExpanded = !this.isCampersSectionExpanded;
+    },
+    handleNavClick() {
+      // Close mobile menu when a nav link is clicked (on mobile only)
+      if (window.innerWidth <= 768) {
+        this.$emit('close');
+      }
     }
   }
 });
@@ -286,77 +299,59 @@ export default defineComponent({
 
 @media (max-width: 768px) {
   .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    border-right: none;
-    border-bottom: 1px solid var(--border-light);
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 200;
+    border-right: 1px solid var(--border-light);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sidebar-mobile-open {
+    transform: translateX(0);
   }
 
   .sidebar-content {
-    padding: 1rem 0;
+    padding: 1.5rem 0;
   }
 
   .logo {
-    padding: 0 1rem;
-    margin-bottom: 1rem;
-    text-align: center;
+    padding: 0 1.5rem;
+    margin-bottom: 2rem;
   }
 
   .nav {
-    flex-direction: row;
-    overflow-x: auto;
     padding: 0 1rem;
   }
 
   .nav-link {
-    flex-direction: column;
-    gap: 0.25rem;
-    min-width: 80px;
-    text-align: center;
-    padding: 0.5rem;
-  }
-
-  .nav-text {
-    font-size: 0.75rem;
+    /* Keep desktop styles for mobile sidebar */
   }
 
   .nav-section {
-    min-width: auto;
+    /* Keep desktop styles */
   }
 
   .nav-section-header {
-    flex-direction: column;
-    gap: 0.25rem;
-    min-width: 80px;
-    text-align: center;
-    padding: 0.5rem;
-  }
-
-  .nav-chevron {
-    margin-left: 0;
+    /* Keep desktop styles */
   }
 
   .nav-subsection {
-    flex-direction: row;
-    margin-left: 0;
-    padding-left: 0;
-    border-left: none;
-    gap: 0;
+    /* Keep desktop styles */
   }
 
   .nav-sublink {
-    flex-direction: column;
-    gap: 0.25rem;
-    min-width: 80px;
-    text-align: center;
-    padding: 0.5rem;
+    /* Keep desktop styles */
   }
 
   .conflicts-section {
-    padding: 1rem;
-    margin-top: 0;
-    border-top: none;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-light);
+    margin-top: auto;
   }
 }
 </style>
