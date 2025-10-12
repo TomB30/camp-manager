@@ -29,71 +29,34 @@
 
         <div class="form-group">
           <label class="form-label">Campers in this Group</label>
-          <div class="campers-selection">
-            <div v-if="localFormData.camperIds.length > 0" class="selected-campers">
-              <div 
-                v-for="camperId in localFormData.camperIds"
-                :key="camperId"
-                class="selected-camper-item"
-              >
-                <div class="camper-info-sm">
-                  <div class="camper-avatar-xs">
-                    {{ getCamperInitials(camperId) }}
-                  </div>
-                  <span>{{ getCamperFullName(camperId) }}</span>
-                </div>
-                <button 
-                  type="button"
-                  class="btn-remove"
-                  @click="removeCamper(camperId)"
-                  title="Remove camper"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-            <div v-else class="text-sm text-secondary mb-2">
-              No campers assigned yet
-            </div>
-            
-            <div class="add-camper-section">
-              <Autocomplete
-                v-model="selectedCamperToAdd"
-                :options="availableCampersOptions"
-                placeholder="Add a camper..."
-              />
-              <button 
-                type="button"
-                class="btn btn-sm btn-primary"
-                @click="addCamper"
-                :disabled="!selectedCamperToAdd"
-              >
-                Add
-              </button>
-            </div>
-          </div>
+          <SelectionList
+            v-model="localFormData.camperIds"
+            :items="campers"
+            item-type="camper"
+            placeholder="Add a camper..."
+            empty-text="No campers assigned yet"
+            add-button-text="Add"
+            mode="multiple"
+            :get-label-fn="getCamperLabel"
+            :get-initials-fn="getCamperInitials"
+            :get-options-fn="getCamperOption"
+          />
         </div>
 
         <div class="form-group">
           <label class="form-label">Staff Members</label>
-          <div class="checkbox-group">
-            <label 
-              v-for="staff in staffMembers" 
-              :key="staff.id"
-              class="checkbox-label"
-            >
-              <input 
-                type="checkbox" 
-                :value="staff.id"
-                v-model="localFormData.staffMemberIds"
-                class="checkbox-input"
-              />
-              <span>{{ staff.firstName }} {{ staff.lastName }} ({{ staff.role }})</span>
-            </label>
-            <div v-if="staffMembers.length === 0" class="text-sm text-secondary">
-              No staff members available
-            </div>
-          </div>
+          <SelectionList
+            v-model="localFormData.staffMemberIds"
+            :items="staffMembers"
+            item-type="staff member"
+            placeholder="Add a staff member..."
+            empty-text="No staff members assigned yet"
+            add-button-text="Add"
+            mode="multiple"
+            :get-label-fn="getStaffLabel"
+            :get-initials-fn="getStaffInitials"
+            :get-options-fn="getStaffOption"
+          />
         </div>
 
         <div class="form-group">
@@ -105,15 +68,24 @@
               + {{ localFormData.staffMemberIds.length }} staff)
             </span>
           </div>
-          <Autocomplete
+          <SelectionList
             v-model="localFormData.sleepingRoomId"
-            :options="sleepingRoomOptions"
+            :items="sleepingRooms"
+            item-type="sleeping room"
             placeholder="Select a sleeping room..."
-            :required="true"
-          />
-          <div v-if="localFormData.sleepingRoomId && selectedRoom && !canFitInRoom" class="capacity-warning">
-            ⚠️ This room may not have enough beds for all campers and staff
-          </div>
+            empty-text="No sleeping room assigned yet"
+            add-button-text="Select"
+            mode="single"
+            :get-label-fn="getRoomLabel"
+            :get-initials-fn="getRoomInitials"
+            :get-options-fn="getRoomOption"
+          >
+            <template #after-items>
+              <div v-if="selectedRoom && !canFitInRoom" class="capacity-warning">
+                ⚠️ This room may not have enough beds for all campers and staff
+              </div>
+            </template>
+          </SelectionList>
         </div>
 
         <div class="form-group">
@@ -135,9 +107,10 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
-import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
+import SelectionList from '@/components/SelectionList.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import type { Camper, StaffMember, SleepingRoom } from '@/types/api';
+import type { AutocompleteOption } from '@/components/Autocomplete.vue';
 
 interface FamilyGroupFormData {
   name: string;
@@ -154,7 +127,7 @@ export default defineComponent({
   name: 'FamilyGroupFormModal',
   components: {
     BaseModal,
-    Autocomplete,
+    SelectionList,
     ColorPicker
   },
   props: {
@@ -186,29 +159,12 @@ export default defineComponent({
   emits: ['close', 'save'],
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData)),
-      selectedCamperToAdd: ''
+      localFormData: JSON.parse(JSON.stringify(this.formData))
     };
   },
   computed: {
-    availableCampers(): Camper[] {
-      return this.campers.filter(c => !this.localFormData.camperIds.includes(c.id));
-    },
-    availableCampersOptions(): AutocompleteOption[] {
-      return this.availableCampers.map(camper => ({
-        label: `${camper.firstName} ${camper.lastName} (Age ${camper.age})`,
-        value: camper.id
-      }));
-    },
     totalPeople(): number {
       return this.localFormData.camperIds.length + this.localFormData.staffMemberIds.length;
-    },
-    sleepingRoomOptions(): AutocompleteOption[] {
-      return this.sleepingRooms.map(room => ({
-        label: `${room.name} (${room.beds} beds)${room.beds >= this.totalPeople ? '' : ' - Not enough beds'}`,
-        value: room.id,
-        disabled: room.beds < this.totalPeople
-      }));
     },
     selectedRoom(): SleepingRoom | undefined {
       return this.sleepingRooms.find(r => r.id === this.localFormData.sleepingRoomId);
@@ -226,26 +182,54 @@ export default defineComponent({
     }
   },
   methods: {
-    getCamperFullName(camperId: string): string {
-      const camper = this.campers.find(c => c.id === camperId);
-      return camper ? `${camper.firstName} ${camper.lastName}` : 'Unknown';
+    // Camper methods
+    getCamperLabel(camper: Camper): string {
+      return `${camper.firstName} ${camper.lastName}`;
     },
-    getCamperInitials(camperId: string): string {
-      const camper = this.campers.find(c => c.id === camperId);
-      return camper ? `${camper.firstName.charAt(0)}${camper.lastName.charAt(0)}` : '??';
+    getCamperInitials(camper: Camper): string {
+      return `${camper.firstName.charAt(0)}${camper.lastName.charAt(0)}`;
     },
-    addCamper(): void {
-      if (this.selectedCamperToAdd && !this.localFormData.camperIds.includes(this.selectedCamperToAdd)) {
-        this.localFormData.camperIds.push(this.selectedCamperToAdd);
-        this.selectedCamperToAdd = '';
+    getCamperOption(camper: Camper): AutocompleteOption {
+      return {
+        label: `${camper.firstName} ${camper.lastName} (Age ${camper.age})`,
+        value: camper.id
+      };
+    },
+
+    // Staff methods
+    getStaffLabel(staff: StaffMember): string {
+      return `${staff.firstName} ${staff.lastName} (${staff.role})`;
+    },
+    getStaffInitials(staff: StaffMember): string {
+      return `${staff.firstName.charAt(0)}${staff.lastName.charAt(0)}`;
+    },
+    getStaffOption(staff: StaffMember): AutocompleteOption {
+      return {
+        label: `${staff.firstName} ${staff.lastName} (${staff.role})`,
+        value: staff.id
+      };
+    },
+
+    // Room methods
+    getRoomLabel(room: SleepingRoom): string {
+      return `${room.name} (${room.beds} beds)`;
+    },
+    getRoomInitials(room: SleepingRoom): string {
+      const words = room.name.split(' ');
+      if (words.length >= 2) {
+        return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
       }
+      return room.name.substring(0, 2).toUpperCase();
     },
-    removeCamper(camperId: string): void {
-      const index = this.localFormData.camperIds.indexOf(camperId);
-      if (index > -1) {
-        this.localFormData.camperIds.splice(index, 1);
-      }
+    getRoomOption(room: SleepingRoom): AutocompleteOption {
+      const hasEnoughBeds = room.beds >= this.totalPeople;
+      return {
+        label: `${room.name} (${room.beds} beds)${hasEnoughBeds ? '' : ' - Not enough beds'}`,
+        value: room.id,
+        disabled: !hasEnoughBeds
+      };
     },
+
     handleSave() {
       this.$emit('save', this.localFormData);
     }
@@ -254,115 +238,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.campers-selection {
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  padding: 0.75rem;
-  background: var(--background);
-}
-
-.selected-campers {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.selected-camper-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  background: white;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  transition: background 0.15s ease;
-}
-
-.selected-camper-item:hover {
-  background: var(--surface);
-}
-
-.camper-info-sm {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex: 1;
-}
-
-.camper-avatar-xs {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.75rem;
-  flex-shrink: 0;
-}
-
-.btn-remove {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: none;
-  background: var(--error-color, #ef4444);
-  color: white;
-  font-size: 0.875rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s ease;
-  padding: 0;
-  line-height: 1;
-}
-
-.btn-remove:hover {
-  background: #dc2626;
-  transform: scale(1.1);
-}
-
-.add-camper-section {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-height: 200px;
-  overflow-y: auto;
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: var(--radius);
-  transition: background 0.15s ease;
-}
-
-.checkbox-label:hover {
-  background: var(--background);
-}
-
-.checkbox-input {
-  cursor: pointer;
-}
-
 .capacity-info {
   margin-bottom: 0.5rem;
 }
