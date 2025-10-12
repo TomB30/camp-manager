@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="dashboard">
-      <h2 class="mb-2">Dashboard</h2>
+      <ViewHeader title="Dashboard" />
 
       <!-- Stats Cards -->
       <div class="stats-grid">
@@ -150,6 +150,7 @@ import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
 import { Calendar, Users, UsersRound } from 'lucide-vue-next';
+import ViewHeader from '@/components/ViewHeader.vue';
 import type { Event } from '@/types/api';
 import type { Camper } from '@/types/api';
 
@@ -158,7 +159,8 @@ export default defineComponent({
   components: {
     Calendar,
     Users,
-    UsersRound
+    UsersRound,
+    ViewHeader
   },
   computed: {
     store(): ReturnType<typeof useCampStore> {

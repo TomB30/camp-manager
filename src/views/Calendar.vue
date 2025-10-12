@@ -1,9 +1,7 @@
 <template>
   <div class="container">
     <div class="calendar-view">
-      <div class="calendar-header">
-        <h2>Event Calendar</h2>
-      </div>
+      <ViewHeader title="Event Calendar" />
 
       <!-- Date Navigation -->
       <div class="calendar-controls card p-2">
@@ -277,6 +275,7 @@ import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import Autocomplete from '@/components/Autocomplete.vue';
+import ViewHeader from '@/components/ViewHeader.vue';
 import EventDetailModal from '@/components/modals/EventDetailModal.vue';
 import EventFormModal from '@/components/modals/EventFormModal.vue';
 import { filterEventsByDateAndHour } from '@/utils/dateUtils';
@@ -289,6 +288,7 @@ export default defineComponent({
     FilterBar,
     ColorPicker,
     Autocomplete,
+    ViewHeader,
     EventDetailModal,
     EventFormModal,
   },
@@ -816,12 +816,8 @@ export default defineComponent({
   grid-template-rows: auto auto auto 1fr;
 }
 
-.calendar-header {
+.calendar-view > .view-header {
   grid-column: 1 / -1;
-}
-
-.calendar-header h2 {
-  text-align: left;
 }
 
 .filter-section {
