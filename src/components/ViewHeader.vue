@@ -60,8 +60,6 @@ export default defineComponent({
 
 .view-header h2 {
   margin: 0;
-  font-size: 1.875rem;
-  font-weight: 700;
   color: var(--text-primary);
 }
 
