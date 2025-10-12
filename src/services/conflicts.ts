@@ -1,4 +1,4 @@
-import type { Conflict, Event, Camper, StaffMember, Room } from '@/types/api';
+import type { Conflict, Event, Camper, StaffMember, Room, FamilyGroup, SleepingRoom } from '@/types/api';
 
 export class ConflictDetector {
   detectConflicts(
@@ -185,6 +185,99 @@ export class ConflictDetector {
     const end2 = new Date(event2.endTime).getTime();
 
     return start1 < end2 && start2 < end1;
+  }
+
+  /**
+   * Check if two date ranges overlap.
+   * Overlap is allowed if one group's end date equals another's start date
+   * (i.e., checkout on Oct 17 allows checkin on Oct 17)
+   */
+  private dateRangesOverlap(start1: string, end1: string, start2: string, end2: string): boolean {
+    const startTime1 = new Date(start1).getTime();
+    const endTime1 = new Date(end1).getTime();
+    const startTime2 = new Date(start2).getTime();
+    const endTime2 = new Date(end2).getTime();
+
+    // Allow overlap if end time equals start time (same day checkout/checkin)
+    // Return true only if there's actual overlap (not just touching)
+    return startTime1 < endTime2 && startTime2 < endTime1;
+  }
+
+  /**
+   * Get all family groups that conflict with a given date range in a specific sleeping room
+   */
+  getFamilyGroupConflictsInRoom(
+    sleepingRoomId: string,
+    startDate: string,
+    endDate: string,
+    familyGroups: FamilyGroup[],
+    excludeFamilyGroupId?: string
+  ): FamilyGroup[] {
+    return familyGroups.filter(group => {
+      // Skip the group we're excluding (e.g., the one being edited)
+      if (excludeFamilyGroupId && group.id === excludeFamilyGroupId) {
+        return false;
+      }
+
+      // Only check groups in the same sleeping room
+      if (group.sleepingRoomId !== sleepingRoomId) {
+        return false;
+      }
+
+      // Check if date ranges overlap
+      return this.dateRangesOverlap(startDate, endDate, group.startDate, group.endDate);
+    });
+  }
+
+  /**
+   * Check if a family group can be assigned to a sleeping room
+   */
+  canAssignFamilyGroupToRoom(
+    sleepingRoomId: string,
+    startDate: string,
+    endDate: string,
+    familyGroups: FamilyGroup[],
+    excludeFamilyGroupId?: string
+  ): { canAssign: boolean; reason?: string; conflictingGroups?: FamilyGroup[] } {
+    const conflictingGroups = this.getFamilyGroupConflictsInRoom(
+      sleepingRoomId,
+      startDate,
+      endDate,
+      familyGroups,
+      excludeFamilyGroupId
+    );
+
+    if (conflictingGroups.length > 0) {
+      return {
+        canAssign: false,
+        reason: `This room is already occupied by ${conflictingGroups.length === 1 ? 'another family group' : 'other family groups'} during these dates`,
+        conflictingGroups
+      };
+    }
+
+    return { canAssign: true };
+  }
+
+  /**
+   * Get available sleeping rooms for a given date range
+   */
+  getAvailableSleepingRooms(
+    startDate: string,
+    endDate: string,
+    allSleepingRooms: SleepingRoom[],
+    familyGroups: FamilyGroup[],
+    excludeFamilyGroupId?: string
+  ): SleepingRoom[] {
+    return allSleepingRooms.filter(room => {
+      const validation = this.canAssignFamilyGroupToRoom(
+        room.id,
+        startDate,
+        endDate,
+        familyGroups,
+        excludeFamilyGroupId
+      );
+      return validation.canAssign;
+    });
   }
 }
 

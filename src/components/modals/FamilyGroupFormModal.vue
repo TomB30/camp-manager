@@ -109,8 +109,9 @@ import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import SelectionList from '@/components/SelectionList.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
-import type { Camper, StaffMember, SleepingRoom } from '@/types/api';
+import type { Camper, StaffMember, SleepingRoom, FamilyGroup } from '@/types/api';
 import type { AutocompleteOption } from '@/components/Autocomplete.vue';
+import { conflictDetector } from '@/services/conflicts';
 
 interface FamilyGroupFormData {
   name: string;
@@ -154,6 +155,14 @@ export default defineComponent({
     sleepingRooms: {
       type: Array as PropType<SleepingRoom[]>,
       required: true
+    },
+    familyGroups: {
+      type: Array as PropType<FamilyGroup[]>,
+      required: true
+    },
+    editingGroupId: {
+      type: String as PropType<string | null>,
+      default: null
     }
   },
   emits: ['close', 'save'],
@@ -223,10 +232,38 @@ export default defineComponent({
     },
     getRoomOption(room: SleepingRoom): AutocompleteOption {
       const hasEnoughBeds = room.beds >= this.totalPeople;
+      
+      // Check if the room is available for the selected dates
+      let isAvailable = true;
+      let conflictMessage = '';
+      
+      if (this.localFormData.startDate && this.localFormData.endDate) {
+        const validation = conflictDetector.canAssignFamilyGroupToRoom(
+          room.id,
+          this.localFormData.startDate,
+          this.localFormData.endDate,
+          this.familyGroups,
+          this.editingGroupId || undefined
+        );
+        
+        isAvailable = validation.canAssign;
+        
+        if (!isAvailable && validation.conflictingGroups && validation.conflictingGroups.length > 0) {
+          const groupNames = validation.conflictingGroups.map(g => g.name).join(', ');
+          conflictMessage = ` - Occupied by: ${groupNames}`;
+        }
+      }
+      
+      const warnings: string[] = [];
+      if (!hasEnoughBeds) warnings.push('Not enough beds');
+      if (!isAvailable) warnings.push(conflictMessage || 'Occupied during these dates');
+      
+      const warningText = warnings.length > 0 ? ' - ' + warnings.join(', ') : '';
+      
       return {
-        label: `${room.name} (${room.beds} beds)${hasEnoughBeds ? '' : ' - Not enough beds'}`,
+        label: `${room.name} (${room.beds} beds)${warningText}`,
         value: room.id,
-        disabled: !hasEnoughBeds
+        disabled: !hasEnoughBeds || !isAvailable
       };
     },
 

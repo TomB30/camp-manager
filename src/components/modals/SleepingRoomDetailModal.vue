@@ -38,6 +38,9 @@
                       • {{ familyGroup.staffCount }} staff
                     </span>
                   </div>
+                  <div class="text-xs group-dates">
+                    📅 {{ formatDate(familyGroup.startDate) }} - {{ formatDate(familyGroup.endDate) }}
+                  </div>
                   <div v-if="familyGroup.description" class="text-xs text-secondary mt-1">
                     {{ familyGroup.description }}
                   </div>
@@ -75,6 +78,8 @@ interface FamilyGroupInfo {
   description?: string;
   camperCount: number;
   staffCount: number;
+  startDate: string;
+  endDate: string;
 }
 
 export default defineComponent({
@@ -96,7 +101,13 @@ export default defineComponent({
       default: () => []
     }
   },
-  emits: ['close', 'edit', 'delete', 'view-family-group']
+  emits: ['close', 'edit', 'delete', 'view-family-group'],
+  methods: {
+    formatDate(dateString: string): string {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+  }
 });
 </script>
 
@@ -130,6 +141,16 @@ export default defineComponent({
 
 .group-info {
   flex: 1;
+}
+
+.group-dates {
+  margin-top: 0.375rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
 }
 </style>
 

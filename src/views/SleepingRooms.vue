@@ -198,7 +198,9 @@ export default defineComponent({
         name: fg.name,
         description: fg.description,
         camperCount: this.getCampersInFamilyGroup(fg.id).length,
-        staffCount: fg.staffMemberIds.length
+        staffCount: fg.staffMemberIds.length,
+        startDate: fg.startDate,
+        endDate: fg.endDate
       }));
     }
   },

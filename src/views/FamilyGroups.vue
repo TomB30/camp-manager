@@ -166,6 +166,8 @@
         :campers="store.campers"
         :staff-members="store.staffMembers"
         :sleeping-rooms="store.sleepingRooms"
+        :family-groups="store.familyGroups"
+        :editing-group-id="editingGroupId"
         @close="closeModal"
         @save="saveGroup"
       />
@@ -190,6 +192,8 @@
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { FamilyGroup, Camper } from '@/types/api';
+import { conflictDetector } from '@/services/conflicts';
+import { useToast } from '@/composables/useToast';
 import ViewHeader from '@/components/ViewHeader.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import ColorIndicator from '@/components/ColorIndicator.vue';
@@ -373,6 +377,32 @@ export default defineComponent({
       this.showModal = true;
     },
     async saveGroup(formData: typeof this.formData): Promise<void> {
+      const toast = useToast();
+      
+      // Validate date range
+      const startDate = new Date(formData.startDate);
+      const endDate = new Date(formData.endDate);
+      
+      if (startDate >= endDate) {
+        toast.error('End date must be after start date');
+        return;
+      }
+      
+      // Validate room availability
+      const validation = conflictDetector.canAssignFamilyGroupToRoom(
+        formData.sleepingRoomId,
+        formData.startDate,
+        formData.endDate,
+        this.store.familyGroups,
+        this.editingGroupId || undefined
+      );
+      
+      if (!validation.canAssign) {
+        const groupNames = validation.conflictingGroups?.map(g => g.name).join(', ') || 'another group';
+        toast.error(`This room is already occupied by ${groupNames} during these dates`);
+        return;
+      }
+      
       const groupData: FamilyGroup = {
         id: this.editingGroupId || `family-${Date.now()}`,
         name: formData.name,
@@ -439,6 +469,7 @@ export default defineComponent({
         }
       }
 
+      toast.success(this.editingGroupId ? 'Family group updated successfully' : 'Family group created successfully');
       this.closeModal();
     },
     deleteGroupConfirm(): void {
