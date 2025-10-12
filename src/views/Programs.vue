@@ -268,7 +268,7 @@
     <ActivityFormModal
       :show="showActivityModal"
       :activity="editingActivity"
-      :program-id="selectedProgramId"
+      :program-id="selectedProgramId || undefined"
       @close="closeActivityModal"
       @save="saveActivity"
     />

@@ -109,7 +109,7 @@ import { useCampStore } from '@/stores/campStore';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
-import type { Event, Room, CamperGroup, Camper, Activity } from '@/types/api';
+import type { Event, Room, CamperGroup, Camper } from '@/types/api';
 
 interface EventFormData {
   title: string;

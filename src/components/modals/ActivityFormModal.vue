@@ -88,7 +88,7 @@
         <div class="form-group">
           <label class="form-label">Required Certifications (Optional)</label>
           <div class="certifications-input">
-            <div v-for="(cert, index) in localFormData.requiredCertifications" :key="index" class="cert-item">
+            <div v-for="(_cert, index) in localFormData.requiredCertifications" :key="index" class="cert-item">
               <input 
                 v-model="localFormData.requiredCertifications[index]" 
                 type="text" 

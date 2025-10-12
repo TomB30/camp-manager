@@ -317,6 +317,8 @@ export default defineComponent({
         type: 'activity' as Event['type'],
         color: '#3B82F6',
         camperGroupIds: [] as string[],
+        programId: undefined as string | undefined,
+        activityId: undefined as string | undefined,
       },
       filterEventType: '',
       filterRoom: '',
@@ -591,6 +593,8 @@ export default defineComponent({
         type: this.selectedEvent.type,
         color: this.selectedEvent.color || '#3B82F6',
         camperGroupIds: [],
+        programId: this.selectedEvent.programId,
+        activityId: this.selectedEvent.activityId,
       };
       
       this.selectedEventId = null;
