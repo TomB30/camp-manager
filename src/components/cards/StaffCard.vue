@@ -17,8 +17,8 @@
       <div v-if="member.email" class="member-contact text-sm text-secondary mt-1">
         {{ member.email }}
       </div>
-      <div v-if="member.certifications && member.certifications.length > 0" class="member-certs text-xs mt-2">
-        {{ member.certifications.length }} Certification(s)
+      <div v-if="certificationCount > 0" class="member-certs text-xs mt-2">
+        {{ certificationCount }} Certification(s)
       </div>
     </div>
   </div>
@@ -49,6 +49,17 @@ export default defineComponent({
     },
   },
   emits: ['click'],
+  computed: {
+    certificationCount(): number {
+      if (this.member.certificationIds) {
+        return this.member.certificationIds.length;
+      }
+      if (this.member.certifications) {
+        return this.member.certifications.length;
+      }
+      return 0;
+    }
+  }
 });
 </script>
 

@@ -1,7 +1,237 @@
-import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup, Program, Activity } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup, Program, Activity, Location, Certification } from '@/types/api';
 
 // Generate consistent IDs
 const generateId = (prefix: string, index: number) => `${prefix}-${String(index).padStart(3, '0')}`;
+
+// Certifications - Setup first as they're referenced by staff
+export const mockCertifications: Certification[] = [
+  {
+    id: generateId('cert', 1),
+    name: 'First Aid',
+    description: 'Basic first aid training for emergency response',
+    expirationRequired: true,
+    validityPeriodMonths: 24,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('cert', 2),
+    name: 'CPR',
+    description: 'Cardiopulmonary resuscitation certification',
+    expirationRequired: true,
+    validityPeriodMonths: 24,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('cert', 3),
+    name: 'Wilderness First Aid',
+    description: 'Advanced first aid for wilderness and outdoor settings',
+    expirationRequired: true,
+    validityPeriodMonths: 36,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('cert', 4),
+    name: 'Lifeguard',
+    description: 'Certified lifeguard for pool and waterfront supervision',
+    expirationRequired: true,
+    validityPeriodMonths: 24,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('cert', 5),
+    name: 'Swimming Instructor',
+    description: 'Certified to teach swimming lessons',
+    expirationRequired: true,
+    validityPeriodMonths: 36,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('cert', 6),
+    name: 'Climbing Instructor',
+    description: 'Certified rock climbing and bouldering instructor',
+    expirationRequired: true,
+    validityPeriodMonths: 24,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('cert', 7),
+    name: 'Archery Instructor',
+    description: 'Certified archery safety and instruction',
+    expirationRequired: true,
+    validityPeriodMonths: 36,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('cert', 8),
+    name: 'Ropes Course Instructor',
+    description: 'High and low ropes course facilitation',
+    expirationRequired: true,
+    validityPeriodMonths: 24,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('cert', 9),
+    name: 'Boat Driver',
+    description: 'Licensed boat operation for water activities',
+    expirationRequired: true,
+    validityPeriodMonths: 60,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('cert', 10),
+    name: 'Food Handler',
+    description: 'Food safety and handling certification',
+    expirationRequired: true,
+    validityPeriodMonths: 36,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+];
+
+// Locations - Setup before rooms and sleeping rooms
+export const mockLocations: Location[] = [
+  {
+    id: generateId('location', 1),
+    name: 'Main Building A',
+    description: 'Primary administrative and activity building',
+    type: 'indoor',
+    capacity: 100,
+    equipment: ['HVAC', 'Fire Suppression', 'Emergency Exits'],
+    notes: 'Central location with easy access',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('location', 2),
+    name: 'Arts & Crafts Building B',
+    description: 'Dedicated arts and creative activities building',
+    type: 'indoor',
+    capacity: 50,
+    equipment: ['Sinks', 'Storage Cabinets', 'Ventilation'],
+    notes: 'Near the main hall',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('location', 3),
+    name: 'Education Building C',
+    description: 'Classrooms and learning spaces',
+    type: 'indoor',
+    capacity: 60,
+    equipment: ['WiFi', 'Projectors', 'Whiteboards'],
+    notes: 'Quiet zone for focused activities',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('location', 4),
+    name: 'Sports Field Alpha',
+    description: 'Large outdoor field for sports and games',
+    type: 'field',
+    capacity: 50,
+    equipment: ['Goals', 'Field Markings', 'Benches'],
+    notes: 'Grass field with irrigation',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('location', 5),
+    name: 'Recreation Center',
+    description: 'Indoor recreation facility with pool',
+    type: 'facility',
+    capacity: 80,
+    equipment: ['Showers', 'Lockers', 'First Aid Station'],
+    notes: 'Pool area requires lifeguard on duty',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('location', 6),
+    name: 'Central Plaza',
+    description: 'Outdoor gathering space',
+    type: 'outdoor',
+    capacity: 100,
+    equipment: ['Shade Structures', 'Benches', 'Water Fountains'],
+    notes: 'Weather dependent activities',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('location', 7),
+    name: 'Basketball Court',
+    description: 'Outdoor basketball court',
+    type: 'outdoor',
+    capacity: 30,
+    equipment: ['Hoops', 'Court Lines', 'Scoreboard'],
+    notes: 'Well-lit for evening activities',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('location', 8),
+    name: 'North Cabin Area',
+    description: 'North wing sleeping quarters - Floor 1',
+    type: 'indoor',
+    capacity: 20,
+    equipment: ['Climate Control', 'Bathroom Facilities'],
+    notes: 'Ground floor cabins',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('location', 9),
+    name: 'North Cabin Area - Upper',
+    description: 'North wing sleeping quarters - Floor 2',
+    type: 'indoor',
+    capacity: 20,
+    equipment: ['Climate Control', 'Bathroom Facilities'],
+    notes: 'Second floor cabins',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('location', 10),
+    name: 'South Cabin Area',
+    description: 'South wing sleeping quarters - Floor 1',
+    type: 'indoor',
+    capacity: 20,
+    equipment: ['Climate Control', 'Bathroom Facilities'],
+    notes: 'Ground floor cabins',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('location', 11),
+    name: 'South Cabin Area - Upper',
+    description: 'South wing sleeping quarters - Floor 2',
+    type: 'indoor',
+    capacity: 20,
+    equipment: ['Climate Control', 'Bathroom Facilities'],
+    notes: 'Second floor cabins',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('location', 12),
+    name: 'Lakefront',
+    description: 'Waterfront area with dock and beach',
+    type: 'water',
+    capacity: 40,
+    equipment: ['Dock', 'Boat Launch', 'Life Jackets', 'Safety Equipment'],
+    notes: 'Requires lifeguard supervision at all times',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+];
 
 // Extended sleeping rooms for more campers
 export const mockSleepingRooms: SleepingRoom[] = [
@@ -10,36 +240,42 @@ export const mockSleepingRooms: SleepingRoom[] = [
     name: 'Cabin 1 - Eagles',
     beds: 8,
     location: 'North Wing, Floor 1',
+    locationId: generateId('location', 8),
   },
   {
     id: generateId('sleeping', 2),
     name: 'Cabin 2 - Hawks',
     beds: 8,
     location: 'North Wing, Floor 1',
+    locationId: generateId('location', 8),
   },
   {
     id: generateId('sleeping', 3),
     name: 'Cabin 3 - Wolves',
     beds: 8,
     location: 'North Wing, Floor 2',
+    locationId: generateId('location', 9),
   },
   {
     id: generateId('sleeping', 4),
     name: 'Cabin 4 - Butterflies',
     beds: 8,
     location: 'South Wing, Floor 1',
+    locationId: generateId('location', 10),
   },
   {
     id: generateId('sleeping', 5),
     name: 'Cabin 5 - Fireflies',
     beds: 8,
     location: 'South Wing, Floor 1',
+    locationId: generateId('location', 10),
   },
   {
     id: generateId('sleeping', 6),
     name: 'Cabin 6 - Dolphins',
     beds: 8,
     location: 'South Wing, Floor 2',
+    locationId: generateId('location', 11),
   },
 ];
 
@@ -178,6 +414,7 @@ export const mockStaffMembers: StaffMember[] = [
     email: 'sarah.connor@camp.com',
     phone: '555-0101',
     certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3)],
     managerId: undefined, // Top of hierarchy
   },
   {
@@ -188,6 +425,7 @@ export const mockStaffMembers: StaffMember[] = [
     email: 'james.rodriguez@camp.com',
     phone: '555-0109',
     certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3)],
     managerId: generateId('staff', 1), // Reports to Sarah (Director)
   },
   {
@@ -198,6 +436,7 @@ export const mockStaffMembers: StaffMember[] = [
     email: 'mike.peterson@camp.com',
     phone: '555-0102',
     certifications: ['First Aid', 'CPR'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2)],
     managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
@@ -208,6 +447,7 @@ export const mockStaffMembers: StaffMember[] = [
     email: 'jessica.lee@camp.com',
     phone: '555-0103',
     certifications: ['First Aid', 'CPR'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2)],
     managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
@@ -218,6 +458,7 @@ export const mockStaffMembers: StaffMember[] = [
     email: 'david.chen@camp.com',
     phone: '555-0104',
     certifications: ['Lifeguard', 'Swimming Instructor', 'CPR'],
+    certificationIds: [generateId('cert', 4), generateId('cert', 5), generateId('cert', 2)],
     managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
@@ -228,6 +469,7 @@ export const mockStaffMembers: StaffMember[] = [
     email: 'rachel.martinez@camp.com',
     phone: '555-0105',
     certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3)],
     managerId: generateId('staff', 1), // Reports directly to Sarah (Director)
   },
   {
@@ -238,6 +480,7 @@ export const mockStaffMembers: StaffMember[] = [
     email: 'tom.wilson@camp.com',
     phone: '555-0106',
     certifications: ['First Aid', 'CPR'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2)],
     managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
@@ -248,6 +491,7 @@ export const mockStaffMembers: StaffMember[] = [
     email: 'amanda.foster@camp.com',
     phone: '555-0107',
     certifications: ['First Aid', 'CPR'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2)],
     managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
@@ -258,6 +502,7 @@ export const mockStaffMembers: StaffMember[] = [
     email: 'chris.bryant@camp.com',
     phone: '555-0108',
     certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3)],
     managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
 ];
@@ -269,6 +514,7 @@ export const mockRooms: Room[] = [
     capacity: 50,
     type: 'activity',
     location: 'Building A',
+    locationId: generateId('location', 1),
     equipment: ['Projector', 'Sound System', 'Tables', 'Chairs'],
   },
   {
@@ -277,6 +523,7 @@ export const mockRooms: Room[] = [
     capacity: 15,
     type: 'arts',
     location: 'Building B',
+    locationId: generateId('location', 2),
     equipment: ['Easels', 'Paint Supplies', 'Clay', 'Kiln'],
   },
   {
@@ -285,6 +532,7 @@ export const mockRooms: Room[] = [
     capacity: 30,
     type: 'sports',
     location: 'Outdoor Area 1',
+    locationId: generateId('location', 4),
     equipment: ['Soccer Goals', 'Cones', 'Balls'],
   },
   {
@@ -293,6 +541,7 @@ export const mockRooms: Room[] = [
     capacity: 20,
     type: 'sports',
     location: 'Recreation Center',
+    locationId: generateId('location', 5),
     equipment: ['Pool Noodles', 'Kickboards', 'Life Vests'],
   },
   {
@@ -301,6 +550,7 @@ export const mockRooms: Room[] = [
     capacity: 20,
     type: 'classroom',
     location: 'Building C',
+    locationId: generateId('location', 3),
     equipment: ['Whiteboard', 'Desks', 'Books', 'Computers'],
   },
   {
@@ -309,6 +559,7 @@ export const mockRooms: Room[] = [
     capacity: 60,
     type: 'dining',
     location: 'Building C',
+    locationId: generateId('location', 3),
     equipment: ['Tables', 'Benches', 'Kitchen Access'],
   },
   {
@@ -317,6 +568,7 @@ export const mockRooms: Room[] = [
     capacity: 40,
     type: 'outdoor',
     location: 'Central Campus',
+    locationId: generateId('location', 6),
     equipment: ['Picnic Tables', 'Shade Structures', 'Water Fountain'],
   },
   {
@@ -325,6 +577,7 @@ export const mockRooms: Room[] = [
     capacity: 15,
     type: 'arts',
     location: 'Building B',
+    locationId: generateId('location', 2),
     equipment: ['Piano', 'Guitars', 'Drums', 'Microphones'],
   },
   {
@@ -333,6 +586,7 @@ export const mockRooms: Room[] = [
     capacity: 20,
     type: 'sports',
     location: 'Outdoor Area 2',
+    locationId: generateId('location', 7),
     equipment: ['Basketballs', 'Scoreboard', 'Benches'],
   },
   {
@@ -341,6 +595,7 @@ export const mockRooms: Room[] = [
     capacity: 25,
     type: 'arts',
     location: 'Building A',
+    locationId: generateId('location', 1),
     equipment: ['Stage', 'Costumes', 'Props', 'Lighting'],
   },
 ];
@@ -848,4 +1103,6 @@ export const mockData = {
   familyGroups: mockFamilyGroups,
   programs: mockPrograms,
   activities: mockActivities,
+  locations: mockLocations,
+  certifications: mockCertifications,
 };

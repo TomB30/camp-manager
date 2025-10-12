@@ -54,7 +54,11 @@
         </template>
         
         <template #cell-location="{ item }">
-          {{ item.location || '—' }}
+          <span v-if="item.locationId">
+            {{ store.getLocationById(item.locationId)?.name || item.location || 'Unknown' }}
+          </span>
+          <span v-else-if="item.location">{{ item.location }}</span>
+          <span v-else>—</span>
         </template>
         
         <template #cell-groups="{ item }">
@@ -157,7 +161,7 @@ export default defineComponent({
       formData: {
         name: '',
         beds: 4,
-        location: '',
+        locationId: undefined as string | undefined,
       },
       searchQuery: '',
       roomColumns: [
@@ -232,18 +236,24 @@ export default defineComponent({
       this.formData = {
         name: this.selectedRoom.name,
         beds: this.selectedRoom.beds,
-        location: this.selectedRoom.location || '',
+        locationId: this.selectedRoom.locationId,
       };
       
       this.selectedRoomId = null;
       this.showModal = true;
     },
     async saveRoom(formData: typeof this.formData): Promise<void> {
+      // Get location name for backward compatibility
+      const location = formData.locationId 
+        ? this.store.getLocationById(formData.locationId)?.name 
+        : undefined;
+
       const roomData: SleepingRoom = {
         id: this.editingRoomId || `sleeping-${Date.now()}`,
         name: formData.name,
         beds: formData.beds,
-        location: formData.location || undefined,
+        location: location,
+        locationId: formData.locationId,
       };
 
       if (this.editingRoomId) {
@@ -292,7 +302,7 @@ export default defineComponent({
       this.formData = {
         name: '',
         beds: 4,
-        location: '',
+        locationId: undefined,
       };
     }
   }

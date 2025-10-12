@@ -1,11 +1,12 @@
-import type { Conflict, Event, Camper, StaffMember, Room, FamilyGroup, SleepingRoom } from '@/types/api';
+import type { Conflict, Event, Camper, StaffMember, Room, FamilyGroup, SleepingRoom, Certification } from '@/types/api';
 
 export class ConflictDetector {
   detectConflicts(
     events: Event[],
     campers: Camper[],
     staffMembers: StaffMember[],
-    rooms: Room[]
+    rooms: Room[],
+    certifications: Certification[] = []
   ): Conflict[] {
     const conflicts: Conflict[] = [];
 
@@ -127,9 +128,23 @@ export class ConflictDetector {
         event.assignedStaffIds?.includes(m.id)
       );
 
-      const allCertifications = new Set(
-        assignedStaff.flatMap(s => s.certifications || [])
-      );
+      // Collect all certifications from assigned staff (support both certificationIds and certifications)
+      const allCertifications = new Set<string>();
+      assignedStaff.forEach(staff => {
+        // Check certificationIds first
+        if (staff.certificationIds && staff.certificationIds.length > 0) {
+          staff.certificationIds.forEach(certId => {
+            const cert = certifications.find(c => c.id === certId);
+            if (cert) {
+              allCertifications.add(cert.name);
+            }
+          });
+        }
+        // Fallback to certifications string array for backward compatibility
+        else if (staff.certifications) {
+          staff.certifications.forEach(certName => allCertifications.add(certName));
+        }
+      });
 
       const missingCerts = event.requiredCertifications.filter(
         cert => !allCertifications.has(cert)

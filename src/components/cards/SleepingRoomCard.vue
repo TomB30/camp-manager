@@ -10,9 +10,9 @@
       <h4>{{ room.name }}</h4>
       <div class="card-meta">
         <span class="badge badge-primary">{{ room.beds }} beds</span>
-        <span v-if="room.location" class="text-sm text-secondary">
+        <span v-if="locationName" class="text-sm text-secondary">
           <MapPin :size="14" class="inline" />
-          {{ room.location }}
+          {{ locationName }}
         </span>
       </div>
       <div v-if="familyGroups.length > 0" class="assigned-groups mt-2">
@@ -35,6 +35,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { SleepingRoom, FamilyGroup } from '@/types/api';
+import { useCampStore } from '@/stores/campStore';
 import { Bed, MapPin } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -54,6 +55,18 @@ export default defineComponent({
     },
   },
   emits: ['click'],
+  setup() {
+    const store = useCampStore();
+    return { store };
+  },
+  computed: {
+    locationName(): string | undefined {
+      if (this.room.locationId) {
+        return this.store.getLocationById(this.room.locationId)?.name;
+      }
+      return this.room.location;
+    }
+  }
 });
 </script>
 

@@ -61,6 +61,14 @@
           <span class="badge badge-primary badge-sm">{{ formatRoomType(item.type) }}</span>
         </template>
         
+        <template #cell-location="{ item }">
+          <span v-if="item.locationId">
+            {{ store.getLocationById(item.locationId)?.name || item.location || 'Unknown' }}
+          </span>
+          <span v-else-if="item.location">{{ item.location }}</span>
+          <span v-else class="text-secondary">No location</span>
+        </template>
+        
         <template #cell-equipment="{ item }">
           <span v-if="item.equipment && item.equipment.length > 0" class="badge badge-success badge-sm">
             {{ item.equipment.length }} item(s)
@@ -197,7 +205,7 @@ export default defineComponent({
         name: '',
         type: 'classroom' as Room['type'],
         capacity: 20,
-        location: '',
+        locationId: undefined as string | undefined,
         equipment: [] as string[],
         notes: '',
       },
@@ -256,10 +264,13 @@ export default defineComponent({
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        rooms = rooms.filter((room: Room) =>
-          room.name.toLowerCase().includes(query) ||
-          (room.location && room.location.toLowerCase().includes(query))
-        );
+        rooms = rooms.filter((room: Room) => {
+          const locationName = room.locationId 
+            ? this.store.getLocationById(room.locationId)?.name 
+            : room.location;
+          return room.name.toLowerCase().includes(query) ||
+            (locationName && locationName.toLowerCase().includes(query));
+        });
       }
 
       // Type filter
@@ -350,7 +361,7 @@ export default defineComponent({
         name: this.selectedRoom.name,
         type: this.selectedRoom.type,
         capacity: this.selectedRoom.capacity,
-        location: this.selectedRoom.location || '',
+        locationId: this.selectedRoom.locationId,
         equipment: this.selectedRoom.equipment || [],
         notes: this.selectedRoom.notes || '',
       };
@@ -360,12 +371,18 @@ export default defineComponent({
       this.showModal = true;
     },
     async saveRoom(formData: typeof this.formData & { equipment: string[] }) {
+      // Get location name for backward compatibility
+      const location = formData.locationId 
+        ? this.store.getLocationById(formData.locationId)?.name 
+        : undefined;
+
       const roomData: Room = {
         id: this.editingRoomId || `room-${Date.now()}`,
         name: formData.name,
         type: formData.type,
         capacity: formData.capacity,
-        location: formData.location,
+        location: location,
+        locationId: formData.locationId,
         equipment: formData.equipment,
         notes: formData.notes,
       };

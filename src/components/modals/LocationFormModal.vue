@@ -1,14 +1,19 @@
 <template>
   <BaseModal
     :show="show"
-    :title="isEditing ? 'Edit Room' : 'Add New Room'"
+    :title="isEditing ? 'Edit Location' : 'Add New Location'"
     @close="$emit('close')"
   >
     <template #body>
       <form @submit.prevent="handleSave">
         <div class="form-group">
-          <label class="form-label">Room Name</label>
+          <label class="form-label">Location Name</label>
           <input v-model="localFormData.name" type="text" class="form-input" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea v-model="localFormData.description" class="form-textarea" rows="2"></textarea>
         </div>
 
         <div class="grid grid-cols-2">
@@ -16,32 +21,21 @@
             <label class="form-label">Type</label>
             <Autocomplete
               v-model="localFormData.type"
-              :options="roomTypeOptions"
-              placeholder="Select room type..."
+              :options="locationTypeOptions"
+              placeholder="Select location type..."
               :required="true"
             />
           </div>
 
           <div class="form-group">
             <label class="form-label">Capacity</label>
-            <input v-model.number="localFormData.capacity" type="number" min="1" class="form-input" required />
+            <input v-model.number="localFormData.capacity" type="number" min="0" class="form-input" />
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Location (optional)</label>
-          <Autocomplete
-            v-model="localFormData.locationId"
-            :options="locationOptions"
-            placeholder="Select a location..."
-            :required="false"
-          />
-          <p class="form-help-text">Select the physical location where this room is located</p>
-        </div>
-
-        <div class="form-group">
           <label class="form-label">Equipment (comma-separated)</label>
-          <input v-model="equipmentInput" type="text" class="form-input" placeholder="e.g., Projector, Tables, Chairs" />
+          <input v-model="equipmentInput" type="text" class="form-input" placeholder="e.g., Tables, Chairs, Sound System" />
         </div>
 
         <div class="form-group">
@@ -54,7 +48,7 @@
     <template #footer>
       <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
       <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? 'Update' : 'Add' }} Room
+        {{ isEditing ? 'Update' : 'Add' }} Location
       </button>
     </template>
   </BaseModal>
@@ -64,20 +58,19 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import { useCampStore } from '@/stores/campStore';
-import type { Room } from '@/types/api';
+import type { Location } from '@/types/api';
 
-interface RoomFormData {
+interface LocationFormData {
   name: string;
-  type: Room['type'];
-  capacity: number;
-  locationId?: string;
+  description: string;
+  type: Location['type'];
+  capacity?: number;
   equipment: string[];
   notes: string;
 }
 
 export default defineComponent({
-  name: 'RoomFormModal',
+  name: 'LocationFormModal',
   components: {
     BaseModal,
     Autocomplete
@@ -92,36 +85,24 @@ export default defineComponent({
       default: false
     },
     formData: {
-      type: Object as PropType<RoomFormData>,
+      type: Object as PropType<LocationFormData>,
       required: true
     }
   },
   emits: ['close', 'save'],
-  setup() {
-    const store = useCampStore();
-    return { store };
-  },
   data() {
     return {
       localFormData: JSON.parse(JSON.stringify(this.formData)),
       equipmentInput: this.formData.equipment.join(', '),
-      roomTypeOptions: [
-        { label: 'Classroom', value: 'classroom' },
-        { label: 'Activity', value: 'activity' },
-        { label: 'Sports', value: 'sports' },
-        { label: 'Dining', value: 'dining' },
+      locationTypeOptions: [
+        { label: 'Indoor', value: 'indoor' },
         { label: 'Outdoor', value: 'outdoor' },
-        { label: 'Arts', value: 'arts' }
+        { label: 'Facility', value: 'facility' },
+        { label: 'Field', value: 'field' },
+        { label: 'Water', value: 'water' },
+        { label: 'Other', value: 'other' }
       ] as AutocompleteOption[]
     };
-  },
-  computed: {
-    locationOptions(): AutocompleteOption[] {
-      return this.store.locations.map(location => ({
-        label: location.name,
-        value: location.id
-      }));
-    }
   },
   watch: {
     formData: {
@@ -147,12 +128,4 @@ export default defineComponent({
   }
 });
 </script>
-
-<style scoped>
-.form-help-text {
-  margin-top: 0.375rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-</style>
 

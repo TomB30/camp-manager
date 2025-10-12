@@ -39,10 +39,10 @@
           <div>{{ member.phone }}</div>
         </div>
 
-        <div v-if="member.certifications && member.certifications.length > 0" class="detail-section">
+        <div v-if="certificationNames.length > 0" class="detail-section">
           <div class="detail-label">Certifications</div>
           <div class="flex gap-1 flex-wrap">
-            <span v-for="cert in member.certifications" :key="cert" class="badge badge-success">
+            <span v-for="cert in certificationNames" :key="cert" class="badge badge-success">
               {{ cert }}
             </span>
           </div>
@@ -68,6 +68,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
+import { useCampStore } from '@/stores/campStore';
 import type { StaffMember } from '@/types/api';
 
 export default defineComponent({
@@ -86,6 +87,26 @@ export default defineComponent({
     }
   },
   emits: ['close', 'edit', 'delete'],
+  setup() {
+    const store = useCampStore();
+    return { store };
+  },
+  computed: {
+    certificationNames(): string[] {
+      if (!this.member) return [];
+      
+      if (this.member.certificationIds) {
+        return this.member.certificationIds
+          .map(id => {
+            const cert = this.store.getCertificationById(id);
+            return cert ? cert.name : '';
+          })
+          .filter(name => name.length > 0);
+      }
+      
+      return this.member.certifications || [];
+    }
+  },
   methods: {
     formatRole(role: string): string {
       return role.charAt(0).toUpperCase() + role.slice(1);

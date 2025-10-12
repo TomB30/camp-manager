@@ -1,4 +1,4 @@
-import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup, Program, Activity } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup, Program, Activity, Location, Certification } from '@/types/api';
 
 const STORAGE_KEYS = {
   CAMPERS: 'camp_campers',
@@ -10,6 +10,8 @@ const STORAGE_KEYS = {
   FAMILY_GROUPS: 'camp_family_groups',
   PROGRAMS: 'camp_programs',
   ACTIVITIES: 'camp_activities',
+  LOCATIONS: 'camp_locations',
+  CERTIFICATIONS: 'camp_certifications',
 } as const;
 
 // Simulate async operations to match future API
@@ -397,6 +399,76 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(filtered));
   }
 
+  // Locations operations
+  async getLocations(): Promise<Location[]> {
+    await delay();
+    const data = localStorage.getItem(STORAGE_KEYS.LOCATIONS);
+    return data ? JSON.parse(data) : [];
+  }
+
+  async getLocation(id: string): Promise<Location | null> {
+    await delay();
+    const locations = await this.getLocations();
+    return locations.find(l => l.id === id) || null;
+  }
+
+  async saveLocation(location: Location): Promise<Location> {
+    await delay();
+    const locations = await this.getLocations();
+    const index = locations.findIndex(l => l.id === location.id);
+    
+    if (index >= 0) {
+      locations[index] = { ...location, updatedAt: new Date().toISOString() };
+    } else {
+      locations.push(location);
+    }
+    
+    localStorage.setItem(STORAGE_KEYS.LOCATIONS, JSON.stringify(locations));
+    return locations[index >= 0 ? index : locations.length - 1];
+  }
+
+  async deleteLocation(id: string): Promise<void> {
+    await delay();
+    const locations = await this.getLocations();
+    const filtered = locations.filter(l => l.id !== id);
+    localStorage.setItem(STORAGE_KEYS.LOCATIONS, JSON.stringify(filtered));
+  }
+
+  // Certifications operations
+  async getCertifications(): Promise<Certification[]> {
+    await delay();
+    const data = localStorage.getItem(STORAGE_KEYS.CERTIFICATIONS);
+    return data ? JSON.parse(data) : [];
+  }
+
+  async getCertification(id: string): Promise<Certification | null> {
+    await delay();
+    const certifications = await this.getCertifications();
+    return certifications.find(c => c.id === id) || null;
+  }
+
+  async saveCertification(certification: Certification): Promise<Certification> {
+    await delay();
+    const certifications = await this.getCertifications();
+    const index = certifications.findIndex(c => c.id === certification.id);
+    
+    if (index >= 0) {
+      certifications[index] = { ...certification, updatedAt: new Date().toISOString() };
+    } else {
+      certifications.push(certification);
+    }
+    
+    localStorage.setItem(STORAGE_KEYS.CERTIFICATIONS, JSON.stringify(certifications));
+    return certifications[index >= 0 ? index : certifications.length - 1];
+  }
+
+  async deleteCertification(id: string): Promise<void> {
+    await delay();
+    const certifications = await this.getCertifications();
+    const filtered = certifications.filter(c => c.id !== id);
+    localStorage.setItem(STORAGE_KEYS.CERTIFICATIONS, JSON.stringify(filtered));
+  }
+
   // Utility methods
   async clearAll(): Promise<void> {
     await delay();
@@ -415,6 +487,8 @@ class StorageService {
     familyGroups?: FamilyGroup[];
     programs?: Program[];
     activities?: Activity[];
+    locations?: Location[];
+    certifications?: Certification[];
   }): Promise<void> {
     await delay();
     if (data.campers) {
@@ -443,6 +517,12 @@ class StorageService {
     }
     if (data.activities) {
       localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(data.activities));
+    }
+    if (data.locations) {
+      localStorage.setItem(STORAGE_KEYS.LOCATIONS, JSON.stringify(data.locations));
+    }
+    if (data.certifications) {
+      localStorage.setItem(STORAGE_KEYS.CERTIFICATIONS, JSON.stringify(data.certifications));
     }
   }
 }

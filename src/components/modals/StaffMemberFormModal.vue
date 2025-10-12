@@ -48,8 +48,20 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Certifications (comma-separated)</label>
-          <input v-model="certificationsInput" type="text" class="form-input" placeholder="e.g., CPR, First Aid" />
+          <label class="form-label">Certifications</label>
+          <SelectionList
+            v-model="localFormData.certificationIds"
+            :items="store.certifications"
+            item-type="certification"
+            placeholder="Select a certification..."
+            empty-text="No certifications selected"
+            add-button-text="Add"
+            mode="multiple"
+            :get-label-fn="(cert) => cert.name"
+            :get-initials-fn="(cert) => cert.name.substring(0, 2).toUpperCase()"
+            :get-options-fn="(cert) => ({ label: cert.name, value: cert.id })"
+          />
+          <p class="form-help-text">Select certifications from the prepared list</p>
         </div>
       </form>
     </template>
@@ -67,6 +79,8 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
+import SelectionList from '@/components/SelectionList.vue';
+import { useCampStore } from '@/stores/campStore';
 import type { StaffMember } from '@/types/api';
 
 interface StaffMemberFormData {
@@ -75,7 +89,7 @@ interface StaffMemberFormData {
   role: StaffMember['role'];
   email: string;
   phone: string;
-  certifications: string[];
+  certificationIds: string[];
   managerId: string;
 }
 
@@ -83,7 +97,8 @@ export default defineComponent({
   name: 'StaffMemberFormModal',
   components: {
     BaseModal,
-    Autocomplete
+    Autocomplete,
+    SelectionList
   },
   props: {
     show: {
@@ -108,10 +123,13 @@ export default defineComponent({
     }
   },
   emits: ['close', 'save'],
+  setup() {
+    const store = useCampStore();
+    return { store };
+  },
   data() {
     return {
       localFormData: JSON.parse(JSON.stringify(this.formData)),
-      certificationsInput: this.formData.certifications.join(', '),
       roleOptions: [
         { label: 'Counselor', value: 'counselor' },
         { label: 'Supervisor', value: 'supervisor' },
@@ -136,24 +154,23 @@ export default defineComponent({
     formData: {
       handler(newVal) {
         this.localFormData = JSON.parse(JSON.stringify(newVal));
-        this.certificationsInput = newVal.certifications.join(', ');
       },
       deep: true
     }
   },
   methods: {
     handleSave() {
-      const certifications = this.certificationsInput
-        .split(',')
-        .map(c => c.trim())
-        .filter(c => c.length > 0);
-      
-      this.$emit('save', {
-        ...this.localFormData,
-        certifications
-      });
+      this.$emit('save', this.localFormData);
     }
   }
 });
 </script>
+
+<style scoped>
+.form-help-text {
+  margin-top: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+</style>
 

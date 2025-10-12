@@ -19,6 +19,10 @@
           <Boxes :size="20" class="nav-icon" />
           <span class="nav-text">Programs</span>
         </RouterLink>
+        <RouterLink to="/staff" class="nav-link" @click="handleNavClick">
+          <UsersRound :size="20" class="nav-icon" />
+          <span class="nav-text">Staff</span>
+        </RouterLink>
         
         <!-- Collapsible Campers Section -->
         <div class="nav-section">
@@ -51,18 +55,42 @@
           </div>
         </div>
         
-        <RouterLink to="/staff" class="nav-link" @click="handleNavClick">
-          <UsersRound :size="20" class="nav-icon" />
-          <span class="nav-text">Staff</span>
-        </RouterLink>
-        <RouterLink to="/rooms" class="nav-link" @click="handleNavClick">
-          <Home :size="20" class="nav-icon" />
-          <span class="nav-text">Activity Rooms</span>
-        </RouterLink>
-        <RouterLink to="/sleeping-rooms" class="nav-link" @click="handleNavClick">
-          <Bed :size="20" class="nav-icon" />
-          <span class="nav-text">Cabins</span>
-        </RouterLink>
+
+        
+        <!-- Collapsible Camp Info Section -->
+        <div class="nav-section">
+          <button 
+            class="nav-section-header" 
+            @click="toggleCampInfoSection"
+            type="button"
+          >
+            <Settings :size="20" class="nav-icon" />
+            <span class="nav-text">Camp Info</span>
+            <ChevronRight 
+              :size="16" 
+              class="nav-chevron"
+              :class="{ 'nav-chevron-expanded': isCampInfoSectionExpanded }"
+            />
+          </button>
+          <div v-if="isCampInfoSectionExpanded" class="nav-subsection">
+            <RouterLink to="/locations" class="nav-link nav-sublink" @click="handleNavClick">
+              <MapPin :size="18" class="nav-icon" />
+              <span class="nav-text">Locations</span>
+            </RouterLink>
+            <RouterLink to="/rooms" class="nav-link nav-sublink" @click="handleNavClick">
+              <Home :size="18" class="nav-icon" />
+              <span class="nav-text">Activity Rooms</span>
+            </RouterLink>
+            <RouterLink to="/sleeping-rooms" class="nav-link nav-sublink" @click="handleNavClick">
+              <Bed :size="18" class="nav-icon" />
+              <span class="nav-text">Cabins</span>
+            </RouterLink>
+            <RouterLink to="/certifications" class="nav-link nav-sublink" @click="handleNavClick">
+              <Award :size="18" class="nav-icon" />
+              <span class="nav-text">Certifications</span>
+            </RouterLink>
+          </div>
+        </div>
       </nav>
 
       <div v-if="store.conflicts.length > 0" class="conflicts-section">
@@ -91,7 +119,10 @@ import {
   FolderOpen,
   ChevronRight,
   AlertTriangle,
-  Boxes 
+  Boxes,
+  Settings,
+  MapPin,
+  Award
 } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -107,7 +138,10 @@ export default defineComponent({
     FolderOpen,
     ChevronRight,
     AlertTriangle,
-    Boxes
+    Boxes,
+    Settings,
+    MapPin,
+    Award
   },
   props: {
     isMobileOpen: {
@@ -118,7 +152,8 @@ export default defineComponent({
   emits: ['close'],
   data() {
     return {
-      isCampersSectionExpanded: true
+      isCampersSectionExpanded: false,
+      isCampInfoSectionExpanded: false
     };
   },
   computed: {
@@ -129,6 +164,9 @@ export default defineComponent({
   methods: {
     toggleCampersSection() {
       this.isCampersSectionExpanded = !this.isCampersSectionExpanded;
+    },
+    toggleCampInfoSection() {
+      this.isCampInfoSectionExpanded = !this.isCampInfoSectionExpanded;
     },
     handleNavClick() {
       // Close mobile menu when a nav link is clicked (on mobile only)

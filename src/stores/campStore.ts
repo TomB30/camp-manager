@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { Camper, StaffMember, Room, SleepingRoom, Event, Conflict, CamperGroup, FamilyGroup, Program, Activity } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, Conflict, CamperGroup, FamilyGroup, Program, Activity, Location, Certification } from '@/types/api';
 import { storageService } from '@/services/storage';
 import { conflictDetector } from '@/services/conflicts';
 import { filterEventsByDate } from '@/utils/dateUtils';
@@ -16,6 +16,8 @@ export const useCampStore = defineStore('camp', {
     familyGroups: [] as FamilyGroup[],
     programs: [] as Program[],
     activities: [] as Activity[],
+    locations: [] as Location[],
+    certifications: [] as Certification[],
     loading: false,
     selectedDate: new Date(),
   }),
@@ -164,13 +166,25 @@ export const useCampStore = defineStore('camp', {
         return state.events.filter(e => e.programId === programId);
       };
     },
+
+    getLocationById(state): (id: string) => Location | undefined {
+      return (id: string): Location | undefined => {
+        return state.locations.find(l => l.id === id);
+      };
+    },
+
+    getCertificationById(state): (id: string) => Certification | undefined {
+      return (id: string): Certification | undefined => {
+        return state.certifications.find(c => c.id === id);
+      };
+    },
   },
 
   actions: {
     async loadAll(): Promise<void> {
       this.loading = true;
       try {
-        const [campersData, membersData, roomsData, sleepingRoomsData, eventsData, groupsData, familyGroupsData, programsData, activitiesData] = await Promise.all([
+        const [campersData, membersData, roomsData, sleepingRoomsData, eventsData, groupsData, familyGroupsData, programsData, activitiesData, locationsData, certificationsData] = await Promise.all([
           storageService.getCampers(),
           storageService.getStaffMembers(),
           storageService.getRooms(),
@@ -180,6 +194,8 @@ export const useCampStore = defineStore('camp', {
           storageService.getFamilyGroups(),
           storageService.getPrograms(),
           storageService.getActivities(),
+          storageService.getLocations(),
+          storageService.getCertifications(),
         ]);
 
         this.campers = campersData;
@@ -191,6 +207,8 @@ export const useCampStore = defineStore('camp', {
         this.familyGroups = familyGroupsData;
         this.programs = programsData;
         this.activities = activitiesData;
+        this.locations = locationsData;
+        this.certifications = certificationsData;
 
         this.updateConflicts();
       } finally {
@@ -203,7 +221,8 @@ export const useCampStore = defineStore('camp', {
         this.events,
         this.campers,
         this.staffMembers,
-        this.rooms
+        this.rooms,
+        this.certifications
       );
     },
 
@@ -636,6 +655,44 @@ export const useCampStore = defineStore('camp', {
       // Update program
       program.activityIds = program.activityIds.filter(id => id !== activityId);
       await this.updateProgram(program);
+    },
+
+    // Location actions
+    async addLocation(location: Location): Promise<void> {
+      await storageService.saveLocation(location);
+      this.locations.push(location);
+    },
+
+    async updateLocation(location: Location): Promise<void> {
+      await storageService.saveLocation(location);
+      const index = this.locations.findIndex(l => l.id === location.id);
+      if (index >= 0) {
+        this.locations[index] = location;
+      }
+    },
+
+    async deleteLocation(id: string): Promise<void> {
+      await storageService.deleteLocation(id);
+      this.locations = this.locations.filter(l => l.id !== id);
+    },
+
+    // Certification actions
+    async addCertification(certification: Certification): Promise<void> {
+      await storageService.saveCertification(certification);
+      this.certifications.push(certification);
+    },
+
+    async updateCertification(certification: Certification): Promise<void> {
+      await storageService.saveCertification(certification);
+      const index = this.certifications.findIndex(c => c.id === certification.id);
+      if (index >= 0) {
+        this.certifications[index] = certification;
+      }
+    },
+
+    async deleteCertification(id: string): Promise<void> {
+      await storageService.deleteCertification(id);
+      this.certifications = this.certifications.filter(c => c.id !== id);
     },
   }
 });

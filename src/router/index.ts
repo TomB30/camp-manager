@@ -8,6 +8,8 @@ import SleepingRooms from '../views/SleepingRooms.vue';
 import Groups from '../views/Groups.vue';
 import FamilyGroups from '../views/FamilyGroups.vue';
 import Programs from '../views/Programs.vue';
+import Locations from '../views/Locations.vue';
+import Certifications from '../views/Certifications.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -56,6 +58,16 @@ const router = createRouter({
       path: '/programs',
       name: 'programs',
       component: Programs,
+    },
+    {
+      path: '/locations',
+      name: 'locations',
+      component: Locations,
+    },
+    {
+      path: '/certifications',
+      name: 'certifications',
+      component: Certifications,
     },
   ],
 });

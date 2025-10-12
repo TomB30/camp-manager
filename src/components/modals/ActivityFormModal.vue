@@ -87,30 +87,19 @@
 
         <div class="form-group">
           <label class="form-label">Required Certifications (Optional)</label>
-          <div class="certifications-input">
-            <div v-for="(_cert, index) in localFormData.requiredCertifications" :key="index" class="cert-item">
-              <input 
-                v-model="localFormData.requiredCertifications[index]" 
-                type="text" 
-                class="form-input"
-                placeholder="e.g., Lifeguard, Boat Driver"
-              />
-              <button 
-                type="button"
-                class="btn btn-sm btn-danger-outline"
-                @click="removeCertification(index)"
-              >
-                Remove
-              </button>
-            </div>
-            <button 
-              type="button"
-              class="btn btn-sm btn-secondary"
-              @click="addCertification"
-            >
-              + Add Certification
-            </button>
-          </div>
+          <SelectionList
+            v-model="selectedCertificationIds"
+            :items="store.certifications"
+            item-type="certification"
+            placeholder="Select a certification..."
+            empty-text="No certifications required"
+            add-button-text="Add"
+            mode="multiple"
+            :get-label-fn="(cert) => cert.name"
+            :get-initials-fn="(cert) => cert.name.substring(0, 2).toUpperCase()"
+            :get-options-fn="(cert) => ({ label: cert.name, value: cert.id })"
+          />
+          <p class="form-help-text">Staff assigned to events using this activity will need these certifications</p>
         </div>
 
         <div class="form-group">
@@ -135,6 +124,7 @@ import { useCampStore } from '@/stores/campStore';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
+import SelectionList from '@/components/SelectionList.vue';
 import type { Activity } from '@/types/api';
 
 interface ActivityFormData {
@@ -155,6 +145,7 @@ export default defineComponent({
     BaseModal,
     Autocomplete,
     ColorPicker,
+    SelectionList,
   },
   props: {
     show: {
@@ -188,6 +179,7 @@ export default defineComponent({
         defaultCapacity: 0,
         color: '#6366F1',
       } as ActivityFormData,
+      selectedCertificationIds: [] as string[],
     };
   },
   computed: {
@@ -225,6 +217,10 @@ export default defineComponent({
           defaultCapacity: this.activity.defaultCapacity || 0,
           color: this.activity.color || '#6366F1',
         };
+        // Convert certification names to IDs for the SelectionList
+        this.selectedCertificationIds = this.getCertificationIdsFromNames(
+          this.activity.requiredCertifications || []
+        );
       } else {
         this.localFormData = {
           name: '',
@@ -237,13 +233,24 @@ export default defineComponent({
           defaultCapacity: 0,
           color: '#6366F1',
         };
+        this.selectedCertificationIds = [];
       }
     },
-    addCertification() {
-      this.localFormData.requiredCertifications.push('');
+    getCertificationIdsFromNames(names: string[]): string[] {
+      return names
+        .map(name => {
+          const cert = this.store.certifications.find(c => c.name === name);
+          return cert ? cert.id : '';
+        })
+        .filter(id => id !== '');
     },
-    removeCertification(index: number) {
-      this.localFormData.requiredCertifications.splice(index, 1);
+    getCertificationNamesFromIds(ids: string[]): string[] {
+      return ids
+        .map(id => {
+          const cert = this.store.getCertificationById(id);
+          return cert ? cert.name : '';
+        })
+        .filter(name => name !== '');
     },
     handleSave() {
       // Determine programIds for the activity
@@ -265,9 +272,8 @@ export default defineComponent({
 
       const now = new Date().toISOString();
       
-      // Filter out empty certifications
-      const certifications = this.localFormData.requiredCertifications
-        .filter(cert => cert.trim() !== '');
+      // Convert selected certification IDs to names
+      const certifications = this.getCertificationNamesFromIds(this.selectedCertificationIds);
       
       const activityData: Activity = {
         id: this.activity?.id || crypto.randomUUID(),
@@ -292,21 +298,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Only custom styles for this component */
-.certifications-input {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.cert-item {
-  display: flex;
-  gap: 0.5rem;
-  align-items: start;
-}
-
-.cert-item .form-input {
-  flex: 1;
+.form-help-text {
+  margin-top: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
 }
 </style>
 

@@ -1,0 +1,103 @@
+<template>
+  <BaseModal
+    :show="show"
+    :title="certification?.name || ''"
+    @close="$emit('close')"
+  >
+    <template #body>
+      <div v-if="certification">
+        <div v-if="certification.description" class="detail-section">
+          <div class="detail-label">Description</div>
+          <div>{{ certification.description }}</div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-label">Type</div>
+          <div>
+            <span class="badge badge-sm" :class="certification.expirationRequired ? 'badge-warning' : 'badge-success'">
+              {{ certification.expirationRequired ? 'Time-limited' : 'Permanent' }}
+            </span>
+          </div>
+        </div>
+
+        <div v-if="certification.expirationRequired" class="detail-section">
+          <div class="detail-label">Expiration Tracking</div>
+          <div>
+            <span v-if="certification.validityPeriodMonths">
+              Valid for <strong>{{ certification.validityPeriodMonths }} months</strong> from issue date
+            </span>
+            <span v-else>
+              Requires expiration tracking (no specific validity period set)
+            </span>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-label">Created</div>
+          <div>{{ formatDate(certification.createdAt) }}</div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-label">Last Updated</div>
+          <div>{{ formatDate(certification.updatedAt) }}</div>
+        </div>
+      </div>
+    </template>
+
+    <template #footer>
+      <button class="btn btn-error" @click="$emit('delete', certification?.id)">Delete Certification</button>
+      <button class="btn btn-secondary" @click="$emit('edit', certification)">Edit</button>
+      <button class="btn btn-secondary" @click="$emit('close')">Close</button>
+    </template>
+  </BaseModal>
+</template>
+
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import BaseModal from '@/components/BaseModal.vue';
+import type { Certification } from '@/types/api';
+
+export default defineComponent({
+  name: 'CertificationDetailModal',
+  components: {
+    BaseModal
+  },
+  props: {
+    show: {
+      type: Boolean,
+      required: true
+    },
+    certification: {
+      type: Object as PropType<Certification | null>,
+      default: null
+    }
+  },
+  emits: ['close', 'edit', 'delete'],
+  methods: {
+    formatDate(dateString: string): string {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+  }
+});
+</script>
+
+<style scoped>
+.detail-section {
+  margin-bottom: 1.5rem;
+}
+
+.detail-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+</style>
+

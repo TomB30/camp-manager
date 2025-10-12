@@ -60,7 +60,10 @@
         </template>
         
         <template #cell-certifications="{ item }">
-          <span v-if="item.certifications && item.certifications.length > 0" class="badge badge-success badge-sm">
+          <span v-if="item.certificationIds && item.certificationIds.length > 0" class="badge badge-success badge-sm">
+            {{ item.certificationIds.length }} cert(s)
+          </span>
+          <span v-else-if="item.certifications && item.certifications.length > 0" class="badge badge-success badge-sm">
             {{ item.certifications.length }} cert(s)
           </span>
           <span v-else class="text-secondary">None</span>
@@ -170,7 +173,6 @@ export default defineComponent({
       selectedMemberId: null as string | null,
       showModal: false,
       editingMemberId: null as string | null,
-      certificationsInput: '',
       viewMode: 'grid' as 'grid' | 'table',
       expandedMembers: new Set<string>(),
       currentPage: 1,
@@ -183,7 +185,7 @@ export default defineComponent({
         role: 'counselor' as StaffMember['role'],
         email: '',
         phone: '',
-        certifications: [] as string[],
+        certificationIds: [] as string[],
         managerId: '',
       },
       searchQuery: '',
@@ -242,13 +244,10 @@ export default defineComponent({
           model: 'filterCertification',
           value: this.filterCertification,
           placeholder: 'All Certifications',
-          options: [
-            { label: 'First Aid', value: 'First Aid' },
-            { label: 'CPR', value: 'CPR' },
-            { label: 'Lifeguard', value: 'Lifeguard' },
-            { label: 'Swimming Instructor', value: 'Swimming Instructor' },
-            { label: 'Wilderness First Aid', value: 'Wilderness First Aid' },
-          ],
+          options: this.store.certifications.map(cert => ({
+            label: cert.name,
+            value: cert.name
+          })),
         },
       ];
     },
@@ -277,9 +276,15 @@ export default defineComponent({
 
       // Certification filter
       if (this.filterCertification) {
-        members = members.filter((member: StaffMember) =>
-          member.certifications && member.certifications.includes(this.filterCertification)
-        );
+        members = members.filter((member: StaffMember) => {
+          if (member.certificationIds) {
+            return member.certificationIds.some(id => {
+              const cert = this.store.getCertificationById(id);
+              return cert && cert.name === this.filterCertification;
+            });
+          }
+          return member.certifications && member.certifications.includes(this.filterCertification);
+        });
       }
 
       return members;
@@ -351,15 +356,20 @@ export default defineComponent({
         role: this.selectedMember.role,
         email: this.selectedMember.email || '',
         phone: this.selectedMember.phone || '',
-        certifications: this.selectedMember.certifications || [],
+        certificationIds: this.selectedMember.certificationIds || [],
         managerId: this.selectedMember.managerId || '',
       };
-      this.certificationsInput = (this.selectedMember.certifications || []).join(', ');
       
       this.selectedMemberId = null;
       this.showModal = true;
     },
-    async saveMember(formData: typeof this.formData & { certifications: string[] }): Promise<void> {
+    async saveMember(formData: typeof this.formData): Promise<void> {
+      // Get certification names for backward compatibility
+      const certifications = formData.certificationIds.map(id => {
+        const cert = this.store.getCertificationById(id);
+        return cert ? cert.name : '';
+      }).filter(name => name.length > 0);
+
       const memberData: StaffMember = {
         id: this.editingMemberId || `staff-${Date.now()}`,
         firstName: formData.firstName,
@@ -367,7 +377,8 @@ export default defineComponent({
         role: formData.role,
         email: formData.email,
         phone: formData.phone,
-        certifications: formData.certifications,
+        certifications: certifications,
+        certificationIds: formData.certificationIds,
         managerId: formData.managerId || undefined,
       };
 
@@ -409,10 +420,9 @@ export default defineComponent({
         role: 'counselor',
         email: '',
         phone: '',
-        certifications: [],
+        certificationIds: [],
         managerId: '',
       };
-      this.certificationsInput = '';
     }
   }
 });

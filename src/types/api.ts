@@ -540,6 +540,7 @@ export interface components {
       email?: string;
       phone?: string;
       certifications?: string[];
+      certificationIds?: string[];
       photoUrl?: string;
       /**
        * Format: uuid
@@ -555,6 +556,8 @@ export interface components {
       /** @enum {string} */
       type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
       location?: string;
+      /** Format: uuid */
+      locationId?: string;
       equipment?: string[];
       notes?: string;
     };
@@ -564,6 +567,8 @@ export interface components {
       name: string;
       beds: number;
       location?: string;
+      /** Format: uuid */
+      locationId?: string;
     };
     Event: {
       /** Format: uuid */
@@ -677,6 +682,30 @@ export interface Program {
   activityIds: string[]; // Activities belonging to this program
   staffMemberIds: string[]; // Staff members associated with this program
   roomIds: string[]; // Locations associated with this program
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Location - physical locations within the camp
+export interface Location {
+  id: string;
+  name: string;
+  description?: string;
+  type: 'indoor' | 'outdoor' | 'facility' | 'field' | 'water' | 'other';
+  capacity?: number;
+  equipment?: string[];
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Certification - staff certifications/qualifications
+export interface Certification {
+  id: string;
+  name: string;
+  description?: string;
+  expirationRequired: boolean; // Whether this certification expires
+  validityPeriodMonths?: number; // How long the certification is valid for
   createdAt: string;
   updatedAt: string;
 }
