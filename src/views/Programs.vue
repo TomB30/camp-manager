@@ -756,7 +756,7 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .view-title {
@@ -766,8 +766,6 @@ export default defineComponent({
 }
 
 .view-header h2 {
-  font-size: 1.875rem;
-  font-weight: 700;
   color: var(--text-primary);
   margin: 0;
 }

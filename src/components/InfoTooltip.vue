@@ -7,7 +7,7 @@
       @blur="hideTooltip"
       :aria-label="'Information'"
     >
-      <HelpCircle :size="18" />
+      <HelpCircle :size="20" />
     </button>
     <div v-if="isVisible" class="tooltip-content">
       <slot></slot>
@@ -58,7 +58,7 @@ export default defineComponent({
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  border-radius: var(--radius);
+  border-radius: 50%;
   transition: all 0.15s ease;
   vertical-align: middle;
 }
