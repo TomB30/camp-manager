@@ -1,17 +1,16 @@
 <template>
   <div class="container">
     <div class="programs-view">
-      <!-- Breadcrumb Navigation -->
-      <nav class="breadcrumbs">
+      <!-- Breadcrumb Navigation (only show when inside a program) -->
+      <nav v-if="selectedProgramId" class="breadcrumbs">
         <button 
           class="breadcrumb-item"
-          :class="{ active: !selectedProgramId }"
           @click="selectedProgramId = null"
         >
           Programs
         </button>
-        <span v-if="selectedProgramId" class="breadcrumb-separator">/</span>
-        <span v-if="selectedProgramId" class="breadcrumb-item active">
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-item active">
           {{ selectedProgram?.name }}
         </span>
       </nav>
