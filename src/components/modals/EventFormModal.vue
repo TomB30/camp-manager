@@ -247,7 +247,8 @@ export default defineComponent({
       }
       
       // Set program and activity IDs for reference
-      this.localFormData.programId = activity.programId;
+      // Use the first program if activity belongs to multiple programs
+      this.localFormData.programId = activity.programIds[0];
       this.localFormData.activityId = activity.id;
     },
     getGroupCamperCount(groupId: string): number {

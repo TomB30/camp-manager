@@ -688,7 +688,7 @@ export const mockActivities: Activity[] = [
     id: generateId('activity', 1),
     name: 'Wakeboarding',
     description: 'Learn wakeboarding basics or improve your skills on the lake',
-    programId: generateId('program', 1),
+    programIds: [generateId('program', 1)],
     durationMinutes: 120,
     defaultRoomId: 'room-005', // Lake
     requiredCertifications: ['Lifeguard', 'Boat Driver'],
@@ -703,7 +703,7 @@ export const mockActivities: Activity[] = [
     id: generateId('activity', 2),
     name: 'Swimming Lessons',
     description: 'Structured swimming instruction for all skill levels',
-    programId: generateId('program', 1),
+    programIds: [generateId('program', 1)],
     durationMinutes: 60,
     defaultRoomId: 'room-010', // Pool
     requiredCertifications: ['Lifeguard', 'Swimming Instructor'],
@@ -718,7 +718,7 @@ export const mockActivities: Activity[] = [
     id: generateId('activity', 3),
     name: 'Kayaking',
     description: 'Explore the lake in kayaks with guided instruction',
-    programId: generateId('program', 1),
+    programIds: [generateId('program', 1)],
     durationMinutes: 90,
     defaultRoomId: 'room-005', // Lake
     requiredCertifications: ['Lifeguard'],
@@ -734,7 +734,7 @@ export const mockActivities: Activity[] = [
     id: generateId('activity', 4),
     name: 'Pottery',
     description: 'Create your own pottery pieces on the wheel',
-    programId: generateId('program', 2),
+    programIds: [generateId('program', 2)],
     durationMinutes: 90,
     defaultRoomId: 'room-006', // Art Studio 1
     minStaff: 1,
@@ -748,7 +748,7 @@ export const mockActivities: Activity[] = [
     id: generateId('activity', 5),
     name: 'Painting Workshop',
     description: 'Express yourself through various painting techniques',
-    programId: generateId('program', 2),
+    programIds: [generateId('program', 2)],
     durationMinutes: 75,
     defaultRoomId: 'room-009', // Art Studio 2
     minStaff: 1,
@@ -762,7 +762,7 @@ export const mockActivities: Activity[] = [
     id: generateId('activity', 6),
     name: 'Jewelry Making',
     description: 'Design and create your own jewelry pieces',
-    programId: generateId('program', 2),
+    programIds: [generateId('program', 2)],
     durationMinutes: 60,
     defaultRoomId: 'room-009', // Art Studio 2
     minStaff: 1,
@@ -777,7 +777,7 @@ export const mockActivities: Activity[] = [
     id: generateId('activity', 7),
     name: 'Rock Climbing',
     description: 'Indoor rock climbing with safety instruction',
-    programId: generateId('program', 3),
+    programIds: [generateId('program', 3)],
     durationMinutes: 90,
     defaultRoomId: 'room-003', // Gym
     requiredCertifications: ['Climbing Instructor', 'First Aid'],
@@ -792,7 +792,7 @@ export const mockActivities: Activity[] = [
     id: generateId('activity', 8),
     name: 'Archery',
     description: 'Learn archery basics and target practice',
-    programId: generateId('program', 3),
+    programIds: [generateId('program', 3)],
     durationMinutes: 60,
     defaultRoomId: 'room-007', // Outdoor Field
     requiredCertifications: ['Archery Instructor'],
@@ -807,7 +807,7 @@ export const mockActivities: Activity[] = [
     id: generateId('activity', 9),
     name: 'Ropes Course',
     description: 'Challenge yourself on our high ropes course',
-    programId: generateId('program', 3),
+    programIds: [generateId('program', 3)],
     durationMinutes: 120,
     defaultRoomId: 'room-007', // Outdoor Field
     requiredCertifications: ['Ropes Course Instructor', 'First Aid'],

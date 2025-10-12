@@ -169,7 +169,7 @@
             </h3>
             <button
               class="btn btn-sm btn-secondary"
-              @click="showActivityModal = true"
+              @click="showActivitySelector = true"
             >
               + Add Activity
             </button>
@@ -312,6 +312,14 @@
       @save="saveProgram"
     />
 
+    <ActivitySelectorModal
+      :show="showActivitySelector"
+      :program-id="selectedProgramId || ''"
+      @close="showActivitySelector = false"
+      @create-new="handleCreateNewActivity"
+      @add-existing="handleAddExistingActivity"
+    />
+
     <ActivityFormModal
       :show="showActivityModal"
       :activity="editingActivity"
@@ -422,6 +430,7 @@ import InfoTooltip from "@/components/InfoTooltip.vue";
 import ProgramFormModal from "@/components/modals/ProgramFormModal.vue";
 import ActivityFormModal from "@/components/modals/ActivityFormModal.vue";
 import ActivityDetailModal from "@/components/modals/ActivityDetailModal.vue";
+import ActivitySelectorModal from "@/components/modals/ActivitySelectorModal.vue";
 import SelectionList from "@/components/SelectionList.vue";
 import type { AutocompleteOption } from "@/components/Autocomplete.vue";
 
@@ -448,6 +457,7 @@ export default defineComponent({
     ProgramFormModal,
     ActivityFormModal,
     ActivityDetailModal,
+    ActivitySelectorModal,
     SelectionList,
   },
   data() {
@@ -460,6 +470,7 @@ export default defineComponent({
       selectedActivityId: null as string | null,
       showProgramModal: false,
       showActivityModal: false,
+      showActivitySelector: false,
       showStaffSelector: false,
       showLocationSelector: false,
       showDeleteConfirm: false,
@@ -657,6 +668,20 @@ export default defineComponent({
       this.editingActivity = activity;
       this.showActivityModal = true;
       this.selectedActivityId = null;
+    },
+    handleCreateNewActivity() {
+      this.editingActivity = null;
+      this.showActivityModal = true;
+    },
+    async handleAddExistingActivity(activityId: string) {
+      if (!this.selectedProgramId) return;
+
+      try {
+        await this.store.addActivityToProgram(activityId, this.selectedProgramId);
+        this.toast.success("Activity added to program successfully");
+      } catch (error: any) {
+        this.toast.error(error.message || "Failed to add activity to program");
+      }
     },
     async saveActivity(activity: Activity) {
       try {

@@ -346,10 +346,20 @@ class StorageService {
     const filtered = programs.filter(p => p.id !== id);
     localStorage.setItem(STORAGE_KEYS.PROGRAMS, JSON.stringify(filtered));
     
-    // Also delete all activities belonging to this program
+    // Remove program ID from all activities' programIds arrays
+    // The store handles deleting activities that have no remaining programs
     const activities = await this.getActivities();
-    const filteredActivities = activities.filter(a => a.programId !== id);
-    localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(filteredActivities));
+    const updatedActivities = activities.map(activity => {
+      if (activity.programIds.includes(id)) {
+        return {
+          ...activity,
+          programIds: activity.programIds.filter(pid => pid !== id)
+        };
+      }
+      return activity;
+    }).filter(activity => activity.programIds.length > 0); // Remove activities with no programs
+    
+    localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(updatedActivities));
   }
 
   // Activities operations

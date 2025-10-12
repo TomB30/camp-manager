@@ -155,7 +155,7 @@ export const useCampStore = defineStore('camp', {
 
     getActivitiesInProgram(state): (programId: string) => Activity[] {
       return (programId: string): Activity[] => {
-        return state.activities.filter(a => a.programId === programId);
+        return state.activities.filter(a => a.programIds.includes(programId));
       };
     },
 
@@ -510,10 +510,21 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteProgram(id: string): Promise<void> {
+      // Remove program ID from all activities
+      const activitiesInProgram = this.activities.filter(a => a.programIds.includes(id));
+      for (const activity of activitiesInProgram) {
+        activity.programIds = activity.programIds.filter(pid => pid !== id);
+        // If activity is no longer in any program, delete it
+        if (activity.programIds.length === 0) {
+          await storageService.deleteActivity(activity.id);
+          this.activities = this.activities.filter(a => a.id !== activity.id);
+        } else {
+          await storageService.saveActivity(activity);
+        }
+      }
+
       await storageService.deleteProgram(id);
       this.programs = this.programs.filter(p => p.id !== id);
-      // Activities will be deleted by storage service
-      this.activities = this.activities.filter(a => a.programId !== id);
     },
 
     // Activity actions
@@ -521,35 +532,110 @@ export const useCampStore = defineStore('camp', {
       await storageService.saveActivity(activity);
       this.activities.push(activity);
       
-      // Add activity ID to parent program
-      const program = this.programs.find(p => p.id === activity.programId);
-      if (program && !program.activityIds.includes(activity.id)) {
-        program.activityIds.push(activity.id);
-        await this.updateProgram(program);
+      // Add activity ID to all parent programs
+      for (const programId of activity.programIds) {
+        const program = this.programs.find(p => p.id === programId);
+        if (program && !program.activityIds.includes(activity.id)) {
+          program.activityIds.push(activity.id);
+          await this.updateProgram(program);
+        }
       }
     },
 
     async updateActivity(activity: Activity): Promise<void> {
+      const oldActivity = this.activities.find(a => a.id === activity.id);
+      
       await storageService.saveActivity(activity);
       const index = this.activities.findIndex(a => a.id === activity.id);
       if (index >= 0) {
         this.activities[index] = activity;
+      }
+
+      // Update program associations if they changed
+      if (oldActivity) {
+        const oldProgramIds = new Set(oldActivity.programIds);
+        const newProgramIds = new Set(activity.programIds);
+
+        // Remove from programs that are no longer associated
+        for (const programId of oldProgramIds) {
+          if (!newProgramIds.has(programId)) {
+            const program = this.programs.find(p => p.id === programId);
+            if (program) {
+              program.activityIds = program.activityIds.filter(aid => aid !== activity.id);
+              await this.updateProgram(program);
+            }
+          }
+        }
+
+        // Add to new programs
+        for (const programId of newProgramIds) {
+          if (!oldProgramIds.has(programId)) {
+            const program = this.programs.find(p => p.id === programId);
+            if (program && !program.activityIds.includes(activity.id)) {
+              program.activityIds.push(activity.id);
+              await this.updateProgram(program);
+            }
+          }
+        }
       }
     },
 
     async deleteActivity(id: string): Promise<void> {
       const activity = this.activities.find(a => a.id === id);
       if (activity) {
-        // Remove from program's activityIds
-        const program = this.programs.find(p => p.id === activity.programId);
-        if (program) {
-          program.activityIds = program.activityIds.filter(aid => aid !== id);
-          await this.updateProgram(program);
+        // Remove from all programs' activityIds
+        for (const programId of activity.programIds) {
+          const program = this.programs.find(p => p.id === programId);
+          if (program) {
+            program.activityIds = program.activityIds.filter(aid => aid !== id);
+            await this.updateProgram(program);
+          }
         }
       }
       
       await storageService.deleteActivity(id);
       this.activities = this.activities.filter(a => a.id !== id);
+    },
+
+    // Add/remove activity from a specific program
+    async addActivityToProgram(activityId: string, programId: string): Promise<void> {
+      const activity = this.activities.find(a => a.id === activityId);
+      const program = this.programs.find(p => p.id === programId);
+      
+      if (!activity || !program) {
+        throw new Error('Activity or Program not found');
+      }
+
+      if (activity.programIds.includes(programId)) {
+        throw new Error('Activity is already in this program');
+      }
+
+      // Update activity
+      activity.programIds.push(programId);
+      await storageService.saveActivity(activity);
+
+      // Update program
+      if (!program.activityIds.includes(activityId)) {
+        program.activityIds.push(activityId);
+        await this.updateProgram(program);
+      }
+    },
+
+    async removeActivityFromProgram(activityId: string, programId: string): Promise<void> {
+      const activity = this.activities.find(a => a.id === activityId);
+      const program = this.programs.find(p => p.id === programId);
+      
+      if (!activity || !program) {
+        throw new Error('Activity or Program not found');
+      }
+
+      // Update activity
+      activity.programIds = activity.programIds.filter(id => id !== programId);
+      await storageService.saveActivity(activity);
+
+      // Update program
+      program.activityIds = program.activityIds.filter(id => id !== activityId);
+      await this.updateProgram(program);
     },
   }
 });

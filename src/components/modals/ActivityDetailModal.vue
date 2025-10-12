@@ -69,8 +69,16 @@
         </div>
 
         <div class="detail-section">
-          <h4>Program</h4>
-          <p>{{ getProgramName(activity.programId) }}</p>
+          <h4>Programs</h4>
+          <div class="programs-list">
+            <span 
+              v-for="programId in activity.programIds" 
+              :key="programId"
+              class="program-badge"
+            >
+              {{ getProgramName(programId) }}
+            </span>
+          </div>
         </div>
       </div>
     </template>
@@ -216,6 +224,23 @@ export default defineComponent({
   font-family: 'Monaco', 'Courier New', monospace;
   font-size: 0.875rem;
   color: var(--text-secondary);
+}
+
+.programs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.program-badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 </style>
 

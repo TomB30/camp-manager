@@ -169,6 +169,10 @@ export default defineComponent({
       type: String,
       default: null,
     },
+    programIds: {
+      type: Array as PropType<string[]>,
+      default: null,
+    },
   },
   emits: ['close', 'save'],
   data() {
@@ -242,8 +246,20 @@ export default defineComponent({
       this.localFormData.requiredCertifications.splice(index, 1);
     },
     handleSave() {
-      if (!this.programId && !this.activity) {
-        console.error('programId is required for new activities');
+      // Determine programIds for the activity
+      let activityProgramIds: string[];
+      
+      if (this.activity) {
+        // Editing existing activity - keep its current programIds
+        activityProgramIds = this.activity.programIds;
+      } else if (this.programIds && this.programIds.length > 0) {
+        // Creating new activity with specified programIds
+        activityProgramIds = this.programIds;
+      } else if (this.programId) {
+        // Creating new activity with single programId
+        activityProgramIds = [this.programId];
+      } else {
+        console.error('programId or programIds is required for new activities');
         return;
       }
 
@@ -257,7 +273,7 @@ export default defineComponent({
         id: this.activity?.id || crypto.randomUUID(),
         name: this.localFormData.name,
         description: this.localFormData.description || undefined,
-        programId: this.activity?.programId || this.programId!,
+        programIds: activityProgramIds,
         durationMinutes: this.localFormData.durationMinutes,
         defaultRoomId: this.localFormData.defaultRoomId || undefined,
         requiredCertifications: certifications.length > 0 ? certifications : undefined,

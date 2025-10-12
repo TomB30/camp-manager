@@ -656,7 +656,7 @@ export interface Activity {
   id: string;
   name: string;
   description?: string;
-  programId: string; // Reference to parent program
+  programIds: string[]; // References to programs this activity belongs to
   durationMinutes: number; // Default duration
   defaultRoomId?: string; // Default location
   requiredCertifications?: string[]; // Required staff certifications
