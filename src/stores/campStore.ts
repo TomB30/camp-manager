@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { Camper, StaffMember, Room, SleepingRoom, Event, Conflict, CamperGroup, FamilyGroup } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, Conflict, CamperGroup, FamilyGroup, Program, Activity } from '@/types/api';
 import { storageService } from '@/services/storage';
 import { conflictDetector } from '@/services/conflicts';
 import { filterEventsByDate } from '@/utils/dateUtils';
@@ -14,6 +14,8 @@ export const useCampStore = defineStore('camp', {
     conflicts: [] as Conflict[],
     camperGroups: [] as CamperGroup[],
     familyGroups: [] as FamilyGroup[],
+    programs: [] as Program[],
+    activities: [] as Activity[],
     loading: false,
     selectedDate: new Date(),
   }),
@@ -138,13 +140,37 @@ export const useCampStore = defineStore('camp', {
         });
       };
     },
+
+    getProgramById(state): (id: string) => Program | undefined {
+      return (id: string): Program | undefined => {
+        return state.programs.find(p => p.id === id);
+      };
+    },
+
+    getActivityById(state): (id: string) => Activity | undefined {
+      return (id: string): Activity | undefined => {
+        return state.activities.find(a => a.id === id);
+      };
+    },
+
+    getActivitiesInProgram(state): (programId: string) => Activity[] {
+      return (programId: string): Activity[] => {
+        return state.activities.filter(a => a.programId === programId);
+      };
+    },
+
+    getEventsForProgram(state): (programId: string) => Event[] {
+      return (programId: string): Event[] => {
+        return state.events.filter(e => e.programId === programId);
+      };
+    },
   },
 
   actions: {
     async loadAll(): Promise<void> {
       this.loading = true;
       try {
-        const [campersData, membersData, roomsData, sleepingRoomsData, eventsData, groupsData, familyGroupsData] = await Promise.all([
+        const [campersData, membersData, roomsData, sleepingRoomsData, eventsData, groupsData, familyGroupsData, programsData, activitiesData] = await Promise.all([
           storageService.getCampers(),
           storageService.getStaffMembers(),
           storageService.getRooms(),
@@ -152,6 +178,8 @@ export const useCampStore = defineStore('camp', {
           storageService.getEvents(),
           storageService.getCamperGroups(),
           storageService.getFamilyGroups(),
+          storageService.getPrograms(),
+          storageService.getActivities(),
         ]);
 
         this.campers = campersData;
@@ -161,6 +189,8 @@ export const useCampStore = defineStore('camp', {
         this.events = eventsData;
         this.camperGroups = groupsData;
         this.familyGroups = familyGroupsData;
+        this.programs = programsData;
+        this.activities = activitiesData;
 
         this.updateConflicts();
       } finally {
@@ -463,6 +493,63 @@ export const useCampStore = defineStore('camp', {
           ? `Enrolled ${enrolled.length} of ${groupCampers.length} campers. ${errors.length} conflicts occurred.`
           : `Successfully enrolled all ${enrolled.length} campers from group "${group.name}".`
       };
+    },
+
+    // Program actions
+    async addProgram(program: Program): Promise<void> {
+      await storageService.saveProgram(program);
+      this.programs.push(program);
+    },
+
+    async updateProgram(program: Program): Promise<void> {
+      await storageService.saveProgram(program);
+      const index = this.programs.findIndex(p => p.id === program.id);
+      if (index >= 0) {
+        this.programs[index] = program;
+      }
+    },
+
+    async deleteProgram(id: string): Promise<void> {
+      await storageService.deleteProgram(id);
+      this.programs = this.programs.filter(p => p.id !== id);
+      // Activities will be deleted by storage service
+      this.activities = this.activities.filter(a => a.programId !== id);
+    },
+
+    // Activity actions
+    async addActivity(activity: Activity): Promise<void> {
+      await storageService.saveActivity(activity);
+      this.activities.push(activity);
+      
+      // Add activity ID to parent program
+      const program = this.programs.find(p => p.id === activity.programId);
+      if (program && !program.activityIds.includes(activity.id)) {
+        program.activityIds.push(activity.id);
+        await this.updateProgram(program);
+      }
+    },
+
+    async updateActivity(activity: Activity): Promise<void> {
+      await storageService.saveActivity(activity);
+      const index = this.activities.findIndex(a => a.id === activity.id);
+      if (index >= 0) {
+        this.activities[index] = activity;
+      }
+    },
+
+    async deleteActivity(id: string): Promise<void> {
+      const activity = this.activities.find(a => a.id === id);
+      if (activity) {
+        // Remove from program's activityIds
+        const program = this.programs.find(p => p.id === activity.programId);
+        if (program) {
+          program.activityIds = program.activityIds.filter(aid => aid !== id);
+          await this.updateProgram(program);
+        }
+      }
+      
+      await storageService.deleteActivity(id);
+      this.activities = this.activities.filter(a => a.id !== id);
     },
   }
 });

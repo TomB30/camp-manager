@@ -1,4 +1,4 @@
-import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup, Program, Activity } from '@/types/api';
 
 const STORAGE_KEYS = {
   CAMPERS: 'camp_campers',
@@ -8,6 +8,8 @@ const STORAGE_KEYS = {
   EVENTS: 'camp_events',
   CAMPER_GROUPS: 'camp_camper_groups',
   FAMILY_GROUPS: 'camp_family_groups',
+  PROGRAMS: 'camp_programs',
+  ACTIVITIES: 'camp_activities',
 } as const;
 
 // Simulate async operations to match future API
@@ -310,6 +312,81 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.FAMILY_GROUPS, JSON.stringify(filtered));
   }
 
+  // Programs operations
+  async getPrograms(): Promise<Program[]> {
+    await delay();
+    const data = localStorage.getItem(STORAGE_KEYS.PROGRAMS);
+    return data ? JSON.parse(data) : [];
+  }
+
+  async getProgram(id: string): Promise<Program | null> {
+    await delay();
+    const programs = await this.getPrograms();
+    return programs.find(p => p.id === id) || null;
+  }
+
+  async saveProgram(program: Program): Promise<Program> {
+    await delay();
+    const programs = await this.getPrograms();
+    const index = programs.findIndex(p => p.id === program.id);
+    
+    if (index >= 0) {
+      programs[index] = { ...program, updatedAt: new Date().toISOString() };
+    } else {
+      programs.push(program);
+    }
+    
+    localStorage.setItem(STORAGE_KEYS.PROGRAMS, JSON.stringify(programs));
+    return programs[index >= 0 ? index : programs.length - 1];
+  }
+
+  async deleteProgram(id: string): Promise<void> {
+    await delay();
+    const programs = await this.getPrograms();
+    const filtered = programs.filter(p => p.id !== id);
+    localStorage.setItem(STORAGE_KEYS.PROGRAMS, JSON.stringify(filtered));
+    
+    // Also delete all activities belonging to this program
+    const activities = await this.getActivities();
+    const filteredActivities = activities.filter(a => a.programId !== id);
+    localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(filteredActivities));
+  }
+
+  // Activities operations
+  async getActivities(): Promise<Activity[]> {
+    await delay();
+    const data = localStorage.getItem(STORAGE_KEYS.ACTIVITIES);
+    return data ? JSON.parse(data) : [];
+  }
+
+  async getActivity(id: string): Promise<Activity | null> {
+    await delay();
+    const activities = await this.getActivities();
+    return activities.find(a => a.id === id) || null;
+  }
+
+  async saveActivity(activity: Activity): Promise<Activity> {
+    await delay();
+    const activities = await this.getActivities();
+    const index = activities.findIndex(a => a.id === activity.id);
+    
+    if (index >= 0) {
+      activities[index] = { ...activity, updatedAt: new Date().toISOString() };
+    } else {
+      activities.push(activity);
+    }
+    
+    localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(activities));
+    return activities[index >= 0 ? index : activities.length - 1];
+  }
+
+  async deleteActivity(id: string): Promise<void> {
+    await delay();
+    const activities = await this.getActivities();
+    const filtered = activities.filter(a => a.id !== id);
+    localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(filtered));
+  }
+
   // Utility methods
   async clearAll(): Promise<void> {
     await delay();
@@ -326,6 +403,8 @@ class StorageService {
     events?: Event[];
     camperGroups?: CamperGroup[];
     familyGroups?: FamilyGroup[];
+    programs?: Program[];
+    activities?: Activity[];
   }): Promise<void> {
     await delay();
     if (data.campers) {
@@ -348,6 +427,12 @@ class StorageService {
     }
     if (data.familyGroups) {
       localStorage.setItem(STORAGE_KEYS.FAMILY_GROUPS, JSON.stringify(data.familyGroups));
+    }
+    if (data.programs) {
+      localStorage.setItem(STORAGE_KEYS.PROGRAMS, JSON.stringify(data.programs));
+    }
+    if (data.activities) {
+      localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(data.activities));
     }
   }
 }

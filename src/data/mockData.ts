@@ -1,4 +1,4 @@
-import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup, Program, Activity } from '@/types/api';
 
 // Generate consistent IDs
 const generateId = (prefix: string, index: number) => `${prefix}-${String(index).padStart(3, '0')}`;
@@ -644,6 +644,199 @@ export const mockCamperGroups: CamperGroup[] = [
   },
 ];
 
+// Programs
+export const mockPrograms: Program[] = [
+  {
+    id: generateId('program', 1),
+    name: 'Watersports',
+    description: 'Water-based activities including wakeboarding, jet skiing, and swimming',
+    color: '#3B82F6',
+    activityIds: [], // Will be populated by activities
+    staffMemberIds: ['staff-005', 'staff-006'], // Staff with relevant certifications
+    roomIds: ['room-005', 'room-010'], // Lake and Pool
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('program', 2),
+    name: 'Arts & Crafts',
+    description: 'Creative activities including pottery, painting, and jewelry making',
+    color: '#EC4899',
+    activityIds: [],
+    staffMemberIds: ['staff-002', 'staff-008'],
+    roomIds: ['room-006', 'room-009'], // Art Studios
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('program', 3),
+    name: 'Adventure Sports',
+    description: 'High-energy outdoor activities including rock climbing, archery, and ropes course',
+    color: '#10B981',
+    activityIds: [],
+    staffMemberIds: ['staff-001', 'staff-003'],
+    roomIds: ['room-003', 'room-007'], // Gym and Outdoor Field
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+];
+
+// Activities
+export const mockActivities: Activity[] = [
+  // Watersports Activities
+  {
+    id: generateId('activity', 1),
+    name: 'Wakeboarding',
+    description: 'Learn wakeboarding basics or improve your skills on the lake',
+    programId: generateId('program', 1),
+    durationMinutes: 120,
+    defaultRoomId: 'room-005', // Lake
+    requiredCertifications: ['Lifeguard', 'Boat Driver'],
+    minStaff: 2,
+    maxStaff: 3,
+    defaultCapacity: 8,
+    color: '#3B82F6',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 2),
+    name: 'Swimming Lessons',
+    description: 'Structured swimming instruction for all skill levels',
+    programId: generateId('program', 1),
+    durationMinutes: 60,
+    defaultRoomId: 'room-010', // Pool
+    requiredCertifications: ['Lifeguard', 'Swimming Instructor'],
+    minStaff: 2,
+    maxStaff: 2,
+    defaultCapacity: 12,
+    color: '#60A5FA',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 3),
+    name: 'Kayaking',
+    description: 'Explore the lake in kayaks with guided instruction',
+    programId: generateId('program', 1),
+    durationMinutes: 90,
+    defaultRoomId: 'room-005', // Lake
+    requiredCertifications: ['Lifeguard'],
+    minStaff: 2,
+    maxStaff: 3,
+    defaultCapacity: 10,
+    color: '#2563EB',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Arts & Crafts Activities
+  {
+    id: generateId('activity', 4),
+    name: 'Pottery',
+    description: 'Create your own pottery pieces on the wheel',
+    programId: generateId('program', 2),
+    durationMinutes: 90,
+    defaultRoomId: 'room-006', // Art Studio 1
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 10,
+    color: '#EC4899',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 5),
+    name: 'Painting Workshop',
+    description: 'Express yourself through various painting techniques',
+    programId: generateId('program', 2),
+    durationMinutes: 75,
+    defaultRoomId: 'room-009', // Art Studio 2
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 15,
+    color: '#F472B6',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 6),
+    name: 'Jewelry Making',
+    description: 'Design and create your own jewelry pieces',
+    programId: generateId('program', 2),
+    durationMinutes: 60,
+    defaultRoomId: 'room-009', // Art Studio 2
+    minStaff: 1,
+    maxStaff: 1,
+    defaultCapacity: 12,
+    color: '#DB2777',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Adventure Sports Activities
+  {
+    id: generateId('activity', 7),
+    name: 'Rock Climbing',
+    description: 'Indoor rock climbing with safety instruction',
+    programId: generateId('program', 3),
+    durationMinutes: 90,
+    defaultRoomId: 'room-003', // Gym
+    requiredCertifications: ['Climbing Instructor', 'First Aid'],
+    minStaff: 2,
+    maxStaff: 3,
+    defaultCapacity: 10,
+    color: '#10B981',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 8),
+    name: 'Archery',
+    description: 'Learn archery basics and target practice',
+    programId: generateId('program', 3),
+    durationMinutes: 60,
+    defaultRoomId: 'room-007', // Outdoor Field
+    requiredCertifications: ['Archery Instructor'],
+    minStaff: 2,
+    maxStaff: 2,
+    defaultCapacity: 12,
+    color: '#34D399',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 9),
+    name: 'Ropes Course',
+    description: 'Challenge yourself on our high ropes course',
+    programId: generateId('program', 3),
+    durationMinutes: 120,
+    defaultRoomId: 'room-007', // Outdoor Field
+    requiredCertifications: ['Ropes Course Instructor', 'First Aid'],
+    minStaff: 3,
+    maxStaff: 4,
+    defaultCapacity: 8,
+    color: '#059669',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+];
+
+// Update programs with activity IDs
+mockPrograms[0].activityIds = [
+  generateId('activity', 1),
+  generateId('activity', 2),
+  generateId('activity', 3),
+];
+mockPrograms[1].activityIds = [
+  generateId('activity', 4),
+  generateId('activity', 5),
+  generateId('activity', 6),
+];
+mockPrograms[2].activityIds = [
+  generateId('activity', 7),
+  generateId('activity', 8),
+  generateId('activity', 9),
+];
+
 // Export all mock data together for easy import
 export const mockData = {
   campers: mockCampers,
@@ -653,4 +846,6 @@ export const mockData = {
   events: mockEvents,
   camperGroups: mockCamperGroups,
   familyGroups: mockFamilyGroups,
+  programs: mockPrograms,
+  activities: mockActivities,
 };

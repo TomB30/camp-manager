@@ -6,6 +6,20 @@
   >
     <template #body>
       <form @submit.prevent="handleSave">
+        <!-- Activity Template Selector (only show when creating new event) -->
+        <div v-if="!isEditing" class="form-group">
+          <label class="form-label">Create from Activity Template (Optional)</label>
+          <Autocomplete
+            v-model="selectedActivityId"
+            :options="activityOptions"
+            placeholder="Select an activity template..."
+            @update:modelValue="applyActivityTemplate"
+          />
+          <div v-if="selectedActivityId" class="text-xs text-secondary mt-1">
+            Event details will be pre-filled from the activity template. You can still modify them.
+          </div>
+        </div>
+
         <div class="form-group">
           <label class="form-label">Title</label>
           <input v-model="localFormData.title" type="text" class="form-input" required />
@@ -91,10 +105,11 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
+import { useCampStore } from '@/stores/campStore';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
-import type { Event, Room, CamperGroup, Camper } from '@/types/api';
+import type { Event, Room, CamperGroup, Camper, Activity } from '@/types/api';
 
 interface EventFormData {
   title: string;
@@ -105,6 +120,8 @@ interface EventFormData {
   type: Event['type'];
   color: string;
   camperGroupIds: string[];
+  programId?: string;
+  activityId?: string;
 }
 
 export default defineComponent({
@@ -144,6 +161,7 @@ export default defineComponent({
   data() {
     return {
       localFormData: JSON.parse(JSON.stringify(this.formData)),
+      selectedActivityId: '',
       eventTypeOptions: [
         { label: 'Activity', value: 'activity' },
         { label: 'Sports', value: 'sports' },
@@ -155,11 +173,32 @@ export default defineComponent({
     };
   },
   computed: {
+    store() {
+      return useCampStore();
+    },
     roomOptions(): AutocompleteOption[] {
       return this.rooms.map(room => ({
         label: `${room.name} (Capacity: ${room.capacity})`,
         value: room.id
       }));
+    },
+    activityOptions(): AutocompleteOption[] {
+      // Group activities by program
+      const optionsWithGroups: AutocompleteOption[] = [];
+      
+      this.store.programs.forEach(program => {
+        const programActivities = this.store.getActivitiesInProgram(program.id);
+        if (programActivities.length > 0) {
+          programActivities.forEach(activity => {
+            optionsWithGroups.push({
+              label: `${activity.name} (${program.name})`,
+              value: activity.id
+            });
+          });
+        }
+      });
+      
+      return optionsWithGroups;
     }
   },
   watch: {
@@ -171,6 +210,46 @@ export default defineComponent({
     }
   },
   methods: {
+    applyActivityTemplate(activityId: string) {
+      if (!activityId) return;
+      
+      const activity = this.store.getActivityById(activityId);
+      if (!activity) return;
+      
+      // Auto-populate form fields from activity template
+      this.localFormData.title = activity.name;
+      
+      // Calculate end time based on start time and duration
+      if (this.localFormData.startTime) {
+        const [hours, minutes] = this.localFormData.startTime.split(':').map(Number);
+        const startDate = new Date();
+        startDate.setHours(hours, minutes, 0, 0);
+        
+        const endDate = new Date(startDate.getTime() + activity.durationMinutes * 60000);
+        const endHours = endDate.getHours().toString().padStart(2, '0');
+        const endMinutes = endDate.getMinutes().toString().padStart(2, '0');
+        this.localFormData.endTime = `${endHours}:${endMinutes}`;
+      }
+      
+      // Set default room if specified
+      if (activity.defaultRoomId) {
+        this.localFormData.roomId = activity.defaultRoomId;
+      }
+      
+      // Set default capacity if specified
+      if (activity.defaultCapacity) {
+        this.localFormData.capacity = activity.defaultCapacity;
+      }
+      
+      // Set color if specified
+      if (activity.color) {
+        this.localFormData.color = activity.color;
+      }
+      
+      // Set program and activity IDs for reference
+      this.localFormData.programId = activity.programId;
+      this.localFormData.activityId = activity.id;
+    },
     getGroupCamperCount(groupId: string): number {
       const group = this.camperGroups.find(g => g.id === groupId);
       if (!group) return 0;

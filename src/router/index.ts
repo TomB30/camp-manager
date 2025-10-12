@@ -7,6 +7,7 @@ import Rooms from '../views/Rooms.vue';
 import SleepingRooms from '../views/SleepingRooms.vue';
 import Groups from '../views/Groups.vue';
 import FamilyGroups from '../views/FamilyGroups.vue';
+import Programs from '../views/Programs.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +51,11 @@ const router = createRouter({
       path: '/family-groups',
       name: 'family-groups',
       component: FamilyGroups,
+    },
+    {
+      path: '/programs',
+      name: 'programs',
+      component: Programs,
     },
   ],
 });

@@ -59,6 +59,10 @@
           <Bed :size="20" class="nav-icon" />
           <span class="nav-text">Cabins</span>
         </RouterLink>
+        <RouterLink to="/programs" class="nav-link">
+          <Boxes :size="20" class="nav-icon" />
+          <span class="nav-text">Programs</span>
+        </RouterLink>
       </nav>
 
       <div v-if="store.conflicts.length > 0" class="conflicts-section">
@@ -86,7 +90,8 @@ import {
   Bed, 
   FolderOpen,
   ChevronRight,
-  AlertTriangle 
+  AlertTriangle,
+  Boxes 
 } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -101,7 +106,8 @@ export default defineComponent({
     Bed,
     FolderOpen,
     ChevronRight,
-    AlertTriangle
+    AlertTriangle,
+    Boxes
   },
   data() {
     return {

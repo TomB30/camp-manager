@@ -53,6 +53,7 @@
           :show-search="false"
           v-model:filterEventType="filterEventType"
           v-model:filterRoom="filterRoom"
+          v-model:filterProgram="filterProgram"
           :filters="eventFilters"
           :filtered-count="viewMode === 'daily' ? filteredTodayEvents.length : 0"
           :total-count="viewMode === 'daily' ? todayEvents.length : 0"
@@ -319,6 +320,7 @@ export default defineComponent({
       },
       filterEventType: '',
       filterRoom: '',
+      filterProgram: '',
       sleepingRoomToAssign: '',
       groupToAssign: ''
     };
@@ -342,6 +344,15 @@ export default defineComponent({
     },
     eventFilters(): Filter[] {
       return [
+        {
+          model: 'filterProgram',
+          value: this.filterProgram,
+          placeholder: 'All Programs',
+          options: this.store.programs.map(program => ({
+            label: program.name,
+            value: program.id,
+          })),
+        },
         {
           model: 'filterEventType',
           value: this.filterEventType,
@@ -371,6 +382,11 @@ export default defineComponent({
     filteredTodayEvents() {
       let events = this.todayEvents;
 
+      // Program filter
+      if (this.filterProgram) {
+        events = events.filter(event => event.programId === this.filterProgram);
+      }
+
       // Type filter
       if (this.filterEventType) {
         events = events.filter(event => event.type === this.filterEventType);
@@ -390,6 +406,7 @@ export default defineComponent({
   },
   methods: {
     clearEventFilters() {
+      this.filterProgram = '';
       this.filterEventType = '';
       this.filterRoom = '';
     },
@@ -591,6 +608,8 @@ export default defineComponent({
         type: 'activity',
         color: '#3B82F6',
         camperGroupIds: [],
+        programId: undefined,
+        activityId: undefined,
       };
     },
     async saveEvent(formData: any) {
@@ -625,6 +644,8 @@ export default defineComponent({
             capacity: formData.capacity,
             type: formData.type,
             color: formData.color,
+            programId: formData.programId,
+            activityId: formData.activityId,
           };
           
           await this.store.updateEvent(updatedEvent);
@@ -643,6 +664,8 @@ export default defineComponent({
           color: formData.color,
           enrolledCamperIds: [],
           assignedStaffIds: [],
+          programId: formData.programId,
+          activityId: formData.activityId,
         };
         
         await this.store.addEvent(event);

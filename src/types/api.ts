@@ -584,6 +584,10 @@ export interface components {
       requiredCertifications?: string[];
       /** @description Hex color code for calendar display */
       color?: string;
+      /** Format: uuid */
+      programId?: string;
+      /** Format: uuid */
+      activityId?: string;
     };
     Conflict: {
       /** @enum {string} */
@@ -643,6 +647,36 @@ export interface FamilyGroup {
   startDate: string; // ISO date string - when the group starts
   endDate: string; // ISO date string - when the group ends
   color?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Activity - event template with default settings
+export interface Activity {
+  id: string;
+  name: string;
+  description?: string;
+  programId: string; // Reference to parent program
+  durationMinutes: number; // Default duration
+  defaultRoomId?: string; // Default location
+  requiredCertifications?: string[]; // Required staff certifications
+  minStaff?: number; // Minimum number of staff required
+  maxStaff?: number; // Maximum number of staff allowed
+  defaultCapacity?: number; // Default camper capacity
+  color?: string; // Default color for events created from this activity
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Program - collection of activities, staff, and locations
+export interface Program {
+  id: string;
+  name: string;
+  description?: string;
+  color?: string;
+  activityIds: string[]; // Activities belonging to this program
+  staffMemberIds: string[]; // Staff members associated with this program
+  roomIds: string[]; // Locations associated with this program
   createdAt: string;
   updatedAt: string;
 }
