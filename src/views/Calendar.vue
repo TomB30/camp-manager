@@ -13,7 +13,19 @@
             <h3 v-else>{{ formatWeekRange(selectedDate) }}</h3>
           </div>
         <div class="flex gap-2 items-center justify-center flex-wrap">
-          <!-- View Toggle -->
+          <!-- Navigation -->
+          <div class="flex gap-2 items-center justify-center flex-wrap">
+          <button class="btn btn-secondary" @click="changeDate(-1)">
+            ← Previous {{ viewMode === 'daily' ? 'Day' : 'Week' }}
+          </button>
+          <button class="btn btn-secondary" @click="goToToday">Today</button>
+          <button class="btn btn-secondary" @click="changeDate(1)">
+            Next {{ viewMode === 'daily' ? 'Day' : 'Week' }} →
+          </button>
+          </div>
+
+
+                <!-- View Toggle -->
           <div class="view-toggle">
             <button 
               class="btn btn-sm"
@@ -30,16 +42,8 @@
               Weekly
             </button>
           </div>
-
-          <!-- Navigation -->
-          <button class="btn btn-secondary" @click="changeDate(-1)">
-            ← Previous {{ viewMode === 'daily' ? 'Day' : 'Week' }}
-          </button>
-          <button class="btn btn-secondary" @click="goToToday">Today</button>
-          <button class="btn btn-secondary" @click="changeDate(1)">
-            Next {{ viewMode === 'daily' ? 'Day' : 'Week' }} →
-          </button>
           <button class="btn btn-primary" @click="showEventModal = true">+ New Event</button>
+
         </div>
       </div>
       
