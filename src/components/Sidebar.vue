@@ -15,6 +15,10 @@
           <Calendar :size="20" class="nav-icon" />
           <span class="nav-text">Calendar</span>
         </RouterLink>
+        <RouterLink to="/programs" class="nav-link" @click="handleNavClick">
+          <Boxes :size="20" class="nav-icon" />
+          <span class="nav-text">Programs</span>
+        </RouterLink>
         
         <!-- Collapsible Campers Section -->
         <div class="nav-section">
@@ -58,10 +62,6 @@
         <RouterLink to="/sleeping-rooms" class="nav-link" @click="handleNavClick">
           <Bed :size="20" class="nav-icon" />
           <span class="nav-text">Cabins</span>
-        </RouterLink>
-        <RouterLink to="/programs" class="nav-link" @click="handleNavClick">
-          <Boxes :size="20" class="nav-icon" />
-          <span class="nav-text">Programs</span>
         </RouterLink>
       </nav>
 
