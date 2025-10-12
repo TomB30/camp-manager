@@ -10,8 +10,8 @@
       <!-- Search and Filters -->
       <FilterBar
         v-model:searchQuery="searchQuery"
-        v-model:filterGender="filterGender"
-        v-model:filterAge="filterAge"
+        v-model:filter-gender="filterGender"
+        v-model:filter-age="filterAge"
         :filters="campersFilters"
         :filtered-count="filteredCampers.length"
         :total-count="store.campers.length"

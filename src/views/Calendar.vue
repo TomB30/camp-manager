@@ -49,9 +49,9 @@
       <div class="filter-section">
         <FilterBar
           :show-search="false"
-          v-model:filterEventType="filterEventType"
-          v-model:filterRoom="filterRoom"
-          v-model:filterProgram="filterProgram"
+          v-model:filter-event-type="filterEventType"
+          v-model:filter-room="filterRoom"
+          v-model:filter-program="filterProgram"
           :filters="eventFilters"
           :filtered-count="viewMode === 'daily' ? filteredTodayEvents.length : 0"
           :total-count="viewMode === 'daily' ? todayEvents.length : 0"

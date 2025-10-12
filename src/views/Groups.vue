@@ -13,8 +13,8 @@
       <!-- Search and Filters -->
       <FilterBar
         v-model:searchQuery="searchQuery"
-        v-model:filterGender="filterGender"
-        v-model:filterAgeRange="filterAgeRange"
+        v-model:filter-gender="filterGender"
+        v-model:filter-age-range="filterAgeRange"
         :filters="groupsFilters"
         :filtered-count="filteredGroups.length"
         :total-count="store.camperGroups.length"

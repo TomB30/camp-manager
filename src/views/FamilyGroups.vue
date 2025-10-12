@@ -13,7 +13,7 @@
       <!-- Search and Filters -->
       <FilterBar
         v-model:searchQuery="searchQuery"
-        v-model:filterSleepingRoom="filterSleepingRoom"
+        v-model:filter-sleeping-room="filterSleepingRoom"
         :filters="familyGroupsFilters"
         :filtered-count="filteredFamilyGroups.length"
         :total-count="store.familyGroups.length"

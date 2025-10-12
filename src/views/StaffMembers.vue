@@ -10,8 +10,8 @@
       <!-- Search and Filters -->
       <FilterBar
         v-model:searchQuery="searchQuery"
-        v-model:filterRole="filterRole"
-        v-model:filterCertification="filterCertification"
+        v-model:filter-role="filterRole"
+        v-model:filter-certification="filterCertification"
         :filters="staffFilters"
         :filtered-count="filteredMembers.length"
         :total-count="store.staffMembers.length"

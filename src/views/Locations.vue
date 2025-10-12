@@ -10,7 +10,7 @@
       <!-- Search and Filters -->
       <FilterBar
         v-model:searchQuery="searchQuery"
-        v-model:filterType="filterType"
+        v-model:filter-type="filterType"
         :filters="locationFilters"
         :filtered-count="filteredLocations.length"
         :total-count="store.locations.length"
@@ -151,7 +151,7 @@ export default defineComponent({
       editingLocationId: null as string | null,
       selectedLocationId: null as string | null,
       searchQuery: '',
-      filterType: 'all',
+      filterType: '',
       viewMode: 'grid' as 'grid' | 'table',
       currentPage: 1,
       pageSize: 10,
@@ -171,11 +171,10 @@ export default defineComponent({
     locationFilters(): Filter[] {
       return [
         {
-          key: 'type',
-          label: 'Type',
-          type: 'select',
+          model: 'filterType',
+          value: this.filterType,
+          placeholder: 'All Types',
           options: [
-            { value: 'all', label: 'All Types' },
             { value: 'indoor', label: 'Indoor' },
             { value: 'outdoor', label: 'Outdoor' },
             { value: 'facility', label: 'Facility' },
@@ -200,7 +199,7 @@ export default defineComponent({
       }
 
       // Type filter
-      if (this.filterType && this.filterType !== 'all') {
+      if (this.filterType && this.filterType !== '' && this.filterType !== 'all') {
         filtered = filtered.filter((location) => location.type === this.filterType);
       }
 
@@ -292,7 +291,7 @@ export default defineComponent({
 
     clearFilters() {
       this.searchQuery = '';
-      this.filterType = 'all';
+      this.filterType = '';
     },
 
     handleConfirmAction() {

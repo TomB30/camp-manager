@@ -10,8 +10,8 @@
       <!-- Search and Filters -->
       <FilterBar
         v-model:searchQuery="searchQuery"
-        v-model:filterType="filterType"
-        v-model:filterCapacity="filterCapacity"
+        v-model:filter-type="filterType"
+        v-model:filter-capacity="filterCapacity"
         :filters="roomFilters"
         :filtered-count="filteredRooms.length"
         :total-count="store.rooms.length"

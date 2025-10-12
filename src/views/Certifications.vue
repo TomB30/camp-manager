@@ -10,7 +10,7 @@
       <!-- Search and Filters -->
       <FilterBar
         v-model:searchQuery="searchQuery"
-        v-model:filterExpiration="filterExpiration"
+        v-model:filter-expiration="filterExpiration"
         :filters="certificationFilters"
         :filtered-count="filteredCertifications.length"
         :total-count="store.certifications.length"
@@ -142,7 +142,7 @@ export default defineComponent({
       editingCertificationId: null as string | null,
       selectedCertificationId: null as string | null,
       searchQuery: '',
-      filterExpiration: 'all',
+      filterExpiration: '',
       viewMode: 'grid' as 'grid' | 'table',
       currentPage: 1,
       pageSize: 10,
@@ -161,11 +161,10 @@ export default defineComponent({
     certificationFilters(): Filter[] {
       return [
         {
-          key: 'expiration',
-          label: 'Type',
-          type: 'select',
+          model: 'filterExpiration',
+          value: this.filterExpiration,
+          placeholder: 'All Types',
           options: [
-            { value: 'all', label: 'All Types' },
             { value: 'time-limited', label: 'Time-limited' },
             { value: 'permanent', label: 'Permanent' },
           ],
@@ -186,7 +185,7 @@ export default defineComponent({
       }
 
       // Expiration filter
-      if (this.filterExpiration && this.filterExpiration !== 'all') {
+      if (this.filterExpiration && this.filterExpiration !== '' && this.filterExpiration !== 'all') {
         if (this.filterExpiration === 'time-limited') {
           filtered = filtered.filter((cert) => cert.expirationRequired);
         } else if (this.filterExpiration === 'permanent') {
@@ -278,7 +277,7 @@ export default defineComponent({
 
     clearFilters() {
       this.searchQuery = '';
-      this.filterExpiration = 'all';
+      this.filterExpiration = '';
     },
 
     handleConfirmAction() {
