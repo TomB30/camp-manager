@@ -347,12 +347,20 @@ const generateCampers = (count: number, totalFamilyGroups: number): Camper[] => 
   let maleCount = 0;
   let femaleCount = 0;
   
+  // Create a more unique name pairing by using different cycling rates
+  // This ensures that first and last names don't repeat in the same pattern
   for (let i = 1; i <= count; i++) {
     const gender: 'male' | 'female' = i % 2 === 0 ? 'male' : 'female';
     const genderNames = firstNames[gender];
     const nameIndex = gender === 'male' ? maleCount++ : femaleCount++;
-    const firstName = genderNames[nameIndex % genderNames.length];
-    const lastName = lastNames[(i - 1) % lastNames.length];
+    
+    // Use different offsets for first and last names to create more unique combinations
+    const firstNameIndex = nameIndex % genderNames.length;
+    // Use a prime number offset (17) to ensure different pairing patterns
+    const lastNameIndex = ((i - 1) * 17) % lastNames.length;
+    
+    const firstName = genderNames[firstNameIndex];
+    const lastName = lastNames[lastNameIndex];
     const age = 6 + (i % 10); // Ages 6-15
     
     // Distribute campers evenly across family groups (~10-12 per group)
