@@ -93,18 +93,14 @@ export default defineComponent({
   },
   computed: {
     certificationNames(): string[] {
-      if (!this.member) return [];
+      if (!this.member || !this.member.certificationIds) return [];
       
-      if (this.member.certificationIds) {
-        return this.member.certificationIds
-          .map(id => {
-            const cert = this.store.getCertificationById(id);
-            return cert ? cert.name : '';
-          })
-          .filter(name => name.length > 0);
-      }
-      
-      return this.member.certifications || [];
+      return this.member.certificationIds
+        .map(id => {
+          const cert = this.store.getCertificationById(id);
+          return cert ? cert.name : '';
+        })
+        .filter(name => name.length > 0);
     }
   },
   methods: {

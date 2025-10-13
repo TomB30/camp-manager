@@ -51,13 +51,7 @@ export default defineComponent({
   emits: ['click'],
   computed: {
     certificationCount(): number {
-      if (this.member.certificationIds) {
-        return this.member.certificationIds.length;
-      }
-      if (this.member.certifications) {
-        return this.member.certifications.length;
-      }
-      return 0;
+      return this.member.certificationIds?.length || 0;
     }
   }
 });

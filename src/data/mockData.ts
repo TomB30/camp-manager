@@ -424,7 +424,6 @@ const generateStaff = (count: number): StaffMember[] => {
     role: 'director',
     email: 'sarah.connor@camp.com',
     phone: '555-0101',
-    certifications: ['First Aid', 'CPR', 'Wilderness First Aid', 'Climbing Instructor'],
     certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3), generateId('cert', 6)],
     managerId: undefined,
   });
@@ -439,7 +438,6 @@ const generateStaff = (count: number): StaffMember[] => {
     role: 'supervisor',
       email: `${staffFirstNames[i - 1].toLowerCase()}.${staffLastNames[i - 1].toLowerCase()}@camp.com`,
       phone: `555-${String(100 + i).padStart(4, '0')}`,
-      certifications: certCombo.map(c => mockCertifications[c - 1].name),
       certificationIds: certCombo.map(c => generateId('cert', c)),
       managerId: generateId('staff', 1),
     });
@@ -454,7 +452,6 @@ const generateStaff = (count: number): StaffMember[] => {
     role: 'nurse',
       email: `${staffFirstNames[i - 1].toLowerCase()}.${staffLastNames[i - 1].toLowerCase()}@camp.com`,
       phone: `555-${String(100 + i).padStart(4, '0')}`,
-      certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
       certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3)],
       managerId: generateId('staff', 1),
     });
@@ -474,7 +471,6 @@ const generateStaff = (count: number): StaffMember[] => {
       role,
       email: `${staffFirstNames[i % staffFirstNames.length].toLowerCase()}.${staffLastNames[i % staffLastNames.length].toLowerCase()}@camp.com`,
       phone: `555-${String(100 + i).padStart(4, '0')}`,
-      certifications: certCombo.map(c => mockCertifications[c - 1].name),
       certificationIds: certCombo.map(c => generateId('cert', c)),
       managerId: generateId('staff', supervisorId),
     });

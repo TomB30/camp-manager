@@ -237,12 +237,12 @@
               @remove="confirmRemoveStaff(staff.id)"
             >
               <template
-                v-if="staff.certifications && staff.certifications.length > 0"
+                v-if="getStaffCertificationNames(staff).length > 0"
                 #metadata
               >
                 <div class="staff-certifications">
                   <span
-                    v-for="cert in staff.certifications"
+                    v-for="cert in getStaffCertificationNames(staff)"
                     :key="cert"
                     class="certification-badge"
                   >
@@ -624,6 +624,15 @@ export default defineComponent({
     },
     formatRole(role: string) {
       return role.charAt(0).toUpperCase() + role.slice(1);
+    },
+    getStaffCertificationNames(staff: any): string[] {
+      if (!staff.certificationIds) return [];
+      return staff.certificationIds
+        .map((id: string) => {
+          const cert = this.store.getCertificationById(id);
+          return cert ? cert.name : '';
+        })
+        .filter((name: string) => name.length > 0);
     },
     formatRoomType(type: string) {
       return type

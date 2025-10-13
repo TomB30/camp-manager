@@ -172,10 +172,9 @@ export class ConflictDetector {
         event.assignedStaffIds?.includes(m.id)
       );
 
-      // Collect all certifications from assigned staff (support both certificationIds and certifications)
+      // Collect all certifications from assigned staff
       const allCertifications = new Set<string>();
       assignedStaff.forEach(staff => {
-        // Check certificationIds first
         if (staff.certificationIds && staff.certificationIds.length > 0) {
           staff.certificationIds.forEach(certId => {
             const cert = certifications.find(c => c.id === certId);
@@ -183,10 +182,6 @@ export class ConflictDetector {
               allCertifications.add(cert.name);
             }
           });
-        }
-        // Fallback to certifications string array for backward compatibility
-        else if (staff.certifications) {
-          staff.certifications.forEach(certName => allCertifications.add(certName));
         }
       });
 

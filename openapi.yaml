@@ -71,10 +71,12 @@ components:
           format: email
         phone:
           type: string
-        certifications:
+        certificationIds:
           type: array
           items:
             type: string
+            format: uuid
+          description: IDs of certifications this staff member holds
         photoUrl:
           type: string
         managerId:

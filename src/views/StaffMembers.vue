@@ -63,9 +63,6 @@
           <span v-if="item.certificationIds && item.certificationIds.length > 0" class="badge badge-success badge-sm">
             {{ item.certificationIds.length }} cert(s)
           </span>
-          <span v-else-if="item.certifications && item.certifications.length > 0" class="badge badge-success badge-sm">
-            {{ item.certifications.length }} cert(s)
-          </span>
           <span v-else class="text-secondary">None</span>
         </template>
         
@@ -277,13 +274,11 @@ export default defineComponent({
       // Certification filter
       if (this.filterCertification) {
         members = members.filter((member: StaffMember) => {
-          if (member.certificationIds) {
-            return member.certificationIds.some(id => {
-              const cert = this.store.getCertificationById(id);
-              return cert && cert.name === this.filterCertification;
-            });
-          }
-          return member.certifications && member.certifications.includes(this.filterCertification);
+          if (!member.certificationIds) return false;
+          return member.certificationIds.some(id => {
+            const cert = this.store.getCertificationById(id);
+            return cert && cert.name === this.filterCertification;
+          });
         });
       }
 
