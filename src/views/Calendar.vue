@@ -196,6 +196,16 @@ export default defineComponent({
       sleepingRoomToAssign: ''
     };
   },
+  mounted() {
+    this.handleEventIdFromQuery();
+  },
+  watch: {
+    '$route.query.eventId': {
+      handler() {
+        this.handleEventIdFromQuery();
+      }
+    }
+  },
   computed: {
     store() {
       return useCampStore();
@@ -293,6 +303,20 @@ export default defineComponent({
     }
   },
   methods: {
+    handleEventIdFromQuery() {
+      const eventId = this.$route.query.eventId as string | undefined;
+      if (eventId) {
+        const event = this.store.getEventById(eventId);
+        if (event) {
+          // Set the selected date to the event's date
+          this.selectedDate = new Date(event.startTime);
+          // Select the event to open the detail modal
+          this.selectedEventId = eventId;
+          // Clear the query parameter to avoid reopening on page refresh
+          this.$router.replace({ query: {} });
+        }
+      }
+    },
     clearEventFilters() {
       this.filterProgram = '';
       this.filterEventType = '';

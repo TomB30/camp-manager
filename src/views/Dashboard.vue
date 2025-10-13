@@ -52,9 +52,15 @@
           <h3>⚠️ Scheduling Conflicts ({{ store.conflicts.length }})</h3>
         </div>
         <div class="conflicts-list">
-          <div v-for="conflict in store.conflicts" :key="conflict.entityId" class="conflict-item">
+          <div 
+            v-for="conflict in store.conflicts" 
+            :key="conflict.entityId" 
+            class="conflict-item"
+            @click="goToConflictEvent(conflict)"
+          >
             <span class="badge badge-error">{{ formatConflictType(conflict.type) }}</span>
             <span class="conflict-message">{{ conflict.message }}</span>
+            <span class="conflict-action">View Event →</span>
           </div>
         </div>
       </div>
@@ -151,8 +157,7 @@ import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
 import { Calendar, Users, UsersRound } from 'lucide-vue-next';
 import ViewHeader from '@/components/ViewHeader.vue';
-import type { Event } from '@/types/api';
-import type { Camper } from '@/types/api';
+import type { Event, Camper, Conflict } from '@/types/api';
 
 export default defineComponent({
   name: 'Dashboard',
@@ -210,6 +215,30 @@ export default defineComponent({
       }, 0);
       
       return totalUsage / roomEvents.length;
+    },
+    goToConflictEvent(conflict: Conflict): void {
+      // Determine which event ID to use based on conflict type
+      let eventId: string | undefined;
+      
+      if (conflict.type === 'event_overcapacity' || conflict.type === 'missing_certification') {
+        // For event-specific conflicts, entityId is the event ID
+        eventId = conflict.entityId;
+      } else if (conflict.conflictingIds && conflict.conflictingIds.length > 0) {
+        // For other conflicts (camper/staff double booking, room overcapacity), use first conflicting event
+        eventId = conflict.conflictingIds[0];
+      }
+      
+      if (!eventId) return;
+      
+      // Get the event to determine its date
+      const event = this.store.getEventById(eventId);
+      if (!event) return;
+      
+      // Navigate to calendar with event ID as query parameter
+      this.$router.push({
+        path: '/calendar',
+        query: { eventId }
+      });
     }
   }
 });
@@ -295,11 +324,34 @@ export default defineComponent({
   padding: 0.75rem;
   background: var(--background);
   border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.conflict-item:hover {
+  background: var(--surface);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .conflict-message {
   font-size: 0.875rem;
   color: var(--text-primary);
+  flex: 1;
+}
+
+.conflict-action {
+  font-size: 0.875rem;
+  color: var(--error-color);
+  font-weight: 500;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.conflict-item:hover .conflict-action {
+  opacity: 1;
 }
 
 .events-timeline {

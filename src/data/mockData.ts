@@ -403,14 +403,14 @@ const staffLastNames = [
 const certificationCombos = [
   [1, 2, 3, 6], // First Aid, CPR, Wilderness First Aid, Climbing Instructor
   [1, 2, 3, 8], // First Aid, CPR, Wilderness First Aid, Ropes Course
-  [1, 2, 10], // First Aid, CPR, Food Handler
   [1, 2, 7], // First Aid, CPR, Archery
   [4, 5, 2, 1], // Lifeguard, Swimming Instructor, CPR, First Aid
-  [1, 2, 3, 4, 9], // First Aid, CPR, Wilderness First Aid, Lifeguard, Boat Driver
+  [4, 5, 9, 2, 1], // Lifeguard, Swimming Instructor, Boat Driver, CPR, First Aid
   [1, 2, 4, 9], // First Aid, CPR, Lifeguard, Boat Driver
   [1, 2, 8, 6], // First Aid, CPR, Ropes Course, Climbing
-  [4, 5, 9, 2, 1], // Lifeguard, Swimming Instructor, Boat Driver, CPR, First Aid
-  [8, 1, 2, 6], // Ropes Course, First Aid, CPR, Climbing
+  [4, 5, 2, 1], // Lifeguard, Swimming Instructor, CPR, First Aid (repeat for more coverage)
+  [1, 2, 6], // First Aid, CPR, Climbing Instructor (more climbing instructors)
+  [1, 2, 7], // First Aid, CPR, Archery (more archery instructors)
 ];
 
 const generateStaff = (count: number): StaffMember[] => {
@@ -736,6 +736,11 @@ const generateMonthEvents = (): Event[] => {
       ));
     } else if (dayMod === 1 || dayMod === 4) {
       // Swimming Lessons from Watersports Program
+      // Staff 11, 12, 15 have Lifeguard + Swimming Instructor
+      // Intentionally use wrong staff on day 4 for demo conflict
+      const swimmingStaff = day === (startDay + 3)
+        ? [generateId('staff', 8), generateId('staff', 10)] // Missing Lifeguard/Swimming Instructor!
+        : [generateId('staff', 11), generateId('staff', 15)];
       events.push(createEvent(
         eventId++,
         'Swimming Lessons',
@@ -745,7 +750,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 4),
         15,
         'sports',
-        [generateId('staff', 8), generateId('staff', 10)],
+        swimmingStaff,
         getCampers(12, morningPool),
         '#60A5FA',
         ['Lifeguard', 'Swimming Instructor'],
@@ -805,6 +810,11 @@ const generateMonthEvents = (): Event[] => {
       ));
     } else if (dayMod === 2 || dayMod === 5) {
       // Rock Climbing from Adventure Sports Program
+      // Staff 8, 14, 16, 18 have Climbing Instructor + First Aid
+      // Intentionally use wrong staff on day 1 for demo conflict
+      const climbingStaff = day === startDay 
+        ? [generateId('staff', 9), generateId('staff', 11)] // Missing Climbing Instructor!
+        : [generateId('staff', 8), generateId('staff', 14)];
       events.push(createEvent(
         eventId++,
         'Rock Climbing',
@@ -814,7 +824,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 3),
         12,
         'activity',
-        [generateId('staff', 9), generateId('staff', 11)],
+        climbingStaff,
         getCampers(10, morningPool),
         '#10B981',
         ['Climbing Instructor', 'First Aid'],
@@ -822,6 +832,11 @@ const generateMonthEvents = (): Event[] => {
         generateId('activity', 9)
       ));
       // Archery - Group B
+      // Staff 10, 17, 20 have Archery Instructor
+      // Intentionally use wrong staff on day 2 for demo conflict
+      const archeryStaff = day === (startDay + 1)
+        ? [generateId('staff', 15), generateId('staff', 19)] // Missing Archery Instructor!
+        : [generateId('staff', 10), generateId('staff', 17)];
       events.push(createEvent(
         eventId++,
         'Archery',
@@ -831,7 +846,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 7),
         15,
         'activity',
-        [generateId('staff', 15), generateId('staff', 19)],
+        archeryStaff,
         getCampers(12, morningPool + 10),
         '#34D399',
         ['Archery Instructor'],
@@ -944,8 +959,11 @@ const generateMonthEvents = (): Event[] => {
     // Afternoon Activities Block 1 (2:00-4:00) - Multiple concurrent activities
     if (dayMod === 0 || dayMod === 2 || dayMod === 4) {
       // Wakeboarding from Watersports Program - Group A
-      // Staff 5 (Rachel) has: Lifeguard, Boat Driver, First Aid, CPR, Wilderness First Aid
-      // Staff 6 (Tom) has: Lifeguard, Boat Driver, First Aid, CPR
+      // Staff 12, 13 have Lifeguard + Boat Driver
+      // Intentionally use wrong staff on day 1 & 2 for demo conflicts
+      const wakeboardingStaff = day <= (startDay + 1) 
+        ? [generateId('staff', 5), generateId('staff', 6)] // Missing certifications!
+        : [generateId('staff', 12), generateId('staff', 13)];
       events.push(createEvent(
         eventId++,
         'Wakeboarding',
@@ -955,7 +973,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 5),
         8,
         'sports',
-        [generateId('staff', 5), generateId('staff', 6)],
+        wakeboardingStaff,
         getCampers(7, afternoonPool1),
         '#3B82F6',
         ['Lifeguard', 'Boat Driver'],
@@ -1010,8 +1028,7 @@ const generateMonthEvents = (): Event[] => {
       ));
     } else {
       // Kayaking from Watersports Program - Group A
-      // Staff 4 (David) has: Lifeguard, Swimming Instructor, CPR, First Aid
-      // Staff 11 (Marcus) has: Lifeguard, Swimming Instructor, Boat Driver, CPR, First Aid
+      // Staff 11, 12, 13, 15 have Lifeguard certification
       events.push(createEvent(
         eventId++,
         'Kayaking',
@@ -1021,7 +1038,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 5),
         10,
         'sports',
-        [generateId('staff', 4), generateId('staff', 11)],
+        [generateId('staff', 12), generateId('staff', 13)],
         getCampers(9, afternoonPool1),
         '#2563EB',
         ['Lifeguard'],
@@ -1033,6 +1050,7 @@ const generateMonthEvents = (): Event[] => {
     // Afternoon Activities Block 2 (4:00-5:30)
     if (dayMod % 2 === 0) {
       // Archery from Adventure Sports Program - Group A
+      // Staff 10, 17, 20 have Archery Instructor
       events.push(createEvent(
         eventId++,
         'Archery',
@@ -1042,7 +1060,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 7),
         12,
         'activity',
-        [generateId('staff', 3), generateId('staff', 8)],
+        [generateId('staff', 20), generateId('staff', 27)],
         getCampers(10, afternoonPool2),
         '#10B981',
         ['Archery Instructor'],
