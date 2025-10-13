@@ -233,139 +233,116 @@ export const mockLocations: Location[] = [
   },
 ];
 
-// Extended sleeping rooms for more campers
-export const mockSleepingRooms: SleepingRoom[] = [
-  {
-    id: generateId('sleeping', 1),
-    name: 'Cabin 1 - Eagles',
-    beds: 8,
-    location: 'North Wing, Floor 1',
-    locationId: generateId('location', 8),
-  },
-  {
-    id: generateId('sleeping', 2),
-    name: 'Cabin 2 - Hawks',
-    beds: 8,
-    location: 'North Wing, Floor 1',
-    locationId: generateId('location', 8),
-  },
-  {
-    id: generateId('sleeping', 3),
-    name: 'Cabin 3 - Wolves',
-    beds: 8,
-    location: 'North Wing, Floor 2',
-    locationId: generateId('location', 9),
-  },
-  {
-    id: generateId('sleeping', 4),
-    name: 'Cabin 4 - Butterflies',
-    beds: 8,
-    location: 'South Wing, Floor 1',
-    locationId: generateId('location', 10),
-  },
-  {
-    id: generateId('sleeping', 5),
-    name: 'Cabin 5 - Fireflies',
-    beds: 8,
-    location: 'South Wing, Floor 1',
-    locationId: generateId('location', 10),
-  },
-  {
-    id: generateId('sleeping', 6),
-    name: 'Cabin 6 - Dolphins',
-    beds: 8,
-    location: 'South Wing, Floor 2',
-    locationId: generateId('location', 11),
-  },
+// Extended sleeping rooms for more campers (20 cabins total)
+const cabinNames = [
+  'Eagles', 'Hawks', 'Wolves', 'Butterflies', 'Fireflies', 'Dolphins',
+  'Tigers', 'Bears', 'Panthers', 'Foxes', 'Owls', 'Ravens',
+  'Falcons', 'Cougars', 'Lynx', 'Otters', 'Beavers', 'Moose',
+  'Elk', 'Bison', 'Cardinals', 'Blue Jays', 'Sparrows', 'Swallows'
 ];
 
-// Family Groups - fundamental organizational units
-export const mockFamilyGroups: FamilyGroup[] = [
-  {
-    id: generateId('family', 1),
-    name: 'Eagles Family',
-    description: 'Family group for Cabin 1',
-    sleepingRoomId: generateId('sleeping', 1),
-    staffMemberIds: [generateId('staff', 2), generateId('staff', 6)],
-    startDate: new Date('2024-06-10').toISOString(),
-    endDate: new Date('2024-06-17').toISOString(),
-    color: '#3B82F6',
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('family', 2),
-    name: 'Hawks Family',
-    description: 'Family group for Cabin 2',
-    sleepingRoomId: generateId('sleeping', 2),
-    staffMemberIds: [generateId('staff', 8)],
-    startDate: new Date('2024-06-10').toISOString(),
-    endDate: new Date('2024-06-17').toISOString(),
-    color: '#10B981',
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('family', 3),
-    name: 'Wolves Family',
-    description: 'Family group for Cabin 3',
-    sleepingRoomId: generateId('sleeping', 3),
-    staffMemberIds: [generateId('staff', 2)],
-    startDate: new Date('2024-06-17').toISOString(),
-    endDate: new Date('2024-06-24').toISOString(),
-    color: '#6366F1',
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('family', 4),
-    name: 'Butterflies Family',
-    description: 'Family group for Cabin 4',
-    sleepingRoomId: generateId('sleeping', 4),
-    staffMemberIds: [generateId('staff', 3), generateId('staff', 7)],
-    startDate: new Date('2024-06-17').toISOString(),
-    endDate: new Date('2024-06-24').toISOString(),
-    color: '#EC4899',
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('family', 5),
-    name: 'Fireflies Family',
-    description: 'Family group for Cabin 5',
-    sleepingRoomId: generateId('sleeping', 5),
-    staffMemberIds: [generateId('staff', 4)],
-    startDate: new Date('2024-06-24').toISOString(),
-    endDate: new Date('2024-07-01').toISOString(),
-    color: '#F59E0B',
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('family', 6),
-    name: 'Dolphins Family',
-    description: 'Family group for Cabin 6',
-    sleepingRoomId: generateId('sleeping', 6),
-    staffMemberIds: [generateId('staff', 3)],
-    startDate: new Date('2024-06-24').toISOString(),
-    endDate: new Date('2024-07-01').toISOString(),
-    color: '#06B6D4',
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-];
-
-// Generate many campers
-const firstNames = {
-  male: ['Liam', 'Noah', 'Oliver', 'Elijah', 'James', 'William', 'Benjamin', 'Lucas', 'Henry', 'Alexander', 'Mason', 'Michael', 'Ethan', 'Daniel', 'Jacob', 'Logan', 'Jackson', 'Levi', 'Sebastian', 'Mateo', 'Jack', 'Owen', 'Theodore', 'Aiden', 'Samuel', 'Joseph', 'John', 'David', 'Wyatt', 'Matthew'],
-  female: ['Emma', 'Olivia', 'Ava', 'Isabella', 'Sophia', 'Charlotte', 'Mia', 'Amelia', 'Harper', 'Evelyn', 'Abigail', 'Emily', 'Elizabeth', 'Mila', 'Ella', 'Avery', 'Sofia', 'Camila', 'Aria', 'Scarlett', 'Victoria', 'Madison', 'Luna', 'Grace', 'Chloe', 'Penelope', 'Layla', 'Riley', 'Zoey', 'Nora']
+const generateSleepingRooms = (count: number): SleepingRoom[] => {
+  const rooms: SleepingRoom[] = [];
+  const locations = [
+    { id: 8, name: 'North Wing, Floor 1' },
+    { id: 9, name: 'North Wing, Floor 2' },
+    { id: 10, name: 'South Wing, Floor 1' },
+    { id: 11, name: 'South Wing, Floor 2' },
+  ];
+  
+  for (let i = 1; i <= count; i++) {
+    const locationIndex = (i - 1) % locations.length;
+    const location = locations[locationIndex];
+    rooms.push({
+      id: generateId('sleeping', i),
+      name: `Cabin ${i} - ${cabinNames[i - 1]}`,
+      beds: i <= 16 ? 12 : 10, // First 16 cabins have 12 beds, rest have 10
+      location: location.name,
+      locationId: generateId('location', location.id),
+    });
+  }
+  
+  return rooms;
 };
 
-const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson'];
+export const mockSleepingRooms: SleepingRoom[] = generateSleepingRooms(24);
 
-const allergies = ['Peanuts', 'Tree nuts', 'Dairy', 'Eggs', 'Soy', 'Wheat', 'Fish', 'Shellfish'];
+// Family Groups - fundamental organizational units (one per sleeping room)
+const familyGroupColors = [
+  '#3B82F6', '#10B981', '#6366F1', '#EC4899', '#F59E0B', '#06B6D4',
+  '#EF4444', '#8B5CF6', '#F97316', '#14B8A6', '#84CC16', '#A855F7',
+  '#FB923C', '#22D3EE', '#FCD34D', '#FB7185', '#67E8F9', '#FDE047',
+  '#FDBA74', '#C084FC', '#86EFAC', '#FCA5A5', '#BAE6FD', '#D8B4FE'
+];
 
-const generateCampers = (count: number): Camper[] => {
+const generateFamilyGroups = (sleepingRooms: SleepingRoom[]): FamilyGroup[] => {
+  const groups: FamilyGroup[] = [];
+  const weekDates = [
+    { start: new Date('2024-06-10'), end: new Date('2024-06-17') },
+    { start: new Date('2024-06-17'), end: new Date('2024-06-24') },
+    { start: new Date('2024-06-24'), end: new Date('2024-07-01') },
+  ];
+  
+  sleepingRooms.forEach((room, index) => {
+    const weekIndex = index % 3;
+    const week = weekDates[weekIndex];
+    const staffCount = 1 + (index % 2); // 1 or 2 staff per family
+    const staffIds: string[] = [];
+    
+    // Assign staff members (we'll have more staff now)
+    for (let s = 0; s < staffCount; s++) {
+      const staffId = ((index * 2 + s) % 48) + 2; // Cycle through staff 2-49 (excluding director)
+      staffIds.push(generateId('staff', staffId));
+    }
+    
+    groups.push({
+      id: generateId('family', index + 1),
+      name: `${cabinNames[index]} Family`,
+      description: `Family group for Cabin ${index + 1}`,
+      sleepingRoomId: room.id,
+      staffMemberIds: staffIds,
+      startDate: week.start.toISOString(),
+      endDate: week.end.toISOString(),
+      color: familyGroupColors[index % familyGroupColors.length],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+    });
+  });
+  
+  return groups;
+};
+
+export const mockFamilyGroups: FamilyGroup[] = generateFamilyGroups(mockSleepingRooms);
+
+// Generate many campers - expanded name lists
+const firstNames = {
+  male: [
+    'Liam', 'Noah', 'Oliver', 'Elijah', 'James', 'William', 'Benjamin', 'Lucas', 'Henry', 'Alexander',
+    'Mason', 'Michael', 'Ethan', 'Daniel', 'Jacob', 'Logan', 'Jackson', 'Levi', 'Sebastian', 'Mateo',
+    'Jack', 'Owen', 'Theodore', 'Aiden', 'Samuel', 'Joseph', 'John', 'David', 'Wyatt', 'Matthew',
+    'Luke', 'Asher', 'Carter', 'Julian', 'Grayson', 'Leo', 'Jayden', 'Gabriel', 'Isaac', 'Lincoln',
+    'Anthony', 'Hudson', 'Dylan', 'Ezra', 'Thomas', 'Charles', 'Christopher', 'Jaxon', 'Maverick', 'Josiah'
+  ],
+  female: [
+    'Emma', 'Olivia', 'Ava', 'Isabella', 'Sophia', 'Charlotte', 'Mia', 'Amelia', 'Harper', 'Evelyn',
+    'Abigail', 'Emily', 'Elizabeth', 'Mila', 'Ella', 'Avery', 'Sofia', 'Camila', 'Aria', 'Scarlett',
+    'Victoria', 'Madison', 'Luna', 'Grace', 'Chloe', 'Penelope', 'Layla', 'Riley', 'Zoey', 'Nora',
+    'Lily', 'Eleanor', 'Hannah', 'Lillian', 'Addison', 'Aubrey', 'Ellie', 'Stella', 'Natalie', 'Zoe',
+    'Leah', 'Hazel', 'Violet', 'Aurora', 'Savannah', 'Audrey', 'Brooklyn', 'Bella', 'Claire', 'Skylar'
+  ]
+};
+
+const lastNames = [
+  'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
+  'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
+  'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson',
+  'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores',
+  'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts'
+];
+
+const allergies = ['Peanuts', 'Tree nuts', 'Dairy', 'Eggs', 'Soy', 'Wheat', 'Fish', 'Shellfish', 'Sesame', 'Gluten'];
+
+const generateCampers = (count: number, totalFamilyGroups: number): Camper[] => {
   const campers: Camper[] = [];
   let maleCount = 0;
   let femaleCount = 0;
@@ -378,12 +355,13 @@ const generateCampers = (count: number): Camper[] => {
     const lastName = lastNames[(i - 1) % lastNames.length];
     const age = 6 + (i % 10); // Ages 6-15
     
-    // Assign to family groups (6 campers per family group, 6 family groups)
-    const familyGroupIndex = Math.floor((i - 1) / 6) % 6;
+    // Distribute campers evenly across family groups (~10-12 per group)
+    const campersPerGroup = Math.ceil(count / totalFamilyGroups);
+    const familyGroupIndex = Math.floor((i - 1) / campersPerGroup) % totalFamilyGroups;
     const familyGroupId = generateId('family', familyGroupIndex + 1);
     
-    // 25% chance of having an allergy
-    const hasAllergy = Math.random() < 0.25;
+    // 20% chance of having an allergy
+    const hasAllergy = (i * 7) % 100 < 20;
     const camperAllergies = hasAllergy ? [allergies[i % allergies.length]] : [];
     
     campers.push({
@@ -403,10 +381,43 @@ const generateCampers = (count: number): Camper[] => {
   return campers;
 };
 
-export const mockCampers: Camper[] = generateCampers(36);
+export const mockCampers: Camper[] = generateCampers(350, mockFamilyGroups.length);
 
-export const mockStaffMembers: StaffMember[] = [
-  {
+// Generate staff members
+const staffFirstNames = [
+  'Sarah', 'James', 'Mike', 'Jessica', 'David', 'Rachel', 'Tom', 'Amanda', 'Chris', 'Emily',
+  'Marcus', 'Lisa', 'Brian', 'Jennifer', 'Kevin', 'Nicole', 'Ryan', 'Ashley', 'Eric', 'Melissa',
+  'Daniel', 'Laura', 'Justin', 'Stephanie', 'Matthew', 'Michelle', 'Andrew', 'Angela', 'Joshua', 'Heather',
+  'Brandon', 'Amber', 'Tyler', 'Rebecca', 'Jason', 'Christina', 'Aaron', 'Megan', 'Adam', 'Kimberly',
+  'Nathan', 'Amy', 'Zachary', 'Brittany', 'Kyle', 'Samantha', 'Jacob', 'Katherine', 'Patrick', 'Christine'
+];
+
+const staffLastNames = [
+  'Connor', 'Rodriguez', 'Peterson', 'Lee', 'Chen', 'Martinez', 'Wilson', 'Foster', 'Bryant', 'Davis',
+  'Thompson', 'Kim', 'Anderson', 'White', 'Harris', 'Clark', 'Lewis', 'Walker', 'Hall', 'Allen',
+  'Young', 'King', 'Wright', 'Lopez', 'Hill', 'Scott', 'Green', 'Adams', 'Baker', 'Gonzalez',
+  'Nelson', 'Carter', 'Mitchell', 'Perez', 'Roberts', 'Turner', 'Phillips', 'Campbell', 'Parker', 'Evans',
+  'Edwards', 'Collins', 'Stewart', 'Sanchez', 'Morris', 'Rogers', 'Reed', 'Cook', 'Morgan', 'Bell'
+];
+
+const certificationCombos = [
+  [1, 2, 3, 6], // First Aid, CPR, Wilderness First Aid, Climbing Instructor
+  [1, 2, 3, 8], // First Aid, CPR, Wilderness First Aid, Ropes Course
+  [1, 2, 10], // First Aid, CPR, Food Handler
+  [1, 2, 7], // First Aid, CPR, Archery
+  [4, 5, 2, 1], // Lifeguard, Swimming Instructor, CPR, First Aid
+  [1, 2, 3, 4, 9], // First Aid, CPR, Wilderness First Aid, Lifeguard, Boat Driver
+  [1, 2, 4, 9], // First Aid, CPR, Lifeguard, Boat Driver
+  [1, 2, 8, 6], // First Aid, CPR, Ropes Course, Climbing
+  [4, 5, 9, 2, 1], // Lifeguard, Swimming Instructor, Boat Driver, CPR, First Aid
+  [8, 1, 2, 6], // Ropes Course, First Aid, CPR, Climbing
+];
+
+const generateStaff = (count: number): StaffMember[] => {
+  const staff: StaffMember[] = [];
+  
+  // Director
+  staff.push({
     id: generateId('staff', 1),
     firstName: 'Sarah',
     lastName: 'Connor',
@@ -415,130 +426,64 @@ export const mockStaffMembers: StaffMember[] = [
     phone: '555-0101',
     certifications: ['First Aid', 'CPR', 'Wilderness First Aid', 'Climbing Instructor'],
     certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3), generateId('cert', 6)],
-    managerId: undefined, // Top of hierarchy
-  },
-  {
-    id: generateId('staff', 9),
-    firstName: 'James',
-    lastName: 'Rodriguez',
+    managerId: undefined,
+  });
+  
+  // Supervisors (4 total - reporting to director)
+  for (let i = 2; i <= 5; i++) {
+    const certCombo = certificationCombos[(i - 2) % certificationCombos.length];
+    staff.push({
+      id: generateId('staff', i),
+      firstName: staffFirstNames[i - 1],
+      lastName: staffLastNames[i - 1],
     role: 'supervisor',
-    email: 'james.rodriguez@camp.com',
-    phone: '555-0109',
-    certifications: ['First Aid', 'CPR', 'Wilderness First Aid', 'Ropes Course Instructor'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3), generateId('cert', 8)],
-    managerId: generateId('staff', 1), // Reports to Sarah (Director)
-  },
-  {
-    id: generateId('staff', 2),
-    firstName: 'Mike',
-    lastName: 'Peterson',
-    role: 'counselor',
-    email: 'mike.peterson@camp.com',
-    phone: '555-0102',
-    certifications: ['First Aid', 'CPR', 'Food Handler'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 10)],
-    managerId: generateId('staff', 9), // Reports to James (Supervisor)
-  },
-  {
-    id: generateId('staff', 3),
-    firstName: 'Jessica',
-    lastName: 'Lee',
-    role: 'counselor',
-    email: 'jessica.lee@camp.com',
-    phone: '555-0103',
-    certifications: ['First Aid', 'CPR', 'Archery Instructor'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 7)],
-    managerId: generateId('staff', 9), // Reports to James (Supervisor)
-  },
-  {
-    id: generateId('staff', 4),
-    firstName: 'David',
-    lastName: 'Chen',
-    role: 'instructor',
-    email: 'david.chen@camp.com',
-    phone: '555-0104',
-    certifications: ['Lifeguard', 'Swimming Instructor', 'CPR', 'First Aid'],
-    certificationIds: [generateId('cert', 4), generateId('cert', 5), generateId('cert', 2), generateId('cert', 1)],
-    managerId: generateId('staff', 9), // Reports to James (Supervisor)
-  },
-  {
-    id: generateId('staff', 5),
-    firstName: 'Rachel',
-    lastName: 'Martinez',
+      email: `${staffFirstNames[i - 1].toLowerCase()}.${staffLastNames[i - 1].toLowerCase()}@camp.com`,
+      phone: `555-${String(100 + i).padStart(4, '0')}`,
+      certifications: certCombo.map(c => mockCertifications[c - 1].name),
+      certificationIds: certCombo.map(c => generateId('cert', c)),
+      managerId: generateId('staff', 1),
+    });
+  }
+  
+  // Nurses (2 - reporting to director)
+  for (let i = 6; i <= 7; i++) {
+    staff.push({
+      id: generateId('staff', i),
+      firstName: staffFirstNames[i - 1],
+      lastName: staffLastNames[i - 1],
     role: 'nurse',
-    email: 'rachel.martinez@camp.com',
-    phone: '555-0105',
-    certifications: ['First Aid', 'CPR', 'Wilderness First Aid', 'Lifeguard', 'Boat Driver'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3), generateId('cert', 4), generateId('cert', 9)],
-    managerId: generateId('staff', 1), // Reports directly to Sarah (Director)
-  },
-  {
-    id: generateId('staff', 6),
-    firstName: 'Tom',
-    lastName: 'Wilson',
-    role: 'counselor',
-    email: 'tom.wilson@camp.com',
-    phone: '555-0106',
-    certifications: ['First Aid', 'CPR', 'Lifeguard', 'Boat Driver'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 4), generateId('cert', 9)],
-    managerId: generateId('staff', 9), // Reports to James (Supervisor)
-  },
-  {
-    id: generateId('staff', 7),
-    firstName: 'Amanda',
-    lastName: 'Foster',
-    role: 'counselor',
-    email: 'amanda.foster@camp.com',
-    phone: '555-0107',
-    certifications: ['First Aid', 'CPR', 'Ropes Course Instructor', 'Climbing Instructor'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 8), generateId('cert', 6)],
-    managerId: generateId('staff', 9), // Reports to James (Supervisor)
-  },
-  {
-    id: generateId('staff', 8),
-    firstName: 'Chris',
-    lastName: 'Bryant',
-    role: 'counselor',
-    email: 'chris.bryant@camp.com',
-    phone: '555-0108',
-    certifications: ['First Aid', 'CPR', 'Wilderness First Aid', 'Archery Instructor'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3), generateId('cert', 7)],
-    managerId: generateId('staff', 9), // Reports to James (Supervisor)
-  },
-  {
-    id: generateId('staff', 10),
-    firstName: 'Emily',
-    lastName: 'Davis',
-    role: 'instructor',
-    email: 'emily.davis@camp.com',
-    phone: '555-0110',
-    certifications: ['Ropes Course Instructor', 'First Aid', 'CPR', 'Climbing Instructor'],
-    certificationIds: [generateId('cert', 8), generateId('cert', 1), generateId('cert', 2), generateId('cert', 6)],
-    managerId: generateId('staff', 9), // Reports to James (Supervisor)
-  },
-  {
-    id: generateId('staff', 11),
-    firstName: 'Marcus',
-    lastName: 'Thompson',
-    role: 'instructor',
-    email: 'marcus.thompson@camp.com',
-    phone: '555-0111',
-    certifications: ['Lifeguard', 'Swimming Instructor', 'Boat Driver', 'CPR', 'First Aid'],
-    certificationIds: [generateId('cert', 4), generateId('cert', 5), generateId('cert', 9), generateId('cert', 2), generateId('cert', 1)],
-    managerId: generateId('staff', 9), // Reports to James (Supervisor)
-  },
-  {
-    id: generateId('staff', 12),
-    firstName: 'Lisa',
-    lastName: 'Kim',
-    role: 'counselor',
-    email: 'lisa.kim@camp.com',
-    phone: '555-0112',
-    certifications: ['First Aid', 'CPR', 'Food Handler'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 10)],
-    managerId: generateId('staff', 9), // Reports to James (Supervisor)
-  },
-];
+      email: `${staffFirstNames[i - 1].toLowerCase()}.${staffLastNames[i - 1].toLowerCase()}@camp.com`,
+      phone: `555-${String(100 + i).padStart(4, '0')}`,
+      certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
+      certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3)],
+      managerId: generateId('staff', 1),
+    });
+  }
+  
+  // Rest of staff (counselors and instructors - reporting to supervisors)
+  const roles: Array<'counselor' | 'instructor'> = ['counselor', 'instructor'];
+  for (let i = 8; i <= count; i++) {
+    const role = roles[(i - 8) % 2];
+    const supervisorId = 2 + ((i - 8) % 4); // Cycle through supervisors 2-5
+    const certCombo = certificationCombos[(i - 8) % certificationCombos.length];
+    
+    staff.push({
+      id: generateId('staff', i),
+      firstName: staffFirstNames[i % staffFirstNames.length],
+      lastName: staffLastNames[i % staffLastNames.length],
+      role,
+      email: `${staffFirstNames[i % staffFirstNames.length].toLowerCase()}.${staffLastNames[i % staffLastNames.length].toLowerCase()}@camp.com`,
+      phone: `555-${String(100 + i).padStart(4, '0')}`,
+      certifications: certCombo.map(c => mockCertifications[c - 1].name),
+      certificationIds: certCombo.map(c => generateId('cert', c)),
+      managerId: generateId('staff', supervisorId),
+    });
+  }
+  
+  return staff;
+};
+
+export const mockStaffMembers: StaffMember[] = generateStaff(50);
 
 export const mockRooms: Room[] = [
   {
@@ -679,8 +624,9 @@ const generateMonthEvents = (): Event[] => {
   // Helper to get sequential campers without overlap
   const getCampers = (count: number, startIdx: number) => {
     const campers = [];
+    const totalCampers = 350;
     for (let i = 0; i < count; i++) {
-      const camperId = ((startIdx + i) % 36) + 1; // Wrap around 36 campers
+      const camperId = ((startIdx + i) % totalCampers) + 1;
       campers.push(generateId('camper', camperId));
     }
     return campers;
@@ -695,12 +641,12 @@ const generateMonthEvents = (): Event[] => {
   for (let day = startDay; day < startDay + daysInMonth; day++) {
     const dayMod = Math.abs(day) % 7;
     // Use different camper pools for different time slots to avoid conflicts
-    let morningPool = (Math.abs(day) * 8) % 36;
-    let afternoonPool1 = (Math.abs(day) * 8 + 12) % 36;
-    let afternoonPool2 = (Math.abs(day) * 8 + 24) % 36;
-    let eveningPool = (Math.abs(day) * 8 + 2) % 36;
+    let morningPool = (Math.abs(day) * 30) % 350;
+    let afternoonPool1 = (Math.abs(day) * 30 + 100) % 350;
+    let afternoonPool2 = (Math.abs(day) * 30 + 200) % 350;
+    let eveningPool = (Math.abs(day) * 30 + 50) % 350;
     
-    // Morning Assembly (9:00-9:30) - Everyone (not every day)
+    // Morning Assembly (9:00-9:30) - Large groups (not every day)
     if (dayMod === 1 || dayMod === 3 || dayMod === 5) {
       events.push(createEvent(
         eventId++,
@@ -709,10 +655,10 @@ const generateMonthEvents = (): Event[] => {
         9,
         0.5,
         generateId('room', 1),
-        50,
+        150,
         'activity',
-        [generateId('staff', 1), generateId('staff', 2)],
-        getCampers(30, 0),
+        [generateId('staff', 1), generateId('staff', 2), generateId('staff', 3)],
+        getCampers(120, morningPool),
         '#6366F1',
       ));
     }
@@ -727,70 +673,138 @@ const generateMonthEvents = (): Event[] => {
         day,
         10,
         1.5,
-        generateId('room', 6),
-        10,
+        generateId('room', 2),
+        15,
         'activity',
-        [generateId('staff', 2)],
-        getCampers(8, morningPool),
+        [generateId('staff', 14), generateId('staff', 22)],
+        getCampers(12, morningPool),
         '#EC4899',
         undefined,
         generateId('program', 2),
-        generateId('activity', 4)
+        generateId('activity', 5)
       ));
-      // Soccer Practice - Group B (different campers, same time)
+      // Soccer - Group B
       events.push(createEvent(
         eventId++,
-        'Soccer Practice',
+        'Soccer',
         day,
         10,
         1.5,
+        generateId('room', 3),
+        25,
+        'sports',
+        [generateId('staff', 26), generateId('staff', 30)],
+        getCampers(22, morningPool + 12),
+        '#F59E0B',
+        undefined,
+        generateId('program', 6),
+        generateId('activity', 21)
+      ));
+      // Theater Workshop - Group C
+      events.push(createEvent(
+        eventId++,
+        'Theater Workshop',
+        day,
+        10,
+        1.5,
+        generateId('room', 10),
+        20,
+        'activity',
+        [generateId('staff', 13)],
+        getCampers(18, morningPool + 34),
+        '#8B5CF6',
+        undefined,
+        generateId('program', 4),
+        generateId('activity', 13)
+      ));
+      // Nature Hike - Group D
+      events.push(createEvent(
+        eventId++,
+        'Nature Hike',
+        day,
+        10,
+        2,
         generateId('room', 7),
         20,
-        'sports',
-        [generateId('staff', 6), generateId('staff', 8)],
-        getCampers(16, morningPool + 8),
-        '#10B981',
+        'activity',
+        [generateId('staff', 21), generateId('staff', 25)],
+        getCampers(18, morningPool + 52),
+        '#14B8A6',
+        undefined,
+        generateId('program', 5),
+        generateId('activity', 17)
       ));
     } else if (dayMod === 1 || dayMod === 4) {
       // Swimming Lessons from Watersports Program
-      // Staff 4 (David Chen) has: Lifeguard, Swimming Instructor, CPR, First Aid
       events.push(createEvent(
         eventId++,
         'Swimming Lessons',
         day,
         10,
         1,
-        generateId('room', 10),
-        12,
+        generateId('room', 4),
+        15,
         'sports',
-        [generateId('staff', 4)],
-        getCampers(10, morningPool),
+        [generateId('staff', 8), generateId('staff', 10)],
+        getCampers(12, morningPool),
         '#60A5FA',
         ['Lifeguard', 'Swimming Instructor'],
         generateId('program', 1),
         generateId('activity', 2)
       ));
-      // Painting workshop - different campers, same time
+      // Painting Workshop - different campers
       events.push(createEvent(
         eventId++,
         'Painting Workshop',
         day,
         10,
         1.25,
-        generateId('room', 9),
-        15,
+        generateId('room', 2),
+        18,
         'activity',
-        [generateId('staff', 2)],
-        getCampers(12, morningPool + 10),
+        [generateId('staff', 18)],
+        getCampers(15, morningPool + 12),
         '#F472B6',
         undefined,
         generateId('program', 2),
-        generateId('activity', 5)
+        generateId('activity', 6)
+      ));
+      // Basketball - Group C
+      events.push(createEvent(
+        eventId++,
+        'Basketball',
+        day,
+        10,
+        1.5,
+        generateId('room', 9),
+        20,
+        'sports',
+        [generateId('staff', 30)],
+        getCampers(18, morningPool + 27),
+        '#FBBF24',
+        undefined,
+        generateId('program', 6),
+        generateId('activity', 22)
+      ));
+      // Coding Basics - Group D
+      events.push(createEvent(
+        eventId++,
+        'Coding Basics',
+        day,
+        10,
+        1.5,
+        generateId('room', 5),
+        15,
+        'activity',
+        [generateId('staff', 33)],
+        getCampers(14, morningPool + 45),
+        '#06B6D4',
+        undefined,
+        generateId('program', 9),
+        generateId('activity', 31)
       ));
     } else if (dayMod === 2 || dayMod === 5) {
       // Rock Climbing from Adventure Sports Program
-      // Staff 1 (Sarah) has: Climbing Instructor, First Aid, CPR, Wilderness First Aid
-      // Staff 7 (Amanda) has: Climbing Instructor, Ropes Course Instructor, First Aid, CPR
       events.push(createEvent(
         eventId++,
         'Rock Climbing',
@@ -798,29 +812,117 @@ const generateMonthEvents = (): Event[] => {
         10,
         1.5,
         generateId('room', 3),
-        8,
+        12,
         'activity',
-        [generateId('staff', 1), generateId('staff', 7)],
-        getCampers(7, morningPool),
+        [generateId('staff', 9), generateId('staff', 11)],
+        getCampers(10, morningPool),
         '#10B981',
         ['Climbing Instructor', 'First Aid'],
         generateId('program', 3),
-        generateId('activity', 7)
+        generateId('activity', 9)
+      ));
+      // Archery - Group B
+      events.push(createEvent(
+        eventId++,
+        'Archery',
+        day,
+        10,
+        1,
+        generateId('room', 7),
+        15,
+        'activity',
+        [generateId('staff', 15), generateId('staff', 19)],
+        getCampers(12, morningPool + 10),
+        '#34D399',
+        ['Archery Instructor'],
+        generateId('program', 3),
+        generateId('activity', 10)
+      ));
+      // Music Jam Session - Group C
+      events.push(createEvent(
+        eventId++,
+        'Music Jam Session',
+        day,
+        10,
+        1,
+        generateId('room', 8),
+        15,
+        'activity',
+        [generateId('staff', 17)],
+        getCampers(14, morningPool + 22),
+        '#A78BFA',
+        undefined,
+        generateId('program', 4),
+        generateId('activity', 14)
+      ));
+      // Baking Class - Group D
+      events.push(createEvent(
+        eventId++,
+        'Baking Class',
+        day,
+        10,
+        1.5,
+        generateId('room', 6),
+        12,
+        'activity',
+        [generateId('staff', 28), generateId('staff', 32)],
+        getCampers(11, morningPool + 36),
+        '#EF4444',
+        undefined,
+        generateId('program', 8),
+        generateId('activity', 28)
       ));
     } else {
       // General Soccer Practice
       events.push(createEvent(
         eventId++,
-        'Soccer Practice',
+        'Soccer',
         day,
         10,
         1.5,
-        generateId('room', 7),
-        20,
+        generateId('room', 3),
+        25,
         'sports',
-        [generateId('staff', 6), generateId('staff', 8)],
-        getCampers(16, morningPool),
-        '#10B981',
+        [generateId('staff', 26), generateId('staff', 34)],
+        getCampers(22, morningPool),
+        '#F59E0B',
+        undefined,
+        generateId('program', 6),
+        generateId('activity', 21)
+      ));
+      // Yoga - Group B
+      events.push(createEvent(
+        eventId++,
+        'Yoga',
+        day,
+        10,
+        1,
+        generateId('room', 1),
+        25,
+        'activity',
+        [generateId('staff', 36)],
+        getCampers(24, morningPool + 22),
+        '#A855F7',
+        undefined,
+        generateId('program', 10),
+        generateId('activity', 34)
+      ));
+      // Tie-Dye - Group C
+      events.push(createEvent(
+        eventId++,
+        'Tie-Dye',
+        day,
+        10,
+        1.5,
+        generateId('room', 2),
+        20,
+        'activity',
+        [generateId('staff', 22)],
+        getCampers(18, morningPool + 46),
+        '#F9A8D4',
+        undefined,
+        generateId('program', 2),
+        generateId('activity', 8)
       ));
     }
     
@@ -832,10 +934,10 @@ const generateMonthEvents = (): Event[] => {
       12,
       1,
       generateId('room', 6),
-      60,
+      400,
       'meal',
-      [generateId('staff', 2), generateId('staff', 7)],
-      getCampers(36, 0), // All campers
+      [generateId('staff', 2), generateId('staff', 7), generateId('staff', 12), generateId('staff', 15)],
+      getCampers(350, 0), // All campers
       '#64748B',
     ));
     
@@ -990,10 +1092,10 @@ const generateMonthEvents = (): Event[] => {
       18,
       1,
       generateId('room', 6),
-      60,
+      400,
       'meal',
-      [generateId('staff', 3), generateId('staff', 6)],
-      getCampers(36, 0), // All campers
+      [generateId('staff', 3), generateId('staff', 6), generateId('staff', 10), generateId('staff', 14)],
+      getCampers(350, 0), // All campers
       '#64748B',
     ));
     
@@ -1006,10 +1108,10 @@ const generateMonthEvents = (): Event[] => {
         19.5,
         1,
         generateId('room', 7),
-        40,
+        150,
         'activity',
-        [generateId('staff', 1), generateId('staff', 2), generateId('staff', 3)],
-        getCampers(32, eveningPool),
+        [generateId('staff', 1), generateId('staff', 2), generateId('staff', 3), generateId('staff', 16)],
+        getCampers(120, eveningPool),
         '#F97316',
       ));
     } else if (dayMod === 6) {
@@ -1020,10 +1122,10 @@ const generateMonthEvents = (): Event[] => {
         19.5,
         1.5,
         generateId('room', 10),
-        25,
+        100,
         'activity',
-        [generateId('staff', 1), generateId('staff', 7)],
-        getCampers(20, eveningPool),
+        [generateId('staff', 1), generateId('staff', 7), generateId('staff', 17)],
+        getCampers(80, eveningPool),
         '#8B5CF6',
       ));
     } else if (dayMod === 4) {
@@ -1034,10 +1136,10 @@ const generateMonthEvents = (): Event[] => {
         19.5,
         2,
         generateId('room', 1),
-        45,
+        150,
         'activity',
-        [generateId('staff', 2), generateId('staff', 4)],
-        getCampers(34, eveningPool),
+        [generateId('staff', 2), generateId('staff', 4), generateId('staff', 18)],
+        getCampers(130, eveningPool),
         '#8B5CF6',
       ));
       // Intentionally create ONE conflict for demonstration - small overlap
@@ -1049,10 +1151,10 @@ const generateMonthEvents = (): Event[] => {
           20,
           1.5,
           generateId('room', 8),
-          15,
+          40,
           'activity',
-          [generateId('staff', 8)],
-          getCampers(10, eveningPool), // Same campers as Movie Night - creates conflict!
+          [generateId('staff', 8), generateId('staff', 19)],
+          getCampers(30, eveningPool), // Same campers as Movie Night - creates conflict!
           '#A78BFA',
         ));
       }
@@ -1067,10 +1169,10 @@ const generateMonthEvents = (): Event[] => {
         21,
         1,
         generateId('room', 1),
-        50,
+        200,
         'free-time',
-        [generateId('staff', 1), generateId('staff', 2)],
-        getCampers(34, eveningPool),
+        [generateId('staff', 1), generateId('staff', 2), generateId('staff', 20)],
+        getCampers(150, eveningPool),
         '#475569',
       ));
     }
@@ -1142,16 +1244,16 @@ export const mockCamperGroups: CamperGroup[] = [
   },
 ];
 
-// Programs
+// Programs - Expanded to 10 programs
 export const mockPrograms: Program[] = [
   {
     id: generateId('program', 1),
     name: 'Watersports',
-    description: 'Water-based activities including wakeboarding, jet skiing, and swimming',
+    description: 'Water-based activities including wakeboarding, kayaking, and swimming',
     color: '#3B82F6',
-    activityIds: [], // Will be populated by activities
-    staffMemberIds: ['staff-005', 'staff-006'], // Staff with relevant certifications
-    roomIds: ['room-005', 'room-010'], // Lake and Pool
+    activityIds: [],
+    staffMemberIds: ['staff-008', 'staff-010', 'staff-012', 'staff-016', 'staff-020'],
+    roomIds: ['room-004', 'room-010'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1161,8 +1263,8 @@ export const mockPrograms: Program[] = [
     description: 'Creative activities including pottery, painting, and jewelry making',
     color: '#EC4899',
     activityIds: [],
-    staffMemberIds: ['staff-002', 'staff-008'],
-    roomIds: ['room-006', 'room-009'], // Art Studios
+    staffMemberIds: ['staff-014', 'staff-018', 'staff-022'],
+    roomIds: ['room-002', 'room-008'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1172,23 +1274,100 @@ export const mockPrograms: Program[] = [
     description: 'High-energy outdoor activities including rock climbing, archery, and ropes course',
     color: '#10B981',
     activityIds: [],
-    staffMemberIds: ['staff-001', 'staff-003'],
-    roomIds: ['room-003', 'room-007'], // Gym and Outdoor Field
+    staffMemberIds: ['staff-009', 'staff-011', 'staff-015', 'staff-019'],
+    roomIds: ['room-003', 'room-007'],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('program', 4),
+    name: 'Performing Arts',
+    description: 'Theater, music, dance, and performance activities',
+    color: '#8B5CF6',
+    activityIds: [],
+    staffMemberIds: ['staff-013', 'staff-017', 'staff-24'],
+    roomIds: ['room-008', 'room-010'],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('program', 5),
+    name: 'Science & Nature',
+    description: 'Outdoor education, biology, astronomy, and environmental science',
+    color: '#14B8A6',
+    activityIds: [],
+    staffMemberIds: ['staff-021', 'staff-025', 'staff-29'],
+    roomIds: ['room-005', 'room-007'],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('program', 6),
+    name: 'Team Sports',
+    description: 'Soccer, basketball, volleyball, and other team-based sports',
+    color: '#F59E0B',
+    activityIds: [],
+    staffMemberIds: ['staff-026', 'staff-30', 'staff-34'],
+    roomIds: ['room-003', 'room-009'],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('program', 7),
+    name: 'Leadership Development',
+    description: 'Team building, leadership skills, and communication workshops',
+    color: '#6366F1',
+    activityIds: [],
+    staffMemberIds: ['staff-027', 'staff-31', 'staff-35'],
+    roomIds: ['room-001', 'room-005'],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('program', 8),
+    name: 'Cooking & Culinary',
+    description: 'Baking, cooking classes, and food science',
+    color: '#EF4444',
+    activityIds: [],
+    staffMemberIds: ['staff-028', 'staff-32'],
+    roomIds: ['room-006'],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('program', 9),
+    name: 'Technology & Gaming',
+    description: 'Coding, robotics, video production, and board games',
+    color: '#06B6D4',
+    activityIds: [],
+    staffMemberIds: ['staff-033', 'staff-37', 'staff-41'],
+    roomIds: ['room-005'],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('program', 10),
+    name: 'Wellness & Mindfulness',
+    description: 'Yoga, meditation, fitness, and mental health activities',
+    color: '#A855F7',
+    activityIds: [],
+    staffMemberIds: ['staff-036', 'staff-40', 'staff-44'],
+    roomIds: ['room-001', 'room-007'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
 ];
 
-// Activities
+// Activities - Expanded to 35 activities across all programs
 export const mockActivities: Activity[] = [
-  // Watersports Activities
+  // Watersports Activities (Program 1)
   {
     id: generateId('activity', 1),
     name: 'Wakeboarding',
     description: 'Learn wakeboarding basics or improve your skills on the lake',
     programIds: [generateId('program', 1)],
     durationMinutes: 120,
-    defaultRoomId: 'room-005', // Lake
+    defaultRoomId: 'room-004',
     requiredCertifications: ['Lifeguard', 'Boat Driver'],
     minStaff: 2,
     maxStaff: 3,
@@ -1203,7 +1382,7 @@ export const mockActivities: Activity[] = [
     description: 'Structured swimming instruction for all skill levels',
     programIds: [generateId('program', 1)],
     durationMinutes: 60,
-    defaultRoomId: 'room-010', // Pool
+    defaultRoomId: 'room-004',
     requiredCertifications: ['Lifeguard', 'Swimming Instructor'],
     minStaff: 2,
     maxStaff: 2,
@@ -1218,7 +1397,7 @@ export const mockActivities: Activity[] = [
     description: 'Explore the lake in kayaks with guided instruction',
     programIds: [generateId('program', 1)],
     durationMinutes: 90,
-    defaultRoomId: 'room-005', // Lake
+    defaultRoomId: 'room-004',
     requiredCertifications: ['Lifeguard'],
     minStaff: 2,
     maxStaff: 3,
@@ -1227,14 +1406,29 @@ export const mockActivities: Activity[] = [
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
-  // Arts & Crafts Activities
   {
     id: generateId('activity', 4),
+    name: 'Stand-Up Paddleboarding',
+    description: 'Balance and paddle on stand-up paddleboards',
+    programIds: [generateId('program', 1)],
+    durationMinutes: 75,
+    defaultRoomId: 'room-004',
+    requiredCertifications: ['Lifeguard'],
+    minStaff: 2,
+    maxStaff: 2,
+    defaultCapacity: 10,
+    color: '#1D4ED8',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Arts & Crafts Activities (Program 2)
+  {
+    id: generateId('activity', 5),
     name: 'Pottery',
     description: 'Create your own pottery pieces on the wheel',
     programIds: [generateId('program', 2)],
     durationMinutes: 90,
-    defaultRoomId: 'room-006', // Art Studio 1
+    defaultRoomId: 'room-002',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 10,
@@ -1243,12 +1437,12 @@ export const mockActivities: Activity[] = [
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
   {
-    id: generateId('activity', 5),
+    id: generateId('activity', 6),
     name: 'Painting Workshop',
     description: 'Express yourself through various painting techniques',
     programIds: [generateId('program', 2)],
     durationMinutes: 75,
-    defaultRoomId: 'room-009', // Art Studio 2
+    defaultRoomId: 'room-002',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 15,
@@ -1257,12 +1451,12 @@ export const mockActivities: Activity[] = [
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
   {
-    id: generateId('activity', 6),
+    id: generateId('activity', 7),
     name: 'Jewelry Making',
     description: 'Design and create your own jewelry pieces',
     programIds: [generateId('program', 2)],
     durationMinutes: 60,
-    defaultRoomId: 'room-009', // Art Studio 2
+    defaultRoomId: 'room-002',
     minStaff: 1,
     maxStaff: 1,
     defaultCapacity: 12,
@@ -1270,14 +1464,28 @@ export const mockActivities: Activity[] = [
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
-  // Adventure Sports Activities
   {
-    id: generateId('activity', 7),
+    id: generateId('activity', 8),
+    name: 'Tie-Dye',
+    description: 'Create colorful tie-dye shirts and accessories',
+    programIds: [generateId('program', 2)],
+    durationMinutes: 90,
+    defaultRoomId: 'room-002',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 20,
+    color: '#F9A8D4',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Adventure Sports Activities (Program 3)
+  {
+    id: generateId('activity', 9),
     name: 'Rock Climbing',
     description: 'Indoor rock climbing with safety instruction',
     programIds: [generateId('program', 3)],
     durationMinutes: 90,
-    defaultRoomId: 'room-003', // Gym
+    defaultRoomId: 'room-003',
     requiredCertifications: ['Climbing Instructor', 'First Aid'],
     minStaff: 2,
     maxStaff: 3,
@@ -1287,12 +1495,12 @@ export const mockActivities: Activity[] = [
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
   {
-    id: generateId('activity', 8),
+    id: generateId('activity', 10),
     name: 'Archery',
     description: 'Learn archery basics and target practice',
     programIds: [generateId('program', 3)],
     durationMinutes: 60,
-    defaultRoomId: 'room-007', // Outdoor Field
+    defaultRoomId: 'room-007',
     requiredCertifications: ['Archery Instructor'],
     minStaff: 2,
     maxStaff: 2,
@@ -1302,12 +1510,12 @@ export const mockActivities: Activity[] = [
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
   {
-    id: generateId('activity', 9),
+    id: generateId('activity', 11),
     name: 'Ropes Course',
     description: 'Challenge yourself on our high ropes course',
     programIds: [generateId('program', 3)],
     durationMinutes: 120,
-    defaultRoomId: 'room-007', // Outdoor Field
+    defaultRoomId: 'room-007',
     requiredCertifications: ['Ropes Course Instructor', 'First Aid'],
     minStaff: 3,
     maxStaff: 4,
@@ -1316,24 +1524,362 @@ export const mockActivities: Activity[] = [
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
+  {
+    id: generateId('activity', 12),
+    name: 'Orienteering',
+    description: 'Navigation and map reading in the wilderness',
+    programIds: [generateId('program', 3)],
+    durationMinutes: 120,
+    defaultRoomId: 'room-007',
+    minStaff: 2,
+    maxStaff: 3,
+    defaultCapacity: 15,
+    color: '#10B981',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Performing Arts Activities (Program 4)
+  {
+    id: generateId('activity', 13),
+    name: 'Theater Workshop',
+    description: 'Acting exercises and scene work',
+    programIds: [generateId('program', 4)],
+    durationMinutes: 90,
+    defaultRoomId: 'room-010',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 20,
+    color: '#8B5CF6',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 14),
+    name: 'Music Jam Session',
+    description: 'Play instruments and create music together',
+    programIds: [generateId('program', 4)],
+    durationMinutes: 60,
+    defaultRoomId: 'room-008',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 15,
+    color: '#A78BFA',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 15),
+    name: 'Dance Class',
+    description: 'Learn various dance styles and choreography',
+    programIds: [generateId('program', 4)],
+    durationMinutes: 75,
+    defaultRoomId: 'room-001',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 25,
+    color: '#C4B5FD',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 16),
+    name: 'Improv Comedy',
+    description: 'Quick thinking and comedy improvisation',
+    programIds: [generateId('program', 4)],
+    durationMinutes: 60,
+    defaultRoomId: 'room-010',
+    minStaff: 1,
+    maxStaff: 1,
+    defaultCapacity: 18,
+    color: '#7C3AED',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Science & Nature Activities (Program 5)
+  {
+    id: generateId('activity', 17),
+    name: 'Nature Hike',
+    description: 'Explore local trails and learn about ecology',
+    programIds: [generateId('program', 5)],
+    durationMinutes: 120,
+    defaultRoomId: 'room-007',
+    minStaff: 2,
+    maxStaff: 3,
+    defaultCapacity: 20,
+    color: '#14B8A6',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 18),
+    name: 'Stargazing',
+    description: 'Learn about constellations and astronomy',
+    programIds: [generateId('program', 5)],
+    durationMinutes: 90,
+    defaultRoomId: 'room-007',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 30,
+    color: '#5EEAD4',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 19),
+    name: 'Biology Lab',
+    description: 'Hands-on experiments and microscope work',
+    programIds: [generateId('program', 5)],
+    durationMinutes: 75,
+    defaultRoomId: 'room-005',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 15,
+    color: '#2DD4BF',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 20),
+    name: 'Gardening',
+    description: 'Learn about plants and sustainable gardening',
+    programIds: [generateId('program', 5)],
+    durationMinutes: 60,
+    defaultRoomId: 'room-007',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 12,
+    color: '#14B8A6',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Team Sports Activities (Program 6)
+  {
+    id: generateId('activity', 21),
+    name: 'Soccer',
+    description: 'Team soccer games and skill development',
+    programIds: [generateId('program', 6)],
+    durationMinutes: 90,
+    defaultRoomId: 'room-003',
+    minStaff: 2,
+    maxStaff: 3,
+    defaultCapacity: 22,
+    color: '#F59E0B',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 22),
+    name: 'Basketball',
+    description: 'Basketball drills and games',
+    programIds: [generateId('program', 6)],
+    durationMinutes: 90,
+    defaultRoomId: 'room-009',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 20,
+    color: '#FBBF24',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 23),
+    name: 'Volleyball',
+    description: 'Volleyball techniques and matches',
+    programIds: [generateId('program', 6)],
+    durationMinutes: 75,
+    defaultRoomId: 'room-003',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 16,
+    color: '#FCD34D',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 24),
+    name: 'Ultimate Frisbee',
+    description: 'Fast-paced team frisbee games',
+    programIds: [generateId('program', 6)],
+    durationMinutes: 60,
+    defaultRoomId: 'room-003',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 20,
+    color: '#F59E0B',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Leadership Development Activities (Program 7)
+  {
+    id: generateId('activity', 25),
+    name: 'Team Building Games',
+    description: 'Collaborative challenges and trust exercises',
+    programIds: [generateId('program', 7)],
+    durationMinutes: 90,
+    defaultRoomId: 'room-007',
+    minStaff: 2,
+    maxStaff: 3,
+    defaultCapacity: 25,
+    color: '#6366F1',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 26),
+    name: 'Public Speaking',
+    description: 'Develop confidence and presentation skills',
+    programIds: [generateId('program', 7)],
+    durationMinutes: 60,
+    defaultRoomId: 'room-005',
+    minStaff: 1,
+    maxStaff: 1,
+    defaultCapacity: 15,
+    color: '#818CF8',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 27),
+    name: 'Conflict Resolution',
+    description: 'Learn mediation and problem-solving skills',
+    programIds: [generateId('program', 7)],
+    durationMinutes: 75,
+    defaultRoomId: 'room-005',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 20,
+    color: '#A5B4FC',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Cooking & Culinary Activities (Program 8)
+  {
+    id: generateId('activity', 28),
+    name: 'Baking Class',
+    description: 'Learn to bake cookies, cakes, and pastries',
+    programIds: [generateId('program', 8)],
+    durationMinutes: 90,
+    defaultRoomId: 'room-006',
+    minStaff: 2,
+    maxStaff: 2,
+    defaultCapacity: 12,
+    color: '#EF4444',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 29),
+    name: 'Cooking Workshop',
+    description: 'Prepare healthy meals and learn kitchen safety',
+    programIds: [generateId('program', 8)],
+    durationMinutes: 120,
+    defaultRoomId: 'room-006',
+    minStaff: 2,
+    maxStaff: 3,
+    defaultCapacity: 15,
+    color: '#F87171',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 30),
+    name: 'Food Science',
+    description: 'Explore the chemistry of cooking',
+    programIds: [generateId('program', 8)],
+    durationMinutes: 75,
+    defaultRoomId: 'room-006',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 12,
+    color: '#FCA5A5',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Technology & Gaming Activities (Program 9)
+  {
+    id: generateId('activity', 31),
+    name: 'Coding Basics',
+    description: 'Introduction to programming with Scratch or Python',
+    programIds: [generateId('program', 9)],
+    durationMinutes: 90,
+    defaultRoomId: 'room-005',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 15,
+    color: '#06B6D4',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 32),
+    name: 'Robotics',
+    description: 'Build and program simple robots',
+    programIds: [generateId('program', 9)],
+    durationMinutes: 120,
+    defaultRoomId: 'room-005',
+    minStaff: 2,
+    maxStaff: 2,
+    defaultCapacity: 12,
+    color: '#22D3EE',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 33),
+    name: 'Board Game Tournament',
+    description: 'Strategic board games and tournaments',
+    programIds: [generateId('program', 9)],
+    durationMinutes: 90,
+    defaultRoomId: 'room-001',
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 20,
+    color: '#67E8F9',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Wellness & Mindfulness Activities (Program 10)
+  {
+    id: generateId('activity', 34),
+    name: 'Yoga',
+    description: 'Gentle yoga practice for all levels',
+    programIds: [generateId('program', 10)],
+    durationMinutes: 60,
+    defaultRoomId: 'room-001',
+    minStaff: 1,
+    maxStaff: 1,
+    defaultCapacity: 25,
+    color: '#A855F7',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: generateId('activity', 35),
+    name: 'Meditation & Mindfulness',
+    description: 'Breathing exercises and guided meditation',
+    programIds: [generateId('program', 10)],
+    durationMinutes: 45,
+    defaultRoomId: 'room-007',
+    minStaff: 1,
+    maxStaff: 1,
+    defaultCapacity: 30,
+    color: '#C084FC',
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
 ];
 
 // Update programs with activity IDs
-mockPrograms[0].activityIds = [
-  generateId('activity', 1),
-  generateId('activity', 2),
-  generateId('activity', 3),
-];
-mockPrograms[1].activityIds = [
-  generateId('activity', 4),
-  generateId('activity', 5),
-  generateId('activity', 6),
-];
-mockPrograms[2].activityIds = [
-  generateId('activity', 7),
-  generateId('activity', 8),
-  generateId('activity', 9),
-];
+mockPrograms[0].activityIds = [generateId('activity', 1), generateId('activity', 2), generateId('activity', 3), generateId('activity', 4)];
+mockPrograms[1].activityIds = [generateId('activity', 5), generateId('activity', 6), generateId('activity', 7), generateId('activity', 8)];
+mockPrograms[2].activityIds = [generateId('activity', 9), generateId('activity', 10), generateId('activity', 11), generateId('activity', 12)];
+mockPrograms[3].activityIds = [generateId('activity', 13), generateId('activity', 14), generateId('activity', 15), generateId('activity', 16)];
+mockPrograms[4].activityIds = [generateId('activity', 17), generateId('activity', 18), generateId('activity', 19), generateId('activity', 20)];
+mockPrograms[5].activityIds = [generateId('activity', 21), generateId('activity', 22), generateId('activity', 23), generateId('activity', 24)];
+mockPrograms[6].activityIds = [generateId('activity', 25), generateId('activity', 26), generateId('activity', 27)];
+mockPrograms[7].activityIds = [generateId('activity', 28), generateId('activity', 29), generateId('activity', 30)];
+mockPrograms[8].activityIds = [generateId('activity', 31), generateId('activity', 32), generateId('activity', 33)];
+mockPrograms[9].activityIds = [generateId('activity', 34), generateId('activity', 35)];
 
 // Export all mock data together for easy import
 export const mockData = {
