@@ -108,6 +108,8 @@
     <EventFormModal
       :show="showEventModal"
       :is-editing="!!editingEventId"
+      :editing-event-id="editingEventId || ''"
+      :event-date="getEventFormDate()"
       :form-data="eventFormData"
       :rooms="store.rooms"
       :staff-members="store.staffMembers"
@@ -351,6 +353,16 @@ export default defineComponent({
     },
     selectEvent(event: Event) {
       this.selectedEventId = event.id;
+    },
+    getEventFormDate(): Date {
+      // If editing, use the event's date; otherwise use selected date
+      if (this.editingEventId) {
+        const event = this.store.getEventById(this.editingEventId);
+        if (event) {
+          return new Date(event.startTime);
+        }
+      }
+      return this.selectedDate;
     },
     editEvent() {
       if (!this.selectedEvent) return;

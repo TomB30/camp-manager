@@ -239,6 +239,49 @@ export class ConflictDetector {
     return { canEnroll: true };
   }
 
+  /**
+   * Check if a staff member is available for a specific event time
+   */
+  canAssignStaff(
+    eventStartTime: string | Date, 
+    eventEndTime: string | Date, 
+    staffId: string, 
+    allEvents: Event[],
+    excludeEventId?: string
+  ): { 
+    canAssign: boolean; 
+    reason?: string;
+    conflictingEvent?: Event;
+  } {
+    // Get all events this staff member is assigned to
+    const staffEvents = allEvents.filter(e => 
+      e.assignedStaffIds?.includes(staffId) && e.id !== excludeEventId
+    );
+
+    // Create a temporary event object to check overlaps
+    const tempEvent = {
+      startTime: typeof eventStartTime === 'string' ? eventStartTime : eventStartTime.toISOString(),
+      endTime: typeof eventEndTime === 'string' ? eventEndTime : eventEndTime.toISOString(),
+    } as Event;
+
+    // Check for time conflicts
+    for (const existingEvent of staffEvents) {
+      if (this.eventsOverlap(tempEvent, existingEvent)) {
+        const startTime = new Date(existingEvent.startTime).toLocaleTimeString('en-US', { 
+          hour: 'numeric', 
+          minute: '2-digit' 
+        });
+        return {
+          canAssign: false,
+          reason: `Already assigned to "${existingEvent.title}" at ${startTime}`,
+          conflictingEvent: existingEvent,
+        };
+      }
+    }
+
+    return { canAssign: true };
+  }
+
   private eventsOverlap(event1: Event, event2: Event): boolean {
     const start1 = new Date(event1.startTime).getTime();
     const end1 = new Date(event1.endTime).getTime();

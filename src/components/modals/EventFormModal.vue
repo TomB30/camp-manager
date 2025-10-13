@@ -98,8 +98,9 @@
             :get-options-fn="getStaffOption"
           >
             <template #after-items>
-              <div v-if="selectedCertificationIds.length > 0" class="text-xs text-secondary mt-2">
-                ✓ = Has all required certifications
+              <div class="text-xs text-secondary mt-2">
+                <div v-if="selectedCertificationIds.length > 0">✓ = Has all required certifications</div>
+                <div>⚠️ = Already assigned to another event at this time</div>
               </div>
             </template>
           </SelectionList>
@@ -145,6 +146,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import { useCampStore } from '@/stores/campStore';
+import { conflictDetector } from '@/services/conflicts';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
@@ -186,6 +188,14 @@ export default defineComponent({
     formData: {
       type: Object as PropType<EventFormData>,
       required: true,
+    },
+    eventDate: {
+      type: Date,
+      required: true,
+    },
+    editingEventId: {
+      type: String,
+      default: null,
     },
     rooms: {
       type: Array as PropType<Room[]>,
@@ -251,6 +261,20 @@ export default defineComponent({
     availableStaffMembers(): StaffMember[] {
       // Return staff members with their original data
       return this.staffMembers;
+    },
+    eventStartDateTime(): Date | null {
+      if (!this.localFormData.startTime) return null;
+      const [hours, minutes] = this.localFormData.startTime.split(':').map(Number);
+      const date = new Date(this.eventDate);
+      date.setHours(hours, minutes, 0, 0);
+      return date;
+    },
+    eventEndDateTime(): Date | null {
+      if (!this.localFormData.endTime) return null;
+      const [hours, minutes] = this.localFormData.endTime.split(':').map(Number);
+      const date = new Date(this.eventDate);
+      date.setHours(hours, minutes, 0, 0);
+      return date;
     }
   },
   watch: {
@@ -380,28 +404,69 @@ export default defineComponent({
       if (!staff.certificationIds || staff.certificationIds.length === 0) return false;
       return this.selectedCertificationIds.every(certId => staff.certificationIds!.includes(certId));
     },
+    isStaffAvailable(staff: StaffMember): { available: boolean; reason?: string } {
+      if (!this.eventStartDateTime || !this.eventEndDateTime) {
+        return { available: true };
+      }
+
+      const result = conflictDetector.canAssignStaff(
+        this.eventStartDateTime,
+        this.eventEndDateTime,
+        staff.id,
+        this.store.events,
+        this.editingEventId || undefined
+      );
+
+      return { available: result.canAssign, reason: result.reason };
+    },
     getStaffLabel(staff: StaffMember): string {
       const baseLabel = `${staff.firstName} ${staff.lastName} - ${staff.role}`;
+      const availability = this.isStaffAvailable(staff);
+      
+      let prefix = '';
+      
+      // Check certifications
       if (this.selectedCertificationIds.length > 0) {
         const hasCerts = this.staffHasRequiredCertifications(staff);
-        return hasCerts ? `✓ ${baseLabel}` : baseLabel;
+        if (hasCerts) {
+          prefix = '✓ ';
+        }
       }
-      return baseLabel;
+      
+      // Check availability
+      if (!availability.available) {
+        return `⚠️ ${baseLabel} (${availability.reason})`;
+      }
+      
+      return prefix + baseLabel;
     },
     getStaffInitials(staff: StaffMember): string {
       return `${staff.firstName[0]}${staff.lastName[0]}`.toUpperCase();
     },
     getStaffOption(staff: StaffMember): AutocompleteOption {
       const baseLabel = `${staff.firstName} ${staff.lastName} - ${staff.role}`;
+      const availability = this.isStaffAvailable(staff);
+      
+      let prefix = '';
+      
+      // Check certifications
       if (this.selectedCertificationIds.length > 0) {
         const hasCerts = this.staffHasRequiredCertifications(staff);
+        if (hasCerts) {
+          prefix = '✓ ';
+        }
+      }
+      
+      // Check availability
+      if (!availability.available) {
         return {
-          label: hasCerts ? `✓ ${baseLabel}` : baseLabel,
+          label: `⚠️ ${baseLabel} (${availability.reason})`,
           value: staff.id
         };
       }
+      
       return {
-        label: baseLabel,
+        label: prefix + baseLabel,
         value: staff.id
       };
     },
