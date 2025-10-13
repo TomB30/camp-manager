@@ -1,10 +1,20 @@
 <template>
   <BaseModal
     :show="show"
-    :title="activity?.name || 'Activity Details'"
     size="large"
     @close="$emit('close')"
   >
+    <template #header>
+      <div class="activity-title-header">
+        <div 
+          v-if="activity?.color" 
+          class="activity-color-indicator"
+          :style="{ background: activity.color }"
+        ></div>
+        <h3>{{ activity?.name || 'Activity Details' }}</h3>
+      </div>
+    </template>
+
     <template #body>
       <div v-if="activity" class="activity-detail">
         <div v-if="activity.description" class="detail-section">
@@ -57,14 +67,6 @@
             >
               {{ cert }}
             </span>
-          </div>
-        </div>
-
-        <div v-if="activity.color" class="detail-section">
-          <h4>Event Color</h4>
-          <div class="color-preview">
-            <div class="color-swatch" :style="{ background: activity.color }"></div>
-            <span class="color-value">{{ activity.color }}</span>
           </div>
         </div>
 
@@ -132,6 +134,25 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.activity-title-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.activity-color-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.activity-title-header h3 {
+  margin: 0;
+  flex: 1;
+}
+
 .activity-detail {
   display: flex;
   flex-direction: column;
@@ -204,26 +225,6 @@ export default defineComponent({
   border-radius: var(--radius);
   font-size: 0.875rem;
   font-weight: 500;
-}
-
-.color-preview {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.color-swatch {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius);
-  border: 2px solid var(--border-light);
-  box-shadow: var(--shadow-sm);
-}
-
-.color-value {
-  font-family: 'Monaco', 'Courier New', monospace;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
 }
 
 .programs-list {

@@ -62,6 +62,8 @@ export default defineComponent({
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+  padding: 4px; /* Add padding to prevent box-shadow clipping */
+  margin: -4px; /* Negative margin to maintain visual alignment */
 }
 
 .color-option {

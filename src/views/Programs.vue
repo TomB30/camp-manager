@@ -669,9 +669,13 @@ export default defineComponent({
       this.showActivityModal = true;
       this.selectedActivityId = null;
     },
-    handleCreateNewActivity() {
-      this.editingActivity = null;
-      this.showActivityModal = true;
+    async handleCreateNewActivity(activity: Activity) {
+      try {
+        await this.store.addActivity(activity);
+        this.toast.success("Activity created successfully");
+      } catch (error: any) {
+        this.toast.error(error.message || "Failed to create activity");
+      }
     },
     async handleAddExistingActivity(activityId: string) {
       if (!this.selectedProgramId) return;
