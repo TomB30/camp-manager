@@ -1054,7 +1054,7 @@ export default defineComponent({
   padding-top: 0.75rem;
   position: sticky;
   left: 0;
-  z-index: 20;
+  z-index: 200;
 }
 
 .day-col {
