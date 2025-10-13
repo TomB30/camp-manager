@@ -12,6 +12,7 @@
         v-model:searchQuery="searchQuery"
         v-model:filter-role="filterRole"
         v-model:filter-certification="filterCertification"
+        v-model:filter-program="filterProgram"
         :filters="staffFilters"
         :filtered-count="filteredMembers.length"
         :total-count="store.staffMembers.length"
@@ -188,6 +189,7 @@ export default defineComponent({
       searchQuery: '',
       filterRole: '',
       filterCertification: '',
+      filterProgram: '',
       memberColumns: [
         { key: 'name', label: 'Name', width: '200px' },
         { key: 'role', label: 'Role', width: '140px' },
@@ -246,6 +248,15 @@ export default defineComponent({
             value: cert.name
           })),
         },
+        {
+          model: 'filterProgram',
+          value: this.filterProgram,
+          placeholder: 'Filter by Program',
+          options: this.store.programs.map(program => ({
+            label: program.name,
+            value: program.id
+          })),
+        },
       ];
     },
     selectedMember(): StaffMember | null {
@@ -282,6 +293,14 @@ export default defineComponent({
         });
       }
 
+      // Program filter
+      if (this.filterProgram) {
+        members = members.filter((member: StaffMember) => {
+          const program = this.store.getProgramById(this.filterProgram);
+          return program && program.staffMemberIds.includes(member.id);
+        });
+      }
+
       return members;
     }
   },
@@ -293,6 +312,9 @@ export default defineComponent({
       this.currentPage = 1;
     },
     filterCertification() {
+      this.currentPage = 1;
+    },
+    filterProgram() {
       this.currentPage = 1;
     }
   },
@@ -309,6 +331,7 @@ export default defineComponent({
       this.searchQuery = '';
       this.filterRole = '';
       this.filterCertification = '';
+      this.filterProgram = '';
     },
     getDirectReports(managerId: string): StaffMember[] {
       return this.filteredMembers.filter(member => member.managerId === managerId);

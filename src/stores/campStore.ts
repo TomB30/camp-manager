@@ -178,6 +178,20 @@ export const useCampStore = defineStore('camp', {
         return state.certifications.find(c => c.id === id);
       };
     },
+
+    getProgramsForStaffMember(state): (staffId: string) => Program[] {
+      return (staffId: string): Program[] => {
+        return state.programs.filter(p => p.staffMemberIds.includes(staffId));
+      };
+    },
+
+    getStaffMembersInProgram(state): (programId: string) => StaffMember[] {
+      return (programId: string): StaffMember[] => {
+        const program = state.programs.find(p => p.id === programId);
+        if (!program) return [];
+        return state.staffMembers.filter(s => program.staffMemberIds.includes(s.id));
+      };
+    },
   },
 
   actions: {

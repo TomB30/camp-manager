@@ -181,6 +181,17 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">Program (Optional)</label>
+          <Autocomplete
+            v-model="localFormData.programId"
+            :options="programOptions"
+            placeholder="Select a program..."
+            @update:modelValue="onProgramSelected"
+          />
+          <p class="form-help-text">Selecting a program helps auto-suggest staff members from that program</p>
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Color</label>
           <ColorPicker v-model="localFormData.color" />
         </div>
@@ -203,7 +214,17 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Assign Staff Members (Optional)</label>
+          <div class="form-label-with-action">
+            <label class="form-label">Assign Staff Members (Optional)</label>
+            <button 
+              v-if="localFormData.programId" 
+              type="button"
+              class="btn btn-sm btn-secondary"
+              @click="autoAssignStaffFromProgram"
+            >
+              Auto-assign from {{ selectedProgramName }}
+            </button>
+          </div>
           <SelectionList
             v-model="localFormData.assignedStaffIds"
             :items="availableStaffMembers"
@@ -220,6 +241,7 @@
               <div class="text-xs text-secondary mt-2">
                 <div v-if="selectedCertificationIds.length > 0">✓ = Has all required certifications</div>
                 <div>⚠️ = Already assigned to another event at this time</div>
+                <div v-if="localFormData.programId">🎯 = Part of selected program</div>
               </div>
             </template>
           </SelectionList>
@@ -266,6 +288,7 @@
 import { defineComponent, type PropType } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { conflictDetector } from '@/services/conflicts';
+import { useToast } from '@/composables/useToast';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
@@ -338,6 +361,10 @@ export default defineComponent({
     }
   },
   emits: ['close', 'save'],
+  setup() {
+    const toast = useToast();
+    return { toast };
+  },
   data() {
     return {
       localFormData: JSON.parse(JSON.stringify(this.formData)),
@@ -366,6 +393,20 @@ export default defineComponent({
   computed: {
     store() {
       return useCampStore();
+    },
+    programOptions(): AutocompleteOption[] {
+      return [
+        { label: 'None', value: '' },
+        ...this.store.programs.map(program => ({
+          label: program.name,
+          value: program.id
+        }))
+      ];
+    },
+    selectedProgramName(): string {
+      if (!this.localFormData.programId) return '';
+      const program = this.store.getProgramById(this.localFormData.programId);
+      return program ? program.name : '';
     },
     roomOptions(): AutocompleteOption[] {
       return this.rooms.map(room => ({
@@ -563,6 +604,11 @@ export default defineComponent({
         value: cert.id
       };
     },
+    isStaffInSelectedProgram(staff: StaffMember): boolean {
+      if (!this.localFormData.programId) return false;
+      const program = this.store.getProgramById(this.localFormData.programId);
+      return program ? program.staffMemberIds.includes(staff.id) : false;
+    },
     staffHasRequiredCertifications(staff: StaffMember): boolean {
       if (this.selectedCertificationIds.length === 0) return true;
       if (!staff.certificationIds || staff.certificationIds.length === 0) return false;
@@ -589,17 +635,22 @@ export default defineComponent({
       
       let prefix = '';
       
+      // Check program membership
+      if (this.isStaffInSelectedProgram(staff)) {
+        prefix = '🎯 ';
+      }
+      
       // Check certifications
       if (this.selectedCertificationIds.length > 0) {
         const hasCerts = this.staffHasRequiredCertifications(staff);
         if (hasCerts) {
-          prefix = '✓ ';
+          prefix = prefix ? prefix + '✓ ' : '✓ ';
         }
       }
       
       // Check availability
       if (!availability.available) {
-        return `⚠️ ${baseLabel} (${availability.reason})`;
+        return `⚠️ ${prefix}${baseLabel} (${availability.reason})`;
       }
       
       return prefix + baseLabel;
@@ -613,18 +664,23 @@ export default defineComponent({
       
       let prefix = '';
       
+      // Check program membership
+      if (this.isStaffInSelectedProgram(staff)) {
+        prefix = '🎯 ';
+      }
+      
       // Check certifications
       if (this.selectedCertificationIds.length > 0) {
         const hasCerts = this.staffHasRequiredCertifications(staff);
         if (hasCerts) {
-          prefix = '✓ ';
+          prefix = prefix ? prefix + '✓ ' : '✓ ';
         }
       }
       
       // Check availability
       if (!availability.available) {
         return {
-          label: `⚠️ ${baseLabel} (${availability.reason})`,
+          label: `⚠️ ${prefix}${baseLabel} (${availability.reason})`,
           value: staff.id
         };
       }
@@ -633,6 +689,68 @@ export default defineComponent({
         label: prefix + baseLabel,
         value: staff.id
       };
+    },
+    onProgramSelected(programId: string) {
+      if (!programId) return;
+      
+      const program = this.store.getProgramById(programId);
+      if (!program) return;
+      
+      // Auto-apply program color if event color is not set or is default
+      if (!this.localFormData.color || this.localFormData.color === '#6366F1') {
+        if (program.color) {
+          this.localFormData.color = program.color;
+        }
+      }
+    },
+    autoAssignStaffFromProgram() {
+      if (!this.localFormData.programId) return;
+      
+      const programStaff = this.store.getStaffMembersInProgram(this.localFormData.programId);
+      
+      if (programStaff.length === 0) {
+        this.toast.warning('No staff members are assigned to this program.');
+        return;
+      }
+      
+      // Filter staff members based on certifications and availability
+      const eligibleStaff = programStaff.filter(staff => {
+        // Check if has required certifications
+        if (this.selectedCertificationIds.length > 0) {
+          const hasCerts = this.staffHasRequiredCertifications(staff);
+          if (!hasCerts) return false;
+        }
+        
+        // Check availability
+        const availability = this.isStaffAvailable(staff);
+        return availability.available;
+      });
+      
+      if (eligibleStaff.length === 0) {
+        this.toast.warning(
+          'No available staff found',
+          'No staff members from this program meet the requirements (certifications or availability).'
+        );
+        return;
+      }
+      
+      // Add eligible staff to the assignment list (avoiding duplicates)
+      const staffIdsToAdd = eligibleStaff
+        .map(s => s.id)
+        .filter(id => !this.localFormData.assignedStaffIds.includes(id));
+      
+      if (staffIdsToAdd.length === 0) {
+        this.toast.info('All eligible staff are already assigned to this event.');
+        return;
+      }
+      
+      this.localFormData.assignedStaffIds.push(...staffIdsToAdd);
+      
+      // Show confirmation
+      this.toast.success(
+        'Staff assigned successfully',
+        `Added ${staffIdsToAdd.length} staff member(s) from ${this.selectedProgramName}.`
+      );
     },
     toggleDay(day: number) {
       if (!this.recurrenceData.daysOfWeek) {
@@ -654,7 +772,7 @@ export default defineComponent({
       if (this.recurrenceData.enabled) {
         const validation = validateRecurrenceRule(this.recurrenceData);
         if (!validation.valid) {
-          alert(validation.error);
+          this.toast.error('Invalid recurrence settings', validation.error);
           return;
         }
       }
@@ -669,6 +787,22 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.form-label-with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.form-label-with-action .form-label {
+  margin-bottom: 0;
+}
+
+.btn-sm {
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+}
+
 .form-help-text {
   margin-top: 0.25rem;
   font-size: 0.75rem;

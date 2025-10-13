@@ -49,6 +49,21 @@
         </div>
 
         <div class="detail-section">
+          <div class="detail-label">Programs</div>
+          <div v-if="memberPrograms.length > 0" class="flex gap-1 flex-wrap">
+            <span 
+              v-for="program in memberPrograms" 
+              :key="program.id" 
+              class="badge badge-program"
+              :style="{ backgroundColor: program.color || '#6366F1', color: 'white' }"
+            >
+              {{ program.name }}
+            </span>
+          </div>
+          <div v-else class="text-secondary">Not assigned to any programs</div>
+        </div>
+
+        <div class="detail-section">
           <div class="detail-label">Assigned Events</div>
           <slot name="events-list">
             <div class="text-secondary">No events assigned</div>
@@ -101,6 +116,10 @@ export default defineComponent({
           return cert ? cert.name : '';
         })
         .filter(name => name.length > 0);
+    },
+    memberPrograms() {
+      if (!this.member) return [];
+      return this.store.getProgramsForStaffMember(this.member.id);
     }
   },
   methods: {
@@ -121,6 +140,13 @@ export default defineComponent({
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
+}
+
+.badge-program {
+  font-weight: 500;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
 }
 </style>
 
