@@ -12,7 +12,12 @@
     <div class="events-grid">
       <!-- Time grid background -->
       <div class="grid-lines">
-        <div v-for="hour in hours" :key="hour" class="grid-line"></div>
+        <div 
+          v-for="hour in hours" 
+          :key="hour" 
+          class="grid-line"
+          @click="handleTimeSlotClick(hour)"
+        ></div>
       </div>
 
       <!-- Events -->
@@ -51,7 +56,7 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['select-event'],
+  emits: ['select-event', 'create-event'],
   data() {
     return {
       hours: Array.from({ length: 14 }, (_, i) => i + 7),
@@ -66,6 +71,9 @@ export default defineComponent({
     getRoomName(roomId: string): string {
       const room = this.rooms.find(r => r.id === roomId);
       return room?.name || 'Unknown Room';
+    },
+    handleTimeSlotClick(hour: number) {
+      this.$emit('create-event', hour);
     },
     getEventStyle(event: Event) {
       const start = new Date(event.startTime);
@@ -187,6 +195,12 @@ export default defineComponent({
   height: 80px;
   border-bottom: 1px solid var(--border-light);
   background: var(--surface);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.grid-line:hover {
+  background: var(--surface-secondary);
 }
 
 .event-block {
