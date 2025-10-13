@@ -233,7 +233,7 @@ export default defineComponent({
         {
           model: 'filterType',
           value: this.filterType,
-          placeholder: 'All Types',
+          placeholder: 'Filter by Type',
           options: [
             { label: 'Classroom', value: 'classroom' },
             { label: 'Outdoor', value: 'outdoor' },
@@ -245,7 +245,7 @@ export default defineComponent({
         {
           model: 'filterCapacity',
           value: this.filterCapacity,
-          placeholder: 'All Capacities',
+          placeholder: 'Filter by Capacity',
           options: [
             { label: 'Small (< 15)', value: 'small' },
             { label: 'Medium (15-30)', value: 'medium' },

@@ -13,6 +13,8 @@
         v-model:filter-event-type="filterEventType"
         v-model:filter-room="filterRoom"
         v-model:filter-program="filterProgram"
+        v-model:filter-camper="filterCamper"
+        v-model:filter-staff="filterStaff"
         :filters="eventFilters"
         :filtered-count="filteredEvents.length"
         :total-count="viewMode === 'daily' ? todayEvents.length : viewMode === 'weekly' ? weekEvents.length : monthEvents.length"
@@ -195,6 +197,8 @@ export default defineComponent({
       filterEventType: '',
       filterRoom: '',
       filterProgram: '',
+      filterCamper: '',
+      filterStaff: '',
       sleepingRoomToAssign: ''
     };
   },
@@ -238,7 +242,7 @@ export default defineComponent({
         {
           model: 'filterProgram',
           value: this.filterProgram,
-          placeholder: 'All Programs',
+          placeholder: 'Filter by Program',
           options: this.store.programs.map(program => ({
             label: program.name,
             value: program.id,
@@ -247,7 +251,7 @@ export default defineComponent({
         {
           model: 'filterEventType',
           value: this.filterEventType,
-          placeholder: 'All Types',
+          placeholder: 'Filter by Type',
           options: [
             { label: 'Activity', value: 'activity' },
             { label: 'Sports', value: 'sports' },
@@ -259,11 +263,33 @@ export default defineComponent({
         {
           model: 'filterRoom',
           value: this.filterRoom,
-          placeholder: 'All Rooms',
+          placeholder: 'Filter by Room',
           options: this.store.rooms.map(room => ({
             label: room.name,
             value: room.id,
           })),
+        },
+        {
+          model: 'filterCamper',
+          value: this.filterCamper,
+          placeholder: 'Filter by Camper',
+          options: this.store.campers
+            .sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`))
+            .map(camper => ({
+              label: `${camper.firstName} ${camper.lastName}`,
+              value: camper.id,
+            })),
+        },
+        {
+          model: 'filterStaff',
+          value: this.filterStaff,
+          placeholder: 'Filter by Staff',
+          options: this.store.staffMembers
+            .sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`))
+            .map(staff => ({
+              label: `${staff.firstName} ${staff.lastName}`,
+              value: staff.id,
+            })),
         },
       ];
     },
@@ -291,6 +317,20 @@ export default defineComponent({
       // Room filter
       if (this.filterRoom) {
         events = events.filter(event => event.roomId === this.filterRoom);
+      }
+
+      // Camper filter
+      if (this.filterCamper) {
+        events = events.filter(event => 
+          event.enrolledCamperIds && event.enrolledCamperIds.includes(this.filterCamper)
+        );
+      }
+
+      // Staff filter
+      if (this.filterStaff) {
+        events = events.filter(event => 
+          event.assignedStaffIds && event.assignedStaffIds.includes(this.filterStaff)
+        );
       }
 
       return events;
@@ -323,6 +363,8 @@ export default defineComponent({
       this.filterProgram = '';
       this.filterEventType = '';
       this.filterRoom = '';
+      this.filterCamper = '';
+      this.filterStaff = '';
     },
     formatDate(date: Date): string {
       return format(date, 'EEEE, MMMM d, yyyy');

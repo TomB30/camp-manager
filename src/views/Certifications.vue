@@ -163,7 +163,7 @@ export default defineComponent({
         {
           model: 'filterExpiration',
           value: this.filterExpiration,
-          placeholder: 'All Types',
+          placeholder: 'Filter by Type',
           options: [
             { value: 'time-limited', label: 'Time-limited' },
             { value: 'permanent', label: 'Permanent' },

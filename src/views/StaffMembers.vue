@@ -229,7 +229,7 @@ export default defineComponent({
         {
           model: 'filterRole',
           value: this.filterRole,
-          placeholder: 'All Roles',
+          placeholder: 'Filter by Role',
           options: [
             { label: 'Counselor', value: 'counselor' },
             { label: 'Activity Leader', value: 'activity-leader' },
@@ -240,7 +240,7 @@ export default defineComponent({
         {
           model: 'filterCertification',
           value: this.filterCertification,
-          placeholder: 'All Certifications',
+          placeholder: 'Filter by Certification',
           options: this.store.certifications.map(cert => ({
             label: cert.name,
             value: cert.name

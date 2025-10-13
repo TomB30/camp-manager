@@ -173,7 +173,7 @@ export default defineComponent({
         {
           model: 'filterType',
           value: this.filterType,
-          placeholder: 'All Types',
+          placeholder: 'Filter by Type',
           options: [
             { value: 'indoor', label: 'Indoor' },
             { value: 'outdoor', label: 'Outdoor' },

@@ -206,7 +206,7 @@ export default defineComponent({
         {
           model: 'filterGender',
           value: this.filterGender,
-          placeholder: 'All Genders',
+          placeholder: 'Filter by Gender',
           options: [
             { label: 'Male', value: 'male' },
             { label: 'Female', value: 'female' },
@@ -215,7 +215,7 @@ export default defineComponent({
         {
           model: 'filterAge',
           value: this.filterAge,
-          placeholder: 'All Ages',
+          placeholder: 'Filter by Age',
           options: [
             { label: '6-8 years', value: '6-8' },
             { label: '9-11 years', value: '9-11' },

@@ -268,7 +268,7 @@ export default defineComponent({
         {
           model: 'filterSleepingRoom',
           value: this.filterSleepingRoom,
-          placeholder: 'All Sleeping Rooms',
+          placeholder: 'Filter by Sleeping Room',
           options: this.store.sleepingRooms.map(room => ({
             label: room.name,
             value: room.id,

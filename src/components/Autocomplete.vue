@@ -21,7 +21,7 @@
       />
       <div class="autocomplete-icons">
         <button
-          v-if="modelValue && !disabled"
+          v-if="showClear && modelValue && !disabled"
           type="button"
           class="autocomplete-clear"
           @mousedown.prevent="clearSelection"
@@ -140,6 +140,11 @@ export default defineComponent({
     maxHeight: {
       type: Number,
       default: 300
+    },
+    // Show clear button
+    showClear: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['update:modelValue', 'change'],
