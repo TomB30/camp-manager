@@ -1,31 +1,27 @@
 <template>
   <div class="container">
     <div class="calendar-view">
-      <ViewHeader title="Event Calendar" />
+      <ViewHeader title="Event Calendar">
+        <template #actions>
+          <button class="btn btn-primary" @click="showEventModal = true">+ New Event</button>
+        </template>
+      </ViewHeader>
 
-      <!-- Date Navigation -->
-      <div class="calendar-controls card p-2">
-        <!-- Date Display -->
-        <div class="calendar-date">
-            <h3 v-if="viewMode === 'daily'">{{ formatDate(selectedDate) }}</h3>
-            <h3 v-else-if="viewMode === 'weekly'">{{ formatWeekRange(selectedDate) }}</h3>
-            <h3 v-else>{{ formatMonthYear(selectedDate) }}</h3>
-          </div>
-        <div class="flex gap-2 items-center justify-center flex-wrap">
-          <!-- Navigation -->
-          <div class="flex gap-2 items-center justify-center flex-wrap">
-          <button class="btn btn-secondary" @click="changeDate(-1)">
-            ← Previous {{ viewMode === 'daily' ? 'Day' : viewMode === 'weekly' ? 'Week' : 'Month' }}
-          </button>
-          <button class="btn btn-secondary" @click="goToToday">Today</button>
-          <button class="btn btn-secondary" @click="changeDate(1)">
-            Next {{ viewMode === 'daily' ? 'Day' : viewMode === 'weekly' ? 'Week' : 'Month' }} →
-          </button>
-          </div>
-
-
-                <!-- View Toggle -->
-          <div class="view-toggle">
+      <!-- Date Navigation and Filters -->
+      <FilterBar
+        :show-search="false"
+        v-model:filter-event-type="filterEventType"
+        v-model:filter-room="filterRoom"
+        v-model:filter-program="filterProgram"
+        :filters="eventFilters"
+        :filtered-count="filteredEvents.length"
+        :total-count="viewMode === 'daily' ? todayEvents.length : viewMode === 'weekly' ? weekEvents.length : monthEvents.length"
+        :show-count="true"
+        @clear="clearEventFilters"
+      >
+        <template #prepend>
+          <!-- Calendar View Toggle -->
+          <div class="calendar-view-toggle">
             <button 
               class="btn btn-sm"
               :class="viewMode === 'daily' ? 'btn-primary' : 'btn-secondary'"
@@ -48,24 +44,25 @@
               Monthly
             </button>
           </div>
-          <button class="btn btn-primary" @click="showEventModal = true">+ New Event</button>
+        </template>
+      </FilterBar>
 
+      <!-- Date Navigation Bar -->
+      <div class="date-navigation">
+        <div class="date-display">
+          <h3 v-if="viewMode === 'daily'">{{ formatDate(selectedDate) }}</h3>
+          <h3 v-else-if="viewMode === 'weekly'">{{ formatWeekRange(selectedDate) }}</h3>
+          <h3 v-else>{{ formatMonthYear(selectedDate) }}</h3>
         </div>
-      </div>
-      
-      <!-- Event Filters -->
-      <div class="filter-section">
-        <FilterBar
-          :show-search="false"
-          v-model:filter-event-type="filterEventType"
-          v-model:filter-room="filterRoom"
-          v-model:filter-program="filterProgram"
-          :filters="eventFilters"
-          :filtered-count="viewMode === 'daily' ? filteredTodayEvents.length : filteredEvents.length"
-          :total-count="viewMode === 'daily' ? todayEvents.length : store.events.length"
-          :show-count="true"
-          @clear="clearEventFilters"
-        />
+        <div class="date-controls">
+          <button class="btn btn-secondary" @click="changeDate(-1)">
+            ← Previous {{ viewMode === 'daily' ? 'Day' : viewMode === 'weekly' ? 'Week' : 'Month' }}
+          </button>
+          <button class="btn btn-secondary" @click="goToToday">Today</button>
+          <button class="btn btn-secondary" @click="changeDate(1)">
+            Next {{ viewMode === 'daily' ? 'Day' : viewMode === 'weekly' ? 'Week' : 'Month' }} →
+          </button>
+        </div>
       </div>
 
 
@@ -210,6 +207,20 @@ export default defineComponent({
       const start = startOfWeek(this.selectedDate);
       return Array.from({ length: 7 }, (_, i) => addDays(start, i));
     },
+    weekEvents() {
+      // Get all events for the current week
+      return this.weekDays.flatMap(day => this.store.eventsForDate(day));
+    },
+    monthEvents() {
+      // Get all events for the current month
+      const start = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth(), 1);
+      const end = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth() + 1, 0);
+      
+      return this.store.events.filter(event => {
+        const eventDate = new Date(event.startTime);
+        return eventDate >= start && eventDate <= end;
+      });
+    },
     eventFilters(): Filter[] {
       return [
         {
@@ -248,7 +259,12 @@ export default defineComponent({
       return this.store.eventsForDate(this.selectedDate);
     },
     filteredEvents() {
-      let events = this.store.events;
+      // Get base events depending on view mode
+      let events = this.viewMode === 'daily' 
+        ? this.todayEvents 
+        : this.viewMode === 'weekly' 
+          ? this.weekEvents 
+          : this.monthEvents;
 
       // Program filter
       if (this.filterProgram) {
@@ -268,12 +284,8 @@ export default defineComponent({
       return events;
     },
     filteredTodayEvents() {
-      // Filter the already-filtered events by today's date
-      const todayStr = this.selectedDate.toISOString().split('T')[0];
-      return this.filteredEvents.filter(event => {
-        const eventDateStr = new Date(event.startTime).toISOString().split('T')[0];
-        return eventDateStr === todayStr;
-      });
+      // For daily view, use filteredEvents directly since it's already filtered by day
+      return this.filteredEvents;
     },
     selectedEvent() {
       if (!this.selectedEventId) return null;
@@ -495,50 +507,64 @@ export default defineComponent({
 
 <style scoped>
 .calendar-view {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 1rem;
-  grid-template-rows: auto auto auto 1fr;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.calendar-view > .view-header {
-  grid-column: 1 / -1;
+/* Calendar View Toggle */
+.calendar-view-toggle {
+  display: flex;
+  gap: 0.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 2px;
+  background: var(--background);
 }
 
-.filter-section {
-  grid-column: 1 / -1;
+.calendar-view-toggle .btn {
+  padding: 0.5rem 1rem;
+  border-radius: calc(var(--radius) - 2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.calendar-controls {
+/* Date Navigation Bar */
+.date-navigation {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  grid-column: 1 / -1;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
 }
 
-.calendar-date {
-  text-align: center;
+.date-display h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-.view-toggle {
+.date-controls {
   display: flex;
-  gap: 0;
-  background: var(--background);
-  border-radius: var(--radius);
-  padding: 0.25rem;
-}
-
-.view-toggle .btn {
-  border-radius: var(--radius-sm);
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 1024px) {
-  .calendar-view {
-    grid-template-columns: 1fr;
+  .date-navigation {
+    flex-direction: column;
+    text-align: center;
   }
 
-  .calendar-controls .flex {
+  .date-controls {
     justify-content: center;
+    width: 100%;
   }
 }
 

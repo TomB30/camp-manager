@@ -47,7 +47,7 @@
       </div>
 
       <!-- Conflicts Alert -->
-      <div v-if="store.conflicts.length > 0" class="card mt-4" style="border-left: 4px solid var(--error-color);">
+      <div v-if="store.conflicts.length > 0" class="conflicts-section" style="border-left: 4px solid var(--error-color);">
         <div class="card-header">
           <h3>⚠️ Scheduling Conflicts ({{ store.conflicts.length }})</h3>
         </div>
@@ -60,7 +60,7 @@
       </div>
 
       <!-- Today's Schedule -->
-      <div class="card mt-4">
+      <div class="schedule-section">
         <div class="card-header">
           <h3>Today's Schedule</h3>
         </div>
@@ -93,7 +93,7 @@
       </div>
 
       <!-- Quick Actions -->
-      <div class="grid grid-cols-3 mt-4">
+      <div class="quick-actions-grid">
         <div class="card">
           <h4 class="mb-2">Quick Actions</h4>
           <div class="flex flex-col gap-2">
@@ -225,6 +225,7 @@ export default defineComponent({
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .stat-card {
@@ -270,6 +271,17 @@ export default defineComponent({
   color: var(--text-primary);
 }
 
+/* Sections with consistent spacing */
+.conflicts-section,
+.schedule-section {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
 .conflicts-list {
   display: flex;
   flex-direction: column;
@@ -300,8 +312,7 @@ export default defineComponent({
   display: flex;
   gap: 1.5rem;
   padding: 1rem;
-  border-left: 3px solid var(--accent-color);
-  background: var(--surface);
+  background: var(--background);
   border-radius: var(--radius);
   border: 1px solid var(--border-light);
   border-left: 3px solid var(--accent-color);
@@ -310,7 +321,7 @@ export default defineComponent({
 
 .timeline-event:hover {
   border-color: var(--border-color);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .timeline-time {
@@ -338,6 +349,28 @@ export default defineComponent({
 .empty-state {
   padding: 3rem;
   text-align: center;
+}
+
+/* Quick Actions Grid */
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.quick-actions-grid .card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.quick-actions-grid .card h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .recent-list,
@@ -381,6 +414,26 @@ export default defineComponent({
 
 .capacity-text {
   color: var(--text-secondary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-event {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .timeline-time {
+    min-width: auto;
+  }
 }
 </style>
 
