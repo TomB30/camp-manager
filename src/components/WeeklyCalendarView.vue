@@ -93,7 +93,7 @@ export default defineComponent({
     getEventsForDayAndHour(day: Date, hour: number) {
       return filterEventsByDateAndHour(this.events, day, hour);
     },
-    getWeekEventStyle(event: Event, day: Date) {
+    getWeekEventStyle(event: Event, _day: Date) {
       const start = new Date(event.startTime);
       const end = new Date(event.endTime);
       

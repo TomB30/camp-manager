@@ -413,8 +413,8 @@ export const mockStaffMembers: StaffMember[] = [
     role: 'director',
     email: 'sarah.connor@camp.com',
     phone: '555-0101',
-    certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3)],
+    certifications: ['First Aid', 'CPR', 'Wilderness First Aid', 'Climbing Instructor'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3), generateId('cert', 6)],
     managerId: undefined, // Top of hierarchy
   },
   {
@@ -424,8 +424,8 @@ export const mockStaffMembers: StaffMember[] = [
     role: 'supervisor',
     email: 'james.rodriguez@camp.com',
     phone: '555-0109',
-    certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3)],
+    certifications: ['First Aid', 'CPR', 'Wilderness First Aid', 'Ropes Course Instructor'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3), generateId('cert', 8)],
     managerId: generateId('staff', 1), // Reports to Sarah (Director)
   },
   {
@@ -435,8 +435,8 @@ export const mockStaffMembers: StaffMember[] = [
     role: 'counselor',
     email: 'mike.peterson@camp.com',
     phone: '555-0102',
-    certifications: ['First Aid', 'CPR'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2)],
+    certifications: ['First Aid', 'CPR', 'Food Handler'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 10)],
     managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
@@ -446,8 +446,8 @@ export const mockStaffMembers: StaffMember[] = [
     role: 'counselor',
     email: 'jessica.lee@camp.com',
     phone: '555-0103',
-    certifications: ['First Aid', 'CPR'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2)],
+    certifications: ['First Aid', 'CPR', 'Archery Instructor'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 7)],
     managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
@@ -457,8 +457,8 @@ export const mockStaffMembers: StaffMember[] = [
     role: 'instructor',
     email: 'david.chen@camp.com',
     phone: '555-0104',
-    certifications: ['Lifeguard', 'Swimming Instructor', 'CPR'],
-    certificationIds: [generateId('cert', 4), generateId('cert', 5), generateId('cert', 2)],
+    certifications: ['Lifeguard', 'Swimming Instructor', 'CPR', 'First Aid'],
+    certificationIds: [generateId('cert', 4), generateId('cert', 5), generateId('cert', 2), generateId('cert', 1)],
     managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
@@ -468,8 +468,8 @@ export const mockStaffMembers: StaffMember[] = [
     role: 'nurse',
     email: 'rachel.martinez@camp.com',
     phone: '555-0105',
-    certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3)],
+    certifications: ['First Aid', 'CPR', 'Wilderness First Aid', 'Lifeguard', 'Boat Driver'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3), generateId('cert', 4), generateId('cert', 9)],
     managerId: generateId('staff', 1), // Reports directly to Sarah (Director)
   },
   {
@@ -479,8 +479,8 @@ export const mockStaffMembers: StaffMember[] = [
     role: 'counselor',
     email: 'tom.wilson@camp.com',
     phone: '555-0106',
-    certifications: ['First Aid', 'CPR'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2)],
+    certifications: ['First Aid', 'CPR', 'Lifeguard', 'Boat Driver'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 4), generateId('cert', 9)],
     managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
@@ -490,8 +490,8 @@ export const mockStaffMembers: StaffMember[] = [
     role: 'counselor',
     email: 'amanda.foster@camp.com',
     phone: '555-0107',
-    certifications: ['First Aid', 'CPR'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2)],
+    certifications: ['First Aid', 'CPR', 'Ropes Course Instructor', 'Climbing Instructor'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 8), generateId('cert', 6)],
     managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
   {
@@ -501,8 +501,41 @@ export const mockStaffMembers: StaffMember[] = [
     role: 'counselor',
     email: 'chris.bryant@camp.com',
     phone: '555-0108',
-    certifications: ['First Aid', 'CPR', 'Wilderness First Aid'],
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3)],
+    certifications: ['First Aid', 'CPR', 'Wilderness First Aid', 'Archery Instructor'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3), generateId('cert', 7)],
+    managerId: generateId('staff', 9), // Reports to James (Supervisor)
+  },
+  {
+    id: generateId('staff', 10),
+    firstName: 'Emily',
+    lastName: 'Davis',
+    role: 'instructor',
+    email: 'emily.davis@camp.com',
+    phone: '555-0110',
+    certifications: ['Ropes Course Instructor', 'First Aid', 'CPR', 'Climbing Instructor'],
+    certificationIds: [generateId('cert', 8), generateId('cert', 1), generateId('cert', 2), generateId('cert', 6)],
+    managerId: generateId('staff', 9), // Reports to James (Supervisor)
+  },
+  {
+    id: generateId('staff', 11),
+    firstName: 'Marcus',
+    lastName: 'Thompson',
+    role: 'instructor',
+    email: 'marcus.thompson@camp.com',
+    phone: '555-0111',
+    certifications: ['Lifeguard', 'Swimming Instructor', 'Boat Driver', 'CPR', 'First Aid'],
+    certificationIds: [generateId('cert', 4), generateId('cert', 5), generateId('cert', 9), generateId('cert', 2), generateId('cert', 1)],
+    managerId: generateId('staff', 9), // Reports to James (Supervisor)
+  },
+  {
+    id: generateId('staff', 12),
+    firstName: 'Lisa',
+    lastName: 'Kim',
+    role: 'counselor',
+    email: 'lisa.kim@camp.com',
+    phone: '555-0112',
+    certifications: ['First Aid', 'CPR', 'Food Handler'],
+    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 10)],
     managerId: generateId('staff', 9), // Reports to James (Supervisor)
   },
 ];
@@ -643,11 +676,12 @@ const generateMonthEvents = (): Event[] => {
   const events: Event[] = [];
   let eventId = 1;
   
-  // Helper to get random campers
-  const getRandomCampers = (count: number, startIdx: number = 0) => {
+  // Helper to get sequential campers without overlap
+  const getCampers = (count: number, startIdx: number) => {
     const campers = [];
     for (let i = 0; i < count; i++) {
-      campers.push(generateId('camper', startIdx + i + 1));
+      const camperId = ((startIdx + i) % 36) + 1; // Wrap around 36 campers
+      campers.push(generateId('camper', camperId));
     }
     return campers;
   };
@@ -659,8 +693,12 @@ const generateMonthEvents = (): Event[] => {
   
   // Generate events for all days in the month
   for (let day = startDay; day < startDay + daysInMonth; day++) {
-    const camperOffset = (Math.abs(day) * 8) % 40;
     const dayMod = Math.abs(day) % 7;
+    // Use different camper pools for different time slots to avoid conflicts
+    let morningPool = (Math.abs(day) * 8) % 36;
+    let afternoonPool1 = (Math.abs(day) * 8 + 12) % 36;
+    let afternoonPool2 = (Math.abs(day) * 8 + 24) % 36;
+    let eveningPool = (Math.abs(day) * 8 + 2) % 36;
     
     // Morning Assembly (9:00-9:30) - Everyone (not every day)
     if (dayMod === 1 || dayMod === 3 || dayMod === 5) {
@@ -674,15 +712,15 @@ const generateMonthEvents = (): Event[] => {
         50,
         'activity',
         [generateId('staff', 1), generateId('staff', 2)],
-        getRandomCampers(30, camperOffset),
+        getCampers(30, 0),
         '#6366F1',
       ));
     }
     
     // Morning Activities Block 1 (10:00-11:30)
-    // Rotate through different program activities
+    // Multiple concurrent activities with different camper pools
     if (dayMod === 0 || dayMod === 3) {
-      // Pottery from Arts & Crafts Program
+      // Pottery from Arts & Crafts Program - Group A
       events.push(createEvent(
         eventId++,
         'Pottery',
@@ -693,14 +731,29 @@ const generateMonthEvents = (): Event[] => {
         10,
         'activity',
         [generateId('staff', 2)],
-        getRandomCampers(8, camperOffset),
+        getCampers(8, morningPool),
         '#EC4899',
         undefined,
         generateId('program', 2),
         generateId('activity', 4)
       ));
+      // Soccer Practice - Group B (different campers, same time)
+      events.push(createEvent(
+        eventId++,
+        'Soccer Practice',
+        day,
+        10,
+        1.5,
+        generateId('room', 7),
+        20,
+        'sports',
+        [generateId('staff', 6), generateId('staff', 8)],
+        getCampers(16, morningPool + 8),
+        '#10B981',
+      ));
     } else if (dayMod === 1 || dayMod === 4) {
       // Swimming Lessons from Watersports Program
+      // Staff 4 (David Chen) has: Lifeguard, Swimming Instructor, CPR, First Aid
       events.push(createEvent(
         eventId++,
         'Swimming Lessons',
@@ -710,15 +763,34 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 10),
         12,
         'sports',
-        [generateId('staff', 4), generateId('staff', 5)],
-        getRandomCampers(10, camperOffset),
+        [generateId('staff', 4)],
+        getCampers(10, morningPool),
         '#60A5FA',
         ['Lifeguard', 'Swimming Instructor'],
         generateId('program', 1),
         generateId('activity', 2)
       ));
+      // Painting workshop - different campers, same time
+      events.push(createEvent(
+        eventId++,
+        'Painting Workshop',
+        day,
+        10,
+        1.25,
+        generateId('room', 9),
+        15,
+        'activity',
+        [generateId('staff', 2)],
+        getCampers(12, morningPool + 10),
+        '#F472B6',
+        undefined,
+        generateId('program', 2),
+        generateId('activity', 5)
+      ));
     } else if (dayMod === 2 || dayMod === 5) {
       // Rock Climbing from Adventure Sports Program
+      // Staff 1 (Sarah) has: Climbing Instructor, First Aid, CPR, Wilderness First Aid
+      // Staff 7 (Amanda) has: Climbing Instructor, Ropes Course Instructor, First Aid, CPR
       events.push(createEvent(
         eventId++,
         'Rock Climbing',
@@ -728,8 +800,8 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 3),
         8,
         'activity',
-        [generateId('staff', 1), generateId('staff', 3)],
-        getRandomCampers(7, camperOffset),
+        [generateId('staff', 1), generateId('staff', 7)],
+        getCampers(7, morningPool),
         '#10B981',
         ['Climbing Instructor', 'First Aid'],
         generateId('program', 3),
@@ -747,12 +819,12 @@ const generateMonthEvents = (): Event[] => {
         20,
         'sports',
         [generateId('staff', 6), generateId('staff', 8)],
-        getRandomCampers(16, camperOffset),
+        getCampers(16, morningPool),
         '#10B981',
       ));
     }
     
-    // Lunch (12:00-1:00) - Everyone
+    // Lunch (12:00-1:00) - Everyone (can accommodate all)
     events.push(createEvent(
       eventId++,
       'Lunch',
@@ -763,13 +835,15 @@ const generateMonthEvents = (): Event[] => {
       60,
       'meal',
       [generateId('staff', 2), generateId('staff', 7)],
-      getRandomCampers(40, camperOffset),
+      getCampers(36, 0), // All campers
       '#64748B',
     ));
     
-    // Afternoon Activities Block 1 (2:00-3:30)
+    // Afternoon Activities Block 1 (2:00-4:00) - Multiple concurrent activities
     if (dayMod === 0 || dayMod === 2 || dayMod === 4) {
-      // Wakeboarding from Watersports Program
+      // Wakeboarding from Watersports Program - Group A
+      // Staff 5 (Rachel) has: Lifeguard, Boat Driver, First Aid, CPR, Wilderness First Aid
+      // Staff 6 (Tom) has: Lifeguard, Boat Driver, First Aid, CPR
       events.push(createEvent(
         eventId++,
         'Wakeboarding',
@@ -780,52 +854,13 @@ const generateMonthEvents = (): Event[] => {
         8,
         'sports',
         [generateId('staff', 5), generateId('staff', 6)],
-        getRandomCampers(7, camperOffset),
+        getCampers(7, afternoonPool1),
         '#3B82F6',
         ['Lifeguard', 'Boat Driver'],
         generateId('program', 1),
         generateId('activity', 1)
       ));
-    } else if (dayMod === 1 || dayMod === 3) {
-      // Painting Workshop from Arts & Crafts Program
-      events.push(createEvent(
-        eventId++,
-        'Painting Workshop',
-        day,
-        14,
-        1.25,
-        generateId('room', 9),
-        15,
-        'activity',
-        [generateId('staff', 2)],
-        getRandomCampers(12, camperOffset),
-        '#F472B6',
-        undefined,
-        generateId('program', 2),
-        generateId('activity', 5)
-      ));
-    } else {
-      // Kayaking from Watersports Program
-      events.push(createEvent(
-        eventId++,
-        'Kayaking',
-        day,
-        14,
-        1.5,
-        generateId('room', 5),
-        10,
-        'sports',
-        [generateId('staff', 5), generateId('staff', 6)],
-        getRandomCampers(9, camperOffset),
-        '#2563EB',
-        ['Lifeguard'],
-        generateId('program', 1),
-        generateId('activity', 3)
-      ));
-    }
-    
-    // Second afternoon activity
-    if (dayMod === 0 || dayMod === 3 || dayMod === 5) {
+      // Music Class - Group B (different campers)
       events.push(createEvent(
         eventId++,
         'Music Class',
@@ -836,14 +871,66 @@ const generateMonthEvents = (): Event[] => {
         15,
         'activity',
         [generateId('staff', 3)],
-        getRandomCampers(12, camperOffset + 10),
+        getCampers(12, afternoonPool1 + 7),
         '#F59E0B',
+      ));
+    } else if (dayMod === 1 || dayMod === 3) {
+      // Painting Workshop from Arts & Crafts Program - Group A
+      events.push(createEvent(
+        eventId++,
+        'Painting Workshop',
+        day,
+        14,
+        1.25,
+        generateId('room', 9),
+        15,
+        'activity',
+        [generateId('staff', 2)],
+        getCampers(12, afternoonPool1),
+        '#F472B6',
+        undefined,
+        generateId('program', 2),
+        generateId('activity', 5)
+      ));
+      // Basketball - Group B (different campers, same time)
+      events.push(createEvent(
+        eventId++,
+        'Basketball',
+        day,
+        14,
+        1.5,
+        generateId('room', 3),
+        20,
+        'sports',
+        [generateId('staff', 6)],
+        getCampers(16, afternoonPool1 + 12),
+        '#EF4444',
+      ));
+    } else {
+      // Kayaking from Watersports Program - Group A
+      // Staff 4 (David) has: Lifeguard, Swimming Instructor, CPR, First Aid
+      // Staff 11 (Marcus) has: Lifeguard, Swimming Instructor, Boat Driver, CPR, First Aid
+      events.push(createEvent(
+        eventId++,
+        'Kayaking',
+        day,
+        14,
+        1.5,
+        generateId('room', 5),
+        10,
+        'sports',
+        [generateId('staff', 4), generateId('staff', 11)],
+        getCampers(9, afternoonPool1),
+        '#2563EB',
+        ['Lifeguard'],
+        generateId('program', 1),
+        generateId('activity', 3)
       ));
     }
     
     // Afternoon Activities Block 2 (4:00-5:30)
     if (dayMod % 2 === 0) {
-      // Archery from Adventure Sports Program
+      // Archery from Adventure Sports Program - Group A
       events.push(createEvent(
         eventId++,
         'Archery',
@@ -853,15 +940,15 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 7),
         12,
         'activity',
-        [generateId('staff', 1)],
-        getRandomCampers(10, camperOffset),
+        [generateId('staff', 3), generateId('staff', 8)],
+        getCampers(10, afternoonPool2),
         '#10B981',
         ['Archery Instructor'],
         generateId('program', 3),
         generateId('activity', 8)
       ));
       
-      // Jewelry Making from Arts & Crafts Program
+      // Jewelry Making from Arts & Crafts Program - Group B
       events.push(createEvent(
         eventId++,
         'Jewelry Making',
@@ -871,14 +958,15 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 9),
         12,
         'activity',
-        [generateId('staff', 8)],
-        getRandomCampers(10, camperOffset + 10),
+        [generateId('staff', 12)],
+        getCampers(10, afternoonPool2 + 10),
         '#DB2777',
         undefined,
         generateId('program', 2),
         generateId('activity', 6)
       ));
     } else {
+      // Basketball - Group A
       events.push(createEvent(
         eventId++,
         'Basketball',
@@ -889,12 +977,12 @@ const generateMonthEvents = (): Event[] => {
         20,
         'sports',
         [generateId('staff', 6)],
-        getRandomCampers(16, camperOffset),
+        getCampers(16, afternoonPool2),
         '#EF4444',
       ));
     }
     
-    // Dinner (6:00-7:00) - Everyone
+    // Dinner (6:00-7:00) - Everyone (can accommodate all)
     events.push(createEvent(
       eventId++,
       'Dinner',
@@ -905,7 +993,7 @@ const generateMonthEvents = (): Event[] => {
       60,
       'meal',
       [generateId('staff', 3), generateId('staff', 6)],
-      getRandomCampers(40, camperOffset),
+      getCampers(36, 0), // All campers
       '#64748B',
     ));
     
@@ -921,7 +1009,7 @@ const generateMonthEvents = (): Event[] => {
         40,
         'activity',
         [generateId('staff', 1), generateId('staff', 2), generateId('staff', 3)],
-        getRandomCampers(35, camperOffset),
+        getCampers(32, eveningPool),
         '#F97316',
       ));
     } else if (dayMod === 6) {
@@ -935,7 +1023,7 @@ const generateMonthEvents = (): Event[] => {
         25,
         'activity',
         [generateId('staff', 1), generateId('staff', 7)],
-        getRandomCampers(20, camperOffset),
+        getCampers(20, eveningPool),
         '#8B5CF6',
       ));
     } else if (dayMod === 4) {
@@ -949,9 +1037,25 @@ const generateMonthEvents = (): Event[] => {
         45,
         'activity',
         [generateId('staff', 2), generateId('staff', 4)],
-        getRandomCampers(38, camperOffset),
+        getCampers(34, eveningPool),
         '#8B5CF6',
       ));
+      // Intentionally create ONE conflict for demonstration - small overlap
+      if (day === startDay + 7) { // Only on one specific day
+        events.push(createEvent(
+          eventId++,
+          'Game Night',
+          day,
+          20,
+          1.5,
+          generateId('room', 8),
+          15,
+          'activity',
+          [generateId('staff', 8)],
+          getCampers(10, eveningPool), // Same campers as Movie Night - creates conflict!
+          '#A78BFA',
+        ));
+      }
     }
     
     // Quiet Time (9:00 PM) - Most days
@@ -966,7 +1070,7 @@ const generateMonthEvents = (): Event[] => {
         50,
         'free-time',
         [generateId('staff', 1), generateId('staff', 2)],
-        getRandomCampers(40, camperOffset),
+        getCampers(34, eveningPool),
         '#475569',
       ));
     }

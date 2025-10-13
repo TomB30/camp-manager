@@ -91,12 +91,30 @@
           </div>
         </div>
 
+        <div v-if="event.requiredCertifications && event.requiredCertifications.length > 0" class="mb-3">
+          <div class="text-sm text-secondary mb-1">Required Certifications</div>
+          <div class="flex flex-wrap gap-1">
+            <span 
+              v-for="cert in event.requiredCertifications" 
+              :key="cert"
+              class="certification-badge"
+            >
+              {{ cert }}
+            </span>
+          </div>
+        </div>
+
         <div class="mb-3">
           <div class="text-sm text-secondary mb-1">Assigned Staff</div>
           <div v-if="event.assignedStaffIds?.length" class="flex flex-col gap-1">
-            <span v-for="staffId in event.assignedStaffIds" :key="staffId" class="badge badge-primary">
-              {{ getStaffName(staffId) }}
-            </span>
+            <div v-for="staffId in event.assignedStaffIds" :key="staffId" class="staff-item">
+              <span class="badge badge-primary">
+                {{ getStaffName(staffId) }}
+              </span>
+              <span v-if="event.requiredCertifications && event.requiredCertifications.length > 0" class="staff-cert-status">
+                {{ staffHasRequiredCertifications(staffId, event.requiredCertifications) ? '✓ Has required certs' : '⚠ Missing certs' }}
+              </span>
+            </div>
           </div>
           <div v-else class="text-secondary">No staff assigned</div>
         </div>
@@ -174,6 +192,21 @@ export default defineComponent({
     getStaffName(staffId: string): string {
       const staff = this.store.getStaffMemberById(staffId);
       return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
+    },
+    staffHasRequiredCertifications(staffId: string, requiredCertNames: string[]): boolean {
+      const staff = this.store.getStaffMemberById(staffId);
+      if (!staff || !staff.certificationIds || staff.certificationIds.length === 0) return false;
+      
+      // Convert required cert names to IDs
+      const requiredCertIds = requiredCertNames
+        .map(name => {
+          const cert = this.store.certifications.find(c => c.name === name);
+          return cert ? cert.id : '';
+        })
+        .filter(id => id !== '');
+      
+      // Check if staff has all required certifications
+      return requiredCertIds.every(certId => staff.certificationIds!.includes(certId));
     },
     getGroupCamperCount(groupId: string): number {
       return this.store.getCampersInGroup(groupId).length;
@@ -295,6 +328,27 @@ export default defineComponent({
 
 .bg-background {
   background: var(--background);
+}
+
+.certification-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--primary-light);
+  color: var(--primary-color);
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.staff-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.staff-cert-status {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
 }
 </style>
 

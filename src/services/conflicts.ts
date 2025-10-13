@@ -14,9 +14,16 @@ export class ConflictDetector {
     events.forEach(event => {
       const enrolledCount = event.enrolledCamperIds?.length || 0;
       if (enrolledCount > event.capacity) {
+        const eventDate = new Date(event.startTime);
+        const formattedDate = eventDate.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric',
+          year: 'numeric'
+        });
+        
         conflicts.push({
           type: 'event_overcapacity',
-          message: `Event "${event.title}" has ${enrolledCount} campers enrolled but capacity is ${event.capacity}`,
+          message: `Event "${event.title}" on ${formattedDate} has ${enrolledCount} campers enrolled but capacity is ${event.capacity}`,
           entityId: event.id,
           conflictingIds: event.enrolledCamperIds || [],
         });
@@ -48,9 +55,16 @@ export class ConflictDetector {
               (event2.enrolledCamperIds?.length || 0);
 
             if (totalCapacity > room.capacity) {
+              const eventDate = new Date(event1.startTime);
+              const formattedDate = eventDate.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                year: 'numeric'
+              });
+              
               conflicts.push({
                 type: 'room_overcapacity',
-                message: `Room "${room.name}" has overlapping events exceeding capacity (${totalCapacity}/${room.capacity})`,
+                message: `Room "${room.name}" has overlapping events exceeding capacity on ${formattedDate} (${totalCapacity}/${room.capacity})`,
                 entityId: room.id,
                 conflictingIds: [event1.id, event2.id],
               });
@@ -78,9 +92,24 @@ export class ConflictDetector {
       for (let i = 0; i < camperEvents.length; i++) {
         for (let j = i + 1; j < camperEvents.length; j++) {
           if (this.eventsOverlap(camperEvents[i], camperEvents[j])) {
+            const eventDate = new Date(camperEvents[i].startTime);
+            const formattedDate = eventDate.toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric',
+              year: 'numeric'
+            });
+            const event1Time = new Date(camperEvents[i].startTime).toLocaleTimeString('en-US', { 
+              hour: 'numeric', 
+              minute: '2-digit' 
+            });
+            const event2Time = new Date(camperEvents[j].startTime).toLocaleTimeString('en-US', { 
+              hour: 'numeric', 
+              minute: '2-digit' 
+            });
+            
             conflicts.push({
               type: 'camper_double_booked',
-              message: `${camper.firstName} ${camper.lastName} is enrolled in overlapping events`,
+              message: `${camper.firstName} ${camper.lastName} is enrolled in overlapping events on ${formattedDate} ("${camperEvents[i].title}" at ${event1Time} and "${camperEvents[j].title}" at ${event2Time})`,
               entityId: camperId,
               conflictingIds: [camperEvents[i].id, camperEvents[j].id],
             });
@@ -107,9 +136,24 @@ export class ConflictDetector {
       for (let i = 0; i < staffEvents.length; i++) {
         for (let j = i + 1; j < staffEvents.length; j++) {
           if (this.eventsOverlap(staffEvents[i], staffEvents[j])) {
+            const eventDate = new Date(staffEvents[i].startTime);
+            const formattedDate = eventDate.toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric',
+              year: 'numeric'
+            });
+            const event1Time = new Date(staffEvents[i].startTime).toLocaleTimeString('en-US', { 
+              hour: 'numeric', 
+              minute: '2-digit' 
+            });
+            const event2Time = new Date(staffEvents[j].startTime).toLocaleTimeString('en-US', { 
+              hour: 'numeric', 
+              minute: '2-digit' 
+            });
+            
             conflicts.push({
               type: 'staff_double_booked',
-              message: `${staff.firstName} ${staff.lastName} is assigned to overlapping events`,
+              message: `${staff.firstName} ${staff.lastName} is assigned to overlapping events on ${formattedDate} ("${staffEvents[i].title}" at ${event1Time} and "${staffEvents[j].title}" at ${event2Time})`,
               entityId: staffId,
               conflictingIds: [staffEvents[i].id, staffEvents[j].id],
             });
@@ -151,9 +195,16 @@ export class ConflictDetector {
       );
 
       if (missingCerts.length > 0) {
+        const eventDate = new Date(event.startTime);
+        const formattedDate = eventDate.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric',
+          year: 'numeric'
+        });
+        
         conflicts.push({
           type: 'missing_certification',
-          message: `Event "${event.title}" requires certifications: ${missingCerts.join(', ')}`,
+          message: `Event "${event.title}" on ${formattedDate} requires certifications: ${missingCerts.join(', ')}`,
           entityId: event.id,
           conflictingIds: event.assignedStaffIds || [],
         });

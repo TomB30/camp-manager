@@ -67,6 +67,45 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">Required Certifications (Optional)</label>
+          <SelectionList
+            v-model="selectedCertificationIds"
+            :items="store.certifications"
+            item-type="certification"
+            placeholder="Select a certification..."
+            empty-text="No certifications required"
+            add-button-text="Add"
+            mode="multiple"
+            :get-label-fn="getCertificationLabel"
+            :get-initials-fn="getCertificationInitials"
+            :get-options-fn="getCertificationOption"
+          />
+          <p class="form-help-text">Staff assigned to this event should have these certifications</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Assign Staff Members (Optional)</label>
+          <SelectionList
+            v-model="localFormData.assignedStaffIds"
+            :items="availableStaffMembers"
+            item-type="staff member"
+            placeholder="Select a staff member..."
+            empty-text="No staff members assigned"
+            add-button-text="Assign"
+            mode="multiple"
+            :get-label-fn="getStaffLabel"
+            :get-initials-fn="getStaffInitials"
+            :get-options-fn="getStaffOption"
+          >
+            <template #after-items>
+              <div v-if="selectedCertificationIds.length > 0" class="text-xs text-secondary mt-2">
+                ✓ = Has all required certifications
+              </div>
+            </template>
+          </SelectionList>
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Assign Camper Groups (Optional)</label>
           <div class="camper-groups-selector">
             <div v-for="group in camperGroups" :key="group.id" class="checkbox-item">
@@ -109,7 +148,8 @@ import { useCampStore } from '@/stores/campStore';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
-import type { Event, Room, CamperGroup, Camper } from '@/types/api';
+import SelectionList from '@/components/SelectionList.vue';
+import type { Event, Room, CamperGroup, Camper, StaffMember, Certification } from '@/types/api';
 
 interface EventFormData {
   title: string;
@@ -119,6 +159,8 @@ interface EventFormData {
   capacity: number;
   type: Event['type'];
   color: string;
+  requiredCertifications: string[];
+  assignedStaffIds: string[];
   camperGroupIds: string[];
   programId?: string;
   activityId?: string;
@@ -129,7 +171,8 @@ export default defineComponent({
   components: {
     BaseModal,
     Autocomplete,
-    ColorPicker
+    ColorPicker,
+    SelectionList
   },
   props: {
     show: {
@@ -148,6 +191,10 @@ export default defineComponent({
       type: Array as PropType<Room[]>,
       required: true
     },
+    staffMembers: {
+      type: Array as PropType<StaffMember[]>,
+      required: true
+    },
     camperGroups: {
       type: Array as PropType<CamperGroup[]>,
       required: true
@@ -162,6 +209,7 @@ export default defineComponent({
     return {
       localFormData: JSON.parse(JSON.stringify(this.formData)),
       selectedActivityId: '',
+      selectedCertificationIds: [] as string[],
       eventTypeOptions: [
         { label: 'Activity', value: 'activity' },
         { label: 'Sports', value: 'sports' },
@@ -199,14 +247,25 @@ export default defineComponent({
       });
       
       return optionsWithGroups;
+    },
+    availableStaffMembers(): StaffMember[] {
+      // Return staff members with their original data
+      return this.staffMembers;
     }
   },
   watch: {
     formData: {
       handler(newVal) {
         this.localFormData = JSON.parse(JSON.stringify(newVal));
+        // Initialize certification IDs from names
+        if (newVal.requiredCertifications && newVal.requiredCertifications.length > 0) {
+          this.selectedCertificationIds = this.getCertificationIdsFromNames(newVal.requiredCertifications);
+        } else {
+          this.selectedCertificationIds = [];
+        }
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   },
   methods: {
@@ -246,6 +305,12 @@ export default defineComponent({
         this.localFormData.color = activity.color;
       }
       
+      // Set required certifications if specified
+      if (activity.requiredCertifications && activity.requiredCertifications.length > 0) {
+        this.localFormData.requiredCertifications = [...activity.requiredCertifications];
+        this.selectedCertificationIds = this.getCertificationIdsFromNames(activity.requiredCertifications);
+      }
+      
       // Set program and activity IDs for reference
       // Use the first program if activity belongs to multiple programs
       this.localFormData.programId = activity.programIds[0];
@@ -282,7 +347,67 @@ export default defineComponent({
         return total + this.getGroupCamperCount(groupId);
       }, 0);
     },
+    getCertificationIdsFromNames(names: string[]): string[] {
+      return names
+        .map(name => {
+          const cert = this.store.certifications.find(c => c.name === name);
+          return cert ? cert.id : '';
+        })
+        .filter(id => id !== '');
+    },
+    getCertificationNamesFromIds(ids: string[]): string[] {
+      return ids
+        .map(id => {
+          const cert = this.store.getCertificationById(id);
+          return cert ? cert.name : '';
+        })
+        .filter(name => name !== '');
+    },
+    getCertificationLabel(cert: Certification): string {
+      return cert.name;
+    },
+    getCertificationInitials(cert: Certification): string {
+      return cert.name.substring(0, 2).toUpperCase();
+    },
+    getCertificationOption(cert: Certification): AutocompleteOption {
+      return {
+        label: cert.name,
+        value: cert.id
+      };
+    },
+    staffHasRequiredCertifications(staff: StaffMember): boolean {
+      if (this.selectedCertificationIds.length === 0) return true;
+      if (!staff.certificationIds || staff.certificationIds.length === 0) return false;
+      return this.selectedCertificationIds.every(certId => staff.certificationIds!.includes(certId));
+    },
+    getStaffLabel(staff: StaffMember): string {
+      const baseLabel = `${staff.firstName} ${staff.lastName} - ${staff.role}`;
+      if (this.selectedCertificationIds.length > 0) {
+        const hasCerts = this.staffHasRequiredCertifications(staff);
+        return hasCerts ? `✓ ${baseLabel}` : baseLabel;
+      }
+      return baseLabel;
+    },
+    getStaffInitials(staff: StaffMember): string {
+      return `${staff.firstName[0]}${staff.lastName[0]}`.toUpperCase();
+    },
+    getStaffOption(staff: StaffMember): AutocompleteOption {
+      const baseLabel = `${staff.firstName} ${staff.lastName} - ${staff.role}`;
+      if (this.selectedCertificationIds.length > 0) {
+        const hasCerts = this.staffHasRequiredCertifications(staff);
+        return {
+          label: hasCerts ? `✓ ${baseLabel}` : baseLabel,
+          value: staff.id
+        };
+      }
+      return {
+        label: baseLabel,
+        value: staff.id
+      };
+    },
     handleSave() {
+      // Convert certification IDs to names before saving
+      this.localFormData.requiredCertifications = this.getCertificationNamesFromIds(this.selectedCertificationIds);
       this.$emit('save', this.localFormData);
     },
   },
@@ -290,6 +415,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.form-help-text {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
 .camper-groups-selector {
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
@@ -331,6 +462,10 @@ export default defineComponent({
 
 .mt-1 {
   margin-top: 0.25rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
 }
 </style>
 

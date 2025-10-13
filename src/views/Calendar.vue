@@ -113,6 +113,7 @@
       :is-editing="!!editingEventId"
       :form-data="eventFormData"
       :rooms="store.rooms"
+      :staff-members="store.staffMembers"
       :camper-groups="store.camperGroups"
       :campers="store.campers"
       @close="closeEventModal"
@@ -186,6 +187,8 @@ export default defineComponent({
         capacity: 20,
         type: 'activity' as Event['type'],
         color: '#3B82F6',
+        requiredCertifications: [] as string[],
+        assignedStaffIds: [] as string[],
         camperGroupIds: [] as string[],
         programId: undefined as string | undefined,
         activityId: undefined as string | undefined,
@@ -329,6 +332,8 @@ export default defineComponent({
         capacity: this.selectedEvent.capacity,
         type: this.selectedEvent.type,
         color: this.selectedEvent.color || '#3B82F6',
+        requiredCertifications: this.selectedEvent.requiredCertifications || [],
+        assignedStaffIds: this.selectedEvent.assignedStaffIds || [],
         camperGroupIds: [],
         programId: this.selectedEvent.programId,
         activityId: this.selectedEvent.activityId,
@@ -348,6 +353,8 @@ export default defineComponent({
         capacity: 20,
         type: 'activity',
         color: '#3B82F6',
+        requiredCertifications: [],
+        assignedStaffIds: [],
         camperGroupIds: [],
         programId: undefined,
         activityId: undefined,
@@ -385,6 +392,8 @@ export default defineComponent({
             capacity: formData.capacity,
             type: formData.type,
             color: formData.color,
+            requiredCertifications: formData.requiredCertifications && formData.requiredCertifications.length > 0 ? formData.requiredCertifications : undefined,
+            assignedStaffIds: formData.assignedStaffIds || [],
             programId: formData.programId,
             activityId: formData.activityId,
           };
@@ -403,8 +412,9 @@ export default defineComponent({
           capacity: formData.capacity,
           type: formData.type,
           color: formData.color,
+          requiredCertifications: formData.requiredCertifications && formData.requiredCertifications.length > 0 ? formData.requiredCertifications : undefined,
           enrolledCamperIds: [],
-          assignedStaffIds: [],
+          assignedStaffIds: formData.assignedStaffIds || [],
           programId: formData.programId,
           activityId: formData.activityId,
         };
