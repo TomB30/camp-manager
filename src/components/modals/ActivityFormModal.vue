@@ -5,108 +5,14 @@
     @close="$emit('close')"
   >
     <template #body>
-      <form @submit.prevent="handleSave">
-        <div class="form-group">
-          <label class="form-label">Activity Name</label>
-          <input 
-            v-model="localFormData.name" 
-            type="text" 
-            class="form-input" 
-            placeholder="e.g., Wakeboarding, Pottery"
-            required 
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Description</label>
-          <textarea
-            v-model="localFormData.description"
-            class="form-textarea"
-            rows="3"
-            placeholder="Describe this activity..."
-          ></textarea>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Duration (minutes)</label>
-          <input 
-            v-model.number="localFormData.durationMinutes" 
-            type="number" 
-            class="form-input" 
-            min="1"
-            placeholder="e.g., 60, 120"
-            required 
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Default Location (Optional)</label>
-          <Autocomplete
-            v-model="localFormData.defaultRoomId"
-            :options="roomOptions"
-            placeholder="Select a default location"
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Default Capacity (Optional)</label>
-          <input 
-            v-model.number="localFormData.defaultCapacity" 
-            type="number" 
-            class="form-input" 
-            min="1"
-            placeholder="Maximum number of campers"
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Staff Requirements</label>
-          <div class="grid grid-cols-2">
-            <div>
-              <label class="form-label text-xs">Minimum Staff</label>
-              <input 
-                v-model.number="localFormData.minStaff" 
-                type="number" 
-                class="form-input" 
-                min="0"
-                placeholder="Min"
-              />
-            </div>
-            <div>
-              <label class="form-label text-xs">Maximum Staff</label>
-              <input 
-                v-model.number="localFormData.maxStaff" 
-                type="number" 
-                class="form-input" 
-                min="0"
-                placeholder="Max"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Required Certifications (Optional)</label>
-          <SelectionList
-            v-model="selectedCertificationIds"
-            :items="store.certifications"
-            item-type="certification"
-            placeholder="Select a certification..."
-            empty-text="No certifications required"
-            add-button-text="Add"
-            mode="multiple"
-            :get-label-fn="(cert) => cert.name"
-            :get-initials-fn="(cert) => cert.name.substring(0, 2).toUpperCase()"
-            :get-options-fn="(cert) => ({ label: cert.name, value: cert.id })"
-          />
-          <p class="form-help-text">Staff assigned to events using this activity will need these certifications</p>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Color</label>
-          <ColorPicker v-model="localFormData.color" />
-        </div>
-      </form>
+      <ActivityForm
+        v-model="localFormData"
+        v-model:selected-certification-ids="selectedCertificationIds"
+        v-model:is-custom-duration="isCustomDuration"
+        :room-options="roomOptions"
+        :certifications="store.certifications"
+        @submit="handleSave"
+      />
     </template>
 
     <template #footer>
@@ -122,30 +28,15 @@
 import { defineComponent, type PropType } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import BaseModal from '@/components/BaseModal.vue';
-import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import ColorPicker from '@/components/ColorPicker.vue';
-import SelectionList from '@/components/SelectionList.vue';
+import ActivityForm, { type ActivityFormData } from '@/components/ActivityForm.vue';
+import { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import type { Activity } from '@/types/api';
-
-interface ActivityFormData {
-  name: string;
-  description: string;
-  durationMinutes: number;
-  defaultRoomId: string;
-  requiredCertifications: string[];
-  minStaff: number;
-  maxStaff: number;
-  defaultCapacity: number;
-  color: string;
-}
 
 export default defineComponent({
   name: 'ActivityFormModal',
   components: {
     BaseModal,
-    Autocomplete,
-    ColorPicker,
-    SelectionList,
+    ActivityForm,
   },
   props: {
     show: {
@@ -180,6 +71,7 @@ export default defineComponent({
         color: '#6366F1',
       } as ActivityFormData,
       selectedCertificationIds: [] as string[],
+      isCustomDuration: false,
     };
   },
   computed: {
@@ -194,6 +86,9 @@ export default defineComponent({
         value: room.id,
         label: `${room.name} (${room.type})`,
       }));
+    },
+    presetDurations(): number[] {
+      return [30, 60, 90, 120, 180, 240, 480];
     },
   },
   watch: {
@@ -221,6 +116,8 @@ export default defineComponent({
         this.selectedCertificationIds = this.getCertificationIdsFromNames(
           this.activity.requiredCertifications || []
         );
+        // Check if duration matches any preset
+        this.isCustomDuration = !this.presetDurations.includes(this.activity!.durationMinutes);
       } else {
         this.localFormData = {
           name: '',
@@ -234,6 +131,7 @@ export default defineComponent({
           color: '#6366F1',
         };
         this.selectedCertificationIds = [];
+        this.isCustomDuration = false;
       }
     },
     getCertificationIdsFromNames(names: string[]): string[] {
@@ -297,11 +195,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.form-help-text {
-  margin-top: 0.375rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-</style>
 

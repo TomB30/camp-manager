@@ -38,108 +38,15 @@
 
         <!-- Create New Activity Form -->
         <div v-if="mode === 'create'" class="activity-form">
-          <form @submit.prevent="handleCreateNew">
-            <div class="form-group">
-              <label class="form-label">Activity Name</label>
-              <input 
-                v-model="formData.name" 
-                type="text" 
-                class="form-input" 
-                placeholder="e.g., Wakeboarding, Pottery"
-                required 
-              />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Description</label>
-              <textarea
-                v-model="formData.description"
-                class="form-textarea"
-                rows="3"
-                placeholder="Describe this activity..."
-              ></textarea>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Duration (minutes)</label>
-              <input 
-                v-model.number="formData.durationMinutes" 
-                type="number" 
-                class="form-input" 
-                min="1"
-                placeholder="e.g., 60, 120"
-                required 
-              />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Default Location (Optional)</label>
-              <Autocomplete
-                v-model="formData.defaultRoomId"
-                :options="roomOptions"
-                placeholder="Select a default location"
-              />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Default Capacity (Optional)</label>
-              <input 
-                v-model.number="formData.defaultCapacity" 
-                type="number" 
-                class="form-input" 
-                min="1"
-                placeholder="Maximum number of campers"
-              />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Staff Requirements</label>
-              <div class="grid grid-cols-2">
-                <div>
-                  <label class="form-label text-xs">Minimum Staff</label>
-                  <input 
-                    v-model.number="formData.minStaff" 
-                    type="number" 
-                    class="form-input" 
-                    min="0"
-                    placeholder="Min"
-                  />
-                </div>
-                <div>
-                  <label class="form-label text-xs">Maximum Staff</label>
-                  <input 
-                    v-model.number="formData.maxStaff" 
-                    type="number" 
-                    class="form-input" 
-                    min="0"
-                    placeholder="Max"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Required Certifications (Optional)</label>
-              <SelectionList
-                v-model="selectedCertificationIds"
-                :items="store.certifications"
-                item-type="certification"
-                placeholder="Select a certification..."
-                empty-text="No certifications required"
-                add-button-text="Add"
-                mode="multiple"
-                :get-label-fn="(cert) => cert.name"
-                :get-initials-fn="(cert) => cert.name.substring(0, 2).toUpperCase()"
-                :get-options-fn="(cert) => ({ label: cert.name, value: cert.id })"
-              />
-              <p class="form-help-text">Staff assigned to events using this activity will need these certifications</p>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="form-label">Color</label>
-              <ColorPicker v-model="formData.color" />
-            </div>
-          </form>
+          <ActivityForm
+            v-model="formData"
+            v-model:selected-certification-ids="selectedCertificationIds"
+            v-model:is-custom-duration="isCustomDuration"
+            :room-options="roomOptions"
+            :certifications="store.certifications"
+            :compact-mode="true"
+            @submit="handleCreateNew"
+          />
         </div>
 
         <!-- Existing Activities List -->
@@ -216,30 +123,15 @@ import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { Activity } from '@/types/api';
 import BaseModal from '@/components/BaseModal.vue';
-import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import ColorPicker from '@/components/ColorPicker.vue';
-import SelectionList from '@/components/SelectionList.vue';
+import ActivityForm, { type ActivityFormData } from '@/components/ActivityForm.vue';
+import { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import { Plus, ListPlus } from 'lucide-vue-next';
-
-interface ActivityFormData {
-  name: string;
-  description: string;
-  durationMinutes: number;
-  defaultRoomId: string;
-  requiredCertifications: string[];
-  minStaff: number;
-  maxStaff: number;
-  defaultCapacity: number;
-  color: string;
-}
 
 export default defineComponent({
   name: 'ActivitySelectorModal',
   components: {
     BaseModal,
-    Autocomplete,
-    ColorPicker,
-    SelectionList,
+    ActivityForm,
     Plus,
     ListPlus,
   },
@@ -271,6 +163,7 @@ export default defineComponent({
         color: '#6366F1',
       } as ActivityFormData,
       selectedCertificationIds: [] as string[],
+      isCustomDuration: false,
     };
   },
   computed: {
@@ -335,6 +228,7 @@ export default defineComponent({
         color: '#6366F1',
       };
       this.selectedCertificationIds = [];
+      this.isCustomDuration = false;
     },
     selectActivity(activityId: string) {
       this.selectedActivityId = activityId;
@@ -554,35 +448,8 @@ export default defineComponent({
   overflow: hidden; /* Prevent horizontal overflow */
 }
 
-.activity-form .form-group:last-child {
-  margin: 6px;
-}
-
-.form-help-text {
-  margin-top: 0.375rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.grid {
-  display: grid;
-  gap: 1rem;
-}
-
-.grid-cols-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.text-xs {
-  font-size: 0.75rem;
-}
-
 @media (max-width: 640px) {
   .selector-options {
-    grid-template-columns: 1fr;
-  }
-
-  .grid-cols-2 {
     grid-template-columns: 1fr;
   }
 }
