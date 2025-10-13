@@ -334,6 +334,16 @@ export const useCampStore = defineStore('camp', {
       this.updateConflicts();
     },
 
+    // Batch add events - more efficient for recurring events
+    async addEventsBatch(events: Event[]): Promise<void> {
+      // Save all events to storage in parallel
+      await Promise.all(events.map(event => storageService.saveEvent(event)));
+      // Add all to state at once
+      this.events.push(...events);
+      // Only run conflict detection once at the end
+      this.updateConflicts();
+    },
+
     async updateEvent(event: Event): Promise<void> {
       await storageService.saveEvent(event);
       const index = this.events.findIndex(e => e.id === event.id);

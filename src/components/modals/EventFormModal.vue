@@ -25,6 +25,11 @@
           <input v-model="localFormData.title" type="text" class="form-input" required />
         </div>
 
+        <div class="form-group">
+          <label class="form-label">Event Date</label>
+          <input v-model="localFormData.eventDate" type="date" class="form-input" required />
+        </div>
+
         <div class="grid grid-cols-2">
           <div class="form-group">
             <label class="form-label">Start Time</label>
@@ -34,6 +39,120 @@
           <div class="form-group">
             <label class="form-label">End Time</label>
             <input v-model="localFormData.endTime" type="time" class="form-input" required />
+          </div>
+        </div>
+
+        <!-- Recurrence Section (only show when creating new event) -->
+        <div v-if="!isEditing" class="form-group recurrence-section">
+          <div class="recurrence-header">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                v-model="recurrenceData.enabled"
+                class="checkbox-input"
+              />
+              <span class="form-label" style="margin: 0;">Repeat Event</span>
+            </label>
+          </div>
+
+          <div v-if="recurrenceData.enabled" class="recurrence-content">
+            <!-- Repeat Every -->
+            <div class="recurrence-row">
+              <label class="recurrence-label">Repeat every</label>
+              <div class="recurrence-inputs">
+                <NumberInput 
+                  v-model="recurrenceData.interval"
+                  :min="1"
+                  :max="99"
+                />
+                <select v-model="recurrenceData.frequency" class="frequency-select">
+                  <option value="daily">{{ recurrenceData.interval === 1 ? 'day' : 'days' }}</option>
+                  <option value="weekly">{{ recurrenceData.interval === 1 ? 'week' : 'weeks' }}</option>
+                  <option value="monthly">{{ recurrenceData.interval === 1 ? 'month' : 'months' }}</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Repeat On (for weekly) -->
+            <div v-if="recurrenceData.frequency === 'weekly'" class="recurrence-row">
+              <label class="recurrence-label">Repeat on</label>
+              <div class="days-selector">
+                <button
+                  v-for="(day, index) in daysOfWeek"
+                  :key="index"
+                  type="button"
+                  class="day-button"
+                  :class="{ active: recurrenceData.daysOfWeek && recurrenceData.daysOfWeek.includes(index as any) }"
+                  @click="toggleDay(index)"
+                >
+                  {{ day }}
+                </button>
+              </div>
+              <p class="recurrence-help-text">
+                Select which days of the week this event should occur. 
+                Example: Select S, T, Th for every Sunday, Tuesday, and Thursday.
+              </p>
+            </div>
+
+            <!-- Ends -->
+            <div class="recurrence-row">
+              <label class="recurrence-label">Ends</label>
+              <div class="ends-options">
+                <label class="radio-option">
+                  <input 
+                    type="radio" 
+                    value="never" 
+                    v-model="recurrenceData.endType"
+                    class="radio-input"
+                  />
+                  <span>Never</span>
+                </label>
+
+                <label class="radio-option">
+                  <input 
+                    type="radio" 
+                    value="on" 
+                    v-model="recurrenceData.endType"
+                    class="radio-input"
+                  />
+                  <span>On</span>
+                  <input 
+                    v-model="recurrenceData.endDate" 
+                    type="date" 
+                    class="date-input"
+                    :disabled="recurrenceData.endType !== 'on'"
+                    :min="localFormData.eventDate"
+                  />
+                </label>
+
+                <label class="radio-option">
+                  <input 
+                    type="radio" 
+                    value="after" 
+                    v-model="recurrenceData.endType"
+                    class="radio-input"
+                  />
+                  <span>After</span>
+                  <NumberInput 
+                    v-model="occurrencesValue"
+                    :min="1"
+                    :max="365"
+                    :disabled="recurrenceData.endType !== 'after'"
+                    :small="true"
+                  />
+                  <span>occurrences</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Recurrence Summary -->
+            <div 
+              v-if="recurrenceSummary" 
+              class="recurrence-summary"
+              :class="{ warning: recurrenceSummary.includes('⚠️') }"
+            >
+              <strong>Summary:</strong> {{ recurrenceSummary }}
+            </div>
           </div>
         </div>
 
@@ -151,10 +270,13 @@ import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import SelectionList from '@/components/SelectionList.vue';
+import NumberInput from '@/components/NumberInput.vue';
 import type { Event, Room, CamperGroup, Camper, StaffMember, Certification } from '@/types/api';
+import { type RecurrenceData, type DayOfWeek, formatRecurrenceRule, validateRecurrenceRule } from '@/utils/recurrence';
 
 interface EventFormData {
   title: string;
+  eventDate: string;
   startTime: string;
   endTime: string;
   roomId: string;
@@ -174,7 +296,8 @@ export default defineComponent({
     BaseModal,
     Autocomplete,
     ColorPicker,
-    SelectionList
+    SelectionList,
+    NumberInput
   },
   props: {
     show: {
@@ -227,7 +350,17 @@ export default defineComponent({
         { label: 'Education', value: 'education' },
         { label: 'Meal', value: 'meal' },
         { label: 'Free Time', value: 'free-time' }
-      ] as AutocompleteOption[]
+      ] as AutocompleteOption[],
+      recurrenceData: {
+        enabled: false,
+        frequency: 'weekly' as 'daily' | 'weekly' | 'monthly',
+        interval: 1,
+        daysOfWeek: [] as DayOfWeek[],
+        endType: 'never' as 'never' | 'on' | 'after',
+        endDate: '',
+        occurrences: 10
+      } as RecurrenceData,
+      daysOfWeek: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
     };
   },
   computed: {
@@ -263,18 +396,36 @@ export default defineComponent({
       return this.staffMembers;
     },
     eventStartDateTime(): Date | null {
-      if (!this.localFormData.startTime) return null;
+      if (!this.localFormData.startTime || !this.localFormData.eventDate) return null;
       const [hours, minutes] = this.localFormData.startTime.split(':').map(Number);
-      const date = new Date(this.eventDate);
+      const date = new Date(this.localFormData.eventDate);
       date.setHours(hours, minutes, 0, 0);
       return date;
     },
     eventEndDateTime(): Date | null {
-      if (!this.localFormData.endTime) return null;
+      if (!this.localFormData.endTime || !this.localFormData.eventDate) return null;
       const [hours, minutes] = this.localFormData.endTime.split(':').map(Number);
-      const date = new Date(this.eventDate);
+      const date = new Date(this.localFormData.eventDate);
       date.setHours(hours, minutes, 0, 0);
       return date;
+    },
+    recurrenceSummary(): string | null {
+      if (!this.recurrenceData.enabled) return null;
+      
+      const validation = validateRecurrenceRule(this.recurrenceData);
+      if (!validation.valid) {
+        return `⚠️ ${validation.error}`;
+      }
+      
+      return formatRecurrenceRule(this.recurrenceData);
+    },
+    occurrencesValue: {
+      get(): number {
+        return this.recurrenceData.occurrences || 10;
+      },
+      set(value: number) {
+        this.recurrenceData.occurrences = value;
+      }
     }
   },
   watch: {
@@ -290,6 +441,19 @@ export default defineComponent({
       },
       deep: true,
       immediate: true
+    },
+    'recurrenceData.frequency': {
+      handler(newFrequency, oldFrequency) {
+        // Auto-select the event's day when switching to weekly mode
+        if (newFrequency === 'weekly' && oldFrequency !== 'weekly') {
+          if (!this.recurrenceData.daysOfWeek || this.recurrenceData.daysOfWeek.length === 0) {
+            // Get the day of week from the event date
+            const eventDate = new Date(this.localFormData.eventDate);
+            const dayOfWeek = eventDate.getDay() as DayOfWeek;
+            this.recurrenceData.daysOfWeek = [dayOfWeek];
+          }
+        }
+      }
     }
   },
   methods: {
@@ -470,10 +634,35 @@ export default defineComponent({
         value: staff.id
       };
     },
+    toggleDay(day: number) {
+      if (!this.recurrenceData.daysOfWeek) {
+        this.recurrenceData.daysOfWeek = [];
+      }
+      const index = this.recurrenceData.daysOfWeek.indexOf(day as DayOfWeek);
+      if (index > -1) {
+        this.recurrenceData.daysOfWeek.splice(index, 1);
+      } else {
+        this.recurrenceData.daysOfWeek.push(day as DayOfWeek);
+        this.recurrenceData.daysOfWeek.sort((a, b) => a - b);
+      }
+    },
     handleSave() {
       // Convert certification IDs to names before saving
       this.localFormData.requiredCertifications = this.getCertificationNamesFromIds(this.selectedCertificationIds);
-      this.$emit('save', this.localFormData);
+      
+      // Validate recurrence if enabled
+      if (this.recurrenceData.enabled) {
+        const validation = validateRecurrenceRule(this.recurrenceData);
+        if (!validation.valid) {
+          alert(validation.error);
+          return;
+        }
+      }
+      
+      this.$emit('save', { 
+        formData: this.localFormData, 
+        recurrence: this.recurrenceData.enabled ? this.recurrenceData : null 
+      });
     },
   },
 });
@@ -531,6 +720,180 @@ export default defineComponent({
 
 .mt-2 {
   margin-top: 0.5rem;
+}
+
+/* Recurrence Styles */
+.recurrence-section {
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  background: var(--background);
+}
+
+
+.recurrence-header .checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.recurrence-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+
+.recurrence-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.recurrence-label {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.recurrence-inputs {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.frequency-select {
+  height: 42px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background: white;
+  font-size: 0.95rem;
+  cursor: pointer;
+  min-width: 100px;
+}
+
+.days-selector {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.day-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: white;
+  color: var(--text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.day-button:hover {
+  border-color: var(--primary-color);
+  background: var(--primary-light);
+}
+
+.day-button.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.ends-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background: white;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.radio-option:hover {
+  background: var(--background);
+}
+
+.radio-input {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.date-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  background: white;
+}
+
+.date-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--background);
+}
+
+.recurrence-summary {
+  padding: 0.75rem;
+  background: var(--primary-light);
+  border-left: 3px solid var(--primary-color);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.recurrence-summary strong {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.recurrence-summary.warning {
+  background: #fffbeb;
+  border-left: 3px solid #f59e0b;
+  font-weight: 400;
+}
+
+.recurrence-summary.warning strong {
+  color: #d97706;
+  font-weight: 500;
+}
+
+.recurrence-help-text {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .days-selector {
+    justify-content: space-between;
+  }
+  
+  .day-button {
+    width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
+  }
+  
+  .recurrence-help-text {
+    font-size: 0.8rem;
+  }
 }
 </style>
 

@@ -593,6 +593,10 @@ export interface components {
       programId?: string;
       /** Format: uuid */
       activityId?: string;
+      /** @description Recurrence rule ID - links this event to a recurrence series */
+      recurrenceId?: string;
+      /** @description Indicates if this is the parent event of a recurrence series */
+      isRecurrenceParent?: boolean;
     };
     Conflict: {
       /** @enum {string} */

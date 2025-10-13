@@ -3,7 +3,7 @@
     <div class="calendar-view">
       <ViewHeader title="Event Calendar">
         <template #actions>
-          <button class="btn btn-primary" @click="showEventModal = true">+ New Event</button>
+          <button class="btn btn-primary" @click="openNewEventModal">+ New Event</button>
         </template>
       </ViewHeader>
 
@@ -74,6 +74,7 @@
         :events="filteredTodayEvents"
         :rooms="store.rooms"
         @select-event="selectEvent"
+        @create-event="createEventAtHour"
       />
 
       <!-- Weekly View -->
@@ -154,6 +155,7 @@ import DailyCalendarView from '@/components/DailyCalendarView.vue';
 import WeeklyCalendarView from '@/components/WeeklyCalendarView.vue';
 import MonthlyCalendarView from '@/components/MonthlyCalendarView.vue';
 import type { Event } from '@/types/api';
+import { generateRecurrenceDates, type RecurrenceData } from '@/utils/recurrence';
 
 export default defineComponent({
   name: 'Calendar',
@@ -182,6 +184,7 @@ export default defineComponent({
       } | null,
       eventFormData: {
         title: '',
+        eventDate: format(new Date(), 'yyyy-MM-dd'),
         startTime: '09:00',
         endTime: '10:00',
         roomId: '',
@@ -396,6 +399,52 @@ export default defineComponent({
     selectEvent(event: Event) {
       this.selectedEventId = event.id;
     },
+    openNewEventModal() {
+      // Reset form data with the currently selected date
+      this.eventFormData = {
+        title: '',
+        eventDate: format(this.selectedDate, 'yyyy-MM-dd'),
+        startTime: '09:00',
+        endTime: '10:00',
+        roomId: '',
+        capacity: 20,
+        type: 'activity',
+        color: '#3B82F6',
+        requiredCertifications: [],
+        assignedStaffIds: [],
+        camperGroupIds: [],
+        programId: undefined,
+        activityId: undefined,
+      };
+      this.showEventModal = true;
+    },
+    createEventAtHour(hour: number) {
+      // Set the start time to the clicked hour
+      const startTime = `${String(hour).padStart(2, '0')}:00`;
+      // Set the end time to one hour later
+      const endHour = hour + 1;
+      const endTime = `${String(endHour).padStart(2, '0')}:00`;
+      
+      // Reset form data and set the time and date
+      this.eventFormData = {
+        title: '',
+        eventDate: format(this.selectedDate, 'yyyy-MM-dd'),
+        startTime,
+        endTime,
+        roomId: '',
+        capacity: 20,
+        type: 'activity',
+        color: '#3B82F6',
+        requiredCertifications: [],
+        assignedStaffIds: [],
+        camperGroupIds: [],
+        programId: undefined,
+        activityId: undefined,
+      };
+      
+      // Open the modal
+      this.showEventModal = true;
+    },
     getEventFormDate(): Date {
       // If editing, use the event's date; otherwise use selected date
       if (this.editingEventId) {
@@ -409,13 +458,14 @@ export default defineComponent({
     editEvent() {
       if (!this.selectedEvent) return;
       
-      // Extract time from ISO date strings
+      // Extract date and time from ISO date strings
       const startTime = new Date(this.selectedEvent.startTime);
       const endTime = new Date(this.selectedEvent.endTime);
       
       this.editingEventId = this.selectedEvent.id;
       this.eventFormData = {
         title: this.selectedEvent.title,
+        eventDate: format(startTime, 'yyyy-MM-dd'),
         startTime: `${String(startTime.getHours()).padStart(2, '0')}:${String(startTime.getMinutes()).padStart(2, '0')}`,
         endTime: `${String(endTime.getHours()).padStart(2, '0')}:${String(endTime.getMinutes()).padStart(2, '0')}`,
         roomId: this.selectedEvent.roomId,
@@ -437,6 +487,7 @@ export default defineComponent({
       this.editingEventId = null;
       this.eventFormData = {
         title: '',
+        eventDate: format(new Date(), 'yyyy-MM-dd'),
         startTime: '09:00',
         endTime: '10:00',
         roomId: '',
@@ -450,18 +501,16 @@ export default defineComponent({
         activityId: undefined,
       };
     },
-    async saveEvent(formData: any) {
+    async saveEvent(data: any) {
+      // Handle the new structure with formData and recurrence
+      const formData = data.formData || data;
+      const recurrence = data.recurrence || null;
+      
       const [startHour, startMinute] = formData.startTime.split(':').map(Number);
       const [endHour, endMinute] = formData.endTime.split(':').map(Number);
       
-      // Use selected date or existing event's date
-      let eventDate = this.selectedDate;
-      if (this.editingEventId) {
-        const existingEvent = this.store.getEventById(this.editingEventId);
-        if (existingEvent) {
-          eventDate = new Date(existingEvent.startTime);
-        }
-      }
+      // Use the date from the form
+      const eventDate = new Date(formData.eventDate);
       
       const startTime = new Date(eventDate);
       startTime.setHours(startHour, startMinute, 0, 0);
@@ -492,55 +541,139 @@ export default defineComponent({
           this.toast.success('Event updated successfully');
         }
       } else {
-        // Create new event
-        const event: Event = {
-          id: `event-${Date.now()}`,
-          title: formData.title,
-          startTime: startTime.toISOString(),
-          endTime: endTime.toISOString(),
-          roomId: formData.roomId,
-          capacity: formData.capacity,
-          type: formData.type,
-          color: formData.color,
-          requiredCertifications: formData.requiredCertifications && formData.requiredCertifications.length > 0 ? formData.requiredCertifications : undefined,
-          enrolledCamperIds: [],
-          assignedStaffIds: formData.assignedStaffIds || [],
-          programId: formData.programId,
-          activityId: formData.activityId,
-        };
-        
-        await this.store.addEvent(event);
-        
-        // Enroll camper groups if any were selected
-        if (formData.camperGroupIds && formData.camperGroupIds.length > 0) {
-          const messages: string[] = [];
-          
-          // Enroll camper groups
-          for (const groupId of formData.camperGroupIds) {
-            try {
-              const result = await this.store.enrollCamperGroup(event.id, groupId);
-              if (result.errors.length > 0) {
-                messages.push(result.message);
-              }
-            } catch (error: any) {
-              messages.push(error.message);
-            }
-          }
-          
-          if (messages.length > 0) {
-            this.toast.warning(
-              'Event created with some enrollment issues',
-              messages.join('\n')
-            );
-          } else {
-            this.toast.success('Event created successfully');
-          }
+        // Create new event(s)
+        if (recurrence && recurrence.enabled) {
+          // Generate recurring events
+          await this.createRecurringEvents(formData, recurrence, startTime, endTime);
         } else {
-          this.toast.success('Event created successfully');
+          // Create single event
+          await this.createSingleEvent(formData, startTime, endTime);
         }
       }
       
       this.closeEventModal();
+    },
+    
+    async createSingleEvent(formData: any, startTime: Date, endTime: Date) {
+      const event: Event = {
+        id: `event-${Date.now()}`,
+        title: formData.title,
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+        roomId: formData.roomId,
+        capacity: formData.capacity,
+        type: formData.type,
+        color: formData.color,
+        requiredCertifications: formData.requiredCertifications && formData.requiredCertifications.length > 0 ? formData.requiredCertifications : undefined,
+        enrolledCamperIds: [],
+        assignedStaffIds: formData.assignedStaffIds || [],
+        programId: formData.programId,
+        activityId: formData.activityId,
+      };
+      
+      await this.store.addEvent(event);
+      
+      // Enroll camper groups if any were selected
+      if (formData.camperGroupIds && formData.camperGroupIds.length > 0) {
+        await this.enrollCamperGroups(event.id, formData.camperGroupIds);
+      } else {
+        this.toast.success('Event created successfully');
+      }
+    },
+    
+    async createRecurringEvents(formData: any, recurrence: RecurrenceData, startTime: Date, endTime: Date) {
+      try {
+        // Generate all occurrence dates
+        const occurrenceDates = generateRecurrenceDates(startTime, recurrence);
+        
+        if (occurrenceDates.length === 0) {
+          this.toast.error('Failed to generate recurring events');
+          return;
+        }
+        
+        // Show loading toast for large batches
+        if (occurrenceDates.length > 10) {
+          this.toast.info(`Creating ${occurrenceDates.length} recurring events...`);
+        }
+        
+        // Generate a unique recurrence ID for this series
+        const recurrenceId = `recurrence-${Date.now()}`;
+        const baseTimestamp = Date.now();
+        
+        // Calculate the duration in milliseconds
+        const duration = endTime.getTime() - startTime.getTime();
+        
+        // Create all events in memory first (fast)
+        const eventsToCreate: Event[] = [];
+        
+        for (let i = 0; i < occurrenceDates.length; i++) {
+          const occurrenceStart = occurrenceDates[i];
+          const occurrenceEnd = new Date(occurrenceStart.getTime() + duration);
+          
+          const event: Event = {
+            id: `event-${baseTimestamp}-${i}`,
+            title: formData.title,
+            startTime: occurrenceStart.toISOString(),
+            endTime: occurrenceEnd.toISOString(),
+            roomId: formData.roomId,
+            capacity: formData.capacity,
+            type: formData.type,
+            color: formData.color,
+            requiredCertifications: formData.requiredCertifications && formData.requiredCertifications.length > 0 ? formData.requiredCertifications : undefined,
+            enrolledCamperIds: [],
+            assignedStaffIds: formData.assignedStaffIds || [],
+            programId: formData.programId,
+            activityId: formData.activityId,
+            recurrenceId: recurrenceId,
+            isRecurrenceParent: i === 0, // First event is the parent
+          };
+          
+          eventsToCreate.push(event);
+        }
+        
+        // Batch add all events at once (much faster)
+        // Use batch method to add all events and run conflict detection only once
+        await this.store.addEventsBatch(eventsToCreate);
+        
+        // Enroll camper groups for all events if any were selected
+        if (formData.camperGroupIds && formData.camperGroupIds.length > 0) {
+          // Batch enrollment operations
+          const enrollmentPromises = eventsToCreate.map(event => 
+            this.enrollCamperGroups(event.id, formData.camperGroupIds, true)
+          );
+          await Promise.all(enrollmentPromises);
+        }
+        
+        this.toast.success(`Successfully created ${occurrenceDates.length} recurring events`);
+      } catch (error: any) {
+        this.toast.error('Failed to create recurring events', error.message);
+      }
+    },
+    
+    async enrollCamperGroups(eventId: string, groupIds: string[], silent: boolean = false) {
+      const messages: string[] = [];
+      
+      for (const groupId of groupIds) {
+        try {
+          const result = await this.store.enrollCamperGroup(eventId, groupId);
+          if (result.errors.length > 0) {
+            messages.push(result.message);
+          }
+        } catch (error: any) {
+          messages.push(error.message);
+        }
+      }
+      
+      if (!silent) {
+        if (messages.length > 0) {
+          this.toast.warning(
+            'Event created with some enrollment issues',
+            messages.join('\n')
+          );
+        } else {
+          this.toast.success('Event created successfully');
+        }
+      }
     },
     deleteEventConfirm() {
       if (!this.selectedEventId) return;
