@@ -600,7 +600,7 @@ export const mockRooms: Room[] = [
   },
 ];
 
-// Helper to create events for the week
+// Helper to create events for the month
 const createEvent = (
   id: number,
   title: string,
@@ -613,7 +613,9 @@ const createEvent = (
   staffIds: string[],
   camperIds: string[],
   color: string,
-  requiredCerts?: string[]
+  requiredCerts?: string[],
+  programId?: string,
+  activityId?: string
 ): Event => {
   const today = new Date();
   const eventDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + dayOffset, startHour, 0);
@@ -631,11 +633,13 @@ const createEvent = (
     enrolledCamperIds: camperIds,
     color,
     requiredCertifications: requiredCerts,
+    programId,
+    activityId,
   };
 };
 
-// Generate a full week of varied events
-const generateWeekEvents = (): Event[] => {
+// Generate a full month of varied events
+const generateMonthEvents = (): Event[] => {
   const events: Event[] = [];
   let eventId = 1;
   
@@ -648,53 +652,105 @@ const generateWeekEvents = (): Event[] => {
     return campers;
   };
   
-  // Days of the week (0 = today through 6 = next week)
-  for (let day = 0; day < 7; day++) {
-    const camperOffset = (day * 8) % 40;
+  // Get current month details
+  const today = new Date();
+  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  const startDay = 1 - today.getDate(); // Start from the 1st of the month
+  
+  // Generate events for all days in the month
+  for (let day = startDay; day < startDay + daysInMonth; day++) {
+    const camperOffset = (Math.abs(day) * 8) % 40;
+    const dayMod = Math.abs(day) % 7;
     
-    // Morning Assembly (9:00-9:30) - Everyone
-    events.push(createEvent(
-      eventId++,
-      'Morning Assembly',
-      day,
-      9,
-      0.5,
-      generateId('room', 1),
-      50,
-      'activity',
-      [generateId('staff', 1), generateId('staff', 2)],
-      getRandomCampers(30, camperOffset),
-      '#6366F1',
-    ));
+    // Morning Assembly (9:00-9:30) - Everyone (not every day)
+    if (dayMod === 1 || dayMod === 3 || dayMod === 5) {
+      events.push(createEvent(
+        eventId++,
+        'Morning Assembly',
+        day,
+        9,
+        0.5,
+        generateId('room', 1),
+        50,
+        'activity',
+        [generateId('staff', 1), generateId('staff', 2)],
+        getRandomCampers(30, camperOffset),
+        '#6366F1',
+      ));
+    }
     
-    // Morning Activities Block 1 (10:00-12:00)
-    events.push(createEvent(
-      eventId++,
-      'Arts & Crafts',
-      day,
-      10,
-      2,
-      generateId('room', 2),
-      15,
-      'activity',
-      [generateId('staff', 3)],
-      getRandomCampers(12, camperOffset),
-      '#A855F7',
-    ));
-    
-    events.push(createEvent(
-      eventId++,
-      'Soccer Practice',
-      day,
-      10,
-      2,
-      generateId('room', 3),
-      20,
-      'sports',
-      [generateId('staff', 6), generateId('staff', 8)],
-      getRandomCampers(18, camperOffset + 12),
-      '#10B981',
-    ));
+    // Morning Activities Block 1 (10:00-11:30)
+    // Rotate through different program activities
+    if (dayMod === 0 || dayMod === 3) {
+      // Pottery from Arts & Crafts Program
+      events.push(createEvent(
+        eventId++,
+        'Pottery',
+        day,
+        10,
+        1.5,
+        generateId('room', 6),
+        10,
+        'activity',
+        [generateId('staff', 2)],
+        getRandomCampers(8, camperOffset),
+        '#EC4899',
+        undefined,
+        generateId('program', 2),
+        generateId('activity', 4)
+      ));
+    } else if (dayMod === 1 || dayMod === 4) {
+      // Swimming Lessons from Watersports Program
+      events.push(createEvent(
+        eventId++,
+        'Swimming Lessons',
+        day,
+        10,
+        1,
+        generateId('room', 10),
+        12,
+        'sports',
+        [generateId('staff', 4), generateId('staff', 5)],
+        getRandomCampers(10, camperOffset),
+        '#60A5FA',
+        ['Lifeguard', 'Swimming Instructor'],
+        generateId('program', 1),
+        generateId('activity', 2)
+      ));
+    } else if (dayMod === 2 || dayMod === 5) {
+      // Rock Climbing from Adventure Sports Program
+      events.push(createEvent(
+        eventId++,
+        'Rock Climbing',
+        day,
+        10,
+        1.5,
+        generateId('room', 3),
+        8,
+        'activity',
+        [generateId('staff', 1), generateId('staff', 3)],
+        getRandomCampers(7, camperOffset),
+        '#10B981',
+        ['Climbing Instructor', 'First Aid'],
+        generateId('program', 3),
+        generateId('activity', 7)
+      ));
+    } else {
+      // General Soccer Practice
+      events.push(createEvent(
+        eventId++,
+        'Soccer Practice',
+        day,
+        10,
+        1.5,
+        generateId('room', 7),
+        20,
+        'sports',
+        [generateId('staff', 6), generateId('staff', 8)],
+        getRandomCampers(16, camperOffset),
+        '#10B981',
+      ));
+    }
     
     // Lunch (12:00-1:00) - Everyone
     events.push(createEvent(
@@ -712,77 +768,129 @@ const generateWeekEvents = (): Event[] => {
     ));
     
     // Afternoon Activities Block 1 (2:00-3:30)
-    events.push(createEvent(
-      eventId++,
-      'Swimming',
-      day,
-      14,
-      1.5,
-      generateId('room', 4),
-      20,
-      'sports',
-      [generateId('staff', 4)],
-      getRandomCampers(18, camperOffset),
-      '#06B6D4',
-      ['Lifeguard']
-    ));
+    if (dayMod === 0 || dayMod === 2 || dayMod === 4) {
+      // Wakeboarding from Watersports Program
+      events.push(createEvent(
+        eventId++,
+        'Wakeboarding',
+        day,
+        14,
+        2,
+        generateId('room', 5),
+        8,
+        'sports',
+        [generateId('staff', 5), generateId('staff', 6)],
+        getRandomCampers(7, camperOffset),
+        '#3B82F6',
+        ['Lifeguard', 'Boat Driver'],
+        generateId('program', 1),
+        generateId('activity', 1)
+      ));
+    } else if (dayMod === 1 || dayMod === 3) {
+      // Painting Workshop from Arts & Crafts Program
+      events.push(createEvent(
+        eventId++,
+        'Painting Workshop',
+        day,
+        14,
+        1.25,
+        generateId('room', 9),
+        15,
+        'activity',
+        [generateId('staff', 2)],
+        getRandomCampers(12, camperOffset),
+        '#F472B6',
+        undefined,
+        generateId('program', 2),
+        generateId('activity', 5)
+      ));
+    } else {
+      // Kayaking from Watersports Program
+      events.push(createEvent(
+        eventId++,
+        'Kayaking',
+        day,
+        14,
+        1.5,
+        generateId('room', 5),
+        10,
+        'sports',
+        [generateId('staff', 5), generateId('staff', 6)],
+        getRandomCampers(9, camperOffset),
+        '#2563EB',
+        ['Lifeguard'],
+        generateId('program', 1),
+        generateId('activity', 3)
+      ));
+    }
     
-    events.push(createEvent(
-      eventId++,
-      'Music Class',
-      day,
-      14,
-      1.5,
-      generateId('room', 8),
-      15,
-      'activity',
-      [generateId('staff', 3)],
-      getRandomCampers(12, camperOffset + 18),
-      '#F59E0B',
-    ));
+    // Second afternoon activity
+    if (dayMod === 0 || dayMod === 3 || dayMod === 5) {
+      events.push(createEvent(
+        eventId++,
+        'Music Class',
+        day,
+        14,
+        1,
+        generateId('room', 8),
+        15,
+        'activity',
+        [generateId('staff', 3)],
+        getRandomCampers(12, camperOffset + 10),
+        '#F59E0B',
+      ));
+    }
     
     // Afternoon Activities Block 2 (4:00-5:30)
-    if (day % 2 === 0) {
+    if (dayMod % 2 === 0) {
+      // Archery from Adventure Sports Program
+      events.push(createEvent(
+        eventId++,
+        'Archery',
+        day,
+        16,
+        1.5,
+        generateId('room', 7),
+        12,
+        'activity',
+        [generateId('staff', 1)],
+        getRandomCampers(10, camperOffset),
+        '#10B981',
+        ['Archery Instructor'],
+        generateId('program', 3),
+        generateId('activity', 8)
+      ));
+      
+      // Jewelry Making from Arts & Crafts Program
+      events.push(createEvent(
+        eventId++,
+        'Jewelry Making',
+        day,
+        16,
+        1,
+        generateId('room', 9),
+        12,
+        'activity',
+        [generateId('staff', 8)],
+        getRandomCampers(10, camperOffset + 10),
+        '#DB2777',
+        undefined,
+        generateId('program', 2),
+        generateId('activity', 6)
+      ));
+    } else {
       events.push(createEvent(
         eventId++,
         'Basketball',
         day,
         16,
         1.5,
-        generateId('room', 9),
+        generateId('room', 3),
         20,
         'sports',
         [generateId('staff', 6)],
         getRandomCampers(16, camperOffset),
         '#EF4444',
-      ));
-      
-      events.push(createEvent(
-        eventId++,
-        'Drama Club',
-        day,
-        16,
-        1.5,
-        generateId('room', 10),
-        20,
-        'activity',
-        [generateId('staff', 7)],
-        getRandomCampers(14, camperOffset + 16),
-        '#EC4899',
-      ));
-    } else {
-      events.push(createEvent(
-        eventId++,
-        'Nature Hike',
-        day,
-        16,
-        1.5,
-        generateId('room', 7),
-        30,
-        'activity',
-        [generateId('staff', 8), generateId('staff', 2)],
-        getRandomCampers(25, camperOffset),
-        '#84CC16',
       ));
     }
     
@@ -801,8 +909,8 @@ const generateWeekEvents = (): Event[] => {
       '#64748B',
     ));
     
-    // Evening Activity (7:30-8:30)
-    if (day === 2 || day === 5) {
+    // Evening Activity (7:30-8:30) - Not every day
+    if (dayMod === 2 || dayMod === 5) {
       events.push(createEvent(
         eventId++,
         'Campfire & Songs',
@@ -816,7 +924,7 @@ const generateWeekEvents = (): Event[] => {
         getRandomCampers(35, camperOffset),
         '#F97316',
       ));
-    } else if (day === 6) {
+    } else if (dayMod === 6) {
       events.push(createEvent(
         eventId++,
         'Talent Show',
@@ -830,13 +938,44 @@ const generateWeekEvents = (): Event[] => {
         getRandomCampers(20, camperOffset),
         '#8B5CF6',
       ));
+    } else if (dayMod === 4) {
+      events.push(createEvent(
+        eventId++,
+        'Movie Night',
+        day,
+        19.5,
+        2,
+        generateId('room', 1),
+        45,
+        'activity',
+        [generateId('staff', 2), generateId('staff', 4)],
+        getRandomCampers(38, camperOffset),
+        '#8B5CF6',
+      ));
+    }
+    
+    // Quiet Time (9:00 PM) - Most days
+    if (dayMod !== 6) {
+      events.push(createEvent(
+        eventId++,
+        'Quiet Time',
+        day,
+        21,
+        1,
+        generateId('room', 1),
+        50,
+        'free-time',
+        [generateId('staff', 1), generateId('staff', 2)],
+        getRandomCampers(40, camperOffset),
+        '#475569',
+      ));
     }
   }
   
   return events;
 };
 
-export const mockEvents: Event[] = generateWeekEvents();
+export const mockEvents: Event[] = generateMonthEvents();
 
 // Example Camper Groups
 export const mockCamperGroups: CamperGroup[] = [
