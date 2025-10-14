@@ -22,17 +22,18 @@
     />
 
     <!-- Empty State -->
-    <div v-if="store.colors.length === 0" class="empty-state">
-      <div class="empty-state-content">
-        <Palette :size="48" class="empty-state-icon" />
-        <h3>No colors configured</h3>
-        <p>Add your first color to start customizing your camp's color palette.</p>
-        <button class="btn btn-primary" @click="showAddModal = true">
-          <Plus :size="18" />
-          Add Your First Color
-        </button>
-      </div>
-    </div>
+    <EmptyState
+      v-if="store.colors.length === 0"
+      type="empty"
+      title="No Colors Yet"
+      message="Add your first color to start customizing your camp's color palette."
+      action-text="Add Your First Color"
+      @action="showAddModal = true"
+    >
+      <template #icon>
+        <Palette :size="64" stroke-width="1.5" />
+      </template>
+    </EmptyState>
 
     <!-- Colors Grid -->
     <div v-else class="colors-grid">
@@ -77,6 +78,7 @@ import ColorCard from '@/components/cards/ColorCard.vue';
 import ColorFormModal from '@/components/modals/ColorFormModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar from '@/components/FilterBar.vue';
+import EmptyState from '@/components/EmptyState.vue';
 import { useToast } from '@/composables/useToast';
 
 export default defineComponent({
@@ -89,6 +91,7 @@ export default defineComponent({
     ColorFormModal,
     ConfirmModal,
     FilterBar,
+    EmptyState,
   },
   setup() {
     const store = useCampStore();
@@ -209,6 +212,10 @@ export default defineComponent({
   gap: 1.5rem;
 }
 
+.colors-grid .empty-state {
+  grid-column: 1 / -1;
+}
+
 .color-input-group {
   display: flex;
   gap: 0.5rem;
@@ -256,35 +263,6 @@ export default defineComponent({
     opacity: 1;
     transform: translateX(0);
   }
-}
-
-.empty-state {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-}
-
-.empty-state-content {
-  text-align: center;
-  max-width: 400px;
-}
-
-.empty-state-icon {
-  color: var(--text-secondary);
-  opacity: 0.5;
-  margin-bottom: 1rem;
-}
-
-.empty-state-content h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.25rem;
-  color: var(--text-primary);
-}
-
-.empty-state-content p {
-  margin: 0 0 1.5rem;
-  color: var(--text-secondary);
 }
 
 @media (max-width: 768px) {

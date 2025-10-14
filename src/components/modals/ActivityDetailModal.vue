@@ -1,8 +1,8 @@
 <template>
   <BaseModal
     :show="show"
-    size="large"
     @close="$emit('close')"
+    modal-class="modal-large"
   >
     <template #header>
       <div class="activity-title-header">

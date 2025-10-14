@@ -34,6 +34,32 @@
           :session-name="getSessionName(camper.sessionId)"
           @click="selectCamper(camper.id)"
         />
+
+        <EmptyState
+          v-if="filteredCampers.length === 0 && store.campers.length === 0"
+          type="empty"
+          title="No Campers Yet"
+          message="Add your first camper to start managing registrations and camp activities."
+          action-text="Add Camper"
+          @action="showModal = true"
+        >
+          <template #icon>
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </template>
+        </EmptyState>
+
+        <EmptyState
+          v-if="filteredCampers.length === 0 && store.campers.length > 0"
+          type="no-results"
+          title="No Campers Found"
+          message="No campers match your current filters. Try adjusting your search criteria."
+          action-text="Clear Filters"
+          action-button-class="btn-secondary"
+          @action="clearFilters"
+        />
       </div>
 
       <!-- Table View -->
@@ -165,6 +191,7 @@ import EventsByDate from '@/components/EventsByDate.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
 import Autocomplete from '@/components/Autocomplete.vue';
+import EmptyState from '@/components/EmptyState.vue';
 import CamperDetailModal from '@/components/modals/CamperDetailModal.vue';
 import CamperFormModal from '@/components/modals/CamperFormModal.vue';
 
@@ -180,6 +207,7 @@ export default defineComponent({
     DataTable,
     ViewToggle,
     Autocomplete,
+    EmptyState,
     CamperDetailModal,
     CamperFormModal
   },
@@ -451,6 +479,10 @@ export default defineComponent({
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
+}
+
+.campers-grid .empty-state {
+  grid-column: 1 / -1;
 }
 
 .family-group-info {

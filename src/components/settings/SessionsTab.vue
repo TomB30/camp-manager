@@ -22,17 +22,18 @@
     />
 
     <!-- Empty State -->
-    <div v-if="store.sessions.length === 0" class="empty-state">
-      <div class="empty-state-content">
-        <CalendarDays :size="48" class="empty-state-icon" />
-        <h3>No sessions configured</h3>
-        <p>Add your first session to define the registration periods for your camp.</p>
-        <button class="btn btn-primary" @click="showAddModal = true">
-          <Plus :size="18" />
-          Add Your First Session
-        </button>
-      </div>
-    </div>
+    <EmptyState
+      v-if="store.sessions.length === 0"
+      type="empty"
+      title="No Sessions Yet"
+      message="Add your first session to define the registration periods for your camp."
+      action-text="Add Your First Session"
+      @action="showAddModal = true"
+    >
+      <template #icon>
+        <CalendarDays :size="64" stroke-width="1.5" />
+      </template>
+    </EmptyState>
 
     <!-- Sessions List -->
     <div v-else class="sessions-list">
@@ -86,6 +87,7 @@ import SessionDetailModal from '@/components/modals/SessionDetailModal.vue';
 import SessionFormModal from '@/components/modals/SessionFormModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import FilterBar from '@/components/FilterBar.vue';
+import EmptyState from '@/components/EmptyState.vue';
 import { useToast } from '@/composables/useToast';
 
 export default defineComponent({
@@ -99,6 +101,7 @@ export default defineComponent({
     SessionFormModal,
     ConfirmModal,
     FilterBar,
+    EmptyState,
   },
   setup() {
     const store = useCampStore();
@@ -260,35 +263,6 @@ export default defineComponent({
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
-}
-
-.empty-state {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-}
-
-.empty-state-content {
-  text-align: center;
-  max-width: 400px;
-}
-
-.empty-state-icon {
-  color: var(--text-secondary);
-  opacity: 0.5;
-  margin-bottom: 1rem;
-}
-
-.empty-state-content h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.25rem;
-  color: var(--text-primary);
-}
-
-.empty-state-content p {
-  margin: 0 0 1.5rem;
-  color: var(--text-secondary);
 }
 
 @keyframes slideIn {

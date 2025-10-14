@@ -41,8 +41,9 @@
         <EmptyState
           v-if="filteredFamilyGroups.length === 0 && store.familyGroups.length === 0"
           type="empty"
-          message="No family groups created yet"
-          action-text="Create First Group"
+          title="No Family Groups Yet"
+          message="Create your first family group to organize campers and assign them to sleeping rooms."
+          action-text="Create Group"
           @action="showModal = true"
         >
           <template #icon>
@@ -577,23 +578,8 @@ export default defineComponent({
   gap: 1.5rem;
 }
 
-.empty-state {
+.groups-grid .empty-state {
   grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  color: var(--text-secondary);
-}
-
-.empty-state svg {
-  color: var(--text-tertiary);
-  margin-bottom: 1rem;
-}
-
-.empty-state p {
-  margin-bottom: 1.5rem;
 }
 
 .detail-section {

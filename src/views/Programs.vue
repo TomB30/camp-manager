@@ -915,6 +915,10 @@ export default defineComponent({
   gap: 1.5rem;
 }
 
+.programs-grid .empty-state {
+  grid-column: 1 / -1;
+}
+
 /* Program Detail View */
 .program-detail {
   animation: fadeIn 0.3s ease;
@@ -1094,33 +1098,6 @@ export default defineComponent({
 }
 
 /* Empty States */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 1rem;
-  text-align: center;
-  color: var(--text-secondary);
-}
-
-.empty-state svg {
-  color: var(--text-muted);
-  margin-bottom: 1rem;
-}
-
-.empty-state h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 0.5rem 0;
-}
-
-.empty-state p {
-  margin: 0 0 1.5rem 0;
-  max-width: 400px;
-}
-
 .empty-section {
   padding: 2rem;
   text-align: center;

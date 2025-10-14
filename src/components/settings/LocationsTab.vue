@@ -376,6 +376,10 @@ export default defineComponent({
   gap: 1.5rem;
 }
 
+.locations-grid .empty-state {
+  grid-column: 1 / -1;
+}
+
 .location-name-content {
   display: flex;
   align-items: center;

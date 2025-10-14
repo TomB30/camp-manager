@@ -352,6 +352,10 @@ export default defineComponent({
   gap: 1.5rem;
 }
 
+.rooms-grid .empty-state {
+  grid-column: 1 / -1;
+}
+
 .cabin-name-content {
   display: flex;
   align-items: center;

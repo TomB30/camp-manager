@@ -26,17 +26,18 @@
     </FilterBar>
 
     <!-- Empty State -->
-    <div v-if="store.certifications.length === 0" class="empty-state">
-      <div class="empty-state-content">
-        <Award :size="48" class="empty-state-icon" />
-        <h3>No certifications configured</h3>
-        <p>Add your first certification to start tracking staff qualifications.</p>
-        <button class="btn btn-primary" @click="showModal = true">
-          <Plus :size="18" />
-          Add Your First Certification
-        </button>
-      </div>
-    </div>
+    <EmptyState
+      v-if="store.certifications.length === 0"
+      type="empty"
+      title="No Certifications Yet"
+      message="Add your first certification to start tracking staff qualifications."
+      action-text="Add Your First Certification"
+      @action="showModal = true"
+    >
+      <template #icon>
+        <Award :size="64" stroke-width="1.5" />
+      </template>
+    </EmptyState>
 
     <!-- Grid View -->
     <div v-else-if="viewMode === 'grid'" class="certifications-grid">
@@ -137,6 +138,7 @@ import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
+import EmptyState from '@/components/EmptyState.vue';
 import { useToast } from '@/composables/useToast';
 
 export default defineComponent({
@@ -154,6 +156,7 @@ export default defineComponent({
     DataTable,
     FilterBar,
     ViewToggle,
+    EmptyState,
   },
   setup() {
     const store = useCampStore();
@@ -329,36 +332,14 @@ export default defineComponent({
   animation: slideIn 0.3s ease;
 }
 
-.empty-state {
-  padding: 4rem 2rem;
-  text-align: center;
-}
-
-.empty-state-content {
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.empty-state-icon {
-  color: var(--text-tertiary);
-  margin-bottom: 1rem;
-}
-
-.empty-state h3 {
-  margin: 0 0 0.5rem 0;
-  color: var(--text-primary);
-  font-size: 1.25rem;
-}
-
-.empty-state p {
-  margin: 0 0 1.5rem 0;
-  color: var(--text-secondary);
-}
-
 .certifications-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 1rem;
+}
+
+.certifications-grid .empty-state {
+  grid-column: 1 / -1;
 }
 
 .certification-card-wrapper {
