@@ -31,6 +31,8 @@ export async function clearData(): Promise<void> {
   store.activities = [];
   store.locations = [];
   store.certifications = [];
+  store.colors = [];
+  store.sessions = [];
   store.conflicts = [];
   
   console.log('✅ All data cleared successfully!');

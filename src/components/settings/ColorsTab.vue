@@ -3,7 +3,7 @@
     <TabHeader
       title="Color Palette"
       description="Manage the colors available throughout your camp system. These colors will be used in events, programs, groups, and more."
-      action-text="+ Color"
+      action-text="Color"
       @action="showAddModal = true"
     >
       <template #action-icon>

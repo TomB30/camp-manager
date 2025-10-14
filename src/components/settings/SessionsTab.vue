@@ -3,7 +3,7 @@
     <TabHeader
       title="Camp Sessions"
       description="Define the time periods (weeks, months, or custom durations) that campers can register for at your camp."
-      action-text="+ Session"
+      action-text="Session"
       @action="showAddModal = true"
     >
       <template #action-icon>

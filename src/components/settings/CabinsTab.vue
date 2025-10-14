@@ -3,7 +3,7 @@
     <TabHeader
       title="Cabins (Sleeping Rooms)"
       description="Manage all sleeping accommodations where campers and family groups will stay during their time at camp."
-      action-text="+ Cabin"
+      action-text="Cabin"
       @action="showModal = true"
     >
       <template #action-icon>
@@ -30,6 +30,8 @@
       icon="Bed"
       title="No cabins configured"
       message="Add your first cabin to start managing sleeping accommodations for campers."
+      action-text="+ Cabin"
+      @action="showModal = true"
     >
       <button class="btn btn-primary" @click="showModal = true">
         <Plus :size="18" />

@@ -3,7 +3,7 @@
     <TabHeader
       title="Locations"
       description="Manage all physical locations within your camp - from activity rooms to outdoor spaces."
-      action-text="+ Location"
+      action-text="Location"
       @action="showModal = true"
     >
       <template #action-icon>
@@ -31,6 +31,7 @@
       icon="MapPin"
       title="No locations configured"
       message="Add your first location to start organizing your camp spaces."
+      action-text="+ Location"
     >
       <button class="btn btn-primary" @click="showModal = true">
         <Plus :size="18" />

@@ -3,7 +3,7 @@
     <TabHeader
       title="Staff Certifications"
       description="Manage the certifications available for your staff members. Define which certifications are required and their validity periods."
-      action-text="+ Certification"
+      action-text="Certification"
       @action="showModal = true"
     >
       <template #action-icon>

@@ -3,7 +3,7 @@
     <TabHeader
       title="Activity Rooms"
       description="Manage all activity rooms where camp programs and events take place."
-      action-text="+ Room"
+      action-text="Room"
       @action="showModal = true"
     >
       <template #action-icon>
@@ -32,6 +32,8 @@
       icon="Home"
       title="No activity rooms configured"
       message="Add your first activity room to start organizing your camp spaces."
+      action-text="+ Room"
+      @action="showModal = true"
     >
       <button class="btn btn-primary" @click="showModal = true">
         <Plus :size="18" />
