@@ -43,6 +43,13 @@
         </div>
 
         <div class="detail-section">
+          <div class="detail-label">Session</div>
+          <slot name="session">
+            <div class="text-secondary">Not registered for a session</div>
+          </slot>
+        </div>
+
+        <div class="detail-section">
           <div class="detail-label">Family Group</div>
           <slot name="family-group">
             <div class="text-secondary">Not assigned to a family group</div>

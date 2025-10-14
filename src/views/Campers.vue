@@ -12,6 +12,7 @@
         v-model:searchQuery="searchQuery"
         v-model:filter-gender="filterGender"
         v-model:filter-age="filterAge"
+        v-model:filter-session="filterSession"
         :filters="campersFilters"
         :filtered-count="filteredCampers.length"
         :total-count="store.campers.length"
@@ -30,6 +31,7 @@
           :camper="camper"
           :formatted-gender="formatGender(camper.gender)"
           :today-events-count="getCamperTodayEvents(camper.id).length"
+          :session-name="getSessionName(camper.sessionId)"
           @click="selectCamper(camper.id)"
         />
       </div>
@@ -58,6 +60,13 @@
           <span class="badge badge-primary badge-sm">{{ formatGender(item.gender) }}</span>
         </template>
         
+        <template #cell-session="{ item }">
+          <span v-if="item.sessionId" class="badge badge-info badge-sm">
+            {{ getSessionName(item.sessionId) }}
+          </span>
+          <span v-else class="text-secondary">Not registered</span>
+        </template>
+        
         <template #cell-allergies="{ item }">
           <span v-if="item.allergies && item.allergies.length > 0" class="badge badge-warning badge-sm">
             {{ item.allergies.length }} allergy(ies)
@@ -84,6 +93,17 @@
         @edit="editCamper"
         @delete="deleteCamperConfirm"
       >
+        <template #session>
+          <div v-if="selectedCamper?.sessionId">
+            <span class="badge badge-info">
+              {{ getSessionName(selectedCamper.sessionId) }}
+            </span>
+            <div class="text-xs text-secondary mt-1">
+              {{ getSessionDateRange(selectedCamper.sessionId) }}
+            </div>
+          </div>
+          <div v-else class="text-secondary">Not registered for a session</div>
+        </template>
         <template #family-group>
           <div v-if="selectedCamper?.familyGroupId && getFamilyGroup(selectedCamper.familyGroupId)">
             <div class="family-group-info">
@@ -111,6 +131,7 @@
         :is-editing="!!editingCamperId"
         :form-data="formData"
         :family-groups="store.familyGroups"
+        :sessions="store.sessions"
         @close="closeModal"
         @save="saveCamper"
       />
@@ -181,15 +202,18 @@ export default defineComponent({
         parentContact: '',
         allergies: [] as string[],
         medicalNotes: '',
+        sessionId: '' as string | undefined,
         familyGroupId: '' as string | undefined,
       },
       searchQuery: '',
       filterGender: '',
       filterAge: '',
+      filterSession: '',
       camperColumns: [
         { key: 'name', label: 'Name', width: '200px' },
         { key: 'age', label: 'Age', width: '80px' },
         { key: 'gender', label: 'Gender', width: '100px' },
+        { key: 'session', label: 'Session', width: '150px' },
         { key: 'parentContact', label: 'Parent Contact', width: '250px' },
         { key: 'allergies', label: 'Allergies', width: '120px' },
         { key: 'events', label: "Today's Events", width: '120px' },
@@ -203,6 +227,15 @@ export default defineComponent({
     },
     campersFilters(): Filter[] {
       return [
+        {
+          model: 'filterSession',
+          value: this.filterSession,
+          placeholder: 'Filter by Session',
+          options: this.store.sessions.map(session => ({
+            label: session.name,
+            value: session.id,
+          })),
+        },
         {
           model: 'filterGender',
           value: this.filterGender,
@@ -242,6 +275,11 @@ export default defineComponent({
         );
       }
 
+      // Session filter
+      if (this.filterSession) {
+        campers = campers.filter((camper: Camper) => camper.sessionId === this.filterSession);
+      }
+
       // Gender filter
       if (this.filterGender) {
         campers = campers.filter((camper: Camper) => camper.gender === this.filterGender);
@@ -263,6 +301,7 @@ export default defineComponent({
       this.searchQuery = '';
       this.filterGender = '';
       this.filterAge = '';
+      this.filterSession = '';
     },
     getCamperTodayEvents(camperId: string): Event[] {
       const today = new Date();
@@ -287,6 +326,19 @@ export default defineComponent({
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
     },
+    getSessionName(sessionId: string | undefined): string {
+      if (!sessionId) return 'No session';
+      const session = this.store.sessions.find(s => s.id === sessionId);
+      return session?.name || 'Unknown Session';
+    },
+    getSessionDateRange(sessionId: string | undefined): string {
+      if (!sessionId) return '';
+      const session = this.store.sessions.find(s => s.id === sessionId);
+      if (!session) return 'Unknown';
+      const startDate = new Date(session.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const endDate = new Date(session.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return `${startDate} - ${endDate}`;
+    },
     selectCamper(camperId: string): void {
       this.selectedCamperId = camperId;
     },
@@ -302,6 +354,7 @@ export default defineComponent({
         parentContact: this.selectedCamper.parentContact,
         allergies: this.selectedCamper.allergies || [],
         medicalNotes: this.selectedCamper.medicalNotes || '',
+        sessionId: this.selectedCamper.sessionId,
         familyGroupId: this.selectedCamper.familyGroupId,
       };
       this.allergiesInput = (this.selectedCamper.allergies || []).join(', ');
@@ -319,6 +372,7 @@ export default defineComponent({
         parentContact: formData.parentContact,
         allergies: formData.allergies,
         medicalNotes: formData.medicalNotes,
+        sessionId: formData.sessionId || undefined,
         familyGroupId: formData.familyGroupId || undefined,
         registrationDate: this.editingCamperId 
           ? this.store.getCamperById(this.editingCamperId)?.registrationDate 
@@ -367,7 +421,8 @@ export default defineComponent({
         parentContact: '',
         allergies: [],
         medicalNotes: '',
-        familyGroupId: '',
+        sessionId: undefined,
+        familyGroupId: undefined,
       };
       this.allergiesInput = '';
     }

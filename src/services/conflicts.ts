@@ -292,28 +292,39 @@ export class ConflictDetector {
   }
 
   /**
-   * Check if two date ranges overlap.
-   * Overlap is allowed if one group's end date equals another's start date
-   * (i.e., checkout on Oct 17 allows checkin on Oct 17)
-   */
-  private dateRangesOverlap(start1: string, end1: string, start2: string, end2: string): boolean {
-    const startTime1 = new Date(start1).getTime();
-    const endTime1 = new Date(end1).getTime();
-    const startTime2 = new Date(start2).getTime();
-    const endTime2 = new Date(end2).getTime();
-
-    // Allow overlap if end time equals start time (same day checkout/checkin)
-    // Return true only if there's actual overlap (not just touching)
-    return startTime1 < endTime2 && startTime2 < endTime1;
-  }
-
-  /**
    * Get all family groups that conflict with a given date range in a specific sleeping room
+   * @deprecated Use canAssignFamilyGroupToRoomBySession instead
    */
   getFamilyGroupConflictsInRoom(
     sleepingRoomId: string,
-    startDate: string,
-    endDate: string,
+    _startDate: string,
+    _endDate: string,
+    familyGroups: FamilyGroup[],
+    excludeFamilyGroupId?: string
+  ): FamilyGroup[] {
+    // This method is deprecated - keeping for backward compatibility only
+    return familyGroups.filter(group => {
+      // Skip the group we're excluding (e.g., the one being edited)
+      if (excludeFamilyGroupId && group.id === excludeFamilyGroupId) {
+        return false;
+      }
+
+      // Only check groups in the same sleeping room
+      if (group.sleepingRoomId !== sleepingRoomId) {
+        return false;
+      }
+
+      // Since we now use sessions, always return false
+      return false;
+    });
+  }
+  
+  /**
+   * Get all family groups that conflict with a given session in a specific sleeping room
+   */
+  getFamilyGroupConflictsInRoomBySession(
+    sleepingRoomId: string,
+    sessionId: string,
     familyGroups: FamilyGroup[],
     excludeFamilyGroupId?: string
   ): FamilyGroup[] {
@@ -328,13 +339,14 @@ export class ConflictDetector {
         return false;
       }
 
-      // Check if date ranges overlap
-      return this.dateRangesOverlap(startDate, endDate, group.startDate, group.endDate);
+      // Check if they have the same sessionId
+      return group.sessionId === sessionId;
     });
   }
 
   /**
-   * Check if a family group can be assigned to a sleeping room
+   * Check if a family group can be assigned to a sleeping room (for date-based, deprecated)
+   * @deprecated Use canAssignFamilyGroupToRoomBySession instead
    */
   canAssignFamilyGroupToRoom(
     sleepingRoomId: string,
@@ -355,6 +367,33 @@ export class ConflictDetector {
       return {
         canAssign: false,
         reason: `This room is already occupied by ${conflictingGroups.length === 1 ? 'another family group' : 'other family groups'} during these dates`,
+        conflictingGroups
+      };
+    }
+
+    return { canAssign: true };
+  }
+
+  /**
+   * Check if a family group can be assigned to a sleeping room for a specific session
+   */
+  canAssignFamilyGroupToRoomBySession(
+    sleepingRoomId: string,
+    sessionId: string,
+    familyGroups: FamilyGroup[],
+    excludeFamilyGroupId?: string
+  ): { canAssign: boolean; reason?: string; conflictingGroups?: FamilyGroup[] } {
+    const conflictingGroups = this.getFamilyGroupConflictsInRoomBySession(
+      sleepingRoomId,
+      sessionId,
+      familyGroups,
+      excludeFamilyGroupId
+    );
+
+    if (conflictingGroups.length > 0) {
+      return {
+        canAssign: false,
+        reason: `This room is already occupied by ${conflictingGroups.length === 1 ? 'another family group' : 'other family groups'} during this session`,
         conflictingGroups
       };
     }

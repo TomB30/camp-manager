@@ -14,6 +14,7 @@
       <FilterBar
         v-model:searchQuery="searchQuery"
         v-model:filter-sleeping-room="filterSleepingRoom"
+        v-model:filter-session="filterSession"
         :filters="familyGroupsFilters"
         :filtered-count="filteredFamilyGroups.length"
         :total-count="store.familyGroups.length"
@@ -32,7 +33,7 @@
           :key="group.id"
           :group="group"
           :campers-count="getCampersCount(group.id)"
-          :formatted-date-range="`${formatDate(group.startDate)} - ${formatDate(group.endDate)}`"
+          :formatted-date-range="getSessionDateRange(group.sessionId)"
           :sleeping-room-name="getSleepingRoomName(group.sleepingRoomId)"
           @click="selectGroup(group.id)"
         />
@@ -78,8 +79,8 @@
         
         <template #cell-dates="{ item }">
           <div class="dates-content">
-            <div>{{ formatDate(item.startDate) }}</div>
-            <div class="text-xs text-secondary">to {{ formatDate(item.endDate) }}</div>
+            <div>{{ getSessionName(item.sessionId) }}</div>
+            <div class="text-xs text-secondary">{{ getSessionDateRange(item.sessionId) }}</div>
           </div>
         </template>
         
@@ -117,6 +118,16 @@
         @edit="editGroup"
         @delete="deleteGroupConfirm"
       >
+        <template #session-info>
+          <div v-if="selectedGroup">
+            <span class="badge badge-primary">
+              {{ getSessionName(selectedGroup.sessionId) }}
+            </span>
+            <div class="text-xs text-secondary mt-1">
+              {{ getSessionDateRange(selectedGroup.sessionId) }}
+            </div>
+          </div>
+        </template>
         <template #sleeping-room>
           <span class="badge badge-primary">{{ selectedGroup ? getSleepingRoomName(selectedGroup.sleepingRoomId) : '' }}</span>
         </template>
@@ -167,6 +178,7 @@
         :staff-members="store.staffMembers"
         :sleeping-rooms="store.sleepingRooms"
         :family-groups="store.familyGroups"
+        :sessions="store.sessions"
         :editing-group-id="editingGroupId"
         @close="closeModal"
         @save="saveGroup"
@@ -236,14 +248,14 @@ export default defineComponent({
       confirmAction: null as (() => void) | null,
       searchQuery: '',
       filterSleepingRoom: '',
+      filterSession: '',
       viewMode: 'grid' as 'grid' | 'table',
       currentPage: 1,
       pageSize: 10,
       formData: {
         name: '',
         description: '',
-        startDate: '',
-        endDate: '',
+        sessionId: '',
         sleepingRoomId: '',
         staffMemberIds: [] as string[],
         camperIds: [] as string[],
@@ -251,7 +263,7 @@ export default defineComponent({
       },
       familyGroupColumns: [
         { key: 'name', label: 'Group Name', width: '180px' },
-        { key: 'dates', label: 'Dates', width: '200px' },
+        { key: 'dates', label: 'Session', width: '200px' },
         { key: 'room', label: 'Sleeping Room', width: '180px' },
         { key: 'staff', label: 'Staff', width: '120px' },
         { key: 'campers', label: 'Campers', width: '100px' },
@@ -265,6 +277,15 @@ export default defineComponent({
     },
     familyGroupsFilters(): Filter[] {
       return [
+        {
+          model: 'filterSession',
+          value: this.filterSession,
+          placeholder: 'Filter by Session',
+          options: this.store.sessions.map(session => ({
+            label: session.name,
+            value: session.id,
+          })),
+        },
         {
           model: 'filterSleepingRoom',
           value: this.filterSleepingRoom,
@@ -296,6 +317,13 @@ export default defineComponent({
         );
       }
 
+      // Session filter
+      if (this.filterSession) {
+        groups = groups.filter((group: FamilyGroup) => 
+          group.sessionId === this.filterSession
+        );
+      }
+
       // Sleeping room filter
       if (this.filterSleepingRoom) {
         groups = groups.filter((group: FamilyGroup) => 
@@ -318,6 +346,7 @@ export default defineComponent({
     clearFilters(): void {
       this.searchQuery = '';
       this.filterSleepingRoom = '';
+      this.filterSession = '';
     },
     getCampersCount(groupId: string): number {
       return this.store.getCampersInFamilyGroup(groupId).length;
@@ -332,6 +361,17 @@ export default defineComponent({
     },
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
+    },
+    getSessionName(sessionId: string): string {
+      const session = this.store.sessions.find(s => s.id === sessionId);
+      return session?.name || 'Unknown Session';
+    },
+    getSessionDateRange(sessionId: string): string {
+      const session = this.store.sessions.find(s => s.id === sessionId);
+      if (!session) return 'Unknown';
+      const startDate = new Date(session.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const endDate = new Date(session.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return `${startDate} - ${endDate}`;
     },
     formatDate(dateString: string): string {
       const date = new Date(dateString);
@@ -365,8 +405,7 @@ export default defineComponent({
       this.formData = {
         name: this.selectedGroup.name,
         description: this.selectedGroup.description || '',
-        startDate: this.selectedGroup.startDate.split('T')[0], // Convert ISO to YYYY-MM-DD
-        endDate: this.selectedGroup.endDate.split('T')[0],
+        sessionId: this.selectedGroup.sessionId,
         sleepingRoomId: this.selectedGroup.sleepingRoomId,
         staffMemberIds: [...this.selectedGroup.staffMemberIds],
         camperIds: currentCampers.map(c => c.id),
@@ -379,27 +418,34 @@ export default defineComponent({
     async saveGroup(formData: typeof this.formData): Promise<void> {
       const toast = useToast();
       
-      // Validate date range
-      const startDate = new Date(formData.startDate);
-      const endDate = new Date(formData.endDate);
+      // Validate session selection
+      if (!formData.sessionId) {
+        toast.error('Please select a session');
+        return;
+      }
       
-      if (startDate >= endDate) {
-        toast.error('End date must be after start date');
+      // Validate camper session match
+      const invalidCampers = formData.camperIds.filter(camperId => {
+        const camper = this.store.getCamperById(camperId);
+        return camper && camper.sessionId !== formData.sessionId;
+      });
+      
+      if (invalidCampers.length > 0) {
+        toast.error('All campers must be registered for the same session as the family group');
         return;
       }
       
       // Validate room availability
-      const validation = conflictDetector.canAssignFamilyGroupToRoom(
+      const validation = conflictDetector.canAssignFamilyGroupToRoomBySession(
         formData.sleepingRoomId,
-        formData.startDate,
-        formData.endDate,
+        formData.sessionId,
         this.store.familyGroups,
         this.editingGroupId || undefined
       );
       
       if (!validation.canAssign) {
         const groupNames = validation.conflictingGroups?.map(g => g.name).join(', ') || 'another group';
-        toast.error(`This room is already occupied by ${groupNames} during these dates`);
+        toast.error(`This room is already occupied by ${groupNames} during this session`);
         return;
       }
       
@@ -407,8 +453,7 @@ export default defineComponent({
         id: this.editingGroupId || `family-${Date.now()}`,
         name: formData.name,
         description: formData.description || undefined,
-        startDate: new Date(formData.startDate).toISOString(),
-        endDate: new Date(formData.endDate).toISOString(),
+        sessionId: formData.sessionId,
         sleepingRoomId: formData.sleepingRoomId,
         staffMemberIds: formData.staffMemberIds,
         color: formData.color,
@@ -509,8 +554,7 @@ export default defineComponent({
       this.formData = {
         name: '',
         description: '',
-        startDate: '',
-        endDate: '',
+        sessionId: '',
         sleepingRoomId: '',
         staffMemberIds: [],
         camperIds: [],

@@ -162,7 +162,6 @@ export default defineComponent({
 .detail-label {
   color: var(--text-secondary);
   font-weight: 500;
-  min-width: 80px;
 }
 
 .detail-value {

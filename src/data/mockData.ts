@@ -391,15 +391,10 @@ const familyGroupColors = [
 
 const generateFamilyGroups = (sleepingRooms: SleepingRoom[]): FamilyGroup[] => {
   const groups: FamilyGroup[] = [];
-  const weekDates = [
-    { start: new Date('2024-06-10'), end: new Date('2024-06-17') },
-    { start: new Date('2024-06-17'), end: new Date('2024-06-24') },
-    { start: new Date('2024-06-24'), end: new Date('2024-07-01') },
-  ];
   
   sleepingRooms.forEach((room, index) => {
-    const weekIndex = index % 3;
-    const week = weekDates[weekIndex];
+    // Distribute family groups across the 5 sessions evenly
+    const sessionIndex = (index % 5) + 1;
     const staffCount = 1 + (index % 2); // 1 or 2 staff per family
     const staffIds: string[] = [];
     
@@ -415,11 +410,10 @@ const generateFamilyGroups = (sleepingRooms: SleepingRoom[]): FamilyGroup[] => {
       description: `Family group for Cabin ${index + 1}`,
       sleepingRoomId: room.id,
       staffMemberIds: staffIds,
-      startDate: week.start.toISOString(),
-      endDate: week.end.toISOString(),
+      sessionId: generateId('session', sessionIndex),
       color: familyGroupColors[index % familyGroupColors.length],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+      createdAt: new Date(2025, 5, 1).toISOString(),
+      updatedAt: new Date(2025, 5, 1).toISOString(),
     });
   });
   

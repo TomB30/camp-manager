@@ -87,16 +87,16 @@ export default defineComponent({
           count: this.store.sessions.length,
         },
         {
-          id: 'rooms' as const,
-          label: 'Activity Rooms',
-          icon: Home,
-          count: this.store.rooms.length,
-        },
-        {
           id: 'locations' as const,
           label: 'Locations',
           icon: MapPin,
           count: this.store.locations.length,
+        },
+        {
+          id: 'rooms' as const,
+          label: 'Activity Rooms',
+          icon: Home,
+          count: this.store.rooms.length,
         },
         {
           id: 'cabins' as const,

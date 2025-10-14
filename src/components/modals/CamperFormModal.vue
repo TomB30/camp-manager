@@ -41,13 +41,29 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">Camp Session</label>
+          <Autocomplete
+            v-model="localFormData.sessionId"
+            :options="sessionOptions"
+            placeholder="Select a session..."
+            :required="true"
+          />
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Family Group</label>
           <Autocomplete
             v-model="localFormData.familyGroupId"
-            :options="familyGroupOptions"
+            :options="availableFamilyGroupOptions"
             placeholder="Select a family group..."
-            :required="true"
+            :disabled="!localFormData.sessionId"
           />
+          <div v-if="!localFormData.sessionId" class="text-xs text-secondary mt-1">
+            Please select a session first
+          </div>
+          <div v-else-if="availableFamilyGroupOptions.length === 0" class="text-xs text-warning mt-1">
+            No family groups available for this session
+          </div>
         </div>
 
         <div class="form-group">
@@ -75,7 +91,7 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import type { FamilyGroup } from '@/types/api';
+import type { FamilyGroup, CampSession } from '@/types/api';
 
 interface CamperFormData {
   firstName: string;
@@ -85,6 +101,7 @@ interface CamperFormData {
   parentContact: string;
   allergies: string[];
   medicalNotes: string;
+  sessionId?: string;
   familyGroupId?: string;
 }
 
@@ -110,6 +127,10 @@ export default defineComponent({
     familyGroups: {
       type: Array as PropType<FamilyGroup[]>,
       required: true
+    },
+    sessions: {
+      type: Array as PropType<CampSession[]>,
+      required: true
     }
   },
   emits: ['close', 'save'],
@@ -124,8 +145,27 @@ export default defineComponent({
     };
   },
   computed: {
-    familyGroupOptions(): AutocompleteOption[] {
-      return this.familyGroups.map(group => ({
+    sessionOptions(): AutocompleteOption[] {
+      return this.sessions.map(session => {
+        const startDate = new Date(session.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const endDate = new Date(session.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        return {
+          label: `${session.name} (${startDate} - ${endDate})`,
+          value: session.id
+        };
+      });
+    },
+    availableFamilyGroupOptions(): AutocompleteOption[] {
+      // Only show family groups that match the selected session
+      if (!this.localFormData.sessionId) {
+        return [];
+      }
+      
+      const filteredGroups = this.familyGroups.filter(
+        group => group.sessionId === this.localFormData.sessionId
+      );
+      
+      return filteredGroups.map(group => ({
         label: group.name,
         value: group.id
       }));
@@ -138,6 +178,15 @@ export default defineComponent({
         this.allergiesInput = newVal.allergies.join(', ');
       },
       deep: true
+    },
+    // When session changes, clear family group if it doesn't match
+    'localFormData.sessionId'(newSessionId: string, oldSessionId: string) {
+      if (newSessionId !== oldSessionId && this.localFormData.familyGroupId) {
+        const currentGroup = this.familyGroups.find(g => g.id === this.localFormData.familyGroupId);
+        if (currentGroup && currentGroup.sessionId !== newSessionId) {
+          this.localFormData.familyGroupId = undefined;
+        }
+      }
     }
   },
   methods: {

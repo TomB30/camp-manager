@@ -661,8 +661,7 @@ export interface FamilyGroup {
   description?: string;
   sleepingRoomId: string; // Required - each family group must be assigned to a room
   staffMemberIds: string[]; // Staff members assigned to this family group
-  startDate: string; // ISO date string - when the group starts
-  endDate: string; // ISO date string - when the group ends
+  sessionId: string; // ID of the camp session this family group belongs to
   color?: string; // Deprecated - use colorId
   colorId?: string;
   createdAt: string;

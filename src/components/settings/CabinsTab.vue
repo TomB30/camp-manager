@@ -216,17 +216,23 @@ export default defineComponent({
 
       return rooms;
     },
-    selectedRoomFamilyGroups(): Array<FamilyGroup> {
+    selectedRoomFamilyGroups(): Array<any> {
       if (!this.selectedRoomId) return [];
-      return this.getFamilyGroupsForRoom(this.selectedRoomId).map((fg: FamilyGroup) => ({
-        id: fg.id,
-        name: fg.name,
-        description: fg.description,
-        camperCount: this.getCampersInFamilyGroup(fg.id).length,
-        staffCount: fg.staffMemberIds.length,
-        startDate: fg.startDate,
-        endDate: fg.endDate
-      }));
+      return this.getFamilyGroupsForRoom(this.selectedRoomId).map((fg: FamilyGroup) => {
+        const session = this.store.sessions.find(s => s.id === fg.sessionId);
+        return {
+          id: fg.id,
+          name: fg.name,
+          description: fg.description,
+          camperCount: this.getCampersInFamilyGroup(fg.id).length,
+          staffCount: fg.staffMemberIds.length,
+          sessionId: fg.sessionId,
+          sessionName: session?.name || 'Unknown Session',
+          sessionDateRange: session 
+            ? `${new Date(session.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${new Date(session.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+            : 'Unknown'
+        };
+      });
     }
   },
   methods: {

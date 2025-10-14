@@ -13,15 +13,10 @@
         </div>
 
         <div class="detail-section">
-          <div class="detail-label">Dates</div>
-          <div>
-            <span class="badge badge-primary">
-              {{ formatDate(group.startDate) }} - {{ formatDate(group.endDate) }}
-            </span>
-            <div class="text-xs text-secondary mt-1">
-              {{ getDayCount(group.startDate, group.endDate) }} days
-            </div>
-          </div>
+          <div class="detail-label">Session</div>
+          <slot name="session-info">
+            <div class="text-secondary">No session assigned</div>
+          </slot>
         </div>
 
         <div class="detail-section">
@@ -79,20 +74,7 @@ export default defineComponent({
       default: () => []
     }
   },
-  emits: ['close', 'edit', 'delete'],
-  methods: {
-    formatDate(dateString: string): string {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    },
-    getDayCount(startDate: string, endDate: string): number {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      const diffTime = Math.abs(end.getTime() - start.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays;
-    }
-  }
+  emits: ['close', 'edit', 'delete']
 });
 </script>
 

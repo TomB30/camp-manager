@@ -13,6 +13,7 @@
       <div class="card-meta">
         <span class="badge badge-primary">Age {{ camper.age }}</span>
         <span class="badge badge-primary">{{ formattedGender }}</span>
+        <span v-if="sessionName" class="badge badge-primary">{{ sessionName }}</span>
         <span v-if="camper.allergies && camper.allergies.length > 0" class="badge badge-warning">
           {{ camper.allergies.length }} Allergy(ies)
         </span>
@@ -43,6 +44,10 @@ export default defineComponent({
       required: true,
     },
     formattedGender: {
+      type: String,
+      default: '',
+    },
+    sessionName: {
       type: String,
       default: '',
     },

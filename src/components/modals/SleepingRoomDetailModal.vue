@@ -39,7 +39,7 @@
                     </span>
                   </div>
                   <div class="text-xs group-dates">
-                    📅 {{ formatDate(familyGroup.startDate) }} - {{ formatDate(familyGroup.endDate) }}
+                    📅 {{ familyGroup.sessionName }} ({{ familyGroup.sessionDateRange }})
                   </div>
                   <div v-if="familyGroup.description" class="text-xs text-secondary mt-1">
                     {{ familyGroup.description }}
@@ -78,8 +78,9 @@ interface FamilyGroupInfo {
   description?: string;
   camperCount: number;
   staffCount: number;
-  startDate: string;
-  endDate: string;
+  sessionId: string;
+  sessionName: string;
+  sessionDateRange: string;
 }
 
 export default defineComponent({
@@ -101,13 +102,7 @@ export default defineComponent({
       default: () => []
     }
   },
-  emits: ['close', 'edit', 'delete', 'view-family-group'],
-  methods: {
-    formatDate(dateString: string): string {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-  }
+  emits: ['close', 'edit', 'delete', 'view-family-group']
 });
 </script>
 
