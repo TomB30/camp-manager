@@ -58,48 +58,16 @@
             </div>
           </Transition>
         </div>
-        
 
-        
-        <!-- Collapsible Camp Info Section -->
-        <div class="nav-section">
-          <button 
-            class="nav-section-header" 
-            :class="{ 'has-active-route': isCampInfoRouteActiveWhileCollapsed }"
-            @click="toggleCampInfoSection"
-            type="button"
-          >
-            <Settings :size="20" class="nav-icon" />
-            <span class="nav-text">Camp Info</span>
-            <span v-if="isCampInfoRouteActiveWhileCollapsed" class="active-indicator"></span>
-            <ChevronRight 
-              :size="16" 
-              class="nav-chevron"
-              :class="{ 'nav-chevron-expanded': isCampInfoSectionExpanded }"
-            />
-          </button>
-          <Transition name="expand">
-            <div v-if="isCampInfoSectionExpanded" class="nav-subsection">
-              <RouterLink to="/locations" class="nav-link nav-sublink" @click="handleNavClick">
-                <MapPin :size="18" class="nav-icon" />
-                <span class="nav-text">Locations</span>
-              </RouterLink>
-              <RouterLink to="/rooms" class="nav-link nav-sublink" @click="handleNavClick">
-                <Home :size="18" class="nav-icon" />
-                <span class="nav-text">Activity Rooms</span>
-              </RouterLink>
-              <RouterLink to="/sleeping-rooms" class="nav-link nav-sublink" @click="handleNavClick">
-                <Bed :size="18" class="nav-icon" />
-                <span class="nav-text">Cabins</span>
-              </RouterLink>
-              <RouterLink to="/certifications" class="nav-link nav-sublink" @click="handleNavClick">
-                <Award :size="18" class="nav-icon" />
-                <span class="nav-text">Certifications</span>
-              </RouterLink>
-            </div>
-          </Transition>
-        </div>
       </nav>
+
+      <!-- Camp Settings (Bottom of Sidebar) -->
+      <div class="settings-section">
+        <RouterLink to="/settings" class="nav-link" @click="handleNavClick">
+          <Settings :size="20" class="nav-icon" />
+          <span class="nav-text">Camp Settings</span>
+        </RouterLink>
+      </div>
 
       <div v-if="store.conflicts.length > 0" class="conflicts-section">
         <div class="conflicts-badge">
@@ -160,8 +128,7 @@ export default defineComponent({
   emits: ['close'],
   data() {
     return {
-      isCampersSectionExpanded: false,
-      isCampInfoSectionExpanded: false
+      isCampersSectionExpanded: false
     };
   },
   computed: {
@@ -171,10 +138,6 @@ export default defineComponent({
     isCampersRouteActiveWhileCollapsed() {
       const campersRoutes = ['/campers', '/groups', '/family-groups'];
       return !this.isCampersSectionExpanded && campersRoutes.includes(this.$route.path);
-    },
-    isCampInfoRouteActiveWhileCollapsed() {
-      const campInfoRoutes = ['/locations', '/rooms', '/sleeping-rooms', '/certifications'];
-      return !this.isCampInfoSectionExpanded && campInfoRoutes.includes(this.$route.path);
     }
   },
   watch: {
@@ -189,17 +152,12 @@ export default defineComponent({
     updateExpandedSections(path: string) {
       // Define routes for each section
       const campersRoutes = ['/campers', '/groups', '/family-groups'];
-      const campInfoRoutes = ['/locations', '/rooms', '/sleeping-rooms', '/certifications'];
       
       // Set expanded state based on current route
       this.isCampersSectionExpanded = campersRoutes.includes(path);
-      this.isCampInfoSectionExpanded = campInfoRoutes.includes(path);
     },
     toggleCampersSection() {
       this.isCampersSectionExpanded = !this.isCampersSectionExpanded;
-    },
-    toggleCampInfoSection() {
-      this.isCampInfoSectionExpanded = !this.isCampInfoSectionExpanded;
     },
     handleNavClick() {
       // Close mobile menu when a nav link is clicked (on mobile only)
@@ -398,10 +356,15 @@ export default defineComponent({
   margin-top: 0.25rem;
 }
 
+.settings-section {
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--border-light);
+  margin-top: auto;
+}
+
 .conflicts-section {
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--border-light);
-  margin-top: auto;
 }
 
 .conflicts-badge {
@@ -445,30 +408,15 @@ export default defineComponent({
     padding: 0 1rem;
   }
 
-  .nav-link {
-    /* Keep desktop styles for mobile sidebar */
-  }
-
-  .nav-section {
-    /* Keep desktop styles */
-  }
-
-  .nav-section-header {
-    /* Keep desktop styles */
-  }
-
-  .nav-subsection {
-    /* Keep desktop styles */
-  }
-
-  .nav-sublink {
-    /* Keep desktop styles */
+  .settings-section {
+    padding: 0.5rem 1rem;
+    border-top: 1px solid var(--border-light);
+    margin-top: auto;
   }
 
   .conflicts-section {
     padding: 1rem 1.5rem;
     border-top: 1px solid var(--border-light);
-    margin-top: auto;
   }
 }
 </style>

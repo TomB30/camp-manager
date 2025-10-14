@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { Camper, StaffMember, Room, SleepingRoom, Event, Conflict, CamperGroup, FamilyGroup, Program, Activity, Location, Certification } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, Conflict, CamperGroup, FamilyGroup, Program, Activity, Location, Certification, CampColor, CampSession } from '@/types/api';
 import { storageService } from '@/services/storage';
 import { conflictDetector } from '@/services/conflicts';
 import { filterEventsByDate } from '@/utils/dateUtils';
@@ -18,6 +18,8 @@ export const useCampStore = defineStore('camp', {
     activities: [] as Activity[],
     locations: [] as Location[],
     certifications: [] as Certification[],
+    colors: [] as CampColor[],
+    sessions: [] as CampSession[],
     loading: false,
     selectedDate: new Date(),
   }),
@@ -192,13 +194,25 @@ export const useCampStore = defineStore('camp', {
         return state.staffMembers.filter(s => program.staffMemberIds.includes(s.id));
       };
     },
+
+    getColorById(state): (id: string) => CampColor | undefined {
+      return (id: string): CampColor | undefined => {
+        return state.colors.find(c => c.id === id);
+      };
+    },
+
+    getSessionById(state): (id: string) => CampSession | undefined {
+      return (id: string): CampSession | undefined => {
+        return state.sessions.find(s => s.id === id);
+      };
+    },
   },
 
   actions: {
     async loadAll(): Promise<void> {
       this.loading = true;
       try {
-        const [campersData, membersData, roomsData, sleepingRoomsData, eventsData, groupsData, familyGroupsData, programsData, activitiesData, locationsData, certificationsData] = await Promise.all([
+        const [campersData, membersData, roomsData, sleepingRoomsData, eventsData, groupsData, familyGroupsData, programsData, activitiesData, locationsData, certificationsData, colorsData, sessionsData] = await Promise.all([
           storageService.getCampers(),
           storageService.getStaffMembers(),
           storageService.getRooms(),
@@ -210,6 +224,8 @@ export const useCampStore = defineStore('camp', {
           storageService.getActivities(),
           storageService.getLocations(),
           storageService.getCertifications(),
+          storageService.getColors(),
+          storageService.getSessions(),
         ]);
 
         this.campers = campersData;
@@ -223,6 +239,8 @@ export const useCampStore = defineStore('camp', {
         this.activities = activitiesData;
         this.locations = locationsData;
         this.certifications = certificationsData;
+        this.colors = colorsData;
+        this.sessions = sessionsData;
 
         this.updateConflicts();
       } finally {
@@ -717,6 +735,44 @@ export const useCampStore = defineStore('camp', {
     async deleteCertification(id: string): Promise<void> {
       await storageService.deleteCertification(id);
       this.certifications = this.certifications.filter(c => c.id !== id);
+    },
+
+    // Color actions
+    async addColor(color: CampColor): Promise<void> {
+      await storageService.saveColor(color);
+      this.colors.push(color);
+    },
+
+    async updateColor(color: CampColor): Promise<void> {
+      await storageService.saveColor(color);
+      const index = this.colors.findIndex(c => c.id === color.id);
+      if (index >= 0) {
+        this.colors[index] = color;
+      }
+    },
+
+    async deleteColor(id: string): Promise<void> {
+      await storageService.deleteColor(id);
+      this.colors = this.colors.filter(c => c.id !== id);
+    },
+
+    // Session actions
+    async addSession(session: CampSession): Promise<void> {
+      await storageService.saveSession(session);
+      this.sessions.push(session);
+    },
+
+    async updateSession(session: CampSession): Promise<void> {
+      await storageService.saveSession(session);
+      const index = this.sessions.findIndex(s => s.id === session.id);
+      if (index >= 0) {
+        this.sessions[index] = session;
+      }
+    },
+
+    async deleteSession(id: string): Promise<void> {
+      await storageService.deleteSession(id);
+      this.sessions = this.sessions.filter(s => s.id !== id);
     },
   }
 });

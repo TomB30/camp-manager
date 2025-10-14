@@ -1,118 +1,134 @@
 <template>
-  <div class="container">
-    <div class="sleeping-rooms-view">
-      <ViewHeader title="Cabins (Sleeping Rooms)">
-        <template #actions>
-          <button class="btn btn-primary" @click="showModal = true">+ Add Cabin</button>
-        </template>
-      </ViewHeader>
+  <div class="cabins-tab">
+    <TabHeader
+      title="Cabins (Sleeping Rooms)"
+      description="Manage all sleeping accommodations where campers and family groups will stay during their time at camp."
+      action-text="Add Cabin"
+      @action="showModal = true"
+    >
+      <template #action-icon>
+        <Plus :size="18" />
+      </template>
+    </TabHeader>
 
-      <!-- Search and Filters -->
-      <FilterBar
-        v-model:searchQuery="searchQuery"
-        :filters="[]"
-        :filtered-count="filteredRooms.length"
-        :total-count="store.sleepingRooms.length"
-        @clear="clearFilters"
-      >
-        <template #prepend>
-          <ViewToggle v-model="viewMode" />
-        </template>
-      </FilterBar>
+    <!-- Search and Filters -->
+    <FilterBar
+      v-model:searchQuery="searchQuery"
+      :filters="[]"
+      :filtered-count="filteredRooms.length"
+      :total-count="store.sleepingRooms.length"
+      @clear="clearFilters"
+    >
+      <template #prepend>
+        <ViewToggle v-model="viewMode" />
+      </template>
+    </FilterBar>
 
-      <!-- Grid View -->
-      <div v-if="viewMode === 'grid'" class="rooms-grid">
-        <SleepingRoomCard
-          v-for="room in filteredRooms"
-          :key="room.id"
-          :room="room"
-          :family-groups="getFamilyGroupsForRoom(room.id)"
-          @click="selectRoom(room.id)"
-        />
-      </div>
+    <!-- Empty State -->
+    <EmptyState
+      v-if="store.sleepingRooms.length === 0"
+      icon="Bed"
+      title="No cabins configured"
+      message="Add your first cabin to start managing sleeping accommodations for campers."
+    >
+      <button class="btn btn-primary" @click="showModal = true">
+        <Plus :size="18" />
+        Add Your First Cabin
+      </button>
+    </EmptyState>
 
-      <!-- Table View -->
-      <DataTable
-        v-if="viewMode === 'table'"
-        :columns="roomColumns"
-        :data="filteredRooms"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
-      >
-        <template #cell-name="{ item }">
-          <div class="cabin-name-content">
-            <div class="cabin-icon-sm">
-              <Bed :size="18" :stroke-width="2" />
-            </div>
-            <div class="cabin-name">{{ item.name }}</div>
-          </div>
-        </template>
-        
-        <template #cell-beds="{ item }">
-          <span class="badge badge-primary badge-sm">{{ item.beds }} beds</span>
-        </template>
-        
-        <template #cell-location="{ item }">
-          <span v-if="item.locationId">
-            {{ store.getLocationById(item.locationId)?.name || item.location || 'Unknown' }}
-          </span>
-          <span v-else-if="item.location">{{ item.location }}</span>
-          <span v-else>—</span>
-        </template>
-        
-        <template #cell-groups="{ item }">
-          <div v-if="getFamilyGroupsForRoom(item.id).length > 0" class="flex gap-1 flex-wrap">
-            <span 
-              v-for="familyGroup in getFamilyGroupsForRoom(item.id)" 
-              :key="familyGroup.id" 
-              class="badge badge-success badge-sm"
-            >
-              {{ familyGroup.name }}
-            </span>
-          </div>
-          <span v-else class="text-secondary">None</span>
-        </template>
-        
-        <template #cell-actions="{ item }">
-          <button class="btn btn-sm btn-secondary" @click.stop="selectRoom(item.id)">
-            View Details
-          </button>
-        </template>
-      </DataTable>
-
-      <!-- Room Detail Modal -->
-      <SleepingRoomDetailModal
-        :show="!!selectedRoomId"
-        :room="selectedRoom"
-        :family-groups="selectedRoomFamilyGroups"
-        @close="selectedRoomId = null"
-        @edit="editRoom"
-        @delete="deleteRoomConfirm"
-        @view-family-group="viewFamilyGroup"
-      />
-
-      <!-- Add/Edit Room Modal -->
-      <SleepingRoomFormModal
-        :show="showModal"
-        :is-editing="!!editingRoomId"
-        :form-data="formData"
-        @close="closeModal"
-        @save="saveRoom"
-      />
-
-      <!-- Confirm Delete Modal -->
-      <ConfirmModal
-        :show="showConfirmModal"
-        :title="confirmModalTitle"
-        :message="confirmModalMessage"
-        :details="confirmModalDetails"
-        confirm-text="Delete"
-        :danger-mode="true"
-        @confirm="handleConfirmAction"
-        @cancel="handleCancelConfirm"
+    <!-- Grid View -->
+    <div v-else-if="viewMode === 'grid'" class="rooms-grid">
+      <SleepingRoomCard
+        v-for="room in filteredRooms"
+        :key="room.id"
+        :room="room"
+        :family-groups="getFamilyGroupsForRoom(room.id)"
+        @click="selectRoom(room.id)"
       />
     </div>
+
+    <!-- Table View -->
+    <DataTable
+      v-else
+      :columns="roomColumns"
+      :data="filteredRooms"
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      row-key="id"
+    >
+      <template #cell-name="{ item }">
+        <div class="cabin-name-content">
+          <div class="cabin-icon-sm">
+            <Bed :size="18" :stroke-width="2" />
+          </div>
+          <div class="cabin-name">{{ item.name }}</div>
+        </div>
+      </template>
+      
+      <template #cell-beds="{ item }">
+        <span class="badge badge-primary badge-sm">{{ item.beds }} beds</span>
+      </template>
+      
+      <template #cell-location="{ item }">
+        <span v-if="item.locationId">
+          {{ store.getLocationById(item.locationId)?.name || item.location || 'Unknown' }}
+        </span>
+        <span v-else-if="item.location">{{ item.location }}</span>
+        <span v-else>—</span>
+      </template>
+      
+      <template #cell-groups="{ item }">
+        <div v-if="getFamilyGroupsForRoom(item.id).length > 0" class="flex gap-1 flex-wrap">
+          <span 
+            v-for="familyGroup in getFamilyGroupsForRoom(item.id)" 
+            :key="familyGroup.id" 
+            class="badge badge-success badge-sm"
+          >
+            {{ familyGroup.name }}
+          </span>
+        </div>
+        <span v-else class="text-secondary">None</span>
+      </template>
+      
+      <template #cell-actions="{ item }">
+        <button class="btn btn-sm btn-secondary" @click.stop="selectRoom(item.id)">
+          View Details
+        </button>
+      </template>
+    </DataTable>
+
+    <!-- Room Detail Modal -->
+    <SleepingRoomDetailModal
+      :show="!!selectedRoomId"
+      :room="selectedRoom"
+      :family-groups="selectedRoomFamilyGroups"
+      @close="selectedRoomId = null"
+      @edit="editRoom"
+      @delete="deleteRoomConfirm"
+      @view-family-group="viewFamilyGroup"
+    />
+
+    <!-- Add/Edit Room Modal -->
+    <SleepingRoomFormModal
+      :show="showModal"
+      :is-editing="!!editingRoomId"
+      :form-data="formData"
+      @close="closeModal"
+      @save="saveRoom"
+    />
+
+    <!-- Confirm Delete Modal -->
+    <ConfirmModal
+      :show="showConfirmModal"
+      :title="confirmModalTitle"
+      :message="confirmModalMessage"
+      :details="confirmModalDetails"
+      confirm-text="Delete"
+      :danger-mode="true"
+      @confirm="handleConfirmAction"
+      @cancel="handleCancelConfirm"
+    />
   </div>
 </template>
 
@@ -121,7 +137,6 @@
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { SleepingRoom, FamilyGroup, Camper } from '@/types/api';
-import ViewHeader from '@/components/ViewHeader.vue';
 import SleepingRoomCard from '@/components/cards/SleepingRoomCard.vue';
 import FilterBar from '@/components/FilterBar.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
@@ -129,12 +144,14 @@ import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
 import SleepingRoomDetailModal from '@/components/modals/SleepingRoomDetailModal.vue';
 import SleepingRoomFormModal from '@/components/modals/SleepingRoomFormModal.vue';
-import { Bed, MapPin } from 'lucide-vue-next';
+import EmptyState from '@/components/EmptyState.vue';
+import { Bed, Plus } from 'lucide-vue-next';
+import TabHeader from '@/components/settings/TabHeader.vue';
+import { useToast } from '@/composables/useToast';
 
 export default defineComponent({
-  name: 'SleepingRooms',
+  name: 'CabinsTab',
   components: {
-    ViewHeader,
     SleepingRoomCard,
     FilterBar,
     ConfirmModal,
@@ -142,8 +159,15 @@ export default defineComponent({
     ViewToggle,
     SleepingRoomDetailModal,
     SleepingRoomFormModal,
+    EmptyState,
     Bed,
-    MapPin
+    Plus,
+    TabHeader,
+  },
+  setup() {
+    const store = useCampStore();
+    const toast = useToast();
+    return { store, toast };
   },
   data() {
     return {
@@ -174,9 +198,6 @@ export default defineComponent({
     };
   },
   computed: {
-    store(): ReturnType<typeof useCampStore> {
-      return useCampStore();
-    },
     selectedRoom(): SleepingRoom | null {
       if (!this.selectedRoomId) return null;
       return this.store.getSleepingRoomById(this.selectedRoomId) || null;
@@ -219,12 +240,7 @@ export default defineComponent({
       return this.store.getCampersInFamilyGroup(familyGroupId);
     },
     viewFamilyGroup(familyGroupId: string): void {
-      // Navigate to family groups view (we'll implement this)
       this.$router.push(`/family-groups?id=${familyGroupId}`);
-    },
-    formatDate(dateString: string): string {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     },
     selectRoom(roomId: string): void {
       this.selectedRoomId = roomId;
@@ -256,13 +272,18 @@ export default defineComponent({
         locationId: formData.locationId,
       };
 
-      if (this.editingRoomId) {
-        await this.store.updateSleepingRoom(roomData);
-      } else {
-        await this.store.addSleepingRoom(roomData);
+      try {
+        if (this.editingRoomId) {
+          await this.store.updateSleepingRoom(roomData);
+          this.toast.success('Cabin updated successfully');
+        } else {
+          await this.store.addSleepingRoom(roomData);
+          this.toast.success('Cabin added successfully');
+        }
+        this.closeModal();
+      } catch (error: any) {
+        this.toast.error(error.message || 'Failed to save cabin');
       }
-
-      this.closeModal();
     },
     deleteRoomConfirm(): void {
       if (!this.selectedRoomId) return;
@@ -270,16 +291,21 @@ export default defineComponent({
       const familyGroupCount = this.getFamilyGroupsForRoom(this.selectedRoomId).length;
       
       // Setup the confirm modal
-      this.confirmModalTitle = 'Delete Sleeping Room';
-      this.confirmModalMessage = 'Are you sure you want to delete this sleeping room?';
+      this.confirmModalTitle = 'Delete Cabin';
+      this.confirmModalMessage = 'Are you sure you want to delete this cabin?';
       this.confirmModalDetails = familyGroupCount > 0 
-        ? `This room has ${familyGroupCount} family group(s) assigned. You will need to reassign them to another room.`
+        ? `This cabin has ${familyGroupCount} family group(s) assigned. You will need to reassign them to another cabin.`
         : '';
       
       this.confirmAction = async () => {
         if (this.selectedRoomId) {
-          await this.store.deleteSleepingRoom(this.selectedRoomId);
-          this.selectedRoomId = null;
+          try {
+            await this.store.deleteSleepingRoom(this.selectedRoomId);
+            this.toast.success('Cabin deleted successfully');
+            this.selectedRoomId = null;
+          } catch (error: any) {
+            this.toast.error(error.message || 'Failed to delete cabin');
+          }
         }
       };
       
@@ -309,12 +335,9 @@ export default defineComponent({
 });
 </script>
 
-
-
 <style scoped>
-.sleeping-rooms-view {
-  max-width: 1400px;
-  margin: 0 auto;
+.cabins-tab {
+  animation: slideIn 0.3s ease;
 }
 
 .rooms-grid {
@@ -323,7 +346,6 @@ export default defineComponent({
   gap: 1.5rem;
 }
 
-/* Table View Styles */
 .cabin-name-content {
   display: flex;
   align-items: center;
@@ -347,13 +369,22 @@ export default defineComponent({
   color: var(--text-primary);
 }
 
-.badge-sm {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-.modal-lg {
-  max-width: 800px;
+@media (max-width: 768px) {
+  .rooms-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 </style>
 

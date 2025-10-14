@@ -26,6 +26,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { useCampStore } from '@/stores/campStore';
 
 export default defineComponent({
   name: 'ColorPicker',
@@ -36,9 +37,22 @@ export default defineComponent({
     }
   },
   emits: ['update:modelValue'],
-  data() {
-    return {
-      colorOptions: [
+  setup() {
+    const store = useCampStore();
+    return { store };
+  },
+  computed: {
+    colorOptions() {
+      // If custom colors are configured, use them
+      if (this.store.colors.length > 0) {
+        return this.store.colors.map(color => ({
+          name: color.name,
+          value: color.hexValue
+        }));
+      }
+      
+      // Otherwise, use default colors
+      return [
         { name: 'Blue', value: '#6366F1' },
         { name: 'Green', value: '#10B981' },
         { name: 'Orange', value: '#F59E0B' },
@@ -47,8 +61,8 @@ export default defineComponent({
         { name: 'Red', value: '#EF4444' },
         { name: 'Teal', value: '#14B8A6' },
         { name: 'Indigo', value: '#4F46E5' },
-      ]
-    };
+      ];
+    }
   }
 });
 </script>

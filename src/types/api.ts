@@ -528,6 +528,11 @@ export interface components {
        * @description ID of the family group this camper belongs to
        */
       familyGroupId?: string;
+      /**
+       * Format: uuid
+       * @description ID of the camp session this camper is registered for
+       */
+      sessionId?: string;
     };
     StaffMember: {
       /** Format: uuid */
@@ -587,8 +592,10 @@ export interface components {
       /** @enum {string} */
       type?: "activity" | "sports" | "arts" | "education" | "meal" | "free-time";
       requiredCertifications?: string[];
-      /** @description Hex color code for calendar display */
+      /** @description Hex color code for calendar display (deprecated - use colorId) */
       color?: string;
+      /** Format: uuid */
+      colorId?: string;
       /** Format: uuid */
       programId?: string;
       /** Format: uuid */
@@ -639,7 +646,8 @@ export interface CamperGroup {
   id: string;
   name: string;
   description?: string;
-  color?: string;
+  color?: string; // Deprecated - use colorId
+  colorId?: string;
   filters: CamperGroupFilter;
   familyGroupIds?: string[]; // Optional array of family group IDs to include
   createdAt: string;
@@ -655,7 +663,8 @@ export interface FamilyGroup {
   staffMemberIds: string[]; // Staff members assigned to this family group
   startDate: string; // ISO date string - when the group starts
   endDate: string; // ISO date string - when the group ends
-  color?: string;
+  color?: string; // Deprecated - use colorId
+  colorId?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -672,7 +681,8 @@ export interface Activity {
   minStaff?: number; // Minimum number of staff required
   maxStaff?: number; // Maximum number of staff allowed
   defaultCapacity?: number; // Default camper capacity
-  color?: string; // Default color for events created from this activity
+  color?: string; // Default color for events created from this activity (deprecated - use colorId)
+  colorId?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -682,7 +692,8 @@ export interface Program {
   id: string;
   name: string;
   description?: string;
-  color?: string;
+  color?: string; // Deprecated - use colorId
+  colorId?: string;
   activityIds: string[]; // Activities belonging to this program
   staffMemberIds: string[]; // Staff members associated with this program
   roomIds: string[]; // Locations associated with this program
@@ -710,6 +721,27 @@ export interface Certification {
   description?: string;
   expirationRequired: boolean; // Whether this certification expires
   validityPeriodMonths?: number; // How long the certification is valid for
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Camp Color - customizable color options for the camp
+export interface CampColor {
+  id: string;
+  name: string;
+  hexValue: string; // Hex color value (e.g., "#FF5733")
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Camp Session - time periods that campers register for
+export interface CampSession {
+  id: string;
+  name: string;
+  startDate: string; // ISO date string
+  endDate: string; // ISO date string
+  description?: string;
+  maxCampers?: number; // Optional max capacity for this session
   createdAt: string;
   updatedAt: string;
 }

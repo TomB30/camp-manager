@@ -1,7 +1,121 @@
-import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup, Program, Activity, Location, Certification } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup, Program, Activity, Location, Certification, CampColor, CampSession } from '@/types/api';
 
 // Generate consistent IDs
 const generateId = (prefix: string, index: number) => `${prefix}-${String(index).padStart(3, '0')}`;
+
+// Colors - Setup first for use throughout the system
+export const mockColors: CampColor[] = [
+  {
+    id: generateId('color', 1),
+    name: 'Ocean Blue',
+    hexValue: '#3B82F6',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('color', 2),
+    name: 'Forest Green',
+    hexValue: '#10B981',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('color', 3),
+    name: 'Sunset Orange',
+    hexValue: '#F59E0B',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('color', 4),
+    name: 'Royal Purple',
+    hexValue: '#8B5CF6',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('color', 5),
+    name: 'Flamingo Pink',
+    hexValue: '#EC4899',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('color', 6),
+    name: 'Fire Red',
+    hexValue: '#EF4444',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('color', 7),
+    name: 'Teal Wave',
+    hexValue: '#14B8A6',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('color', 8),
+    name: 'Indigo Night',
+    hexValue: '#6366F1',
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+];
+
+// Sessions - Define camp registration periods
+export const mockSessions: CampSession[] = [
+  {
+    id: generateId('session', 1),
+    name: 'Week 1: Adventure Begins',
+    startDate: new Date(2025, 5, 15).toISOString().split('T')[0], // June 15, 2025
+    endDate: new Date(2025, 5, 21).toISOString().split('T')[0], // June 21, 2025
+    description: 'Opening week of summer camp - perfect for first-time campers',
+    maxCampers: 150,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('session', 2),
+    name: 'Week 2: Explorer\'s Quest',
+    startDate: new Date(2025, 5, 22).toISOString().split('T')[0], // June 22, 2025
+    endDate: new Date(2025, 5, 28).toISOString().split('T')[0], // June 28, 2025
+    description: 'Focus on outdoor adventure and nature exploration',
+    maxCampers: 150,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('session', 3),
+    name: 'Week 3-4: Summer Spectacular',
+    startDate: new Date(2025, 5, 29).toISOString().split('T')[0], // June 29, 2025
+    endDate: new Date(2025, 6, 12).toISOString().split('T')[0], // July 12, 2025
+    description: 'Extended two-week session with special programming',
+    maxCampers: 175,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('session', 4),
+    name: 'Week 5: Arts & Performance',
+    startDate: new Date(2025, 6, 13).toISOString().split('T')[0], // July 13, 2025
+    endDate: new Date(2025, 6, 19).toISOString().split('T')[0], // July 19, 2025
+    description: 'Creative arts, theater, and performance showcase',
+    maxCampers: 150,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('session', 5),
+    name: 'Week 6: Grand Finale',
+    startDate: new Date(2025, 6, 20).toISOString().split('T')[0], // July 20, 2025
+    endDate: new Date(2025, 6, 26).toISOString().split('T')[0], // July 26, 2025
+    description: 'Closing week with camp-wide games and celebrations',
+    maxCampers: 150,
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+];
 
 // Certifications - Setup first as they're referenced by staff
 export const mockCertifications: Certification[] = [
@@ -372,6 +486,10 @@ const generateCampers = (count: number, totalFamilyGroups: number): Camper[] => 
     const hasAllergy = (i * 7) % 100 < 20;
     const camperAllergies = hasAllergy ? [allergies[i % allergies.length]] : [];
     
+    // Distribute campers across 5 sessions evenly
+    const sessionIndex = (i % 5) + 1;
+    const sessionId = generateId('session', sessionIndex);
+    
     campers.push({
       id: generateId('camper', i),
       firstName,
@@ -383,6 +501,7 @@ const generateCampers = (count: number, totalFamilyGroups: number): Camper[] => 
       medicalNotes: hasAllergy ? `Please avoid ${camperAllergies[0]}` : undefined,
       registrationDate: new Date(2025, 5, 1 + (i % 7)).toISOString(),
       familyGroupId,
+      sessionId,
     });
   }
   
@@ -1211,7 +1330,7 @@ export const mockCamperGroups: CamperGroup[] = [
     id: generateId('group', 1),
     name: 'Junior Campers',
     description: 'Campers ages 6-9 for age-appropriate activities',
-    color: '#10B981',
+    colorId: generateId('color', 2), // Forest Green
     filters: {
       ageMin: 6,
       ageMax: 9,
@@ -1223,7 +1342,7 @@ export const mockCamperGroups: CamperGroup[] = [
     id: generateId('group', 2),
     name: 'Senior Campers',
     description: 'Campers ages 13+ for advanced activities',
-    color: '#6366F1',
+    colorId: generateId('color', 8), // Indigo Night
     filters: {
       ageMin: 13,
     },
@@ -1234,7 +1353,7 @@ export const mockCamperGroups: CamperGroup[] = [
     id: generateId('group', 3),
     name: 'Middle Age Campers',
     description: 'Campers ages 10-12 for age-appropriate activities',
-    color: '#F59E0B',
+    colorId: generateId('color', 3), // Sunset Orange
     filters: {
       ageMin: 10,
       ageMax: 12,
@@ -1246,7 +1365,7 @@ export const mockCamperGroups: CamperGroup[] = [
     id: generateId('group', 4),
     name: 'Girls Power',
     description: 'All female campers for girls-only activities',
-    color: '#EC4899',
+    colorId: generateId('color', 5), // Flamingo Pink
     filters: {
       gender: 'female',
     },
@@ -1257,7 +1376,7 @@ export const mockCamperGroups: CamperGroup[] = [
     id: generateId('group', 5),
     name: 'Allergy-Aware Group',
     description: 'Campers with allergies for special meal planning',
-    color: '#EF4444',
+    colorId: generateId('color', 6), // Fire Red
     filters: {
       hasAllergies: true,
     },
@@ -1272,7 +1391,7 @@ export const mockPrograms: Program[] = [
     id: generateId('program', 1),
     name: 'Watersports',
     description: 'Water-based activities including wakeboarding, kayaking, and swimming',
-    color: '#3B82F6',
+    colorId: generateId('color', 1), // Ocean Blue
     activityIds: [],
     staffMemberIds: ['staff-008', 'staff-010', 'staff-012', 'staff-016', 'staff-020'],
     roomIds: ['room-004', 'room-010'],
@@ -1283,7 +1402,7 @@ export const mockPrograms: Program[] = [
     id: generateId('program', 2),
     name: 'Arts & Crafts',
     description: 'Creative activities including pottery, painting, and jewelry making',
-    color: '#EC4899',
+    colorId: generateId('color', 5), // Flamingo Pink
     activityIds: [],
     staffMemberIds: ['staff-014', 'staff-018', 'staff-022'],
     roomIds: ['room-002', 'room-008'],
@@ -1294,7 +1413,7 @@ export const mockPrograms: Program[] = [
     id: generateId('program', 3),
     name: 'Adventure Sports',
     description: 'High-energy outdoor activities including rock climbing, archery, and ropes course',
-    color: '#10B981',
+    colorId: generateId('color', 2), // Forest Green
     activityIds: [],
     staffMemberIds: ['staff-009', 'staff-011', 'staff-015', 'staff-019'],
     roomIds: ['room-003', 'room-007'],
@@ -1305,7 +1424,7 @@ export const mockPrograms: Program[] = [
     id: generateId('program', 4),
     name: 'Performing Arts',
     description: 'Theater, music, dance, and performance activities',
-    color: '#8B5CF6',
+    colorId: generateId('color', 4), // Royal Purple
     activityIds: [],
     staffMemberIds: ['staff-013', 'staff-017', 'staff-024'],
     roomIds: ['room-008', 'room-010'],
@@ -1316,7 +1435,7 @@ export const mockPrograms: Program[] = [
     id: generateId('program', 5),
     name: 'Science & Nature',
     description: 'Outdoor education, biology, astronomy, and environmental science',
-    color: '#14B8A6',
+    colorId: generateId('color', 7), // Teal Wave
     activityIds: [],
     staffMemberIds: ['staff-021', 'staff-025', 'staff-029'],
     roomIds: ['room-005', 'room-007'],
@@ -1327,7 +1446,7 @@ export const mockPrograms: Program[] = [
     id: generateId('program', 6),
     name: 'Team Sports',
     description: 'Soccer, basketball, volleyball, and other team-based sports',
-    color: '#F59E0B',
+    colorId: generateId('color', 3), // Sunset Orange
     activityIds: [],
     staffMemberIds: ['staff-026', 'staff-030', 'staff-034'],
     roomIds: ['room-003', 'room-009'],
@@ -1338,7 +1457,7 @@ export const mockPrograms: Program[] = [
     id: generateId('program', 7),
     name: 'Leadership Development',
     description: 'Team building, leadership skills, and communication workshops',
-    color: '#6366F1',
+    colorId: generateId('color', 8), // Indigo Night
     activityIds: [],
     staffMemberIds: ['staff-027', 'staff-031', 'staff-035'],
     roomIds: ['room-001', 'room-005'],
@@ -1349,7 +1468,7 @@ export const mockPrograms: Program[] = [
     id: generateId('program', 8),
     name: 'Cooking & Culinary',
     description: 'Baking, cooking classes, and food science',
-    color: '#EF4444',
+    colorId: generateId('color', 6), // Fire Red
     activityIds: [],
     staffMemberIds: ['staff-028', 'staff-032'],
     roomIds: ['room-006'],
@@ -1360,7 +1479,7 @@ export const mockPrograms: Program[] = [
     id: generateId('program', 9),
     name: 'Technology & Gaming',
     description: 'Coding, robotics, video production, and board games',
-    color: '#06B6D4',
+    colorId: generateId('color', 7), // Teal Wave
     activityIds: [],
     staffMemberIds: ['staff-033', 'staff-037', 'staff-041'],
     roomIds: ['room-005'],
@@ -1371,7 +1490,7 @@ export const mockPrograms: Program[] = [
     id: generateId('program', 10),
     name: 'Wellness & Mindfulness',
     description: 'Yoga, meditation, fitness, and mental health activities',
-    color: '#A855F7',
+    colorId: generateId('color', 4), // Royal Purple
     activityIds: [],
     staffMemberIds: ['staff-036', 'staff-040', 'staff-044'],
     roomIds: ['room-001', 'room-007'],
@@ -1394,7 +1513,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 8,
-    color: '#3B82F6',
+    colorId: generateId('color', 1), // Ocean Blue
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1409,7 +1528,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 2,
     defaultCapacity: 12,
-    color: '#60A5FA',
+    colorId: generateId('color', 1), // Ocean Blue
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1424,7 +1543,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 10,
-    color: '#2563EB',
+    colorId: generateId('color', 1), // Ocean Blue
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1439,7 +1558,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 2,
     defaultCapacity: 10,
-    color: '#1D4ED8',
+    colorId: generateId('color', 1), // Ocean Blue
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1454,7 +1573,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 10,
-    color: '#EC4899',
+    colorId: generateId('color', 5), // Flamingo Pink
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1468,7 +1587,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 15,
-    color: '#F472B6',
+    colorId: generateId('color', 5), // Flamingo Pink
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1482,7 +1601,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 1,
     defaultCapacity: 12,
-    color: '#DB2777',
+    colorId: generateId('color', 5), // Flamingo Pink
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1496,7 +1615,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 20,
-    color: '#F9A8D4',
+    colorId: generateId('color', 5), // Flamingo Pink
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1512,7 +1631,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 10,
-    color: '#10B981',
+    colorId: generateId('color', 2), // Forest Green
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1527,7 +1646,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 2,
     defaultCapacity: 12,
-    color: '#34D399',
+    colorId: generateId('color', 2), // Forest Green
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1542,7 +1661,7 @@ export const mockActivities: Activity[] = [
     minStaff: 3,
     maxStaff: 4,
     defaultCapacity: 8,
-    color: '#059669',
+    colorId: generateId('color', 2), // Forest Green
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1556,7 +1675,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 15,
-    color: '#10B981',
+    colorId: generateId('color', 2), // Forest Green
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1571,7 +1690,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 20,
-    color: '#8B5CF6',
+    colorId: generateId('color', 4), // Royal Purple
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1585,7 +1704,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 15,
-    color: '#A78BFA',
+    colorId: generateId('color', 4), // Royal Purple
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1599,7 +1718,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 25,
-    color: '#C4B5FD',
+    colorId: generateId('color', 4), // Royal Purple
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1613,7 +1732,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 1,
     defaultCapacity: 18,
-    color: '#7C3AED',
+    colorId: generateId('color', 4), // Royal Purple
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1628,7 +1747,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 20,
-    color: '#14B8A6',
+    colorId: generateId('color', 7), // Teal Wave
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1642,7 +1761,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 30,
-    color: '#5EEAD4',
+    colorId: generateId('color', 7), // Teal Wave
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1656,7 +1775,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 15,
-    color: '#2DD4BF',
+    colorId: generateId('color', 7), // Teal Wave
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1670,7 +1789,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 12,
-    color: '#14B8A6',
+    colorId: generateId('color', 7), // Teal Wave
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1685,7 +1804,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 22,
-    color: '#F59E0B',
+    colorId: generateId('color', 3), // Sunset Orange
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1699,7 +1818,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 20,
-    color: '#FBBF24',
+    colorId: generateId('color', 3), // Sunset Orange
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1713,7 +1832,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 16,
-    color: '#FCD34D',
+    colorId: generateId('color', 3), // Sunset Orange
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1727,7 +1846,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 20,
-    color: '#F59E0B',
+    colorId: generateId('color', 3), // Sunset Orange
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1742,7 +1861,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 25,
-    color: '#6366F1',
+    colorId: generateId('color', 8), // Indigo Night
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1756,7 +1875,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 1,
     defaultCapacity: 15,
-    color: '#818CF8',
+    colorId: generateId('color', 8), // Indigo Night
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1770,7 +1889,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 20,
-    color: '#A5B4FC',
+    colorId: generateId('color', 8), // Indigo Night
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1785,7 +1904,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 2,
     defaultCapacity: 12,
-    color: '#EF4444',
+    colorId: generateId('color', 6), // Fire Red
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1799,7 +1918,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 15,
-    color: '#F87171',
+    colorId: generateId('color', 6), // Fire Red
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1813,7 +1932,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 12,
-    color: '#FCA5A5',
+    colorId: generateId('color', 6), // Fire Red
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1828,7 +1947,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 15,
-    color: '#06B6D4',
+    colorId: generateId('color', 7), // Teal Wave
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1842,7 +1961,7 @@ export const mockActivities: Activity[] = [
     minStaff: 2,
     maxStaff: 2,
     defaultCapacity: 12,
-    color: '#22D3EE',
+    colorId: generateId('color', 7), // Teal Wave
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1856,7 +1975,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 20,
-    color: '#67E8F9',
+    colorId: generateId('color', 7), // Teal Wave
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1871,7 +1990,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 1,
     defaultCapacity: 25,
-    color: '#A855F7',
+    colorId: generateId('color', 4), // Royal Purple
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1885,7 +2004,7 @@ export const mockActivities: Activity[] = [
     minStaff: 1,
     maxStaff: 1,
     defaultCapacity: 30,
-    color: '#C084FC',
+    colorId: generateId('color', 4), // Royal Purple
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1916,4 +2035,6 @@ export const mockData = {
   activities: mockActivities,
   locations: mockLocations,
   certifications: mockCertifications,
+  colors: mockColors,
+  sessions: mockSessions,
 };

@@ -1,112 +1,128 @@
 <template>
-  <div class="container">
-    <div class="locations-view">
-      <ViewHeader title="Location Management">
-        <template #actions>
-          <button class="btn btn-primary" @click="showModal = true">+ Add Location</button>
-        </template>
-      </ViewHeader>
+  <div class="locations-tab">
+    <TabHeader
+      title="Locations"
+      description="Manage all physical locations within your camp - from activity rooms to outdoor spaces."
+      action-text="Add Location"
+      @action="showModal = true"
+    >
+      <template #action-icon>
+        <Plus :size="18" />
+      </template>
+    </TabHeader>
 
-      <!-- Search and Filters -->
-      <FilterBar
-        v-model:searchQuery="searchQuery"
-        v-model:filter-type="filterType"
-        :filters="locationFilters"
-        :filtered-count="filteredLocations.length"
-        :total-count="store.locations.length"
-        @clear="clearFilters"
+    <!-- Search and Filters -->
+    <FilterBar
+      v-model:searchQuery="searchQuery"
+      v-model:filter-type="filterType"
+      :filters="locationFilters"
+      :filtered-count="filteredLocations.length"
+      :total-count="store.locations.length"
+      @clear="clearFilters"
+    >
+      <template #prepend>
+        <ViewToggle v-model="viewMode" />
+      </template>
+    </FilterBar>
+
+    <!-- Empty State -->
+    <EmptyState
+      v-if="store.locations.length === 0"
+      icon="MapPin"
+      title="No locations configured"
+      message="Add your first location to start organizing your camp spaces."
+    >
+      <button class="btn btn-primary" @click="showModal = true">
+        <Plus :size="18" />
+        Add Your First Location
+      </button>
+    </EmptyState>
+
+    <!-- Grid View -->
+    <div v-else-if="viewMode === 'grid'" class="locations-grid">
+      <LocationCard
+        v-for="location in filteredLocations"
+        :key="location.id"
+        :location="location"
+        :format-type="formatLocationType(location.type)"
+        :icon-color="getLocationTypeColor(location.type)"
+        @click="selectLocation(location.id)"
       >
-        <template #prepend>
-          <ViewToggle v-model="viewMode" />
+        <template #icon>
+          <component :is="LocationTypeIcon(location.type)" :size="24" :stroke-width="2" />
         </template>
-      </FilterBar>
-
-      <!-- Grid View -->
-      <div v-if="viewMode === 'grid'" class="locations-grid">
-        <LocationCard
-          v-for="location in filteredLocations"
-          :key="location.id"
-          :location="location"
-          :format-type="formatLocationType(location.type)"
-          :icon-color="getLocationTypeColor(location.type)"
-          @click="selectLocation(location.id)"
-        >
-          <template #icon>
-            <component :is="LocationTypeIcon(location.type)" :size="24" :stroke-width="2" />
-          </template>
-        </LocationCard>
-      </div>
-
-      <!-- Table View -->
-      <DataTable
-        v-if="viewMode === 'table'"
-        :columns="locationColumns"
-        :data="filteredLocations"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
-      >
-        <template #cell-name="{ item }">
-          <div class="location-name-content">
-            <div class="location-icon-sm" :style="{ background: getLocationTypeColor(item.type) }">
-              <component :is="LocationTypeIcon(item.type)" :size="18" :stroke-width="2" />
-            </div>
-            <div class="location-name">{{ item.name }}</div>
-          </div>
-        </template>
-        
-        <template #cell-type="{ item }">
-          <span class="badge badge-primary badge-sm">{{ formatLocationType(item.type) }}</span>
-        </template>
-        
-        <template #cell-capacity="{ item }">
-          <span v-if="item.capacity">{{ item.capacity }}</span>
-          <span v-else class="text-secondary">N/A</span>
-        </template>
-        
-        <template #cell-equipment="{ item }">
-          <span v-if="item.equipment && item.equipment.length > 0" class="badge badge-success badge-sm">
-            {{ item.equipment.length }} item(s)
-          </span>
-          <span v-else class="text-secondary">None</span>
-        </template>
-        
-        <template #cell-actions="{ item }">
-          <button class="btn btn-sm btn-secondary" @click.stop="selectLocation(item.id)">
-            View Details
-          </button>
-        </template>
-      </DataTable>
-
-      <!-- Location Detail Modal -->
-      <LocationDetailModal
-        :show="!!selectedLocationId"
-        :location="selectedLocation"
-        @close="selectedLocationId = null"
-        @edit="editLocation"
-        @delete="deleteLocationConfirm"
-      />
-
-      <!-- Add/Edit Location Modal -->
-      <LocationFormModal
-        :show="showModal"
-        :is-editing="!!editingLocationId"
-        :form-data="formData"
-        @close="closeModal"
-        @save="saveLocation"
-      />
-
-      <!-- Confirm Delete Modal -->
-      <ConfirmModal
-        :show="showConfirmModal"
-        title="Delete Location"
-        message="Are you sure you want to delete this location?"
-        confirm-text="Delete"
-        :danger-mode="true"
-        @confirm="handleConfirmAction"
-        @cancel="handleCancelConfirm"
-      />
+      </LocationCard>
     </div>
+
+    <!-- Table View -->
+    <DataTable
+      v-else
+      :columns="locationColumns"
+      :data="filteredLocations"
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      row-key="id"
+    >
+      <template #cell-name="{ item }">
+        <div class="location-name-content">
+          <div class="location-icon-sm" :style="{ background: getLocationTypeColor(item.type) }">
+            <component :is="LocationTypeIcon(item.type)" :size="18" :stroke-width="2" />
+          </div>
+          <div class="location-name">{{ item.name }}</div>
+        </div>
+      </template>
+      
+      <template #cell-type="{ item }">
+        <span class="badge badge-primary badge-sm">{{ formatLocationType(item.type) }}</span>
+      </template>
+      
+      <template #cell-capacity="{ item }">
+        <span v-if="item.capacity">{{ item.capacity }}</span>
+        <span v-else class="text-secondary">N/A</span>
+      </template>
+      
+      <template #cell-equipment="{ item }">
+        <span v-if="item.equipment && item.equipment.length > 0" class="badge badge-success badge-sm">
+          {{ item.equipment.length }} item(s)
+        </span>
+        <span v-else class="text-secondary">None</span>
+      </template>
+      
+      <template #cell-actions="{ item }">
+        <button class="btn btn-sm btn-secondary" @click.stop="selectLocation(item.id)">
+          View Details
+        </button>
+      </template>
+    </DataTable>
+
+    <!-- Location Detail Modal -->
+    <LocationDetailModal
+      :show="!!selectedLocationId"
+      :location="selectedLocation"
+      @close="selectedLocationId = null"
+      @edit="editLocation"
+      @delete="deleteLocationConfirm"
+    />
+
+    <!-- Add/Edit Location Modal -->
+    <LocationFormModal
+      :show="showModal"
+      :is-editing="!!editingLocationId"
+      :form-data="formData"
+      @close="closeModal"
+      @save="saveLocation"
+    />
+
+    <!-- Confirm Delete Modal -->
+    <ConfirmModal
+      :show="showConfirmModal"
+      title="Delete Location"
+      message="Are you sure you want to delete this location?"
+      confirm-text="Delete"
+      :danger-mode="true"
+      @confirm="handleConfirmAction"
+      @cancel="handleCancelConfirm"
+    />
   </div>
 </template>
 
@@ -115,7 +131,6 @@
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { Location } from '@/types/api';
-import ViewHeader from '@/components/ViewHeader.vue';
 import LocationCard from '@/components/cards/LocationCard.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
@@ -123,13 +138,14 @@ import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
 import LocationDetailModal from '@/components/modals/LocationDetailModal.vue';
 import LocationFormModal from '@/components/modals/LocationFormModal.vue';
-import { MapPin, Home, TreesIcon as Trees, Activity, Waves, MoreHorizontal } from 'lucide-vue-next';
+import EmptyState from '@/components/EmptyState.vue';
+import { MapPin, Home, TreesIcon as Trees, Activity, Waves, MoreHorizontal, Plus } from 'lucide-vue-next';
+import TabHeader from '@/components/settings/TabHeader.vue';
 import { useToast } from '@/composables/useToast';
 
 export default defineComponent({
-  name: 'Locations',
+  name: 'LocationsTab',
   components: {
-    ViewHeader,
     LocationCard,
     FilterBar,
     ConfirmModal,
@@ -137,7 +153,10 @@ export default defineComponent({
     ViewToggle,
     LocationDetailModal,
     LocationFormModal,
+    EmptyState,
     MapPin,
+    Plus,
+    TabHeader,
   },
   setup() {
     const store = useCampStore();
@@ -347,8 +366,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.locations-view {
-  padding: 0;
+.locations-tab {
+  animation: slideIn 0.3s ease;
 }
 
 .locations-grid {
@@ -379,11 +398,18 @@ export default defineComponent({
   color: var(--text-primary);
 }
 
-@media (max-width: 768px) {
-  .locations-view {
-    padding: 1rem 0;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
   }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 
+@media (max-width: 768px) {
   .locations-grid {
     grid-template-columns: 1fr;
     gap: 1rem;

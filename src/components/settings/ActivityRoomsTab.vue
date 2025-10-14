@@ -1,162 +1,178 @@
 <template>
-  <div class="container">
-    <div class="rooms-view">
-      <ViewHeader title="Room Management">
-        <template #actions>
-          <button class="btn btn-primary" @click="showModal = true">+ Add Room</button>
-        </template>
-      </ViewHeader>
+  <div class="activity-rooms-tab">
+    <TabHeader
+      title="Activity Rooms"
+      description="Manage all activity rooms where camp programs and events take place."
+      action-text="Add Room"
+      @action="showModal = true"
+    >
+      <template #action-icon>
+        <Plus :size="18" />
+      </template>
+    </TabHeader>
 
-      <!-- Search and Filters -->
-      <FilterBar
-        v-model:searchQuery="searchQuery"
-        v-model:filter-type="filterType"
-        v-model:filter-capacity="filterCapacity"
-        :filters="roomFilters"
-        :filtered-count="filteredRooms.length"
-        :total-count="store.rooms.length"
-        @clear="clearFilters"
+    <!-- Search and Filters -->
+    <FilterBar
+      v-model:searchQuery="searchQuery"
+      v-model:filter-type="filterType"
+      v-model:filter-capacity="filterCapacity"
+      :filters="roomFilters"
+      :filtered-count="filteredRooms.length"
+      :total-count="store.rooms.length"
+      @clear="clearFilters"
+    >
+      <template #prepend>
+        <ViewToggle v-model="viewMode" />
+      </template>
+    </FilterBar>
+
+    <!-- Empty State -->
+    <EmptyState
+      v-if="store.rooms.length === 0"
+      icon="Home"
+      title="No activity rooms configured"
+      message="Add your first activity room to start organizing your camp spaces."
+    >
+      <button class="btn btn-primary" @click="showModal = true">
+        <Plus :size="18" />
+        Add Your First Room
+      </button>
+    </EmptyState>
+
+    <!-- Grid View -->
+    <div v-else-if="viewMode === 'grid'" class="rooms-grid">
+      <RoomCard
+        v-for="room in filteredRooms"
+        :key="room.id"
+        :room="room"
+        :formatted-type="formatRoomType(room.type)"
+        :icon-color="getRoomTypeColor(room.type)"
+        :usage-percent="getRoomUsage(room.id)"
+        @click="selectRoom(room.id)"
       >
-        <template #prepend>
-          <ViewToggle v-model="viewMode" />
+        <template #icon>
+          <component :is="RoomTypeIcon(room.type)" :size="24" :stroke-width="2" />
         </template>
-      </FilterBar>
-
-      <!-- Grid View -->
-      <div v-if="viewMode === 'grid'" class="rooms-grid">
-        <RoomCard
-          v-for="room in filteredRooms"
-          :key="room.id"
-          :room="room"
-          :formatted-type="formatRoomType(room.type)"
-          :icon-color="getRoomTypeColor(room.type)"
-          :usage-percent="getRoomUsage(room.id)"
-          @click="selectRoom(room.id)"
-        >
-          <template #icon>
-            <component :is="RoomTypeIcon(room.type)" :size="24" :stroke-width="2" />
-          </template>
-        </RoomCard>
-      </div>
-
-      <!-- Table View -->
-      <DataTable
-        v-if="viewMode === 'table'"
-        :columns="roomColumns"
-        :data="filteredRooms"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
-      >
-        <template #cell-name="{ item }">
-          <div class="room-name-content">
-            <div class="room-icon-sm" :style="{ background: getRoomTypeColor(item.type) }">
-              <component :is="RoomTypeIcon(item.type)" :size="18" :stroke-width="2" />
-            </div>
-            <div class="room-name">{{ item.name }}</div>
-          </div>
-        </template>
-        
-        <template #cell-type="{ item }">
-          <span class="badge badge-primary badge-sm">{{ formatRoomType(item.type) }}</span>
-        </template>
-        
-        <template #cell-location="{ item }">
-          <span v-if="item.locationId">
-            {{ store.getLocationById(item.locationId)?.name || item.location || 'Unknown' }}
-          </span>
-          <span v-else-if="item.location">{{ item.location }}</span>
-          <span v-else class="text-secondary">No location</span>
-        </template>
-        
-        <template #cell-equipment="{ item }">
-          <span v-if="item.equipment && item.equipment.length > 0" class="badge badge-success badge-sm">
-            {{ item.equipment.length }} item(s)
-          </span>
-          <span v-else class="text-secondary">None</span>
-        </template>
-        
-        <template #cell-usage="{ item }">
-          <div class="usage-indicator">
-            <div class="usage-bar-sm">
-              <div 
-                class="usage-fill-sm"
-                :style="{ 
-                  width: `${getRoomUsage(item.id)}%`,
-                  background: getRoomUsage(item.id) > 80 ? 'var(--error-color)' : 'var(--success-color)'
-                }"
-              ></div>
-            </div>
-            <span class="usage-text">{{ getRoomUsage(item.id).toFixed(0) }}%</span>
-          </div>
-        </template>
-        
-        <template #cell-events="{ item }">
-          <span class="event-count">{{ getRoomEvents(item.id).length }}</span>
-        </template>
-        
-        <template #cell-actions="{ item }">
-          <button class="btn btn-sm btn-secondary" @click.stop="selectRoom(item.id)">
-            View Details
-          </button>
-        </template>
-      </DataTable>
-
-      <!-- Room Detail Modal -->
-      <RoomDetailModal
-        :show="!!selectedRoomId"
-        :room="selectedRoom"
-        @close="selectedRoomId = null"
-        @edit="editRoom"
-        @delete="deleteRoomConfirm"
-      >
-        <template #events-list>
-          <EventsByDate 
-            :events="selectedRoom ? getRoomEvents(selectedRoom.id) : []"
-            :show-enrollment="true"
-            empty-message="No events scheduled"
-          />
-        </template>
-      </RoomDetailModal>
-
-      <!-- Add/Edit Room Modal -->
-      <RoomFormModal
-        :show="showModal"
-        :is-editing="!!editingRoomId"
-        :form-data="formData"
-        @close="closeModal"
-        @save="saveRoom"
-      />
-
-      <!-- Confirm Delete Modal -->
-      <ConfirmModal
-        :show="showConfirmModal"
-        title="Delete Activity Room"
-        message="Are you sure you want to delete this room?"
-        confirm-text="Delete"
-        :danger-mode="true"
-        @confirm="handleConfirmAction"
-        @cancel="handleCancelConfirm"
-      />
+      </RoomCard>
     </div>
+
+    <!-- Table View -->
+    <DataTable
+      v-else
+      :columns="roomColumns"
+      :data="filteredRooms"
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      row-key="id"
+    >
+      <template #cell-name="{ item }">
+        <div class="room-name-content">
+          <div class="room-icon-sm" :style="{ background: getRoomTypeColor(item.type) }">
+            <component :is="RoomTypeIcon(item.type)" :size="18" :stroke-width="2" />
+          </div>
+          <div class="room-name">{{ item.name }}</div>
+        </div>
+      </template>
+      
+      <template #cell-type="{ item }">
+        <span class="badge badge-primary badge-sm">{{ formatRoomType(item.type) }}</span>
+      </template>
+      
+      <template #cell-location="{ item }">
+        <span v-if="item.locationId">
+          {{ store.getLocationById(item.locationId)?.name || item.location || 'Unknown' }}
+        </span>
+        <span v-else-if="item.location">{{ item.location }}</span>
+        <span v-else class="text-secondary">No location</span>
+      </template>
+      
+      <template #cell-equipment="{ item }">
+        <span v-if="item.equipment && item.equipment.length > 0" class="badge badge-success badge-sm">
+          {{ item.equipment.length }} item(s)
+        </span>
+        <span v-else class="text-secondary">None</span>
+      </template>
+      
+      <template #cell-usage="{ item }">
+        <div class="usage-indicator">
+          <div class="usage-bar-sm">
+            <div 
+              class="usage-fill-sm"
+              :style="{ 
+                width: `${getRoomUsage(item.id)}%`,
+                background: getRoomUsage(item.id) > 80 ? 'var(--error-color)' : 'var(--success-color)'
+              }"
+            ></div>
+          </div>
+          <span class="usage-text">{{ getRoomUsage(item.id).toFixed(0) }}%</span>
+        </div>
+      </template>
+      
+      <template #cell-events="{ item }">
+        <span class="event-count">{{ getRoomEvents(item.id).length }}</span>
+      </template>
+      
+      <template #cell-actions="{ item }">
+        <button class="btn btn-sm btn-secondary" @click.stop="selectRoom(item.id)">
+          View Details
+        </button>
+      </template>
+    </DataTable>
+
+    <!-- Room Detail Modal -->
+    <RoomDetailModal
+      :show="!!selectedRoomId"
+      :room="selectedRoom"
+      @close="selectedRoomId = null"
+      @edit="editRoom"
+      @delete="deleteRoomConfirm"
+    >
+      <template #events-list>
+        <EventsByDate 
+          :events="selectedRoom ? getRoomEvents(selectedRoom.id) : []"
+          :show-enrollment="true"
+          empty-message="No events scheduled"
+        />
+      </template>
+    </RoomDetailModal>
+
+    <!-- Add/Edit Room Modal -->
+    <RoomFormModal
+      :show="showModal"
+      :is-editing="!!editingRoomId"
+      :form-data="formData"
+      @close="closeModal"
+      @save="saveRoom"
+    />
+
+    <!-- Confirm Delete Modal -->
+    <ConfirmModal
+      :show="showConfirmModal"
+      title="Delete Activity Room"
+      message="Are you sure you want to delete this room?"
+      confirm-text="Delete"
+      :danger-mode="true"
+      @confirm="handleConfirmAction"
+      @cancel="handleCancelConfirm"
+    />
   </div>
 </template>
 
 <script lang="ts">
 // @ts-nocheck
-import { defineComponent} from 'vue';
+import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import type { Room } from '@/types/api';
-import ViewHeader from '@/components/ViewHeader.vue';
 import RoomCard from '@/components/cards/RoomCard.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
-import Autocomplete from '@/components/Autocomplete.vue';
 import RoomDetailModal from '@/components/modals/RoomDetailModal.vue';
 import RoomFormModal from '@/components/modals/RoomFormModal.vue';
+import EmptyState from '@/components/EmptyState.vue';
+import TabHeader from '@/components/settings/TabHeader.vue';
 import { 
   BookOpen, 
   Target, 
@@ -165,30 +181,29 @@ import {
   Trees, 
   Palette, 
   Home,
-  MapPin 
+  Plus
 } from 'lucide-vue-next';
+import { useToast } from '@/composables/useToast';
 
 export default defineComponent({
-  name: 'Rooms',
+  name: 'ActivityRoomsTab',
   components: {
-    ViewHeader,
     RoomCard,
     FilterBar,
     EventsByDate,
     ConfirmModal,
     DataTable,
     ViewToggle,
-    Autocomplete,
     RoomDetailModal,
     RoomFormModal,
-    BookOpen,
-    Target,
-    Dumbbell,
-    Utensils,
-    Trees,
-    Palette,
-    Home,
-    MapPin
+    EmptyState,
+    TabHeader,
+    Plus,
+  },
+  setup() {
+    const store = useCampStore();
+    const toast = useToast();
+    return { store, toast };
   },
   data() {
     return {
@@ -197,7 +212,6 @@ export default defineComponent({
       editingRoomId: null as string | null,
       showConfirmModal: false,
       confirmAction: null as (() => void) | null,
-      equipmentInput: '',
       viewMode: 'grid' as 'grid' | 'table',
       currentPage: 1,
       pageSize: 10,
@@ -225,9 +239,6 @@ export default defineComponent({
     };
   },
   computed: {
-    store() {
-      return useCampStore();
-    },
     roomFilters(): Filter[] {
       return [
         {
@@ -365,42 +376,52 @@ export default defineComponent({
         equipment: this.selectedRoom.equipment || [],
         notes: this.selectedRoom.notes || '',
       };
-      this.equipmentInput = (this.selectedRoom.equipment || []).join(', ');
       
       this.selectedRoomId = null;
       this.showModal = true;
     },
     async saveRoom(formData: typeof this.formData & { equipment: string[] }) {
-      // Get location name for backward compatibility
-      const location = formData.locationId 
-        ? this.store.getLocationById(formData.locationId)?.name 
-        : undefined;
+      try {
+        // Get location name for backward compatibility
+        const location = formData.locationId 
+          ? this.store.getLocationById(formData.locationId)?.name 
+          : undefined;
 
-      const roomData: Room = {
-        id: this.editingRoomId || `room-${Date.now()}`,
-        name: formData.name,
-        type: formData.type,
-        capacity: formData.capacity,
-        location: location,
-        locationId: formData.locationId,
-        equipment: formData.equipment,
-        notes: formData.notes,
-      };
+        const roomData: Room = {
+          id: this.editingRoomId || `room-${Date.now()}`,
+          name: formData.name,
+          type: formData.type,
+          capacity: formData.capacity,
+          location: location,
+          locationId: formData.locationId,
+          equipment: formData.equipment,
+          notes: formData.notes,
+        };
 
-      if (this.editingRoomId) {
-        await this.store.updateRoom(roomData);
-      } else {
-        await this.store.addRoom(roomData);
+        if (this.editingRoomId) {
+          await this.store.updateRoom(roomData);
+          this.toast.success('Room updated successfully');
+        } else {
+          await this.store.addRoom(roomData);
+          this.toast.success('Room added successfully');
+        }
+
+        this.closeModal();
+      } catch (error: any) {
+        this.toast.error(error.message || 'Failed to save room');
       }
-
-      this.closeModal();
     },
     deleteRoomConfirm() {
       if (!this.selectedRoomId) return;
       this.confirmAction = async () => {
         if (this.selectedRoomId) {
-          await this.store.deleteRoom(this.selectedRoomId);
-          this.selectedRoomId = null;
+          try {
+            await this.store.deleteRoom(this.selectedRoomId);
+            this.toast.success('Room deleted successfully');
+            this.selectedRoomId = null;
+          } catch (error: any) {
+            this.toast.error(error.message || 'Failed to delete room');
+          }
         }
       };
       this.showConfirmModal = true;
@@ -423,21 +444,18 @@ export default defineComponent({
         name: '',
         type: 'classroom',
         capacity: 20,
-        location: '',
+        locationId: undefined,
         equipment: [],
         notes: '',
       };
-      this.equipmentInput = '';
     }
   }
 });
 </script>
 
-
 <style scoped>
-.rooms-view {
-  max-width: 1400px;
-  margin: 0 auto;
+.activity-rooms-tab {
+  animation: slideIn 0.3s ease;
 }
 
 .rooms-grid {
@@ -446,37 +464,6 @@ export default defineComponent({
   gap: 1.5rem;
 }
 
-.detail-section {
-  margin-bottom: 1.5rem;
-}
-
-.detail-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
-}
-
-.events-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.event-item {
-  padding: 0.75rem;
-  background: var(--background);
-  border-radius: var(--radius);
-  border-left: 4px solid var(--primary-color);
-}
-
-.event-item-title {
-  font-weight: 500;
-  margin-bottom: 0.25rem;
-}
-
-/* Table View Styles */
-/* Table cell custom styles */
 .room-name-content {
   display: flex;
   align-items: center;
@@ -491,20 +478,12 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
   flex-shrink: 0;
 }
 
 .room-name {
   font-weight: 500;
   color: var(--text-primary);
-}
-
-.location-cell {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .usage-indicator {
@@ -547,9 +526,22 @@ export default defineComponent({
   font-weight: 600;
 }
 
-.badge-sm {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .rooms-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 </style>
 

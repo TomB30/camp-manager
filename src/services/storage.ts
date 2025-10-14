@@ -1,4 +1,4 @@
-import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup, Program, Activity, Location, Certification } from '@/types/api';
+import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup, Program, Activity, Location, Certification, CampColor, CampSession } from '@/types/api';
 
 const STORAGE_KEYS = {
   CAMPERS: 'camp_campers',
@@ -12,6 +12,8 @@ const STORAGE_KEYS = {
   ACTIVITIES: 'camp_activities',
   LOCATIONS: 'camp_locations',
   CERTIFICATIONS: 'camp_certifications',
+  COLORS: 'camp_colors',
+  SESSIONS: 'camp_sessions',
 } as const;
 
 // Simulate async operations to match future API
@@ -469,6 +471,76 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.CERTIFICATIONS, JSON.stringify(filtered));
   }
 
+  // Colors operations
+  async getColors(): Promise<CampColor[]> {
+    await delay();
+    const data = localStorage.getItem(STORAGE_KEYS.COLORS);
+    return data ? JSON.parse(data) : [];
+  }
+
+  async getColor(id: string): Promise<CampColor | null> {
+    await delay();
+    const colors = await this.getColors();
+    return colors.find(c => c.id === id) || null;
+  }
+
+  async saveColor(color: CampColor): Promise<CampColor> {
+    await delay();
+    const colors = await this.getColors();
+    const index = colors.findIndex(c => c.id === color.id);
+    
+    if (index >= 0) {
+      colors[index] = { ...color, updatedAt: new Date().toISOString() };
+    } else {
+      colors.push(color);
+    }
+    
+    localStorage.setItem(STORAGE_KEYS.COLORS, JSON.stringify(colors));
+    return colors[index >= 0 ? index : colors.length - 1];
+  }
+
+  async deleteColor(id: string): Promise<void> {
+    await delay();
+    const colors = await this.getColors();
+    const filtered = colors.filter(c => c.id !== id);
+    localStorage.setItem(STORAGE_KEYS.COLORS, JSON.stringify(filtered));
+  }
+
+  // Sessions operations
+  async getSessions(): Promise<CampSession[]> {
+    await delay();
+    const data = localStorage.getItem(STORAGE_KEYS.SESSIONS);
+    return data ? JSON.parse(data) : [];
+  }
+
+  async getSession(id: string): Promise<CampSession | null> {
+    await delay();
+    const sessions = await this.getSessions();
+    return sessions.find(s => s.id === id) || null;
+  }
+
+  async saveSession(session: CampSession): Promise<CampSession> {
+    await delay();
+    const sessions = await this.getSessions();
+    const index = sessions.findIndex(s => s.id === session.id);
+    
+    if (index >= 0) {
+      sessions[index] = { ...session, updatedAt: new Date().toISOString() };
+    } else {
+      sessions.push(session);
+    }
+    
+    localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(sessions));
+    return sessions[index >= 0 ? index : sessions.length - 1];
+  }
+
+  async deleteSession(id: string): Promise<void> {
+    await delay();
+    const sessions = await this.getSessions();
+    const filtered = sessions.filter(s => s.id !== id);
+    localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(filtered));
+  }
+
   // Utility methods
   async clearAll(): Promise<void> {
     await delay();
@@ -489,6 +561,8 @@ class StorageService {
     activities?: Activity[];
     locations?: Location[];
     certifications?: Certification[];
+    colors?: CampColor[];
+    sessions?: CampSession[];
   }): Promise<void> {
     await delay();
     if (data.campers) {
@@ -523,6 +597,12 @@ class StorageService {
     }
     if (data.certifications) {
       localStorage.setItem(STORAGE_KEYS.CERTIFICATIONS, JSON.stringify(data.certifications));
+    }
+    if (data.colors) {
+      localStorage.setItem(STORAGE_KEYS.COLORS, JSON.stringify(data.colors));
+    }
+    if (data.sessions) {
+      localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(data.sessions));
     }
   }
 }
