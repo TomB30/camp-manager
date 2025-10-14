@@ -3,7 +3,7 @@
     <TabHeader
       title="Color Palette"
       description="Manage the colors available throughout your camp system. These colors will be used in events, programs, groups, and more."
-      action-text="Add Color"
+      action-text="+ Color"
       @action="showAddModal = true"
     >
       <template #action-icon>
@@ -27,7 +27,7 @@
       type="empty"
       title="No Colors Yet"
       message="Add your first color to start customizing your camp's color palette."
-      action-text="Add Your First Color"
+      action-text="+ Color"
       @action="showAddModal = true"
     >
       <template #icon>

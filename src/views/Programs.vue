@@ -20,7 +20,7 @@
         >
           <template #actions>
             <button class="btn btn-primary" @click="showProgramModal = true">
-              + Create Program
+              + Program
             </button>
           </template>
         </ViewHeader>
@@ -56,7 +56,7 @@
             type="empty"
             title="No Programs Yet"
             message="Create your first program to organize activities, staff, and locations."
-            action-text="Create Program"
+            action-text="+ Program"
             @action="showProgramModal = true"
           />
 
@@ -171,7 +171,7 @@
               class="btn btn-sm btn-secondary"
               @click="showActivitySelector = true"
             >
-              + Add Activity
+              + Activity
             </button>
           </div>
 
@@ -269,7 +269,7 @@
               class="btn btn-sm btn-secondary"
               @click="showLocationSelector = true"
             >
-              + Add Location
+              + Location
             </button>
           </div>
 

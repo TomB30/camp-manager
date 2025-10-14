@@ -3,7 +3,7 @@
     <div class="campers-view">
       <ViewHeader title="Campers Management">
         <template #actions>
-          <button class="btn btn-primary" @click="showModal = true">+ Add Camper</button>
+          <button class="btn btn-primary" @click="showModal = true">+ Camper</button>
         </template>
       </ViewHeader>
 
@@ -40,7 +40,7 @@
           type="empty"
           title="No Campers Yet"
           message="Add your first camper to start managing registrations and camp activities."
-          action-text="Add Camper"
+          action-text="+ Camper"
           @action="showModal = true"
         >
           <template #icon>

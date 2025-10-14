@@ -3,7 +3,7 @@
     <TabHeader
       title="Camp Sessions"
       description="Define the time periods (weeks, months, or custom durations) that campers can register for at your camp."
-      action-text="Add Session"
+      action-text="+ Session"
       @action="showAddModal = true"
     >
       <template #action-icon>
@@ -27,7 +27,7 @@
       type="empty"
       title="No Sessions Yet"
       message="Add your first session to define the registration periods for your camp."
-      action-text="Add Your First Session"
+      action-text="+ Session"
       @action="showAddModal = true"
     >
       <template #icon>

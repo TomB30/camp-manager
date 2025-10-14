@@ -3,7 +3,7 @@
     <div class="calendar-view">
       <ViewHeader title="Event Calendar">
         <template #actions>
-          <button class="btn btn-primary" @click="openNewEventModal">+ New Event</button>
+          <button class="btn btn-primary" @click="openNewEventModal">+ Event</button>
         </template>
       </ViewHeader>
 

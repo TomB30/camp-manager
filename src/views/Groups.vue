@@ -6,7 +6,7 @@
         tooltip="Create virtual groups of campers based on criteria like age, gender, or cabin. Use these groups to quickly assign multiple campers to events."
       >
         <template #actions>
-          <button class="btn btn-primary" @click="showModal = true">+ Create Group</button>
+          <button class="btn btn-primary" @click="showModal = true">+ Group</button>
         </template>
       </ViewHeader>
 
@@ -53,7 +53,7 @@
           type="empty"
           title="No Groups Yet"
           message="Create your first camper group to organize and manage campers more efficiently."
-          action-text="Create Group"
+          action-text="+ Group"
           @action="showModal = true"
         >
           <template #icon>

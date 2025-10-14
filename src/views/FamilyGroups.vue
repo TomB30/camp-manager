@@ -6,7 +6,7 @@
         tooltip="Family groups are the fundamental organizational units. Each family group is assigned to a sleeping room and has staff members responsible for the group."
       >
         <template #actions>
-          <button class="btn btn-primary" @click="showModal = true">+ Create Family Group</button>
+          <button class="btn btn-primary" @click="showModal = true">+ Family Group</button>
         </template>
       </ViewHeader>
 
@@ -43,7 +43,7 @@
           type="empty"
           title="No Family Groups Yet"
           message="Create your first family group to organize campers and assign them to sleeping rooms."
-          action-text="Create Group"
+          action-text="+ Family Group"
           @action="showModal = true"
         >
           <template #icon>

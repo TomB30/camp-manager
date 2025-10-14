@@ -3,7 +3,7 @@
     <TabHeader
       title="Activity Rooms"
       description="Manage all activity rooms where camp programs and events take place."
-      action-text="Add Room"
+      action-text="+ Room"
       @action="showModal = true"
     >
       <template #action-icon>

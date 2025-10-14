@@ -3,7 +3,7 @@
     <TabHeader
       title="Cabins (Sleeping Rooms)"
       description="Manage all sleeping accommodations where campers and family groups will stay during their time at camp."
-      action-text="Add Cabin"
+      action-text="+ Cabin"
       @action="showModal = true"
     >
       <template #action-icon>

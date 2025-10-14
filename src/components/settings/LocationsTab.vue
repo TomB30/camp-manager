@@ -3,7 +3,7 @@
     <TabHeader
       title="Locations"
       description="Manage all physical locations within your camp - from activity rooms to outdoor spaces."
-      action-text="Add Location"
+      action-text="+ Location"
       @action="showModal = true"
     >
       <template #action-icon>

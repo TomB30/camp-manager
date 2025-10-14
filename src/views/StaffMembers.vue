@@ -3,7 +3,7 @@
     <div class="staff-view">
       <ViewHeader title="Staff Management">
         <template #actions>
-          <button class="btn btn-primary" @click="showModal = true">+ Add Staff Member</button>
+          <button class="btn btn-primary" @click="showModal = true">+ Staff Member</button>
         </template>
       </ViewHeader>
 
@@ -39,7 +39,7 @@
           type="empty"
           title="No Staff Members Yet"
           message="Add your first staff member to start building your camp team and managing assignments."
-          action-text="Add Staff Member"
+          action-text="+ Staff Member"
           @action="showModal = true"
         >
           <template #icon>
