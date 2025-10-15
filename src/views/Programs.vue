@@ -191,7 +191,7 @@
               <div class="activity-meta">
                 <span class="meta-item">
                   <Clock :size="14" />
-                  {{ activity.durationMinutes }} min
+                  <DurationDisplay :minutes="activity.durationMinutes" />
                 </span>
                 <span v-if="activity.defaultRoomId" class="meta-item">
                   <Home :size="14" />
@@ -433,6 +433,7 @@ import ActivityDetailModal from "@/components/modals/ActivityDetailModal.vue";
 import ActivitySelectorModal from "@/components/modals/ActivitySelectorModal.vue";
 import SelectionList from "@/components/SelectionList.vue";
 import type { AutocompleteOption } from "@/components/Autocomplete.vue";
+import DurationDisplay from "@/components/DurationDisplay.vue";
 
 export default defineComponent({
   name: "Programs",
@@ -459,6 +460,7 @@ export default defineComponent({
     ActivityDetailModal,
     ActivitySelectorModal,
     SelectionList,
+    DurationDisplay,
   },
   data() {
     return {

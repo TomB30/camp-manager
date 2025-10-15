@@ -76,7 +76,7 @@
               <div class="activity-info">
                 <div class="activity-header">
                   <h4>{{ activity.name }}</h4>
-                  <span class="activity-duration">{{ activity.durationMinutes }} min</span>
+                  <span class="activity-duration"><DurationDisplay :minutes="activity.durationMinutes" /></span>
                 </div>
                 <p v-if="activity.description" class="activity-description">
                   {{ activity.description }}
@@ -125,6 +125,7 @@ import type { Activity } from '@/types/api';
 import BaseModal from '@/components/BaseModal.vue';
 import ActivityForm, { type ActivityFormData } from '@/components/ActivityForm.vue';
 import { type AutocompleteOption } from '@/components/Autocomplete.vue';
+import DurationDisplay from '@/components/DurationDisplay.vue';
 import { Plus, ListPlus } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -132,6 +133,7 @@ export default defineComponent({
   components: {
     BaseModal,
     ActivityForm,
+    DurationDisplay,
     Plus,
     ListPlus,
   },

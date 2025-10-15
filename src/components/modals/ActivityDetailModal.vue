@@ -27,7 +27,7 @@
           <div class="detail-grid">
             <div class="detail-item">
               <span class="detail-label">Duration</span>
-              <span class="detail-value">{{ activity.durationMinutes }} minutes</span>
+              <span class="detail-value"><DurationDisplay :minutes="activity.durationMinutes" format="long" /></span>
             </div>
             
             <div v-if="activity.defaultRoomId" class="detail-item">
@@ -97,12 +97,14 @@
 import { defineComponent, type PropType } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import BaseModal from '@/components/BaseModal.vue';
+import DurationDisplay from '@/components/DurationDisplay.vue';
 import type { Activity } from '@/types/api';
 
 export default defineComponent({
   name: 'ActivityDetailModal',
   components: {
     BaseModal,
+    DurationDisplay,
   },
   props: {
     show: {
