@@ -423,7 +423,7 @@ export default defineComponent({
         if (programActivities.length > 0) {
           programActivities.forEach(activity => {
             optionsWithGroups.push({
-              label: `${activity.name} (${program.name})`,
+              label: `(${program.name}) ${activity.name}`,
               value: activity.id
             });
           });
