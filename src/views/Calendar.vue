@@ -9,7 +9,9 @@
 
       <!-- Date Navigation and Filters -->
       <FilterBar
-        :show-search="false"
+        :show-search="true"
+        v-model:search-query="searchQuery"
+        search-placeholder="Search events by title, room, program, camper, or staff"
         v-model:filter-event-type="filterEventType"
         v-model:filter-room="filterRoom"
         v-model:filter-program="filterProgram"
@@ -197,6 +199,7 @@ export default defineComponent({
         programId: undefined as string | undefined,
         activityId: undefined as string | undefined,
       },
+      searchQuery: '',
       filterEventType: '',
       filterRoom: '',
       filterProgram: '',
@@ -299,44 +302,105 @@ export default defineComponent({
     todayEvents() {
       return this.store.eventsForDate(this.selectedDate);
     },
+    // Memoized lookup maps for efficient filtering (O(1) lookups instead of O(n))
+    roomLookupMap() {
+      return new Map(this.store.rooms.map(r => [r.id, r.name.toLowerCase()]));
+    },
+    programLookupMap() {
+      return new Map(this.store.programs.map(p => [p.id, p.name.toLowerCase()]));
+    },
+    staffLookupMap() {
+      return new Map(
+        this.store.staffMembers.map(s => [s.id, `${s.firstName} ${s.lastName}`.toLowerCase()])
+      );
+    },
+    camperLookupMap() {
+      return new Map(
+        this.store.campers.map(c => [c.id, `${c.firstName} ${c.lastName}`.toLowerCase()])
+      );
+    },
     filteredEvents() {
       // Get base events depending on view mode
-      let events = this.viewMode === 'daily' 
+      const events = this.viewMode === 'daily' 
         ? this.todayEvents 
         : this.viewMode === 'weekly' 
           ? this.weekEvents 
           : this.monthEvents;
 
-      // Program filter
-      if (this.filterProgram) {
-        events = events.filter(event => event.programId === this.filterProgram);
+      // Early return if no filters are active
+      if (!this.searchQuery && !this.filterProgram && !this.filterEventType && 
+          !this.filterRoom && !this.filterCamper && !this.filterStaff) {
+        return events;
       }
 
-      // Type filter
-      if (this.filterEventType) {
-        events = events.filter(event => event.type === this.filterEventType);
-      }
+      // Use memoized lookup maps for O(1) access
+      const roomMap = this.roomLookupMap;
+      const programMap = this.programLookupMap;
+      const staffMap = this.staffLookupMap;
+      const camperMap = this.camperLookupMap;
 
-      // Room filter
-      if (this.filterRoom) {
-        events = events.filter(event => event.roomId === this.filterRoom);
-      }
+      // Pre-process search query
+      const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : '';
 
-      // Camper filter
-      if (this.filterCamper) {
-        events = events.filter(event => 
-          event.enrolledCamperIds && event.enrolledCamperIds.includes(this.filterCamper)
-        );
-      }
+      // Single pass filter combining all conditions
+      return events.filter(event => {
+        // Simple filters first (fastest to check)
+        if (this.filterProgram && event.programId !== this.filterProgram) return false;
+        if (this.filterEventType && event.type !== this.filterEventType) return false;
+        if (this.filterRoom && event.roomId !== this.filterRoom) return false;
+        
+        if (this.filterCamper) {
+          if (!event.enrolledCamperIds || !event.enrolledCamperIds.includes(this.filterCamper)) {
+            return false;
+          }
+        }
+        
+        if (this.filterStaff) {
+          if (!event.assignedStaffIds || !event.assignedStaffIds.includes(this.filterStaff)) {
+            return false;
+          }
+        }
 
-      // Staff filter
-      if (this.filterStaff) {
-        events = events.filter(event => 
-          event.assignedStaffIds && event.assignedStaffIds.includes(this.filterStaff)
-        );
-      }
+        // Search filter (most expensive, check last)
+        if (searchQuery) {
+          // Search in event title
+          if (event.title.toLowerCase().includes(searchQuery)) return true;
+          
+          // Search in room name (using memoized map for O(1) lookup)
+          const roomName = roomMap.get(event.roomId);
+          if (roomName && roomName.includes(searchQuery)) return true;
+          
+          // Search in program name (using memoized map for O(1) lookup)
+          if (event.programId) {
+            const programName = programMap.get(event.programId);
+            if (programName && programName.includes(searchQuery)) return true;
+          }
+          
+          // Search in enrolled camper names (using memoized map for O(1) lookup)
+          if (event.enrolledCamperIds) {
+            const hasMatchingCamper = event.enrolledCamperIds.some(camperId => {
+              const camperName = camperMap.get(camperId);
+              return camperName && camperName.includes(searchQuery);
+            });
+            if (hasMatchingCamper) return true;
+          }
+          
+          // Search in assigned staff names (using memoized map for O(1) lookup)
+          if (event.assignedStaffIds) {
+            const hasMatchingStaff = event.assignedStaffIds.some(staffId => {
+              const staffName = staffMap.get(staffId);
+              return staffName && staffName.includes(searchQuery);
+            });
+            if (hasMatchingStaff) return true;
+          }
+          
+          // No match found in search
+          return false;
+        }
 
-      return events;
+        // All filters passed
+        return true;
+      });
     },
     filteredTodayEvents() {
       // For daily view, use filteredEvents directly since it's already filtered by day
@@ -363,6 +427,7 @@ export default defineComponent({
       }
     },
     clearEventFilters() {
+      this.searchQuery = '';
       this.filterProgram = '';
       this.filterEventType = '';
       this.filterRoom = '';

@@ -8,7 +8,7 @@
           <path d="m21 21-4.35-4.35"></path>
         </svg>
         <input 
-          :value="searchQuery"
+          :value="internalSearchQuery"
           @input="handleSearchInput"
           type="text"
           :placeholder="searchPlaceholder"
@@ -126,6 +126,10 @@ export default defineComponent({
       type: String,
       default: 'Search...'
     },
+    searchDebounce: {
+      type: Number,
+      default: 300
+    },
     filters: {
       type: Array as PropType<Filter[]>,
       required: true
@@ -146,6 +150,8 @@ export default defineComponent({
   emits: ['update:searchQuery', 'clear'],
   data() {
     return {
+      internalSearchQuery: this.searchQuery,
+      searchDebounceTimer: null as ReturnType<typeof setTimeout> | null,
       addedFilterModels: [] as string[],
       showAddFilterDropdown: false
     };
@@ -166,10 +172,20 @@ export default defineComponent({
     document.addEventListener('click', this.handleClickOutside);
   },
   beforeUnmount() {
+    // Clear debounce timer
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+    }
     // Remove click outside listener
     document.removeEventListener('click', this.handleClickOutside);
   },
   watch: {
+    searchQuery(newValue: string) {
+      // Sync internal search query when prop changes externally
+      if (this.internalSearchQuery !== newValue) {
+        this.internalSearchQuery = newValue;
+      }
+    },
     filters: {
       handler(newFilters: Filter[]) {
         // Remove filters that no longer exist in the filters array
@@ -196,7 +212,20 @@ export default defineComponent({
     },
     handleSearchInput(event: Event): void {
       const target = event.target as HTMLInputElement;
-      this.$emit('update:searchQuery', target.value);
+      const value = target.value;
+      
+      // Update internal query immediately for responsive UI
+      this.internalSearchQuery = value;
+      
+      // Clear existing timer
+      if (this.searchDebounceTimer) {
+        clearTimeout(this.searchDebounceTimer);
+      }
+      
+      // Set new timer to emit the update after delay
+      this.searchDebounceTimer = setTimeout(() => {
+        this.$emit('update:searchQuery', value);
+      }, this.searchDebounce);
     },
     handleFilterChange(model: string, value: string | number | boolean | null): void {
       this.$emit(`update:${model}` as any, value);
