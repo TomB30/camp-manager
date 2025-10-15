@@ -14,11 +14,14 @@
           @change="$emit('update:modelValue', color.value)"
           class="color-radio"
         />
-        <div 
-          class="color-circle"
-          :style="{ background: color.value }"
-          :title="color.name"
-        ></div>
+        <div class="color-option-content">
+          <div 
+            class="color-circle"
+            :style="{ background: color.value }"
+            :title="color.name"
+          ></div>
+          <span class="color-name">{{ color.name }}</span>
+        </div>
       </label>
     </div>
   </div>
@@ -73,11 +76,11 @@ export default defineComponent({
 }
 
 .color-options {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  padding: 4px; /* Add padding to prevent box-shadow clipping */
-  margin: -4px; /* Negative margin to maintain visual alignment */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 0.75rem 0.5rem;
+  padding: 4px;
+  margin: -4px;
 }
 
 .color-option {
@@ -88,6 +91,29 @@ export default defineComponent({
   justify-content: center;
 }
 
+.color-option-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.color-name {
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  text-align: center;
+  transition: color 0.2s ease;
+  user-select: none;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.color-option.selected .color-name {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
 .color-radio {
   position: absolute;
   opacity: 0;
@@ -96,23 +122,23 @@ export default defineComponent({
 }
 
 .color-circle {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  border: 3px solid transparent;
+  border: 2px solid transparent;
   transition: all 0.2s ease;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .color-circle:hover {
   transform: scale(1.1);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .color-option.selected .color-circle {
   border-color: var(--text-primary);
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--text-primary);
+  box-shadow: 0 0 0 2px white, 0 0 0 3px var(--text-primary);
   transform: scale(1.05);
 }
 </style>
