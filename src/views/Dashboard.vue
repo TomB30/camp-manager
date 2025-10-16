@@ -30,8 +30,8 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"></path></svg>
           </div>
           <div class="stat-content">
-            <div class="stat-label">Activity Rooms</div>
-            <div class="stat-value">{{ store.rooms.length }}</div>
+            <div class="stat-label">Locations</div>
+            <div class="stat-value">{{ store.locations.length }}</div>
           </div>
         </div>
 
@@ -87,7 +87,7 @@
               <div class="timeline-title">{{ event.title }}</div>
               <div class="timeline-meta">
                 <span class="badge badge-primary">
-                  {{ getRoomName(event.roomId) }}
+                  {{ getLocationName(event.locationId) }}
                 </span>
                 <span class="text-secondary text-sm">
                   {{ event.enrolledCamperIds?.length || 0 }}/{{ event.capacity }} campers
@@ -131,7 +131,7 @@
         <div class="card">
           <h4 class="mb-2">Room Capacity</h4>
           <div class="capacity-list">
-            <div v-for="room in store.rooms.slice(0, 5)" :key="room.id" class="capacity-item">
+            <div v-for="room in store.locations.slice(0, 5)" :key="room.id" class="capacity-item">
               <div class="capacity-name">{{ room.name }}</div>
               <div class="capacity-bar">
                 <div 
@@ -198,20 +198,20 @@ export default defineComponent({
       if (!type) return 'Unknown';
       return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     },
-    getRoomName(roomId: string): string | null | undefined {
-      const room = this.store.getRoomById(roomId);
-      return room?.name || 'Unknown Room';
+    getLocationName(locationId: string): string | null | undefined {
+      const location = this.store.getAreaById(locationId);
+      return location?.name || 'Unknown Location';
     },
-    getRoomUsage(roomId: string): number {
-      const roomEvents = this.store.roomEvents(roomId);
+    getRoomUsage(locationId: string): number {
+      const roomEvents = this.store.locationEvents(locationId);
       if (roomEvents.length === 0) return 0;
       
-      const room = this.store.getRoomById(roomId);
-      if (!room) return 0;
+      const room = this.store.getAreaById(locationId);
+      if (!room || !room.capacity) return 0;
       
       // Calculate average capacity usage
       const totalUsage = roomEvents.reduce((sum, event) => {
-        return sum + ((event.enrolledCamperIds?.length || 0) / room.capacity) * 100;
+        return sum + ((event.enrolledCamperIds?.length || 0) / room.capacity!) * 100;
       }, 0);
       
       return totalUsage / roomEvents.length;

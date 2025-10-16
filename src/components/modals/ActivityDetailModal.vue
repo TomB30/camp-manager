@@ -30,9 +30,9 @@
               <span class="detail-value"><DurationDisplay :minutes="activity.durationMinutes" format="long" /></span>
             </div>
             
-            <div v-if="activity.defaultRoomId" class="detail-item">
+            <div v-if="activity.defaultLocationId" class="detail-item">
               <span class="detail-label">Default Location</span>
-              <span class="detail-value">{{ getRoomName(activity.defaultRoomId) }}</span>
+              <span class="detail-value">{{ getLocationName(activity.defaultLocationId) }}</span>
             </div>
             
             <div v-if="activity.defaultCapacity" class="detail-item">
@@ -123,9 +123,9 @@ export default defineComponent({
     },
   },
   methods: {
-    getRoomName(roomId: string) {
-      const room = this.store.getRoomById(roomId);
-      return room?.name || 'Unknown Location';
+    getLocationName(locationId: string) {
+      const location = this.store.getAreaById(locationId);
+      return location?.name || 'Unknown Location';
     },
     getProgramName(programId: string) {
       const program = this.store.getProgramById(programId);

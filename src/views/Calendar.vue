@@ -74,7 +74,7 @@
       <DailyCalendarView 
         v-if="viewMode === 'daily'" 
         :events="filteredTodayEvents"
-        :rooms="store.rooms"
+        :rooms="store.locations"
         @select-event="selectEvent"
         @create-event="createEventAtHour"
       />
@@ -84,7 +84,7 @@
         v-else-if="viewMode === 'weekly'"
         :week-days="weekDays"
         :events="filteredEvents"
-        :rooms="store.rooms"
+        :rooms="store.locations"
         @select-event="selectEvent"
       />
 
@@ -116,7 +116,7 @@
       :editing-event-id="editingEventId || ''"
       :event-date="getEventFormDate()"
       :form-data="eventFormData"
-      :rooms="store.rooms"
+      :rooms="store.locations"
       :staff-members="store.staffMembers"
       :camper-groups="store.camperGroups"
       :campers="store.campers"
@@ -189,7 +189,7 @@ export default defineComponent({
         eventDate: format(new Date(), 'yyyy-MM-dd'),
         startTime: '09:00',
         endTime: '10:00',
-        roomId: '',
+        locationId: '',
         capacity: 20,
         type: 'activity' as Event['type'],
         color: '#3B82F6',
@@ -270,7 +270,7 @@ export default defineComponent({
           model: 'filterRoom',
           value: this.filterRoom,
           placeholder: 'Filter by Room',
-          options: this.store.rooms.map(room => ({
+          options: this.store.locations.map(room => ({
             label: room.name,
             value: room.id,
           })),
@@ -304,7 +304,7 @@ export default defineComponent({
     },
     // Memoized lookup maps for efficient filtering (O(1) lookups instead of O(n))
     roomLookupMap() {
-      return new Map(this.store.rooms.map(r => [r.id, r.name.toLowerCase()]));
+      return new Map(this.store.locations.map(r => [r.id, r.name.toLowerCase()]));
     },
     programLookupMap() {
       return new Map(this.store.programs.map(p => [p.id, p.name.toLowerCase()]));
@@ -347,7 +347,7 @@ export default defineComponent({
         // Simple filters first (fastest to check)
         if (this.filterProgram && event.programId !== this.filterProgram) return false;
         if (this.filterEventType && event.type !== this.filterEventType) return false;
-        if (this.filterRoom && event.roomId !== this.filterRoom) return false;
+        if (this.filterRoom && event.locationId !== this.filterRoom) return false;
         
         if (this.filterCamper) {
           if (!event.enrolledCamperIds || !event.enrolledCamperIds.includes(this.filterCamper)) {
@@ -367,7 +367,7 @@ export default defineComponent({
           if (event.title.toLowerCase().includes(searchQuery)) return true;
           
           // Search in room name (using memoized map for O(1) lookup)
-          const roomName = roomMap.get(event.roomId);
+          const roomName = roomMap.get(event.locationId);
           if (roomName && roomName.includes(searchQuery)) return true;
           
           // Search in program name (using memoized map for O(1) lookup)
@@ -471,7 +471,7 @@ export default defineComponent({
         eventDate: format(this.selectedDate, 'yyyy-MM-dd'),
         startTime: '09:00',
         endTime: '10:00',
-        roomId: '',
+        locationId: '',
         capacity: 20,
         type: 'activity',
         color: '#3B82F6',
@@ -496,7 +496,7 @@ export default defineComponent({
         eventDate: format(this.selectedDate, 'yyyy-MM-dd'),
         startTime,
         endTime,
-        roomId: '',
+        locationId: '',
         capacity: 20,
         type: 'activity',
         color: '#3B82F6',
@@ -533,7 +533,7 @@ export default defineComponent({
         eventDate: format(startTime, 'yyyy-MM-dd'),
         startTime: `${String(startTime.getHours()).padStart(2, '0')}:${String(startTime.getMinutes()).padStart(2, '0')}`,
         endTime: `${String(endTime.getHours()).padStart(2, '0')}:${String(endTime.getMinutes()).padStart(2, '0')}`,
-        roomId: this.selectedEvent.roomId,
+        locationId: this.selectedEvent.locationId,
         capacity: this.selectedEvent.capacity,
         type: this.selectedEvent.type,
         color: this.selectedEvent.color || '#3B82F6',
@@ -555,7 +555,7 @@ export default defineComponent({
         eventDate: format(new Date(), 'yyyy-MM-dd'),
         startTime: '09:00',
         endTime: '10:00',
-        roomId: '',
+        locationId: '',
         capacity: 20,
         type: 'activity',
         color: '#3B82F6',
@@ -592,7 +592,7 @@ export default defineComponent({
             title: formData.title,
             startTime: startTime.toISOString(),
             endTime: endTime.toISOString(),
-            roomId: formData.roomId,
+            locationId: formData.locationId,
             capacity: formData.capacity,
             type: formData.type,
             color: formData.color,
@@ -625,7 +625,7 @@ export default defineComponent({
         title: formData.title,
         startTime: startTime.toISOString(),
         endTime: endTime.toISOString(),
-        roomId: formData.roomId,
+        locationId: formData.locationId,
         capacity: formData.capacity,
         type: formData.type,
         color: formData.color,
@@ -680,7 +680,7 @@ export default defineComponent({
             title: formData.title,
             startTime: occurrenceStart.toISOString(),
             endTime: occurrenceEnd.toISOString(),
-            roomId: formData.roomId,
+            locationId: formData.locationId,
             capacity: formData.capacity,
             type: formData.type,
             color: formData.color,

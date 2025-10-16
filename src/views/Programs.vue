@@ -193,9 +193,9 @@
                   <Clock :size="14" />
                   <DurationDisplay :minutes="activity.durationMinutes" />
                 </span>
-                <span v-if="activity.defaultRoomId" class="meta-item">
+                <span v-if="activity.defaultLocationId" class="meta-item">
                   <Home :size="14" />
-                  {{ getRoomName(activity.defaultRoomId) }}
+                  {{ getLocationName(activity.defaultLocationId) }}
                 </span>
                 <span v-if="activity.defaultCapacity" class="meta-item">
                   <Users :size="14" />
@@ -275,11 +275,11 @@
 
           <div v-if="programLocations.length > 0" class="locations-list">
             <EntityListItem
-              v-for="room in programLocations"
-              :key="room.id"
-              :title="room.name"
+              v-for="location in programLocations"
+              :key="location.id"
+              :title="location.name"
               :removable="true"
-              @remove="confirmRemoveLocation(room.id)"
+              @remove="confirmRemoveLocation(location.id)"
             >
               <template #avatar>
                 <div class="location-icon">
@@ -288,10 +288,10 @@
               </template>
               <template #metadata>
                 <div class="location-meta text-secondary">
-                  <span>{{ formatRoomType(room.type) }}</span>
+                  <span>{{ formatLocationType(location.type) }}</span>
                   <span>•</span>
-                  <span>Capacity: {{ room.capacity }}</span>
-                  <span v-if="room.location">• {{ room.location }}</span>
+                  <span>Capacity: {{ location.capacity }}</span>
+                  <span v-if="location.areaId">• {{ getAreaName(location.areaId) }}</span>
                 </div>
               </template>
             </EntityListItem>
@@ -371,16 +371,16 @@
     >
       <template #body>
         <SelectionList
-          v-model="programRoomIds"
-          :items="store.rooms"
+          v-model="programLocationIds"
+          :items="store.locations"
           item-type="location"
           placeholder="Add a location..."
           empty-text="No locations assigned yet"
           add-button-text="Add"
           mode="multiple"
-          :get-label-fn="getRoomLabel"
-          :get-initials-fn="getRoomInitials"
-          :get-options-fn="getRoomOption"
+          :get-label-fn="getLocationLabel"
+          :get-initials-fn="getLocationInitials"
+          :get-options-fn="getLocationOption"
         />
       </template>
       <template #footer>
@@ -407,7 +407,7 @@
 import { defineComponent } from "vue";
 import { useCampStore } from "@/stores/campStore";
 import { useToast } from "@/composables/useToast";
-import type { Program, Activity } from "@/types/api";
+import type { Program, Activity, StaffMember, Location } from "@/types/api";
 import {
   Users,
   UsersRound,
@@ -525,28 +525,28 @@ export default defineComponent({
         ? this.store.getActivitiesInProgram(this.selectedProgramId)
         : [];
     },
-    programStaff() {
+    programStaff(): StaffMember[] {
       if (!this.selectedProgram) return [];
       return this.selectedProgram.staffMemberIds
         .map((id) => this.store.getStaffMemberById(id))
         .filter((staff) => staff !== undefined);
     },
-    programLocations() {
+    programLocations(): Location[] {
       if (!this.selectedProgram) return [];
-      return this.selectedProgram.roomIds
-        .map((id) => this.store.getRoomById(id))
-        .filter((room) => room !== undefined);
+      return this.selectedProgram.locationIds
+        .map((id) => this.store.getLocationById(id))
+        .filter((location) => location !== undefined);
     },
-    availableStaff() {
+    availableStaff(): StaffMember[] {
       if (!this.selectedProgram) return [];
       return this.store.staffMembers.filter(
         (staff) => !this.selectedProgram!.staffMemberIds.includes(staff.id)
       );
     },
-    availableLocations() {
+    availableLocations(): Location[] {
       if (!this.selectedProgram) return [];
-      return this.store.rooms.filter(
-        (room) => !this.selectedProgram!.roomIds.includes(room.id)
+      return this.store.locations.filter(
+        (location) => !this.selectedProgram!.locationIds.includes(location.id)
       );
     },
     programStaffIds: {
@@ -559,13 +559,13 @@ export default defineComponent({
         }
       }
     },
-    programRoomIds: {
+    programLocationIds: {
       get(): string[] {
-        return this.selectedProgram?.roomIds || [];
+        return this.selectedProgram?.locationIds || [];
       },
       set(value: string[]) {
         if (this.selectedProgram) {
-          this.updateProgramRooms(value);
+          this.updateProgramLocations(value);
         }
       }
     },
@@ -596,8 +596,8 @@ export default defineComponent({
         const staff = this.store.getStaffMemberById(this.deleteTarget.id);
         return `Are you sure you want to remove "${staff?.firstName} ${staff?.lastName}" from this program?`;
       } else if (this.deleteTarget.type === "location") {
-        const room = this.store.getRoomById(this.deleteTarget.id);
-        return `Are you sure you want to remove "${room?.name}" from this program?`;
+        const location = this.store.getLocationById(this.deleteTarget.id);
+        return `Are you sure you want to remove "${location?.name}" from this program?`;
       }
       return "";
     },
@@ -618,11 +618,15 @@ export default defineComponent({
     },
     getLocationsCount(programId: string) {
       const program = this.store.getProgramById(programId);
-      return program?.roomIds.length || 0;
+      return program?.locationIds.length || 0;
     },
-    getRoomName(roomId: string) {
-      const room = this.store.getRoomById(roomId);
-      return room?.name || "Unknown";
+    getLocationName(locationId: string) {
+      const location = this.store.getLocationById(locationId);
+      return location?.name || "Unknown";
+    },
+    getAreaName(areaId: string) {
+      const area = this.store.getAreaById(areaId);
+      return area?.name || "Unknown";
     },
     formatRole(role: string) {
       return role.charAt(0).toUpperCase() + role.slice(1);
@@ -636,7 +640,7 @@ export default defineComponent({
         })
         .filter((name: string) => name.length > 0);
     },
-    formatRoomType(type: string) {
+    formatLocationType(type: string) {
       return type
         .split("-")
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -721,8 +725,8 @@ export default defineComponent({
       this.deleteTarget = { type: "staff", id: staffId };
       this.showDeleteConfirm = true;
     },
-    confirmRemoveLocation(roomId: string) {
-      this.deleteTarget = { type: "location", id: roomId };
+    confirmRemoveLocation(locationId: string) {
+      this.deleteTarget = { type: "location", id: locationId };
       this.showDeleteConfirm = true;
     },
     async removeStaffFromProgram(staffId: string) {
@@ -742,12 +746,12 @@ export default defineComponent({
         this.toast.error(error.message || "Failed to remove staff member");
       }
     },
-    async removeLocationFromProgram(roomId: string) {
+    async removeLocationFromProgram(locationId: string) {
       if (!this.selectedProgram) return;
 
       const updatedProgram = {
         ...this.selectedProgram,
-        roomIds: this.selectedProgram.roomIds.filter((id) => id !== roomId),
+        locationIds: this.selectedProgram.locationIds.filter((id) => id !== locationId),
       };
 
       try {
@@ -796,21 +800,21 @@ export default defineComponent({
         value: staff.id
       };
     },
-    // Room/Location helper methods
-    getRoomLabel(room: any): string {
-      return `${room.name}`;
+    // Location helper methods
+    getLocationLabel(location: any): string {
+      return `${location.name}`;
     },
-    getRoomInitials(room: any): string {
-      const words = room.name.split(' ');
+    getLocationInitials(location: any): string {
+      const words = location.name.split(' ');
       if (words.length >= 2) {
         return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
       }
-      return room.name.substring(0, 2).toUpperCase();
+      return location.name.substring(0, 2).toUpperCase();
     },
-    getRoomOption(room: any): AutocompleteOption {
+    getLocationOption(location: any): AutocompleteOption {
       return {
-        label: `${room.name} (${this.formatRoomType(room.type)} • Capacity: ${room.capacity})`,
-        value: room.id
+        label: `${location.name} (${this.formatLocationType(location.type)} • Capacity: ${location.capacity})`,
+        value: location.id
       };
     },
     // Update methods for SelectionList v-model binding
@@ -829,12 +833,12 @@ export default defineComponent({
         this.toast.error(error.message || "Failed to update staff assignments");
       }
     },
-    async updateProgramRooms(roomIds: string[]) {
+    async updateProgramLocations(locationIds: string[]) {
       if (!this.selectedProgram) return;
       
       const updatedProgram = {
         ...this.selectedProgram,
-        roomIds: roomIds,
+        locationIds: locationIds,
       };
 
       try {

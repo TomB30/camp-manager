@@ -70,7 +70,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Sleeping Room</label>
+          <label class="form-label">Housing Room</label>
           <div v-if="totalPeople > 0" class="capacity-info mb-2">
             <span class="badge badge-primary">
               {{ totalPeople }} {{ totalPeople === 1 ? 'person' : 'people' }} 
@@ -79,11 +79,11 @@
             </span>
           </div>
           <SelectionList
-            v-model="localFormData.sleepingRoomId"
-            :items="sleepingRooms"
-            item-type="sleeping room"
-            placeholder="Select a sleeping room..."
-            empty-text="No sleeping room assigned yet"
+            v-model="localFormData.housingRoomId"
+            :items="housingRooms"
+            item-type="housing room"
+            placeholder="Select a housing room..."
+            empty-text="No housing room assigned yet"
             add-button-text="Select"
             mode="single"
             :get-label-fn="getRoomLabel"
@@ -119,7 +119,7 @@ import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import SelectionList from '@/components/SelectionList.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
-import type { Camper, StaffMember, SleepingRoom, FamilyGroup, CampSession } from '@/types/api';
+import type { Camper, StaffMember, HousingRoom, FamilyGroup, CampSession } from '@/types/api';
 import type { AutocompleteOption } from '@/components/Autocomplete.vue';
 import { conflictDetector } from '@/services/conflicts';
 import { Info } from 'lucide-vue-next';
@@ -128,7 +128,7 @@ interface FamilyGroupFormData {
   name: string;
   description: string;
   sessionId: string;
-  sleepingRoomId: string;
+  housingRoomId: string;
   staffMemberIds: string[];
   camperIds: string[];
   color: string;
@@ -163,8 +163,8 @@ export default defineComponent({
       type: Array as PropType<StaffMember[]>,
       required: true
     },
-    sleepingRooms: {
-      type: Array as PropType<SleepingRoom[]>,
+    housingRooms: {
+      type: Array as PropType<HousingRoom[]>,
       required: true
     },
     familyGroups: {
@@ -200,8 +200,8 @@ export default defineComponent({
     totalPeople(): number {
       return this.localFormData.camperIds.length + this.localFormData.staffMemberIds.length;
     },
-    selectedRoom(): SleepingRoom | undefined {
-      return this.sleepingRooms.find(r => r.id === this.localFormData.sleepingRoomId);
+    selectedRoom(): HousingRoom | undefined {
+      return this.housingRooms.find(r => r.id === this.localFormData.housingRoomId);
     },
     canFitInRoom(): boolean {
       return this.selectedRoom ? this.selectedRoom.beds >= this.totalPeople : false;
@@ -272,17 +272,17 @@ export default defineComponent({
     },
 
     // Room methods
-    getRoomLabel(room: SleepingRoom): string {
+    getRoomLabel(room: HousingRoom): string {
       return `${room.name} (${room.beds} beds)`;
     },
-    getRoomInitials(room: SleepingRoom): string {
+    getRoomInitials(room: HousingRoom): string {
       const words = room.name.split(' ');
       if (words.length >= 2) {
         return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
       }
       return room.name.substring(0, 2).toUpperCase();
     },
-    getRoomOption(room: SleepingRoom): AutocompleteOption {
+    getRoomOption(room: HousingRoom): AutocompleteOption {
       const hasEnoughBeds = room.beds >= this.totalPeople;
       
       // Check if the room is available for the selected session

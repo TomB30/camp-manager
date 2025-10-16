@@ -1,11 +1,11 @@
-import type { Conflict, Event, Camper, StaffMember, Room, FamilyGroup, SleepingRoom, Certification } from '@/types/api';
+import type { Conflict, Event, Camper, StaffMember, Location, FamilyGroup, HousingRoom, Certification } from '@/types/api';
 
 export class ConflictDetector {
   detectConflicts(
     events: Event[],
     campers: Camper[],
     staffMembers: StaffMember[],
-    rooms: Room[],
+    rooms: Location[],
     certifications: Certification[] = []
   ): Conflict[] {
     const conflicts: Conflict[] = [];
@@ -33,14 +33,14 @@ export class ConflictDetector {
     // Check for room capacity conflicts (multiple events in same room at same time)
     const roomUsage = new Map<string, Event[]>();
     events.forEach(event => {
-      if (!roomUsage.has(event.roomId)) {
-        roomUsage.set(event.roomId, []);
+      if (!roomUsage.has(event.locationId)) {
+        roomUsage.set(event.locationId, []);
       }
-      roomUsage.get(event.roomId)!.push(event);
+      roomUsage.get(event.locationId)!.push(event);
     });
 
-    roomUsage.forEach((roomEvents, roomId) => {
-      const room = rooms.find(r => r.id === roomId);
+    roomUsage.forEach((roomEvents, locationId) => {
+      const room = rooms.find(r => r.id === locationId);
       if (!room) return;
 
       // Check for overlapping events in the same room
@@ -292,11 +292,11 @@ export class ConflictDetector {
   }
 
   /**
-   * Get all family groups that conflict with a given date range in a specific sleeping room
+   * Get all family groups that conflict with a given date range in a specific housing room
    * @deprecated Use canAssignFamilyGroupToRoomBySession instead
    */
   getFamilyGroupConflictsInRoom(
-    sleepingRoomId: string,
+    housingRoomId: string,
     _startDate: string,
     _endDate: string,
     familyGroups: FamilyGroup[],
@@ -309,8 +309,8 @@ export class ConflictDetector {
         return false;
       }
 
-      // Only check groups in the same sleeping room
-      if (group.sleepingRoomId !== sleepingRoomId) {
+      // Only check groups in the same housing room
+      if (group.housingRoomId !== housingRoomId) {
         return false;
       }
 
@@ -320,10 +320,10 @@ export class ConflictDetector {
   }
   
   /**
-   * Get all family groups that conflict with a given session in a specific sleeping room
+   * Get all family groups that conflict with a given session in a specific housing room
    */
   getFamilyGroupConflictsInRoomBySession(
-    sleepingRoomId: string,
+    housingRoomId: string,
     sessionId: string,
     familyGroups: FamilyGroup[],
     excludeFamilyGroupId?: string
@@ -334,8 +334,8 @@ export class ConflictDetector {
         return false;
       }
 
-      // Only check groups in the same sleeping room
-      if (group.sleepingRoomId !== sleepingRoomId) {
+      // Only check groups in the same housing room
+      if (group.housingRoomId !== housingRoomId) {
         return false;
       }
 
@@ -345,18 +345,18 @@ export class ConflictDetector {
   }
 
   /**
-   * Check if a family group can be assigned to a sleeping room (for date-based, deprecated)
+   * Check if a family group can be assigned to a housing room (for date-based, deprecated)
    * @deprecated Use canAssignFamilyGroupToRoomBySession instead
    */
   canAssignFamilyGroupToRoom(
-    sleepingRoomId: string,
+    housingRoomId: string,
     startDate: string,
     endDate: string,
     familyGroups: FamilyGroup[],
     excludeFamilyGroupId?: string
   ): { canAssign: boolean; reason?: string; conflictingGroups?: FamilyGroup[] } {
     const conflictingGroups = this.getFamilyGroupConflictsInRoom(
-      sleepingRoomId,
+      housingRoomId,
       startDate,
       endDate,
       familyGroups,
@@ -375,16 +375,16 @@ export class ConflictDetector {
   }
 
   /**
-   * Check if a family group can be assigned to a sleeping room for a specific session
+   * Check if a family group can be assigned to a housing room for a specific session
    */
   canAssignFamilyGroupToRoomBySession(
-    sleepingRoomId: string,
+    housingRoomId: string,
     sessionId: string,
     familyGroups: FamilyGroup[],
     excludeFamilyGroupId?: string
   ): { canAssign: boolean; reason?: string; conflictingGroups?: FamilyGroup[] } {
     const conflictingGroups = this.getFamilyGroupConflictsInRoomBySession(
-      sleepingRoomId,
+      housingRoomId,
       sessionId,
       familyGroups,
       excludeFamilyGroupId
@@ -402,15 +402,15 @@ export class ConflictDetector {
   }
 
   /**
-   * Get available sleeping rooms for a given date range
+   * Get available housing rooms for a given date range
    */
   getAvailableSleepingRooms(
     startDate: string,
     endDate: string,
-    allSleepingRooms: SleepingRoom[],
+    allSleepingRooms: HousingRoom[],
     familyGroups: FamilyGroup[],
     excludeFamilyGroupId?: string
-  ): SleepingRoom[] {
+  ): HousingRoom[] {
     return allSleepingRooms.filter(room => {
       const validation = this.canAssignFamilyGroupToRoom(
         room.id,

@@ -31,9 +31,9 @@
     <div class="tab-content">
       <Transition name="fade" mode="out-in">
         <SessionsTab v-if="activeTab === 'sessions'" key="sessions" />
-        <ActivityRoomsTab v-else-if="activeTab === 'rooms'" key="rooms" />
-        <LocationsTab v-else-if="activeTab === 'locations'" key="locations" />
-        <CabinsTab v-else-if="activeTab === 'cabins'" key="cabins" />
+        <LocationsTab v-else-if="activeTab === 'rooms'" key="rooms" />
+        <AreasTab v-else-if="activeTab === 'locations'" key="locations" />
+        <HousingTab v-else-if="activeTab === 'cabins'" key="cabins" />
         <CertificationsTab v-else-if="activeTab === 'certifications'" key="certifications" />
         <ColorsTab v-else-if="activeTab === 'colors'" key="colors" />
       </Transition>
@@ -44,13 +44,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import { Settings, Palette, CalendarDays, MapPin, Bed, Award, Home } from 'lucide-vue-next';
+import { Settings, Palette, CalendarDays, Map, Bed, Award, MapPin } from 'lucide-vue-next';
 import ColorsTab from '@/components/settings/ColorsTab.vue';
 import SessionsTab from '@/components/settings/SessionsTab.vue';
-import LocationsTab from '@/components/settings/LocationsTab.vue';
-import CabinsTab from '@/components/settings/CabinsTab.vue';
+import AreasTab from '@/components/settings/AreasTab.vue';
+import HousingTab from '@/components/settings/HousingTab.vue';
 import CertificationsTab from '@/components/settings/CertificationsTab.vue';
-import ActivityRoomsTab from '@/components/settings/ActivityRoomsTab.vue';
+import LocationsTab from '@/components/settings/LocationsTab.vue';
 
 export default defineComponent({
   name: 'CampSettings',
@@ -58,10 +58,10 @@ export default defineComponent({
     Settings,
     ColorsTab,
     SessionsTab,
-    LocationsTab,
-    CabinsTab,
+    AreasTab,
+    HousingTab,
     CertificationsTab,
-    ActivityRoomsTab,
+    LocationsTab,
   },
   setup() {
     const store = useCampStore();
@@ -88,21 +88,21 @@ export default defineComponent({
         },
         {
           id: 'locations' as const,
+          label: 'Areas',
+          icon: Map,
+          count: this.store.areas.length,
+        },
+        {
+          id: 'rooms' as const,
           label: 'Locations',
           icon: MapPin,
           count: this.store.locations.length,
         },
         {
-          id: 'rooms' as const,
-          label: 'Activity Rooms',
-          icon: Home,
-          count: this.store.rooms.length,
-        },
-        {
           id: 'cabins' as const,
-          label: 'Cabins',
+          label: 'Housing',
           icon: Bed,
-          count: this.store.sleepingRooms.length,
+          count: this.store.housingRooms.length,
         },
         {
           id: 'certifications' as const,

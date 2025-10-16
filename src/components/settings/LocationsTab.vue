@@ -1,8 +1,8 @@
 <template>
-  <div class="locations-tab">
+  <div class="activity-locations-tab">
     <TabHeader
       title="Locations"
-      description="Manage all physical locations within your camp - from activity rooms to outdoor spaces."
+      description="Manage all locations where camp programs and events take place."
       action-text="Location"
       @action="showModal = true"
     >
@@ -15,6 +15,7 @@
     <FilterBar
       v-model:searchQuery="searchQuery"
       v-model:filter-type="filterType"
+      v-model:filter-capacity="filterCapacity"
       :filters="locationFilters"
       :filtered-count="filteredLocations.length"
       :total-count="store.locations.length"
@@ -32,6 +33,7 @@
       title="No locations configured"
       message="Add your first location to start organizing your camp spaces."
       action-text="+ Location"
+      @action="showModal = true"
     >
       <button class="btn btn-primary" @click="showModal = true">
         <Plus :size="18" />
@@ -45,8 +47,9 @@
         v-for="location in filteredLocations"
         :key="location.id"
         :location="location"
-        :format-type="formatLocationType(location.type)"
+        :formatted-type="formatLocationType(location.type)"
         :icon-color="getLocationTypeColor(location.type)"
+        :usage-percent="getLocationUsage(location.id)"
         @click="selectLocation(location.id)"
       >
         <template #icon>
@@ -77,9 +80,11 @@
         <span class="badge badge-primary badge-sm">{{ formatLocationType(item.type) }}</span>
       </template>
       
-      <template #cell-capacity="{ item }">
-        <span v-if="item.capacity">{{ item.capacity }}</span>
-        <span v-else class="text-secondary">N/A</span>
+      <template #cell-location="{ item }">
+        <span v-if="item.areaId">
+          {{ store.getAreaById(item.areaId)?.name || 'Unknown' }}
+        </span>
+        <span v-else class="text-secondary">No area</span>
       </template>
       
       <template #cell-equipment="{ item }">
@@ -87,6 +92,25 @@
           {{ item.equipment.length }} item(s)
         </span>
         <span v-else class="text-secondary">None</span>
+      </template>
+      
+      <template #cell-usage="{ item }">
+        <div class="usage-indicator">
+          <div class="usage-bar-sm">
+            <div 
+              class="usage-fill-sm"
+              :style="{ 
+                width: `${getLocationUsage(item.id)}%`,
+                background: getLocationUsage(item.id) > 80 ? 'var(--error-color)' : 'var(--success-color)'
+              }"
+            ></div>
+          </div>
+          <span class="usage-text">{{ getLocationUsage(item.id).toFixed(0) }}%</span>
+        </div>
+      </template>
+      
+      <template #cell-events="{ item }">
+        <span class="event-count">{{ getLocationEvents(item.id).length }}</span>
       </template>
       
       <template #cell-actions="{ item }">
@@ -103,7 +127,15 @@
       @close="selectedLocationId = null"
       @edit="editLocation"
       @delete="deleteLocationConfirm"
-    />
+    >
+      <template #events-list>
+        <EventsByDate 
+          :events="selectedLocation ? getLocationEvents(selectedLocation.id) : []"
+          :show-enrollment="true"
+          empty-message="No events scheduled"
+        />
+      </template>
+    </LocationDetailModal>
 
     <!-- Add/Edit Location Modal -->
     <LocationFormModal
@@ -134,14 +166,24 @@ import { useCampStore } from '@/stores/campStore';
 import type { Location } from '@/types/api';
 import LocationCard from '@/components/cards/LocationCard.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
+import EventsByDate from '@/components/EventsByDate.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
 import LocationDetailModal from '@/components/modals/LocationDetailModal.vue';
 import LocationFormModal from '@/components/modals/LocationFormModal.vue';
 import EmptyState from '@/components/EmptyState.vue';
-import { MapPin, Home, TreesIcon as Trees, Activity, Waves, MoreHorizontal, Plus } from 'lucide-vue-next';
 import TabHeader from '@/components/settings/TabHeader.vue';
+import { 
+  BookOpen, 
+  Target, 
+  Dumbbell, 
+  Utensils, 
+  Trees, 
+  Palette, 
+  Home,
+  Plus
+} from 'lucide-vue-next';
 import { useToast } from '@/composables/useToast';
 
 export default defineComponent({
@@ -149,15 +191,15 @@ export default defineComponent({
   components: {
     LocationCard,
     FilterBar,
+    EventsByDate,
     ConfirmModal,
     DataTable,
     ViewToggle,
     LocationDetailModal,
     LocationFormModal,
     EmptyState,
-    MapPin,
-    Plus,
     TabHeader,
+    Plus,
   },
   setup() {
     const store = useCampStore();
@@ -166,25 +208,35 @@ export default defineComponent({
   },
   data() {
     return {
-      showModal: false,
-      showConfirmModal: false,
-      editingLocationId: null as string | null,
       selectedLocationId: null as string | null,
-      searchQuery: '',
-      filterType: '',
+      showModal: false,
+      editingLocationId: null as string | null,
+      showConfirmModal: false,
+      confirmAction: null as (() => void) | null,
       viewMode: 'grid' as 'grid' | 'table',
       currentPage: 1,
       pageSize: 10,
-      formData: this.getEmptyFormData(),
-      confirmAction: null as (() => void) | null,
-      
+      formData: {
+        name: '',
+        type: 'classroom' as Location['type'],
+        capacity: 20,
+        areaId: undefined as string | undefined,
+        equipment: [] as string[],
+        notes: '',
+      },
+      searchQuery: '',
+      filterType: '',
+      filterCapacity: '',
       locationColumns: [
-        { key: 'name', label: 'Location Name', sortable: true },
-        { key: 'type', label: 'Type', sortable: true },
-        { key: 'capacity', label: 'Capacity', sortable: true },
-        { key: 'equipment', label: 'Equipment' },
-        { key: 'actions', label: '', width: '120px' },
-      ],
+        { key: 'name', label: 'Location Name', width: '200px' },
+        { key: 'type', label: 'Type', width: '120px' },
+        { key: 'capacity', label: 'Capacity', width: '100px' },
+        { key: 'location', label: 'Area', width: '180px' },
+        { key: 'equipment', label: 'Equipment', width: '120px' },
+        { key: 'usage', label: 'Usage', width: '140px' },
+        { key: 'events', label: 'Events', width: '100px' },
+        { key: 'actions', label: 'Actions', width: '140px' },
+      ]
     };
   },
   computed: {
@@ -195,179 +247,209 @@ export default defineComponent({
           value: this.filterType,
           placeholder: 'Filter by Type',
           options: [
-            { value: 'indoor', label: 'Indoor' },
-            { value: 'outdoor', label: 'Outdoor' },
-            { value: 'facility', label: 'Facility' },
-            { value: 'field', label: 'Field' },
-            { value: 'water', label: 'Water' },
-            { value: 'other', label: 'Other' },
+            { label: 'Classroom', value: 'classroom' },
+            { label: 'Outdoor', value: 'outdoor' },
+            { label: 'Sports', value: 'sports' },
+            { label: 'Arts', value: 'arts' },
+            { label: 'Dining', value: 'dining' },
+          ],
+        },
+        {
+          model: 'filterCapacity',
+          value: this.filterCapacity,
+          placeholder: 'Filter by Capacity',
+          options: [
+            { label: 'Small (< 15)', value: 'small' },
+            { label: 'Medium (15-30)', value: 'medium' },
+            { label: 'Large (> 30)', value: 'large' },
           ],
         },
       ];
     },
-
+    selectedLocation(): Location | null {
+      if (!this.selectedLocationId) return null;
+      return this.store.getLocationById(this.selectedLocationId) || null;
+    },
     filteredLocations(): Location[] {
-      let filtered = this.store.locations;
+      let locations: Location[] = this.store.locations;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        filtered = filtered.filter((location) =>
-          location.name.toLowerCase().includes(query) ||
-          location.description?.toLowerCase().includes(query)
-        );
+        locations = locations.filter((location: Location) => {
+          const areaName = location.areaId 
+            ? this.store.getAreaById(location.areaId)?.name 
+            : undefined;
+          return location.name.toLowerCase().includes(query) ||
+            (areaName && areaName.toLowerCase().includes(query));
+        });
       }
 
       // Type filter
-      if (this.filterType && this.filterType !== '' && this.filterType !== 'all') {
-        filtered = filtered.filter((location) => location.type === this.filterType);
+      if (this.filterType) {
+        locations = locations.filter((location: Location) => location.type === this.filterType);
       }
 
-      return filtered.sort((a, b) => a.name.localeCompare(b.name));
-    },
+      // Capacity filter
+      if (this.filterCapacity) {
+        locations = locations.filter((location: Location) => {
+          if (this.filterCapacity === 'small') return location.capacity < 15;
+          if (this.filterCapacity === 'medium') return location.capacity >= 15 && location.capacity <= 30;
+          if (this.filterCapacity === 'large') return location.capacity > 30;
+          return true;
+        });
+      }
 
-    selectedLocation(): Location | null {
-      if (!this.selectedLocationId) return null;
-      return this.store.getLocationById(this.selectedLocationId);
+      return locations;
+    }
+  },
+  watch: {
+    searchQuery() {
+      this.currentPage = 1;
     },
+    filterType() {
+      this.currentPage = 1;
+    },
+    filterCapacity() {
+      this.currentPage = 1;
+    }
   },
   methods: {
-    getEmptyFormData() {
-      return {
-        name: '',
-        description: '',
-        type: 'indoor' as Location['type'],
-        capacity: undefined,
-        equipment: [] as string[],
-        notes: '',
+    clearFilters() {
+      this.searchQuery = '';
+      this.filterType = '';
+      this.filterCapacity = '';
+    },
+    formatLocationType(type: string): string {
+      return type.charAt(0).toUpperCase() + type.slice(1);
+    },
+    LocationTypeIcon(type: Location['type']) {
+      const iconMap: Record<Location['type'], any> = {
+        classroom: BookOpen,
+        activity: Target,
+        sports: Dumbbell,
+        dining: Utensils,
+        outdoor: Trees,
+        arts: Palette,
       };
+      return iconMap[type] || Home;
     },
-
-    selectLocation(id: string) {
-      this.selectedLocationId = id;
+    getLocationTypeColor(type: Location['type']): string {
+      const colors: Record<Location['type'], string> = {
+        classroom: '#2196F3',
+        activity: '#4CAF50',
+        sports: '#FF9800',
+        dining: '#795548',
+        outdoor: '#8BC34A',
+        arts: '#9C27B0',
+      };
+      return colors[type] || '#757575';
     },
-
-    editLocation(location: Location) {
-      this.editingLocationId = location.id;
+    getLocationEvents(locationId: string) {
+      return this.store.locationEvents(locationId);
+    },
+    getLocationUsage(locationId: string): number {
+      const locationEvents = this.store.locationEvents(locationId);
+      if (locationEvents.length === 0) return 0;
+      
+      const location = this.store.getLocationById(locationId);
+      if (!location) return 0;
+      
+      // Calculate average capacity usage
+      const totalUsage = locationEvents.reduce((sum, event) => {
+        return sum + ((event.enrolledCamperIds?.length || 0) / location.capacity) * 100;
+      }, 0);
+      
+      return totalUsage / locationEvents.length;
+    },
+    selectLocation(locationId: string) {
+      this.selectedLocationId = locationId;
+    },
+    editLocation() {
+      if (!this.selectedLocation) return;
+      
+      this.editingLocationId = this.selectedLocation.id;
       this.formData = {
-        name: location.name,
-        description: location.description || '',
-        type: location.type,
-        capacity: location.capacity,
-        equipment: location.equipment || [],
-        notes: location.notes || '',
+        name: this.selectedLocation.name,
+        type: this.selectedLocation.type,
+        capacity: this.selectedLocation.capacity,
+        areaId: this.selectedLocation.areaId,
+        equipment: this.selectedLocation.equipment || [],
+        notes: this.selectedLocation.notes || '',
       };
+      
       this.selectedLocationId = null;
       this.showModal = true;
     },
-
-    async saveLocation(data: any) {
+    async saveLocation(formData: typeof this.formData & { equipment: string[] }) {
       try {
+        const locationData: Location = {
+          id: this.editingLocationId || `location-${Date.now()}`,
+          name: formData.name,
+          type: formData.type,
+          capacity: formData.capacity,
+          areaId: formData.areaId,
+          equipment: formData.equipment,
+          notes: formData.notes,
+        };
+
         if (this.editingLocationId) {
-          // Update existing
-          await this.store.updateLocation({
-            id: this.editingLocationId,
-            ...data,
-            createdAt: this.store.getLocationById(this.editingLocationId)?.createdAt || new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          });
+          await this.store.updateLocation(locationData);
           this.toast.success('Location updated successfully');
         } else {
-          // Create new
-          await this.store.addLocation({
-            id: crypto.randomUUID(),
-            ...data,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          });
+          await this.store.addLocation(locationData);
           this.toast.success('Location added successfully');
         }
+
         this.closeModal();
       } catch (error: any) {
         this.toast.error(error.message || 'Failed to save location');
       }
     },
-
-    deleteLocationConfirm(id: string) {
-      this.confirmAction = () => this.deleteLocation(id);
+    deleteLocationConfirm() {
+      if (!this.selectedLocationId) return;
+      this.confirmAction = async () => {
+        if (this.selectedLocationId) {
+          try {
+            await this.store.deleteLocation(this.selectedLocationId);
+            this.toast.success('Location deleted successfully');
+            this.selectedLocationId = null;
+          } catch (error: any) {
+            this.toast.error(error.message || 'Failed to delete location');
+          }
+        }
+      };
       this.showConfirmModal = true;
-      this.selectedLocationId = null;
     },
-
-    async deleteLocation(id: string) {
-      try {
-        await this.store.deleteLocation(id);
-        this.toast.success('Location deleted successfully');
-      } catch (error: any) {
-        this.toast.error(error.message || 'Failed to delete location');
+    async handleConfirmAction() {
+      if (this.confirmAction) {
+        await this.confirmAction();
       }
+      this.showConfirmModal = false;
+      this.confirmAction = null;
     },
-
+    handleCancelConfirm() {
+      this.showConfirmModal = false;
+      this.confirmAction = null;
+    },
     closeModal() {
       this.showModal = false;
       this.editingLocationId = null;
-      this.formData = this.getEmptyFormData();
-    },
-
-    clearFilters() {
-      this.searchQuery = '';
-      this.filterType = '';
-    },
-
-    handleConfirmAction() {
-      if (this.confirmAction) {
-        this.confirmAction();
-        this.confirmAction = null;
-      }
-      this.showConfirmModal = false;
-    },
-
-    handleCancelConfirm() {
-      this.confirmAction = null;
-      this.showConfirmModal = false;
-    },
-
-    formatLocationType(type: Location['type']): string {
-      const typeMap: Record<Location['type'], string> = {
-        indoor: 'Indoor',
-        outdoor: 'Outdoor',
-        facility: 'Facility',
-        field: 'Field',
-        water: 'Water',
-        other: 'Other',
+      this.formData = {
+        name: '',
+        type: 'classroom',
+        capacity: 20,
+        areaId: undefined,
+        equipment: [],
+        notes: '',
       };
-      return typeMap[type] || type;
-    },
-
-    getLocationTypeColor(type: Location['type']): string {
-      const colorMap: Record<Location['type'], string> = {
-        indoor: '#3b82f6',
-        outdoor: '#10b981',
-        facility: '#6366f1',
-        field: '#f59e0b',
-        water: '#06b6d4',
-        other: '#6b7280',
-      };
-      return colorMap[type] || '#6b7280';
-    },
-
-    LocationTypeIcon(type: Location['type']) {
-      const iconMap: Record<Location['type'], any> = {
-        indoor: Home,
-        outdoor: Trees,
-        facility: Activity,
-        field: Activity,
-        water: Waves,
-        other: MoreHorizontal,
-      };
-      return iconMap[type] || MapPin;
-    },
-  },
+    }
+  }
 });
 </script>
 
 <style scoped>
-.locations-tab {
+.activity-locations-tab {
   animation: slideIn 0.3s ease;
 }
 
@@ -391,16 +473,56 @@ export default defineComponent({
   width: 32px;
   height: 32px;
   border-radius: var(--radius);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: white;
 }
 
 .location-name {
   font-weight: 500;
   color: var(--text-primary);
+}
+
+.usage-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.usage-bar-sm {
+  flex: 1;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 999px;
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.usage-fill-sm {
+  height: 100%;
+  transition: width 0.3s, background 0.3s;
+}
+
+.usage-text {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.event-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 @keyframes slideIn {

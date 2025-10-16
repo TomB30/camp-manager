@@ -14,9 +14,9 @@
           </div>
         </div>
 
-        <div v-if="room.location" class="detail-section">
-          <div class="detail-label">Location</div>
-          <div>{{ room.location }}</div>
+        <div v-if="room.areaId" class="detail-section">
+          <div class="detail-label">Area</div>
+          <div>{{ getAreaName(room.areaId) }}</div>
         </div>
 
         <div class="detail-section">
@@ -54,13 +54,13 @@
               </div>
             </div>
           </div>
-          <div v-else class="text-secondary">No family groups assigned to this cabin</div>
+          <div v-else class="text-secondary">No family groups assigned to this room</div>
         </div>
       </div>
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete')">Delete Cabin</button>
+      <button class="btn btn-error" @click="$emit('delete')">Delete Room</button>
       <button class="btn btn-secondary" @click="$emit('edit')">Edit</button>
       <button class="btn btn-secondary" @click="$emit('close')">Close</button>
     </template>
@@ -70,7 +70,8 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
-import type { SleepingRoom } from '@/types/api';
+import type { HousingRoom } from '@/types/api';
+import { useCampStore } from '@/stores/campStore';
 
 interface FamilyGroupInfo {
   id: string;
@@ -84,7 +85,7 @@ interface FamilyGroupInfo {
 }
 
 export default defineComponent({
-  name: 'SleepingRoomDetailModal',
+  name: 'HousingRoomDetailModal',
   components: {
     BaseModal
   },
@@ -94,7 +95,7 @@ export default defineComponent({
       required: true
     },
     room: {
-      type: Object as PropType<SleepingRoom | null>,
+      type: Object as PropType<HousingRoom | null>,
       default: null
     },
     familyGroups: {
@@ -102,7 +103,17 @@ export default defineComponent({
       default: () => []
     }
   },
-  emits: ['close', 'edit', 'delete', 'view-family-group']
+  emits: ['close', 'edit', 'delete', 'view-family-group'],
+  setup() {
+    const store = useCampStore();
+    return { store };
+  },
+  methods: {
+    getAreaName(areaId: string): string {
+      const area = this.store.getAreaById(areaId);
+      return area?.name || 'Unknown';
+    }
+  }
 });
 </script>
 

@@ -22,14 +22,14 @@ export async function clearData(): Promise<void> {
   const store = useCampStore();
   store.campers = [];
   store.staffMembers = [];
-  store.rooms = [];
-  store.sleepingRooms = [];
+  store.locations = [];
+  store.housingRooms = [];
   store.events = [];
   store.camperGroups = [];
   store.familyGroups = [];
   store.programs = [];
   store.activities = [];
-  store.locations = [];
+  store.areas = [];
   store.certifications = [];
   store.colors = [];
   store.sessions = [];
@@ -47,7 +47,7 @@ export async function insertMockData(): Promise<void> {
   console.log(`- ${mockData.locations.length} locations`);
   console.log(`- ${mockData.staffMembers.length} staff members`);
   console.log(`- ${mockData.rooms.length} rooms`);
-  console.log(`- ${mockData.sleepingRooms.length} sleeping rooms`);
+  console.log(`- ${mockData.sleepingRooms.length} housing rooms`);
   console.log(`- ${mockData.familyGroups.length} family groups`);
   console.log(`- ${mockData.campers.length} campers`);
   console.log(`- ${mockData.camperGroups.length} camper groups`);

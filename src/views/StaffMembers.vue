@@ -130,8 +130,8 @@
         <template #events-list>
           <EventsByDate 
             :events="selectedMember ? getMemberEvents(selectedMember.id) : []"
-            :show-room="true"
-            :get-room-name="getRoomName"
+            :show-location="true"
+            :get-location-name="getLocationName"
             empty-message="No events assigned"
           />
         </template>
@@ -387,9 +387,9 @@ export default defineComponent({
     getMemberEvents(memberId: string): Event[] {
       return this.store.staffEvents(memberId);
     },
-    getRoomName(roomId: string): string {
-      const room = this.store.getRoomById(roomId);
-      return room?.name || 'Unknown Room';
+    getLocationName(locationId: string): string {
+      const location = this.store.getAreaById(locationId);
+      return location?.name || 'Unknown Location';
     },
     selectMember(memberId: string): void {
       this.selectedMemberId = memberId;

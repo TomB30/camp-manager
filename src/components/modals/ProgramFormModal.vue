@@ -55,7 +55,7 @@ interface ProgramFormData {
   color: string;
   activityIds: string[];
   staffMemberIds: string[];
-  roomIds: string[];
+  locationIds: string[];
 }
 
 export default defineComponent({
@@ -83,7 +83,7 @@ export default defineComponent({
         color: '#6366F1',
         activityIds: [],
         staffMemberIds: [],
-        roomIds: [],
+        locationIds: [],
       } as ProgramFormData,
     };
   },
@@ -108,7 +108,7 @@ export default defineComponent({
           color: this.program.color || '#6366F1',
           activityIds: [...this.program.activityIds],
           staffMemberIds: [...this.program.staffMemberIds],
-          roomIds: [...this.program.roomIds],
+          locationIds: [...this.program.locationIds],
         };
       } else {
         this.localFormData = {
@@ -117,7 +117,7 @@ export default defineComponent({
           color: '#6366F1',
           activityIds: [],
           staffMemberIds: [],
-          roomIds: [],
+          locationIds: [],
         };
       }
     },
@@ -130,7 +130,7 @@ export default defineComponent({
         color: this.localFormData.color,
         activityIds: this.localFormData.activityIds,
         staffMemberIds: this.localFormData.staffMemberIds,
-        roomIds: this.localFormData.roomIds,
+        locationIds: this.localFormData.locationIds,
         createdAt: this.program?.createdAt || now,
         updatedAt: now,
       };

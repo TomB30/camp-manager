@@ -20,9 +20,9 @@
         </div>
 
         <div class="detail-section">
-          <div class="detail-label">Sleeping Room</div>
+          <div class="detail-label">Housing Room</div>
           <slot name="sleeping-room">
-            <div class="text-secondary">No sleeping room assigned</div>
+            <div class="text-secondary">No housing room assigned</div>
           </slot>
         </div>
 

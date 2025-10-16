@@ -157,7 +157,7 @@ export default defineComponent({
         name: '',
         description: '',
         durationMinutes: 60,
-        defaultRoomId: '',
+        defaultLocationId: '',
         requiredCertifications: [],
         minStaff: 0,
         maxStaff: 0,
@@ -200,7 +200,7 @@ export default defineComponent({
       return this.filteredActivities;
     },
     roomOptions(): AutocompleteOption[] {
-      return this.store.rooms.map(room => ({
+      return this.store.locations.map(room => ({
         value: room.id,
         label: `${room.name} (${room.type})`,
       }));
@@ -222,7 +222,7 @@ export default defineComponent({
         name: '',
         description: '',
         durationMinutes: 60,
-        defaultRoomId: '',
+        defaultLocationId: '',
         requiredCertifications: [],
         minStaff: 0,
         maxStaff: 0,
@@ -255,7 +255,7 @@ export default defineComponent({
         description: this.formData.description || undefined,
         programIds: [this.programId],
         durationMinutes: this.formData.durationMinutes,
-        defaultRoomId: this.formData.defaultRoomId || undefined,
+        defaultLocationId: this.formData.defaultLocationId || undefined,
         requiredCertifications: certifications.length > 0 ? certifications : undefined,
         minStaff: this.formData.minStaff || undefined,
         maxStaff: this.formData.maxStaff || undefined,

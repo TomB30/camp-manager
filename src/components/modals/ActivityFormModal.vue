@@ -63,7 +63,7 @@ export default defineComponent({
         name: '',
         description: '',
         durationMinutes: 60,
-        defaultRoomId: '',
+        defaultLocationId: '',
         requiredCertifications: [],
         minStaff: 0,
         maxStaff: 0,
@@ -82,7 +82,7 @@ export default defineComponent({
       return !!this.activity;
     },
     roomOptions(): AutocompleteOption[] {
-      return this.store.rooms.map(room => ({
+      return this.store.locations.map(room => ({
         value: room.id,
         label: `${room.name} (${room.type})`,
       }));
@@ -105,7 +105,7 @@ export default defineComponent({
           name: this.activity.name,
           description: this.activity.description || '',
           durationMinutes: this.activity.durationMinutes,
-          defaultRoomId: this.activity.defaultRoomId || '',
+          defaultLocationId: this.activity.defaultLocationId || '',
           requiredCertifications: this.activity.requiredCertifications ? [...this.activity.requiredCertifications] : [],
           minStaff: this.activity.minStaff || 0,
           maxStaff: this.activity.maxStaff || 0,
@@ -123,7 +123,7 @@ export default defineComponent({
           name: '',
           description: '',
           durationMinutes: 60,
-          defaultRoomId: '',
+          defaultLocationId: '',
           requiredCertifications: [],
           minStaff: 0,
           maxStaff: 0,
@@ -179,7 +179,7 @@ export default defineComponent({
         description: this.localFormData.description || undefined,
         programIds: activityProgramIds,
         durationMinutes: this.localFormData.durationMinutes,
-        defaultRoomId: this.localFormData.defaultRoomId || undefined,
+        defaultLocationId: this.localFormData.defaultLocationId || undefined,
         requiredCertifications: certifications.length > 0 ? certifications : undefined,
         minStaff: this.localFormData.minStaff || undefined,
         maxStaff: this.localFormData.maxStaff || undefined,

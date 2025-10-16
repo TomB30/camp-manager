@@ -3,7 +3,7 @@
     <div class="family-groups-view">
       <ViewHeader 
         title="Family Groups" 
-        tooltip="Family groups are the fundamental organizational units. Each family group is assigned to a sleeping room and has staff members responsible for the group."
+        tooltip="Family groups are the fundamental organizational units. Each family group is assigned to a housing room and has staff members responsible for the group."
       >
         <template #actions>
           <button class="btn btn-primary" @click="showModal = true">+ Family Group</button>
@@ -34,7 +34,7 @@
           :group="group"
           :campers-count="getCampersCount(group.id)"
           :formatted-date-range="getSessionDateRange(group.sessionId)"
-          :sleeping-room-name="getSleepingRoomName(group.sleepingRoomId)"
+          :housing-room-name="getSleepingRoomName(group.housingRoomId)"
           @click="selectGroup(group.id)"
         />
 
@@ -42,7 +42,7 @@
           v-if="filteredFamilyGroups.length === 0 && store.familyGroups.length === 0"
           type="empty"
           title="No Family Groups Yet"
-          message="Create your first family group to organize campers and assign them to sleeping rooms."
+          message="Create your first family group to organize campers and assign them to housing rooms."
           action-text="+ Family Group"
           @action="showModal = true"
         >
@@ -88,7 +88,7 @@
         <template #cell-room="{ item }">
           <div class="room-content">
             <Bed :size="14" />
-            <span>{{ getSleepingRoomName(item.sleepingRoomId) }}</span>
+            <span>{{ getSleepingRoomName(item.housingRoomId) }}</span>
           </div>
         </template>
         
@@ -130,7 +130,7 @@
           </div>
         </template>
         <template #sleeping-room>
-          <span class="badge badge-primary">{{ selectedGroup ? getSleepingRoomName(selectedGroup.sleepingRoomId) : '' }}</span>
+          <span class="badge badge-primary">{{ selectedGroup ? getSleepingRoomName(selectedGroup.housingRoomId) : '' }}</span>
         </template>
         <template #staff-members>
           <div v-if="selectedGroup && selectedGroup.staffMemberIds.length > 0">
@@ -177,7 +177,7 @@
         :form-data="formData"
         :campers="store.campers"
         :staff-members="store.staffMembers"
-        :sleeping-rooms="store.sleepingRooms"
+        :housing-rooms="store.housingRooms"
         :family-groups="store.familyGroups"
         :sessions="store.sessions"
         :editing-group-id="editingGroupId"
@@ -257,7 +257,7 @@ export default defineComponent({
         name: '',
         description: '',
         sessionId: '',
-        sleepingRoomId: '',
+        housingRoomId: '',
         staffMemberIds: [] as string[],
         camperIds: [] as string[],
         color: '#6366F1',
@@ -265,7 +265,7 @@ export default defineComponent({
       familyGroupColumns: [
         { key: 'name', label: 'Group Name', width: '180px' },
         { key: 'dates', label: 'Session', width: '200px' },
-        { key: 'room', label: 'Sleeping Room', width: '180px' },
+        { key: 'room', label: 'Housing Room', width: '180px' },
         { key: 'staff', label: 'Staff', width: '120px' },
         { key: 'campers', label: 'Campers', width: '100px' },
         { key: 'actions', label: 'Actions', width: '140px' },
@@ -290,8 +290,8 @@ export default defineComponent({
         {
           model: 'filterSleepingRoom',
           value: this.filterSleepingRoom,
-          placeholder: 'Filter by Sleeping Room',
-          options: this.store.sleepingRooms.map(room => ({
+          placeholder: 'Filter by Housing Room',
+          options: this.store.housingRooms.map(room => ({
             label: room.name,
             value: room.id,
           })),
@@ -325,10 +325,10 @@ export default defineComponent({
         );
       }
 
-      // Sleeping room filter
+      // Housing room filter
       if (this.filterSleepingRoom) {
         groups = groups.filter((group: FamilyGroup) => 
-          group.sleepingRoomId === this.filterSleepingRoom
+          group.housingRoomId === this.filterSleepingRoom
         );
       }
 
@@ -352,8 +352,8 @@ export default defineComponent({
     getCampersCount(groupId: string): number {
       return this.store.getCampersInFamilyGroup(groupId).length;
     },
-    getSleepingRoomName(roomId: string): string {
-      const room = this.store.getSleepingRoomById(roomId);
+    getSleepingRoomName(housingRoomId: string): string {
+      const room = this.store.getHousingRoomById(housingRoomId);
       return room?.name || 'Unknown Room';
     },
     getStaffMemberName(staffId: string): string {
@@ -407,7 +407,7 @@ export default defineComponent({
         name: this.selectedGroup.name,
         description: this.selectedGroup.description || '',
         sessionId: this.selectedGroup.sessionId,
-        sleepingRoomId: this.selectedGroup.sleepingRoomId,
+        housingRoomId: this.selectedGroup.housingRoomId,
         staffMemberIds: [...this.selectedGroup.staffMemberIds],
         camperIds: currentCampers.map(c => c.id),
         color: this.selectedGroup.color || '#6366F1',
@@ -438,7 +438,7 @@ export default defineComponent({
       
       // Validate room availability
       const validation = conflictDetector.canAssignFamilyGroupToRoomBySession(
-        formData.sleepingRoomId,
+        formData.housingRoomId,
         formData.sessionId,
         this.store.familyGroups,
         this.editingGroupId || undefined
@@ -455,7 +455,7 @@ export default defineComponent({
         name: formData.name,
         description: formData.description || undefined,
         sessionId: formData.sessionId,
-        sleepingRoomId: formData.sleepingRoomId,
+        housingRoomId: formData.housingRoomId,
         staffMemberIds: formData.staffMemberIds,
         color: formData.color,
         createdAt: this.editingGroupId 
@@ -556,7 +556,7 @@ export default defineComponent({
         name: '',
         description: '',
         sessionId: '',
-        sleepingRoomId: '',
+        housingRoomId: '',
         staffMemberIds: [],
         camperIds: [],
         color: '#6366F1',

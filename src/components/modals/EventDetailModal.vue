@@ -12,8 +12,8 @@
         </div>
 
         <div class="mb-3">
-          <div class="text-sm text-secondary mb-1">Room</div>
-          <div>{{ getRoomName(event.roomId) }}</div>
+          <div class="text-sm text-secondary mb-1">Location</div>
+          <div>{{ getLocationName(event.locationId) }}</div>
         </div>
 
         <div class="mb-3">
@@ -181,9 +181,9 @@ export default defineComponent({
     formatTime(dateStr: string): string {
       return format(new Date(dateStr), 'h:mm a');
     },
-    getRoomName(roomId: string): string {
-      const room = this.store.getRoomById(roomId);
-      return room?.name || 'Unknown Room';
+    getLocationName(locationId: string): string {
+      const location = this.store.getAreaById(locationId);
+      return location?.name || 'Unknown Location';
     },
     getCamperName(camperId: string): string {
       const camper = this.store.getCamperById(camperId);

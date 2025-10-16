@@ -53,8 +53,8 @@
     <div class="form-group">
       <label class="form-label">Default Location (Optional)</label>
       <Autocomplete
-        :model-value="modelValue.defaultRoomId"
-        @update:model-value="updateField('defaultRoomId', $event)"
+        :model-value="modelValue.defaultLocationId"
+        @update:model-value="updateField('defaultLocationId', $event)"
         :options="roomOptions"
         placeholder="Select a default location"
       />
@@ -139,7 +139,7 @@ export interface ActivityFormData {
   name: string;
   description: string;
   durationMinutes: number;
-  defaultRoomId: string;
+  defaultLocationId: string;
   requiredCertifications: string[];
   minStaff: number;
   maxStaff: number;

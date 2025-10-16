@@ -157,11 +157,11 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Room</label>
+          <label class="form-label">Location</label>
           <Autocomplete
-            v-model="localFormData.roomId"
-            :options="roomOptions"
-            placeholder="Select a room"
+            v-model="localFormData.locationId"
+            :options="locationOptions"
+            placeholder="Select a location"
             :required="true"
           />
         </div>
@@ -294,7 +294,7 @@ import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete
 import ColorPicker from '@/components/ColorPicker.vue';
 import SelectionList from '@/components/SelectionList.vue';
 import NumberInput from '@/components/NumberInput.vue';
-import type { Event, Room, CamperGroup, Camper, StaffMember, Certification } from '@/types/api';
+import type { Event, Location, CamperGroup, Camper, StaffMember, Certification } from '@/types/api';
 import { type RecurrenceData, type DayOfWeek, formatRecurrenceRule, validateRecurrenceRule } from '@/utils/recurrence';
 
 interface EventFormData {
@@ -302,7 +302,7 @@ interface EventFormData {
   eventDate: string;
   startTime: string;
   endTime: string;
-  roomId: string;
+  locationId: string;
   capacity: number;
   type: Event['type'];
   color: string;
@@ -344,7 +344,7 @@ export default defineComponent({
       default: null,
     },
     rooms: {
-      type: Array as PropType<Room[]>,
+      type: Array as PropType<Location[]>,
       required: true
     },
     staffMembers: {
@@ -408,7 +408,7 @@ export default defineComponent({
       const program = this.store.getProgramById(this.localFormData.programId);
       return program ? program.name : '';
     },
-    roomOptions(): AutocompleteOption[] {
+    locationOptions(): AutocompleteOption[] {
       return this.rooms.map(room => ({
         label: `${room.name} (Capacity: ${room.capacity})`,
         value: room.id
@@ -519,9 +519,9 @@ export default defineComponent({
         this.localFormData.endTime = `${endHours}:${endMinutes}`;
       }
       
-      // Set default room if specified
-      if (activity.defaultRoomId) {
-        this.localFormData.roomId = activity.defaultRoomId;
+      // Set default location if specified
+      if (activity.defaultLocationId) {
+        this.localFormData.locationId = activity.defaultLocationId;
       }
       
       // Set default capacity if specified

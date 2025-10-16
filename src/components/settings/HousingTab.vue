@@ -1,9 +1,9 @@
 <template>
   <div class="cabins-tab">
     <TabHeader
-      title="Cabins (Sleeping Rooms)"
+      title="Housing"
       description="Manage all sleeping accommodations where campers and family groups will stay during their time at camp."
-      action-text="Cabin"
+      action-text="Room"
       @action="showModal = true"
     >
       <template #action-icon>
@@ -16,7 +16,7 @@
       v-model:searchQuery="searchQuery"
       :filters="[]"
       :filtered-count="filteredRooms.length"
-      :total-count="store.sleepingRooms.length"
+      :total-count="store.housingRooms.length"
       @clear="clearFilters"
     >
       <template #prepend>
@@ -26,22 +26,22 @@
 
     <!-- Empty State -->
     <EmptyState
-      v-if="store.sleepingRooms.length === 0"
+      v-if="store.housingRooms.length === 0"
       icon="Bed"
-      title="No cabins configured"
-      message="Add your first cabin to start managing sleeping accommodations for campers."
-      action-text="+ Cabin"
+      title="No housing configured"
+      message="Add your first room to start managing sleeping accommodations for campers."
+      action-text="+ Room"
       @action="showModal = true"
     >
       <button class="btn btn-primary" @click="showModal = true">
         <Plus :size="18" />
-        Add Your First Cabin
+        Add Your First Room
       </button>
     </EmptyState>
 
     <!-- Grid View -->
     <div v-else-if="viewMode === 'grid'" class="rooms-grid">
-      <SleepingRoomCard
+      <HousingRoomCard
         v-for="room in filteredRooms"
         :key="room.id"
         :room="room"
@@ -73,10 +73,9 @@
       </template>
       
       <template #cell-location="{ item }">
-        <span v-if="item.locationId">
-          {{ store.getLocationById(item.locationId)?.name || item.location || 'Unknown' }}
+        <span v-if="item.areaId">
+          {{ store.getAreaById(item.areaId)?.name || 'Unknown' }}
         </span>
-        <span v-else-if="item.location">{{ item.location }}</span>
         <span v-else>—</span>
       </template>
       
@@ -101,7 +100,7 @@
     </DataTable>
 
     <!-- Room Detail Modal -->
-    <SleepingRoomDetailModal
+    <HousingRoomDetailModal
       :show="!!selectedRoomId"
       :room="selectedRoom"
       :family-groups="selectedRoomFamilyGroups"
@@ -112,7 +111,7 @@
     />
 
     <!-- Add/Edit Room Modal -->
-    <SleepingRoomFormModal
+    <HousingRoomFormModal
       :show="showModal"
       :is-editing="!!editingRoomId"
       :form-data="formData"
@@ -138,29 +137,29 @@
 // @ts-nocheck
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { SleepingRoom, FamilyGroup, Camper } from '@/types/api';
-import SleepingRoomCard from '@/components/cards/SleepingRoomCard.vue';
+import type { HousingRoom, FamilyGroup, Camper } from '@/types/api';
+import HousingRoomCard from '@/components/cards/HousingRoomCard.vue';
 import FilterBar from '@/components/FilterBar.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
-import SleepingRoomDetailModal from '@/components/modals/SleepingRoomDetailModal.vue';
-import SleepingRoomFormModal from '@/components/modals/SleepingRoomFormModal.vue';
+import HousingRoomDetailModal from '@/components/modals/HousingRoomDetailModal.vue';
+import HousingRoomFormModal from '@/components/modals/HousingRoomFormModal.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import { Bed, Plus } from 'lucide-vue-next';
 import TabHeader from '@/components/settings/TabHeader.vue';
 import { useToast } from '@/composables/useToast';
 
 export default defineComponent({
-  name: 'CabinsTab',
+  name: 'HousingTab',
   components: {
-    SleepingRoomCard,
+    HousingRoomCard,
     FilterBar,
     ConfirmModal,
     DataTable,
     ViewToggle,
-    SleepingRoomDetailModal,
-    SleepingRoomFormModal,
+    HousingRoomDetailModal,
+    HousingRoomFormModal,
     EmptyState,
     Bed,
     Plus,
@@ -187,33 +186,36 @@ export default defineComponent({
       formData: {
         name: '',
         beds: 4,
-        locationId: undefined as string | undefined,
+        areaId: undefined as string | undefined,
       },
       searchQuery: '',
       roomColumns: [
-        { key: 'name', label: 'Cabin Name', width: '250px' },
+        { key: 'name', label: 'Room Name', width: '250px' },
         { key: 'beds', label: 'Beds', width: '100px' },
-        { key: 'location', label: 'Location', width: '250px' },
+        { key: 'location', label: 'Area', width: '250px' },
         { key: 'groups', label: 'Family Groups', width: '250px' },
         { key: 'actions', label: 'Actions', width: '140px' },
       ]
     };
   },
   computed: {
-    selectedRoom(): SleepingRoom | null {
+    selectedRoom(): HousingRoom | null {
       if (!this.selectedRoomId) return null;
-      return this.store.getSleepingRoomById(this.selectedRoomId) || null;
+      return this.store.getHousingRoomById(this.selectedRoomId) || null;
     },
-    filteredRooms(): SleepingRoom[] {
-      let rooms: SleepingRoom[] = this.store.sleepingRooms;
+    filteredRooms(): HousingRoom[] {
+      let rooms: HousingRoom[] = this.store.housingRooms;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        rooms = rooms.filter((room: SleepingRoom) =>
-          room.name.toLowerCase().includes(query) ||
-          (room.location && room.location.toLowerCase().includes(query))
-        );
+        rooms = rooms.filter((room: HousingRoom) => {
+          const areaName = room.areaId 
+            ? this.store.getAreaById(room.areaId)?.name 
+            : undefined;
+          return room.name.toLowerCase().includes(query) ||
+            (areaName && areaName.toLowerCase().includes(query));
+        });
       }
 
       return rooms;
@@ -241,8 +243,8 @@ export default defineComponent({
     clearFilters(): void {
       this.searchQuery = '';
     },
-    getFamilyGroupsForRoom(roomId: string): FamilyGroup[] {
-      return this.store.getFamilyGroupsInRoom(roomId);
+    getFamilyGroupsForRoom(housingRoomId: string): FamilyGroup[] {
+      return this.store.getFamilyGroupsInRoom(housingRoomId);
     },
     getCampersInFamilyGroup(familyGroupId: string): Camper[] {
       return this.store.getCampersInFamilyGroup(familyGroupId);
@@ -250,8 +252,8 @@ export default defineComponent({
     viewFamilyGroup(familyGroupId: string): void {
       this.$router.push(`/family-groups?id=${familyGroupId}`);
     },
-    selectRoom(roomId: string): void {
-      this.selectedRoomId = roomId;
+    selectRoom(housingRoomId: string): void {
+      this.selectedRoomId = housingRoomId;
     },
     editRoom(): void {
       if (!this.selectedRoom) return;
@@ -260,37 +262,31 @@ export default defineComponent({
       this.formData = {
         name: this.selectedRoom.name,
         beds: this.selectedRoom.beds,
-        locationId: this.selectedRoom.locationId,
+        areaId: this.selectedRoom.areaId,
       };
       
       this.selectedRoomId = null;
       this.showModal = true;
     },
     async saveRoom(formData: typeof this.formData): Promise<void> {
-      // Get location name for backward compatibility
-      const location = formData.locationId 
-        ? this.store.getLocationById(formData.locationId)?.name 
-        : undefined;
-
-      const roomData: SleepingRoom = {
-        id: this.editingRoomId || `sleeping-${Date.now()}`,
+      const roomData: HousingRoom = {
+        id: this.editingRoomId || `housing-${Date.now()}`,
         name: formData.name,
         beds: formData.beds,
-        location: location,
-        locationId: formData.locationId,
+        areaId: formData.areaId,
       };
 
       try {
         if (this.editingRoomId) {
-          await this.store.updateSleepingRoom(roomData);
-          this.toast.success('Cabin updated successfully');
+          await this.store.updateHousingRoom(roomData);
+          this.toast.success('Room updated successfully');
         } else {
-          await this.store.addSleepingRoom(roomData);
-          this.toast.success('Cabin added successfully');
+          await this.store.addHousingRoom(roomData);
+          this.toast.success('Room added successfully');
         }
         this.closeModal();
       } catch (error: any) {
-        this.toast.error(error.message || 'Failed to save cabin');
+        this.toast.error(error.message || 'Failed to save room');
       }
     },
     deleteRoomConfirm(): void {
@@ -299,20 +295,20 @@ export default defineComponent({
       const familyGroupCount = this.getFamilyGroupsForRoom(this.selectedRoomId).length;
       
       // Setup the confirm modal
-      this.confirmModalTitle = 'Delete Cabin';
-      this.confirmModalMessage = 'Are you sure you want to delete this cabin?';
+      this.confirmModalTitle = 'Delete Room';
+      this.confirmModalMessage = 'Are you sure you want to delete this room?';
       this.confirmModalDetails = familyGroupCount > 0 
-        ? `This cabin has ${familyGroupCount} family group(s) assigned. You will need to reassign them to another cabin.`
+        ? `This room has ${familyGroupCount} family group(s) assigned. You will need to reassign them to another room.`
         : '';
       
       this.confirmAction = async () => {
         if (this.selectedRoomId) {
           try {
-            await this.store.deleteSleepingRoom(this.selectedRoomId);
-            this.toast.success('Cabin deleted successfully');
+            await this.store.deleteHousingRoom(this.selectedRoomId);
+            this.toast.success('Room deleted successfully');
             this.selectedRoomId = null;
           } catch (error: any) {
-            this.toast.error(error.message || 'Failed to delete cabin');
+            this.toast.error(error.message || 'Failed to delete room');
           }
         }
       };
@@ -336,7 +332,7 @@ export default defineComponent({
       this.formData = {
         name: '',
         beds: 4,
-        locationId: undefined,
+        areaId: undefined,
       };
     }
   }

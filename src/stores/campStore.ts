@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { Camper, StaffMember, Room, SleepingRoom, Event, Conflict, CamperGroup, FamilyGroup, Program, Activity, Location, Certification, CampColor, CampSession } from '@/types/api';
+import type { Camper, StaffMember, Location, HousingRoom, Event, Conflict, CamperGroup, FamilyGroup, Program, Activity, Area, Certification, CampColor, CampSession } from '@/types/api';
 import { storageService } from '@/services/storage';
 import { conflictDetector } from '@/services/conflicts';
 import { filterEventsByDate } from '@/utils/dateUtils';
@@ -8,15 +8,15 @@ export const useCampStore = defineStore('camp', {
   state: () => ({
     campers: [] as Camper[],
     staffMembers: [] as StaffMember[],
-    rooms: [] as Room[],
-    sleepingRooms: [] as SleepingRoom[],
+    locations: [] as Location[],
+    housingRooms: [] as HousingRoom[],
     events: [] as Event[],
     conflicts: [] as Conflict[],
     camperGroups: [] as CamperGroup[],
     familyGroups: [] as FamilyGroup[],
     programs: [] as Program[],
     activities: [] as Activity[],
-    locations: [] as Location[],
+    areas: [] as Area[],
     certifications: [] as Certification[],
     colors: [] as CampColor[],
     sessions: [] as CampSession[],
@@ -37,15 +37,15 @@ export const useCampStore = defineStore('camp', {
       };
     },
 
-    getRoomById(state): (id: string) => Room | undefined {
-      return (id: string): Room | undefined => {
-        return state.rooms.find(r => r.id === id);
+    getLocationById(state): (id: string) => Location | undefined {
+      return (id: string): Location | undefined => {
+        return state.locations.find(l => l.id === id);
       };
     },
 
-    getSleepingRoomById(state): (id: string) => SleepingRoom | undefined {
-      return (id: string): SleepingRoom | undefined => {
-        return state.sleepingRooms.find(r => r.id === id);
+    getHousingRoomById(state): (id: string) => HousingRoom | undefined {
+      return (id: string): HousingRoom | undefined => {
+        return state.housingRooms.find(h => h.id === id);
       };
     },
 
@@ -77,9 +77,9 @@ export const useCampStore = defineStore('camp', {
       };
     },
 
-    roomEvents(state): (roomId: string) => Event[] {
-      return (roomId: string): Event[] => {
-        return state.events.filter(event => event.roomId === roomId);
+    locationEvents(state): (locationId: string) => Event[] {
+      return (locationId: string): Event[] => {
+        return state.events.filter(event => event.locationId === locationId);
       };
     },
 
@@ -101,9 +101,9 @@ export const useCampStore = defineStore('camp', {
       };
     },
 
-    getFamilyGroupsInRoom(state): (sleepingRoomId: string) => FamilyGroup[] {
-      return (sleepingRoomId: string): FamilyGroup[] => {
-        return state.familyGroups.filter(g => g.sleepingRoomId === sleepingRoomId);
+    getFamilyGroupsInRoom(state): (housingRoomId: string) => FamilyGroup[] {
+      return (housingRoomId: string): FamilyGroup[] => {
+        return state.familyGroups.filter(g => g.housingRoomId === housingRoomId);
       };
     },
 
@@ -169,9 +169,9 @@ export const useCampStore = defineStore('camp', {
       };
     },
 
-    getLocationById(state): (id: string) => Location | undefined {
-      return (id: string): Location | undefined => {
-        return state.locations.find(l => l.id === id);
+    getAreaById(state): (id: string) => Area | undefined {
+      return (id: string): Area | undefined => {
+        return state.areas.find(a => a.id === id);
       };
     },
 
@@ -212,17 +212,17 @@ export const useCampStore = defineStore('camp', {
     async loadAll(): Promise<void> {
       this.loading = true;
       try {
-        const [campersData, membersData, roomsData, sleepingRoomsData, eventsData, groupsData, familyGroupsData, programsData, activitiesData, locationsData, certificationsData, colorsData, sessionsData] = await Promise.all([
+        const [campersData, membersData, locationsData, housingRoomsData, eventsData, groupsData, familyGroupsData, programsData, activitiesData, areasData, certificationsData, colorsData, sessionsData] = await Promise.all([
           storageService.getCampers(),
           storageService.getStaffMembers(),
-          storageService.getRooms(),
-          storageService.getSleepingRooms(),
+          storageService.getLocations(),
+          storageService.getHousingRooms(),
           storageService.getEvents(),
           storageService.getCamperGroups(),
           storageService.getFamilyGroups(),
           storageService.getPrograms(),
           storageService.getActivities(),
-          storageService.getLocations(),
+          storageService.getAreas(),
           storageService.getCertifications(),
           storageService.getColors(),
           storageService.getSessions(),
@@ -230,14 +230,14 @@ export const useCampStore = defineStore('camp', {
 
         this.campers = campersData;
         this.staffMembers = membersData;
-        this.rooms = roomsData;
-        this.sleepingRooms = sleepingRoomsData;
+        this.locations = locationsData;
+        this.housingRooms = housingRoomsData;
         this.events = eventsData;
         this.camperGroups = groupsData;
         this.familyGroups = familyGroupsData;
         this.programs = programsData;
         this.activities = activitiesData;
-        this.locations = locationsData;
+        this.areas = areasData;
         this.certifications = certificationsData;
         this.colors = colorsData;
         this.sessions = sessionsData;
@@ -253,7 +253,7 @@ export const useCampStore = defineStore('camp', {
         this.events,
         this.campers,
         this.staffMembers,
-        this.rooms,
+        this.locations,
         this.certifications
       );
     },
@@ -319,44 +319,44 @@ export const useCampStore = defineStore('camp', {
     },
 
     // Room actions
-    async addRoom(room: Room): Promise<void> {
-      await storageService.saveRoom(room);
-      this.rooms.push(room);
+    async addLocation(location: Location): Promise<void> {
+      await storageService.saveLocation(location);
+      this.locations.push(location);
       this.updateConflicts();
     },
 
-    async updateRoom(room: Room): Promise<void> {
-      await storageService.saveRoom(room);
-      const index = this.rooms.findIndex(r => r.id === room.id);
+    async updateLocation(location: Location): Promise<void> {
+      await storageService.saveLocation(location);
+      const index = this.locations.findIndex(r => r.id === location.id);
       if (index >= 0) {
-        this.rooms[index] = room;
+        this.locations[index] = location;
       }
       this.updateConflicts();
     },
 
-    async deleteRoom(id: string): Promise<void> {
-      await storageService.deleteRoom(id);
-      this.rooms = this.rooms.filter(r => r.id !== id);
+    async deleteLocation(id: string): Promise<void> {
+      await storageService.deleteLocation(id);
+      this.locations = this.locations.filter(l => l.id !== id);
       this.updateConflicts();
     },
 
-    // Sleeping room actions
-    async addSleepingRoom(room: SleepingRoom): Promise<void> {
-      await storageService.saveSleepingRoom(room);
-      this.sleepingRooms.push(room);
+    // Housing room actions
+    async addHousingRoom(housingRoom: HousingRoom): Promise<void> {
+      await storageService.saveHousingRoom(housingRoom);
+      this.housingRooms.push(housingRoom);
     },
 
-    async updateSleepingRoom(room: SleepingRoom): Promise<void> {
-      await storageService.saveSleepingRoom(room);
-      const index = this.sleepingRooms.findIndex(r => r.id === room.id);
+    async updateHousingRoom(housingRoom: HousingRoom): Promise<void> {
+      await storageService.saveHousingRoom(housingRoom);
+      const index = this.housingRooms.findIndex(r => r.id === housingRoom.id);
       if (index >= 0) {
-        this.sleepingRooms[index] = room;
+        this.housingRooms[index] = housingRoom;
       }
     },
 
-    async deleteSleepingRoom(id: string): Promise<void> {
-      await storageService.deleteSleepingRoom(id);
-      this.sleepingRooms = this.sleepingRooms.filter(r => r.id !== id);
+    async deleteHousingRoom(id: string): Promise<void> {
+      await storageService.deleteHousingRoom(id);
+      this.housingRooms = this.housingRooms.filter(r => r.id !== id);
     },
 
     // Event actions
@@ -699,23 +699,23 @@ export const useCampStore = defineStore('camp', {
       await this.updateProgram(program);
     },
 
-    // Location actions
-    async addLocation(location: Location): Promise<void> {
-      await storageService.saveLocation(location);
-      this.locations.push(location);
+    // Area actions
+    async addArea(area: Area): Promise<void> {
+      await storageService.saveArea(area);
+      this.areas.push(area);
     },
 
-    async updateLocation(location: Location): Promise<void> {
-      await storageService.saveLocation(location);
-      const index = this.locations.findIndex(l => l.id === location.id);
+    async updateArea(area: Area): Promise<void> {
+      await storageService.saveArea(area);
+      const index = this.areas.findIndex(a => a.id === area.id);
       if (index >= 0) {
-        this.locations[index] = location;
+        this.areas[index] = area;
       }
     },
 
-    async deleteLocation(id: string): Promise<void> {
-      await storageService.deleteLocation(id);
-      this.locations = this.locations.filter(l => l.id !== id);
+    async deleteArea(id: string): Promise<void> {
+      await storageService.deleteArea(id);
+      this.areas = this.areas.filter(a => a.id !== id);
     },
 
     // Certification actions

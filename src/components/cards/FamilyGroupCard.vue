@@ -20,7 +20,7 @@
     <div class="group-info mt-2">
       <div class="card-info-row">
         <Bed :size="16" />
-        <span>{{ sleepingRoomName }}</span>
+        <span>{{ housingRoomName }}</span>
       </div>
       <div v-if="group.staffMemberIds.length > 0" class="card-info-row">
         <Users :size="16" />
@@ -54,7 +54,7 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    sleepingRoomName: {
+    housingRoomName: {
       type: String,
       required: true,
     },

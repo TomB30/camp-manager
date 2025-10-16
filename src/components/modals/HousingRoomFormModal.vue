@@ -1,13 +1,13 @@
 <template>
   <BaseModal
     :show="show"
-    :title="isEditing ? 'Edit Cabin' : 'Add New Cabin'"
+    :title="isEditing ? 'Edit Room' : 'Add New Room'"
     @close="$emit('close')"
   >
     <template #body>
       <form @submit.prevent="handleSave">
         <div class="form-group">
-          <label class="form-label">Cabin Name</label>
+          <label class="form-label">Room Name</label>
           <input v-model="localFormData.name" type="text" class="form-input" required />
         </div>
 
@@ -17,14 +17,14 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Location (optional)</label>
+          <label class="form-label">Area (optional)</label>
           <Autocomplete
-            v-model="localFormData.locationId"
+            v-model="localFormData.areaId"
             :options="locationOptions"
-            placeholder="Select a location..."
+            placeholder="Select an area..."
             :required="false"
           />
-          <p class="form-help-text">Select the physical location where this cabin is located</p>
+          <p class="form-help-text">Select the physical area where this room is located</p>
         </div>
       </form>
     </template>
@@ -32,7 +32,7 @@
     <template #footer>
       <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
       <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? 'Update' : 'Add' }} Cabin
+        {{ isEditing ? 'Update' : 'Add' }} Room
       </button>
     </template>
   </BaseModal>
@@ -47,11 +47,11 @@ import { useCampStore } from '@/stores/campStore';
 interface RoomFormData {
   name: string;
   beds: number;
-  locationId?: string;
+  areaId?: string;
 }
 
 export default defineComponent({
-  name: 'SleepingRoomFormModal',
+  name: 'HousingRoomFormModal',
   components: {
     BaseModal,
     Autocomplete
@@ -82,7 +82,7 @@ export default defineComponent({
   },
   computed: {
     locationOptions(): AutocompleteOption[] {
-      return this.store.locations.map(location => ({
+      return this.store.areas.map(location => ({
         label: location.name,
         value: location.id
       }));

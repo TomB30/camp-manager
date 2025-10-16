@@ -136,8 +136,8 @@
               <span class="badge" :style="{ background: getFamilyGroup(selectedCamper.familyGroupId)?.color || '#6366F1' }">
                 {{ getFamilyGroup(selectedCamper.familyGroupId)?.name }}
               </span>
-              <div v-if="getFamilyGroup(selectedCamper.familyGroupId)?.sleepingRoomId" class="text-xs text-secondary mt-1">
-                Room: {{ getSleepingRoomName(getFamilyGroup(selectedCamper.familyGroupId)?.sleepingRoomId || '') }}
+              <div v-if="getFamilyGroup(selectedCamper.familyGroupId)?.housingRoomId" class="text-xs text-secondary mt-1">
+                Room: {{ getSleepingRoomName(getFamilyGroup(selectedCamper.familyGroupId)?.housingRoomId || '') }}
               </div>
             </div>
           </div>
@@ -167,7 +167,7 @@
         :show="showConfirmModal"
         title="Delete Camper"
         :message="`Are you sure you want to delete ${camperToDelete?.name}?`"
-        details="This action cannot be undone. The camper will be removed from all events and their sleeping room assignment."
+        details="This action cannot be undone. The camper will be removed from all events and their housing room assignment."
         confirm-text="Delete"
         :danger-mode="true"
         @confirm="handleConfirmDelete"
@@ -344,8 +344,8 @@ export default defineComponent({
     formatDate(dateStr: string): string {
       return format(new Date(dateStr), 'MMMM d, yyyy');
     },
-    getSleepingRoomName(roomId: string): string {
-      const room = this.store.getSleepingRoomById(roomId);
+    getSleepingRoomName(housingRoomId: string): string {
+      const room = this.store.getHousingRoomById(housingRoomId);
       return room?.name || 'Unknown Room';
     },
     getFamilyGroup(familyGroupId: string): FamilyGroup | null | undefined {

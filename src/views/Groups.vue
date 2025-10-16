@@ -3,7 +3,7 @@
     <div class="groups-view">
       <ViewHeader 
         title="Camper Groups" 
-        tooltip="Create virtual groups of campers based on criteria like age, gender, or cabin. Use these groups to quickly assign multiple campers to events."
+        tooltip="Create virtual groups of campers based on criteria like age, gender, or housing. Use these groups to quickly assign multiple campers to events."
       >
         <template #actions>
           <button class="btn btn-primary" @click="showModal = true">+ Group</button>

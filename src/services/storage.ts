@@ -1,16 +1,16 @@
-import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup, Program, Activity, Location, Certification, CampColor, CampSession } from '@/types/api';
+import type { Camper, StaffMember, Location, HousingRoom, Event, CamperGroup, FamilyGroup, Program, Activity, Area, Certification, CampColor, CampSession } from '@/types/api';
 
 const STORAGE_KEYS = {
   CAMPERS: 'camp_campers',
   STAFF_MEMBERS: 'camp_staff_members',
-  ROOMS: 'camp_rooms',
-  SLEEPING_ROOMS: 'camp_sleeping_rooms',
+  LOCATIONS: 'camp_locations',
+  HOUSING_ROOMS: 'camp_housing_rooms',
   EVENTS: 'camp_events',
   CAMPER_GROUPS: 'camp_camper_groups',
   FAMILY_GROUPS: 'camp_family_groups',
   PROGRAMS: 'camp_programs',
   ACTIVITIES: 'camp_activities',
-  LOCATIONS: 'camp_locations',
+  AREAS: 'camp_areas',
   CERTIFICATIONS: 'camp_certifications',
   COLORS: 'camp_colors',
   SESSIONS: 'camp_sessions',
@@ -107,73 +107,73 @@ class StorageService {
   }
 
   // Rooms operations
-  async getRooms(): Promise<Room[]> {
+  async getLocations(): Promise<Location[]> {
     await delay();
-    const data = localStorage.getItem(STORAGE_KEYS.ROOMS);
+    const data = localStorage.getItem(STORAGE_KEYS.LOCATIONS);
     return data ? JSON.parse(data) : [];
   }
 
-  async getRoom(id: string): Promise<Room | null> {
+  async getLocation(id: string): Promise<Location | null> {
     await delay();
-    const rooms = await this.getRooms();
-    return rooms.find(r => r.id === id) || null;
+    const locations = await this.getLocations();
+    return locations.find(l => l.id === id) || null;
   }
 
-  async saveRoom(room: Room): Promise<Room> {
+  async saveLocation(location: Location): Promise<Location> {
     await delay();
-    const rooms = await this.getRooms();
-    const index = rooms.findIndex(r => r.id === room.id);
+    const locations = await this.getLocations();
+    const index = locations.findIndex(l => l.id === location.id);
     
     if (index >= 0) {
-      rooms[index] = room;
+      locations[index] = location;
     } else {
-      rooms.push(room);
+      locations.push(location);
     }
     
-    localStorage.setItem(STORAGE_KEYS.ROOMS, JSON.stringify(rooms));
-    return room;
+    localStorage.setItem(STORAGE_KEYS.LOCATIONS, JSON.stringify(locations));
+    return location;
   }
 
-  async deleteRoom(id: string): Promise<void> {
+  async deleteLocation(id: string): Promise<void> {
     await delay();
-    const rooms = await this.getRooms();
-    const filtered = rooms.filter(r => r.id !== id);
-    localStorage.setItem(STORAGE_KEYS.ROOMS, JSON.stringify(filtered));
+    const locations = await this.getLocations();
+    const filtered = locations.filter(l => l.id !== id);
+    localStorage.setItem(STORAGE_KEYS.LOCATIONS, JSON.stringify(filtered));
   }
 
-  // Sleeping Rooms operations
-  async getSleepingRooms(): Promise<SleepingRoom[]> {
+  // Housing Rooms operations
+  async getHousingRooms(): Promise<HousingRoom[]> {
     await delay();
-    const data = localStorage.getItem(STORAGE_KEYS.SLEEPING_ROOMS);
+    const data = localStorage.getItem(STORAGE_KEYS.HOUSING_ROOMS);
     return data ? JSON.parse(data) : [];
   }
 
-  async getSleepingRoom(id: string): Promise<SleepingRoom | null> {
+  async getHousingRoom(id: string): Promise<HousingRoom | null> {
     await delay();
-    const rooms = await this.getSleepingRooms();
-    return rooms.find(r => r.id === id) || null;
+    const housingRooms = await this.getHousingRooms();
+    return housingRooms.find(h => h.id === id) || null;
   }
 
-  async saveSleepingRoom(room: SleepingRoom): Promise<SleepingRoom> {
+  async saveHousingRoom(housingRoom: HousingRoom): Promise<HousingRoom> {
     await delay();
-    const rooms = await this.getSleepingRooms();
-    const index = rooms.findIndex(r => r.id === room.id);
+    const housingRooms = await this.getHousingRooms();
+    const index = housingRooms.findIndex(h => h.id === housingRoom.id);
     
     if (index >= 0) {
-      rooms[index] = room;
+      housingRooms[index] = housingRoom;
     } else {
-      rooms.push(room);
+      housingRooms.push(housingRoom);
     }
     
-    localStorage.setItem(STORAGE_KEYS.SLEEPING_ROOMS, JSON.stringify(rooms));
-    return room;
+    localStorage.setItem(STORAGE_KEYS.HOUSING_ROOMS, JSON.stringify(housingRooms));
+    return housingRoom;
   }
 
-  async deleteSleepingRoom(id: string): Promise<void> {
+  async deleteHousingRoom(id: string): Promise<void> {
     await delay();
-    const rooms = await this.getSleepingRooms();
-    const filtered = rooms.filter(r => r.id !== id);
-    localStorage.setItem(STORAGE_KEYS.SLEEPING_ROOMS, JSON.stringify(filtered));
+    const housingRooms = await this.getHousingRooms();
+    const filtered = housingRooms.filter(h => h.id !== id);
+    localStorage.setItem(STORAGE_KEYS.HOUSING_ROOMS, JSON.stringify(filtered));
   }
 
   // Events operations
@@ -402,38 +402,38 @@ class StorageService {
   }
 
   // Locations operations
-  async getLocations(): Promise<Location[]> {
+  async getAreas(): Promise<Area[]> {
     await delay();
-    const data = localStorage.getItem(STORAGE_KEYS.LOCATIONS);
+    const data = localStorage.getItem(STORAGE_KEYS.AREAS);
     return data ? JSON.parse(data) : [];
   }
 
-  async getLocation(id: string): Promise<Location | null> {
+  async getArea(id: string): Promise<Area | null> {
     await delay();
-    const locations = await this.getLocations();
-    return locations.find(l => l.id === id) || null;
+    const areas = await this.getAreas();
+    return areas.find(a => a.id === id) || null;
   }
 
-  async saveLocation(location: Location): Promise<Location> {
+  async saveArea(area: Area): Promise<Area> {
     await delay();
-    const locations = await this.getLocations();
-    const index = locations.findIndex(l => l.id === location.id);
+    const areas = await this.getAreas();
+    const index = areas.findIndex(a => a.id === area.id);
     
     if (index >= 0) {
-      locations[index] = { ...location, updatedAt: new Date().toISOString() };
+      areas[index] = { ...area, updatedAt: new Date().toISOString() };
     } else {
-      locations.push(location);
+      areas.push(area);
     }
     
-    localStorage.setItem(STORAGE_KEYS.LOCATIONS, JSON.stringify(locations));
-    return locations[index >= 0 ? index : locations.length - 1];
+    localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(areas));
+    return areas[index >= 0 ? index : areas.length - 1];
   }
 
-  async deleteLocation(id: string): Promise<void> {
+  async deleteArea(id: string): Promise<void> {
     await delay();
-    const locations = await this.getLocations();
-    const filtered = locations.filter(l => l.id !== id);
-    localStorage.setItem(STORAGE_KEYS.LOCATIONS, JSON.stringify(filtered));
+    const areas = await this.getAreas();
+    const filtered = areas.filter(a => a.id !== id);
+    localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(filtered));
   }
 
   // Certifications operations
@@ -552,14 +552,14 @@ class StorageService {
   async seedData(data: {
     campers?: Camper[];
     staffMembers?: StaffMember[];
-    rooms?: Room[];
-    sleepingRooms?: SleepingRoom[];
+    rooms?: Location[];
+    sleepingRooms?: HousingRoom[];
     events?: Event[];
     camperGroups?: CamperGroup[];
     familyGroups?: FamilyGroup[];
     programs?: Program[];
     activities?: Activity[];
-    locations?: Location[];
+    locations?: Area[];
     certifications?: Certification[];
     colors?: CampColor[];
     sessions?: CampSession[];
@@ -572,10 +572,10 @@ class StorageService {
       localStorage.setItem(STORAGE_KEYS.STAFF_MEMBERS, JSON.stringify(data.staffMembers));
     }
     if (data.rooms) {
-      localStorage.setItem(STORAGE_KEYS.ROOMS, JSON.stringify(data.rooms));
+      localStorage.setItem(STORAGE_KEYS.LOCATIONS, JSON.stringify(data.rooms));
     }
     if (data.sleepingRooms) {
-      localStorage.setItem(STORAGE_KEYS.SLEEPING_ROOMS, JSON.stringify(data.sleepingRooms));
+      localStorage.setItem(STORAGE_KEYS.HOUSING_ROOMS, JSON.stringify(data.sleepingRooms));
     }
     if (data.events) {
       localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(data.events));
@@ -593,7 +593,7 @@ class StorageService {
       localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(data.activities));
     }
     if (data.locations) {
-      localStorage.setItem(STORAGE_KEYS.LOCATIONS, JSON.stringify(data.locations));
+      localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(data.locations));
     }
     if (data.certifications) {
       localStorage.setItem(STORAGE_KEYS.CERTIFICATIONS, JSON.stringify(data.certifications));

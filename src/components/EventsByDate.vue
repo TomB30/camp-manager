@@ -20,11 +20,11 @@
               <div class="event-item-time">
                 {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}
               </div>
-              <div v-if="showRoom && event.roomId" class="event-item-room">
+              <div v-if="showLocation && event.locationId" class="event-item-location">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 </svg>
-                {{ getRoomName(event.roomId) }}
+                {{ getLocationName(event.locationId) }}
               </div>
               <div v-if="showEnrollment" class="event-item-enrollment">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -60,7 +60,7 @@ export default defineComponent({
       type: String,
       default: 'No events'
     },
-    showRoom: {
+    showLocation: {
       type: Boolean,
       default: false
     },
@@ -68,9 +68,9 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
-    getRoomName: {
-      type: Function as PropType<(roomId: string) => string>,
-      default: () => () => 'Unknown Room'
+    getLocationName: {
+      type: Function as PropType<(locationId: string) => string>,
+      default: () => () => 'Unknown Location'
     }
   },
   emits: ['event-click'],

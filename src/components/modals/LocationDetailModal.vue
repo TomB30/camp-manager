@@ -6,11 +6,6 @@
   >
     <template #body>
       <div v-if="location">
-        <div v-if="location.description" class="detail-section">
-          <div class="detail-label">Description</div>
-          <div>{{ location.description }}</div>
-        </div>
-
         <div class="detail-section">
           <div class="detail-label">Type</div>
           <div>
@@ -18,9 +13,14 @@
           </div>
         </div>
 
-        <div v-if="location.capacity" class="detail-section">
+        <div class="detail-section">
           <div class="detail-label">Capacity</div>
           <div>{{ location.capacity }} people</div>
+        </div>
+
+        <div v-if="location.areaId" class="detail-section">
+          <div class="detail-label">Area</div>
+          <div>{{ getAreaName(location.areaId) }}</div>
         </div>
 
         <div v-if="location.equipment && location.equipment.length > 0" class="detail-section">
@@ -38,20 +38,17 @@
         </div>
 
         <div class="detail-section">
-          <div class="detail-label">Created</div>
-          <div>{{ formatDate(location.createdAt) }}</div>
-        </div>
-
-        <div class="detail-section">
-          <div class="detail-label">Last Updated</div>
-          <div>{{ formatDate(location.updatedAt) }}</div>
+          <div class="detail-label">Scheduled Events</div>
+          <slot name="events-list">
+            <div class="text-secondary">No events scheduled</div>
+          </slot>
         </div>
       </div>
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete', location?.id)">Delete Location</button>
-      <button class="btn btn-secondary" @click="$emit('edit', location)">Edit</button>
+      <button class="btn btn-error" @click="$emit('delete')">Delete Location</button>
+      <button class="btn btn-secondary" @click="$emit('edit')">Edit</button>
       <button class="btn btn-secondary" @click="$emit('close')">Close</button>
     </template>
   </BaseModal>
@@ -61,6 +58,7 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import type { Location } from '@/types/api';
+import { useCampStore } from '@/stores/campStore';
 
 export default defineComponent({
   name: 'LocationDetailModal',
@@ -78,27 +76,17 @@ export default defineComponent({
     }
   },
   emits: ['close', 'edit', 'delete'],
+  setup() {
+    const store = useCampStore();
+    return { store };
+  },
   methods: {
     formatLocationType(type: string): string {
-      const typeMap: Record<string, string> = {
-        indoor: 'Indoor',
-        outdoor: 'Outdoor',
-        facility: 'Facility',
-        field: 'Field',
-        water: 'Water',
-        other: 'Other',
-      };
-      return typeMap[type] || type.charAt(0).toUpperCase() + type.slice(1);
+      return type.charAt(0).toUpperCase() + type.slice(1);
     },
-    formatDate(dateString: string): string {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+    getAreaName(areaId: string): string {
+      const area = this.store.getAreaById(areaId);
+      return area?.name || 'Unknown';
     }
   }
 });

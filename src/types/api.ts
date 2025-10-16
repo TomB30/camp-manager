@@ -178,7 +178,7 @@ export interface paths {
         /** @description Success */
         200: {
           content: {
-            "application/json": components["schemas"]["Room"][];
+            "application/json": components["schemas"]["Location"][];
           };
         };
       };
@@ -187,7 +187,7 @@ export interface paths {
     post: {
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Room"];
+          "application/json": components["schemas"]["Location"];
         };
       };
       responses: {
@@ -210,7 +210,7 @@ export interface paths {
         /** @description Success */
         200: {
           content: {
-            "application/json": components["schemas"]["Room"];
+            "application/json": components["schemas"]["Location"];
           };
         };
       };
@@ -224,7 +224,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Room"];
+          "application/json": components["schemas"]["Location"];
         };
       };
       responses: {
@@ -427,7 +427,7 @@ export interface paths {
         /** @description Success */
         200: {
           content: {
-            "application/json": components["schemas"]["SleepingRoom"][];
+            "application/json": components["schemas"]["HousingRoom"][];
           };
         };
       };
@@ -436,7 +436,7 @@ export interface paths {
     post: {
       requestBody: {
         content: {
-          "application/json": components["schemas"]["SleepingRoom"];
+          "application/json": components["schemas"]["HousingRoom"];
         };
       };
       responses: {
@@ -459,7 +459,7 @@ export interface paths {
         /** @description Success */
         200: {
           content: {
-            "application/json": components["schemas"]["SleepingRoom"];
+            "application/json": components["schemas"]["HousingRoom"];
           };
         };
       };
@@ -473,7 +473,7 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["SleepingRoom"];
+          "application/json": components["schemas"]["HousingRoom"];
         };
       };
       responses: {
@@ -484,6 +484,89 @@ export interface paths {
       };
     };
     /** Delete sleeping room */
+    delete: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+  };
+  "/areas": {
+    /** List all areas */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Area"][];
+          };
+        };
+      };
+    };
+    /** Create a new area */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["Area"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/areas/{id}": {
+    /** Get area by ID */
+    get: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Area"];
+          };
+        };
+      };
+    };
+    /** Update area */
+    put: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["Area"];
+        };
+      };
+      responses: {
+        /** @description Updated */
+        200: {
+          content: never;
+        };
+      };
+    };
+    /** Delete area */
     delete: {
       parameters: {
         path: {
@@ -525,6 +608,11 @@ export interface components {
       registrationDate?: string;
       /**
        * Format: uuid
+       * @description ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
+       */
+      housingRoomId?: string;
+      /**
+       * Format: uuid
        * @description ID of the family group this camper belongs to
        */
       familyGroupId?: string;
@@ -544,7 +632,9 @@ export interface components {
       /** Format: email */
       email?: string;
       phone?: string;
+      /** @description Staff certifications (deprecated - use certificationIds) */
       certifications?: string[];
+      /** @description IDs of certifications this staff member holds */
       certificationIds?: string[];
       photoUrl?: string;
       /**
@@ -553,27 +643,47 @@ export interface components {
        */
       managerId?: string;
     };
-    Room: {
+    Location: {
       /** Format: uuid */
       id: string;
       name: string;
       capacity: number;
       /** @enum {string} */
       type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
-      location?: string;
-      /** Format: uuid */
-      locationId?: string;
+      /**
+       * Format: uuid
+       * @description ID of the physical area where this location is situated
+       */
+      areaId?: string;
       equipment?: string[];
       notes?: string;
     };
-    SleepingRoom: {
+    HousingRoom: {
       /** Format: uuid */
       id: string;
       name: string;
+      /** @description Number of beds in this housing room */
       beds: number;
-      location?: string;
+      /**
+       * Format: uuid
+       * @description ID of the physical area where this housing room is located
+       */
+      areaId?: string;
+    };
+    Area: {
       /** Format: uuid */
-      locationId?: string;
+      id: string;
+      name: string;
+      description?: string;
+      /** @enum {string} */
+      type: "indoor" | "outdoor" | "facility" | "field" | "water" | "other";
+      capacity?: number;
+      equipment?: string[];
+      notes?: string;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
     };
     Event: {
       /** Format: uuid */
@@ -585,7 +695,7 @@ export interface components {
       /** Format: date-time */
       endTime: string;
       /** Format: uuid */
-      roomId: string;
+      locationId: string;
       capacity: number;
       assignedStaffIds?: string[];
       enrolledCamperIds?: string[];
@@ -629,10 +739,17 @@ export type operations = Record<string, never>;
 // Export commonly used types
 export type Camper = components["schemas"]["Camper"];
 export type StaffMember = components["schemas"]["StaffMember"];
-export type Room = components["schemas"]["Room"];
-export type SleepingRoom = components["schemas"]["SleepingRoom"];
+export type Location = components["schemas"]["Location"];
+export type HousingRoom = components["schemas"]["HousingRoom"];
+export type Area = components["schemas"]["Area"];
 export type Event = components["schemas"]["Event"];
 export type Conflict = components["schemas"]["Conflict"];
+
+// Deprecated: Use new names for consistency with UI terminology
+/** @deprecated Use Location instead */
+export type Room = components["schemas"]["Location"];
+/** @deprecated Use HousingRoom instead */
+export type SleepingRoom = components["schemas"]["HousingRoom"];
 
 // Camper Group types for virtual groups
 export interface CamperGroupFilter {
@@ -659,7 +776,7 @@ export interface FamilyGroup {
   id: string;
   name: string;
   description?: string;
-  sleepingRoomId: string; // Required - each family group must be assigned to a room
+  housingRoomId: string; // Required - each family group must be assigned to a housing room
   staffMemberIds: string[]; // Staff members assigned to this family group
   sessionId: string; // ID of the camp session this family group belongs to
   color?: string; // Deprecated - use colorId
@@ -675,7 +792,7 @@ export interface Activity {
   description?: string;
   programIds: string[]; // References to programs this activity belongs to
   durationMinutes: number; // Default duration
-  defaultRoomId?: string; // Default location
+  defaultLocationId?: string; // Default location
   requiredCertifications?: string[]; // Required staff certifications
   minStaff?: number; // Minimum number of staff required
   maxStaff?: number; // Maximum number of staff allowed
@@ -695,20 +812,7 @@ export interface Program {
   colorId?: string;
   activityIds: string[]; // Activities belonging to this program
   staffMemberIds: string[]; // Staff members associated with this program
-  roomIds: string[]; // Locations associated with this program
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Location - physical locations within the camp
-export interface Location {
-  id: string;
-  name: string;
-  description?: string;
-  type: 'indoor' | 'outdoor' | 'facility' | 'field' | 'water' | 'other';
-  capacity?: number;
-  equipment?: string[];
-  notes?: string;
+  locationIds: string[]; // Locations associated with this program
   createdAt: string;
   updatedAt: string;
 }

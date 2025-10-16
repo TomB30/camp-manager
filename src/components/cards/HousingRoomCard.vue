@@ -34,19 +34,19 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { SleepingRoom, FamilyGroup } from '@/types/api';
+import type { HousingRoom, FamilyGroup } from '@/types/api';
 import { useCampStore } from '@/stores/campStore';
 import { Bed, MapPin } from 'lucide-vue-next';
 
 export default defineComponent({
-  name: 'SleepingRoomCard',
+  name: 'HousingRoomCard',
   components: {
     Bed,
     MapPin,
   },
   props: {
     room: {
-      type: Object as PropType<SleepingRoom>,
+      type: Object as PropType<HousingRoom>,
       required: true,
     },
     familyGroups: {
@@ -61,10 +61,10 @@ export default defineComponent({
   },
   computed: {
     locationName(): string | undefined {
-      if (this.room.locationId) {
-        return this.store.getLocationById(this.room.locationId)?.name;
+      if (this.room.areaId) {
+        return this.store.getAreaById(this.room.areaId)?.name;
       }
-      return this.room.location;
+      return undefined;
     }
   }
 });

@@ -30,7 +30,7 @@
       >
         <div class="event-title">{{ event.title }}</div>
         <div class="event-details">
-          <div class="event-room text-xs">{{ getRoomName(event.roomId) }}</div>
+          <div class="event-room text-xs">{{ getLocationName(event.locationId) }}</div>
           <div class="event-capacity text-xs">
             {{ event.enrolledCamperIds?.length || 0 }}/{{ event.capacity }}
           </div>
@@ -42,7 +42,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { Event, Room } from '@/types/api';
+import type { Event, Location } from '@/types/api';
 
 export default defineComponent({
   name: 'DailyCalendarView',
@@ -52,7 +52,7 @@ export default defineComponent({
       required: true,
     },
     rooms: {
-      type: Array as PropType<Room[]>,
+      type: Array as PropType<Location[]>,
       required: true,
     },
   },
@@ -68,9 +68,9 @@ export default defineComponent({
       const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
       return `${displayHour}:00 ${ampm}`;
     },
-    getRoomName(roomId: string): string {
-      const room = this.rooms.find(r => r.id === roomId);
-      return room?.name || 'Unknown Room';
+    getLocationName(locationId: string): string {
+      const location = this.rooms.find(r => r.id === locationId);
+      return location?.name || 'Unknown Location';
     },
     handleTimeSlotClick(hour: number) {
       this.$emit('create-event', hour);

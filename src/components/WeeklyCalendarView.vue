@@ -30,7 +30,7 @@
               <div class="week-event-title">{{ event.title }}</div>
               <div class="week-event-details">
                 <div class="week-event-room text-xs">
-                  {{ getRoomName(event.roomId) }}
+                  {{ getLocationName(event.locationId) }}
                 </div>
                 <div class="week-event-capacity text-xs">
                   {{ event.enrolledCamperIds?.length || 0 }}/{{ event.capacity }}
@@ -48,7 +48,7 @@
 import { defineComponent, type PropType } from 'vue';
 import { format } from 'date-fns';
 import { filterEventsByDateAndHour } from '@/utils/dateUtils';
-import type { Event, Room } from '@/types/api';
+import type { Event, Location } from '@/types/api';
 
 export default defineComponent({
   name: 'WeeklyCalendarView',
@@ -62,7 +62,7 @@ export default defineComponent({
       required: true,
     },
     rooms: {
-      type: Array as PropType<Room[]>,
+      type: Array as PropType<Location[]>,
       required: true,
     },
   },
@@ -86,9 +86,9 @@ export default defineComponent({
       const isToday = date.toDateString() === today.toDateString();
       return isToday ? `${format(date, 'MMM d')} (Today)` : format(date, 'MMM d');
     },
-    getRoomName(roomId: string): string {
-      const room = this.rooms.find(r => r.id === roomId);
-      return room?.name || 'Unknown Room';
+    getLocationName(locationId: string): string {
+      const location = this.rooms.find(r => r.id === locationId);
+      return location?.name || 'Unknown Location';
     },
     getEventsForDayAndHour(day: Date, hour: number) {
       return filterEventsByDateAndHour(this.events, day, hour);

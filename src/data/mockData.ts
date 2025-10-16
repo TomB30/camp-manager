@@ -1,4 +1,4 @@
-import type { Camper, StaffMember, Room, SleepingRoom, Event, CamperGroup, FamilyGroup, Program, Activity, Location, Certification, CampColor, CampSession } from '@/types/api';
+import type { Camper, StaffMember, Location, HousingRoom, Event, CamperGroup, FamilyGroup, Program, Activity, Area, Certification, CampColor, CampSession } from '@/types/api';
 
 // Generate consistent IDs
 const generateId = (prefix: string, index: number) => `${prefix}-${String(index).padStart(3, '0')}`;
@@ -211,8 +211,8 @@ export const mockCertifications: Certification[] = [
   },
 ];
 
-// Locations - Setup before rooms and sleeping rooms
-export const mockLocations: Location[] = [
+// Areas - Setup before locations and housing rooms
+export const mockLocations: Area[] = [
   {
     id: generateId('location', 1),
     name: 'Main Building A',
@@ -347,7 +347,7 @@ export const mockLocations: Location[] = [
   },
 ];
 
-// Extended sleeping rooms for more campers (20 cabins total)
+// Extended housing rooms for more campers (20 rooms total)
 const cabinNames = [
   'Eagles', 'Hawks', 'Wolves', 'Butterflies', 'Fireflies', 'Dolphins',
   'Tigers', 'Bears', 'Panthers', 'Foxes', 'Owls', 'Ravens',
@@ -355,8 +355,8 @@ const cabinNames = [
   'Elk', 'Bison', 'Cardinals', 'Blue Jays', 'Sparrows', 'Swallows'
 ];
 
-const generateSleepingRooms = (count: number): SleepingRoom[] => {
-  const rooms: SleepingRoom[] = [];
+const generateSleepingRooms = (count: number): HousingRoom[] => {
+  const rooms: HousingRoom[] = [];
   const locations = [
     { id: 8, name: 'North Wing, Floor 1' },
     { id: 9, name: 'North Wing, Floor 2' },
@@ -371,17 +371,16 @@ const generateSleepingRooms = (count: number): SleepingRoom[] => {
       id: generateId('sleeping', i),
       name: `Cabin ${i} - ${cabinNames[i - 1]}`,
       beds: i <= 16 ? 12 : 10, // First 16 cabins have 12 beds, rest have 10
-      location: location.name,
-      locationId: generateId('location', location.id),
+      areaId: generateId('location', location.id),
     });
   }
   
   return rooms;
 };
 
-export const mockSleepingRooms: SleepingRoom[] = generateSleepingRooms(24);
+export const mockSleepingRooms: HousingRoom[] = generateSleepingRooms(24);
 
-// Family Groups - fundamental organizational units (one per sleeping room)
+// Family Groups - fundamental organizational units (one per housing room)
 const familyGroupColors = [
   '#3B82F6', '#10B981', '#6366F1', '#EC4899', '#F59E0B', '#06B6D4',
   '#EF4444', '#8B5CF6', '#F97316', '#14B8A6', '#84CC16', '#A855F7',
@@ -389,7 +388,7 @@ const familyGroupColors = [
   '#FDBA74', '#C084FC', '#86EFAC', '#FCA5A5', '#BAE6FD', '#D8B4FE'
 ];
 
-const generateFamilyGroups = (sleepingRooms: SleepingRoom[]): FamilyGroup[] => {
+const generateFamilyGroups = (sleepingRooms: HousingRoom[]): FamilyGroup[] => {
   const groups: FamilyGroup[] = [];
   
   sleepingRooms.forEach((room, index) => {
@@ -408,7 +407,7 @@ const generateFamilyGroups = (sleepingRooms: SleepingRoom[]): FamilyGroup[] => {
       id: generateId('family', index + 1),
       name: `${cabinNames[index]} Family`,
       description: `Family group for Cabin ${index + 1}`,
-      sleepingRoomId: room.id,
+      housingRoomId: room.id,
       staffMemberIds: staffIds,
       sessionId: generateId('session', sessionIndex),
       color: familyGroupColors[index % familyGroupColors.length],
@@ -602,14 +601,13 @@ const generateStaff = (count: number): StaffMember[] => {
 
 export const mockStaffMembers: StaffMember[] = generateStaff(50);
 
-export const mockRooms: Room[] = [
+export const mockRooms: Location[] = [
   {
     id: generateId('room', 1),
     name: 'Main Hall',
     capacity: 50,
     type: 'activity',
-    location: 'Building A',
-    locationId: generateId('location', 1),
+    areaId: generateId('location', 1),
     equipment: ['Projector', 'Sound System', 'Tables', 'Chairs'],
   },
   {
@@ -617,8 +615,7 @@ export const mockRooms: Room[] = [
     name: 'Art Studio',
     capacity: 15,
     type: 'arts',
-    location: 'Building B',
-    locationId: generateId('location', 2),
+    areaId: generateId('location', 2),
     equipment: ['Easels', 'Paint Supplies', 'Clay', 'Kiln'],
   },
   {
@@ -626,8 +623,7 @@ export const mockRooms: Room[] = [
     name: 'Sports Field',
     capacity: 30,
     type: 'sports',
-    location: 'Outdoor Area 1',
-    locationId: generateId('location', 4),
+    areaId: generateId('location', 4),
     equipment: ['Soccer Goals', 'Cones', 'Balls'],
   },
   {
@@ -635,8 +631,7 @@ export const mockRooms: Room[] = [
     name: 'Swimming Pool',
     capacity: 20,
     type: 'sports',
-    location: 'Recreation Center',
-    locationId: generateId('location', 5),
+    areaId: generateId('location', 5),
     equipment: ['Pool Noodles', 'Kickboards', 'Life Vests'],
   },
   {
@@ -644,8 +639,7 @@ export const mockRooms: Room[] = [
     name: 'Classroom A',
     capacity: 20,
     type: 'classroom',
-    location: 'Building C',
-    locationId: generateId('location', 3),
+    areaId: generateId('location', 3),
     equipment: ['Whiteboard', 'Desks', 'Books', 'Computers'],
   },
   {
@@ -653,8 +647,7 @@ export const mockRooms: Room[] = [
     name: 'Dining Hall',
     capacity: 60,
     type: 'dining',
-    location: 'Building C',
-    locationId: generateId('location', 3),
+    areaId: generateId('location', 3),
     equipment: ['Tables', 'Benches', 'Kitchen Access'],
   },
   {
@@ -662,8 +655,7 @@ export const mockRooms: Room[] = [
     name: 'Outdoor Plaza',
     capacity: 40,
     type: 'outdoor',
-    location: 'Central Campus',
-    locationId: generateId('location', 6),
+    areaId: generateId('location', 6),
     equipment: ['Picnic Tables', 'Shade Structures', 'Water Fountain'],
   },
   {
@@ -671,8 +663,7 @@ export const mockRooms: Room[] = [
     name: 'Music Room',
     capacity: 15,
     type: 'arts',
-    location: 'Building B',
-    locationId: generateId('location', 2),
+    areaId: generateId('location', 2),
     equipment: ['Piano', 'Guitars', 'Drums', 'Microphones'],
   },
   {
@@ -680,8 +671,7 @@ export const mockRooms: Room[] = [
     name: 'Basketball Court',
     capacity: 20,
     type: 'sports',
-    location: 'Outdoor Area 2',
-    locationId: generateId('location', 7),
+    areaId: generateId('location', 7),
     equipment: ['Basketballs', 'Scoreboard', 'Benches'],
   },
   {
@@ -689,8 +679,7 @@ export const mockRooms: Room[] = [
     name: 'Theater Stage',
     capacity: 25,
     type: 'arts',
-    location: 'Building A',
-    locationId: generateId('location', 1),
+    areaId: generateId('location', 1),
     equipment: ['Stage', 'Costumes', 'Props', 'Lighting'],
   },
 ];
@@ -702,7 +691,7 @@ const createEvent = (
   dayOffset: number, // 0 = today, 1 = tomorrow, etc.
   startHour: number,
   durationHours: number,
-  roomId: string,
+  locationId: string,
   capacity: number,
   type: Event['type'],
   staffIds: string[],
@@ -721,7 +710,7 @@ const createEvent = (
     title,
     startTime: eventDate.toISOString(),
     endTime: endTime.toISOString(),
-    roomId,
+    locationId,
     capacity,
     type,
     assignedStaffIds: staffIds,
@@ -1388,7 +1377,7 @@ export const mockPrograms: Program[] = [
     colorId: generateId('color', 1), // Ocean Blue
     activityIds: [],
     staffMemberIds: ['staff-008', 'staff-010', 'staff-012', 'staff-016', 'staff-020'],
-    roomIds: ['room-004', 'room-010'],
+    locationIds: ['room-004', 'room-010'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1399,7 +1388,7 @@ export const mockPrograms: Program[] = [
     colorId: generateId('color', 5), // Flamingo Pink
     activityIds: [],
     staffMemberIds: ['staff-014', 'staff-018', 'staff-022'],
-    roomIds: ['room-002', 'room-008'],
+    locationIds: ['room-002', 'room-008'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1410,7 +1399,7 @@ export const mockPrograms: Program[] = [
     colorId: generateId('color', 2), // Forest Green
     activityIds: [],
     staffMemberIds: ['staff-009', 'staff-011', 'staff-015', 'staff-019'],
-    roomIds: ['room-003', 'room-007'],
+    locationIds: ['room-003', 'room-007'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1421,7 +1410,7 @@ export const mockPrograms: Program[] = [
     colorId: generateId('color', 4), // Royal Purple
     activityIds: [],
     staffMemberIds: ['staff-013', 'staff-017', 'staff-024'],
-    roomIds: ['room-008', 'room-010'],
+    locationIds: ['room-008', 'room-010'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1432,7 +1421,7 @@ export const mockPrograms: Program[] = [
     colorId: generateId('color', 7), // Teal Wave
     activityIds: [],
     staffMemberIds: ['staff-021', 'staff-025', 'staff-029'],
-    roomIds: ['room-005', 'room-007'],
+    locationIds: ['room-005', 'room-007'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1443,7 +1432,7 @@ export const mockPrograms: Program[] = [
     colorId: generateId('color', 3), // Sunset Orange
     activityIds: [],
     staffMemberIds: ['staff-026', 'staff-030', 'staff-034'],
-    roomIds: ['room-003', 'room-009'],
+    locationIds: ['room-003', 'room-009'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1454,7 +1443,7 @@ export const mockPrograms: Program[] = [
     colorId: generateId('color', 8), // Indigo Night
     activityIds: [],
     staffMemberIds: ['staff-027', 'staff-031', 'staff-035'],
-    roomIds: ['room-001', 'room-005'],
+    locationIds: ['room-001', 'room-005'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1465,7 +1454,7 @@ export const mockPrograms: Program[] = [
     colorId: generateId('color', 6), // Fire Red
     activityIds: [],
     staffMemberIds: ['staff-028', 'staff-032'],
-    roomIds: ['room-006'],
+    locationIds: ['room-006'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1476,7 +1465,7 @@ export const mockPrograms: Program[] = [
     colorId: generateId('color', 7), // Teal Wave
     activityIds: [],
     staffMemberIds: ['staff-033', 'staff-037', 'staff-041'],
-    roomIds: ['room-005'],
+    locationIds: ['room-005'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1487,7 +1476,7 @@ export const mockPrograms: Program[] = [
     colorId: generateId('color', 4), // Royal Purple
     activityIds: [],
     staffMemberIds: ['staff-036', 'staff-040', 'staff-044'],
-    roomIds: ['room-001', 'room-007'],
+    locationIds: ['room-001', 'room-007'],
     createdAt: new Date(2025, 5, 1).toISOString(),
     updatedAt: new Date(2025, 5, 1).toISOString(),
   },
@@ -1502,7 +1491,7 @@ export const mockActivities: Activity[] = [
     description: 'Learn wakeboarding basics or improve your skills on the lake',
     programIds: [generateId('program', 1)],
     durationMinutes: 120,
-    defaultRoomId: 'room-004',
+    defaultLocationId: 'room-004',
     requiredCertifications: ['Lifeguard', 'Boat Driver'],
     minStaff: 2,
     maxStaff: 3,
@@ -1517,7 +1506,7 @@ export const mockActivities: Activity[] = [
     description: 'Structured swimming instruction for all skill levels',
     programIds: [generateId('program', 1)],
     durationMinutes: 60,
-    defaultRoomId: 'room-004',
+    defaultLocationId: 'room-004',
     requiredCertifications: ['Lifeguard', 'Swimming Instructor'],
     minStaff: 2,
     maxStaff: 2,
@@ -1532,7 +1521,7 @@ export const mockActivities: Activity[] = [
     description: 'Explore the lake in kayaks with guided instruction',
     programIds: [generateId('program', 1)],
     durationMinutes: 90,
-    defaultRoomId: 'room-004',
+    defaultLocationId: 'room-004',
     requiredCertifications: ['Lifeguard'],
     minStaff: 2,
     maxStaff: 3,
@@ -1547,7 +1536,7 @@ export const mockActivities: Activity[] = [
     description: 'Balance and paddle on stand-up paddleboards',
     programIds: [generateId('program', 1)],
     durationMinutes: 75,
-    defaultRoomId: 'room-004',
+    defaultLocationId: 'room-004',
     requiredCertifications: ['Lifeguard'],
     minStaff: 2,
     maxStaff: 2,
@@ -1563,7 +1552,7 @@ export const mockActivities: Activity[] = [
     description: 'Create your own pottery pieces on the wheel',
     programIds: [generateId('program', 2)],
     durationMinutes: 90,
-    defaultRoomId: 'room-002',
+    defaultLocationId: 'room-002',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 10,
@@ -1577,7 +1566,7 @@ export const mockActivities: Activity[] = [
     description: 'Express yourself through various painting techniques',
     programIds: [generateId('program', 2)],
     durationMinutes: 75,
-    defaultRoomId: 'room-002',
+    defaultLocationId: 'room-002',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 15,
@@ -1591,7 +1580,7 @@ export const mockActivities: Activity[] = [
     description: 'Design and create your own jewelry pieces',
     programIds: [generateId('program', 2)],
     durationMinutes: 60,
-    defaultRoomId: 'room-002',
+    defaultLocationId: 'room-002',
     minStaff: 1,
     maxStaff: 1,
     defaultCapacity: 12,
@@ -1605,7 +1594,7 @@ export const mockActivities: Activity[] = [
     description: 'Create colorful tie-dye shirts and accessories',
     programIds: [generateId('program', 2)],
     durationMinutes: 90,
-    defaultRoomId: 'room-002',
+    defaultLocationId: 'room-002',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 20,
@@ -1620,7 +1609,7 @@ export const mockActivities: Activity[] = [
     description: 'Indoor rock climbing with safety instruction',
     programIds: [generateId('program', 3)],
     durationMinutes: 90,
-    defaultRoomId: 'room-003',
+    defaultLocationId: 'room-003',
     requiredCertifications: ['Climbing Instructor', 'First Aid'],
     minStaff: 2,
     maxStaff: 3,
@@ -1635,7 +1624,7 @@ export const mockActivities: Activity[] = [
     description: 'Learn archery basics and target practice',
     programIds: [generateId('program', 3)],
     durationMinutes: 60,
-    defaultRoomId: 'room-007',
+    defaultLocationId: 'room-007',
     requiredCertifications: ['Archery Instructor'],
     minStaff: 2,
     maxStaff: 2,
@@ -1650,7 +1639,7 @@ export const mockActivities: Activity[] = [
     description: 'Challenge yourself on our high ropes course',
     programIds: [generateId('program', 3)],
     durationMinutes: 120,
-    defaultRoomId: 'room-007',
+    defaultLocationId: 'room-007',
     requiredCertifications: ['Ropes Course Instructor', 'First Aid'],
     minStaff: 3,
     maxStaff: 4,
@@ -1665,7 +1654,7 @@ export const mockActivities: Activity[] = [
     description: 'Navigation and map reading in the wilderness',
     programIds: [generateId('program', 3)],
     durationMinutes: 120,
-    defaultRoomId: 'room-007',
+    defaultLocationId: 'room-007',
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 15,
@@ -1680,7 +1669,7 @@ export const mockActivities: Activity[] = [
     description: 'Acting exercises and scene work',
     programIds: [generateId('program', 4)],
     durationMinutes: 90,
-    defaultRoomId: 'room-010',
+    defaultLocationId: 'room-010',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 20,
@@ -1694,7 +1683,7 @@ export const mockActivities: Activity[] = [
     description: 'Play instruments and create music together',
     programIds: [generateId('program', 4)],
     durationMinutes: 60,
-    defaultRoomId: 'room-008',
+    defaultLocationId: 'room-008',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 15,
@@ -1708,7 +1697,7 @@ export const mockActivities: Activity[] = [
     description: 'Learn various dance styles and choreography',
     programIds: [generateId('program', 4)],
     durationMinutes: 75,
-    defaultRoomId: 'room-001',
+    defaultLocationId: 'room-001',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 25,
@@ -1722,7 +1711,7 @@ export const mockActivities: Activity[] = [
     description: 'Quick thinking and comedy improvisation',
     programIds: [generateId('program', 4)],
     durationMinutes: 60,
-    defaultRoomId: 'room-010',
+    defaultLocationId: 'room-010',
     minStaff: 1,
     maxStaff: 1,
     defaultCapacity: 18,
@@ -1737,7 +1726,7 @@ export const mockActivities: Activity[] = [
     description: 'Explore local trails and learn about ecology',
     programIds: [generateId('program', 5)],
     durationMinutes: 120,
-    defaultRoomId: 'room-007',
+    defaultLocationId: 'room-007',
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 20,
@@ -1751,7 +1740,7 @@ export const mockActivities: Activity[] = [
     description: 'Learn about constellations and astronomy',
     programIds: [generateId('program', 5)],
     durationMinutes: 90,
-    defaultRoomId: 'room-007',
+    defaultLocationId: 'room-007',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 30,
@@ -1765,7 +1754,7 @@ export const mockActivities: Activity[] = [
     description: 'Hands-on experiments and microscope work',
     programIds: [generateId('program', 5)],
     durationMinutes: 75,
-    defaultRoomId: 'room-005',
+    defaultLocationId: 'room-005',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 15,
@@ -1779,7 +1768,7 @@ export const mockActivities: Activity[] = [
     description: 'Learn about plants and sustainable gardening',
     programIds: [generateId('program', 5)],
     durationMinutes: 60,
-    defaultRoomId: 'room-007',
+    defaultLocationId: 'room-007',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 12,
@@ -1794,7 +1783,7 @@ export const mockActivities: Activity[] = [
     description: 'Team soccer games and skill development',
     programIds: [generateId('program', 6)],
     durationMinutes: 90,
-    defaultRoomId: 'room-003',
+    defaultLocationId: 'room-003',
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 22,
@@ -1808,7 +1797,7 @@ export const mockActivities: Activity[] = [
     description: 'Basketball drills and games',
     programIds: [generateId('program', 6)],
     durationMinutes: 90,
-    defaultRoomId: 'room-009',
+    defaultLocationId: 'room-009',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 20,
@@ -1822,7 +1811,7 @@ export const mockActivities: Activity[] = [
     description: 'Volleyball techniques and matches',
     programIds: [generateId('program', 6)],
     durationMinutes: 75,
-    defaultRoomId: 'room-003',
+    defaultLocationId: 'room-003',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 16,
@@ -1836,7 +1825,7 @@ export const mockActivities: Activity[] = [
     description: 'Fast-paced team frisbee games',
     programIds: [generateId('program', 6)],
     durationMinutes: 60,
-    defaultRoomId: 'room-003',
+    defaultLocationId: 'room-003',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 20,
@@ -1851,7 +1840,7 @@ export const mockActivities: Activity[] = [
     description: 'Collaborative challenges and trust exercises',
     programIds: [generateId('program', 7)],
     durationMinutes: 90,
-    defaultRoomId: 'room-007',
+    defaultLocationId: 'room-007',
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 25,
@@ -1865,7 +1854,7 @@ export const mockActivities: Activity[] = [
     description: 'Develop confidence and presentation skills',
     programIds: [generateId('program', 7)],
     durationMinutes: 60,
-    defaultRoomId: 'room-005',
+    defaultLocationId: 'room-005',
     minStaff: 1,
     maxStaff: 1,
     defaultCapacity: 15,
@@ -1879,7 +1868,7 @@ export const mockActivities: Activity[] = [
     description: 'Learn mediation and problem-solving skills',
     programIds: [generateId('program', 7)],
     durationMinutes: 75,
-    defaultRoomId: 'room-005',
+    defaultLocationId: 'room-005',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 20,
@@ -1894,7 +1883,7 @@ export const mockActivities: Activity[] = [
     description: 'Learn to bake cookies, cakes, and pastries',
     programIds: [generateId('program', 8)],
     durationMinutes: 90,
-    defaultRoomId: 'room-006',
+    defaultLocationId: 'room-006',
     minStaff: 2,
     maxStaff: 2,
     defaultCapacity: 12,
@@ -1908,7 +1897,7 @@ export const mockActivities: Activity[] = [
     description: 'Prepare healthy meals and learn kitchen safety',
     programIds: [generateId('program', 8)],
     durationMinutes: 120,
-    defaultRoomId: 'room-006',
+    defaultLocationId: 'room-006',
     minStaff: 2,
     maxStaff: 3,
     defaultCapacity: 15,
@@ -1922,7 +1911,7 @@ export const mockActivities: Activity[] = [
     description: 'Explore the chemistry of cooking',
     programIds: [generateId('program', 8)],
     durationMinutes: 75,
-    defaultRoomId: 'room-006',
+    defaultLocationId: 'room-006',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 12,
@@ -1937,7 +1926,7 @@ export const mockActivities: Activity[] = [
     description: 'Introduction to programming with Scratch or Python',
     programIds: [generateId('program', 9)],
     durationMinutes: 90,
-    defaultRoomId: 'room-005',
+    defaultLocationId: 'room-005',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 15,
@@ -1951,7 +1940,7 @@ export const mockActivities: Activity[] = [
     description: 'Build and program simple robots',
     programIds: [generateId('program', 9)],
     durationMinutes: 120,
-    defaultRoomId: 'room-005',
+    defaultLocationId: 'room-005',
     minStaff: 2,
     maxStaff: 2,
     defaultCapacity: 12,
@@ -1965,7 +1954,7 @@ export const mockActivities: Activity[] = [
     description: 'Strategic board games and tournaments',
     programIds: [generateId('program', 9)],
     durationMinutes: 90,
-    defaultRoomId: 'room-001',
+    defaultLocationId: 'room-001',
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 20,
@@ -1980,7 +1969,7 @@ export const mockActivities: Activity[] = [
     description: 'Gentle yoga practice for all levels',
     programIds: [generateId('program', 10)],
     durationMinutes: 60,
-    defaultRoomId: 'room-001',
+    defaultLocationId: 'room-001',
     minStaff: 1,
     maxStaff: 1,
     defaultCapacity: 25,
@@ -1994,7 +1983,7 @@ export const mockActivities: Activity[] = [
     description: 'Breathing exercises and guided meditation',
     programIds: [generateId('program', 10)],
     durationMinutes: 45,
-    defaultRoomId: 'room-007',
+    defaultLocationId: 'room-007',
     minStaff: 1,
     maxStaff: 1,
     defaultCapacity: 30,
