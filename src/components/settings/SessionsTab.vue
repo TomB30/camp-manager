@@ -79,7 +79,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { CampSession } from '@/types/api';
+import type { CampSession } from '@/types';
 import { Plus, CalendarDays } from 'lucide-vue-next';
 import TabHeader from '@/components/settings/TabHeader.vue';
 import SessionCard from '@/components/cards/SessionCard.vue';

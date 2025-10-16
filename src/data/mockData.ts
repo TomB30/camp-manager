@@ -1,4 +1,4 @@
-import type { Camper, StaffMember, Location, HousingRoom, Event, CamperGroup, FamilyGroup, Program, Activity, Area, Certification, CampColor, CampSession } from '@/types/api';
+import type { Camper, StaffMember, Location, HousingRoom, Event, Area, Label, CamperGroup, FamilyGroup, Program, Activity, Certification, CampColor, CampSession } from '@/types';
 
 // Generate consistent IDs
 const generateId = (prefix: string, index: number) => `${prefix}-${String(index).padStart(3, '0')}`;
@@ -381,13 +381,6 @@ const generateSleepingRooms = (count: number): HousingRoom[] => {
 export const mockSleepingRooms: HousingRoom[] = generateSleepingRooms(24);
 
 // Family Groups - fundamental organizational units (one per housing room)
-const familyGroupColors = [
-  '#3B82F6', '#10B981', '#6366F1', '#EC4899', '#F59E0B', '#06B6D4',
-  '#EF4444', '#8B5CF6', '#F97316', '#14B8A6', '#84CC16', '#A855F7',
-  '#FB923C', '#22D3EE', '#FCD34D', '#FB7185', '#67E8F9', '#FDE047',
-  '#FDBA74', '#C084FC', '#86EFAC', '#FCA5A5', '#BAE6FD', '#D8B4FE'
-];
-
 const generateFamilyGroups = (sleepingRooms: HousingRoom[]): FamilyGroup[] => {
   const groups: FamilyGroup[] = [];
   
@@ -410,7 +403,7 @@ const generateFamilyGroups = (sleepingRooms: HousingRoom[]): FamilyGroup[] => {
       housingRoomId: room.id,
       staffMemberIds: staffIds,
       sessionId: generateId('session', sessionIndex),
-      color: familyGroupColors[index % familyGroupColors.length],
+      colorId: mockColors[index % mockColors.length].id,
       createdAt: new Date(2025, 5, 1).toISOString(),
       updatedAt: new Date(2025, 5, 1).toISOString(),
     });
@@ -1993,6 +1986,90 @@ export const mockActivities: Activity[] = [
   },
 ];
 
+// Labels - Define tags for categorizing entities
+export const mockLabels: Label[] = [
+  {
+    id: generateId('label', 1),
+    name: 'VIP',
+    description: 'VIP campers requiring special attention',
+    colorId: generateId('color', 4), // Royal Purple
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('label', 2),
+    name: 'First Timer',
+    description: 'New campers attending for the first time',
+    colorId: generateId('color', 1), // Ocean Blue
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('label', 3),
+    name: 'Advanced',
+    description: 'Advanced skill level participants',
+    colorId: generateId('color', 2), // Forest Green
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('label', 4),
+    name: 'Beginner',
+    description: 'Beginner skill level participants',
+    colorId: generateId('color', 3), // Sunset Orange
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('label', 5),
+    name: 'Leadership',
+    description: 'Leadership program participants',
+    colorId: generateId('color', 6), // Fire Red
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('label', 6),
+    name: 'Special Needs',
+    description: 'Participants requiring special accommodations',
+    colorId: generateId('color', 5), // Flamingo Pink
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('label', 7),
+    name: 'Outdoor Focus',
+    description: 'Programs and activities focused on outdoor experiences',
+    colorId: generateId('color', 2), // Forest Green
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('label', 8),
+    name: 'Indoor Focus',
+    description: 'Programs and activities focused on indoor experiences',
+    colorId: generateId('color', 8), // Indigo Night
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('label', 9),
+    name: 'High Energy',
+    description: 'Activities with high physical activity levels',
+    colorId: generateId('color', 3), // Sunset Orange
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+  {
+    id: generateId('label', 10),
+    name: 'Creative',
+    description: 'Creative arts and crafts focused',
+    colorId: generateId('color', 5), // Flamingo Pink
+    createdAt: new Date(2024, 0, 1).toISOString(),
+    updatedAt: new Date(2024, 0, 1).toISOString(),
+  },
+];
+
 // Update programs with activity IDs
 mockPrograms[0].activityIds = [generateId('activity', 1), generateId('activity', 2), generateId('activity', 3), generateId('activity', 4)];
 mockPrograms[1].activityIds = [generateId('activity', 5), generateId('activity', 6), generateId('activity', 7), generateId('activity', 8)];
@@ -2020,4 +2097,5 @@ export const mockData = {
   certifications: mockCertifications,
   colors: mockColors,
   sessions: mockSessions,
+  labels: mockLabels,
 };

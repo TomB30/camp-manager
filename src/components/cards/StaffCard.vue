@@ -26,7 +26,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { StaffMember } from '@/types/api';
+import type { StaffMember } from '@/types';
 import AvatarInitials from '@/components/AvatarInitials.vue';
 
 export default defineComponent({

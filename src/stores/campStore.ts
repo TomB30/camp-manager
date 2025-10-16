@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { Camper, StaffMember, Location, HousingRoom, Event, Conflict, CamperGroup, FamilyGroup, Program, Activity, Area, Certification, CampColor, CampSession } from '@/types/api';
+import type { Camper, StaffMember, Location, HousingRoom, Event, Conflict, Area, Label, CamperGroup, FamilyGroup, Program, Activity, Certification, CampColor, CampSession } from '@/types';
 import { storageService } from '@/services/storage';
 import { conflictDetector } from '@/services/conflicts';
 import { filterEventsByDate } from '@/utils/dateUtils';
@@ -20,6 +20,7 @@ export const useCampStore = defineStore('camp', {
     certifications: [] as Certification[],
     colors: [] as CampColor[],
     sessions: [] as CampSession[],
+    labels: [] as Label[],
     loading: false,
     selectedDate: new Date(),
   }),
@@ -206,13 +207,19 @@ export const useCampStore = defineStore('camp', {
         return state.sessions.find(s => s.id === id);
       };
     },
+
+    getLabelById(state): (id: string) => Label | undefined {
+      return (id: string): Label | undefined => {
+        return state.labels.find(l => l.id === id);
+      };
+    },
   },
 
   actions: {
     async loadAll(): Promise<void> {
       this.loading = true;
       try {
-        const [campersData, membersData, locationsData, housingRoomsData, eventsData, groupsData, familyGroupsData, programsData, activitiesData, areasData, certificationsData, colorsData, sessionsData] = await Promise.all([
+        const [campersData, membersData, locationsData, housingRoomsData, eventsData, groupsData, familyGroupsData, programsData, activitiesData, areasData, certificationsData, colorsData, sessionsData, labelsData] = await Promise.all([
           storageService.getCampers(),
           storageService.getStaffMembers(),
           storageService.getLocations(),
@@ -226,6 +233,7 @@ export const useCampStore = defineStore('camp', {
           storageService.getCertifications(),
           storageService.getColors(),
           storageService.getSessions(),
+          storageService.getLabels(),
         ]);
 
         this.campers = campersData;
@@ -241,6 +249,7 @@ export const useCampStore = defineStore('camp', {
         this.certifications = certificationsData;
         this.colors = colorsData;
         this.sessions = sessionsData;
+        this.labels = labelsData;
 
         this.updateConflicts();
       } finally {
@@ -773,6 +782,25 @@ export const useCampStore = defineStore('camp', {
     async deleteSession(id: string): Promise<void> {
       await storageService.deleteSession(id);
       this.sessions = this.sessions.filter(s => s.id !== id);
+    },
+
+    // Label actions
+    async addLabel(label: Label): Promise<void> {
+      await storageService.saveLabel(label);
+      this.labels.push(label);
+    },
+
+    async updateLabel(label: Label): Promise<void> {
+      await storageService.saveLabel(label);
+      const index = this.labels.findIndex(l => l.id === label.id);
+      if (index >= 0) {
+        this.labels[index] = label;
+      }
+    },
+
+    async deleteLabel(id: string): Promise<void> {
+      await storageService.deleteLabel(id);
+      this.labels = this.labels.filter(l => l.id !== id);
     },
   }
 });

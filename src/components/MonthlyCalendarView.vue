@@ -58,7 +58,7 @@ import {
   isSameDay,
   format 
 } from 'date-fns';
-import type { Event } from '@/types/api';
+import type { Event } from '@/types';
 
 interface CalendarDay {
   date: Date;

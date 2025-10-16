@@ -131,7 +131,7 @@
 // @ts-nocheck
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { Area } from '@/types/api';
+import type { Area } from '@/types';
 import AreaCard from '@/components/cards/AreaCard.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';

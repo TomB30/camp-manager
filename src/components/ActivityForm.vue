@@ -133,7 +133,7 @@ import { defineComponent, type PropType } from 'vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
 import SelectionList from '@/components/SelectionList.vue';
-import type { Certification } from '@/types/api';
+import type { Certification } from '@/types';
 
 export interface ActivityFormData {
   name: string;

@@ -48,7 +48,7 @@
 import { defineComponent, type PropType } from 'vue';
 import { format } from 'date-fns';
 import { filterEventsByDateAndHour } from '@/utils/dateUtils';
-import type { Event, Location } from '@/types/api';
+import type { Event, Location } from '@/types';
 
 export default defineComponent({
   name: 'WeeklyCalendarView',

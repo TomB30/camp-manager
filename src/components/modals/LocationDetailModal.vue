@@ -57,7 +57,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
-import type { Location } from '@/types/api';
+import type { Location } from '@/types';
 import { useCampStore } from '@/stores/campStore';
 
 export default defineComponent({

@@ -41,6 +41,20 @@
           </slot>
         </div>
 
+        <div v-if="group.labelIds && group.labelIds.length > 0" class="detail-section">
+          <div class="detail-label">Labels</div>
+          <div class="labels-container">
+            <span 
+              v-for="labelId in group.labelIds" 
+              :key="labelId"
+              class="label-badge"
+              :style="{ background: getLabelColor(labelId) }"
+            >
+              {{ getLabelName(labelId) }}
+            </span>
+          </div>
+        </div>
+
         <div class="detail-section">
           <div class="detail-label">
             Matching Campers ({{ campers.length }})
@@ -71,7 +85,8 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
-import type { CamperGroup, CamperGroupFilter, Camper } from '@/types/api';
+import type { Camper } from '@/types';
+import type { CamperGroup, CamperGroupFilter } from '@/types';
 import { format } from 'date-fns';
 import { useCampStore } from '@/stores/campStore';
 
@@ -128,6 +143,18 @@ export default defineComponent({
     getFamilyGroupName(familyGroupId: string): string {
       const familyGroup = this.store.getFamilyGroupById(familyGroupId);
       return familyGroup ? familyGroup.name : 'Unknown Family Group';
+    },
+    getLabelName(labelId: string): string {
+      const label = this.store.getLabelById(labelId);
+      return label ? label.name : 'Unknown Label';
+    },
+    getLabelColor(labelId: string): string {
+      const label = this.store.getLabelById(labelId);
+      if (label?.colorId) {
+        const color = this.store.getColorById(label.colorId);
+        return color?.hexValue || '#6366F1';
+      }
+      return '#6366F1';
     }
   }
 });
@@ -162,6 +189,22 @@ export default defineComponent({
 .filter-tag strong {
   color: var(--text-secondary);
   font-weight: 500;
+}
+
+.labels-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.label-badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  border-radius: 9999px;
+  white-space: nowrap;
 }
 
 .modal-large {

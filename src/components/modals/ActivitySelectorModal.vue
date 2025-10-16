@@ -121,7 +121,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { Activity } from '@/types/api';
+import type { Activity } from '@/types';
 import BaseModal from '@/components/BaseModal.vue';
 import ActivityForm, { type ActivityFormData } from '@/components/ActivityForm.vue';
 import { type AutocompleteOption } from '@/components/Autocomplete.vue';

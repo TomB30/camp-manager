@@ -1,4 +1,4 @@
-import type { Camper, StaffMember, Location, HousingRoom, Event, CamperGroup, FamilyGroup, Program, Activity, Area, Certification, CampColor, CampSession } from '@/types/api';
+import type { Camper, StaffMember, Location, HousingRoom, Event, Area, Label, CamperGroup, FamilyGroup, Program, Activity, Certification, CampColor, CampSession } from '@/types';
 
 const STORAGE_KEYS = {
   CAMPERS: 'camp_campers',
@@ -14,6 +14,7 @@ const STORAGE_KEYS = {
   CERTIFICATIONS: 'camp_certifications',
   COLORS: 'camp_colors',
   SESSIONS: 'camp_sessions',
+  LABELS: 'camp_labels',
 } as const;
 
 // Simulate async operations to match future API
@@ -541,6 +542,41 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(filtered));
   }
 
+  // Labels operations
+  async getLabels(): Promise<Label[]> {
+    await delay();
+    const data = localStorage.getItem(STORAGE_KEYS.LABELS);
+    return data ? JSON.parse(data) : [];
+  }
+
+  async getLabel(id: string): Promise<Label | null> {
+    await delay();
+    const labels = await this.getLabels();
+    return labels.find(l => l.id === id) || null;
+  }
+
+  async saveLabel(label: Label): Promise<Label> {
+    await delay();
+    const labels = await this.getLabels();
+    const index = labels.findIndex(l => l.id === label.id);
+    
+    if (index >= 0) {
+      labels[index] = { ...label, updatedAt: new Date().toISOString() };
+    } else {
+      labels.push(label);
+    }
+    
+    localStorage.setItem(STORAGE_KEYS.LABELS, JSON.stringify(labels));
+    return labels[index >= 0 ? index : labels.length - 1];
+  }
+
+  async deleteLabel(id: string): Promise<void> {
+    await delay();
+    const labels = await this.getLabels();
+    const filtered = labels.filter(l => l.id !== id);
+    localStorage.setItem(STORAGE_KEYS.LABELS, JSON.stringify(filtered));
+  }
+
   // Utility methods
   async clearAll(): Promise<void> {
     await delay();
@@ -563,6 +599,7 @@ class StorageService {
     certifications?: Certification[];
     colors?: CampColor[];
     sessions?: CampSession[];
+    labels?: Label[];
   }): Promise<void> {
     await delay();
     if (data.campers) {
@@ -603,6 +640,9 @@ class StorageService {
     }
     if (data.sessions) {
       localStorage.setItem(STORAGE_KEYS.SESSIONS, JSON.stringify(data.sessions));
+    }
+    if (data.labels) {
+      localStorage.setItem(STORAGE_KEYS.LABELS, JSON.stringify(data.labels));
     }
   }
 }

@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { Program } from '@/types/api';
+import type { Program } from '@/types';
 import { Users, Home } from 'lucide-vue-next';
 
 export default defineComponent({

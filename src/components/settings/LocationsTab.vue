@@ -163,7 +163,7 @@
 // @ts-nocheck
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { Location } from '@/types/api';
+import type { Location } from '@/types';
 import LocationCard from '@/components/cards/LocationCard.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import EventsByDate from '@/components/EventsByDate.vue';

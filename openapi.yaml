@@ -261,6 +261,298 @@ components:
           items:
             type: string
 
+    Label:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        colorId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CamperGroupFilter:
+      type: object
+      properties:
+        ageMin:
+          type: integer
+        ageMax:
+          type: integer
+        gender:
+          type: string
+          enum: [male, female]
+        hasAllergies:
+          type: boolean
+
+    CamperGroup:
+      type: object
+      required:
+        - id
+        - name
+        - filters
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        colorId:
+          type: string
+          format: uuid
+        filters:
+          $ref: '#/components/schemas/CamperGroupFilter'
+        familyGroupIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Optional array of family group IDs to include
+        labelIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: IDs of labels assigned to this group
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    FamilyGroup:
+      type: object
+      required:
+        - id
+        - name
+        - housingRoomId
+        - staffMemberIds
+        - sessionId
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        housingRoomId:
+          type: string
+          format: uuid
+          description: Required - each family group must be assigned to a housing room
+        staffMemberIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Staff members assigned to this family group
+        sessionId:
+          type: string
+          format: uuid
+          description: ID of the camp session this family group belongs to
+        colorId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Activity:
+      type: object
+      required:
+        - id
+        - name
+        - programIds
+        - durationMinutes
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        programIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: References to programs this activity belongs to
+        durationMinutes:
+          type: integer
+          description: Default duration
+        defaultLocationId:
+          type: string
+          format: uuid
+          description: Default location
+        requiredCertifications:
+          type: array
+          items:
+            type: string
+          description: Required staff certifications
+        minStaff:
+          type: integer
+          description: Minimum number of staff required
+        maxStaff:
+          type: integer
+          description: Maximum number of staff allowed
+        defaultCapacity:
+          type: integer
+          description: Default camper capacity
+        colorId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Program:
+      type: object
+      required:
+        - id
+        - name
+        - activityIds
+        - staffMemberIds
+        - locationIds
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        colorId:
+          type: string
+          format: uuid
+        activityIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Activities belonging to this program
+        staffMemberIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Staff members associated with this program
+        locationIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Locations associated with this program
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Certification:
+      type: object
+      required:
+        - id
+        - name
+        - expirationRequired
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        expirationRequired:
+          type: boolean
+          description: Whether this certification expires
+        validityPeriodMonths:
+          type: integer
+          description: How long the certification is valid for
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CampColor:
+      type: object
+      required:
+        - id
+        - name
+        - hexValue
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        hexValue:
+          type: string
+          description: Hex color value (e.g., "#FF5733")
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CampSession:
+      type: object
+      required:
+        - id
+        - name
+        - startDate
+        - endDate
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        startDate:
+          type: string
+          format: date
+          description: ISO date string
+        endDate:
+          type: string
+          format: date
+          description: ISO date string
+        description:
+          type: string
+        maxCampers:
+          type: integer
+          description: Optional max capacity for this session
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
 paths:
   /campers:
     get:

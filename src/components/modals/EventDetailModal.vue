@@ -136,7 +136,7 @@ import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete from '@/components/Autocomplete.vue';
 import { useCampStore } from '@/stores/campStore';
 import { useToastStore } from '@/stores/toastStore';
-import type { Event } from '@/types/api';
+import type { Event } from '@/types';
 
 export default defineComponent({
   name: 'EventDetailModal',

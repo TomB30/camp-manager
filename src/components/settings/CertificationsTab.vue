@@ -128,7 +128,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { Certification } from '@/types/api';
+import type { Certification } from '@/types';
 import { Plus, Edit2, Trash2, Award } from 'lucide-vue-next';
 import TabHeader from '@/components/settings/TabHeader.vue';
 import CertificationCard from '@/components/cards/CertificationCard.vue';

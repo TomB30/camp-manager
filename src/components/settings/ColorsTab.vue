@@ -71,7 +71,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { CampColor } from '@/types/api';
+import type { CampColor } from '@/types';
 import { Plus, Palette } from 'lucide-vue-next';
 import TabHeader from '@/components/settings/TabHeader.vue';
 import ColorCard from '@/components/cards/ColorCard.vue';

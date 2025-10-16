@@ -47,7 +47,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import { format } from 'date-fns';
-import type { Event } from '@/types/api';
+import type { Event } from '@/types';
 
 export default defineComponent({
   name: 'EventsByDate',

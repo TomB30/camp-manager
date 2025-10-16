@@ -98,7 +98,7 @@ import { defineComponent, type PropType } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import BaseModal from '@/components/BaseModal.vue';
 import DurationDisplay from '@/components/DurationDisplay.vue';
-import type { Activity } from '@/types/api';
+import type { Activity } from '@/types';
 
 export default defineComponent({
   name: 'ActivityDetailModal',

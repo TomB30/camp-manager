@@ -137,7 +137,8 @@
 // @ts-nocheck
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { HousingRoom, FamilyGroup, Camper } from '@/types/api';
+import type { HousingRoom, Camper } from '@/types/api';
+import type { FamilyGroup } from '@/types';
 import HousingRoomCard from '@/components/cards/HousingRoomCard.vue';
 import FilterBar from '@/components/FilterBar.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';

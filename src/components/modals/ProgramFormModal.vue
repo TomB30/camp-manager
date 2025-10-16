@@ -47,7 +47,7 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
-import type { Program } from '@/types/api';
+import type { Program } from '@/types';
 
 interface ProgramFormData {
   name: string;

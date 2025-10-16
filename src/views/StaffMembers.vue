@@ -166,7 +166,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { StaffMember, Event } from '@/types/api';
+import type { StaffMember, Event } from '@/types';
 import ViewHeader from '@/components/ViewHeader.vue';
 import AvatarInitials from '@/components/AvatarInitials.vue';
 import StaffCard from '@/components/cards/StaffCard.vue';

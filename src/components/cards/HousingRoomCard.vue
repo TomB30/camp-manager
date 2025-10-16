@@ -34,7 +34,8 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { HousingRoom, FamilyGroup } from '@/types/api';
+import type { HousingRoom } from '@/types';
+import type { FamilyGroup } from '@/types';
 import { useCampStore } from '@/stores/campStore';
 import { Bed, MapPin } from 'lucide-vue-next';
 

@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { Camper } from '@/types/api';
+import type { Camper } from '@/types';
 import AvatarInitials from '@/components/AvatarInitials.vue';
 
 export default defineComponent({

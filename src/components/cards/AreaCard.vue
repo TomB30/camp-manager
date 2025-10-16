@@ -37,7 +37,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { Area } from '@/types/api';
+import type { Area } from '@/types';
 import { MapPin, Users, Package, FileText } from 'lucide-vue-next';
 
 export default defineComponent({

@@ -1,4 +1,4 @@
-import type { Conflict, Event, Camper, StaffMember, Location, FamilyGroup, HousingRoom, Certification } from '@/types/api';
+import type { Conflict, Event, Camper, StaffMember, Location, HousingRoom, FamilyGroup, Certification } from '@/types';
 
 export class ConflictDetector {
   detectConflicts(

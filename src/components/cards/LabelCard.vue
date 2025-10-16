@@ -1,45 +1,62 @@
 <template>
-  <div class="color-card">
-    <div class="color-preview" :style="{ background: color.hexValue }">
-      <div class="color-overlay">
-        <button class="icon-btn" @click.stop="$emit('edit', color)" title="Edit">
+  <div class="label-card">
+    <div 
+      class="label-preview" 
+      :style="{ background: labelColor || '#6B7280' }"
+    >
+      <div class="label-overlay">
+        <button class="icon-btn" @click.stop="$emit('edit', label)" title="Edit">
           <Edit2 :size="18" />
         </button>
-        <button class="icon-btn" @click.stop="$emit('delete', color)" title="Delete">
+        <button class="icon-btn" @click.stop="$emit('delete', label)" title="Delete">
           <Trash2 :size="18" />
         </button>
       </div>
     </div>
-    <div class="color-info">
-      <div class="color-name">{{ color.name }}</div>
-      <div class="color-hex">{{ color.hexValue }}</div>
+    <div class="label-info">
+      <div class="label-name">{{ label.name }}</div>
+      <div v-if="label.description" class="label-description">{{ label.description }}</div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { CampColor } from '@/types';
+import type { Label } from '@/types';
+import { useCampStore } from '@/stores/campStore';
 import { Edit2, Trash2 } from 'lucide-vue-next';
 
 export default defineComponent({
-  name: 'ColorCard',
+  name: 'LabelCard',
   components: {
     Edit2,
     Trash2,
   },
   props: {
-    color: {
-      type: Object as PropType<CampColor>,
+    label: {
+      type: Object as PropType<Label>,
       required: true,
     },
   },
   emits: ['edit', 'delete'],
+  setup() {
+    const store = useCampStore();
+    return { store };
+  },
+  computed: {
+    labelColor(): string | undefined {
+      if (this.label.colorId) {
+        const color = this.store.getColorById(this.label.colorId);
+        return color?.hexValue;
+      }
+      return this.label.color;
+    },
+  },
 });
 </script>
 
 <style scoped>
-.color-card {
+.label-card {
   background: var(--surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
@@ -49,20 +66,20 @@ export default defineComponent({
   cursor: pointer;
 }
 
-.color-card:hover {
+.label-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.color-preview {
-  height: 120px;
+.label-preview {
+  height: 100px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.color-overlay {
+.label-overlay {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
@@ -74,7 +91,7 @@ export default defineComponent({
   transition: opacity 0.2s ease;
 }
 
-.color-card:hover .color-overlay {
+.label-card:hover .label-overlay {
   opacity: 1;
 }
 
@@ -98,27 +115,28 @@ export default defineComponent({
   transform: scale(1.1);
 }
 
-.color-info {
+.label-info {
   padding: 0.75rem 1rem;
-  text-align: center;
 }
 
-.color-name {
+.label-name {
   font-weight: 600;
   font-size: 0.9375rem;
   color: var(--text-primary);
   margin-bottom: 0.25rem;
 }
 
-.color-hex {
+.label-description {
   font-size: 0.8125rem;
   color: var(--text-secondary);
-  font-family: 'Courier New', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {
-  .color-preview {
-    height: 100px;
+  .label-preview {
+    height: 80px;
   }
   
   .icon-btn {

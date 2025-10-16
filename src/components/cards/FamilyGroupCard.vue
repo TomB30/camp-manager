@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { FamilyGroup } from '@/types/api';
+import type { FamilyGroup } from '@/types';
 import { Bed, Users } from 'lucide-vue-next';
 
 export default defineComponent({

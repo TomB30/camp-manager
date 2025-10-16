@@ -15,6 +15,7 @@
         v-model:searchQuery="searchQuery"
         v-model:filter-gender="filterGender"
         v-model:filter-age-range="filterAgeRange"
+        v-model:filter-label="filterLabel"
         :filters="groupsFilters"
         :filtered-count="filteredGroups.length"
         :total-count="store.camperGroups.length"
@@ -88,7 +89,7 @@
       >
         <template #cell-name="{ item }">
           <div class="group-name-content">
-            <ColorIndicator :color="item.color || '#6366F1'" type="dot" size="md" />
+            <ColorIndicator :color="getItemColor(item)" type="dot" size="md" />
             <div class="group-name-text">{{ item.name }}</div>
           </div>
         </template>
@@ -164,6 +165,7 @@
         :preview-count="getPreviewCount()"
         :family-groups="store.familyGroups"
         :campers="store.campers"
+        :labels="store.labels"
         @close="closeModal"
         @save="saveGroup"
       />
@@ -187,7 +189,7 @@
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
-import type { CamperGroup, CamperGroupFilter, Camper } from '@/types/api';
+import type { Camper, CamperGroup, CamperGroupFilter } from '@/types';
 import ViewHeader from '@/components/ViewHeader.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import ColorIndicator from '@/components/ColorIndicator.vue';
@@ -229,6 +231,7 @@ export default defineComponent({
       searchQuery: '',
       filterGender: '',
       filterAgeRange: '',
+      filterLabel: '',
       viewMode: 'grid' as 'grid' | 'table',
       currentPage: 1,
       pageSize: 10,
@@ -243,6 +246,7 @@ export default defineComponent({
           hasAllergies: undefined as boolean | undefined,
         },
         familyGroupIds: [] as string[],
+        labelIds: [] as string[],
       },
       groupColumns: [
         { key: 'name', label: 'Group Name', width: '200px' },
@@ -260,6 +264,15 @@ export default defineComponent({
     },
     groupsFilters(): Filter[] {
       return [
+        {
+          model: 'filterLabel',
+          value: this.filterLabel,
+          placeholder: 'Filter by Label',
+          options: this.store.labels.map(label => ({
+            label: label.name,
+            value: label.id,
+          })),
+        },
         {
           model: 'filterGender',
           value: this.filterGender,
@@ -302,6 +315,13 @@ export default defineComponent({
         );
       }
 
+      // Label filter
+      if (this.filterLabel) {
+        groups = groups.filter((group: CamperGroup) => 
+          group.labelIds && group.labelIds.includes(this.filterLabel)
+        );
+      }
+
       // Gender filter
       if (this.filterGender) {
         groups = groups.filter((group: CamperGroup) => 
@@ -332,6 +352,14 @@ export default defineComponent({
       this.searchQuery = '';
       this.filterGender = '';
       this.filterAgeRange = '';
+      this.filterLabel = '';
+    },
+    getItemColor(item: CamperGroup): string {
+      if (item.colorId) {
+        const color = this.store.getColorById(item.colorId);
+        return color?.hexValue || '#6366F1';
+      }
+      return '#6366F1';
     },
     getCampersCount(groupId: string): number {
       return this.store.getCampersInGroup(groupId).length;
@@ -404,7 +432,7 @@ export default defineComponent({
       this.formData = {
         name: this.selectedGroup.name,
         description: this.selectedGroup.description || '',
-        color: this.selectedGroup.color || '#6366F1',
+        color: this.getItemColor(this.selectedGroup),
         filters: {
           ageMin: this.selectedGroup.filters.ageMin,
           ageMax: this.selectedGroup.filters.ageMax,
@@ -412,6 +440,7 @@ export default defineComponent({
           hasAllergies: this.selectedGroup.filters.hasAllergies,
         },
         familyGroupIds: this.selectedGroup.familyGroupIds || [],
+        labelIds: this.selectedGroup.labelIds || [],
       };
       
       this.selectedGroupId = null;
@@ -425,13 +454,20 @@ export default defineComponent({
         hasAllergies: formData.filters.hasAllergies,
       };
 
+      // Find or create colorId from the selected color
+      let colorId = this.store.colors.find(c => c.hexValue === formData.color)?.id;
+      if (!colorId && this.store.colors.length > 0) {
+        colorId = this.store.colors[0].id; // fallback to first color
+      }
+
       const groupData: CamperGroup = {
         id: this.editingGroupId || `group-${Date.now()}`,
         name: formData.name,
         description: formData.description || undefined,
-        color: formData.color || '#6366F1',
+        colorId,
         filters,
         familyGroupIds: formData.familyGroupIds.length > 0 ? formData.familyGroupIds : undefined,
+        labelIds: formData.labelIds && formData.labelIds.length > 0 ? formData.labelIds : undefined,
         createdAt: this.editingGroupId 
           ? this.store.getCamperGroupById(this.editingGroupId)?.createdAt || new Date().toISOString()
           : new Date().toISOString(),
@@ -483,6 +519,7 @@ export default defineComponent({
           hasAllergies: undefined,
         },
         familyGroupIds: [],
+        labelIds: [],
       };
     }
   }

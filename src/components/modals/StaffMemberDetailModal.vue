@@ -84,7 +84,7 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import { useCampStore } from '@/stores/campStore';
-import type { StaffMember } from '@/types/api';
+import type { StaffMember } from '@/types';
 
 export default defineComponent({
   name: 'StaffMemberDetailModal',

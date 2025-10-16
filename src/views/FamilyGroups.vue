@@ -204,7 +204,7 @@
 // @ts-nocheck
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import type { FamilyGroup, Camper } from '@/types/api';
+import type { Camper, FamilyGroup } from '@/types';
 import { conflictDetector } from '@/services/conflicts';
 import { useToast } from '@/composables/useToast';
 import ViewHeader from '@/components/ViewHeader.vue';

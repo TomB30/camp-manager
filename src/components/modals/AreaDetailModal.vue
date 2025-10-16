@@ -60,7 +60,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
-import type { Area } from '@/types/api';
+import type { Area } from '@/types';
 
 export default defineComponent({
   name: 'AreaDetailModal',

@@ -81,7 +81,7 @@ import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import SelectionList from '@/components/SelectionList.vue';
 import { useCampStore } from '@/stores/campStore';
-import type { StaffMember } from '@/types/api';
+import type { StaffMember } from '@/types';
 
 interface StaffMemberFormData {
   firstName: string;

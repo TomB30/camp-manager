@@ -294,7 +294,8 @@ import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete
 import ColorPicker from '@/components/ColorPicker.vue';
 import SelectionList from '@/components/SelectionList.vue';
 import NumberInput from '@/components/NumberInput.vue';
-import type { Event, Location, CamperGroup, Camper, StaffMember, Certification } from '@/types/api';
+import type { Event, Location, Camper, StaffMember } from '@/types';
+import type { CamperGroup, Certification } from '@/types';
 import { type RecurrenceData, type DayOfWeek, formatRecurrenceRule, validateRecurrenceRule } from '@/utils/recurrence';
 
 interface EventFormData {

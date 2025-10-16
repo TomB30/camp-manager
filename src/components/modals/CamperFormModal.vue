@@ -91,7 +91,7 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import type { FamilyGroup, CampSession } from '@/types/api';
+import type { FamilyGroup, CampSession } from '@/types';
 
 interface CamperFormData {
   firstName: string;

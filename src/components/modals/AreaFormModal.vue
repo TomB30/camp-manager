@@ -58,7 +58,7 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import type { Area } from '@/types/api';
+import type { Area } from '@/types';
 
 interface AreaFormData {
   name: string;

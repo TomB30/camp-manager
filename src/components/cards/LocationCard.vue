@@ -36,7 +36,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { Location } from '@/types/api';
+import type { Location } from '@/types';
 import { useCampStore } from '@/stores/campStore';
 import { MapPin } from 'lucide-vue-next';
 

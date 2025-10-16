@@ -157,7 +157,7 @@ import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
 import { Calendar, Users, UsersRound } from 'lucide-vue-next';
 import ViewHeader from '@/components/ViewHeader.vue';
-import type { Event, Camper, Conflict } from '@/types/api';
+import type { Event, Camper, Conflict } from '@/types';
 
 export default defineComponent({
   name: 'Dashboard',

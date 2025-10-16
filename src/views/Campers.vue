@@ -133,8 +133,12 @@
         <template #family-group>
           <div v-if="selectedCamper?.familyGroupId && getFamilyGroup(selectedCamper.familyGroupId)">
             <div class="family-group-info">
-              <span class="badge" :style="{ background: getFamilyGroup(selectedCamper.familyGroupId)?.color || '#6366F1' }">
-                {{ getFamilyGroup(selectedCamper.familyGroupId)?.name }}
+              <span 
+                v-if="getFamilyGroup(selectedCamper.familyGroupId)" 
+                class="badge" 
+                :style="{ background: getFamilyGroupColor(getFamilyGroup(selectedCamper.familyGroupId)!) }"
+              >
+                {{ getFamilyGroup(selectedCamper.familyGroupId)!.name }}
               </span>
               <div v-if="getFamilyGroup(selectedCamper.familyGroupId)?.housingRoomId" class="text-xs text-secondary mt-1">
                 Room: {{ getSleepingRoomName(getFamilyGroup(selectedCamper.familyGroupId)?.housingRoomId || '') }}
@@ -181,7 +185,7 @@
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
 import { format } from 'date-fns';
-import type { Camper, FamilyGroup, Event } from '@/types/api';
+import type { Camper, Event, FamilyGroup } from '@/types';
 import ViewHeader from '@/components/ViewHeader.vue';
 import AvatarInitials from '@/components/AvatarInitials.vue';
 import CamperCard from '@/components/cards/CamperCard.vue';
@@ -330,6 +334,13 @@ export default defineComponent({
       this.filterGender = '';
       this.filterAge = '';
       this.filterSession = '';
+    },
+    getFamilyGroupColor(familyGroup: FamilyGroup): string {
+      if (familyGroup.colorId) {
+        const color = this.store.getColorById(familyGroup.colorId);
+        return color?.hexValue || '#6366F1';
+      }
+      return '#6366F1';
     },
     getCamperTodayEvents(camperId: string): Event[] {
       const today = new Date();

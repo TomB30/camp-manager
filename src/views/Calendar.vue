@@ -156,7 +156,7 @@ import EventFormModal from '@/components/modals/EventFormModal.vue';
 import DailyCalendarView from '@/components/DailyCalendarView.vue';
 import WeeklyCalendarView from '@/components/WeeklyCalendarView.vue';
 import MonthlyCalendarView from '@/components/MonthlyCalendarView.vue';
-import type { Event } from '@/types/api';
+import type { Event } from '@/types';
 import { generateRecurrenceDates, type RecurrenceData } from '@/utils/recurrence';
 
 export default defineComponent({

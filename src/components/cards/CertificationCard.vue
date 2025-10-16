@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { Certification } from '@/types/api';
+import type { Certification } from '@/types';
 import { Award, Clock, CheckCircle } from 'lucide-vue-next';
 
 export default defineComponent({

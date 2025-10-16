@@ -30,7 +30,7 @@ import { useCampStore } from '@/stores/campStore';
 import BaseModal from '@/components/BaseModal.vue';
 import ActivityForm, { type ActivityFormData } from '@/components/ActivityForm.vue';
 import { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import type { Activity } from '@/types/api';
+import type { Activity } from '@/types';
 
 export default defineComponent({
   name: 'ActivityFormModal',

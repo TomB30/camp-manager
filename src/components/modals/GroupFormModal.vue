@@ -27,6 +27,23 @@
           <ColorPicker v-model="localFormData.color" />
         </div>
 
+        <div class="form-group">
+          <label class="form-label">Labels (Optional)</label>
+          <p class="form-help-text">Tag this group with labels for easy filtering and organization</p>
+          <SelectionList
+            v-model="localFormData.labelIds"
+            :items="labels"
+            item-type="label"
+            placeholder="Add a label..."
+            empty-text="No labels assigned yet"
+            add-button-text="Add"
+            mode="multiple"
+            :get-label-fn="getLabelLabel"
+            :get-initials-fn="getLabelInitials"
+            :get-options-fn="getLabelOption"
+          />
+        </div>
+
         <div class="form-divider">
           <span>Filter Criteria</span>
         </div>
@@ -122,7 +139,9 @@ import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
-import type { FamilyGroup, Camper } from '@/types/api';
+import SelectionList from '@/components/SelectionList.vue';
+import type { Camper, FamilyGroup, Label } from '@/types';
+import { useCampStore } from '@/stores/campStore';
 
 interface GroupFilters {
   ageMin?: number;
@@ -137,6 +156,7 @@ interface GroupFormData {
   color: string;
   filters: GroupFilters;
   familyGroupIds?: string[];
+  labelIds?: string[];
 }
 
 export default defineComponent({
@@ -144,7 +164,8 @@ export default defineComponent({
   components: {
     BaseModal,
     Autocomplete,
-    ColorPicker
+    ColorPicker,
+    SelectionList
   },
   props: {
     show: {
@@ -170,12 +191,19 @@ export default defineComponent({
     campers: {
       type: Array as PropType<Camper[]>,
       required: true
+    },
+    labels: {
+      type: Array as PropType<Label[]>,
+      default: () => []
     }
   },
   emits: ['close', 'save'],
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData)),
+      localFormData: {
+        ...JSON.parse(JSON.stringify(this.formData)),
+        labelIds: this.formData.labelIds || []
+      },
       genderFilterOptions: [
         { label: 'Any Gender', value: '' },
         { label: 'Male', value: 'male' },
@@ -188,10 +216,18 @@ export default defineComponent({
       ] as AutocompleteOption[]
     };
   },
+  computed: {
+    store() {
+      return useCampStore();
+    }
+  },
   watch: {
     formData: {
       handler(newVal) {
-        this.localFormData = JSON.parse(JSON.stringify(newVal));
+        this.localFormData = {
+          ...JSON.parse(JSON.stringify(newVal)),
+          labelIds: newVal.labelIds || []
+        };
       },
       deep: true
     }
@@ -199,6 +235,27 @@ export default defineComponent({
   methods: {
     getCampersInFamilyGroup(familyGroupId: string): number {
       return this.campers.filter(c => c.familyGroupId === familyGroupId).length;
+    },
+    getLabelColor(label: Label): string {
+      if (label.colorId) {
+        const color = this.store.getColorById(label.colorId);
+        return color?.hexValue || '#6366F1';
+      }
+      return '#6366F1';
+    },
+    // SelectionList methods for labels
+    getLabelLabel(label: Label): string {
+      return label.name;
+    },
+    getLabelInitials(label: Label): string {
+      return label.name.substring(0, 2).toUpperCase();
+    },
+    getLabelOption(label: Label): AutocompleteOption {
+      return {
+        label: label.name,
+        value: label.id,
+        description: label.description
+      };
     },
     handleSave() {
       this.$emit('save', this.localFormData);

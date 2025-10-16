@@ -36,6 +36,7 @@
         <HousingTab v-else-if="activeTab === 'cabins'" key="cabins" />
         <CertificationsTab v-else-if="activeTab === 'certifications'" key="certifications" />
         <ColorsTab v-else-if="activeTab === 'colors'" key="colors" />
+        <LabelsTab v-else-if="activeTab === 'labels'" key="labels" />
       </Transition>
     </div>
   </div>
@@ -44,13 +45,14 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useCampStore } from '@/stores/campStore';
-import { Settings, Palette, CalendarDays, Map, Bed, Award, MapPin } from 'lucide-vue-next';
+import { Settings, Palette, CalendarDays, Map, Bed, Award, MapPin, Tag } from 'lucide-vue-next';
 import ColorsTab from '@/components/settings/ColorsTab.vue';
 import SessionsTab from '@/components/settings/SessionsTab.vue';
 import AreasTab from '@/components/settings/AreasTab.vue';
 import HousingTab from '@/components/settings/HousingTab.vue';
 import CertificationsTab from '@/components/settings/CertificationsTab.vue';
 import LocationsTab from '@/components/settings/LocationsTab.vue';
+import LabelsTab from '@/components/settings/LabelsTab.vue';
 
 export default defineComponent({
   name: 'CampSettings',
@@ -62,19 +64,20 @@ export default defineComponent({
     HousingTab,
     CertificationsTab,
     LocationsTab,
+    LabelsTab,
   },
   setup() {
     const store = useCampStore();
     return { store };
   },
-  data(): { activeTab: 'colors' | 'sessions' | 'locations' | 'cabins' | 'certifications' | 'rooms' } {
+  data(): { activeTab: 'colors' | 'sessions' | 'locations' | 'cabins' | 'certifications' | 'rooms' | 'labels' } {
     return {
       activeTab: 'sessions',
     };
   },
   computed: {
     tabs(): Array<{
-      id: 'colors' | 'sessions' | 'locations' | 'cabins' | 'certifications' | 'rooms';
+      id: 'colors' | 'sessions' | 'locations' | 'cabins' | 'certifications' | 'rooms' | 'labels';
       label: string;
       icon: any;
       count: number;
@@ -115,6 +118,12 @@ export default defineComponent({
           label: 'Colors',
           icon: Palette,
           count: this.store.colors.length,
+        },
+        {
+          id: 'labels' as const,
+          label: 'Labels',
+          icon: Tag,
+          count: this.store.labels.length,
         },
       ];
     },

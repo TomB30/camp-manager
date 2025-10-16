@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { CampSession } from '@/types/api';
+import type { CampSession } from '@/types';
 import { CalendarDays, Calendar, Clock, Users } from 'lucide-vue-next';
 
 export default defineComponent({

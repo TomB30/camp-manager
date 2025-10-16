@@ -65,7 +65,7 @@ import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import { useCampStore } from '@/stores/campStore';
-import type { Location } from '@/types/api';
+import type { Location } from '@/types';
 
 interface LocationFormData {
   name: string;

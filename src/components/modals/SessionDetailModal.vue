@@ -54,7 +54,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
-import type { CampSession } from '@/types/api';
+import type { CampSession } from '@/types';
 
 export default defineComponent({
   name: 'SessionDetailModal',
