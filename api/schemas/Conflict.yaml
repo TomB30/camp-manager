@@ -1,0 +1,14 @@
+type: object
+properties:
+  type:
+    type: string
+    enum: [room_overcapacity, event_overcapacity, camper_double_booked, staff_double_booked, missing_certification]
+  message:
+    type: string
+  entityId:
+    type: string
+  conflictingIds:
+    type: array
+    items:
+      type: string
+

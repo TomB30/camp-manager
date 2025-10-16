@@ -1,0 +1,28 @@
+parameters:
+  - $ref: '../parameters/id.yaml'
+get:
+  summary: Get sleeping room by ID
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/HousingRoom.yaml'
+put:
+  summary: Update sleeping room
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/HousingRoom.yaml'
+  responses:
+    '200':
+      description: Updated
+delete:
+  summary: Delete sleeping room
+  responses:
+    '204':
+      description: Deleted
+

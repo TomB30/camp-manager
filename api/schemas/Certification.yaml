@@ -1,0 +1,26 @@
+type: object
+required:
+  - id
+  - name
+  - expirationRequired
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+  description:
+    type: string
+  expirationRequired:
+    type: boolean
+    description: Whether this certification expires
+  validityPeriodMonths:
+    type: integer
+    description: How long the certification is valid for
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time
+

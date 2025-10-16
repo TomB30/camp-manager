@@ -1,0 +1,73 @@
+openapi: 3.0.3
+info:
+  title: Summer Camp Manager API
+  version: 1.0.0
+  description: API for managing summer camp operations including campers, events, rooms, and staff members
+
+components:
+  schemas:
+    Camper:
+      $ref: './schemas/Camper.yaml'
+    StaffMember:
+      $ref: './schemas/StaffMember.yaml'
+    Location:
+      $ref: './schemas/Location.yaml'
+    HousingRoom:
+      $ref: './schemas/HousingRoom.yaml'
+    Area:
+      $ref: './schemas/Area.yaml'
+    Event:
+      $ref: './schemas/Event.yaml'
+    Conflict:
+      $ref: './schemas/Conflict.yaml'
+    Label:
+      $ref: './schemas/Label.yaml'
+    CamperGroupFilter:
+      $ref: './schemas/CamperGroupFilter.yaml'
+    CamperGroup:
+      $ref: './schemas/CamperGroup.yaml'
+    FamilyGroup:
+      $ref: './schemas/FamilyGroup.yaml'
+    Activity:
+      $ref: './schemas/Activity.yaml'
+    Program:
+      $ref: './schemas/Program.yaml'
+    Certification:
+      $ref: './schemas/Certification.yaml'
+    CampColor:
+      $ref: './schemas/CampColor.yaml'
+    CampSession:
+      $ref: './schemas/CampSession.yaml'
+
+paths:
+  /campers:
+    $ref: './paths/campers.yaml'
+  /campers/{id}:
+    $ref: './paths/campersById.yaml'
+  /staff-members:
+    $ref: './paths/staff-members.yaml'
+  /staff-members/{id}:
+    $ref: './paths/staff-membersById.yaml'
+  /rooms:
+    $ref: './paths/rooms.yaml'
+  /rooms/{id}:
+    $ref: './paths/roomsById.yaml'
+  /events:
+    $ref: './paths/events.yaml'
+  /events/{id}:
+    $ref: './paths/eventsById.yaml'
+  /events/{id}/enroll:
+    $ref: './paths/eventsByIdEnroll.yaml'
+  /events/{id}/unenroll:
+    $ref: './paths/eventsByIdUnenroll.yaml'
+  /conflicts:
+    $ref: './paths/conflicts.yaml'
+  /sleeping-rooms:
+    $ref: './paths/sleeping-rooms.yaml'
+  /sleeping-rooms/{id}:
+    $ref: './paths/sleeping-roomsById.yaml'
+  /areas:
+    $ref: './paths/areas.yaml'
+  /areas/{id}:
+    $ref: './paths/areasById.yaml'
+

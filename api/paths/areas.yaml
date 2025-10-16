@@ -1,0 +1,23 @@
+get:
+  summary: List all areas
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/Area.yaml'
+post:
+  summary: Create a new area
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/Area.yaml'
+  responses:
+    '201':
+      description: Created
+

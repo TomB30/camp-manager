@@ -1,0 +1,29 @@
+type: object
+required:
+  - id
+  - name
+  - capacity
+  - type
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+  capacity:
+    type: integer
+    minimum: 1
+  type:
+    type: string
+    enum: [classroom, activity, sports, dining, outdoor, arts]
+  areaId:
+    type: string
+    format: uuid
+    description: ID of the physical area where this location is situated
+  equipment:
+    type: array
+    items:
+      type: string
+  notes:
+    type: string
+

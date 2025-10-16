@@ -1,0 +1,49 @@
+type: object
+required:
+  - id
+  - firstName
+  - lastName
+  - age
+  - gender
+  - parentContact
+properties:
+  id:
+    type: string
+    format: uuid
+  firstName:
+    type: string
+  lastName:
+    type: string
+  age:
+    type: integer
+    minimum: 5
+    maximum: 18
+  gender:
+    type: string
+    enum: [male, female]
+  parentContact:
+    type: string
+  allergies:
+    type: array
+    items:
+      type: string
+  medicalNotes:
+    type: string
+  photoUrl:
+    type: string
+  registrationDate:
+    type: string
+    format: date-time
+  housingRoomId:
+    type: string
+    format: uuid
+    description: ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
+  familyGroupId:
+    type: string
+    format: uuid
+    description: ID of the family group this camper belongs to
+  sessionId:
+    type: string
+    format: uuid
+    description: ID of the camp session this camper is registered for
+

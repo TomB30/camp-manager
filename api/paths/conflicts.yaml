@@ -1,0 +1,12 @@
+get:
+  summary: Check for scheduling conflicts
+  responses:
+    '200':
+      description: List of conflicts
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/Conflict.yaml'
+

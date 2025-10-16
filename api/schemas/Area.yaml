@@ -1,0 +1,32 @@
+type: object
+required:
+  - id
+  - name
+  - type
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+  description:
+    type: string
+  type:
+    type: string
+    enum: [indoor, outdoor, facility, field, water, other]
+  capacity:
+    type: integer
+    minimum: 1
+  equipment:
+    type: array
+    items:
+      type: string
+  notes:
+    type: string
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time
+

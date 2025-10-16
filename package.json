@@ -7,7 +7,13 @@
     "dev": "vite",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
-    "generate-types": "openapi-typescript openapi.yaml -o src/types/api.ts"
+    "api:validate": "npx swagger-cli validate api/openapi.yaml",
+    "api:lint": "npx @redocly/cli lint api/openapi.yaml",
+    "api:bundle": "npx @redocly/cli bundle api/openapi.yaml -o api/openapi-bundled.yaml",
+    "api:serve": "cd api && python3 -m http.server 8080",
+    "api:generate-types": "openapi-typescript api/openapi.yaml -o src/types/api.ts",
+    "api:build": "npm run api:lint && npm run api:bundle",
+    "generate-types": "npm run api:generate-types"
   },
   "dependencies": {
     "date-fns": "^3.3.1",

@@ -67,6 +67,28 @@ npm run build
 
 The built files will be in the `dist` directory.
 
+### API Documentation & Commands
+
+The OpenAPI specification is organized in the `api/` directory. See [api/README.md](./api/README.md) for complete documentation.
+
+**Useful API commands:**
+```bash
+# View interactive API documentation
+npm run api:serve
+# Then open http://localhost:8080/swagger-ui.html
+
+# Validate the OpenAPI specification
+npm run api:validate
+
+# Bundle all API files into a single file
+npm run api:bundle
+
+# Generate TypeScript types from OpenAPI spec
+npm run api:generate-types
+```
+
+For more details and workflows, see [api/QUICK_START.md](./api/QUICK_START.md).
+
 ## Project Structure
 
 ```
@@ -93,7 +115,11 @@ camp-manager/
 │   ├── style.css          # Global styles
 │   ├── App.vue            # Root component
 │   └── main.ts            # Application entry point
-├── openapi.yaml           # OpenAPI specification
+├── api/                   # OpenAPI specification (modular)
+│   ├── openapi.yaml       # Main API entry point
+│   ├── schemas/           # Entity definitions
+│   ├── paths/             # API endpoints
+│   └── parameters/        # Reusable parameters
 ├── index.html
 ├── package.json
 ├── tsconfig.json

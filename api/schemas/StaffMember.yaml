@@ -1,0 +1,40 @@
+type: object
+required:
+  - id
+  - firstName
+  - lastName
+  - role
+properties:
+  id:
+    type: string
+    format: uuid
+  firstName:
+    type: string
+  lastName:
+    type: string
+  role:
+    type: string
+    enum: [counselor, supervisor, director, nurse, instructor]
+  email:
+    type: string
+    format: email
+  phone:
+    type: string
+  certifications:
+    type: array
+    items:
+      type: string
+    description: Staff certifications (deprecated - use certificationIds)
+  certificationIds:
+    type: array
+    items:
+      type: string
+      format: uuid
+    description: IDs of certifications this staff member holds
+  photoUrl:
+    type: string
+  managerId:
+    type: string
+    format: uuid
+    description: ID of the staff member who manages this person
+

@@ -1,0 +1,51 @@
+type: object
+required:
+  - id
+  - name
+  - programIds
+  - durationMinutes
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+  description:
+    type: string
+  programIds:
+    type: array
+    items:
+      type: string
+      format: uuid
+    description: References to programs this activity belongs to
+  durationMinutes:
+    type: integer
+    description: Default duration
+  defaultLocationId:
+    type: string
+    format: uuid
+    description: Default location
+  requiredCertifications:
+    type: array
+    items:
+      type: string
+    description: Required staff certifications
+  minStaff:
+    type: integer
+    description: Minimum number of staff required
+  maxStaff:
+    type: integer
+    description: Maximum number of staff allowed
+  defaultCapacity:
+    type: integer
+    description: Default camper capacity
+  colorId:
+    type: string
+    format: uuid
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time
+

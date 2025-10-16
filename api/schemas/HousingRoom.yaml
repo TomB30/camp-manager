@@ -1,0 +1,20 @@
+type: object
+required:
+  - id
+  - name
+  - beds
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+  beds:
+    type: integer
+    minimum: 1
+    description: Number of beds in this housing room
+  areaId:
+    type: string
+    format: uuid
+    description: ID of the physical area where this housing room is located
+

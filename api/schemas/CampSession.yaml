@@ -1,0 +1,32 @@
+type: object
+required:
+  - id
+  - name
+  - startDate
+  - endDate
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+  startDate:
+    type: string
+    format: date
+    description: ISO date string
+  endDate:
+    type: string
+    format: date
+    description: ISO date string
+  description:
+    type: string
+  maxCampers:
+    type: integer
+    description: Optional max capacity for this session
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time
+

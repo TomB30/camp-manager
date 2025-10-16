@@ -1,0 +1,28 @@
+parameters:
+  - $ref: '../parameters/id.yaml'
+get:
+  summary: Get camper by ID
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/Camper.yaml'
+put:
+  summary: Update camper
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/Camper.yaml'
+  responses:
+    '200':
+      description: Updated
+delete:
+  summary: Delete camper
+  responses:
+    '204':
+      description: Deleted
+

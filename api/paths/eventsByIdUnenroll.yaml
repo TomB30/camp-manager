@@ -1,0 +1,18 @@
+parameters:
+  - $ref: '../parameters/id.yaml'
+post:
+  summary: Unenroll a camper from an event
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            camperId:
+              type: string
+              format: uuid
+  responses:
+    '200':
+      description: Unenrolled
+

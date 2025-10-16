@@ -1,0 +1,23 @@
+get:
+  summary: List all staff members
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/StaffMember.yaml'
+post:
+  summary: Create a new staff member
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/StaffMember.yaml'
+  responses:
+    '201':
+      description: Created
+
