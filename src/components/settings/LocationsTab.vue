@@ -18,7 +18,7 @@
       v-model:filter-capacity="filterCapacity"
       :filters="locationFilters"
       :filtered-count="filteredLocations.length"
-      :total-count="store.locations.length"
+      :total-count="locationsStore.locations.length"
       @clear="clearFilters"
     >
       <template #prepend>
@@ -28,8 +28,8 @@
 
     <!-- Empty State -->
     <EmptyState
-      v-if="store.locations.length === 0"
-      icon="MapPin"
+      v-if="locationsStore.locations.length === 0"
+      :icon="MapPin"
       title="No locations configured"
       message="Add your first location to start organizing your camp spaces."
       action-text="+ Location"
@@ -53,7 +53,11 @@
         @click="selectLocation(location.id)"
       >
         <template #icon>
-          <component :is="LocationTypeIcon(location.type)" :size="24" :stroke-width="2" />
+          <component
+            :is="LocationTypeIcon(location.type)"
+            :size="24"
+            :stroke-width="2"
+          />
         </template>
       </LocationCard>
     </div>
@@ -69,52 +73,72 @@
     >
       <template #cell-name="{ item }">
         <div class="location-name-content">
-          <div class="location-icon-sm" :style="{ background: getLocationTypeColor(item.type) }">
-            <component :is="LocationTypeIcon(item.type)" :size="18" :stroke-width="2" />
+          <div
+            class="location-icon-sm"
+            :style="{ background: getLocationTypeColor(item.type) }"
+          >
+            <component
+              :is="LocationTypeIcon(item.type)"
+              :size="18"
+              :stroke-width="2"
+            />
           </div>
           <div class="location-name">{{ item.name }}</div>
         </div>
       </template>
-      
+
       <template #cell-type="{ item }">
-        <span class="badge badge-primary badge-sm">{{ formatLocationType(item.type) }}</span>
+        <span class="badge badge-primary badge-sm">{{
+          formatLocationType(item.type)
+        }}</span>
       </template>
-      
+
       <template #cell-location="{ item }">
         <span v-if="item.areaId">
-          {{ store.getAreaById(item.areaId)?.name || 'Unknown' }}
+          {{ areasStore.getAreaById(item.areaId)?.name || "Unknown" }}
         </span>
         <span v-else class="text-secondary">No area</span>
       </template>
-      
+
       <template #cell-equipment="{ item }">
-        <span v-if="item.equipment && item.equipment.length > 0" class="badge badge-success badge-sm">
+        <span
+          v-if="item.equipment && item.equipment.length > 0"
+          class="badge badge-success badge-sm"
+        >
           {{ item.equipment.length }} item(s)
         </span>
         <span v-else class="text-secondary">None</span>
       </template>
-      
+
       <template #cell-usage="{ item }">
         <div class="usage-indicator">
           <div class="usage-bar-sm">
-            <div 
+            <div
               class="usage-fill-sm"
-              :style="{ 
+              :style="{
                 width: `${getLocationUsage(item.id)}%`,
-                background: getLocationUsage(item.id) > 80 ? 'var(--error-color)' : 'var(--success-color)'
+                background:
+                  getLocationUsage(item.id) > 80
+                    ? 'var(--error-color)'
+                    : 'var(--success-color)',
               }"
             ></div>
           </div>
-          <span class="usage-text">{{ getLocationUsage(item.id).toFixed(0) }}%</span>
+          <span class="usage-text"
+            >{{ getLocationUsage(item.id).toFixed(0) }}%</span
+          >
         </div>
       </template>
-      
+
       <template #cell-events="{ item }">
         <span class="event-count">{{ getLocationEvents(item.id).length }}</span>
       </template>
-      
+
       <template #cell-actions="{ item }">
-        <button class="btn btn-sm btn-secondary" @click.stop="selectLocation(item.id)">
+        <button
+          class="btn btn-sm btn-secondary"
+          @click.stop="selectLocation(item.id)"
+        >
           View Details
         </button>
       </template>
@@ -129,8 +153,10 @@
       @delete="deleteLocationConfirm"
     >
       <template #events-list>
-        <EventsByDate 
-          :events="selectedLocation ? getLocationEvents(selectedLocation.id) : []"
+        <EventsByDate
+          :events="
+            selectedLocation ? getLocationEvents(selectedLocation.id) : []
+          "
           :show-enrollment="true"
           empty-message="No events scheduled"
         />
@@ -160,34 +186,34 @@
 </template>
 
 <script lang="ts">
-// @ts-nocheck
-import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
-import type { Location } from '@/types';
-import LocationCard from '@/components/cards/LocationCard.vue';
-import FilterBar, { type Filter } from '@/components/FilterBar.vue';
-import EventsByDate from '@/components/EventsByDate.vue';
-import ConfirmModal from '@/components/ConfirmModal.vue';
-import DataTable from '@/components/DataTable.vue';
-import ViewToggle from '@/components/ViewToggle.vue';
-import LocationDetailModal from '@/components/modals/LocationDetailModal.vue';
-import LocationFormModal from '@/components/modals/LocationFormModal.vue';
-import EmptyState from '@/components/EmptyState.vue';
-import TabHeader from '@/components/settings/TabHeader.vue';
-import { 
-  BookOpen, 
-  Target, 
-  Dumbbell, 
-  Utensils, 
-  Trees, 
-  Palette, 
+import { defineComponent } from "vue";
+import { useLocationsStore, useAreasStore, useEventsStore } from "@/stores";
+import type { Location } from "@/types";
+import LocationCard from "@/components/cards/LocationCard.vue";
+import FilterBar, { type Filter } from "@/components/FilterBar.vue";
+import EventsByDate from "@/components/EventsByDate.vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
+import DataTable from "@/components/DataTable.vue";
+import ViewToggle from "@/components/ViewToggle.vue";
+import LocationDetailModal from "@/components/modals/LocationDetailModal.vue";
+import LocationFormModal from "@/components/modals/LocationFormModal.vue";
+import EmptyState from "@/components/EmptyState.vue";
+import TabHeader from "@/components/settings/TabHeader.vue";
+import {
+  BookOpen,
+  Target,
+  Dumbbell,
+  Utensils,
+  Trees,
+  Palette,
   Home,
-  Plus
-} from 'lucide-vue-next';
-import { useToast } from '@/composables/useToast';
+  Plus,
+  MapPin,
+} from "lucide-vue-next";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
-  name: 'LocationsTab',
+  name: "LocationsTab",
   components: {
     LocationCard,
     FilterBar,
@@ -199,12 +225,13 @@ export default defineComponent({
     LocationFormModal,
     EmptyState,
     TabHeader,
-    Plus,
   },
   setup() {
-    const store = useCampStore();
+    const locationsStore = useLocationsStore();
     const toast = useToast();
-    return { store, toast };
+    const areasStore = useAreasStore();
+    const eventsStore = useEventsStore();
+    return { locationsStore, toast, areasStore, eventsStore, MapPin, Plus };
   },
   data() {
     return {
@@ -213,95 +240,102 @@ export default defineComponent({
       editingLocationId: null as string | null,
       showConfirmModal: false,
       confirmAction: null as (() => void) | null,
-      viewMode: 'grid' as 'grid' | 'table',
+      viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
       formData: {
-        name: '',
-        type: 'classroom' as Location['type'],
+        name: "",
+        type: "classroom" as Location["type"],
         capacity: 20,
         areaId: undefined as string | undefined,
         equipment: [] as string[],
-        notes: '',
+        notes: "",
       },
-      searchQuery: '',
-      filterType: '',
-      filterCapacity: '',
+      searchQuery: "",
+      filterType: "",
+      filterCapacity: "",
       locationColumns: [
-        { key: 'name', label: 'Location Name', width: '200px' },
-        { key: 'type', label: 'Type', width: '120px' },
-        { key: 'capacity', label: 'Capacity', width: '100px' },
-        { key: 'location', label: 'Area', width: '180px' },
-        { key: 'equipment', label: 'Equipment', width: '120px' },
-        { key: 'usage', label: 'Usage', width: '140px' },
-        { key: 'events', label: 'Events', width: '100px' },
-        { key: 'actions', label: 'Actions', width: '140px' },
-      ]
+        { key: "name", label: "Location Name", width: "200px" },
+        { key: "type", label: "Type", width: "120px" },
+        { key: "capacity", label: "Capacity", width: "100px" },
+        { key: "location", label: "Area", width: "180px" },
+        { key: "equipment", label: "Equipment", width: "120px" },
+        { key: "usage", label: "Usage", width: "140px" },
+        { key: "events", label: "Events", width: "100px" },
+        { key: "actions", label: "Actions", width: "140px" },
+      ],
     };
   },
   computed: {
     locationFilters(): Filter[] {
       return [
         {
-          model: 'filterType',
+          model: "filterType",
           value: this.filterType,
-          placeholder: 'Filter by Type',
+          placeholder: "Filter by Type",
           options: [
-            { label: 'Classroom', value: 'classroom' },
-            { label: 'Outdoor', value: 'outdoor' },
-            { label: 'Sports', value: 'sports' },
-            { label: 'Arts', value: 'arts' },
-            { label: 'Dining', value: 'dining' },
+            { label: "Classroom", value: "classroom" },
+            { label: "Outdoor", value: "outdoor" },
+            { label: "Sports", value: "sports" },
+            { label: "Arts", value: "arts" },
+            { label: "Dining", value: "dining" },
           ],
         },
         {
-          model: 'filterCapacity',
+          model: "filterCapacity",
           value: this.filterCapacity,
-          placeholder: 'Filter by Capacity',
+          placeholder: "Filter by Capacity",
           options: [
-            { label: 'Small (< 15)', value: 'small' },
-            { label: 'Medium (15-30)', value: 'medium' },
-            { label: 'Large (> 30)', value: 'large' },
+            { label: "Small (< 15)", value: "small" },
+            { label: "Medium (15-30)", value: "medium" },
+            { label: "Large (> 30)", value: "large" },
           ],
         },
       ];
     },
     selectedLocation(): Location | null {
       if (!this.selectedLocationId) return null;
-      return this.store.getLocationById(this.selectedLocationId) || null;
+      return (
+        this.locationsStore.getLocationById(this.selectedLocationId) || null
+      );
     },
     filteredLocations(): Location[] {
-      let locations: Location[] = this.store.locations;
+      let locations: Location[] = this.locationsStore.locations;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         locations = locations.filter((location: Location) => {
-          const areaName = location.areaId 
-            ? this.store.getAreaById(location.areaId)?.name 
+          const areaName = location.areaId
+            ? this.areasStore.getAreaById(location.areaId)?.name
             : undefined;
-          return location.name.toLowerCase().includes(query) ||
-            (areaName && areaName.toLowerCase().includes(query));
+          return (
+            location.name.toLowerCase().includes(query) ||
+            (areaName && areaName.toLowerCase().includes(query))
+          );
         });
       }
 
       // Type filter
       if (this.filterType) {
-        locations = locations.filter((location: Location) => location.type === this.filterType);
+        locations = locations.filter(
+          (location: Location) => location.type === this.filterType
+        );
       }
 
       // Capacity filter
       if (this.filterCapacity) {
         locations = locations.filter((location: Location) => {
-          if (this.filterCapacity === 'small') return location.capacity < 15;
-          if (this.filterCapacity === 'medium') return location.capacity >= 15 && location.capacity <= 30;
-          if (this.filterCapacity === 'large') return location.capacity > 30;
+          if (this.filterCapacity === "small") return location.capacity < 15;
+          if (this.filterCapacity === "medium")
+            return location.capacity >= 15 && location.capacity <= 30;
+          if (this.filterCapacity === "large") return location.capacity > 30;
           return true;
         });
       }
 
       return locations;
-    }
+    },
   },
   watch: {
     searchQuery() {
@@ -312,19 +346,19 @@ export default defineComponent({
     },
     filterCapacity() {
       this.currentPage = 1;
-    }
+    },
   },
   methods: {
     clearFilters() {
-      this.searchQuery = '';
-      this.filterType = '';
-      this.filterCapacity = '';
+      this.searchQuery = "";
+      this.filterType = "";
+      this.filterCapacity = "";
     },
     formatLocationType(type: string): string {
       return type.charAt(0).toUpperCase() + type.slice(1);
     },
-    LocationTypeIcon(type: Location['type']) {
-      const iconMap: Record<Location['type'], any> = {
+    LocationTypeIcon(type: Location["type"]) {
+      const iconMap: Record<Location["type"], any> = {
         classroom: BookOpen,
         activity: Target,
         sports: Dumbbell,
@@ -334,32 +368,35 @@ export default defineComponent({
       };
       return iconMap[type] || Home;
     },
-    getLocationTypeColor(type: Location['type']): string {
-      const colors: Record<Location['type'], string> = {
-        classroom: '#2196F3',
-        activity: '#4CAF50',
-        sports: '#FF9800',
-        dining: '#795548',
-        outdoor: '#8BC34A',
-        arts: '#9C27B0',
+    getLocationTypeColor(type: Location["type"]): string {
+      const colors: Record<Location["type"], string> = {
+        classroom: "#2196F3",
+        activity: "#4CAF50",
+        sports: "#FF9800",
+        dining: "#795548",
+        outdoor: "#8BC34A",
+        arts: "#9C27B0",
       };
-      return colors[type] || '#757575';
+      return colors[type] || "#757575";
     },
     getLocationEvents(locationId: string) {
-      return this.store.locationEvents(locationId);
+      return this.eventsStore.locationEvents(locationId);
     },
     getLocationUsage(locationId: string): number {
-      const locationEvents = this.store.locationEvents(locationId);
+      const locationEvents = this.eventsStore.locationEvents(locationId);
       if (locationEvents.length === 0) return 0;
-      
-      const location = this.store.getLocationById(locationId);
+
+      const location = this.locationsStore.getLocationById(locationId);
       if (!location) return 0;
-      
+
       // Calculate average capacity usage
       const totalUsage = locationEvents.reduce((sum, event) => {
-        return sum + ((event.enrolledCamperIds?.length || 0) / location.capacity) * 100;
+        return (
+          sum +
+          ((event.enrolledCamperIds?.length || 0) / location.capacity) * 100
+        );
       }, 0);
-      
+
       return totalUsage / locationEvents.length;
     },
     selectLocation(locationId: string) {
@@ -367,7 +404,7 @@ export default defineComponent({
     },
     editLocation() {
       if (!this.selectedLocation) return;
-      
+
       this.editingLocationId = this.selectedLocation.id;
       this.formData = {
         name: this.selectedLocation.name,
@@ -375,13 +412,15 @@ export default defineComponent({
         capacity: this.selectedLocation.capacity,
         areaId: this.selectedLocation.areaId,
         equipment: this.selectedLocation.equipment || [],
-        notes: this.selectedLocation.notes || '',
+        notes: this.selectedLocation.notes || "",
       };
-      
+
       this.selectedLocationId = null;
       this.showModal = true;
     },
-    async saveLocation(formData: typeof this.formData & { equipment: string[] }) {
+    async saveLocation(
+      formData: typeof this.formData & { equipment: string[] }
+    ) {
       try {
         const locationData: Location = {
           id: this.editingLocationId || `location-${Date.now()}`,
@@ -394,16 +433,16 @@ export default defineComponent({
         };
 
         if (this.editingLocationId) {
-          await this.store.updateLocation(locationData);
-          this.toast.success('Location updated successfully');
+          await this.locationsStore.updateLocation(locationData);
+          this.toast.success("Location updated successfully");
         } else {
-          await this.store.addLocation(locationData);
-          this.toast.success('Location added successfully');
+          await this.locationsStore.addLocation(locationData);
+          this.toast.success("Location added successfully");
         }
 
         this.closeModal();
       } catch (error: any) {
-        this.toast.error(error.message || 'Failed to save location');
+        this.toast.error(error.message || "Failed to save location");
       }
     },
     deleteLocationConfirm() {
@@ -411,11 +450,11 @@ export default defineComponent({
       this.confirmAction = async () => {
         if (this.selectedLocationId) {
           try {
-            await this.store.deleteLocation(this.selectedLocationId);
-            this.toast.success('Location deleted successfully');
+            await this.locationsStore.deleteLocation(this.selectedLocationId);
+            this.toast.success("Location deleted successfully");
             this.selectedLocationId = null;
           } catch (error: any) {
-            this.toast.error(error.message || 'Failed to delete location');
+            this.toast.error(error.message || "Failed to delete location");
           }
         }
       };
@@ -436,15 +475,15 @@ export default defineComponent({
       this.showModal = false;
       this.editingLocationId = null;
       this.formData = {
-        name: '',
-        type: 'classroom',
+        name: "",
+        type: "classroom",
         capacity: 20,
         areaId: undefined,
         equipment: [],
-        notes: '',
+        notes: "",
       };
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -543,4 +582,3 @@ export default defineComponent({
   }
 }
 </style>
-

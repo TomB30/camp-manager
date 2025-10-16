@@ -10,7 +10,7 @@
         v-model:selected-certification-ids="selectedCertificationIds"
         v-model:is-custom-duration="isCustomDuration"
         :room-options="roomOptions"
-        :certifications="store.certifications"
+        :certifications="certificationsStore.certifications"
         @submit="handleSave"
       />
     </template>
@@ -26,7 +26,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useProgramsStore, useLocationsStore, useColorsStore, useCertificationsStore } from '@/stores';
 import BaseModal from '@/components/BaseModal.vue';
 import ActivityForm, { type ActivityFormData } from '@/components/ActivityForm.vue';
 import { type AutocompleteOption } from '@/components/Autocomplete.vue';
@@ -57,6 +57,13 @@ export default defineComponent({
     },
   },
   emits: ['close', 'save'],
+  setup() {
+    const programsStore = useProgramsStore();
+    const locationsStore = useLocationsStore();
+    const colorsStore = useColorsStore();
+    const certificationsStore = useCertificationsStore();
+    return { programsStore, locationsStore, colorsStore, certificationsStore };
+  },
   data() {
     return {
       localFormData: {
@@ -75,14 +82,11 @@ export default defineComponent({
     };
   },
   computed: {
-    store() {
-      return useCampStore();
-    },
     isEditing() {
       return !!this.activity;
     },
     roomOptions(): AutocompleteOption[] {
-      return this.store.locations.map(room => ({
+      return this.locationsStore.locations.map(room => ({
         value: room.id,
         label: `${room.name} (${room.type})`,
       }));
@@ -101,6 +105,13 @@ export default defineComponent({
   methods: {
     resetForm() {
       if (this.activity) {
+        // Get color hex value from colorId
+        let colorHex = '#6366F1';
+        if (this.activity.colorId) {
+          const color = this.colorsStore.getColorById(this.activity.colorId);
+          colorHex = color?.hexValue || '#6366F1';
+        }
+        
         this.localFormData = {
           name: this.activity.name,
           description: this.activity.description || '',
@@ -110,7 +121,7 @@ export default defineComponent({
           minStaff: this.activity.minStaff || 0,
           maxStaff: this.activity.maxStaff || 0,
           defaultCapacity: this.activity.defaultCapacity || 0,
-          color: this.activity.color || '#6366F1',
+          color: colorHex,
         };
         // Convert certification names to IDs for the SelectionList
         this.selectedCertificationIds = this.getCertificationIdsFromNames(
@@ -137,7 +148,7 @@ export default defineComponent({
     getCertificationIdsFromNames(names: string[]): string[] {
       return names
         .map(name => {
-          const cert = this.store.certifications.find(c => c.name === name);
+          const cert = this.certificationsStore.certifications.find(c => c.name === name);
           return cert ? cert.id : '';
         })
         .filter(id => id !== '');
@@ -145,7 +156,7 @@ export default defineComponent({
     getCertificationNamesFromIds(ids: string[]): string[] {
       return ids
         .map(id => {
-          const cert = this.store.getCertificationById(id);
+          const cert = this.certificationsStore.getCertificationById(id);
           return cert ? cert.name : '';
         })
         .filter(name => name !== '');
@@ -173,6 +184,13 @@ export default defineComponent({
       // Convert selected certification IDs to names
       const certifications = this.getCertificationNamesFromIds(this.selectedCertificationIds);
       
+      // Find or create color ID for the selected color
+      let colorId: string | undefined = this.activity?.colorId;
+      if (this.localFormData.color) {
+        const color = this.colorsStore.colors.find(c => c.hexValue === this.localFormData.color);
+        colorId = color?.id;
+      }
+
       const activityData: Activity = {
         id: this.activity?.id || crypto.randomUUID(),
         name: this.localFormData.name,
@@ -184,7 +202,7 @@ export default defineComponent({
         minStaff: this.localFormData.minStaff || undefined,
         maxStaff: this.localFormData.maxStaff || undefined,
         defaultCapacity: this.localFormData.defaultCapacity || undefined,
-        color: this.localFormData.color || undefined,
+        colorId: colorId,
         createdAt: this.activity?.createdAt || now,
         updatedAt: now,
       };

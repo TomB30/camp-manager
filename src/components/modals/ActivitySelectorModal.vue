@@ -43,7 +43,7 @@
             v-model:selected-certification-ids="selectedCertificationIds"
             v-model:is-custom-duration="isCustomDuration"
             :room-options="roomOptions"
-            :certifications="store.certifications"
+            :certifications="certificationsStore.certifications"
             :compact-mode="true"
             @submit="handleCreateNew"
           />
@@ -120,7 +120,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useActivitiesStore, useProgramsStore, useLocationsStore, useColorsStore, useCertificationsStore } from '@/stores';
 import type { Activity } from '@/types';
 import BaseModal from '@/components/BaseModal.vue';
 import ActivityForm, { type ActivityFormData } from '@/components/ActivityForm.vue';
@@ -148,6 +148,14 @@ export default defineComponent({
     },
   },
   emits: ['close', 'create-new', 'add-existing'],
+  setup() {
+    const activitiesStore = useActivitiesStore();
+    const programsStore = useProgramsStore();
+    const locationsStore = useLocationsStore();
+    const colorsStore = useColorsStore();
+    const certificationsStore = useCertificationsStore();
+    return { activitiesStore, programsStore, locationsStore, colorsStore, certificationsStore };
+  },
   data() {
     return {
       mode: 'create' as 'create' | 'existing',
@@ -169,18 +177,15 @@ export default defineComponent({
     };
   },
   computed: {
-    store() {
-      return useCampStore();
-    },
     programActivities() {
-      return this.store.getActivitiesInProgram(this.programId);
+      return this.activitiesStore.getActivitiesInProgram(this.programId);
     },
     programActivityIds() {
       return new Set(this.programActivities.map(a => a.id));
     },
     filteredActivities(): Activity[] {
       // Get all activities not in this program
-      const activities = this.store.activities.filter(
+      const activities = this.activitiesStore.activities.filter(
         a => !a.programIds.includes(this.programId)
       );
 
@@ -200,7 +205,7 @@ export default defineComponent({
       return this.filteredActivities;
     },
     roomOptions(): AutocompleteOption[] {
-      return this.store.locations.map(room => ({
+      return this.locationsStore.locations.map(room => ({
         value: room.id,
         label: `${room.name} (${room.type})`,
       }));
@@ -238,7 +243,7 @@ export default defineComponent({
     getCertificationNamesFromIds(ids: string[]): string[] {
       return ids
         .map(id => {
-          const cert = this.store.getCertificationById(id);
+          const cert = this.certificationsStore.getCertificationById(id);
           return cert ? cert.name : '';
         })
         .filter(name => name !== '');
@@ -248,6 +253,13 @@ export default defineComponent({
       
       // Convert selected certification IDs to names
       const certifications = this.getCertificationNamesFromIds(this.selectedCertificationIds);
+      
+      // Find color ID for the selected color
+      let colorId: string | undefined;
+      if (this.formData.color) {
+        const color = this.colorsStore.colors.find(c => c.hexValue === this.formData.color);
+        colorId = color?.id;
+      }
       
       const activityData: Activity = {
         id: crypto.randomUUID(),
@@ -260,7 +272,7 @@ export default defineComponent({
         minStaff: this.formData.minStaff || undefined,
         maxStaff: this.formData.maxStaff || undefined,
         defaultCapacity: this.formData.defaultCapacity || undefined,
-        color: this.formData.color || undefined,
+        colorId: colorId,
         createdAt: now,
         updatedAt: now,
       };
@@ -275,7 +287,7 @@ export default defineComponent({
       }
     },
     getProgramName(programId: string): string {
-      const program = this.store.getProgramById(programId);
+      const program = this.programsStore.getProgramById(programId);
       return program?.name || 'Unknown Program';
     },
   },

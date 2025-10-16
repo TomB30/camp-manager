@@ -55,7 +55,7 @@
               v-for="program in memberPrograms" 
               :key="program.id" 
               class="badge badge-program"
-              :style="{ backgroundColor: program.color || '#6366F1', color: 'white' }"
+              :style="{ backgroundColor: getProgramColor(program), color: 'white' }"
             >
               {{ program.name }}
             </span>
@@ -83,7 +83,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
-import { useCampStore } from '@/stores/campStore';
+import { useProgramsStore, useColorsStore, useCertificationsStore } from '@/stores';
 import type { StaffMember } from '@/types';
 
 export default defineComponent({
@@ -103,8 +103,10 @@ export default defineComponent({
   },
   emits: ['close', 'edit', 'delete'],
   setup() {
-    const store = useCampStore();
-    return { store };
+    const programsStore = useProgramsStore();
+    const colorsStore = useColorsStore();
+    const certificationsStore = useCertificationsStore();
+    return { programsStore, colorsStore, certificationsStore };
   },
   computed: {
     certificationNames(): string[] {
@@ -112,17 +114,24 @@ export default defineComponent({
       
       return this.member.certificationIds
         .map(id => {
-          const cert = this.store.getCertificationById(id);
+          const cert = this.certificationsStore.getCertificationById(id);
           return cert ? cert.name : '';
         })
         .filter(name => name.length > 0);
     },
     memberPrograms() {
       if (!this.member) return [];
-      return this.store.getProgramsForStaffMember(this.member.id);
+      return this.programsStore.getProgramsForStaffMember(this.member.id);
     }
   },
   methods: {
+    getProgramColor(program: any): string {
+      if (program.colorId) {
+        const color = this.colorsStore.getColorById(program.colorId);
+        return color?.hexValue || '#6366F1';
+      }
+      return '#6366F1';
+    },
     formatRole(role: string): string {
       return role.charAt(0).toUpperCase() + role.slice(1);
     }

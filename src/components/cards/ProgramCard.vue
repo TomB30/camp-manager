@@ -1,7 +1,7 @@
 <template>
   <div 
     class="card card-clickable"
-    :style="{ borderLeft: `4px solid ${program.color || '#6366F1'}` }"
+    :style="{ borderLeft: `4px solid ${programColor}` }"
     @click="$emit('click', program)"
   >
     <div class="card-header">
@@ -29,6 +29,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { Program } from '@/types';
+import { useColorsStore } from '@/stores';
 import { Users, Home } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -56,6 +57,19 @@ export default defineComponent({
     },
   },
   emits: ['click'],
+  setup() {
+    const colorsStore = useColorsStore();
+    return { colorsStore };
+  },
+  computed: {
+    programColor(): string {
+      if (this.program.colorId) {
+        const color = this.colorsStore.getColorById(this.program.colorId);
+        return color?.hexValue || '#6366F1';
+      }
+      return '#6366F1';
+    }
+  }
 });
 </script>
 

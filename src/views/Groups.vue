@@ -18,7 +18,7 @@
         v-model:filter-label="filterLabel"
         :filters="groupsFilters"
         :filtered-count="filteredGroups.length"
-        :total-count="store.camperGroups.length"
+        :total-count="groupsStore.camperGroups.length"
         search-placeholder="Search groups..."
         @clear="clearFilters"
       >
@@ -50,7 +50,7 @@
         </GroupCard>
 
         <EmptyState
-          v-if="filteredGroups.length === 0 && store.camperGroups.length === 0"
+          v-if="filteredGroups.length === 0 && groupsStore.camperGroups.length === 0"
           type="empty"
           title="No Groups Yet"
           message="Create your first camper group to organize and manage campers more efficiently."
@@ -68,7 +68,7 @@
         </EmptyState>
 
         <EmptyState
-          v-if="filteredGroups.length === 0 && store.camperGroups.length > 0"
+          v-if="filteredGroups.length === 0 && groupsStore.camperGroups.length > 0"
           type="no-results"
           title="No Groups Found"
           message="No groups match your current filters. Try adjusting your search criteria."
@@ -163,9 +163,9 @@
         :is-editing="!!editingGroupId"
         :form-data="formData"
         :preview-count="getPreviewCount()"
-        :family-groups="store.familyGroups"
-        :campers="store.campers"
-        :labels="store.labels"
+        :family-groups="familyGroupsStore.familyGroups"
+        :campers="campersStore.campers"
+        :labels="labelsStore.labels"
         @close="closeModal"
         @save="saveGroup"
       />
@@ -187,7 +187,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useGroupsStore, useCampersStore, useLabelsStore, useColorsStore, useFamilyGroupsStore } from '@/stores';
 import { format } from 'date-fns';
 import type { Camper, CamperGroup, CamperGroupFilter } from '@/types';
 import ViewHeader from '@/components/ViewHeader.vue';
@@ -259,8 +259,20 @@ export default defineComponent({
   },
 
   computed: {
-    store(): ReturnType<typeof useCampStore> {
-      return useCampStore();
+    groupsStore() {
+      return useGroupsStore();
+    },
+    campersStore() {
+      return useCampersStore();
+    },
+    labelsStore() {
+      return useLabelsStore();
+    },
+    colorsStore() {
+      return useColorsStore();
+    },
+    familyGroupsStore() {
+      return useFamilyGroupsStore();
     },
     groupsFilters(): Filter[] {
       return [
@@ -268,7 +280,7 @@ export default defineComponent({
           model: 'filterLabel',
           value: this.filterLabel,
           placeholder: 'Filter by Label',
-          options: this.store.labels.map(label => ({
+          options: this.labelsStore.labels.map(label => ({
             label: label.name,
             value: label.id,
           })),
@@ -297,14 +309,14 @@ export default defineComponent({
     },
     selectedGroup(): CamperGroup | null {
       if (!this.selectedGroupId) return null;
-      return this.store.getCamperGroupById(this.selectedGroupId) || null;
+      return this.groupsStore.getCamperGroupById(this.selectedGroupId) || null;
     },
     groupCampers(): Camper[] {
       if (!this.selectedGroupId) return [];
-      return this.store.getCampersInGroup(this.selectedGroupId);
+      return this.groupsStore.getCampersInGroup(this.selectedGroupId);
     },
     filteredGroups(): CamperGroup[] {
-      let groups: CamperGroup[] = this.store.camperGroups;
+      let groups: CamperGroup[] = this.groupsStore.camperGroups;
 
       // Search filter
       if (this.searchQuery) {
@@ -356,13 +368,13 @@ export default defineComponent({
     },
     getItemColor(item: CamperGroup): string {
       if (item.colorId) {
-        const color = this.store.getColorById(item.colorId);
+        const color = this.colorsStore.getColorById(item.colorId);
         return color?.hexValue || '#6366F1';
       }
       return '#6366F1';
     },
     getCampersCount(groupId: string): number {
-      return this.store.getCampersInGroup(groupId).length;
+      return this.groupsStore.getCampersInGroup(groupId).length;
     },
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
@@ -394,12 +406,12 @@ export default defineComponent({
       
       if (this.formData.familyGroupIds && this.formData.familyGroupIds.length > 0) {
         // If family groups are selected, only consider campers from those family groups
-        baseCampers = this.store.campers.filter(camper => 
+        baseCampers = this.campersStore.campers.filter(camper => 
           camper.familyGroupId && this.formData.familyGroupIds.includes(camper.familyGroupId)
         );
       } else {
         // If no family groups selected, consider all campers
-        baseCampers = this.store.campers;
+        baseCampers = this.campersStore.campers;
       }
 
       // Create a temporary filter to preview count
@@ -455,9 +467,9 @@ export default defineComponent({
       };
 
       // Find or create colorId from the selected color
-      let colorId = this.store.colors.find(c => c.hexValue === formData.color)?.id;
-      if (!colorId && this.store.colors.length > 0) {
-        colorId = this.store.colors[0].id; // fallback to first color
+      let colorId = this.colorsStore.colors.find(c => c.hexValue === formData.color)?.id;
+      if (!colorId && this.colorsStore.colors.length > 0) {
+        colorId = this.colorsStore.colors[0].id; // fallback to first color
       }
 
       const groupData: CamperGroup = {
@@ -469,22 +481,22 @@ export default defineComponent({
         familyGroupIds: formData.familyGroupIds.length > 0 ? formData.familyGroupIds : undefined,
         labelIds: formData.labelIds && formData.labelIds.length > 0 ? formData.labelIds : undefined,
         createdAt: this.editingGroupId 
-          ? this.store.getCamperGroupById(this.editingGroupId)?.createdAt || new Date().toISOString()
+          ? this.groupsStore.getCamperGroupById(this.editingGroupId)?.createdAt || new Date().toISOString()
           : new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
       if (this.editingGroupId) {
-        await this.store.updateCamperGroup(groupData);
+        await this.groupsStore.updateCamperGroup(groupData);
       } else {
-        await this.store.addCamperGroup(groupData);
+        await this.groupsStore.addCamperGroup(groupData);
       }
 
       this.closeModal();
     },
     deleteGroupConfirm(): void {
       if (!this.selectedGroupId) return;
-      const group = this.store.getCamperGroupById(this.selectedGroupId);
+      const group = this.groupsStore.getCamperGroupById(this.selectedGroupId);
       if (!group) return;
       
       this.groupToDelete = {
@@ -496,7 +508,7 @@ export default defineComponent({
     async handleConfirmDelete(): Promise<void> {
       if (!this.groupToDelete) return;
       
-      await this.store.deleteCamperGroup(this.groupToDelete.id);
+      await this.groupsStore.deleteCamperGroup(this.groupToDelete.id);
       this.selectedGroupId = null;
       this.showConfirmModal = false;
       this.groupToDelete = null;

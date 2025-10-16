@@ -23,7 +23,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { Label } from '@/types';
-import { useCampStore } from '@/stores/campStore';
+import { useColorsStore } from '@/stores';
 import { Edit2, Trash2 } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -40,16 +40,16 @@ export default defineComponent({
   },
   emits: ['edit', 'delete'],
   setup() {
-    const store = useCampStore();
-    return { store };
+    const colorsStore = useColorsStore();
+    return { colorsStore };
   },
   computed: {
-    labelColor(): string | undefined {
+    labelColor(): string {
       if (this.label.colorId) {
-        const color = this.store.getColorById(this.label.colorId);
-        return color?.hexValue;
+        const color = this.colorsStore.getColorById(this.label.colorId);
+        return color?.hexValue || '#6B7280';
       }
-      return this.label.color;
+      return '#6B7280';
     },
   },
 });

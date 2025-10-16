@@ -47,6 +47,7 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import ColorPicker from '@/components/ColorPicker.vue';
+import { useColorsStore } from '@/stores';
 import type { Program } from '@/types';
 
 interface ProgramFormData {
@@ -75,6 +76,10 @@ export default defineComponent({
     },
   },
   emits: ['close', 'save'],
+  setup() {
+    const colorsStore = useColorsStore();
+    return { colorsStore };
+  },
   data() {
     return {
       localFormData: {
@@ -102,10 +107,17 @@ export default defineComponent({
   methods: {
     resetForm() {
       if (this.program) {
+        // Get color hex value from colorId
+        let colorHex = '#6366F1';
+        if (this.program.colorId) {
+          const color = this.colorsStore.getColorById(this.program.colorId);
+          colorHex = color?.hexValue || '#6366F1';
+        }
+        
         this.localFormData = {
           name: this.program.name,
           description: this.program.description || '',
-          color: this.program.color || '#6366F1',
+          color: colorHex,
           activityIds: [...this.program.activityIds],
           staffMemberIds: [...this.program.staffMemberIds],
           locationIds: [...this.program.locationIds],
@@ -123,11 +135,19 @@ export default defineComponent({
     },
     handleSave() {
       const now = new Date().toISOString();
+      
+      // Find color ID for the selected color
+      let colorId: string | undefined = this.program?.colorId;
+      if (this.localFormData.color) {
+        const color = this.colorsStore.colors.find((c: any) => c.hexValue === this.localFormData.color);
+        colorId = color?.id;
+      }
+      
       const programData: Program = {
         id: this.program?.id || crypto.randomUUID(),
         name: this.localFormData.name,
         description: this.localFormData.description || undefined,
-        color: this.localFormData.color,
+        colorId: colorId,
         activityIds: this.localFormData.activityIds,
         staffMemberIds: this.localFormData.staffMemberIds,
         locationIds: this.localFormData.locationIds,

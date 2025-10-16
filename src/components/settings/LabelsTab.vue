@@ -13,17 +13,17 @@
 
     <!-- Search and Filters -->
     <FilterBar
-      v-if="store.labels.length > 0"
+      v-if="labelsStore.labels.length > 0"
       v-model:searchQuery="searchQuery"
       :filters="[]"
       :filtered-count="filteredLabels.length"
-      :total-count="store.labels.length"
+      :total-count="labelsStore.labels.length"
       @clear="clearFilters"
     />
 
     <!-- Empty State -->
     <EmptyState
-      v-if="store.labels.length === 0"
+      v-if="labelsStore.labels.length === 0"
       type="empty"
       title="No Labels Yet"
       message="Add your first label to start categorizing and organizing your camp entities."
@@ -70,7 +70,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useLabelsStore } from '@/stores';
 import type { Label } from '@/types';
 import { Plus, Tag } from 'lucide-vue-next';
 import TabHeader from '@/components/settings/TabHeader.vue';
@@ -94,9 +94,9 @@ export default defineComponent({
     EmptyState,
   },
   setup() {
-    const store = useCampStore();
+    const labelsStore = useLabelsStore();
     const toast = useToast();
-    return { store, toast };
+    return { labelsStore, toast };
   },
   data() {
     return {
@@ -115,7 +115,7 @@ export default defineComponent({
   },
   computed: {
     filteredLabels(): Label[] {
-      let filtered = this.store.labels;
+      let filtered = this.labelsStore.labels;
 
       // Search filter
       if (this.searchQuery) {
@@ -149,7 +149,7 @@ export default defineComponent({
       if (!this.labelToDelete) return;
       
       try {
-        await this.store.deleteLabel(this.labelToDelete.id);
+        await this.labelsStore.deleteLabel(this.labelToDelete.id);
         this.toast.success('Label deleted successfully');
         this.showConfirmModal = false;
         this.labelToDelete = null;
@@ -162,7 +162,7 @@ export default defineComponent({
       try {
         if (this.editingLabel) {
           // Update existing
-          await this.store.updateLabel({
+          await this.labelsStore.updateLabel({
             ...this.editingLabel,
             name: data.name,
             description: data.description,
@@ -172,7 +172,7 @@ export default defineComponent({
           this.toast.success('Label updated successfully');
         } else {
           // Create new
-          await this.store.addLabel({
+          await this.labelsStore.addLabel({
             id: crypto.randomUUID(),
             name: data.name,
             description: data.description,

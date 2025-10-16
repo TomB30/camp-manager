@@ -16,7 +16,7 @@
       v-model:searchQuery="searchQuery"
       :filters="[]"
       :filtered-count="filteredRooms.length"
-      :total-count="store.housingRooms.length"
+      :total-count="housingRoomsStore.housingRooms.length"
       @clear="clearFilters"
     >
       <template #prepend>
@@ -26,8 +26,8 @@
 
     <!-- Empty State -->
     <EmptyState
-      v-if="store.housingRooms.length === 0"
-      icon="Bed"
+      v-if="housingRoomsStore.housingRooms.length === 0"
+      :icon="Bed"
       title="No housing configured"
       message="Add your first room to start managing sleeping accommodations for campers."
       action-text="+ Room"
@@ -67,23 +67,26 @@
           <div class="cabin-name">{{ item.name }}</div>
         </div>
       </template>
-      
+
       <template #cell-beds="{ item }">
         <span class="badge badge-primary badge-sm">{{ item.beds }} beds</span>
       </template>
-      
+
       <template #cell-location="{ item }">
         <span v-if="item.areaId">
-          {{ store.getAreaById(item.areaId)?.name || 'Unknown' }}
+          {{ areasStore.getAreaById(item.areaId)?.name || "Unknown" }}
         </span>
         <span v-else>—</span>
       </template>
-      
+
       <template #cell-groups="{ item }">
-        <div v-if="getFamilyGroupsForRoom(item.id).length > 0" class="flex gap-1 flex-wrap">
-          <span 
-            v-for="familyGroup in getFamilyGroupsForRoom(item.id)" 
-            :key="familyGroup.id" 
+        <div
+          v-if="getFamilyGroupsForRoom(item.id).length > 0"
+          class="flex gap-1 flex-wrap"
+        >
+          <span
+            v-for="familyGroup in getFamilyGroupsForRoom(item.id)"
+            :key="familyGroup.id"
             class="badge badge-success badge-sm"
           >
             {{ familyGroup.name }}
@@ -91,9 +94,12 @@
         </div>
         <span v-else class="text-secondary">None</span>
       </template>
-      
+
       <template #cell-actions="{ item }">
-        <button class="btn btn-sm btn-secondary" @click.stop="selectRoom(item.id)">
+        <button
+          class="btn btn-sm btn-secondary"
+          @click.stop="selectRoom(item.id)"
+        >
           View Details
         </button>
       </template>
@@ -134,25 +140,24 @@
 </template>
 
 <script lang="ts">
-// @ts-nocheck
-import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
-import type { HousingRoom, Camper } from '@/types/api';
-import type { FamilyGroup } from '@/types';
-import HousingRoomCard from '@/components/cards/HousingRoomCard.vue';
-import FilterBar from '@/components/FilterBar.vue';
-import ConfirmModal from '@/components/ConfirmModal.vue';
-import DataTable from '@/components/DataTable.vue';
-import ViewToggle from '@/components/ViewToggle.vue';
-import HousingRoomDetailModal from '@/components/modals/HousingRoomDetailModal.vue';
-import HousingRoomFormModal from '@/components/modals/HousingRoomFormModal.vue';
-import EmptyState from '@/components/EmptyState.vue';
-import { Bed, Plus } from 'lucide-vue-next';
-import TabHeader from '@/components/settings/TabHeader.vue';
-import { useToast } from '@/composables/useToast';
+import { defineComponent } from "vue";
+import { useCampersStore, useFamilyGroupsStore, useHousingRoomsStore, useSessionsStore } from "@/stores";
+import type { FamilyGroup, HousingRoom, Camper } from "@/types";
+import HousingRoomCard from "@/components/cards/HousingRoomCard.vue";
+import FilterBar from "@/components/FilterBar.vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
+import DataTable from "@/components/DataTable.vue";
+import ViewToggle from "@/components/ViewToggle.vue";
+import HousingRoomDetailModal from "@/components/modals/HousingRoomDetailModal.vue";
+import HousingRoomFormModal from "@/components/modals/HousingRoomFormModal.vue";
+import EmptyState from "@/components/EmptyState.vue";
+import { Bed, Plus } from "lucide-vue-next";
+import TabHeader from "@/components/settings/TabHeader.vue";
+import { useToast } from "@/composables/useToast";
+import { useAreasStore } from "@/stores";
 
 export default defineComponent({
-  name: 'HousingTab',
+  name: "HousingTab",
   components: {
     HousingRoomCard,
     FilterBar,
@@ -162,14 +167,16 @@ export default defineComponent({
     HousingRoomDetailModal,
     HousingRoomFormModal,
     EmptyState,
-    Bed,
-    Plus,
     TabHeader,
   },
   setup() {
-    const store = useCampStore();
+    const housingRoomsStore = useHousingRoomsStore();
+    const areasStore = useAreasStore();
+    const sessionsStore = useSessionsStore();
+    const campersStore = useCampersStore();
+    const familyGroupsStore = useFamilyGroupsStore();
     const toast = useToast();
-    return { store, toast };
+    return { housingRoomsStore, areasStore, sessionsStore, campersStore, familyGroupsStore, toast, Bed, Plus };
   },
   data() {
     return {
@@ -177,45 +184,49 @@ export default defineComponent({
       showModal: false,
       editingRoomId: null as string | null,
       showConfirmModal: false,
-      confirmModalTitle: '',
-      confirmModalMessage: '',
-      confirmModalDetails: '',
+      confirmModalTitle: "",
+      confirmModalMessage: "",
+      confirmModalDetails: "",
       confirmAction: null as (() => void) | null,
-      viewMode: 'grid' as 'grid' | 'table',
+      viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
       formData: {
-        name: '',
+        name: "",
         beds: 4,
         areaId: undefined as string | undefined,
       },
-      searchQuery: '',
+      searchQuery: "",
       roomColumns: [
-        { key: 'name', label: 'Room Name', width: '250px' },
-        { key: 'beds', label: 'Beds', width: '100px' },
-        { key: 'location', label: 'Area', width: '250px' },
-        { key: 'groups', label: 'Family Groups', width: '250px' },
-        { key: 'actions', label: 'Actions', width: '140px' },
-      ]
+        { key: "name", label: "Room Name", width: "250px" },
+        { key: "beds", label: "Beds", width: "100px" },
+        { key: "location", label: "Area", width: "250px" },
+        { key: "groups", label: "Family Groups", width: "250px" },
+        { key: "actions", label: "Actions", width: "140px" },
+      ],
     };
   },
   computed: {
     selectedRoom(): HousingRoom | null {
       if (!this.selectedRoomId) return null;
-      return this.store.getHousingRoomById(this.selectedRoomId) || null;
+      return (
+        this.housingRoomsStore.getHousingRoomById(this.selectedRoomId) || null
+      );
     },
     filteredRooms(): HousingRoom[] {
-      let rooms: HousingRoom[] = this.store.housingRooms;
+      let rooms: HousingRoom[] = this.housingRoomsStore.housingRooms;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         rooms = rooms.filter((room: HousingRoom) => {
-          const areaName = room.areaId 
-            ? this.store.getAreaById(room.areaId)?.name 
+          const areaName = room.areaId
+            ? this.areasStore.getAreaById(room.areaId)?.name
             : undefined;
-          return room.name.toLowerCase().includes(query) ||
-            (areaName && areaName.toLowerCase().includes(query));
+          return (
+            room.name.toLowerCase().includes(query) ||
+            (areaName && areaName.toLowerCase().includes(query))
+          );
         });
       }
 
@@ -223,32 +234,43 @@ export default defineComponent({
     },
     selectedRoomFamilyGroups(): Array<any> {
       if (!this.selectedRoomId) return [];
-      return this.getFamilyGroupsForRoom(this.selectedRoomId).map((fg: FamilyGroup) => {
-        const session = this.store.sessions.find(s => s.id === fg.sessionId);
-        return {
-          id: fg.id,
-          name: fg.name,
-          description: fg.description,
-          camperCount: this.getCampersInFamilyGroup(fg.id).length,
-          staffCount: fg.staffMemberIds.length,
-          sessionId: fg.sessionId,
-          sessionName: session?.name || 'Unknown Session',
-          sessionDateRange: session 
-            ? `${new Date(session.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${new Date(session.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
-            : 'Unknown'
-        };
-      });
-    }
+      return this.getFamilyGroupsForRoom(this.selectedRoomId).map(
+        (fg: FamilyGroup) => {
+          const session = this.sessionsStore.sessions.find(
+            (s) => s.id === fg.sessionId
+          );
+          return {
+            id: fg.id,
+            name: fg.name,
+            description: fg.description,
+            camperCount: this.getCampersInFamilyGroup(fg.id).length,
+            staffCount: fg.staffMemberIds.length,
+            sessionId: fg.sessionId,
+            sessionName: session?.name || "Unknown Session",
+            sessionDateRange: session
+              ? `${new Date(session.startDate).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })} - ${new Date(session.endDate).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}`
+              : "Unknown",
+          };
+        }
+      );
+    },
   },
   methods: {
     clearFilters(): void {
-      this.searchQuery = '';
+      this.searchQuery = "";
     },
     getFamilyGroupsForRoom(housingRoomId: string): FamilyGroup[] {
-      return this.store.getFamilyGroupsInRoom(housingRoomId);
+      return this.familyGroupsStore.getFamilyGroupsInRoom(housingRoomId);
     },
     getCampersInFamilyGroup(familyGroupId: string): Camper[] {
-      return this.store.getCampersInFamilyGroup(familyGroupId);
+      return this.campersStore.getCampersInFamilyGroup(familyGroupId);
     },
     viewFamilyGroup(familyGroupId: string): void {
       this.$router.push(`/family-groups?id=${familyGroupId}`);
@@ -258,14 +280,14 @@ export default defineComponent({
     },
     editRoom(): void {
       if (!this.selectedRoom) return;
-      
+
       this.editingRoomId = this.selectedRoom.id;
       this.formData = {
         name: this.selectedRoom.name,
         beds: this.selectedRoom.beds,
         areaId: this.selectedRoom.areaId,
       };
-      
+
       this.selectedRoomId = null;
       this.showModal = true;
     },
@@ -279,41 +301,44 @@ export default defineComponent({
 
       try {
         if (this.editingRoomId) {
-          await this.store.updateHousingRoom(roomData);
-          this.toast.success('Room updated successfully');
+          await this.housingRoomsStore.updateHousingRoom(roomData);
+          this.toast.success("Room updated successfully");
         } else {
-          await this.store.addHousingRoom(roomData);
-          this.toast.success('Room added successfully');
+          await this.housingRoomsStore.addHousingRoom(roomData);
+          this.toast.success("Room added successfully");
         }
         this.closeModal();
       } catch (error: any) {
-        this.toast.error(error.message || 'Failed to save room');
+        this.toast.error(error.message || "Failed to save room");
       }
     },
     deleteRoomConfirm(): void {
       if (!this.selectedRoomId) return;
-      
-      const familyGroupCount = this.getFamilyGroupsForRoom(this.selectedRoomId).length;
-      
+
+      const familyGroupCount = this.getFamilyGroupsForRoom(
+        this.selectedRoomId
+      ).length;
+
       // Setup the confirm modal
-      this.confirmModalTitle = 'Delete Room';
-      this.confirmModalMessage = 'Are you sure you want to delete this room?';
-      this.confirmModalDetails = familyGroupCount > 0 
-        ? `This room has ${familyGroupCount} family group(s) assigned. You will need to reassign them to another room.`
-        : '';
-      
+      this.confirmModalTitle = "Delete Room";
+      this.confirmModalMessage = "Are you sure you want to delete this room?";
+      this.confirmModalDetails =
+        familyGroupCount > 0
+          ? `This room has ${familyGroupCount} family group(s) assigned. You will need to reassign them to another room.`
+          : "";
+
       this.confirmAction = async () => {
         if (this.selectedRoomId) {
           try {
-            await this.store.deleteHousingRoom(this.selectedRoomId);
-            this.toast.success('Room deleted successfully');
+            await this.housingRoomsStore.deleteHousingRoom(this.selectedRoomId);
+            this.toast.success("Room deleted successfully");
             this.selectedRoomId = null;
           } catch (error: any) {
-            this.toast.error(error.message || 'Failed to delete room');
+            this.toast.error(error.message || "Failed to delete room");
           }
         }
       };
-      
+
       this.showConfirmModal = true;
     },
     async handleConfirmAction(): Promise<void> {
@@ -331,12 +356,12 @@ export default defineComponent({
       this.showModal = false;
       this.editingRoomId = null;
       this.formData = {
-        name: '',
+        name: "",
         beds: 4,
         areaId: undefined,
       };
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -396,4 +421,3 @@ export default defineComponent({
   }
 }
 </style>
-

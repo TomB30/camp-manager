@@ -141,7 +141,7 @@ import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete
 import ColorPicker from '@/components/ColorPicker.vue';
 import SelectionList from '@/components/SelectionList.vue';
 import type { Camper, FamilyGroup, Label } from '@/types';
-import { useCampStore } from '@/stores/campStore';
+import { useColorsStore } from '@/stores';
 
 interface GroupFilters {
   ageMin?: number;
@@ -217,9 +217,9 @@ export default defineComponent({
     };
   },
   computed: {
-    store() {
-      return useCampStore();
-    }
+    colorsStore() {
+      return useColorsStore();
+    },
   },
   watch: {
     formData: {
@@ -238,7 +238,7 @@ export default defineComponent({
     },
     getLabelColor(label: Label): string {
       if (label.colorId) {
-        const color = this.store.getColorById(label.colorId);
+        const color = this.colorsStore.getColorById(label.colorId);
         return color?.hexValue || '#6366F1';
       }
       return '#6366F1';

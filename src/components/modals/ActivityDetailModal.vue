@@ -7,9 +7,9 @@
     <template #header>
       <div class="activity-title-header">
         <div 
-          v-if="activity?.color" 
+          v-if="activity?.colorId" 
           class="activity-color-indicator"
-          :style="{ background: activity.color }"
+          :style="{ background: activityColor }"
         ></div>
         <h3>{{ activity?.name || 'Activity Details' }}</h3>
       </div>
@@ -95,7 +95,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useProgramsStore, useLocationsStore, useColorsStore, useCertificationsStore } from '@/stores';
 import BaseModal from '@/components/BaseModal.vue';
 import DurationDisplay from '@/components/DurationDisplay.vue';
 import type { Activity } from '@/types';
@@ -117,18 +117,29 @@ export default defineComponent({
     },
   },
   emits: ['close', 'edit', 'delete'],
+  setup() {
+    const programsStore = useProgramsStore();
+    const locationsStore = useLocationsStore();
+    const colorsStore = useColorsStore();
+    const certificationsStore = useCertificationsStore();
+    return { programsStore, locationsStore, colorsStore, certificationsStore };
+  },
   computed: {
-    store() {
-      return useCampStore();
-    },
+    activityColor(): string {
+      if (this.activity?.colorId) {
+        const color = this.colorsStore.getColorById(this.activity.colorId);
+        return color?.hexValue || '#6366F1';
+      }
+      return '#6366F1';
+    }
   },
   methods: {
     getLocationName(locationId: string) {
-      const location = this.store.getAreaById(locationId);
+      const location = this.locationsStore.getLocationById(locationId);
       return location?.name || 'Unknown Location';
     },
     getProgramName(programId: string) {
-      const program = this.store.getProgramById(programId);
+      const program = this.programsStore.getProgramById(programId);
       return program?.name || 'Unknown Program';
     },
   },

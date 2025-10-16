@@ -44,7 +44,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useColorsStore, useSessionsStore, useAreasStore, useHousingRoomsStore, useCertificationsStore, useLocationsStore, useLabelsStore } from '@/stores';
 import { Settings, Palette, CalendarDays, Map, Bed, Award, MapPin, Tag } from 'lucide-vue-next';
 import ColorsTab from '@/components/settings/ColorsTab.vue';
 import SessionsTab from '@/components/settings/SessionsTab.vue';
@@ -67,8 +67,14 @@ export default defineComponent({
     LabelsTab,
   },
   setup() {
-    const store = useCampStore();
-    return { store };
+    const colorsStore = useColorsStore();
+    const sessionsStore = useSessionsStore();
+    const areasStore = useAreasStore();
+    const housingRoomsStore = useHousingRoomsStore();
+    const certificationsStore = useCertificationsStore();
+    const locationsStore = useLocationsStore();
+    const labelsStore = useLabelsStore();
+    return { colorsStore, sessionsStore, areasStore, housingRoomsStore, certificationsStore, locationsStore, labelsStore };
   },
   data(): { activeTab: 'colors' | 'sessions' | 'locations' | 'cabins' | 'certifications' | 'rooms' | 'labels' } {
     return {
@@ -87,43 +93,43 @@ export default defineComponent({
           id: 'sessions' as const,
           label: 'Sessions',
           icon: CalendarDays,
-          count: this.store.sessions.length,
+          count: this.sessionsStore.sessions.length,
         },
         {
           id: 'locations' as const,
           label: 'Areas',
           icon: Map,
-          count: this.store.areas.length,
+          count: this.areasStore.areas.length,
         },
         {
           id: 'rooms' as const,
           label: 'Locations',
           icon: MapPin,
-          count: this.store.locations.length,
+          count: this.locationsStore.locations.length,
         },
         {
           id: 'cabins' as const,
           label: 'Housing',
           icon: Bed,
-          count: this.store.housingRooms.length,
+          count: this.housingRoomsStore.housingRooms.length,
         },
         {
           id: 'certifications' as const,
           label: 'Certifications',
           icon: Award,
-          count: this.store.certifications.length,
+          count: this.certificationsStore.certifications.length,
         },
         {
           id: 'colors' as const,
           label: 'Colors',
           icon: Palette,
-          count: this.store.colors.length,
+          count: this.colorsStore.colors.length,
         },
         {
           id: 'labels' as const,
           label: 'Labels',
           icon: Tag,
-          count: this.store.labels.length,
+          count: this.labelsStore.labels.length,
         },
       ];
     },

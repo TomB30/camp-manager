@@ -36,7 +36,7 @@
 import { defineComponent, type PropType } from 'vue';
 import type { HousingRoom } from '@/types';
 import type { FamilyGroup } from '@/types';
-import { useCampStore } from '@/stores/campStore';
+import { useAreasStore } from '@/stores';
 import { Bed, MapPin } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -57,13 +57,13 @@ export default defineComponent({
   },
   emits: ['click'],
   setup() {
-    const store = useCampStore();
-    return { store };
+    const areasStore = useAreasStore();
+    return { areasStore };
   },
   computed: {
     locationName(): string | undefined {
       if (this.room.areaId) {
-        return this.store.getAreaById(this.room.areaId)?.name;
+        return this.areasStore.getAreaById(this.room.areaId)?.name;
       }
       return undefined;
     }

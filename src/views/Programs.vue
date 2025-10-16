@@ -30,7 +30,7 @@
           v-model:searchQuery="searchQuery"
           :filters="[]"
           :filtered-count="filteredPrograms.length"
-          :total-count="store.programs.length"
+          :total-count="programsStore.programs.length"
           search-placeholder="Search programs..."
           @clear="clearFilters"
         >
@@ -52,7 +52,7 @@
           />
 
           <EmptyState
-            v-if="filteredPrograms.length === 0 && store.programs.length === 0"
+            v-if="filteredPrograms.length === 0 && programsStore.programs.length === 0"
             type="empty"
             title="No Programs Yet"
             message="Create your first program to organize activities, staff, and locations."
@@ -61,7 +61,7 @@
           />
 
           <EmptyState
-            v-if="filteredPrograms.length === 0 && store.programs.length > 0"
+            v-if="filteredPrograms.length === 0 && programsStore.programs.length > 0"
             type="no-results"
             title="No Programs Found"
             message="No programs match your search query."
@@ -84,7 +84,7 @@
             <div class="program-name-content">
               <div
                 class="color-indicator"
-                :style="{ background: item.color || '#6366F1' }"
+                :style="{ background: getProgramColor(item) }"
               ></div>
               <div class="program-name-text">{{ item.name }}</div>
             </div>
@@ -128,7 +128,7 @@
             <div class="flex">
               <div
                 class="detail-color-bar"
-                :style="{ background: selectedProgram.color || '#6366F1' }"
+                :style="{ background: getProgramColor(selectedProgram) }"
               ></div>
               <div class="detail-header-info">
                 <h2>{{ selectedProgram.name }}</h2>
@@ -345,7 +345,7 @@
       <template #body>
         <SelectionList
           v-model="programStaffIds"
-          :items="store.staffMembers"
+          :items="staffMembersStore.staffMembers"
           item-type="staff member"
           placeholder="Add a staff member..."
           empty-text="No staff members assigned yet"
@@ -372,7 +372,7 @@
       <template #body>
         <SelectionList
           v-model="programLocationIds"
-          :items="store.locations"
+          :items="locationsStore.locations"
           item-type="location"
           placeholder="Add a location..."
           empty-text="No locations assigned yet"
@@ -405,9 +405,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useCampStore } from "@/stores/campStore";
+import { useProgramsStore, useActivitiesStore, useStaffMembersStore, useLocationsStore, useAreasStore, useCertificationsStore, useColorsStore } from '@/stores';
 import { useToast } from "@/composables/useToast";
-import type { Program, Activity, StaffMember, Location } from "@/types/api";
+import type { Program, Activity, StaffMember, Location } from "@/types";
 import {
   Users,
   UsersRound,
@@ -493,17 +493,35 @@ export default defineComponent({
     };
   },
   computed: {
-    store() {
-      return useCampStore();
+    programsStore() {
+      return useProgramsStore();
+    },
+    activitiesStore() {
+      return useActivitiesStore();
+    },
+    staffMembersStore() {
+      return useStaffMembersStore();
+    },
+    locationsStore() {
+      return useLocationsStore();
+    },
+    areasStore() {
+      return useAreasStore();
+    },
+    certificationsStore() {
+      return useCertificationsStore();
+    },
+    colorsStore() {
+      return useColorsStore();
     },
     toast() {
       return useToast();
     },
     filteredPrograms() {
       const query = this.searchQuery.toLowerCase().trim();
-      if (!query) return this.store.programs;
+      if (!query) return this.programsStore.programs;
 
-      return this.store.programs.filter(
+      return this.programsStore.programs.filter(
         (program) =>
           program.name.toLowerCase().includes(query) ||
           (program.description &&
@@ -512,40 +530,40 @@ export default defineComponent({
     },
     selectedProgram() {
       return this.selectedProgramId
-        ? this.store.getProgramById(this.selectedProgramId)
+        ? this.programsStore.getProgramById(this.selectedProgramId)
         : null;
     },
     selectedActivity() {
       return this.selectedActivityId
-        ? this.store.getActivityById(this.selectedActivityId)
+        ? this.activitiesStore.getActivityById(this.selectedActivityId)
         : null;
     },
     programActivities() {
       return this.selectedProgramId
-        ? this.store.getActivitiesInProgram(this.selectedProgramId)
+        ? this.activitiesStore.getActivitiesInProgram(this.selectedProgramId)
         : [];
     },
     programStaff(): StaffMember[] {
       if (!this.selectedProgram) return [];
       return this.selectedProgram.staffMemberIds
-        .map((id) => this.store.getStaffMemberById(id))
+        .map((id) => this.staffMembersStore.getStaffMemberById(id))
         .filter((staff) => staff !== undefined);
     },
     programLocations(): Location[] {
       if (!this.selectedProgram) return [];
       return this.selectedProgram.locationIds
-        .map((id) => this.store.getLocationById(id))
+        .map((id) => this.locationsStore.getLocationById(id))
         .filter((location) => location !== undefined);
     },
     availableStaff(): StaffMember[] {
       if (!this.selectedProgram) return [];
-      return this.store.staffMembers.filter(
+      return this.staffMembersStore.staffMembers.filter(
         (staff) => !this.selectedProgram!.staffMemberIds.includes(staff.id)
       );
     },
     availableLocations(): Location[] {
       if (!this.selectedProgram) return [];
-      return this.store.locations.filter(
+      return this.locationsStore.locations.filter(
         (location) => !this.selectedProgram!.locationIds.includes(location.id)
       );
     },
@@ -587,16 +605,16 @@ export default defineComponent({
     deleteConfirmMessage() {
       if (!this.deleteTarget) return "";
       if (this.deleteTarget.type === "program") {
-        const program = this.store.getProgramById(this.deleteTarget.id);
+        const program = this.programsStore.getProgramById(this.deleteTarget.id);
         return `Are you sure you want to delete "${program?.name}"? This will also delete all activities in this program. This action cannot be undone.`;
       } else if (this.deleteTarget.type === "activity") {
-        const activity = this.store.getActivityById(this.deleteTarget.id);
+        const activity = this.activitiesStore.getActivityById(this.deleteTarget.id);
         return `Are you sure you want to delete "${activity?.name}"? This action cannot be undone.`;
       } else if (this.deleteTarget.type === "staff") {
-        const staff = this.store.getStaffMemberById(this.deleteTarget.id);
+        const staff = this.staffMembersStore.getStaffMemberById(this.deleteTarget.id);
         return `Are you sure you want to remove "${staff?.firstName} ${staff?.lastName}" from this program?`;
       } else if (this.deleteTarget.type === "location") {
-        const location = this.store.getLocationById(this.deleteTarget.id);
+        const location = this.locationsStore.getLocationById(this.deleteTarget.id);
         return `Are you sure you want to remove "${location?.name}" from this program?`;
       }
       return "";
@@ -609,23 +627,30 @@ export default defineComponent({
     selectProgram(id: string) {
       this.selectedProgramId = id;
     },
+    getProgramColor(program: any): string {
+      if (program.colorId) {
+        const color = this.colorsStore.getColorById(program.colorId);
+        return color?.hexValue || '#6366F1';
+      }
+      return '#6366F1';
+    },
     getActivitiesCount(programId: string) {
-      return this.store.getActivitiesInProgram(programId).length;
+      return this.activitiesStore.getActivitiesInProgram(programId).length;
     },
     getStaffCount(programId: string) {
-      const program = this.store.getProgramById(programId);
+      const program = this.programsStore.getProgramById(programId);
       return program?.staffMemberIds.length || 0;
     },
     getLocationsCount(programId: string) {
-      const program = this.store.getProgramById(programId);
+      const program = this.programsStore.getProgramById(programId);
       return program?.locationIds.length || 0;
     },
     getLocationName(locationId: string) {
-      const location = this.store.getLocationById(locationId);
+      const location = this.locationsStore.getLocationById(locationId);
       return location?.name || "Unknown";
     },
     getAreaName(areaId: string) {
-      const area = this.store.getAreaById(areaId);
+      const area = this.areasStore.getAreaById(areaId);
       return area?.name || "Unknown";
     },
     formatRole(role: string) {
@@ -635,7 +660,7 @@ export default defineComponent({
       if (!staff.certificationIds) return [];
       return staff.certificationIds
         .map((id: string) => {
-          const cert = this.store.getCertificationById(id);
+          const cert = this.certificationsStore.getCertificationById(id);
           return cert ? cert.name : '';
         })
         .filter((name: string) => name.length > 0);
@@ -661,10 +686,10 @@ export default defineComponent({
     async saveProgram(program: Program) {
       try {
         if (this.editingProgram) {
-          await this.store.updateProgram(program);
+          await this.programsStore.updateProgram(program);
           this.toast.success("Program updated successfully");
         } else {
-          await this.store.addProgram(program);
+          await this.programsStore.addProgram(program);
           this.toast.success("Program created successfully");
         }
         this.closeProgramModal();
@@ -686,7 +711,7 @@ export default defineComponent({
     },
     async handleCreateNewActivity(activity: Activity) {
       try {
-        await this.store.addActivity(activity);
+        await this.activitiesStore.addActivity(activity);
         this.toast.success("Activity created successfully");
       } catch (error: any) {
         this.toast.error(error.message || "Failed to create activity");
@@ -696,7 +721,7 @@ export default defineComponent({
       if (!this.selectedProgramId) return;
 
       try {
-        await this.store.addActivityToProgram(activityId, this.selectedProgramId);
+        await this.activitiesStore.addActivityToProgram(activityId, this.selectedProgramId);
         this.toast.success("Activity added to program successfully");
       } catch (error: any) {
         this.toast.error(error.message || "Failed to add activity to program");
@@ -705,10 +730,10 @@ export default defineComponent({
     async saveActivity(activity: Activity) {
       try {
         if (this.editingActivity) {
-          await this.store.updateActivity(activity);
+          await this.activitiesStore.updateActivity(activity);
           this.toast.success("Activity updated successfully");
         } else {
-          await this.store.addActivity(activity);
+          await this.activitiesStore.addActivity(activity);
           this.toast.success("Activity created successfully");
         }
         this.closeActivityModal();
@@ -740,7 +765,7 @@ export default defineComponent({
       };
 
       try {
-        await this.store.updateProgram(updatedProgram);
+        await this.programsStore.updateProgram(updatedProgram);
         this.toast.success("Staff member removed from program");
       } catch (error: any) {
         this.toast.error(error.message || "Failed to remove staff member");
@@ -755,7 +780,7 @@ export default defineComponent({
       };
 
       try {
-        await this.store.updateProgram(updatedProgram);
+        await this.programsStore.updateProgram(updatedProgram);
         this.toast.success("Location removed from program");
       } catch (error: any) {
         this.toast.error(error.message || "Failed to remove location");
@@ -766,11 +791,11 @@ export default defineComponent({
 
       try {
         if (this.deleteTarget.type === "program") {
-          await this.store.deleteProgram(this.deleteTarget.id);
+          await this.programsStore.deleteProgram(this.deleteTarget.id);
           this.toast.success("Program deleted successfully");
           this.selectedProgramId = null;
         } else if (this.deleteTarget.type === "activity") {
-          await this.store.deleteActivity(this.deleteTarget.id);
+          await this.activitiesStore.deleteActivity(this.deleteTarget.id);
           this.toast.success("Activity deleted successfully");
         } else if (this.deleteTarget.type === "staff") {
           await this.removeStaffFromProgram(this.deleteTarget.id);
@@ -827,7 +852,7 @@ export default defineComponent({
       };
 
       try {
-        await this.store.updateProgram(updatedProgram);
+        await this.programsStore.updateProgram(updatedProgram);
         this.toast.success("Staff assignments updated");
       } catch (error: any) {
         this.toast.error(error.message || "Failed to update staff assignments");
@@ -842,7 +867,7 @@ export default defineComponent({
       };
 
       try {
-        await this.store.updateProgram(updatedProgram);
+        await this.programsStore.updateProgram(updatedProgram);
         this.toast.success("Location assignments updated");
       } catch (error: any) {
         this.toast.error(error.message || "Failed to update location assignments");

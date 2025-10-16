@@ -32,12 +32,12 @@
           </div>
         </div>
 
-        <div class="detail-section">
+        <div v-if="certification.createdAt" class="detail-section">
           <div class="detail-label">Created</div>
           <div>{{ formatDate(certification.createdAt) }}</div>
         </div>
 
-        <div class="detail-section">
+        <div v-if="certification.updatedAt" class="detail-section">
           <div class="detail-label">Last Updated</div>
           <div>{{ formatDate(certification.updatedAt) }}</div>
         </div>

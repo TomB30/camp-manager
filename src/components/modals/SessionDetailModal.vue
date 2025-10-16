@@ -31,12 +31,12 @@
           <div>{{ session.maxCampers }} campers</div>
         </div>
 
-        <div class="detail-section">
+        <div v-if="session.createdAt" class="detail-section">
           <div class="detail-label">Created</div>
           <div>{{ formatDateTime(session.createdAt) }}</div>
         </div>
 
-        <div class="detail-section">
+        <div v-if="session.updatedAt" class="detail-section">
           <div class="detail-label">Last Updated</div>
           <div>{{ formatDateTime(session.updatedAt) }}</div>
         </div>

@@ -58,7 +58,7 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import type { Location } from '@/types';
-import { useCampStore } from '@/stores/campStore';
+import { useAreasStore } from '@/stores';
 
 export default defineComponent({
   name: 'LocationDetailModal',
@@ -77,15 +77,15 @@ export default defineComponent({
   },
   emits: ['close', 'edit', 'delete'],
   setup() {
-    const store = useCampStore();
-    return { store };
+    const areasStore = useAreasStore();
+    return { areasStore };
   },
   methods: {
     formatLocationType(type: string): string {
       return type.charAt(0).toUpperCase() + type.slice(1);
     },
     getAreaName(areaId: string): string {
-      const area = this.store.getAreaById(areaId);
+      const area = this.areasStore.getAreaById(areaId);
       return area?.name || 'Unknown';
     }
   }

@@ -29,7 +29,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useColorsStore } from '@/stores';
 
 export default defineComponent({
   name: 'ColorPicker',
@@ -41,14 +41,14 @@ export default defineComponent({
   },
   emits: ['update:modelValue'],
   setup() {
-    const store = useCampStore();
-    return { store };
+    const colorsStore = useColorsStore();
+    return { colorsStore };
   },
   computed: {
     colorOptions() {
       // If custom colors are configured, use them
-      if (this.store.colors.length > 0) {
-        return this.store.colors.map(color => ({
+      if (this.colorsStore.colors.length > 0) {
+        return this.colorsStore.colors.map(color => ({
           name: color.name,
           value: color.hexValue
         }));

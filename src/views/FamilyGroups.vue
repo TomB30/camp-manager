@@ -17,7 +17,7 @@
         v-model:filter-session="filterSession"
         :filters="familyGroupsFilters"
         :filtered-count="filteredFamilyGroups.length"
-        :total-count="store.familyGroups.length"
+        :total-count="familyGroupsStore.familyGroups.length"
         search-placeholder="Search family groups..."
         @clear="clearFilters"
       >
@@ -39,7 +39,7 @@
         />
 
         <EmptyState
-          v-if="filteredFamilyGroups.length === 0 && store.familyGroups.length === 0"
+          v-if="filteredFamilyGroups.length === 0 && familyGroupsStore.familyGroups.length === 0"
           type="empty"
           title="No Family Groups Yet"
           message="Create your first family group to organize campers and assign them to housing rooms."
@@ -52,7 +52,7 @@
         </EmptyState>
 
         <EmptyState
-          v-if="filteredFamilyGroups.length === 0 && store.familyGroups.length > 0"
+          v-if="filteredFamilyGroups.length === 0 && familyGroupsStore.familyGroups.length > 0"
           type="no-results"
           title="No Family Groups Found"
           message="No family groups match your current filters. Try adjusting your search criteria."
@@ -175,11 +175,11 @@
         :show="showModal"
         :is-editing="!!editingGroupId"
         :form-data="formData"
-        :campers="store.campers"
-        :staff-members="store.staffMembers"
-        :housing-rooms="store.housingRooms"
-        :family-groups="store.familyGroups"
-        :sessions="store.sessions"
+        :campers="campersStore.campers"
+        :staff-members="staffMembersStore.staffMembers"
+        :housing-rooms="housingRoomsStore.housingRooms"
+        :family-groups="familyGroupsStore.familyGroups"
+        :sessions="sessionsStore.sessions"
         :editing-group-id="editingGroupId"
         @close="closeModal"
         @save="saveGroup"
@@ -201,9 +201,8 @@
 </template>
 
 <script lang="ts">
-// @ts-nocheck
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useFamilyGroupsStore, useCampersStore, useSessionsStore, useHousingRoomsStore, useStaffMembersStore } from '@/stores';
 import type { Camper, FamilyGroup } from '@/types';
 import { conflictDetector } from '@/services/conflicts';
 import { useToast } from '@/composables/useToast';
@@ -234,8 +233,9 @@ export default defineComponent({
     InfoTooltip,
     FamilyGroupDetailModal,
     FamilyGroupFormModal,
-    Bed,
-    Users,
+  },
+  setup() {
+    return { Bed, Users };
   },
   data() {
     return {
@@ -260,7 +260,7 @@ export default defineComponent({
         housingRoomId: '',
         staffMemberIds: [] as string[],
         camperIds: [] as string[],
-        color: '#6366F1',
+        colorId: '',
       },
       familyGroupColumns: [
         { key: 'name', label: 'Group Name', width: '180px' },
@@ -273,8 +273,20 @@ export default defineComponent({
     };
   },
   computed: {
-    store(): ReturnType<typeof useCampStore> {
-      return useCampStore();
+    familyGroupsStore() {
+      return useFamilyGroupsStore();
+    },
+    campersStore() {
+      return useCampersStore();
+    },
+    sessionsStore() {
+      return useSessionsStore();
+    },
+    housingRoomsStore() {
+      return useHousingRoomsStore();
+    },
+    staffMembersStore() {
+      return useStaffMembersStore();
     },
     familyGroupsFilters(): Filter[] {
       return [
@@ -282,7 +294,7 @@ export default defineComponent({
           model: 'filterSession',
           value: this.filterSession,
           placeholder: 'Filter by Session',
-          options: this.store.sessions.map(session => ({
+          options: this.sessionsStore.sessions.map(session => ({
             label: session.name,
             value: session.id,
           })),
@@ -291,7 +303,7 @@ export default defineComponent({
           model: 'filterSleepingRoom',
           value: this.filterSleepingRoom,
           placeholder: 'Filter by Housing Room',
-          options: this.store.housingRooms.map(room => ({
+          options: this.housingRoomsStore.housingRooms.map(room => ({
             label: room.name,
             value: room.id,
           })),
@@ -300,14 +312,14 @@ export default defineComponent({
     },
     selectedGroup(): FamilyGroup | null {
       if (!this.selectedGroupId) return null;
-      return this.store.getFamilyGroupById(this.selectedGroupId) || null;
+      return this.familyGroupsStore.getFamilyGroupById(this.selectedGroupId) || null;
     },
     groupCampers(): Camper[] {
       if (!this.selectedGroupId) return [];
-      return this.store.getCampersInFamilyGroup(this.selectedGroupId);
+      return this.campersStore.getCampersInFamilyGroup(this.selectedGroupId);
     },
     filteredFamilyGroups(): FamilyGroup[] {
-      let groups: FamilyGroup[] = this.store.familyGroups;
+      let groups: FamilyGroup[] = this.familyGroupsStore.familyGroups;
 
       // Search filter
       if (this.searchQuery) {
@@ -350,25 +362,25 @@ export default defineComponent({
       this.filterSession = '';
     },
     getCampersCount(groupId: string): number {
-      return this.store.getCampersInFamilyGroup(groupId).length;
+      return this.campersStore.getCampersInFamilyGroup(groupId).length;
     },
     getSleepingRoomName(housingRoomId: string): string {
-      const room = this.store.getHousingRoomById(housingRoomId);
+      const room = this.housingRoomsStore.getHousingRoomById(housingRoomId);
       return room?.name || 'Unknown Room';
     },
     getStaffMemberName(staffId: string): string {
-      const staff = this.store.getStaffMemberById(staffId);
+      const staff = this.staffMembersStore.getStaffMemberById(staffId);
       return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
     },
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
     },
     getSessionName(sessionId: string): string {
-      const session = this.store.sessions.find(s => s.id === sessionId);
+      const session = this.sessionsStore.sessions.find(s => s.id === sessionId);
       return session?.name || 'Unknown Session';
     },
     getSessionDateRange(sessionId: string): string {
-      const session = this.store.sessions.find(s => s.id === sessionId);
+      const session = this.sessionsStore.sessions.find(s => s.id === sessionId);
       if (!session) return 'Unknown';
       const startDate = new Date(session.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       const endDate = new Date(session.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -386,11 +398,11 @@ export default defineComponent({
       return diffDays;
     },
     getCamperFullName(camperId: string): string {
-      const camper = this.store.getCamperById(camperId);
+      const camper = this.campersStore.getCamperById(camperId);
       return camper ? `${camper.firstName} ${camper.lastName}` : 'Unknown';
     },
     getCamperInitials(camperId: string): string {
-      const camper = this.store.getCamperById(camperId);
+      const camper = this.campersStore.getCamperById(camperId);
       return camper ? `${camper.firstName.charAt(0)}${camper.lastName.charAt(0)}` : '??';
     },
     selectGroup(groupId: string): void {
@@ -400,7 +412,7 @@ export default defineComponent({
       if (!this.selectedGroup) return;
       
       // Get current campers in this family group
-      const currentCampers = this.store.getCampersInFamilyGroup(this.selectedGroup.id);
+      const currentCampers = this.campersStore.getCampersInFamilyGroup(this.selectedGroup.id);
       
       this.editingGroupId = this.selectedGroup.id;
       this.formData = {
@@ -410,7 +422,7 @@ export default defineComponent({
         housingRoomId: this.selectedGroup.housingRoomId,
         staffMemberIds: [...this.selectedGroup.staffMemberIds],
         camperIds: currentCampers.map(c => c.id),
-        color: this.selectedGroup.color || '#6366F1',
+        colorId: this.selectedGroup.colorId || '',
       };
       
       this.selectedGroupId = null;
@@ -427,7 +439,7 @@ export default defineComponent({
       
       // Validate camper session match
       const invalidCampers = formData.camperIds.filter(camperId => {
-        const camper = this.store.getCamperById(camperId);
+        const camper = this.campersStore.getCamperById(camperId);
         return camper && camper.sessionId !== formData.sessionId;
       });
       
@@ -440,7 +452,7 @@ export default defineComponent({
       const validation = conflictDetector.canAssignFamilyGroupToRoomBySession(
         formData.housingRoomId,
         formData.sessionId,
-        this.store.familyGroups,
+        this.familyGroupsStore.familyGroups,
         this.editingGroupId || undefined
       );
       
@@ -457,19 +469,19 @@ export default defineComponent({
         sessionId: formData.sessionId,
         housingRoomId: formData.housingRoomId,
         staffMemberIds: formData.staffMemberIds,
-        color: formData.color,
+        colorId: formData.colorId,
         createdAt: this.editingGroupId 
-          ? this.store.getFamilyGroupById(this.editingGroupId)?.createdAt || new Date().toISOString()
+          ? this.familyGroupsStore.getFamilyGroupById(this.editingGroupId)?.createdAt || new Date().toISOString()
           : new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
       if (this.editingGroupId) {
-        await this.store.updateFamilyGroup(groupData);
+        await this.familyGroupsStore.updateFamilyGroup(groupData);
         
         // Update camper assignments
         // First, get all campers currently in this group
-        const currentCampers = this.store.getCampersInFamilyGroup(this.editingGroupId);
+        const currentCampers = this.campersStore.getCampersInFamilyGroup(this.editingGroupId);
         const currentCamperIds = currentCampers.map(c => c.id);
         
         // Find campers to remove (were in group, but not in formData)
@@ -480,10 +492,10 @@ export default defineComponent({
         
         // Remove campers from this group (unassign them)
         for (const camperId of campersToRemove) {
-          const camper = this.store.getCamperById(camperId);
+          const camper = this.campersStore.getCamperById(camperId);
           if (camper) {
             // Unassign the camper from this family group
-            await this.store.updateCamper({
+            await this.campersStore.updateCamper({
               ...camper,
               familyGroupId: undefined
             });
@@ -492,22 +504,22 @@ export default defineComponent({
         
         // Add campers to this group
         for (const camperId of campersToAdd) {
-          const camper = this.store.getCamperById(camperId);
+          const camper = this.campersStore.getCamperById(camperId);
           if (camper) {
-            await this.store.updateCamper({
+            await this.campersStore.updateCamper({
               ...camper,
               familyGroupId: this.editingGroupId
             });
           }
         }
       } else {
-        await this.store.addFamilyGroup(groupData);
+        await this.familyGroupsStore.addFamilyGroup(groupData);
         
         // Assign all selected campers to the new group
         for (const camperId of formData.camperIds) {
-          const camper = this.store.getCamperById(camperId);
+          const camper = this.campersStore.getCamperById(camperId);
           if (camper) {
-            await this.store.updateCamper({
+            await this.campersStore.updateCamper({
               ...camper,
               familyGroupId: groupData.id
             });
@@ -531,7 +543,7 @@ export default defineComponent({
       
       this.confirmAction = async () => {
         if (this.selectedGroupId) {
-          await this.store.deleteFamilyGroup(this.selectedGroupId);
+          await this.familyGroupsStore.deleteFamilyGroup(this.selectedGroupId);
           this.selectedGroupId = null;
         }
       };
@@ -559,7 +571,7 @@ export default defineComponent({
         housingRoomId: '',
         staffMemberIds: [],
         camperIds: [],
-        color: '#6366F1',
+        colorId: '',
       };
     }
   }

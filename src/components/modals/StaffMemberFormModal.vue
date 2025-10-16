@@ -51,7 +51,7 @@
           <label class="form-label">Certifications</label>
           <SelectionList
             v-model="localFormData.certificationIds"
-            :items="store.certifications"
+            :items="certificationsStore.certifications"
             item-type="certification"
             placeholder="Select a certification..."
             empty-text="No certifications selected"
@@ -80,7 +80,7 @@ import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import SelectionList from '@/components/SelectionList.vue';
-import { useCampStore } from '@/stores/campStore';
+import { useCertificationsStore } from '@/stores';
 import type { StaffMember } from '@/types';
 
 interface StaffMemberFormData {
@@ -124,8 +124,8 @@ export default defineComponent({
   },
   emits: ['close', 'save'],
   setup() {
-    const store = useCampStore();
-    return { store };
+    const certificationsStore = useCertificationsStore();
+    return { certificationsStore };
   },
   data() {
     return {

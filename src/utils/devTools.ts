@@ -1,6 +1,6 @@
-import { storageService } from '@/services/storage';
+import { storageService, STORAGE_KEYS } from '@/services';
 import { mockData } from '@/data/mockData';
-import { useCampStore } from '@/stores/campStore';
+import { useMainStore } from '@/stores';
 
 /**
  * Development Tools - Functions exposed to browser console for easy data management
@@ -16,24 +16,11 @@ import { useCampStore } from '@/stores/campStore';
  */
 export async function clearData(): Promise<void> {
   console.log('🧹 Clearing all data from localStorage...');
-  await storageService.clearAll();
+  await storageService.clearAll(Object.values(STORAGE_KEYS));
   
-  // Clear the store state
-  const store = useCampStore();
-  store.campers = [];
-  store.staffMembers = [];
-  store.locations = [];
-  store.housingRooms = [];
-  store.events = [];
-  store.camperGroups = [];
-  store.familyGroups = [];
-  store.programs = [];
-  store.activities = [];
-  store.areas = [];
-  store.certifications = [];
-  store.colors = [];
-  store.sessions = [];
-  store.conflicts = [];
+  // Reload all stores to clear state
+  const mainStore = useMainStore();
+  await mainStore.loadAll();
   
   console.log('✅ All data cleared successfully!');
 }
@@ -58,8 +45,8 @@ export async function insertMockData(): Promise<void> {
   await storageService.seedData(mockData);
   
   // Reload data in store
-  const store = useCampStore();
-  await store.loadAll();
+  const mainStore = useMainStore();
+  await mainStore.loadAll();
   
   console.log('✅ Mock data inserted successfully!');
 }

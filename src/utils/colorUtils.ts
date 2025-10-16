@@ -1,4 +1,4 @@
-import { useCampStore } from '@/stores/campStore';
+import { useColorsStore } from '@/stores';
 
 /**
  * Resolves a colorId to its hex value from the camp store
@@ -9,7 +9,7 @@ export function resolveColor(colorId?: string, fallbackColor?: string): string {
     return fallbackColor || '#6366F1'; // Default indigo
   }
   
-  const store = useCampStore();
+  const store = useColorsStore();
   const campColor = store.getColorById(colorId);
   
   if (campColor) {

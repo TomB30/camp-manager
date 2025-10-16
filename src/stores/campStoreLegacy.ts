@@ -1,7 +1,22 @@
 import { defineStore } from 'pinia';
 import type { Camper, StaffMember, Location, HousingRoom, Event, Conflict, Area, Label, CamperGroup, FamilyGroup, Program, Activity, Certification, CampColor, CampSession } from '@/types';
-import { storageService } from '@/services/storage';
-import { conflictDetector } from '@/services/conflicts';
+import { 
+  campersService,
+  staffMembersService,
+  eventsService,
+  locationsService,
+  housingRoomsService,
+  groupsService,
+  familyGroupsService,
+  programsService,
+  activitiesService,
+  areasService,
+  certificationsService,
+  colorsService,
+  sessionsService,
+  labelsService,
+  conflictDetector
+} from '@/services';
 import { filterEventsByDate } from '@/utils/dateUtils';
 
 export const useCampStore = defineStore('camp', {
@@ -220,20 +235,20 @@ export const useCampStore = defineStore('camp', {
       this.loading = true;
       try {
         const [campersData, membersData, locationsData, housingRoomsData, eventsData, groupsData, familyGroupsData, programsData, activitiesData, areasData, certificationsData, colorsData, sessionsData, labelsData] = await Promise.all([
-          storageService.getCampers(),
-          storageService.getStaffMembers(),
-          storageService.getLocations(),
-          storageService.getHousingRooms(),
-          storageService.getEvents(),
-          storageService.getCamperGroups(),
-          storageService.getFamilyGroups(),
-          storageService.getPrograms(),
-          storageService.getActivities(),
-          storageService.getAreas(),
-          storageService.getCertifications(),
-          storageService.getColors(),
-          storageService.getSessions(),
-          storageService.getLabels(),
+          campersService.getCampers(),
+          staffMembersService.getStaffMembers(),
+          locationsService.getLocations(),
+          housingRoomsService.getHousingRooms(),
+          eventsService.getEvents(),
+          groupsService.getCamperGroups(),
+          familyGroupsService.getFamilyGroups(),
+          programsService.getPrograms(),
+          activitiesService.getActivities(),
+          areasService.getAreas(),
+          certificationsService.getCertifications(),
+          colorsService.getColors(),
+          sessionsService.getSessions(),
+          labelsService.getLabels(),
         ]);
 
         this.campers = campersData;
@@ -269,13 +284,13 @@ export const useCampStore = defineStore('camp', {
 
     // Campers actions
     async addCamper(camper: Camper): Promise<void> {
-      await storageService.saveCamper(camper);
+      await campersService.saveCamper(camper);
       this.campers.push(camper);
       this.updateConflicts();
     },
 
     async updateCamper(camper: Camper): Promise<void> {
-      await storageService.saveCamper(camper);
+      await campersService.saveCamper(camper);
       const index = this.campers.findIndex(c => c.id === camper.id);
       if (index >= 0) {
         this.campers[index] = camper;
@@ -284,7 +299,7 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteCamper(id: string): Promise<void> {
-      await storageService.deleteCamper(id);
+      await campersService.deleteCamper(id);
       this.campers = this.campers.filter(c => c.id !== id);
       
       // Remove from events
@@ -299,13 +314,13 @@ export const useCampStore = defineStore('camp', {
 
     // Staff member actions
     async addStaffMember(member: StaffMember): Promise<void> {
-      await storageService.saveStaffMember(member);
+      await staffMembersService.saveStaffMember(member);
       this.staffMembers.push(member);
       this.updateConflicts();
     },
 
     async updateStaffMember(member: StaffMember): Promise<void> {
-      await storageService.saveStaffMember(member);
+      await staffMembersService.saveStaffMember(member);
       const index = this.staffMembers.findIndex(m => m.id === member.id);
       if (index >= 0) {
         this.staffMembers[index] = member;
@@ -314,7 +329,7 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteStaffMember(id: string): Promise<void> {
-      await storageService.deleteStaffMember(id);
+      await staffMembersService.deleteStaffMember(id);
       this.staffMembers = this.staffMembers.filter(m => m.id !== id);
       
       // Remove from events
@@ -329,13 +344,13 @@ export const useCampStore = defineStore('camp', {
 
     // Room actions
     async addLocation(location: Location): Promise<void> {
-      await storageService.saveLocation(location);
+      await locationsService.saveLocation(location);
       this.locations.push(location);
       this.updateConflicts();
     },
 
     async updateLocation(location: Location): Promise<void> {
-      await storageService.saveLocation(location);
+      await locationsService.saveLocation(location);
       const index = this.locations.findIndex(r => r.id === location.id);
       if (index >= 0) {
         this.locations[index] = location;
@@ -344,19 +359,19 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteLocation(id: string): Promise<void> {
-      await storageService.deleteLocation(id);
+      await locationsService.deleteLocation(id);
       this.locations = this.locations.filter(l => l.id !== id);
       this.updateConflicts();
     },
 
     // Housing room actions
     async addHousingRoom(housingRoom: HousingRoom): Promise<void> {
-      await storageService.saveHousingRoom(housingRoom);
+      await housingRoomsService.saveHousingRoom(housingRoom);
       this.housingRooms.push(housingRoom);
     },
 
     async updateHousingRoom(housingRoom: HousingRoom): Promise<void> {
-      await storageService.saveHousingRoom(housingRoom);
+      await housingRoomsService.saveHousingRoom(housingRoom);
       const index = this.housingRooms.findIndex(r => r.id === housingRoom.id);
       if (index >= 0) {
         this.housingRooms[index] = housingRoom;
@@ -364,13 +379,13 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteHousingRoom(id: string): Promise<void> {
-      await storageService.deleteHousingRoom(id);
+      await housingRoomsService.deleteHousingRoom(id);
       this.housingRooms = this.housingRooms.filter(r => r.id !== id);
     },
 
     // Event actions
     async addEvent(event: Event): Promise<void> {
-      await storageService.saveEvent(event);
+      await eventsService.saveEvent(event);
       this.events.push(event);
       this.updateConflicts();
     },
@@ -378,7 +393,7 @@ export const useCampStore = defineStore('camp', {
     // Batch add events - more efficient for recurring events
     async addEventsBatch(events: Event[]): Promise<void> {
       // Save all events to storage in parallel
-      await Promise.all(events.map(event => storageService.saveEvent(event)));
+      await eventsService.saveEventsBatch(events);
       // Add all to state at once
       this.events.push(...events);
       // Only run conflict detection once at the end
@@ -386,7 +401,7 @@ export const useCampStore = defineStore('camp', {
     },
 
     async updateEvent(event: Event): Promise<void> {
-      await storageService.saveEvent(event);
+      await eventsService.saveEvent(event);
       const index = this.events.findIndex(e => e.id === event.id);
       if (index >= 0) {
         this.events[index] = event;
@@ -395,7 +410,7 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteEvent(id: string): Promise<void> {
-      await storageService.deleteEvent(id);
+      await eventsService.deleteEvent(id);
       this.events = this.events.filter(e => e.id !== id);
       this.updateConflicts();
     },
@@ -409,7 +424,7 @@ export const useCampStore = defineStore('camp', {
         throw new Error(validation.reason);
       }
 
-      await storageService.enrollCamper(eventId, camperId);
+      await eventsService.enrollCamper(eventId, camperId);
       
       if (!event.enrolledCamperIds) {
         event.enrolledCamperIds = [];
@@ -423,7 +438,7 @@ export const useCampStore = defineStore('camp', {
       const event = this.events.find(e => e.id === eventId);
       if (!event) throw new Error('Event not found');
 
-      await storageService.unenrollCamper(eventId, camperId);
+      await eventsService.unenrollCamper(eventId, camperId);
       event.enrolledCamperIds = event.enrolledCamperIds?.filter(id => id !== camperId) || [];
       
       this.updateConflicts();
@@ -436,12 +451,12 @@ export const useCampStore = defineStore('camp', {
 
     // Camper Group actions
     async addCamperGroup(group: CamperGroup): Promise<void> {
-      await storageService.saveCamperGroup(group);
+      await groupsService.saveCamperGroup(group);
       this.camperGroups.push(group);
     },
 
     async updateCamperGroup(group: CamperGroup): Promise<void> {
-      await storageService.saveCamperGroup(group);
+      await groupsService.saveCamperGroup(group);
       const index = this.camperGroups.findIndex(g => g.id === group.id);
       if (index >= 0) {
         this.camperGroups[index] = group;
@@ -449,18 +464,18 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteCamperGroup(id: string): Promise<void> {
-      await storageService.deleteCamperGroup(id);
+      await groupsService.deleteCamperGroup(id);
       this.camperGroups = this.camperGroups.filter(g => g.id !== id);
     },
 
     // Family Group actions
     async addFamilyGroup(group: FamilyGroup): Promise<void> {
-      await storageService.saveFamilyGroup(group);
+      await familyGroupsService.saveFamilyGroup(group);
       this.familyGroups.push(group);
     },
 
     async updateFamilyGroup(group: FamilyGroup): Promise<void> {
-      await storageService.saveFamilyGroup(group);
+      await familyGroupsService.saveFamilyGroup(group);
       const index = this.familyGroups.findIndex(g => g.id === group.id);
       if (index >= 0) {
         this.familyGroups[index] = group;
@@ -468,7 +483,7 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteFamilyGroup(id: string): Promise<void> {
-      await storageService.deleteFamilyGroup(id);
+      await familyGroupsService.deleteFamilyGroup(id);
       this.familyGroups = this.familyGroups.filter(g => g.id !== id);
     },
 
@@ -518,7 +533,7 @@ export const useCampStore = defineStore('camp', {
         }
 
         try {
-          await storageService.enrollCamper(eventId, camper.id);
+          await eventsService.enrollCamper(eventId, camper.id);
           return {
             status: 'fulfilled' as const,
             camper
@@ -567,12 +582,12 @@ export const useCampStore = defineStore('camp', {
 
     // Program actions
     async addProgram(program: Program): Promise<void> {
-      await storageService.saveProgram(program);
+      await programsService.saveProgram(program);
       this.programs.push(program);
     },
 
     async updateProgram(program: Program): Promise<void> {
-      await storageService.saveProgram(program);
+      await programsService.saveProgram(program);
       const index = this.programs.findIndex(p => p.id === program.id);
       if (index >= 0) {
         this.programs[index] = program;
@@ -580,26 +595,17 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteProgram(id: string): Promise<void> {
-      // Remove program ID from all activities
-      const activitiesInProgram = this.activities.filter(a => a.programIds.includes(id));
-      for (const activity of activitiesInProgram) {
-        activity.programIds = activity.programIds.filter(pid => pid !== id);
-        // If activity is no longer in any program, delete it
-        if (activity.programIds.length === 0) {
-          await storageService.deleteActivity(activity.id);
-          this.activities = this.activities.filter(a => a.id !== activity.id);
-        } else {
-          await storageService.saveActivity(activity);
-        }
-      }
-
-      await storageService.deleteProgram(id);
+      // The programsService handles all cleanup logic
+      await programsService.deleteProgram(id);
+      
+      // Update state - activities may have been deleted
+      this.activities = await activitiesService.getActivities();
       this.programs = this.programs.filter(p => p.id !== id);
     },
 
     // Activity actions
     async addActivity(activity: Activity): Promise<void> {
-      await storageService.saveActivity(activity);
+      await activitiesService.saveActivity(activity);
       this.activities.push(activity);
       
       // Add activity ID to all parent programs
@@ -615,7 +621,7 @@ export const useCampStore = defineStore('camp', {
     async updateActivity(activity: Activity): Promise<void> {
       const oldActivity = this.activities.find(a => a.id === activity.id);
       
-      await storageService.saveActivity(activity);
+      await activitiesService.saveActivity(activity);
       const index = this.activities.findIndex(a => a.id === activity.id);
       if (index >= 0) {
         this.activities[index] = activity;
@@ -663,59 +669,51 @@ export const useCampStore = defineStore('camp', {
         }
       }
       
-      await storageService.deleteActivity(id);
+      await activitiesService.deleteActivity(id);
       this.activities = this.activities.filter(a => a.id !== id);
     },
 
     // Add/remove activity from a specific program
     async addActivityToProgram(activityId: string, programId: string): Promise<void> {
+      await activitiesService.addActivityToProgram(activityId, programId);
+      
+      // Update state
       const activity = this.activities.find(a => a.id === activityId);
       const program = this.programs.find(p => p.id === programId);
       
-      if (!activity || !program) {
-        throw new Error('Activity or Program not found');
+      if (activity && !activity.programIds.includes(programId)) {
+        activity.programIds.push(programId);
       }
-
-      if (activity.programIds.includes(programId)) {
-        throw new Error('Activity is already in this program');
-      }
-
-      // Update activity
-      activity.programIds.push(programId);
-      await storageService.saveActivity(activity);
-
-      // Update program
-      if (!program.activityIds.includes(activityId)) {
+      
+      if (program && !program.activityIds.includes(activityId)) {
         program.activityIds.push(activityId);
-        await this.updateProgram(program);
       }
     },
 
     async removeActivityFromProgram(activityId: string, programId: string): Promise<void> {
+      await activitiesService.removeActivityFromProgram(activityId, programId);
+      
+      // Update state
       const activity = this.activities.find(a => a.id === activityId);
       const program = this.programs.find(p => p.id === programId);
       
-      if (!activity || !program) {
-        throw new Error('Activity or Program not found');
+      if (activity) {
+        activity.programIds = activity.programIds.filter(id => id !== programId);
       }
-
-      // Update activity
-      activity.programIds = activity.programIds.filter(id => id !== programId);
-      await storageService.saveActivity(activity);
-
-      // Update program
-      program.activityIds = program.activityIds.filter(id => id !== activityId);
-      await this.updateProgram(program);
+      
+      if (program) {
+        program.activityIds = program.activityIds.filter(id => id !== activityId);
+      }
     },
 
     // Area actions
     async addArea(area: Area): Promise<void> {
-      await storageService.saveArea(area);
+      await areasService.saveArea(area);
       this.areas.push(area);
     },
 
     async updateArea(area: Area): Promise<void> {
-      await storageService.saveArea(area);
+      await areasService.saveArea(area);
       const index = this.areas.findIndex(a => a.id === area.id);
       if (index >= 0) {
         this.areas[index] = area;
@@ -723,18 +721,18 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteArea(id: string): Promise<void> {
-      await storageService.deleteArea(id);
+      await areasService.deleteArea(id);
       this.areas = this.areas.filter(a => a.id !== id);
     },
 
     // Certification actions
     async addCertification(certification: Certification): Promise<void> {
-      await storageService.saveCertification(certification);
+      await certificationsService.saveCertification(certification);
       this.certifications.push(certification);
     },
 
     async updateCertification(certification: Certification): Promise<void> {
-      await storageService.saveCertification(certification);
+      await certificationsService.saveCertification(certification);
       const index = this.certifications.findIndex(c => c.id === certification.id);
       if (index >= 0) {
         this.certifications[index] = certification;
@@ -742,18 +740,18 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteCertification(id: string): Promise<void> {
-      await storageService.deleteCertification(id);
+      await certificationsService.deleteCertification(id);
       this.certifications = this.certifications.filter(c => c.id !== id);
     },
 
     // Color actions
     async addColor(color: CampColor): Promise<void> {
-      await storageService.saveColor(color);
+      await colorsService.saveColor(color);
       this.colors.push(color);
     },
 
     async updateColor(color: CampColor): Promise<void> {
-      await storageService.saveColor(color);
+      await colorsService.saveColor(color);
       const index = this.colors.findIndex(c => c.id === color.id);
       if (index >= 0) {
         this.colors[index] = color;
@@ -761,18 +759,18 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteColor(id: string): Promise<void> {
-      await storageService.deleteColor(id);
+      await colorsService.deleteColor(id);
       this.colors = this.colors.filter(c => c.id !== id);
     },
 
     // Session actions
     async addSession(session: CampSession): Promise<void> {
-      await storageService.saveSession(session);
+      await sessionsService.saveSession(session);
       this.sessions.push(session);
     },
 
     async updateSession(session: CampSession): Promise<void> {
-      await storageService.saveSession(session);
+      await sessionsService.saveSession(session);
       const index = this.sessions.findIndex(s => s.id === session.id);
       if (index >= 0) {
         this.sessions[index] = session;
@@ -780,18 +778,18 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteSession(id: string): Promise<void> {
-      await storageService.deleteSession(id);
+      await sessionsService.deleteSession(id);
       this.sessions = this.sessions.filter(s => s.id !== id);
     },
 
     // Label actions
     async addLabel(label: Label): Promise<void> {
-      await storageService.saveLabel(label);
+      await labelsService.saveLabel(label);
       this.labels.push(label);
     },
 
     async updateLabel(label: Label): Promise<void> {
-      await storageService.saveLabel(label);
+      await labelsService.saveLabel(label);
       const index = this.labels.findIndex(l => l.id === label.id);
       if (index >= 0) {
         this.labels[index] = label;
@@ -799,9 +797,8 @@ export const useCampStore = defineStore('camp', {
     },
 
     async deleteLabel(id: string): Promise<void> {
-      await storageService.deleteLabel(id);
+      await labelsService.deleteLabel(id);
       this.labels = this.labels.filter(l => l.id !== id);
     },
   }
 });
-

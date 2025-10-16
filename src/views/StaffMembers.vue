@@ -15,7 +15,7 @@
         v-model:filter-program="filterProgram"
         :filters="staffFilters"
         :filtered-count="filteredMembers.length"
-        :total-count="store.staffMembers.length"
+        :total-count="staffMembersStore.staffMembers.length"
         @clear="clearFilters"
       >
         <template #prepend>
@@ -35,7 +35,7 @@
         />
 
         <EmptyState
-          v-if="filteredMembers.length === 0 && store.staffMembers.length === 0"
+          v-if="filteredMembers.length === 0 && staffMembersStore.staffMembers.length === 0"
           type="empty"
           title="No Staff Members Yet"
           message="Add your first staff member to start building your camp team and managing assignments."
@@ -53,7 +53,7 @@
         </EmptyState>
 
         <EmptyState
-          v-if="filteredMembers.length === 0 && store.staffMembers.length > 0"
+          v-if="filteredMembers.length === 0 && staffMembersStore.staffMembers.length > 0"
           type="no-results"
           title="No Staff Members Found"
           message="No staff members match your current filters. Try adjusting your search criteria."
@@ -142,7 +142,7 @@
         :show="showModal"
         :is-editing="!!editingMemberId"
         :form-data="formData"
-        :staff-members="store.staffMembers"
+        :staff-members="staffMembersStore.staffMembers"
         :current-member-id="editingMemberId || ''"
         @close="closeModal"
         @save="saveMember"
@@ -165,7 +165,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useStaffMembersStore, useCertificationsStore, useProgramsStore, useEventsStore, useAreasStore } from '@/stores';
 import type { StaffMember, Event } from '@/types';
 import ViewHeader from '@/components/ViewHeader.vue';
 import AvatarInitials from '@/components/AvatarInitials.vue';
@@ -232,8 +232,20 @@ export default defineComponent({
     };
   },
   computed: {
-    store(): ReturnType<typeof useCampStore> {
-      return useCampStore();
+    staffMembersStore() {
+      return useStaffMembersStore();
+    },
+    certificationsStore() {
+      return useCertificationsStore();
+    },
+    programsStore() {
+      return useProgramsStore();
+    },
+    eventsStore() {
+      return useEventsStore();
+    },
+    areasStore() {
+      return useAreasStore();
     },
     roleOptions(): Array<AutocompleteOption> {
       return [
@@ -248,7 +260,7 @@ export default defineComponent({
       const options = [
         { label: 'No Manager (Top Level)', value: '' }
       ];
-      const managers: Array<AutocompleteOption> = this.store.staffMembers
+      const managers: Array<AutocompleteOption> = this.staffMembersStore.staffMembers
         .filter(m => m.id !== this.editingMemberId)
         .map((member: StaffMember) => ({
           label: `${member.firstName} ${member.lastName} (${this.formatRole(member.role)})`,
@@ -273,7 +285,7 @@ export default defineComponent({
           model: 'filterCertification',
           value: this.filterCertification,
           placeholder: 'Filter by Certification',
-          options: this.store.certifications.map(cert => ({
+          options: this.certificationsStore.certifications.map(cert => ({
             label: cert.name,
             value: cert.name
           })),
@@ -282,7 +294,7 @@ export default defineComponent({
           model: 'filterProgram',
           value: this.filterProgram,
           placeholder: 'Filter by Program',
-          options: this.store.programs.map(program => ({
+          options: this.programsStore.programs.map(program => ({
             label: program.name,
             value: program.id
           })),
@@ -291,10 +303,10 @@ export default defineComponent({
     },
     selectedMember(): StaffMember | null {
       if (!this.selectedMemberId) return null;
-      return this.store.getStaffMemberById(this.selectedMemberId) || null;
+      return this.staffMembersStore.getStaffMemberById(this.selectedMemberId) || null;
     },
     filteredMembers(): StaffMember[] {
-      let members: StaffMember[] = this.store.staffMembers;
+      let members: StaffMember[] = this.staffMembersStore.staffMembers;
 
       // Search filter
       if (this.searchQuery) {
@@ -317,7 +329,7 @@ export default defineComponent({
         members = members.filter((member: StaffMember) => {
           if (!member.certificationIds) return false;
           return member.certificationIds.some(id => {
-            const cert = this.store.getCertificationById(id);
+            const cert = this.certificationsStore.getCertificationById(id);
             return cert && cert.name === this.filterCertification;
           });
         });
@@ -326,7 +338,7 @@ export default defineComponent({
       // Program filter
       if (this.filterProgram) {
         members = members.filter((member: StaffMember) => {
-          const program = this.store.getProgramById(this.filterProgram);
+          const program = this.programsStore.getProgramById(this.filterProgram);
           return program && program.staffMemberIds.includes(member.id);
         });
       }
@@ -350,7 +362,7 @@ export default defineComponent({
   },
   mounted() {
     // Auto-expand all members with reports
-    this.store.staffMembers.forEach(member => {
+    this.staffMembersStore.staffMembers.forEach(member => {
       if (this.getDirectReports(member.id).length > 0) {
         this.expandedMembers.add(member.id);
       }
@@ -368,7 +380,7 @@ export default defineComponent({
     },
     getManagerName(managerId: string | undefined): string {
       if (!managerId) return 'None';
-      const manager = this.store.getStaffMemberById(managerId);
+      const manager = this.staffMembersStore.getStaffMemberById(managerId);
       return manager ? `${manager.firstName} ${manager.lastName}` : 'Unknown';
     },
     formatRole(role: string): string {
@@ -385,10 +397,10 @@ export default defineComponent({
       return colors[role] || '#757575';
     },
     getMemberEvents(memberId: string): Event[] {
-      return this.store.staffEvents(memberId);
+      return this.eventsStore.staffEvents(memberId);
     },
     getLocationName(locationId: string): string {
-      const location = this.store.getAreaById(locationId);
+      const location = this.areasStore.getAreaById(locationId);
       return location?.name || 'Unknown Location';
     },
     selectMember(memberId: string): void {
@@ -414,7 +426,7 @@ export default defineComponent({
     async saveMember(formData: typeof this.formData): Promise<void> {
       // Get certification names for backward compatibility
       const certifications = formData.certificationIds.map(id => {
-        const cert = this.store.getCertificationById(id);
+        const cert = this.certificationsStore.getCertificationById(id);
         return cert ? cert.name : '';
       }).filter(name => name.length > 0);
 
@@ -431,9 +443,9 @@ export default defineComponent({
       };
 
       if (this.editingMemberId) {
-        await this.store.updateStaffMember(memberData);
+        await this.staffMembersStore.updateStaffMember(memberData);
       } else {
-        await this.store.addStaffMember(memberData);
+        await this.staffMembersStore.addStaffMember(memberData);
       }
 
       this.closeModal();
@@ -442,7 +454,7 @@ export default defineComponent({
       if (!this.selectedMemberId) return;
       this.confirmAction = async () => {
         if (this.selectedMemberId) {
-          await this.store.deleteStaffMember(this.selectedMemberId);
+          await this.staffMembersStore.deleteStaffMember(this.selectedMemberId);
           this.selectedMemberId = null;
         }
       };

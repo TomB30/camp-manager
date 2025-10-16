@@ -37,7 +37,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { Location } from '@/types';
-import { useCampStore } from '@/stores/campStore';
+import { useAreasStore } from '@/stores';
 import { MapPin } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -65,13 +65,13 @@ export default defineComponent({
   },
   emits: ['click'],
   setup() {
-    const store = useCampStore();
-    return { store };
+    const areasStore = useAreasStore();
+    return { areasStore };
   },
   computed: {
     areaName(): string | undefined {
       if (this.location.areaId) {
-        return this.store.getAreaById(this.location.areaId)?.name;
+        return this.areasStore.getAreaById(this.location.areaId)?.name;
       }
       return undefined;
     }

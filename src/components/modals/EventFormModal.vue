@@ -200,7 +200,7 @@
           <label class="form-label">Required Certifications (Optional)</label>
           <SelectionList
             v-model="selectedCertificationIds"
-            :items="store.certifications"
+            :items="certificationsStore.certifications"
             item-type="certification"
             placeholder="Select a certification..."
             empty-text="No certifications required"
@@ -260,7 +260,7 @@
                 />
                 <span 
                   class="group-label" 
-                  :style="{ borderLeft: `3px solid ${group.color || '#6366F1'}` }"
+                  :style="{ borderLeft: `3px solid ${getGroupColor(group)}` }"
                 >
                   {{ group.name }} ({{ getGroupCamperCount(group.id) }} campers)
                 </span>
@@ -286,7 +286,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useEventsStore, useCampersStore, useStaffMembersStore, useGroupsStore, useLocationsStore, useProgramsStore, useActivitiesStore, useColorsStore, useCertificationsStore } from '@/stores';
 import { conflictDetector } from '@/services/conflicts';
 import { useToast } from '@/composables/useToast';
 import BaseModal from '@/components/BaseModal.vue';
@@ -363,8 +363,17 @@ export default defineComponent({
   },
   emits: ['close', 'save'],
   setup() {
+    const eventsStore = useEventsStore();
+    const campersStore = useCampersStore();
+    const staffMembersStore = useStaffMembersStore();
+    const groupsStore = useGroupsStore();
+    const locationsStore = useLocationsStore();
+    const programsStore = useProgramsStore();
+    const activitiesStore = useActivitiesStore();
+    const colorsStore = useColorsStore();
+    const certificationsStore = useCertificationsStore();
     const toast = useToast();
-    return { toast };
+    return { eventsStore, campersStore, staffMembersStore, groupsStore, locationsStore, programsStore, activitiesStore, colorsStore, certificationsStore, toast };
   },
   data() {
     return {
@@ -392,13 +401,10 @@ export default defineComponent({
     };
   },
   computed: {
-    store() {
-      return useCampStore();
-    },
     programOptions(): AutocompleteOption[] {
       return [
         { label: 'None', value: '' },
-        ...this.store.programs.map(program => ({
+        ...this.programsStore.programs.map(program => ({
           label: program.name,
           value: program.id
         }))
@@ -406,7 +412,7 @@ export default defineComponent({
     },
     selectedProgramName(): string {
       if (!this.localFormData.programId) return '';
-      const program = this.store.getProgramById(this.localFormData.programId);
+      const program = this.programsStore.getProgramById(this.localFormData.programId);
       return program ? program.name : '';
     },
     locationOptions(): AutocompleteOption[] {
@@ -419,8 +425,8 @@ export default defineComponent({
       // Group activities by program
       const optionsWithGroups: AutocompleteOption[] = [];
       
-      this.store.programs.forEach(program => {
-        const programActivities = this.store.getActivitiesInProgram(program.id);
+      this.programsStore.programs.forEach(program => {
+        const programActivities = this.activitiesStore.getActivitiesInProgram(program.id);
         if (programActivities.length > 0) {
           programActivities.forEach(activity => {
             optionsWithGroups.push({
@@ -502,7 +508,7 @@ export default defineComponent({
     applyActivityTemplate(activityId: string) {
       if (!activityId) return;
       
-      const activity = this.store.getActivityById(activityId);
+      const activity = this.activitiesStore.getActivityById(activityId);
       if (!activity) return;
       
       // Auto-populate form fields from activity template
@@ -531,8 +537,11 @@ export default defineComponent({
       }
       
       // Set color if specified
-      if (activity.color) {
-        this.localFormData.color = activity.color;
+      if (activity.colorId) {
+        const color = this.colorsStore.getColorById(activity.colorId);
+        if (color) {
+          this.localFormData.color = color.hexValue;
+        }
       }
       
       // Set required certifications if specified
@@ -545,6 +554,13 @@ export default defineComponent({
       // Use the first program if activity belongs to multiple programs
       this.localFormData.programId = activity.programIds[0];
       this.localFormData.activityId = activity.id;
+    },
+    getGroupColor(group: any): string {
+      if (group.colorId) {
+        const color = this.colorsStore.getColorById(group.colorId);
+        return color?.hexValue || '#6366F1';
+      }
+      return '#6366F1';
     },
     getGroupCamperCount(groupId: string): number {
       const group = this.camperGroups.find(g => g.id === groupId);
@@ -580,7 +596,7 @@ export default defineComponent({
     getCertificationIdsFromNames(names: string[]): string[] {
       return names
         .map(name => {
-          const cert = this.store.certifications.find(c => c.name === name);
+          const cert = this.certificationsStore.certifications.find(c => c.name === name);
           return cert ? cert.id : '';
         })
         .filter(id => id !== '');
@@ -588,7 +604,7 @@ export default defineComponent({
     getCertificationNamesFromIds(ids: string[]): string[] {
       return ids
         .map(id => {
-          const cert = this.store.getCertificationById(id);
+          const cert = this.certificationsStore.getCertificationById(id);
           return cert ? cert.name : '';
         })
         .filter(name => name !== '');
@@ -607,7 +623,7 @@ export default defineComponent({
     },
     isStaffInSelectedProgram(staff: StaffMember): boolean {
       if (!this.localFormData.programId) return false;
-      const program = this.store.getProgramById(this.localFormData.programId);
+      const program = this.programsStore.getProgramById(this.localFormData.programId);
       return program ? program.staffMemberIds.includes(staff.id) : false;
     },
     staffHasRequiredCertifications(staff: StaffMember): boolean {
@@ -624,7 +640,7 @@ export default defineComponent({
         this.eventStartDateTime,
         this.eventEndDateTime,
         staff.id,
-        this.store.events,
+        this.eventsStore.events,
         this.editingEventId || undefined
       );
 
@@ -694,20 +710,23 @@ export default defineComponent({
     onProgramSelected(programId: string) {
       if (!programId) return;
       
-      const program = this.store.getProgramById(programId);
+      const program = this.programsStore.getProgramById(programId);
       if (!program) return;
       
       // Auto-apply program color if event color is not set or is default
       if (!this.localFormData.color || this.localFormData.color === '#6366F1') {
-        if (program.color) {
-          this.localFormData.color = program.color;
+        if (program.colorId) {
+          const color = this.colorsStore.getColorById(program.colorId);
+          if (color) {
+            this.localFormData.color = color.hexValue;
+          }
         }
       }
     },
     autoAssignStaffFromProgram() {
       if (!this.localFormData.programId) return;
       
-      const programStaff = this.store.getStaffMembersInProgram(this.localFormData.programId);
+      const programStaff = this.programsStore.getStaffMembersInProgram(this.localFormData.programId);
       
       if (programStaff.length === 0) {
         this.toast.warning('No staff members are assigned to this program.');

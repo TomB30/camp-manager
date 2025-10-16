@@ -27,8 +27,8 @@
 import { defineComponent } from 'vue';
 import Sidebar from './components/Sidebar.vue';
 import Toast from './components/Toast.vue';
-import { useCampStore } from './stores/campStore';
-import { storageService } from './services/storage';
+import { useMainStore } from './stores';
+import { campersService, storageService } from './services';
 import { mockData } from './data/mockData';
 import { Menu, Sun } from 'lucide-vue-next';
 
@@ -54,16 +54,16 @@ export default defineComponent({
     }
   },
   async mounted(): Promise<void> {
-    const store = useCampStore();
+    const mainStore = useMainStore();
     
     // Check if we have data, if not, seed with mock data
-    const existingCampers = await storageService.getCampers();
+    const existingCampers = await campersService.getCampers();
     
     if (existingCampers.length === 0) {
       await storageService.seedData(mockData);
     }
     
-    await store.loadAll();
+    await mainStore.loadAll();
   }
 });
 </script>

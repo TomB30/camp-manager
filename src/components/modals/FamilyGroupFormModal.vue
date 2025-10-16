@@ -132,7 +132,7 @@ interface FamilyGroupFormData {
   housingRoomId: string;
   staffMemberIds: string[];
   camperIds: string[];
-  color: string;
+  colorId: string;
 }
 
 export default defineComponent({

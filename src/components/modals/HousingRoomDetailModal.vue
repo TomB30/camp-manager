@@ -71,7 +71,7 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import type { HousingRoom } from '@/types';
-import { useCampStore } from '@/stores/campStore';
+import { useAreasStore } from '@/stores';
 
 interface FamilyGroupInfo {
   id: string;
@@ -105,12 +105,12 @@ export default defineComponent({
   },
   emits: ['close', 'edit', 'delete', 'view-family-group'],
   setup() {
-    const store = useCampStore();
-    return { store };
+    const areasStore = useAreasStore();
+    return { areasStore };
   },
   methods: {
     getAreaName(areaId: string): string {
-      const area = this.store.getAreaById(areaId);
+      const area = this.areasStore.getAreaById(areaId);
       return area?.name || 'Unknown';
     }
   }

@@ -15,7 +15,7 @@
         v-model:filter-session="filterSession"
         :filters="campersFilters"
         :filtered-count="filteredCampers.length"
-        :total-count="store.campers.length"
+        :total-count="campersStore.campers.length"
         @clear="clearFilters"
       >
         <template #prepend>
@@ -36,7 +36,7 @@
         />
 
         <EmptyState
-          v-if="filteredCampers.length === 0 && store.campers.length === 0"
+          v-if="filteredCampers.length === 0 && campersStore.campers.length === 0"
           type="empty"
           title="No Campers Yet"
           message="Add your first camper to start managing registrations and camp activities."
@@ -52,7 +52,7 @@
         </EmptyState>
 
         <EmptyState
-          v-if="filteredCampers.length === 0 && store.campers.length > 0"
+          v-if="filteredCampers.length === 0 && campersStore.campers.length > 0"
           type="no-results"
           title="No Campers Found"
           message="No campers match your current filters. Try adjusting your search criteria."
@@ -160,8 +160,8 @@
         :show="showModal"
         :is-editing="!!editingCamperId"
         :form-data="formData"
-        :family-groups="store.familyGroups"
-        :sessions="store.sessions"
+        :family-groups="familyGroupsStore.familyGroups"
+        :sessions="sessionsStore.sessions"
         @close="closeModal"
         @save="saveCamper"
       />
@@ -183,7 +183,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useCampersStore, useSessionsStore, useEventsStore, useFamilyGroupsStore, useHousingRoomsStore, useColorsStore } from '@/stores';
 import { format } from 'date-fns';
 import type { Camper, Event, FamilyGroup } from '@/types';
 import ViewHeader from '@/components/ViewHeader.vue';
@@ -254,8 +254,23 @@ export default defineComponent({
     };
   },
   computed: {
-    store(): ReturnType<typeof useCampStore> {
-      return useCampStore();
+    campersStore() {
+      return useCampersStore();
+    },
+    sessionsStore() {
+      return useSessionsStore();
+    },
+    eventsStore() {
+      return useEventsStore();
+    },
+    familyGroupsStore() {
+      return useFamilyGroupsStore();
+    },
+    housingRoomsStore() {
+      return useHousingRoomsStore();
+    },
+    colorsStore() {
+      return useColorsStore();
     },
     campersFilters(): Filter[] {
       return [
@@ -263,7 +278,7 @@ export default defineComponent({
           model: 'filterSession',
           value: this.filterSession,
           placeholder: 'Filter by Session',
-          options: this.store.sessions.map(session => ({
+          options: this.sessionsStore.sessions.map(session => ({
             label: session.name,
             value: session.id,
           })),
@@ -292,10 +307,10 @@ export default defineComponent({
     },
     selectedCamper(): Camper | null {
       if (!this.selectedCamperId) return null;
-      return this.store.getCamperById(this.selectedCamperId) || null;
+      return this.campersStore.getCamperById(this.selectedCamperId) || null;
     },
     filteredCampers(): Camper[] {
-      let campers: Camper[] = this.store.campers;
+      let campers: Camper[] = this.campersStore.campers;
 
       // Search filter
       if (this.searchQuery) {
@@ -337,42 +352,42 @@ export default defineComponent({
     },
     getFamilyGroupColor(familyGroup: FamilyGroup): string {
       if (familyGroup.colorId) {
-        const color = this.store.getColorById(familyGroup.colorId);
+        const color = this.colorsStore.getColorById(familyGroup.colorId);
         return color?.hexValue || '#6366F1';
       }
       return '#6366F1';
     },
     getCamperTodayEvents(camperId: string): Event[] {
       const today = new Date();
-      return this.store.camperEvents(camperId).filter(event => {
+      return this.eventsStore.camperEvents(camperId).filter(event => {
         const eventDate = new Date(event.startTime);
         return eventDate.toDateString() === today.toDateString();
       });
     },
     getCamperEvents(camperId: string): Event[] {
-      return this.store.camperEvents(camperId);
+      return this.eventsStore.camperEvents(camperId);
     },
     formatDate(dateStr: string): string {
       return format(new Date(dateStr), 'MMMM d, yyyy');
     },
     getSleepingRoomName(housingRoomId: string): string {
-      const room = this.store.getHousingRoomById(housingRoomId);
+      const room = this.housingRoomsStore.getHousingRoomById(housingRoomId);
       return room?.name || 'Unknown Room';
     },
     getFamilyGroup(familyGroupId: string): FamilyGroup | null | undefined {
-      return this.store.getFamilyGroupById(familyGroupId);
+      return this.familyGroupsStore.getFamilyGroupById(familyGroupId);
     },
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
     },
     getSessionName(sessionId: string | undefined): string {
       if (!sessionId) return 'No session';
-      const session = this.store.sessions.find(s => s.id === sessionId);
+      const session = this.sessionsStore.sessions.find(s => s.id === sessionId);
       return session?.name || 'Unknown Session';
     },
     getSessionDateRange(sessionId: string | undefined): string {
       if (!sessionId) return '';
-      const session = this.store.sessions.find(s => s.id === sessionId);
+      const session = this.sessionsStore.sessions.find(s => s.id === sessionId);
       if (!session) return 'Unknown';
       const startDate = new Date(session.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       const endDate = new Date(session.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -414,21 +429,21 @@ export default defineComponent({
         sessionId: formData.sessionId || undefined,
         familyGroupId: formData.familyGroupId || undefined,
         registrationDate: this.editingCamperId 
-          ? this.store.getCamperById(this.editingCamperId)?.registrationDate 
+          ? this.campersStore.getCamperById(this.editingCamperId)?.registrationDate 
           : new Date().toISOString(),
       };
 
       if (this.editingCamperId) {
-        await this.store.updateCamper(camperData);
+        await this.campersStore.updateCamper(camperData);
       } else {
-        await this.store.addCamper(camperData);
+        await this.campersStore.addCamper(camperData);
       }
 
       this.closeModal();
     },
     deleteCamperConfirm(): void {
       if (!this.selectedCamperId) return;
-      const camper = this.store.getCamperById(this.selectedCamperId);
+      const camper = this.campersStore.getCamperById(this.selectedCamperId);
       if (!camper) return;
       
       this.camperToDelete = {
@@ -440,7 +455,7 @@ export default defineComponent({
     async handleConfirmDelete(): Promise<void> {
       if (!this.camperToDelete) return;
       
-      await this.store.deleteCamper(this.camperToDelete.id);
+      await this.campersStore.deleteCamper(this.camperToDelete.id);
       this.selectedCamperId = null;
       this.showConfirmModal = false;
       this.camperToDelete = null;

@@ -13,17 +13,17 @@
 
     <!-- Search and Filters -->
     <FilterBar
-      v-if="store.colors.length > 0"
+      v-if="colorsStore.colors.length > 0"
       v-model:searchQuery="searchQuery"
       :filters="[]"
       :filtered-count="filteredColors.length"
-      :total-count="store.colors.length"
+      :total-count="colorsStore.colors.length"
       @clear="clearFilters"
     />
 
     <!-- Empty State -->
     <EmptyState
-      v-if="store.colors.length === 0"
+      v-if="colorsStore.colors.length === 0"
       type="empty"
       title="No Colors Yet"
       message="Add your first color to start customizing your camp's color palette."
@@ -70,7 +70,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useColorsStore } from '@/stores';
 import type { CampColor } from '@/types';
 import { Plus, Palette } from 'lucide-vue-next';
 import TabHeader from '@/components/settings/TabHeader.vue';
@@ -94,9 +94,9 @@ export default defineComponent({
     EmptyState,
   },
   setup() {
-    const store = useCampStore();
+    const colorsStore = useColorsStore();
     const toast = useToast();
-    return { store, toast };
+    return { colorsStore, toast };
   },
   data() {
     return {
@@ -114,7 +114,7 @@ export default defineComponent({
   },
   computed: {
     filteredColors(): CampColor[] {
-      let filtered = this.store.colors;
+      let filtered = this.colorsStore.colors;
 
       // Search filter
       if (this.searchQuery) {
@@ -147,7 +147,7 @@ export default defineComponent({
       if (!this.colorToDelete) return;
       
       try {
-        await this.store.deleteColor(this.colorToDelete.id);
+        await this.colorsStore.deleteColor(this.colorToDelete.id);
         this.toast.success('Color deleted successfully');
         this.showConfirmModal = false;
         this.colorToDelete = null;
@@ -160,7 +160,7 @@ export default defineComponent({
       try {
         if (this.editingColor) {
           // Update existing
-          await this.store.updateColor({
+          await this.colorsStore.updateColor({
             ...this.editingColor,
             name: data.name,
             hexValue: data.hexValue,
@@ -169,7 +169,7 @@ export default defineComponent({
           this.toast.success('Color updated successfully');
         } else {
           // Create new
-          await this.store.addColor({
+          await this.colorsStore.addColor({
             id: crypto.randomUUID(),
             name: data.name,
             hexValue: data.hexValue,

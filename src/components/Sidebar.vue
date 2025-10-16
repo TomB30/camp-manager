@@ -69,11 +69,11 @@
         </RouterLink>
       </div>
 
-      <div v-if="store.conflicts.length > 0" class="conflicts-section">
+      <div v-if="mainStore.conflicts.length > 0" class="conflicts-section">
         <div class="conflicts-badge">
           <span class="badge badge-error">
             <AlertTriangle :size="16" />
-            {{ store.conflicts.length }} Conflict{{ store.conflicts.length > 1 ? 's' : '' }}
+            {{ mainStore.conflicts.length }} Conflict{{ mainStore.conflicts.length > 1 ? 's' : '' }}
           </span>
         </div>
       </div>
@@ -83,7 +83,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useMainStore } from '@/stores';
 import { 
   Sun, 
   LayoutDashboard, 
@@ -132,8 +132,8 @@ export default defineComponent({
     };
   },
   computed: {
-    store() {
-      return useCampStore();
+    mainStore() {
+      return useMainStore();
     },
     isCampersRouteActiveWhileCollapsed() {
       const campersRoutes = ['/campers', '/groups', '/family-groups'];

@@ -17,7 +17,7 @@
       v-model:filter-expiration="filterExpiration"
       :filters="certificationFilters"
       :filtered-count="filteredCertifications.length"
-      :total-count="store.certifications.length"
+      :total-count="certificationsStore.certifications.length"
       @clear="clearFilters"
     >
       <template #prepend>
@@ -27,7 +27,7 @@
 
     <!-- Empty State -->
     <EmptyState
-      v-if="store.certifications.length === 0"
+      v-if="certificationsStore.certifications.length === 0"
       type="empty"
       title="No Certifications Yet"
       message="Add your first certification to start tracking staff qualifications."
@@ -127,7 +127,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useCertificationsStore } from '@/stores';
 import type { Certification } from '@/types';
 import { Plus, Edit2, Trash2, Award } from 'lucide-vue-next';
 import TabHeader from '@/components/settings/TabHeader.vue';
@@ -159,9 +159,9 @@ export default defineComponent({
     EmptyState,
   },
   setup() {
-    const store = useCampStore();
+    const certificationsStore = useCertificationsStore();
     const toast = useToast();
-    return { store, toast };
+    return { certificationsStore, toast };
   },
   data() {
     return {
@@ -206,7 +206,7 @@ export default defineComponent({
     },
 
     filteredCertifications(): Certification[] {
-      let filtered = this.store.certifications;
+      let filtered = this.certificationsStore.certifications;
 
       // Search filter
       if (this.searchQuery) {
@@ -231,7 +231,7 @@ export default defineComponent({
 
     selectedCertification(): Certification | null {
       if (!this.selectedCertificationId) return null;
-      return this.store.getCertificationById(this.selectedCertificationId) || null;
+      return this.certificationsStore.getCertificationById(this.selectedCertificationId) || null;
     },
   },
   methods: {
@@ -265,7 +265,7 @@ export default defineComponent({
       if (!this.certificationToDelete) return;
       
       try {
-        await this.store.deleteCertification(this.certificationToDelete);
+        await this.certificationsStore.deleteCertification(this.certificationToDelete);
         this.toast.success('Certification deleted successfully');
         this.showConfirmModal = false;
         this.certificationToDelete = null;
@@ -278,8 +278,8 @@ export default defineComponent({
       try {
         if (this.editingCertificationId) {
           // Update existing
-          const existing = this.store.getCertificationById(this.editingCertificationId);
-          await this.store.updateCertification({
+          const existing = this.certificationsStore.getCertificationById(this.editingCertificationId);
+          await this.certificationsStore.updateCertification({
             id: this.editingCertificationId,
             name: data.name,
             description: data.description || undefined,
@@ -291,7 +291,7 @@ export default defineComponent({
           this.toast.success('Certification updated successfully');
         } else {
           // Create new
-          await this.store.addCertification({
+          await this.certificationsStore.addCertification({
             id: crypto.randomUUID(),
             name: data.name,
             description: data.description || undefined,

@@ -1,7 +1,7 @@
 <template>
   <div 
     class="card card-clickable"
-    :style="{ borderLeft: `4px solid ${group.color || '#6366F1'}` }"
+    :style="{ borderLeft: `4px solid ${groupColor}` }"
     @click="$emit('click', group)"
   >
     <div class="card-header">
@@ -31,7 +31,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { CamperGroup } from '@/types';
-import { useCampStore } from '@/stores/campStore';
+import { useLabelsStore, useColorsStore } from '@/stores';
 
 export default defineComponent({
   name: 'GroupCard',
@@ -47,19 +47,29 @@ export default defineComponent({
   },
   emits: ['click'],
   computed: {
-    store() {
-      return useCampStore();
+    labelsStore() {
+      return useLabelsStore();
+    },
+    colorsStore() {
+      return useColorsStore();
+    },
+    groupColor(): string {
+      if (this.group.colorId) {
+        const color = this.colorsStore.getColorById(this.group.colorId);
+        return color?.hexValue || '#6366F1';
+      }
+      return '#6366F1';
     }
   },
   methods: {
     getLabelName(labelId: string): string {
-      const label = this.store.getLabelById(labelId);
+      const label = this.labelsStore.getLabelById(labelId);
       return label ? label.name : 'Unknown Label';
     },
     getLabelColor(labelId: string): string {
-      const label = this.store.getLabelById(labelId);
+      const label = this.labelsStore.getLabelById(labelId);
       if (label?.colorId) {
-        const color = this.store.getColorById(label.colorId);
+        const color = this.colorsStore.getColorById(label.colorId);
         return color?.hexValue || '#6366F1';
       }
       return '#6366F1';

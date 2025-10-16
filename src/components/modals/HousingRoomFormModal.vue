@@ -42,7 +42,7 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import { useCampStore } from '@/stores/campStore';
+import { useAreasStore } from '@/stores';
 
 interface RoomFormData {
   name: string;
@@ -72,8 +72,8 @@ export default defineComponent({
   },
   emits: ['close', 'save'],
   setup() {
-    const store = useCampStore();
-    return { store };
+    const areasStore = useAreasStore();
+    return { areasStore };
   },
   data() {
     return {
@@ -82,7 +82,7 @@ export default defineComponent({
   },
   computed: {
     locationOptions(): AutocompleteOption[] {
-      return this.store.areas.map(location => ({
+      return this.areasStore.areas.map(location => ({
         label: location.name,
         value: location.id
       }));

@@ -13,17 +13,17 @@
 
     <!-- Search and Filters -->
     <FilterBar
-      v-if="store.sessions.length > 0"
+      v-if="sessionsStore.sessions.length > 0"
       v-model:searchQuery="searchQuery"
       :filters="[]"
       :filtered-count="filteredSessions.length"
-      :total-count="store.sessions.length"
+      :total-count="sessionsStore.sessions.length"
       @clear="clearFilters"
     />
 
     <!-- Empty State -->
     <EmptyState
-      v-if="store.sessions.length === 0"
+      v-if="sessionsStore.sessions.length === 0"
       type="empty"
       title="No Sessions Yet"
       message="Add your first session to define the registration periods for your camp."
@@ -78,7 +78,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useSessionsStore } from '@/stores';
 import type { CampSession } from '@/types';
 import { Plus, CalendarDays } from 'lucide-vue-next';
 import TabHeader from '@/components/settings/TabHeader.vue';
@@ -104,9 +104,9 @@ export default defineComponent({
     EmptyState,
   },
   setup() {
-    const store = useCampStore();
+    const sessionsStore = useSessionsStore();
     const toast = useToast();
-    return { store, toast };
+    return { sessionsStore, toast };
   },
   data() {
     return {
@@ -128,7 +128,7 @@ export default defineComponent({
   },
   computed: {
     filteredSessions(): CampSession[] {
-      let filtered = this.store.sessions;
+      let filtered = this.sessionsStore.sessions;
 
       // Search filter
       if (this.searchQuery) {
@@ -147,7 +147,7 @@ export default defineComponent({
 
     selectedSession(): CampSession | null {
       if (!this.selectedSessionId) return null;
-      return this.store.getSessionById(this.selectedSessionId) || null;
+      return this.sessionsStore.getSessionById(this.selectedSessionId) || null;
     },
   },
   methods: {
@@ -173,7 +173,7 @@ export default defineComponent({
     },
 
     deleteSessionConfirm(id: string) {
-      const session = this.store.getSessionById(id);
+      const session = this.sessionsStore.getSessionById(id);
       if (session) {
         this.sessionToDelete = session;
         this.selectedSessionId = null;
@@ -185,7 +185,7 @@ export default defineComponent({
       if (!this.sessionToDelete) return;
       
       try {
-        await this.store.deleteSession(this.sessionToDelete.id);
+        await this.sessionsStore.deleteSession(this.sessionToDelete.id);
         this.toast.success('Session deleted successfully');
         this.showConfirmModal = false;
         this.sessionToDelete = null;
@@ -198,7 +198,7 @@ export default defineComponent({
       try {
         if (this.editingSession) {
           // Update existing
-          await this.store.updateSession({
+          await this.sessionsStore.updateSession({
             ...this.editingSession,
             name: data.name,
             startDate: data.startDate,
@@ -210,7 +210,7 @@ export default defineComponent({
           this.toast.success('Session updated successfully');
         } else {
           // Create new
-          await this.store.addSession({
+          await this.sessionsStore.addSession({
             id: crypto.randomUUID(),
             name: data.name,
             startDate: data.startDate,

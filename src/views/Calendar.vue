@@ -74,7 +74,7 @@
       <DailyCalendarView 
         v-if="viewMode === 'daily'" 
         :events="filteredTodayEvents"
-        :rooms="store.locations"
+        :rooms="locationsStore.locations"
         @select-event="selectEvent"
         @create-event="createEventAtHour"
       />
@@ -84,7 +84,7 @@
         v-else-if="viewMode === 'weekly'"
         :week-days="weekDays"
         :events="filteredEvents"
-        :rooms="store.locations"
+        :rooms="locationsStore.locations"
         @select-event="selectEvent"
       />
 
@@ -116,10 +116,10 @@
       :editing-event-id="editingEventId || ''"
       :event-date="getEventFormDate()"
       :form-data="eventFormData"
-      :rooms="store.locations"
-      :staff-members="store.staffMembers"
-      :camper-groups="store.camperGroups"
-      :campers="store.campers"
+      :rooms="locationsStore.locations"
+      :staff-members="staffMembersStore.staffMembers"
+      :camper-groups="groupsStore.camperGroups"
+      :campers="campersStore.campers"
       @close="closeEventModal"
       @save="saveEvent"
     />
@@ -144,7 +144,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useEventsStore, useCampersStore, useStaffMembersStore, useLocationsStore, useColorsStore, useGroupsStore, useProgramsStore } from '@/stores';
 import { useToastStore } from '@/stores/toastStore';
 import { format, addDays, startOfWeek, addWeeks, addMonths } from 'date-fns';
 import ConfirmModal from '@/components/ConfirmModal.vue';
@@ -219,8 +219,26 @@ export default defineComponent({
     }
   },
   computed: {
-    store() {
-      return useCampStore();
+    eventsStore() {
+      return useEventsStore();
+    },
+    campersStore() {
+      return useCampersStore();
+    },
+    staffMembersStore() {
+      return useStaffMembersStore();
+    },
+    locationsStore() {
+      return useLocationsStore();
+    },
+    colorsStore() {
+      return useColorsStore();
+    },
+    groupsStore() {
+      return useGroupsStore();
+    },
+    programsStore() {
+      return useProgramsStore();
     },
     toast() {
       return useToastStore();
@@ -231,14 +249,14 @@ export default defineComponent({
     },
     weekEvents() {
       // Get all events for the current week
-      return this.weekDays.flatMap(day => this.store.eventsForDate(day));
+      return this.weekDays.flatMap(day => this.eventsStore.eventsForDate(day));
     },
     monthEvents() {
       // Get all events for the current month
       const start = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth(), 1);
       const end = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth() + 1, 0);
       
-      return this.store.events.filter(event => {
+      return this.eventsStore.events.filter(event => {
         const eventDate = new Date(event.startTime);
         return eventDate >= start && eventDate <= end;
       });
@@ -249,7 +267,7 @@ export default defineComponent({
           model: 'filterProgram',
           value: this.filterProgram,
           placeholder: 'Filter by Program',
-          options: this.store.programs.map(program => ({
+          options: this.programsStore.programs.map(program => ({
             label: program.name,
             value: program.id,
           })),
@@ -270,7 +288,7 @@ export default defineComponent({
           model: 'filterRoom',
           value: this.filterRoom,
           placeholder: 'Filter by Room',
-          options: this.store.locations.map(room => ({
+          options: this.locationsStore.locations.map(room => ({
             label: room.name,
             value: room.id,
           })),
@@ -279,7 +297,7 @@ export default defineComponent({
           model: 'filterCamper',
           value: this.filterCamper,
           placeholder: 'Filter by Camper',
-          options: this.store.campers
+          options: this.campersStore.campers
             .sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`))
             .map(camper => ({
               label: `${camper.firstName} ${camper.lastName}`,
@@ -290,7 +308,7 @@ export default defineComponent({
           model: 'filterStaff',
           value: this.filterStaff,
           placeholder: 'Filter by Staff',
-          options: this.store.staffMembers
+          options: this.staffMembersStore.staffMembers
             .sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`))
             .map(staff => ({
               label: `${staff.firstName} ${staff.lastName}`,
@@ -300,23 +318,23 @@ export default defineComponent({
       ];
     },
     todayEvents() {
-      return this.store.eventsForDate(this.selectedDate);
+      return this.eventsStore.eventsForDate(this.selectedDate);
     },
     // Memoized lookup maps for efficient filtering (O(1) lookups instead of O(n))
     roomLookupMap() {
-      return new Map(this.store.locations.map(r => [r.id, r.name.toLowerCase()]));
+      return new Map(this.locationsStore.locations.map(r => [r.id, r.name.toLowerCase()]));
     },
     programLookupMap() {
-      return new Map(this.store.programs.map(p => [p.id, p.name.toLowerCase()]));
+      return new Map(this.programsStore.programs.map(p => [p.id, p.name.toLowerCase()]));
     },
     staffLookupMap() {
       return new Map(
-        this.store.staffMembers.map(s => [s.id, `${s.firstName} ${s.lastName}`.toLowerCase()])
+        this.staffMembersStore.staffMembers.map(s => [s.id, `${s.firstName} ${s.lastName}`.toLowerCase()])
       );
     },
     camperLookupMap() {
       return new Map(
-        this.store.campers.map(c => [c.id, `${c.firstName} ${c.lastName}`.toLowerCase()])
+        this.campersStore.campers.map(c => [c.id, `${c.firstName} ${c.lastName}`.toLowerCase()])
       );
     },
     filteredEvents() {
@@ -408,14 +426,14 @@ export default defineComponent({
     },
     selectedEvent() {
       if (!this.selectedEventId) return null;
-      return this.store.getEventById(this.selectedEventId);
+      return this.eventsStore.getEventById(this.selectedEventId);
     }
   },
   methods: {
     handleEventIdFromQuery() {
       const eventId = this.$route.query.eventId as string | undefined;
       if (eventId) {
-        const event = this.store.getEventById(eventId);
+        const event = this.eventsStore.getEventById(eventId);
         if (event) {
           // Set the selected date to the event's date
           this.selectedDate = new Date(event.startTime);
@@ -513,7 +531,7 @@ export default defineComponent({
     getEventFormDate(): Date {
       // If editing, use the event's date; otherwise use selected date
       if (this.editingEventId) {
-        const event = this.store.getEventById(this.editingEventId);
+        const event = this.eventsStore.getEventById(this.editingEventId);
         if (event) {
           return new Date(event.startTime);
         }
@@ -585,7 +603,7 @@ export default defineComponent({
       
       if (this.editingEventId) {
         // Update existing event
-        const existingEvent = this.store.getEventById(this.editingEventId);
+        const existingEvent = this.eventsStore.getEventById(this.editingEventId);
         if (existingEvent) {
           const updatedEvent: Event = {
             ...existingEvent,
@@ -602,7 +620,7 @@ export default defineComponent({
             activityId: formData.activityId,
           };
           
-          await this.store.updateEvent(updatedEvent);
+          await this.eventsStore.updateEvent(updatedEvent);
           this.toast.success('Event updated successfully');
         }
       } else {
@@ -636,7 +654,7 @@ export default defineComponent({
         activityId: formData.activityId,
       };
       
-      await this.store.addEvent(event);
+      await this.eventsStore.addEvent(event);
       
       // Enroll camper groups if any were selected
       if (formData.camperGroupIds && formData.camperGroupIds.length > 0) {
@@ -698,7 +716,7 @@ export default defineComponent({
         
         // Batch add all events at once (much faster)
         // Use batch method to add all events and run conflict detection only once
-        await this.store.addEventsBatch(eventsToCreate);
+        await this.eventsStore.addEventsBatch(eventsToCreate);
         
         // Enroll camper groups for all events if any were selected
         if (formData.camperGroupIds && formData.camperGroupIds.length > 0) {
@@ -720,7 +738,7 @@ export default defineComponent({
       
       for (const groupId of groupIds) {
         try {
-          const result = await this.store.enrollCamperGroup(eventId, groupId);
+          const result = await this.groupsStore.enrollCamperGroup(eventId, groupId);
           if (result.errors.length > 0) {
             messages.push(result.message);
           }
@@ -742,7 +760,7 @@ export default defineComponent({
     },
     deleteEventConfirm() {
       if (!this.selectedEventId) return;
-      const event = this.store.getEventById(this.selectedEventId);
+      const event = this.eventsStore.getEventById(this.selectedEventId);
       this.confirmAction = {
         type: 'deleteEvent',
         data: { eventId: this.selectedEventId, eventName: event?.title }
@@ -753,10 +771,10 @@ export default defineComponent({
       if (!this.confirmAction) return;
 
       if (this.confirmAction.type === 'deleteEvent') {
-        await this.store.deleteEvent(this.confirmAction.data.eventId);
+        await this.eventsStore.deleteEvent(this.confirmAction.data.eventId);
         this.selectedEventId = null;
       } else if (this.confirmAction.type === 'removeCamper') {
-        await this.store.unenrollCamper(this.confirmAction.data.eventId, this.confirmAction.data.camperId);
+        await this.eventsStore.unenrollCamper(this.confirmAction.data.eventId, this.confirmAction.data.camperId);
       }
 
       this.showConfirmModal = false;
@@ -767,8 +785,8 @@ export default defineComponent({
       this.confirmAction = null;
     },
     unenrollCamperFromEvent(eventId: string, camperId: string) {
-      const camper = this.store.getCamperById(camperId);
-      const event = this.store.getEventById(eventId);
+      const camper = this.campersStore.getCamperById(camperId);
+      const event = this.eventsStore.getEventById(eventId);
       this.confirmAction = {
         type: 'removeCamper',
         data: { eventId, camperId, camperName: `${camper?.firstName} ${camper?.lastName}`, eventName: event?.title }

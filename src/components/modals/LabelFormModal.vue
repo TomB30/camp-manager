@@ -65,7 +65,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
-import { useCampStore } from '@/stores/campStore';
+import { useColorsStore } from '@/stores';
 import type { CampColor } from '@/types';
 
 interface LabelFormData {
@@ -95,8 +95,8 @@ export default defineComponent({
   },
   emits: ['close', 'save'],
   setup() {
-    const store = useCampStore();
-    return { store };
+    const colorsStore = useColorsStore();
+    return { colorsStore };
   },
   data() {
     return {
@@ -105,11 +105,11 @@ export default defineComponent({
   },
   computed: {
     colors(): CampColor[] {
-      return this.store.colors;
+      return this.colorsStore.colors;
     },
     selectedColor(): CampColor | undefined {
       if (this.localFormData.colorId) {
-        return this.store.getColorById(this.localFormData.colorId);
+        return this.colorsStore.getColorById(this.localFormData.colorId);
       }
       return undefined;
     }

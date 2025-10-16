@@ -11,7 +11,7 @@
           </div>
           <div class="stat-content">
             <div class="stat-label">Total Campers</div>
-            <div class="stat-value">{{ store.campers.length }}</div>
+            <div class="stat-value">{{ campersStore.campers.length }}</div>
           </div>
         </div>
 
@@ -21,7 +21,7 @@
           </div>
           <div class="stat-content">
             <div class="stat-label">Staff Members</div>
-            <div class="stat-value">{{ store.staffMembers.length }}</div>
+            <div class="stat-value">{{ staffMembersStore.staffMembers.length }}</div>
           </div>
         </div>
 
@@ -31,7 +31,7 @@
           </div>
           <div class="stat-content">
             <div class="stat-label">Locations</div>
-            <div class="stat-value">{{ store.locations.length }}</div>
+            <div class="stat-value">{{ locationsStore.locations.length }}</div>
           </div>
         </div>
 
@@ -47,13 +47,13 @@
       </div>
 
       <!-- Conflicts Alert -->
-      <div v-if="store.conflicts.length > 0" class="conflicts-section" style="border-left: 4px solid var(--error-color);">
+      <div v-if="mainStore.conflicts.length > 0" class="conflicts-section" style="border-left: 4px solid var(--error-color);">
         <div class="card-header">
-          <h3>⚠️ Scheduling Conflicts ({{ store.conflicts.length }})</h3>
+          <h3>⚠️ Scheduling Conflicts ({{ mainStore.conflicts.length }})</h3>
         </div>
         <div class="conflicts-list">
           <div 
-            v-for="conflict in store.conflicts" 
+            v-for="conflict in mainStore.conflicts" 
             :key="conflict.entityId" 
             class="conflict-item"
             @click="goToConflictEvent(conflict)"
@@ -131,7 +131,7 @@
         <div class="card">
           <h4 class="mb-2">Room Capacity</h4>
           <div class="capacity-list">
-            <div v-for="room in store.locations.slice(0, 5)" :key="room.id" class="capacity-item">
+            <div v-for="room in locationsStore.locations.slice(0, 5)" :key="room.id" class="capacity-item">
               <div class="capacity-name">{{ room.name }}</div>
               <div class="capacity-bar">
                 <div 
@@ -153,7 +153,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useCampersStore, useStaffMembersStore, useLocationsStore, useEventsStore, useMainStore, useAreasStore } from '@/stores';
 import { format } from 'date-fns';
 import { Calendar, Users, UsersRound } from 'lucide-vue-next';
 import ViewHeader from '@/components/ViewHeader.vue';
@@ -168,12 +168,27 @@ export default defineComponent({
     ViewHeader
   },
   computed: {
-    store(): ReturnType<typeof useCampStore> {
-      return useCampStore();
+    campersStore() {
+      return useCampersStore();
+    },
+    staffMembersStore() {
+      return useStaffMembersStore();
+    },
+    locationsStore() {
+      return useLocationsStore();
+    },
+    eventsStore() {
+      return useEventsStore();
+    },
+    mainStore() {
+      return useMainStore();
+    },
+    areasStore() {
+      return useAreasStore();
     },
     todayEvents(): Event[] {
       const today = new Date();
-      return this.store.eventsForDate(today);
+      return this.eventsStore.eventsForDate(today);
     },
     sortedTodayEvents(): Event[] {
       return [...this.todayEvents].sort((a, b) => 
@@ -181,7 +196,7 @@ export default defineComponent({
       );
     },
     recentCampers(): Camper[] {
-      return [...this.store.campers]
+      return [...this.campersStore.campers]
         .sort((a, b) => {
           const dateA = a.registrationDate ? new Date(a.registrationDate).getTime() : 0;
           const dateB = b.registrationDate ? new Date(b.registrationDate).getTime() : 0;
@@ -199,14 +214,14 @@ export default defineComponent({
       return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     },
     getLocationName(locationId: string): string | null | undefined {
-      const location = this.store.getAreaById(locationId);
+      const location = this.areasStore.getAreaById(locationId);
       return location?.name || 'Unknown Location';
     },
     getRoomUsage(locationId: string): number {
-      const roomEvents = this.store.locationEvents(locationId);
+      const roomEvents = this.eventsStore.locationEvents(locationId);
       if (roomEvents.length === 0) return 0;
       
-      const room = this.store.getAreaById(locationId);
+      const room = this.areasStore.getAreaById(locationId);
       if (!room || !room.capacity) return 0;
       
       // Calculate average capacity usage
@@ -231,7 +246,7 @@ export default defineComponent({
       if (!eventId) return;
       
       // Get the event to determine its date
-      const event = this.store.getEventById(eventId);
+      const event = this.eventsStore.getEventById(eventId);
       if (!event) return;
       
       // Navigate to calendar with event ID as query parameter

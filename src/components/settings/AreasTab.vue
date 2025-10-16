@@ -17,7 +17,7 @@
       v-model:filter-type="filterType"
       :filters="areaFilters"
       :filtered-count="filteredAreas.length"
-      :total-count="store.areas.length"
+      :total-count="areasStore.areas.length"
       @clear="clearFilters"
     >
       <template #prepend>
@@ -27,8 +27,8 @@
 
     <!-- Empty State -->
     <EmptyState
-      v-if="store.areas.length === 0"
-      icon="Map"
+      v-if="areasStore.areas.length === 0"
+      :icon="Map"
       title="No areas configured"
       message="Add your first area to start organizing your camp spaces."
       action-text="+ Area"
@@ -128,9 +128,9 @@
 </template>
 
 <script lang="ts">
-// @ts-nocheck
+
 import { defineComponent } from 'vue';
-import { useCampStore } from '@/stores/campStore';
+import { useAreasStore } from '@/stores';
 import type { Area } from '@/types';
 import AreaCard from '@/components/cards/AreaCard.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
@@ -160,9 +160,9 @@ export default defineComponent({
     TabHeader,
   },
   setup() {
-    const store = useCampStore();
+    const areasStore = useAreasStore();
     const toast = useToast();
-    return { store, toast };
+    return { areasStore, toast };
   },
   data() {
     return {
@@ -207,7 +207,7 @@ export default defineComponent({
     },
 
     filteredAreas(): Area[] {
-      let filtered = this.store.areas;
+      let filtered = this.areasStore.areas;
 
       // Search filter
       if (this.searchQuery) {
@@ -228,7 +228,7 @@ export default defineComponent({
 
     selectedArea(): Area | null {
       if (!this.selectedAreaId) return null;
-      return this.store.getAreaById(this.selectedAreaId);
+      return this.areasStore.getAreaById(this.selectedAreaId) || null;
     },
   },
   methods: {
@@ -265,16 +265,16 @@ export default defineComponent({
       try {
         if (this.editingAreaId) {
           // Update existing
-          await this.store.updateArea({
+          await this.areasStore.updateArea({
             id: this.editingAreaId,
             ...data,
-            createdAt: this.store.getAreaById(this.editingAreaId)?.createdAt || new Date().toISOString(),
+            createdAt: this.areasStore.getAreaById(this.editingAreaId)?.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           });
           this.toast.success('Area updated successfully');
         } else {
           // Create new
-          await this.store.addArea({
+          await this.areasStore.addArea({
             id: crypto.randomUUID(),
             ...data,
             createdAt: new Date().toISOString(),
@@ -296,7 +296,7 @@ export default defineComponent({
 
     async deleteArea(id: string) {
       try {
-        await this.store.deleteArea(id);
+        await this.areasStore.deleteArea(id);
         this.toast.success('Area deleted successfully');
       } catch (error: any) {
         this.toast.error(error.message || 'Failed to delete area');

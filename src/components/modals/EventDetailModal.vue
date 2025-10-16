@@ -52,7 +52,7 @@
                 Assign
               </button>
             </div>
-            <div v-if="store.camperGroups.length === 0" class="text-xs text-secondary mt-2">
+            <div v-if="groupsStore.camperGroups.length === 0" class="text-xs text-secondary mt-2">
               No groups available. Create groups in the Groups section.
             </div>
           </div>
@@ -134,7 +134,7 @@ import { defineComponent, type PropType } from 'vue';
 import { format } from 'date-fns';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete from '@/components/Autocomplete.vue';
-import { useCampStore } from '@/stores/campStore';
+import { useEventsStore, useCampersStore, useStaffMembersStore, useGroupsStore, useLocationsStore, useProgramsStore, useActivitiesStore, useCertificationsStore } from '@/stores';
 import { useToastStore } from '@/stores/toastStore';
 import type { Event } from '@/types';
 
@@ -164,14 +164,35 @@ export default defineComponent({
     };
   },
   computed: {
-    store() {
-      return useCampStore();
+    eventsStore() {
+      return useEventsStore();
+    },
+    campersStore() {
+      return useCampersStore();
+    },
+    staffMembersStore() {
+      return useStaffMembersStore();
+    },
+    groupsStore() {
+      return useGroupsStore();
+    },
+    locationsStore() {
+      return useLocationsStore();
+    },
+    programsStore() {
+      return useProgramsStore();
+    },
+    activitiesStore() {
+      return useActivitiesStore();
+    },
+    certificationsStore() {
+      return useCertificationsStore();
     },
     toast() {
       return useToastStore();
     },
     groupAssignOptions() {
-      return this.store.camperGroups.map(group => ({
+      return this.groupsStore.camperGroups.map(group => ({
         label: `${group.name} (${this.getGroupCamperCount(group.id)} campers)`,
         value: group.id
       }));
@@ -182,25 +203,25 @@ export default defineComponent({
       return format(new Date(dateStr), 'h:mm a');
     },
     getLocationName(locationId: string): string {
-      const location = this.store.getAreaById(locationId);
+      const location = this.locationsStore.getLocationById(locationId);
       return location?.name || 'Unknown Location';
     },
     getCamperName(camperId: string): string {
-      const camper = this.store.getCamperById(camperId);
+      const camper = this.campersStore.getCamperById(camperId);
       return camper ? `${camper.firstName} ${camper.lastName}` : 'Unknown';
     },
     getStaffName(staffId: string): string {
-      const staff = this.store.getStaffMemberById(staffId);
+      const staff = this.staffMembersStore.getStaffMemberById(staffId);
       return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
     },
     staffHasRequiredCertifications(staffId: string, requiredCertNames: string[]): boolean {
-      const staff = this.store.getStaffMemberById(staffId);
+      const staff = this.staffMembersStore.getStaffMemberById(staffId);
       if (!staff || !staff.certificationIds || staff.certificationIds.length === 0) return false;
       
       // Convert required cert names to IDs
       const requiredCertIds = requiredCertNames
         .map(name => {
-          const cert = this.store.certifications.find(c => c.name === name);
+          const cert = this.certificationsStore.certifications.find(c => c.name === name);
           return cert ? cert.id : '';
         })
         .filter(id => id !== '');
@@ -209,13 +230,13 @@ export default defineComponent({
       return requiredCertIds.every(certId => staff.certificationIds!.includes(certId));
     },
     getGroupCamperCount(groupId: string): number {
-      return this.store.getCampersInGroup(groupId).length;
+      return this.groupsStore.getCampersInGroup(groupId).length;
     },
     async assignGroup() {
       if (!this.groupToAssign || !this.event) return;
       
       try {
-        const result = await this.store.enrollCamperGroup(this.event.id, this.groupToAssign);
+        const result = await this.groupsStore.enrollCamperGroup(this.event.id, this.groupToAssign);
         
         if (result.errors.length > 0) {
           // Show detailed message about conflicts
@@ -262,10 +283,10 @@ export default defineComponent({
       try {
         if (fromEventId && fromEventId !== this.event.id) {
           // Moving from one event to another
-          await this.store.moveCamper(fromEventId, this.event.id, camperId);
+          await this.eventsStore.moveCamper(fromEventId, this.event.id, camperId);
         } else if (!fromEventId || fromEventId !== this.event.id) {
           // Enrolling from the campers list
-          await this.store.enrollCamper(this.event.id, camperId);
+          await this.eventsStore.enrollCamper(this.event.id, camperId);
         }
       } catch (error: any) {
         this.toast.error('Failed to move camper', error.message);

@@ -1,7 +1,7 @@
 <template>
   <div 
     class="card card-clickable"
-    :style="{ borderLeft: `4px solid ${group.color || '#6366F1'}` }"
+    :style="{ borderLeft: `4px solid ${groupColor}` }"
     @click="$emit('click', group)"
   >
     <div class="card-header">
@@ -33,6 +33,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { FamilyGroup } from '@/types';
+import { useColorsStore } from '@/stores';
 import { Bed, Users } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -60,6 +61,19 @@ export default defineComponent({
     },
   },
   emits: ['click'],
+  setup() {
+    const colorsStore = useColorsStore();
+    return { colorsStore };
+  },
+  computed: {
+    groupColor(): string {
+      if (this.group.colorId) {
+        const color = this.colorsStore.getColorById(this.group.colorId);
+        return color?.hexValue || '#6366F1';
+      }
+      return '#6366F1';
+    }
+  }
 });
 </script>
 

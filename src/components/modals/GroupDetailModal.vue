@@ -67,8 +67,8 @@
         <div class="detail-section">
           <div class="detail-label">Metadata</div>
           <div class="text-sm text-secondary">
-            <div>Created: {{ formatDate(group.createdAt) }}</div>
-            <div>Last Updated: {{ formatDate(group.updatedAt) }}</div>
+            <div v-if="group.createdAt">Created: {{ formatDate(group.createdAt) }}</div>
+            <div v-if="group.updatedAt">Last Updated: {{ formatDate(group.updatedAt) }}</div>
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@ import BaseModal from '@/components/BaseModal.vue';
 import type { Camper } from '@/types';
 import type { CamperGroup, CamperGroupFilter } from '@/types';
 import { format } from 'date-fns';
-import { useCampStore } from '@/stores/campStore';
+import { useLabelsStore, useColorsStore, useFamilyGroupsStore } from '@/stores';
 
 export default defineComponent({
   name: 'GroupDetailModal',
@@ -111,9 +111,15 @@ export default defineComponent({
   },
   emits: ['close', 'edit', 'delete'],
   computed: {
-    store() {
-      return useCampStore();
-    }
+    labelsStore() {
+      return useLabelsStore();
+    },
+    colorsStore() {
+      return useColorsStore();
+    },
+    familyGroupsStore() {
+      return useFamilyGroupsStore();
+    },
   },
   methods: {
     formatGender(gender: string): string {
@@ -141,17 +147,17 @@ export default defineComponent({
       );
     },
     getFamilyGroupName(familyGroupId: string): string {
-      const familyGroup = this.store.getFamilyGroupById(familyGroupId);
+      const familyGroup = this.familyGroupsStore.getFamilyGroupById(familyGroupId);
       return familyGroup ? familyGroup.name : 'Unknown Family Group';
     },
     getLabelName(labelId: string): string {
-      const label = this.store.getLabelById(labelId);
+      const label = this.labelsStore.getLabelById(labelId);
       return label ? label.name : 'Unknown Label';
     },
     getLabelColor(labelId: string): string {
-      const label = this.store.getLabelById(labelId);
+      const label = this.labelsStore.getLabelById(labelId);
       if (label?.colorId) {
-        const color = this.store.getColorById(label.colorId);
+        const color = this.colorsStore.getColorById(label.colorId);
         return color?.hexValue || '#6366F1';
       }
       return '#6366F1';
