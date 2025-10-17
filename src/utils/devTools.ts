@@ -1,5 +1,4 @@
 import { storageService, STORAGE_KEYS } from '@/services';
-import { mockData } from '@/data/mockData';
 import { useMainStore } from '@/stores';
 
 /**
@@ -30,6 +29,10 @@ export async function clearData(): Promise<void> {
  */
 export async function insertMockData(): Promise<void> {
   console.log('📦 Inserting mock data...');
+  
+  // Lazy load mock data only when needed
+  const { mockData } = await import('@/data/mockData');
+  
   console.log(`- ${mockData.certifications.length} certifications`);
   console.log(`- ${mockData.locations.length} locations`);
   console.log(`- ${mockData.staffMembers.length} staff members`);

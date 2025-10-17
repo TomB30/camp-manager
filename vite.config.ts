@@ -10,5 +10,17 @@ export default defineConfig(({ mode }) => ({
     },
   },
   base: mode === 'production' ? '/camp-manager/' : '/',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separate vendor chunks for better caching
+          'vue-vendor': ['vue', 'vue-router', 'pinia'],
+          'lucide-icons': ['lucide-vue-next'],
+          'date-utils': ['date-fns'],
+        },
+      },
+    },
+  },
 }))
 

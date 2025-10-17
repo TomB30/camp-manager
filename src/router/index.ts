@@ -1,12 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Dashboard from '../views/Dashboard.vue';
-import Calendar from '../views/Calendar.vue';
-import Campers from '../views/Campers.vue';
-import StaffMembers from '../views/StaffMembers.vue';
-import Groups from '../views/Groups.vue';
-import FamilyGroups from '../views/FamilyGroups.vue';
-import Programs from '../views/Programs.vue';
-import CampSettings from '../views/CampSettings.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,42 +6,42 @@ const router = createRouter({
     {
       path: '/',
       name: 'dashboard',
-      component: Dashboard,
+      component: () => import('../views/Dashboard.vue'),
     },
     {
       path: '/calendar',
       name: 'calendar',
-      component: Calendar,
+      component: () => import('../views/Calendar.vue'),
     },
     {
       path: '/campers',
       name: 'campers',
-      component: Campers,
+      component: () => import('../views/Campers.vue'),
     },
     {
       path: '/staff',
       name: 'staff',
-      component: StaffMembers,
+      component: () => import('../views/StaffMembers.vue'),
     },
     {
       path: '/groups',
       name: 'groups',
-      component: Groups,
+      component: () => import('../views/Groups.vue'),
     },
     {
       path: '/family-groups',
       name: 'family-groups',
-      component: FamilyGroups,
+      component: () => import('../views/FamilyGroups.vue'),
     },
     {
       path: '/programs',
       name: 'programs',
-      component: Programs,
+      component: () => import('../views/Programs.vue'),
     },
     {
       path: '/settings',
       name: 'settings',
-      component: CampSettings,
+      component: () => import('../views/CampSettings.vue'),
     },
   ],
 });

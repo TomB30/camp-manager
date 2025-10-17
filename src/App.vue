@@ -29,7 +29,6 @@ import Sidebar from './components/Sidebar.vue';
 import Toast from './components/Toast.vue';
 import { useMainStore } from './stores';
 import { campersService, storageService } from './services';
-import { mockData } from './data/mockData';
 import { Menu, Sun } from 'lucide-vue-next';
 
 export default defineComponent({
@@ -60,6 +59,8 @@ export default defineComponent({
     const existingCampers = await campersService.getCampers();
     
     if (existingCampers.length === 0) {
+      // Lazy load mock data only when needed
+      const { mockData } = await import('./data/mockData');
       await storageService.seedData(mockData);
     }
     

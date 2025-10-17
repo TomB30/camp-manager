@@ -3,6 +3,8 @@
  * Provides low-level CRUD operations for localStorage
  */
 
+import { STORAGE_KEYS } from './storageKeys';
+
 // Simulate async operations to match future API
 const delay = (ms: number = 50) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -122,9 +124,6 @@ class StorageService {
     labels?: any[];
   }): Promise<void> {
     await delay();
-    
-    // Import storage keys
-    const { STORAGE_KEYS } = await import('./storageKeys');
     
     if (data.campers) {
       localStorage.setItem(STORAGE_KEYS.CAMPERS, JSON.stringify(data.campers));
