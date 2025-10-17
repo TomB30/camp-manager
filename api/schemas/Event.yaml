@@ -44,9 +44,6 @@ properties:
       type: string
       format: uuid
     description: IDs of campers to exclude from assigned groups
-  type:
-    type: string
-    enum: [activity, sports, arts, education, meal, free-time]
   requiredCertifications:
     type: array
     items:

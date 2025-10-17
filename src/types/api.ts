@@ -703,8 +703,6 @@ export interface components {
       excludeStaffIds?: string[];
       /** @description IDs of campers to exclude from assigned groups */
       excludeCamperIds?: string[];
-      /** @enum {string} */
-      type?: "activity" | "sports" | "arts" | "education" | "meal" | "free-time";
       requiredCertifications?: string[];
       /** @description Hex color code for calendar display (deprecated - use colorId) */
       color?: string;

@@ -686,7 +686,6 @@ const createEvent = (
   durationHours: number,
   locationId: string,
   capacity: number,
-  type: Event['type'],
   groupIds: string[],
   color: string,
   requiredCerts?: string[],
@@ -706,7 +705,6 @@ const createEvent = (
     endTime: endTime.toISOString(),
     locationId,
     capacity,
-    type,
     groupIds,
     excludeStaffIds,
     excludeCamperIds,
@@ -780,7 +778,6 @@ const generateMonthEvents = (): Event[] => {
         0.5,
         generateId('room', 1),
         150,
-        'activity',
         getGroups(8, groupOffset), // All camper groups + some family groups
         '#6366F1',
       ));
@@ -798,7 +795,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 2),
         15,
-        'activity',
         [generateId('group', 1)], // Junior Campers
         '#EC4899',
         undefined,
@@ -814,7 +810,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 3),
         25,
-        'sports',
         [generateId('group', 3), generateId('family', 1 + (groupOffset % 24))],
         '#F59E0B',
         undefined,
@@ -830,7 +825,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 10),
         20,
-        'activity',
         [generateId('group', 2)], // Senior Campers
         '#8B5CF6',
         undefined,
@@ -846,7 +840,6 @@ const generateMonthEvents = (): Event[] => {
         2,
         generateId('room', 7),
         20,
-        'activity',
         getGroups(3, groupOffset + 1),
         '#14B8A6',
         undefined,
@@ -863,7 +856,6 @@ const generateMonthEvents = (): Event[] => {
         1,
         generateId('room', 4),
         15,
-        'sports',
         [generateId('family', 1 + (groupOffset % 24)), generateId('family', 1 + ((groupOffset + 1) % 24))],
         '#60A5FA',
         ['Lifeguard', 'Swimming Instructor'],
@@ -879,7 +871,6 @@ const generateMonthEvents = (): Event[] => {
         1.25,
         generateId('room', 2),
         18,
-        'activity',
         [generateId('group', 4)], // Girls Power
         '#F472B6',
         undefined,
@@ -895,7 +886,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 9),
         20,
-        'sports',
         getGroups(2, groupOffset + 2),
         '#FBBF24',
         undefined,
@@ -911,7 +901,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 5),
         15,
-        'activity',
         [generateId('group', 1), generateId('group', 3)],
         '#06B6D4',
         undefined,
@@ -928,7 +917,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 3),
         12,
-        'activity',
         [generateId('group', 2)], // Senior Campers
         '#10B981',
         ['Climbing Instructor', 'First Aid'],
@@ -944,7 +932,6 @@ const generateMonthEvents = (): Event[] => {
         1,
         generateId('room', 7),
         15,
-        'activity',
         [generateId('group', 3), generateId('family', 1 + (groupOffset % 24))],
         '#34D399',
         ['Archery Instructor'],
@@ -960,7 +947,6 @@ const generateMonthEvents = (): Event[] => {
         1,
         generateId('room', 8),
         15,
-        'activity',
         getGroups(2, groupOffset + 3),
         '#A78BFA',
         undefined,
@@ -977,7 +963,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 6),
         12,
-        'activity',
         [generateId('group', 5)], // Allergy-Aware Group
         '#EF4444',
         undefined,
@@ -996,7 +981,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 3),
         25,
-        'sports',
         getGroups(3, groupOffset),
         '#F59E0B',
         undefined,
@@ -1012,7 +996,6 @@ const generateMonthEvents = (): Event[] => {
         1,
         generateId('room', 1),
         25,
-        'activity',
         getGroups(4, groupOffset + 1),
         '#A855F7',
         undefined,
@@ -1028,7 +1011,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 2),
         20,
-        'activity',
         [generateId('group', 4)], // Girls Power
         '#F9A8D4',
         undefined,
@@ -1046,7 +1028,6 @@ const generateMonthEvents = (): Event[] => {
       1,
       generateId('room', 6),
       400,
-      'meal',
       getGroups(10, groupOffset), // All groups
       '#64748B',
     ));
@@ -1062,7 +1043,6 @@ const generateMonthEvents = (): Event[] => {
         2,
         generateId('room', 5),
         8,
-        'sports',
         [generateId('group', 2)], // Senior Campers
         '#3B82F6',
         ['Lifeguard', 'Boat Driver'],
@@ -1078,7 +1058,6 @@ const generateMonthEvents = (): Event[] => {
         1,
         generateId('room', 8),
         15,
-        'activity',
         getGroups(2, groupOffset + 4),
         '#F59E0B',
       ));
@@ -1092,7 +1071,6 @@ const generateMonthEvents = (): Event[] => {
         1.25,
         generateId('room', 9),
         15,
-        'activity',
         [generateId('group', 4)], // Girls Power
         '#F472B6',
         undefined,
@@ -1108,7 +1086,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 3),
         20,
-        'sports',
         getGroups(2, groupOffset + 5),
         '#EF4444',
       ));
@@ -1122,7 +1099,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 5),
         10,
-        'sports',
         [generateId('family', 1 + (groupOffset % 24)), generateId('family', 1 + ((groupOffset + 2) % 24))],
         '#2563EB',
         ['Lifeguard'],
@@ -1143,7 +1119,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 7),
         12,
-        'activity',
         [generateId('group', 3), generateId('family', 1 + (groupOffset % 24))],
         '#10B981',
         ['Archery Instructor'],
@@ -1161,7 +1136,6 @@ const generateMonthEvents = (): Event[] => {
         1,
         generateId('room', 9),
         12,
-        'activity',
         [generateId('group', 4)], // Girls Power
         '#DB2777',
         undefined,
@@ -1178,7 +1152,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 3),
         20,
-        'sports',
         getGroups(3, groupOffset + 6),
         '#EF4444',
       ));
@@ -1193,7 +1166,6 @@ const generateMonthEvents = (): Event[] => {
       1,
       generateId('room', 6),
       400,
-      'meal',
       getGroups(10, groupOffset + 1), // All groups
       '#64748B',
     ));
@@ -1208,7 +1180,6 @@ const generateMonthEvents = (): Event[] => {
         1,
         generateId('room', 7),
         150,
-        'activity',
         getGroups(7, groupOffset + 7),
         '#F97316',
       ));
@@ -1221,7 +1192,6 @@ const generateMonthEvents = (): Event[] => {
         1.5,
         generateId('room', 10),
         100,
-        'activity',
         getGroups(6, groupOffset + 8),
         '#8B5CF6',
       ));
@@ -1235,7 +1205,6 @@ const generateMonthEvents = (): Event[] => {
         2,
         generateId('room', 1),
         150,
-        'activity',
         movieNightGroups,
         '#8B5CF6',
       ));
@@ -1249,7 +1218,6 @@ const generateMonthEvents = (): Event[] => {
           1.5,
           generateId('room', 8),
           40,
-          'activity',
           [movieNightGroups[0], movieNightGroups[1]], // Same groups as Movie Night - creates conflict!
           '#A78BFA',
         ));
@@ -1266,7 +1234,6 @@ const generateMonthEvents = (): Event[] => {
         1,
         generateId('room', 1),
         200,
-        'free-time',
         getGroups(8, groupOffset + 10),
         '#475569',
       ));

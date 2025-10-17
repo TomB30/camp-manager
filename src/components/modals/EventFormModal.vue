@@ -172,15 +172,6 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Type</label>
-          <Autocomplete
-            v-model="localFormData.type"
-            :options="eventTypeOptions"
-            placeholder="Select event type"
-          />
-        </div>
-
-        <div class="form-group">
           <label class="form-label">Program (Optional)</label>
           <Autocomplete
             v-model="localFormData.programId"
@@ -291,7 +282,7 @@ import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete
 import ColorPicker from '@/components/ColorPicker.vue';
 import SelectionList from '@/components/SelectionList.vue';
 import NumberInput from '@/components/NumberInput.vue';
-import type { Event, Location, Camper, StaffMember } from '@/types';
+import type { Location, Camper, StaffMember } from '@/types';
 import type { CamperGroup, FamilyGroup, Certification } from '@/types';
 import { type RecurrenceData, type DayOfWeek, formatRecurrenceRule, validateRecurrenceRule } from '@/utils/recurrence';
 
@@ -302,7 +293,6 @@ interface EventFormData {
   endTime: string;
   locationId: string;
   capacity: number;
-  type: Event['type'];
   color: string;
   requiredCertifications: string[];
   groupIds: string[];
@@ -379,14 +369,6 @@ export default defineComponent({
       localFormData: JSON.parse(JSON.stringify(this.formData)),
       selectedActivityId: '',
       selectedCertificationIds: [] as string[],
-      eventTypeOptions: [
-        { label: 'Activity', value: 'activity' },
-        { label: 'Sports', value: 'sports' },
-        { label: 'Arts', value: 'arts' },
-        { label: 'Education', value: 'education' },
-        { label: 'Meal', value: 'meal' },
-        { label: 'Free Time', value: 'free-time' }
-      ] as AutocompleteOption[],
       recurrenceData: {
         enabled: false,
         frequency: 'weekly' as 'daily' | 'weekly' | 'monthly',

@@ -12,10 +12,8 @@
         :show-search="true"
         v-model:search-query="searchQuery"
         search-placeholder="Search events by title, room, program, camper, or staff"
-        v-model:filter-event-type="filterEventType"
         v-model:filter-room="filterRoom"
         v-model:filter-program="filterProgram"
-        v-model:filter-camper="filterCamper"
         v-model:filter-staff="filterStaff"
         :filters="eventFilters"
         :filtered-count="filteredEvents.length"
@@ -186,7 +184,6 @@ export default defineComponent({
         endTime: '10:00',
         locationId: '',
         capacity: 20,
-        type: 'activity' as Event['type'],
         color: '#3B82F6',
         requiredCertifications: [] as string[],
         groupIds: [] as string[],
@@ -196,10 +193,8 @@ export default defineComponent({
         activityId: undefined as string | undefined,
       },
       searchQuery: '',
-      filterEventType: '',
       filterRoom: '',
       filterProgram: '',
-      filterCamper: '',
       filterStaff: '',
       sleepingRoomToAssign: ''
     };
@@ -269,18 +264,6 @@ export default defineComponent({
           })),
         },
         {
-          model: 'filterEventType',
-          value: this.filterEventType,
-          placeholder: 'Filter by Type',
-          options: [
-            { label: 'Activity', value: 'activity' },
-            { label: 'Sports', value: 'sports' },
-            { label: 'Meal', value: 'meal' },
-            { label: 'Assembly', value: 'assembly' },
-            { label: 'Quiet Time', value: 'quiet-time' },
-          ],
-        },
-        {
           model: 'filterRoom',
           value: this.filterRoom,
           placeholder: 'Filter by Room',
@@ -288,17 +271,6 @@ export default defineComponent({
             label: room.name,
             value: room.id,
           })),
-        },
-        {
-          model: 'filterCamper',
-          value: this.filterCamper,
-          placeholder: 'Filter by Camper',
-          options: this.campersStore.campers
-            .sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`))
-            .map(camper => ({
-              label: `${camper.firstName} ${camper.lastName}`,
-              value: camper.id,
-            })),
         },
         {
           model: 'filterStaff',
@@ -342,8 +314,8 @@ export default defineComponent({
           : this.monthEvents;
 
       // Early return if no filters are active
-      if (!this.searchQuery && !this.filterProgram && !this.filterEventType && 
-          !this.filterRoom && !this.filterCamper && !this.filterStaff) {
+      if (!this.searchQuery && !this.filterProgram && 
+          !this.filterRoom && !this.filterStaff) {
         return events;
       }
 
@@ -351,7 +323,6 @@ export default defineComponent({
       const roomMap = this.roomLookupMap;
       const programMap = this.programLookupMap;
       const staffMap = this.staffLookupMap;
-      const camperMap = this.camperLookupMap;
 
       // Pre-process search query
       const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : '';
@@ -360,15 +331,7 @@ export default defineComponent({
       return events.filter(event => {
         // Simple filters first (fastest to check)
         if (this.filterProgram && event.programId !== this.filterProgram) return false;
-        if (this.filterEventType && event.type !== this.filterEventType) return false;
         if (this.filterRoom && event.locationId !== this.filterRoom) return false;
-        
-        if (this.filterCamper) {
-          const eventCamperIds = this.eventsStore.getEventCamperIds(event.id);
-          if (!eventCamperIds.includes(this.filterCamper)) {
-            return false;
-          }
-        }
         
         if (this.filterStaff) {
           const eventStaffIds = this.eventsStore.getEventStaffIds(event.id);
@@ -390,16 +353,6 @@ export default defineComponent({
           if (event.programId) {
             const programName = programMap.get(event.programId);
             if (programName && programName.includes(searchQuery)) return true;
-          }
-          
-          // Search in enrolled camper names (using memoized map for O(1) lookup)
-          const eventCamperIds = this.eventsStore.getEventCamperIds(event.id);
-          if (eventCamperIds.length > 0) {
-            const hasMatchingCamper = eventCamperIds.some(camperId => {
-              const camperName = camperMap.get(camperId);
-              return camperName && camperName.includes(searchQuery);
-            });
-            if (hasMatchingCamper) return true;
           }
           
           // Search in assigned staff names (using memoized map for O(1) lookup)
@@ -447,9 +400,7 @@ export default defineComponent({
     clearEventFilters() {
       this.searchQuery = '';
       this.filterProgram = '';
-      this.filterEventType = '';
       this.filterRoom = '';
-      this.filterCamper = '';
       this.filterStaff = '';
     },
     formatDate(date: Date): string {
@@ -491,7 +442,6 @@ export default defineComponent({
         endTime: '10:00',
         locationId: '',
         capacity: 20,
-        type: 'activity',
         color: '#3B82F6',
         requiredCertifications: [],
         groupIds: [],
@@ -517,7 +467,6 @@ export default defineComponent({
         endTime,
         locationId: '',
         capacity: 20,
-        type: 'activity',
         color: '#3B82F6',
         requiredCertifications: [],
         groupIds: [],
@@ -555,7 +504,6 @@ export default defineComponent({
         endTime: `${String(endTime.getHours()).padStart(2, '0')}:${String(endTime.getMinutes()).padStart(2, '0')}`,
         locationId: this.selectedEvent.locationId,
         capacity: this.selectedEvent.capacity,
-        type: this.selectedEvent.type,
         color: this.selectedEvent.color || '#3B82F6',
         requiredCertifications: this.selectedEvent.requiredCertifications || [],
         groupIds: this.selectedEvent.groupIds || [],
@@ -578,7 +526,6 @@ export default defineComponent({
         endTime: '10:00',
         locationId: '',
         capacity: 20,
-        type: 'activity',
         color: '#3B82F6',
         requiredCertifications: [],
         groupIds: [],
@@ -616,7 +563,6 @@ export default defineComponent({
             endTime: endTime.toISOString(),
             locationId: formData.locationId,
             capacity: formData.capacity,
-            type: formData.type,
             color: formData.color,
             requiredCertifications: formData.requiredCertifications && formData.requiredCertifications.length > 0 ? formData.requiredCertifications : undefined,
             groupIds: formData.groupIds || [],
@@ -651,7 +597,6 @@ export default defineComponent({
         endTime: endTime.toISOString(),
         locationId: formData.locationId,
         capacity: formData.capacity,
-        type: formData.type,
         color: formData.color,
         requiredCertifications: formData.requiredCertifications && formData.requiredCertifications.length > 0 ? formData.requiredCertifications : undefined,
         groupIds: formData.groupIds || [],
@@ -701,7 +646,6 @@ export default defineComponent({
             endTime: occurrenceEnd.toISOString(),
             locationId: formData.locationId,
             capacity: formData.capacity,
-            type: formData.type,
             color: formData.color,
             requiredCertifications: formData.requiredCertifications && formData.requiredCertifications.length > 0 ? formData.requiredCertifications : undefined,
             groupIds: formData.groupIds || [],
