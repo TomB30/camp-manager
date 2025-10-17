@@ -32,7 +32,7 @@
         <div class="event-details">
           <div class="event-room text-xs">{{ getLocationName(event.locationId) }}</div>
           <div class="event-capacity text-xs">
-            {{ event.enrolledCamperIds?.length || 0 }}/{{ event.capacity }}
+            {{ getEnrolledCount(event.id) }}/{{ event.capacity }}
           </div>
         </div>
       </div>
@@ -42,6 +42,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
+import { useEventsStore } from '@/stores';
 import type { Event, Location } from '@/types';
 
 export default defineComponent({
@@ -57,6 +58,10 @@ export default defineComponent({
     },
   },
   emits: ['select-event', 'create-event'],
+  setup() {
+    const eventsStore = useEventsStore();
+    return { eventsStore };
+  },
   data() {
     return {
       hours: Array.from({ length: 14 }, (_, i) => i + 7),
@@ -71,6 +76,9 @@ export default defineComponent({
     getLocationName(locationId: string): string {
       const location = this.rooms.find(r => r.id === locationId);
       return location?.name || 'Unknown Location';
+    },
+    getEnrolledCount(eventId: string): number {
+      return this.eventsStore.getEventCamperIds(eventId).length;
     },
     handleTimeSlotClick(hour: number) {
       this.$emit('create-event', hour);

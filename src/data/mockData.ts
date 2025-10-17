@@ -687,12 +687,13 @@ const createEvent = (
   locationId: string,
   capacity: number,
   type: Event['type'],
-  staffIds: string[],
-  camperIds: string[],
+  groupIds: string[],
   color: string,
   requiredCerts?: string[],
   programId?: string,
-  activityId?: string
+  activityId?: string,
+  excludeStaffIds?: string[],
+  excludeCamperIds?: string[]
 ): Event => {
   const today = new Date();
   const eventDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + dayOffset, startHour, 0);
@@ -706,8 +707,9 @@ const createEvent = (
     locationId,
     capacity,
     type,
-    assignedStaffIds: staffIds,
-    enrolledCamperIds: camperIds,
+    groupIds,
+    excludeStaffIds,
+    excludeCamperIds,
     color,
     requiredCertifications: requiredCerts,
     programId,
@@ -720,15 +722,42 @@ const generateMonthEvents = (): Event[] => {
   const events: Event[] = [];
   let eventId = 1;
   
-  // Helper to get sequential campers without overlap
-  const getCampers = (count: number, startIdx: number) => {
-    const campers = [];
-    const totalCampers = 350;
-    for (let i = 0; i < count; i++) {
-      const camperId = ((startIdx + i) % totalCampers) + 1;
-      campers.push(generateId('camper', camperId));
+  // Helper to get groups for events
+  const getGroups = (count: number, startIdx: number, includeFamilyGroups: boolean = true) => {
+    const groups = [];
+    
+    // Mix of camper groups (5 total) and family groups (24 total)
+    if (count <= 2) {
+      // Small events: use 1-2 camper groups
+      for (let i = 0; i < count; i++) {
+        const groupIdx = ((startIdx + i) % 5) + 1;
+        groups.push(generateId('group', groupIdx));
+      }
+    } else if (count <= 5 && includeFamilyGroups) {
+      // Medium events: use 2-5 family groups
+      for (let i = 0; i < count; i++) {
+        const familyIdx = ((startIdx + i) % 24) + 1;
+        groups.push(generateId('family', familyIdx));
+      }
+    } else {
+      // Large events: mix of camper groups and some family groups
+      const camperGroupCount = Math.min(3, Math.floor(count / 2));
+      const familyGroupCount = Math.min(count - camperGroupCount, 6);
+      
+      for (let i = 0; i < camperGroupCount; i++) {
+        const groupIdx = ((startIdx + i) % 5) + 1;
+        groups.push(generateId('group', groupIdx));
+      }
+      
+      if (includeFamilyGroups) {
+        for (let i = 0; i < familyGroupCount; i++) {
+          const familyIdx = ((startIdx + i) % 24) + 1;
+          groups.push(generateId('family', familyIdx));
+        }
+      }
     }
-    return campers;
+    
+    return groups;
   };
   
   // Get current month details
@@ -739,11 +768,7 @@ const generateMonthEvents = (): Event[] => {
   // Generate events for all days in the month
   for (let day = startDay; day < startDay + daysInMonth; day++) {
     const dayMod = Math.abs(day) % 7;
-    // Use different camper pools for different time slots to avoid conflicts
-    let morningPool = (Math.abs(day) * 30) % 350;
-    let afternoonPool1 = (Math.abs(day) * 30 + 100) % 350;
-    let afternoonPool2 = (Math.abs(day) * 30 + 200) % 350;
-    let eveningPool = (Math.abs(day) * 30 + 50) % 350;
+    const groupOffset = Math.abs(day);
     
     // Morning Assembly (9:00-9:30) - Large groups (not every day)
     if (dayMod === 1 || dayMod === 3 || dayMod === 5) {
@@ -756,16 +781,15 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 1),
         150,
         'activity',
-        [generateId('staff', 1), generateId('staff', 2), generateId('staff', 3)],
-        getCampers(120, morningPool),
+        getGroups(8, groupOffset), // All camper groups + some family groups
         '#6366F1',
       ));
     }
     
     // Morning Activities Block 1 (10:00-11:30)
-    // Multiple concurrent activities with different camper pools
+    // Multiple concurrent activities with different groups
     if (dayMod === 0 || dayMod === 3) {
-      // Pottery from Arts & Crafts Program - Group A
+      // Pottery from Arts & Crafts Program - Junior Campers
       events.push(createEvent(
         eventId++,
         'Pottery',
@@ -775,14 +799,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 2),
         15,
         'activity',
-        [generateId('staff', 14), generateId('staff', 22)],
-        getCampers(12, morningPool),
+        [generateId('group', 1)], // Junior Campers
         '#EC4899',
         undefined,
         generateId('program', 2),
         generateId('activity', 5)
       ));
-      // Soccer - Group B
+      // Soccer - Middle Age and some family groups
       events.push(createEvent(
         eventId++,
         'Soccer',
@@ -792,14 +815,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 3),
         25,
         'sports',
-        [generateId('staff', 26), generateId('staff', 30)],
-        getCampers(22, morningPool + 12),
+        [generateId('group', 3), generateId('family', 1 + (groupOffset % 24))],
         '#F59E0B',
         undefined,
         generateId('program', 6),
         generateId('activity', 21)
       ));
-      // Theater Workshop - Group C
+      // Theater Workshop - Senior Campers
       events.push(createEvent(
         eventId++,
         'Theater Workshop',
@@ -809,14 +831,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 10),
         20,
         'activity',
-        [generateId('staff', 13)],
-        getCampers(18, morningPool + 34),
+        [generateId('group', 2)], // Senior Campers
         '#8B5CF6',
         undefined,
         generateId('program', 4),
         generateId('activity', 13)
       ));
-      // Nature Hike - Group D
+      // Nature Hike - Mixed groups
       events.push(createEvent(
         eventId++,
         'Nature Hike',
@@ -826,8 +847,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 7),
         20,
         'activity',
-        [generateId('staff', 21), generateId('staff', 25)],
-        getCampers(18, morningPool + 52),
+        getGroups(3, groupOffset + 1),
         '#14B8A6',
         undefined,
         generateId('program', 5),
@@ -835,11 +855,6 @@ const generateMonthEvents = (): Event[] => {
       ));
     } else if (dayMod === 1 || dayMod === 4) {
       // Swimming Lessons from Watersports Program
-      // Staff 11, 12, 15 have Lifeguard + Swimming Instructor
-      // Intentionally use wrong staff on day 4 for demo conflict
-      const swimmingStaff = day === (startDay + 3)
-        ? [generateId('staff', 8), generateId('staff', 10)] // Missing Lifeguard/Swimming Instructor!
-        : [generateId('staff', 11), generateId('staff', 15)];
       events.push(createEvent(
         eventId++,
         'Swimming Lessons',
@@ -849,14 +864,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 4),
         15,
         'sports',
-        swimmingStaff,
-        getCampers(12, morningPool),
+        [generateId('family', 1 + (groupOffset % 24)), generateId('family', 1 + ((groupOffset + 1) % 24))],
         '#60A5FA',
         ['Lifeguard', 'Swimming Instructor'],
         generateId('program', 1),
         generateId('activity', 2)
       ));
-      // Painting Workshop - different campers
+      // Painting Workshop - Girls Power group
       events.push(createEvent(
         eventId++,
         'Painting Workshop',
@@ -866,14 +880,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 2),
         18,
         'activity',
-        [generateId('staff', 18)],
-        getCampers(15, morningPool + 12),
+        [generateId('group', 4)], // Girls Power
         '#F472B6',
         undefined,
         generateId('program', 2),
         generateId('activity', 6)
       ));
-      // Basketball - Group C
+      // Basketball - Mixed groups
       events.push(createEvent(
         eventId++,
         'Basketball',
@@ -883,14 +896,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 9),
         20,
         'sports',
-        [generateId('staff', 30)],
-        getCampers(18, morningPool + 27),
+        getGroups(2, groupOffset + 2),
         '#FBBF24',
         undefined,
         generateId('program', 6),
         generateId('activity', 22)
       ));
-      // Coding Basics - Group D
+      // Coding Basics - Junior and Middle Age
       events.push(createEvent(
         eventId++,
         'Coding Basics',
@@ -900,8 +912,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 5),
         15,
         'activity',
-        [generateId('staff', 33)],
-        getCampers(14, morningPool + 45),
+        [generateId('group', 1), generateId('group', 3)],
         '#06B6D4',
         undefined,
         generateId('program', 9),
@@ -909,11 +920,6 @@ const generateMonthEvents = (): Event[] => {
       ));
     } else if (dayMod === 2 || dayMod === 5) {
       // Rock Climbing from Adventure Sports Program
-      // Staff 8, 14, 16, 18 have Climbing Instructor + First Aid
-      // Intentionally use wrong staff on day 1 for demo conflict
-      const climbingStaff = day === startDay 
-        ? [generateId('staff', 9), generateId('staff', 11)] // Missing Climbing Instructor!
-        : [generateId('staff', 8), generateId('staff', 14)];
       events.push(createEvent(
         eventId++,
         'Rock Climbing',
@@ -923,19 +929,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 3),
         12,
         'activity',
-        climbingStaff,
-        getCampers(10, morningPool),
+        [generateId('group', 2)], // Senior Campers
         '#10B981',
         ['Climbing Instructor', 'First Aid'],
         generateId('program', 3),
         generateId('activity', 9)
       ));
-      // Archery - Group B
-      // Staff 10, 17, 20 have Archery Instructor
-      // Intentionally use wrong staff on day 2 for demo conflict
-      const archeryStaff = day === (startDay + 1)
-        ? [generateId('staff', 15), generateId('staff', 19)] // Missing Archery Instructor!
-        : [generateId('staff', 10), generateId('staff', 17)];
+      // Archery - Multiple groups
       events.push(createEvent(
         eventId++,
         'Archery',
@@ -945,14 +945,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 7),
         15,
         'activity',
-        archeryStaff,
-        getCampers(12, morningPool + 10),
+        [generateId('group', 3), generateId('family', 1 + (groupOffset % 24))],
         '#34D399',
         ['Archery Instructor'],
         generateId('program', 3),
         generateId('activity', 10)
       ));
-      // Music Jam Session - Group C
+      // Music Jam Session - Family groups
       events.push(createEvent(
         eventId++,
         'Music Jam Session',
@@ -962,14 +961,14 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 8),
         15,
         'activity',
-        [generateId('staff', 17)],
-        getCampers(14, morningPool + 22),
+        getGroups(2, groupOffset + 3),
         '#A78BFA',
         undefined,
         generateId('program', 4),
         generateId('activity', 14)
       ));
-      // Baking Class - Group D
+      // Baking Class - Allergy-Aware Group with some exclusions
+      const excludedCampers = day === startDay ? [generateId('camper', 1), generateId('camper', 15)] : undefined;
       events.push(createEvent(
         eventId++,
         'Baking Class',
@@ -979,12 +978,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 6),
         12,
         'activity',
-        [generateId('staff', 28), generateId('staff', 32)],
-        getCampers(11, morningPool + 36),
+        [generateId('group', 5)], // Allergy-Aware Group
         '#EF4444',
         undefined,
         generateId('program', 8),
-        generateId('activity', 28)
+        generateId('activity', 28),
+        undefined,
+        excludedCampers
       ));
     } else {
       // General Soccer Practice
@@ -997,14 +997,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 3),
         25,
         'sports',
-        [generateId('staff', 26), generateId('staff', 34)],
-        getCampers(22, morningPool),
+        getGroups(3, groupOffset),
         '#F59E0B',
         undefined,
         generateId('program', 6),
         generateId('activity', 21)
       ));
-      // Yoga - Group B
+      // Yoga - Large mixed group
       events.push(createEvent(
         eventId++,
         'Yoga',
@@ -1014,14 +1013,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 1),
         25,
         'activity',
-        [generateId('staff', 36)],
-        getCampers(24, morningPool + 22),
+        getGroups(4, groupOffset + 1),
         '#A855F7',
         undefined,
         generateId('program', 10),
         generateId('activity', 34)
       ));
-      // Tie-Dye - Group C
+      // Tie-Dye - Girls Power
       events.push(createEvent(
         eventId++,
         'Tie-Dye',
@@ -1031,8 +1029,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 2),
         20,
         'activity',
-        [generateId('staff', 22)],
-        getCampers(18, morningPool + 46),
+        [generateId('group', 4)], // Girls Power
         '#F9A8D4',
         undefined,
         generateId('program', 2),
@@ -1050,19 +1047,13 @@ const generateMonthEvents = (): Event[] => {
       generateId('room', 6),
       400,
       'meal',
-      [generateId('staff', 2), generateId('staff', 7), generateId('staff', 12), generateId('staff', 15)],
-      getCampers(350, 0), // All campers
+      getGroups(10, groupOffset), // All groups
       '#64748B',
     ));
     
     // Afternoon Activities Block 1 (2:00-4:00) - Multiple concurrent activities
     if (dayMod === 0 || dayMod === 2 || dayMod === 4) {
-      // Wakeboarding from Watersports Program - Group A
-      // Staff 12, 13 have Lifeguard + Boat Driver
-      // Intentionally use wrong staff on day 1 & 2 for demo conflicts
-      const wakeboardingStaff = day <= (startDay + 1) 
-        ? [generateId('staff', 5), generateId('staff', 6)] // Missing certifications!
-        : [generateId('staff', 12), generateId('staff', 13)];
+      // Wakeboarding from Watersports Program - Senior Campers
       events.push(createEvent(
         eventId++,
         'Wakeboarding',
@@ -1072,14 +1063,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 5),
         8,
         'sports',
-        wakeboardingStaff,
-        getCampers(7, afternoonPool1),
+        [generateId('group', 2)], // Senior Campers
         '#3B82F6',
         ['Lifeguard', 'Boat Driver'],
         generateId('program', 1),
         generateId('activity', 1)
       ));
-      // Music Class - Group B (different campers)
+      // Music Class - Family groups
       events.push(createEvent(
         eventId++,
         'Music Class',
@@ -1089,12 +1079,11 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 8),
         15,
         'activity',
-        [generateId('staff', 3)],
-        getCampers(12, afternoonPool1 + 7),
+        getGroups(2, groupOffset + 4),
         '#F59E0B',
       ));
     } else if (dayMod === 1 || dayMod === 3) {
-      // Painting Workshop from Arts & Crafts Program - Group A
+      // Painting Workshop from Arts & Crafts Program - Girls Power
       events.push(createEvent(
         eventId++,
         'Painting Workshop',
@@ -1104,14 +1093,13 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 9),
         15,
         'activity',
-        [generateId('staff', 2)],
-        getCampers(12, afternoonPool1),
+        [generateId('group', 4)], // Girls Power
         '#F472B6',
         undefined,
         generateId('program', 2),
         generateId('activity', 5)
       ));
-      // Basketball - Group B (different campers, same time)
+      // Basketball - Mixed groups
       events.push(createEvent(
         eventId++,
         'Basketball',
@@ -1121,13 +1109,11 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 3),
         20,
         'sports',
-        [generateId('staff', 6)],
-        getCampers(16, afternoonPool1 + 12),
+        getGroups(2, groupOffset + 5),
         '#EF4444',
       ));
     } else {
-      // Kayaking from Watersports Program - Group A
-      // Staff 11, 12, 13, 15 have Lifeguard certification
+      // Kayaking from Watersports Program - Multiple family groups
       events.push(createEvent(
         eventId++,
         'Kayaking',
@@ -1137,8 +1123,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 5),
         10,
         'sports',
-        [generateId('staff', 12), generateId('staff', 13)],
-        getCampers(9, afternoonPool1),
+        [generateId('family', 1 + (groupOffset % 24)), generateId('family', 1 + ((groupOffset + 2) % 24))],
         '#2563EB',
         ['Lifeguard'],
         generateId('program', 1),
@@ -1148,8 +1133,8 @@ const generateMonthEvents = (): Event[] => {
     
     // Afternoon Activities Block 2 (4:00-5:30)
     if (dayMod % 2 === 0) {
-      // Archery from Adventure Sports Program - Group A
-      // Staff 10, 17, 20 have Archery Instructor
+      // Archery from Adventure Sports Program - Middle Age with staff exclusion on first day
+      const excludedStaff = day === startDay ? [generateId('staff', 2)] : undefined;
       events.push(createEvent(
         eventId++,
         'Archery',
@@ -1159,15 +1144,15 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 7),
         12,
         'activity',
-        [generateId('staff', 20), generateId('staff', 27)],
-        getCampers(10, afternoonPool2),
+        [generateId('group', 3), generateId('family', 1 + (groupOffset % 24))],
         '#10B981',
         ['Archery Instructor'],
         generateId('program', 3),
-        generateId('activity', 8)
+        generateId('activity', 8),
+        excludedStaff
       ));
       
-      // Jewelry Making from Arts & Crafts Program - Group B
+      // Jewelry Making from Arts & Crafts Program - Girls Power
       events.push(createEvent(
         eventId++,
         'Jewelry Making',
@@ -1177,15 +1162,14 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 9),
         12,
         'activity',
-        [generateId('staff', 12)],
-        getCampers(10, afternoonPool2 + 10),
+        [generateId('group', 4)], // Girls Power
         '#DB2777',
         undefined,
         generateId('program', 2),
         generateId('activity', 6)
       ));
     } else {
-      // Basketball - Group A
+      // Basketball - Mixed groups
       events.push(createEvent(
         eventId++,
         'Basketball',
@@ -1195,8 +1179,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 3),
         20,
         'sports',
-        [generateId('staff', 6)],
-        getCampers(16, afternoonPool2),
+        getGroups(3, groupOffset + 6),
         '#EF4444',
       ));
     }
@@ -1211,8 +1194,7 @@ const generateMonthEvents = (): Event[] => {
       generateId('room', 6),
       400,
       'meal',
-      [generateId('staff', 3), generateId('staff', 6), generateId('staff', 10), generateId('staff', 14)],
-      getCampers(350, 0), // All campers
+      getGroups(10, groupOffset + 1), // All groups
       '#64748B',
     ));
     
@@ -1227,8 +1209,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 7),
         150,
         'activity',
-        [generateId('staff', 1), generateId('staff', 2), generateId('staff', 3), generateId('staff', 16)],
-        getCampers(120, eveningPool),
+        getGroups(7, groupOffset + 7),
         '#F97316',
       ));
     } else if (dayMod === 6) {
@@ -1241,11 +1222,11 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 10),
         100,
         'activity',
-        [generateId('staff', 1), generateId('staff', 7), generateId('staff', 17)],
-        getCampers(80, eveningPool),
+        getGroups(6, groupOffset + 8),
         '#8B5CF6',
       ));
     } else if (dayMod === 4) {
+      const movieNightGroups = getGroups(7, groupOffset + 9);
       events.push(createEvent(
         eventId++,
         'Movie Night',
@@ -1255,12 +1236,11 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 1),
         150,
         'activity',
-        [generateId('staff', 2), generateId('staff', 4), generateId('staff', 18)],
-        getCampers(130, eveningPool),
+        movieNightGroups,
         '#8B5CF6',
       ));
-      // Intentionally create ONE conflict for demonstration - small overlap
-      if (day === startDay + 7) { // Only on one specific day
+      // Intentionally create ONE conflict for demonstration - overlap on day 7
+      if (day === startDay + 7) {
         events.push(createEvent(
           eventId++,
           'Game Night',
@@ -1270,8 +1250,7 @@ const generateMonthEvents = (): Event[] => {
           generateId('room', 8),
           40,
           'activity',
-          [generateId('staff', 8), generateId('staff', 19)],
-          getCampers(30, eveningPool), // Same campers as Movie Night - creates conflict!
+          [movieNightGroups[0], movieNightGroups[1]], // Same groups as Movie Night - creates conflict!
           '#A78BFA',
         ));
       }
@@ -1288,8 +1267,7 @@ const generateMonthEvents = (): Event[] => {
         generateId('room', 1),
         200,
         'free-time',
-        [generateId('staff', 1), generateId('staff', 2), generateId('staff', 20)],
-        getCampers(150, eveningPool),
+        getGroups(8, groupOffset + 10),
         '#475569',
       ));
     }

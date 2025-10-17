@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
-import type { FamilyGroup } from '@/types';
+import type { FamilyGroup, Camper } from '@/types';
 import { familyGroupsService } from '@/services';
+import { useCampersStore } from './campersStore';
 
 export const useFamilyGroupsStore = defineStore('familyGroups', {
   state: () => ({
@@ -12,6 +13,13 @@ export const useFamilyGroupsStore = defineStore('familyGroups', {
     getFamilyGroupById(state): (id: string) => FamilyGroup | undefined {
       return (id: string): FamilyGroup | undefined => {
         return state.familyGroups.find(g => g.id === id);
+      };
+    },
+
+    getCampersInFamilyGroup(): (familyGroupId: string) => Camper[] {
+      return (familyGroupId: string): Camper[] => {
+        const campersStore = useCampersStore();
+        return campersStore.campers.filter(c => c.familyGroupId === familyGroupId);
       };
     },
 

@@ -214,65 +214,62 @@
         </div>
 
         <div class="form-group">
-          <div class="form-label-with-action">
-            <label class="form-label">Assign Staff Members (Optional)</label>
-            <button 
-              v-if="localFormData.programId" 
-              type="button"
-              class="btn btn-sm btn-secondary"
-              @click="autoAssignStaffFromProgram"
-            >
-              Auto-assign from {{ selectedProgramName }}
-            </button>
+          <label class="form-label">Assign Groups (Optional)</label>
+          <div class="help-text">
+            Select camper groups and family groups to assign to this event. Staff will be automatically included from family groups.
           </div>
           <SelectionList
-            v-model="localFormData.assignedStaffIds"
-            :items="availableStaffMembers"
+            v-model="localFormData.groupIds"
+            :items="allGroups"
+            item-type="group"
+            placeholder="Select groups..."
+            empty-text="No groups assigned"
+            add-button-text="Add Group"
+            mode="multiple"
+            :get-label-fn="getGroupLabel"
+            :get-initials-fn="getGroupInitials"
+            :get-options-fn="getGroupOption"
+          />
+        </div>
+
+        <!-- Exclude Individual Campers -->
+        <div v-if="localFormData.groupIds.length > 0" class="form-group">
+          <label class="form-label">Exclude Individual Campers (Optional)</label>
+          <div class="help-text">
+            Exclude specific campers from the assigned groups.
+          </div>
+          <SelectionList
+            v-model="localFormData.excludeCamperIds"
+            :items="campersInAssignedGroups"
+            item-type="camper"
+            placeholder="Select campers to exclude..."
+            empty-text="No campers excluded"
+            add-button-text="Exclude"
+            mode="multiple"
+            :get-label-fn="getCamperLabel"
+            :get-initials-fn="getCamperInitials"
+            :get-options-fn="getCamperOption"
+          />
+        </div>
+
+        <!-- Exclude Individual Staff -->
+        <div v-if="localFormData.groupIds.length > 0" class="form-group">
+          <label class="form-label">Exclude Individual Staff (Optional)</label>
+          <div class="help-text">
+            Exclude specific staff members from the assigned groups.
+          </div>
+          <SelectionList
+            v-model="localFormData.excludeStaffIds"
+            :items="staffInAssignedGroups"
             item-type="staff member"
-            placeholder="Select a staff member..."
-            empty-text="No staff members assigned"
-            add-button-text="Assign"
+            placeholder="Select staff to exclude..."
+            empty-text="No staff excluded"
+            add-button-text="Exclude"
             mode="multiple"
             :get-label-fn="getStaffLabel"
             :get-initials-fn="getStaffInitials"
             :get-options-fn="getStaffOption"
-          >
-            <template #after-items>
-              <div class="text-xs text-secondary mt-2">
-                <div v-if="selectedCertificationIds.length > 0">✓ = Has all required certifications</div>
-                <div>⚠️ = Already assigned to another event at this time</div>
-                <div v-if="localFormData.programId">🎯 = Part of selected program</div>
-              </div>
-            </template>
-          </SelectionList>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Assign Camper Groups (Optional)</label>
-          <div class="camper-groups-selector">
-            <div v-for="group in camperGroups" :key="group.id" class="checkbox-item">
-              <label class="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  :value="group.id" 
-                  v-model="localFormData.camperGroupIds"
-                  class="checkbox-input"
-                />
-                <span 
-                  class="group-label" 
-                  :style="{ borderLeft: `3px solid ${getGroupColor(group)}` }"
-                >
-                  {{ group.name }} ({{ getGroupCamperCount(group.id) }} campers)
-                </span>
-              </label>
-            </div>
-            <div v-if="camperGroups.length === 0" class="text-secondary text-sm">
-              No camper groups available. Create groups in the Groups section.
-            </div>
-          </div>
-          <div v-if="localFormData.camperGroupIds.length > 0" class="text-xs text-secondary mt-1">
-            This will automatically enroll {{ getTotalCampersFromGroups() }} campers when the event is created.
-          </div>
+          />
         </div>
       </form>
     </template>
@@ -286,7 +283,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import { useEventsStore, useCampersStore, useStaffMembersStore, useGroupsStore, useLocationsStore, useProgramsStore, useActivitiesStore, useColorsStore, useCertificationsStore } from '@/stores';
+import { useEventsStore, useCampersStore, useStaffMembersStore, useGroupsStore, useFamilyGroupsStore, useLocationsStore, useProgramsStore, useActivitiesStore, useColorsStore, useCertificationsStore } from '@/stores';
 import { conflictDetector } from '@/services/conflicts';
 import { useToast } from '@/composables/useToast';
 import BaseModal from '@/components/BaseModal.vue';
@@ -295,7 +292,7 @@ import ColorPicker from '@/components/ColorPicker.vue';
 import SelectionList from '@/components/SelectionList.vue';
 import NumberInput from '@/components/NumberInput.vue';
 import type { Event, Location, Camper, StaffMember } from '@/types';
-import type { CamperGroup, Certification } from '@/types';
+import type { CamperGroup, FamilyGroup, Certification } from '@/types';
 import { type RecurrenceData, type DayOfWeek, formatRecurrenceRule, validateRecurrenceRule } from '@/utils/recurrence';
 
 interface EventFormData {
@@ -308,8 +305,9 @@ interface EventFormData {
   type: Event['type'];
   color: string;
   requiredCertifications: string[];
-  assignedStaffIds: string[];
-  camperGroupIds: string[];
+  groupIds: string[];
+  excludeCamperIds: string[];
+  excludeStaffIds: string[];
   programId?: string;
   activityId?: string;
 }
@@ -367,13 +365,14 @@ export default defineComponent({
     const campersStore = useCampersStore();
     const staffMembersStore = useStaffMembersStore();
     const groupsStore = useGroupsStore();
+    const familyGroupsStore = useFamilyGroupsStore();
     const locationsStore = useLocationsStore();
     const programsStore = useProgramsStore();
     const activitiesStore = useActivitiesStore();
     const colorsStore = useColorsStore();
     const certificationsStore = useCertificationsStore();
     const toast = useToast();
-    return { eventsStore, campersStore, staffMembersStore, groupsStore, locationsStore, programsStore, activitiesStore, colorsStore, certificationsStore, toast };
+    return { eventsStore, campersStore, staffMembersStore, groupsStore, familyGroupsStore, locationsStore, programsStore, activitiesStore, colorsStore, certificationsStore, toast };
   },
   data() {
     return {
@@ -439,6 +438,69 @@ export default defineComponent({
       
       return optionsWithGroups;
     },
+    allGroups(): Array<CamperGroup | FamilyGroup> {
+      // Combine camper groups and family groups into a single array
+      const combined: Array<CamperGroup | FamilyGroup> = [];
+      
+      // Add all camper groups
+      this.camperGroups.forEach(group => {
+        combined.push(group);
+      });
+      
+      // Add all family groups
+      this.familyGroupsStore.familyGroups.forEach(group => {
+        combined.push(group);
+      });
+      
+      return combined;
+    },
+    campersInAssignedGroups(): Camper[] {
+      if (!this.localFormData.groupIds || this.localFormData.groupIds.length === 0) {
+        return [];
+      }
+
+      const camperIds = new Set<string>();
+      
+      // Get campers from all assigned groups
+      this.localFormData.groupIds.forEach((groupId: string) => {
+        // Check if it's a camper group
+        const camperGroup = this.groupsStore.getCamperGroupById(groupId);
+        if (camperGroup) {
+          const groupCampers = this.groupsStore.getCampersInGroup(groupId);
+          groupCampers.forEach(camper => camperIds.add(camper.id));
+        }
+        
+        // Check if it's a family group
+        const familyGroup = this.familyGroupsStore.getFamilyGroupById(groupId);
+        if (familyGroup) {
+          const groupCampers = this.familyGroupsStore.getCampersInFamilyGroup(groupId);
+          groupCampers.forEach(camper => camperIds.add(camper.id));
+        }
+      });
+
+      // Return full camper objects
+      return this.campersStore.campers.filter(c => camperIds.has(c.id));
+    },
+
+    staffInAssignedGroups(): StaffMember[] {
+      if (!this.localFormData.groupIds || this.localFormData.groupIds.length === 0) {
+        return [];
+      }
+
+      const staffIds = new Set<string>();
+      
+      // Get staff from all assigned family groups
+      this.localFormData.groupIds.forEach((groupId: string) => {
+        const familyGroup = this.familyGroupsStore.getFamilyGroupById(groupId);
+        if (familyGroup && familyGroup.staffMemberIds) {
+          familyGroup.staffMemberIds.forEach(staffId => staffIds.add(staffId));
+        }
+      });
+
+      // Return full staff member objects
+      return this.staffMembersStore.staffMembers.filter(s => staffIds.has(s.id));
+    },
+
     availableStaffMembers(): StaffMember[] {
       // Return staff members with their original data
       return this.staffMembers;
@@ -589,9 +651,33 @@ export default defineComponent({
       }).length;
     },
     getTotalCampersFromGroups(): number {
-      return this.localFormData.camperGroupIds.reduce((total: number, groupId: string) => {
-        return total + this.getGroupCamperCount(groupId);
-      }, 0);
+      return this.campersInAssignedGroups.length;
+    },
+    getFamilyGroupColor(group: FamilyGroup): string {
+      if (group.colorId) {
+        const color = this.colorsStore.getColorById(group.colorId);
+        return color?.hexValue || '#F59E0B';
+      }
+      return '#F59E0B';
+    },
+    getFamilyGroupCamperCount(groupId: string): number {
+      return this.familyGroupsStore.getCampersInFamilyGroup(groupId).length;
+    },
+    getFamilyGroupStaffCount(groupId: string): number {
+      const group = this.familyGroupsStore.getFamilyGroupById(groupId);
+      return group?.staffMemberIds?.length || 0;
+    },
+    getCamperLabel(camper: Camper): string {
+      return `${camper.firstName} ${camper.lastName} (Age: ${camper.age})`;
+    },
+    getCamperInitials(camper: Camper): string {
+      return `${camper.firstName[0]}${camper.lastName[0]}`.toUpperCase();
+    },
+    getCamperOption(camper: Camper): AutocompleteOption {
+      return {
+        label: `${camper.firstName} ${camper.lastName} (Age: ${camper.age})`,
+        value: camper.id
+      };
     },
     getCertificationIdsFromNames(names: string[]): string[] {
       return names
@@ -621,6 +707,34 @@ export default defineComponent({
         value: cert.id
       };
     },
+    getGroupLabel(group: CamperGroup | FamilyGroup): string {
+      // Check if it's a camper group or family group
+      const camperGroup = this.groupsStore.getCamperGroupById(group.id);
+      if (camperGroup) {
+        const camperCount = this.groupsStore.getCampersInGroup(group.id).length;
+        return `${group.name} (${camperCount} campers)`;
+      }
+      
+      // It's a family group
+      const familyGroup = this.familyGroupsStore.getFamilyGroupById(group.id);
+      if (familyGroup) {
+        const camperCount = this.familyGroupsStore.getCampersInFamilyGroup(group.id).length;
+        const staffCount = familyGroup.staffMemberIds?.length || 0;
+        return `${group.name} (${camperCount} campers, ${staffCount} staff)`;
+      }
+      
+      return group.name;
+    },
+    getGroupInitials(group: CamperGroup | FamilyGroup): string {
+      // Use first two letters of the group name
+      return group.name.substring(0, 2).toUpperCase();
+    },
+    getGroupOption(group: CamperGroup | FamilyGroup): AutocompleteOption {
+      return {
+        label: this.getGroupLabel(group),
+        value: group.id
+      };
+    },
     isStaffInSelectedProgram(staff: StaffMember): boolean {
       if (!this.localFormData.programId) return false;
       const program = this.programsStore.getProgramById(this.localFormData.programId);
@@ -641,7 +755,7 @@ export default defineComponent({
         this.eventEndDateTime,
         staff.id,
         this.eventsStore.events,
-        this.editingEventId || undefined
+        this.editingEventId ? new Map<string, string[]>([[this.editingEventId, []]]) : undefined
       );
 
       return { available: result.canAssign, reason: result.reason };
@@ -722,55 +836,6 @@ export default defineComponent({
           }
         }
       }
-    },
-    autoAssignStaffFromProgram() {
-      if (!this.localFormData.programId) return;
-      
-      const programStaff = this.programsStore.getStaffMembersInProgram(this.localFormData.programId);
-      
-      if (programStaff.length === 0) {
-        this.toast.warning('No staff members are assigned to this program.');
-        return;
-      }
-      
-      // Filter staff members based on certifications and availability
-      const eligibleStaff = programStaff.filter(staff => {
-        // Check if has required certifications
-        if (this.selectedCertificationIds.length > 0) {
-          const hasCerts = this.staffHasRequiredCertifications(staff);
-          if (!hasCerts) return false;
-        }
-        
-        // Check availability
-        const availability = this.isStaffAvailable(staff);
-        return availability.available;
-      });
-      
-      if (eligibleStaff.length === 0) {
-        this.toast.warning(
-          'No available staff found',
-          'No staff members from this program meet the requirements (certifications or availability).'
-        );
-        return;
-      }
-      
-      // Add eligible staff to the assignment list (avoiding duplicates)
-      const staffIdsToAdd = eligibleStaff
-        .map(s => s.id)
-        .filter(id => !this.localFormData.assignedStaffIds.includes(id));
-      
-      if (staffIdsToAdd.length === 0) {
-        this.toast.info('All eligible staff are already assigned to this event.');
-        return;
-      }
-      
-      this.localFormData.assignedStaffIds.push(...staffIdsToAdd);
-      
-      // Show confirmation
-      this.toast.success(
-        'Staff assigned successfully',
-        `Added ${staffIdsToAdd.length} staff member(s) from ${this.selectedProgramName}.`
-      );
     },
     toggleDay(day: number) {
       if (!this.recurrenceData.daysOfWeek) {
@@ -1048,6 +1113,12 @@ export default defineComponent({
   .recurrence-help-text {
     font-size: 0.8rem;
   }
+}
+
+.help-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
 }
 </style>
 

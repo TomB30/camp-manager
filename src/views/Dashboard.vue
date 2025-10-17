@@ -90,7 +90,7 @@
                   {{ getLocationName(event.locationId) }}
                 </span>
                 <span class="text-secondary text-sm">
-                  {{ event.enrolledCamperIds?.length || 0 }}/{{ event.capacity }} campers
+                  {{ eventsStore.getEventCamperIds(event.id).length }}/{{ event.capacity }} campers
                 </span>
               </div>
             </div>
@@ -226,7 +226,7 @@ export default defineComponent({
       
       // Calculate average capacity usage
       const totalUsage = roomEvents.reduce((sum, event) => {
-        return sum + ((event.enrolledCamperIds?.length || 0) / room.capacity!) * 100;
+        return sum + (this.eventsStore.getEventCamperIds(event.id).length / room.capacity!) * 100;
       }, 0);
       
       return totalUsage / roomEvents.length;

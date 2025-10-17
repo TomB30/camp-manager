@@ -37,7 +37,7 @@ export interface paths {
     get: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       responses: {
@@ -53,7 +53,7 @@ export interface paths {
     put: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       requestBody: {
@@ -72,7 +72,7 @@ export interface paths {
     delete: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       responses: {
@@ -84,7 +84,7 @@ export interface paths {
     };
     parameters: {
       path: {
-        id: string;
+        id: components["parameters"]["id"];
       };
     };
   };
@@ -120,7 +120,7 @@ export interface paths {
     get: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       responses: {
@@ -136,7 +136,7 @@ export interface paths {
     put: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       requestBody: {
@@ -155,7 +155,7 @@ export interface paths {
     delete: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       responses: {
@@ -167,7 +167,7 @@ export interface paths {
     };
     parameters: {
       path: {
-        id: string;
+        id: components["parameters"]["id"];
       };
     };
   };
@@ -203,7 +203,7 @@ export interface paths {
     get: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       responses: {
@@ -219,7 +219,7 @@ export interface paths {
     put: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       requestBody: {
@@ -238,7 +238,7 @@ export interface paths {
     delete: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       responses: {
@@ -250,7 +250,7 @@ export interface paths {
     };
     parameters: {
       path: {
-        id: string;
+        id: components["parameters"]["id"];
       };
     };
   };
@@ -292,7 +292,7 @@ export interface paths {
     get: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       responses: {
@@ -308,7 +308,7 @@ export interface paths {
     put: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       requestBody: {
@@ -327,7 +327,7 @@ export interface paths {
     delete: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       responses: {
@@ -339,7 +339,7 @@ export interface paths {
     };
     parameters: {
       path: {
-        id: string;
+        id: components["parameters"]["id"];
       };
     };
   };
@@ -348,7 +348,7 @@ export interface paths {
     post: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       requestBody: {
@@ -374,7 +374,7 @@ export interface paths {
     };
     parameters: {
       path: {
-        id: string;
+        id: components["parameters"]["id"];
       };
     };
   };
@@ -383,7 +383,7 @@ export interface paths {
     post: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       requestBody: {
@@ -403,7 +403,7 @@ export interface paths {
     };
     parameters: {
       path: {
-        id: string;
+        id: components["parameters"]["id"];
       };
     };
   };
@@ -452,7 +452,7 @@ export interface paths {
     get: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       responses: {
@@ -468,7 +468,7 @@ export interface paths {
     put: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       requestBody: {
@@ -487,7 +487,7 @@ export interface paths {
     delete: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       responses: {
@@ -499,7 +499,7 @@ export interface paths {
     };
     parameters: {
       path: {
-        id: string;
+        id: components["parameters"]["id"];
       };
     };
   };
@@ -535,7 +535,7 @@ export interface paths {
     get: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       responses: {
@@ -551,7 +551,7 @@ export interface paths {
     put: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       requestBody: {
@@ -570,7 +570,7 @@ export interface paths {
     delete: {
       parameters: {
         path: {
-          id: string;
+          id: components["parameters"]["id"];
         };
       };
       responses: {
@@ -582,7 +582,7 @@ export interface paths {
     };
     parameters: {
       path: {
-        id: string;
+        id: components["parameters"]["id"];
       };
     };
   };
@@ -697,8 +697,12 @@ export interface components {
       /** Format: uuid */
       locationId: string;
       capacity: number;
-      assignedStaffIds?: string[];
-      enrolledCamperIds?: string[];
+      /** @description IDs of groups assigned to this event */
+      groupIds?: string[];
+      /** @description IDs of staff members to exclude from assigned groups */
+      excludeStaffIds?: string[];
+      /** @description IDs of campers to exclude from assigned groups */
+      excludeCamperIds?: string[];
       /** @enum {string} */
       type?: "activity" | "sports" | "arts" | "education" | "meal" | "free-time";
       requiredCertifications?: string[];
@@ -878,7 +882,10 @@ export interface components {
     };
   };
   responses: never;
-  parameters: never;
+  parameters: {
+    /** @description Resource ID */
+    id: string;
+  };
   requestBodies: never;
   headers: never;
   pathItems: never;

@@ -21,9 +21,6 @@
       <div class="camper-contact text-sm text-secondary mt-1">
         {{ camper.parentContact }}
       </div>
-      <div class="camper-events text-sm mt-2">
-        <strong>Today's Events:</strong> {{ todayEventsCount }}
-      </div>
     </div>
   </div>
 </template>
@@ -50,10 +47,6 @@ export default defineComponent({
     sessionName: {
       type: String,
       default: '',
-    },
-    todayEventsCount: {
-      type: Number,
-      default: 0,
     },
   },
   emits: ['click'],

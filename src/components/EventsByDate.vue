@@ -33,7 +33,7 @@
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
-                {{ event.enrolledCamperIds?.length || 0 }}/{{ event.capacity }}
+                {{ getEnrolledCount(event) }}/{{ event.capacity }}
               </div>
             </div>
           </div>
@@ -48,6 +48,7 @@
 import { defineComponent, PropType } from 'vue';
 import { format } from 'date-fns';
 import type { Event } from '@/types';
+import { useEventsStore } from '@/stores';
 
 export default defineComponent({
   name: 'EventsByDate',
@@ -74,6 +75,10 @@ export default defineComponent({
     }
   },
   emits: ['event-click'],
+  setup() {
+    const eventsStore = useEventsStore();
+    return { eventsStore };
+  },
   computed: {
     groupedEvents(): Record<string, Event[]> {
       // Sort events by start time
@@ -114,6 +119,9 @@ export default defineComponent({
     },
     formatTime(dateStr: string): string {
       return format(new Date(dateStr), 'h:mm a');
+    },
+    getEnrolledCount(event: Event): number {
+      return this.eventsStore.getEventCamperIds(event.id).length;
     }
   }
 });

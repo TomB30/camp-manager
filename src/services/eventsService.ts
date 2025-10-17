@@ -55,50 +55,6 @@ class EventsService {
   }
 
   /**
-   * Enroll a camper in an event
-   */
-  async enrollCamper(eventId: string, camperId: string): Promise<void> {
-    const event = await this.getEvent(eventId);
-    if (!event) throw new Error('Event not found');
-    
-    if (!event.enrolledCamperIds) {
-      event.enrolledCamperIds = [];
-    }
-    
-    if (!event.enrolledCamperIds.includes(camperId)) {
-      event.enrolledCamperIds.push(camperId);
-      await this.saveEvent(event);
-    }
-  }
-
-  /**
-   * Unenroll a camper from an event
-   */
-  async unenrollCamper(eventId: string, camperId: string): Promise<void> {
-    const event = await this.getEvent(eventId);
-    if (!event) throw new Error('Event not found');
-    
-    event.enrolledCamperIds = event.enrolledCamperIds?.filter(id => id !== camperId) || [];
-    await this.saveEvent(event);
-  }
-
-  /**
-   * Get events for a specific camper
-   */
-  async getEventsForCamper(camperId: string): Promise<Event[]> {
-    const events = await this.getEvents();
-    return events.filter(event => event.enrolledCamperIds?.includes(camperId));
-  }
-
-  /**
-   * Get events for a specific staff member
-   */
-  async getEventsForStaff(staffId: string): Promise<Event[]> {
-    const events = await this.getEvents();
-    return events.filter(event => event.assignedStaffIds?.includes(staffId));
-  }
-
-  /**
    * Get events for a specific location
    */
   async getEventsForLocation(locationId: string): Promise<Event[]> {

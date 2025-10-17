@@ -26,16 +26,24 @@ properties:
   capacity:
     type: integer
     minimum: 1
-  assignedStaffIds:
+  groupIds:
     type: array
     items:
       type: string
       format: uuid
-  enrolledCamperIds:
+    description: IDs of groups assigned to this event
+  excludeStaffIds:
     type: array
     items:
       type: string
       format: uuid
+    description: IDs of staff members to exclude from assigned groups
+  excludeCamperIds:
+    type: array
+    items:
+      type: string
+      format: uuid
+    description: IDs of campers to exclude from assigned groups
   type:
     type: string
     enum: [activity, sports, arts, education, meal, free-time]

@@ -106,7 +106,6 @@
       @close="selectedEventId = null"
       @edit="editEvent"
       @delete="deleteEventConfirm"
-      @unenroll="unenrollCamperFromEvent"
     />
 
     <!-- Create/Edit Event Modal -->
@@ -127,14 +126,10 @@
     <!-- Confirmation Modal -->
     <ConfirmModal
       :show="showConfirmModal"
-      :title="confirmAction?.type === 'deleteEvent' ? 'Delete Event' : 'Remove Camper from Event'"
-      :message="confirmAction?.type === 'deleteEvent' 
-        ? `Are you sure you want to delete the event '${confirmAction.data.eventName}'?` 
-        : `Are you sure you want to remove ${confirmAction?.data.camperName} from '${confirmAction?.data.eventName}'?`"
-      :details="confirmAction?.type === 'deleteEvent' 
-        ? 'This action cannot be undone. All enrolled campers will be removed from this event.' 
-        : 'The camper will no longer be enrolled in this event.'"
-      :confirm-text="confirmAction?.type === 'deleteEvent' ? 'Delete' : 'Remove'"
+      title="Delete Event"
+      :message="`Are you sure you want to delete the event '${confirmAction?.data.eventName}'?`"
+      details="This action cannot be undone. All assigned groups will be removed from this event."
+      confirm-text="Delete"
       :danger-mode="true"
       @confirm="handleConfirmAction"
       @cancel="handleCancelConfirm"
@@ -181,7 +176,7 @@ export default defineComponent({
       viewMode: 'daily' as 'daily' | 'weekly' | 'monthly',
       showConfirmModal: false,
       confirmAction: null as {
-        type: 'deleteEvent' | 'removeCamper';
+        type: 'deleteEvent';
         data?: any;
       } | null,
       eventFormData: {
@@ -194,8 +189,9 @@ export default defineComponent({
         type: 'activity' as Event['type'],
         color: '#3B82F6',
         requiredCertifications: [] as string[],
-        assignedStaffIds: [] as string[],
-        camperGroupIds: [] as string[],
+        groupIds: [] as string[],
+        excludeCamperIds: [] as string[],
+        excludeStaffIds: [] as string[],
         programId: undefined as string | undefined,
         activityId: undefined as string | undefined,
       },
@@ -368,13 +364,15 @@ export default defineComponent({
         if (this.filterRoom && event.locationId !== this.filterRoom) return false;
         
         if (this.filterCamper) {
-          if (!event.enrolledCamperIds || !event.enrolledCamperIds.includes(this.filterCamper)) {
+          const eventCamperIds = this.eventsStore.getEventCamperIds(event.id);
+          if (!eventCamperIds.includes(this.filterCamper)) {
             return false;
           }
         }
         
         if (this.filterStaff) {
-          if (!event.assignedStaffIds || !event.assignedStaffIds.includes(this.filterStaff)) {
+          const eventStaffIds = this.eventsStore.getEventStaffIds(event.id);
+          if (!eventStaffIds.includes(this.filterStaff)) {
             return false;
           }
         }
@@ -395,8 +393,9 @@ export default defineComponent({
           }
           
           // Search in enrolled camper names (using memoized map for O(1) lookup)
-          if (event.enrolledCamperIds) {
-            const hasMatchingCamper = event.enrolledCamperIds.some(camperId => {
+          const eventCamperIds = this.eventsStore.getEventCamperIds(event.id);
+          if (eventCamperIds.length > 0) {
+            const hasMatchingCamper = eventCamperIds.some(camperId => {
               const camperName = camperMap.get(camperId);
               return camperName && camperName.includes(searchQuery);
             });
@@ -404,8 +403,9 @@ export default defineComponent({
           }
           
           // Search in assigned staff names (using memoized map for O(1) lookup)
-          if (event.assignedStaffIds) {
-            const hasMatchingStaff = event.assignedStaffIds.some(staffId => {
+          const eventStaffIds = this.eventsStore.getEventStaffIds(event.id);
+          if (eventStaffIds.length > 0) {
+            const hasMatchingStaff = eventStaffIds.some(staffId => {
               const staffName = staffMap.get(staffId);
               return staffName && staffName.includes(searchQuery);
             });
@@ -494,8 +494,9 @@ export default defineComponent({
         type: 'activity',
         color: '#3B82F6',
         requiredCertifications: [],
-        assignedStaffIds: [],
-        camperGroupIds: [],
+        groupIds: [],
+        excludeCamperIds: [],
+        excludeStaffIds: [],
         programId: undefined,
         activityId: undefined,
       };
@@ -519,8 +520,9 @@ export default defineComponent({
         type: 'activity',
         color: '#3B82F6',
         requiredCertifications: [],
-        assignedStaffIds: [],
-        camperGroupIds: [],
+        groupIds: [],
+        excludeCamperIds: [],
+        excludeStaffIds: [],
         programId: undefined,
         activityId: undefined,
       };
@@ -556,8 +558,9 @@ export default defineComponent({
         type: this.selectedEvent.type,
         color: this.selectedEvent.color || '#3B82F6',
         requiredCertifications: this.selectedEvent.requiredCertifications || [],
-        assignedStaffIds: this.selectedEvent.assignedStaffIds || [],
-        camperGroupIds: [],
+        groupIds: this.selectedEvent.groupIds || [],
+        excludeCamperIds: this.selectedEvent.excludeCamperIds || [],
+        excludeStaffIds: this.selectedEvent.excludeStaffIds || [],
         programId: this.selectedEvent.programId,
         activityId: this.selectedEvent.activityId,
       };
@@ -578,8 +581,9 @@ export default defineComponent({
         type: 'activity',
         color: '#3B82F6',
         requiredCertifications: [],
-        assignedStaffIds: [],
-        camperGroupIds: [],
+        groupIds: [],
+        excludeCamperIds: [],
+        excludeStaffIds: [],
         programId: undefined,
         activityId: undefined,
       };
@@ -615,7 +619,9 @@ export default defineComponent({
             type: formData.type,
             color: formData.color,
             requiredCertifications: formData.requiredCertifications && formData.requiredCertifications.length > 0 ? formData.requiredCertifications : undefined,
-            assignedStaffIds: formData.assignedStaffIds || [],
+            groupIds: formData.groupIds || [],
+            excludeCamperIds: formData.excludeCamperIds || [],
+            excludeStaffIds: formData.excludeStaffIds || [],
             programId: formData.programId,
             activityId: formData.activityId,
           };
@@ -648,20 +654,15 @@ export default defineComponent({
         type: formData.type,
         color: formData.color,
         requiredCertifications: formData.requiredCertifications && formData.requiredCertifications.length > 0 ? formData.requiredCertifications : undefined,
-        enrolledCamperIds: [],
-        assignedStaffIds: formData.assignedStaffIds || [],
+        groupIds: formData.groupIds || [],
+        excludeCamperIds: formData.excludeCamperIds || [],
+        excludeStaffIds: formData.excludeStaffIds || [],
         programId: formData.programId,
         activityId: formData.activityId,
       };
       
       await this.eventsStore.addEvent(event);
-      
-      // Enroll camper groups if any were selected
-      if (formData.camperGroupIds && formData.camperGroupIds.length > 0) {
-        await this.enrollCamperGroups(event.id, formData.camperGroupIds);
-      } else {
-        this.toast.success('Event created successfully');
-      }
+      this.toast.success('Event created successfully');
     },
     
     async createRecurringEvents(formData: any, recurrence: RecurrenceData, startTime: Date, endTime: Date) {
@@ -703,8 +704,9 @@ export default defineComponent({
             type: formData.type,
             color: formData.color,
             requiredCertifications: formData.requiredCertifications && formData.requiredCertifications.length > 0 ? formData.requiredCertifications : undefined,
-            enrolledCamperIds: [],
-            assignedStaffIds: formData.assignedStaffIds || [],
+            groupIds: formData.groupIds || [],
+            excludeCamperIds: formData.excludeCamperIds || [],
+            excludeStaffIds: formData.excludeStaffIds || [],
             programId: formData.programId,
             activityId: formData.activityId,
             recurrenceId: recurrenceId,
@@ -718,46 +720,12 @@ export default defineComponent({
         // Use batch method to add all events and run conflict detection only once
         await this.eventsStore.addEventsBatch(eventsToCreate);
         
-        // Enroll camper groups for all events if any were selected
-        if (formData.camperGroupIds && formData.camperGroupIds.length > 0) {
-          // Batch enrollment operations
-          const enrollmentPromises = eventsToCreate.map(event => 
-            this.enrollCamperGroups(event.id, formData.camperGroupIds, true)
-          );
-          await Promise.all(enrollmentPromises);
-        }
-        
         this.toast.success(`Successfully created ${occurrenceDates.length} recurring events`);
       } catch (error: any) {
         this.toast.error('Failed to create recurring events', error.message);
       }
     },
     
-    async enrollCamperGroups(eventId: string, groupIds: string[], silent: boolean = false) {
-      const messages: string[] = [];
-      
-      for (const groupId of groupIds) {
-        try {
-          const result = await this.groupsStore.enrollCamperGroup(eventId, groupId);
-          if (result.errors.length > 0) {
-            messages.push(result.message);
-          }
-        } catch (error: any) {
-          messages.push(error.message);
-        }
-      }
-      
-      if (!silent) {
-        if (messages.length > 0) {
-          this.toast.warning(
-            'Event created with some enrollment issues',
-            messages.join('\n')
-          );
-        } else {
-          this.toast.success('Event created successfully');
-        }
-      }
-    },
     deleteEventConfirm() {
       if (!this.selectedEventId) return;
       const event = this.eventsStore.getEventById(this.selectedEventId);
@@ -773,8 +741,6 @@ export default defineComponent({
       if (this.confirmAction.type === 'deleteEvent') {
         await this.eventsStore.deleteEvent(this.confirmAction.data.eventId);
         this.selectedEventId = null;
-      } else if (this.confirmAction.type === 'removeCamper') {
-        await this.eventsStore.unenrollCamper(this.confirmAction.data.eventId, this.confirmAction.data.camperId);
       }
 
       this.showConfirmModal = false;
@@ -784,15 +750,6 @@ export default defineComponent({
       this.showConfirmModal = false;
       this.confirmAction = null;
     },
-    unenrollCamperFromEvent(eventId: string, camperId: string) {
-      const camper = this.campersStore.getCamperById(camperId);
-      const event = this.eventsStore.getEventById(eventId);
-      this.confirmAction = {
-        type: 'removeCamper',
-        data: { eventId, camperId, camperName: `${camper?.firstName} ${camper?.lastName}`, eventName: event?.title }
-      };
-      this.showConfirmModal = true;
-    }
   }
 });
 </script>

@@ -393,7 +393,7 @@ export default defineComponent({
       const totalUsage = locationEvents.reduce((sum, event) => {
         return (
           sum +
-          ((event.enrolledCamperIds?.length || 0) / location.capacity) * 100
+          (this.eventsStore.getEventCamperIds(event.id).length / location.capacity) * 100
         );
       }, 0);
 

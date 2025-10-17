@@ -30,7 +30,6 @@
           :key="camper.id"
           :camper="camper"
           :formatted-gender="formatGender(camper.gender)"
-          :today-events-count="getCamperTodayEvents(camper.id).length"
           :session-name="getSessionName(camper.sessionId)"
           @click="selectCamper(camper.id)"
         />
@@ -98,10 +97,6 @@
             {{ item.allergies.length }} allergy(ies)
           </span>
           <span v-else class="text-secondary">None</span>
-        </template>
-        
-        <template #cell-events="{ item }">
-          <span class="event-count">{{ getCamperTodayEvents(item.id).length }}</span>
         </template>
         
         <template #cell-actions="{ item }">
@@ -248,7 +243,6 @@ export default defineComponent({
         { key: 'session', label: 'Session', width: '150px' },
         { key: 'parentContact', label: 'Parent Contact', width: '250px' },
         { key: 'allergies', label: 'Allergies', width: '120px' },
-        { key: 'events', label: "Today's Events", width: '120px' },
         { key: 'actions', label: 'Actions', width: '140px' },
       ]
     };
@@ -357,15 +351,9 @@ export default defineComponent({
       }
       return '#6366F1';
     },
-    getCamperTodayEvents(camperId: string): Event[] {
-      const today = new Date();
-      return this.eventsStore.camperEvents(camperId).filter(event => {
-        const eventDate = new Date(event.startTime);
-        return eventDate.toDateString() === today.toDateString();
-      });
-    },
     getCamperEvents(camperId: string): Event[] {
-      return this.eventsStore.camperEvents(camperId);
+      const events = this.eventsStore.camperEvents(camperId);
+      return events;
     },
     formatDate(dateStr: string): string {
       return format(new Date(dateStr), 'MMMM d, yyyy');

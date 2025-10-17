@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia';
 import type { Event } from '@/types';
-import { eventsService, conflictDetector } from '@/services';
+import { eventsService } from '@/services';
 import { filterEventsByDate } from '@/utils/dateUtils';
+import { useGroupsStore } from './groupsStore';
+import { useFamilyGroupsStore } from './familyGroupsStore';
 
 export const useEventsStore = defineStore('events', {
   state: () => ({
@@ -23,19 +25,89 @@ export const useEventsStore = defineStore('events', {
       };
     },
 
+    /**
+     * Get all camper IDs for an event based on assigned groups minus exclusions
+     */
+    getEventCamperIds(): (eventId: string) => string[] {
+      return (eventId: string): string[] => {
+        const event = this.events.find(e => e.id === eventId);
+        if (!event || !event.groupIds || event.groupIds.length === 0) return [];
+
+        const groupsStore = useGroupsStore();
+        const familyGroupsStore = useFamilyGroupsStore();
+        
+        const camperIds = new Set<string>();
+        
+        // Collect campers from all assigned groups
+        event.groupIds.forEach(groupId => {
+          // Check if it's a camper group
+          const camperGroup = groupsStore.getCamperGroupById(groupId);
+          if (camperGroup) {
+            const groupCampers = groupsStore.getCampersInGroup(groupId);
+            groupCampers.forEach(camper => camperIds.add(camper.id));
+          }
+          
+          // Check if it's a family group
+          const familyGroup = familyGroupsStore.getFamilyGroupById(groupId);
+          if (familyGroup) {
+            const groupCampers = familyGroupsStore.getCampersInFamilyGroup(groupId);
+            groupCampers.forEach(camper => camperIds.add(camper.id));
+          }
+        });
+
+        // Remove excluded campers
+        if (event.excludeCamperIds && event.excludeCamperIds.length > 0) {
+          event.excludeCamperIds.forEach(id => camperIds.delete(id));
+        }
+
+        return Array.from(camperIds);
+      };
+    },
+
+    /**
+     * Get all staff IDs for an event based on assigned groups minus exclusions
+     */
+    getEventStaffIds(): (eventId: string) => string[] {
+      return (eventId: string): string[] => {
+        const event = this.events.find(e => e.id === eventId);
+        if (!event || !event.groupIds || event.groupIds.length === 0) return [];
+
+        const familyGroupsStore = useFamilyGroupsStore();
+        
+        const staffIds = new Set<string>();
+        
+        // Collect staff from all assigned family groups
+        event.groupIds.forEach(groupId => {
+          const familyGroup = familyGroupsStore.getFamilyGroupById(groupId);
+          if (familyGroup && familyGroup.staffMemberIds) {
+            familyGroup.staffMemberIds.forEach(staffId => staffIds.add(staffId));
+          }
+        });
+
+        // Remove excluded staff
+        if (event.excludeStaffIds && event.excludeStaffIds.length > 0) {
+          event.excludeStaffIds.forEach(id => staffIds.delete(id));
+        }
+
+        return Array.from(staffIds);
+      };
+    },
+
     camperEvents(state): (camperId: string) => Event[] {
       return (camperId: string): Event[] => {
-        return state.events.filter(event => 
-          event.enrolledCamperIds?.includes(camperId)
-        );
+        return state.events.filter(event => {
+          const camperIds = this.getEventCamperIds(event.id);
+          return camperIds.includes(camperId);
+        });
       };
     },
 
     staffEvents(state): (staffId: string) => Event[] {
       return (staffId: string): Event[] => {
-        return state.events.filter(event => 
-          event.assignedStaffIds?.includes(staffId)
-        );
+        return state.events.filter(event => {
+          const staffIds = this.getEventStaffIds(event.id);
+          return staffIds.includes(staffId);
+        });
       };
     },
 
@@ -85,34 +157,88 @@ export const useEventsStore = defineStore('events', {
       this.events = this.events.filter(e => e.id !== id);
     },
 
-    async enrollCamper(eventId: string, camperId: string): Promise<void> {
+    /**
+     * Add a group to an event
+     */
+    async addGroupToEvent(eventId: string, groupId: string): Promise<void> {
       const event = this.events.find(e => e.id === eventId);
       if (!event) throw new Error('Event not found');
 
-      const validation = conflictDetector.canEnrollCamper(event, camperId, this.events);
-      if (!validation.canEnroll) {
-        throw new Error(validation.reason);
+      if (!event.groupIds) {
+        event.groupIds = [];
       }
-
-      await eventsService.enrollCamper(eventId, camperId);
       
-      if (!event.enrolledCamperIds) {
-        event.enrolledCamperIds = [];
+      if (!event.groupIds.includes(groupId)) {
+        event.groupIds.push(groupId);
+        await eventsService.saveEvent(event);
       }
-      event.enrolledCamperIds.push(camperId);
     },
 
-    async unenrollCamper(eventId: string, camperId: string): Promise<void> {
+    /**
+     * Remove a group from an event
+     */
+    async removeGroupFromEvent(eventId: string, groupId: string): Promise<void> {
       const event = this.events.find(e => e.id === eventId);
       if (!event) throw new Error('Event not found');
 
-      await eventsService.unenrollCamper(eventId, camperId);
-      event.enrolledCamperIds = event.enrolledCamperIds?.filter(id => id !== camperId) || [];
+      event.groupIds = event.groupIds?.filter(id => id !== groupId) || [];
+      await eventsService.saveEvent(event);
     },
 
-    async moveCamper(fromEventId: string, toEventId: string, camperId: string): Promise<void> {
-      await this.unenrollCamper(fromEventId, camperId);
-      await this.enrollCamper(toEventId, camperId);
+    /**
+     * Exclude a camper from an event
+     */
+    async excludeCamper(eventId: string, camperId: string): Promise<void> {
+      const event = this.events.find(e => e.id === eventId);
+      if (!event) throw new Error('Event not found');
+
+      if (!event.excludeCamperIds) {
+        event.excludeCamperIds = [];
+      }
+      
+      if (!event.excludeCamperIds.includes(camperId)) {
+        event.excludeCamperIds.push(camperId);
+        await eventsService.saveEvent(event);
+      }
+    },
+
+    /**
+     * Remove a camper exclusion from an event
+     */
+    async removeExcludedCamper(eventId: string, camperId: string): Promise<void> {
+      const event = this.events.find(e => e.id === eventId);
+      if (!event) throw new Error('Event not found');
+
+      event.excludeCamperIds = event.excludeCamperIds?.filter(id => id !== camperId) || [];
+      await eventsService.saveEvent(event);
+    },
+
+    /**
+     * Exclude a staff member from an event
+     */
+    async excludeStaff(eventId: string, staffId: string): Promise<void> {
+      const event = this.events.find(e => e.id === eventId);
+      if (!event) throw new Error('Event not found');
+
+      if (!event.excludeStaffIds) {
+        event.excludeStaffIds = [];
+      }
+      
+      if (!event.excludeStaffIds.includes(staffId)) {
+        event.excludeStaffIds.push(staffId);
+        await eventsService.saveEvent(event);
+      }
+    },
+
+    /**
+     * Remove a staff exclusion from an event
+     */
+    async removeExcludedStaff(eventId: string, staffId: string): Promise<void> {
+      const event = this.events.find(e => e.id === eventId);
+      if (!event) throw new Error('Event not found');
+
+      event.excludeStaffIds = event.excludeStaffIds?.filter(id => id !== staffId) || [];
+      await eventsService.saveEvent(event);
     },
   }
 });

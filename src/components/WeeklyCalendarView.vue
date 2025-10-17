@@ -33,7 +33,7 @@
                   {{ getLocationName(event.locationId) }}
                 </div>
                 <div class="week-event-capacity text-xs">
-                  {{ event.enrolledCamperIds?.length || 0 }}/{{ event.capacity }}
+                  {{ getEnrolledCount(event.id) }}/{{ event.capacity }}
                 </div>
               </div>
             </div>
@@ -48,6 +48,7 @@
 import { defineComponent, type PropType } from 'vue';
 import { format } from 'date-fns';
 import { filterEventsByDateAndHour } from '@/utils/dateUtils';
+import { useEventsStore } from '@/stores';
 import type { Event, Location } from '@/types';
 
 export default defineComponent({
@@ -67,6 +68,10 @@ export default defineComponent({
     },
   },
   emits: ['select-event'],
+  setup() {
+    const eventsStore = useEventsStore();
+    return { eventsStore };
+  },
   data() {
     return {
       hours: Array.from({ length: 14 }, (_, i) => i + 7),
@@ -89,6 +94,9 @@ export default defineComponent({
     getLocationName(locationId: string): string {
       const location = this.rooms.find(r => r.id === locationId);
       return location?.name || 'Unknown Location';
+    },
+    getEnrolledCount(eventId: string): number {
+      return this.eventsStore.getEventCamperIds(eventId).length;
     },
     getEventsForDayAndHour(day: Date, hour: number) {
       return filterEventsByDateAndHour(this.events, day, hour);
