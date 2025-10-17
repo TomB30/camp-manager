@@ -42,7 +42,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import { useEventsStore } from '@/stores';
+import { useColorsStore, useEventsStore } from '@/stores';
 import type { Event, Location } from '@/types';
 
 export default defineComponent({
@@ -60,7 +60,8 @@ export default defineComponent({
   emits: ['select-event', 'create-event'],
   setup() {
     const eventsStore = useEventsStore();
-    return { eventsStore };
+    const colorsStore = useColorsStore();
+    return { eventsStore, colorsStore };
   },
   data() {
     return {
@@ -134,7 +135,7 @@ export default defineComponent({
         height: `${height}px`,
         width,
         left,
-        background: event.color || '#3B82F6',
+        background: event.colorId ? this.colorsStore.getColorById(event.colorId)?.hexValue :  '#3B82F6',
       };
     },
   },

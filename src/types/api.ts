@@ -276,13 +276,15 @@ export interface paths {
     post: {
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Event"];
+          "application/json": components["schemas"]["EventCreationRequest"];
         };
       };
       responses: {
-        /** @description Created */
-        201: {
-          content: never;
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Event"];
+          };
         };
       };
     };
@@ -704,15 +706,16 @@ export interface components {
       /** @description IDs of campers to exclude from assigned groups */
       excludeCamperIds?: string[];
       requiredCertifications?: string[];
-      /** @description Hex color code for calendar display (deprecated - use colorId) */
-      color?: string;
       /** Format: uuid */
       colorId?: string;
       /** Format: uuid */
       programId?: string;
       /** Format: uuid */
       activityId?: string;
-      /** @description Recurrence rule ID - links this event to a recurrence series */
+      /**
+       * Format: uuid
+       * @description Recurrence rule ID - links this event to a recurrence series
+       */
       recurrenceId?: string;
       /** @description Indicates if this is the parent event of a recurrence series */
       isRecurrenceParent?: boolean;
@@ -877,6 +880,58 @@ export interface components {
       createdAt?: string;
       /** Format: date-time */
       updatedAt?: string;
+    };
+    EventCreationRequest: {
+      /** @description Title of the event */
+      title: string;
+      /** @description Description of the event */
+      description?: string;
+      /**
+       * Format: date-time
+       * @description Start time of the event
+       */
+      startTime: string;
+      /**
+       * Format: date-time
+       * @description End time of the event
+       */
+      endTime: string;
+      /**
+       * Format: uuid
+       * @description ID of the location of the event
+       */
+      locationId?: string;
+      groupIds?: string[];
+      /** @description IDs of campers to exclude from assigned groups */
+      excludeCamperIds?: string[];
+      /** @description IDs of staff to exclude from assigned groups */
+      excludeStaffIds?: string[];
+      /** @description IDs of staff certifications required for the event */
+      requiredCertifications?: string[];
+      /**
+       * Format: uuid
+       * @description ID of the program this event belongs to
+       */
+      programId?: string;
+      /**
+       * Format: uuid
+       * @description ID of the activity this event was created from
+       */
+      activityId?: string;
+      /**
+       * Format: uuid
+       * @description ID of the color this event uses
+       */
+      colorId?: string;
+      /** @description Maximum number of campers this event can accommodate */
+      capacity?: number;
+      /**
+       * Format: uuid
+       * @description ID of the recurrence this event belongs to
+       */
+      recurrenceId?: string;
+      /** @description Indicates if this is the parent event of a recurrence series */
+      isRecurrenceParent?: boolean;
     };
   };
   responses: never;

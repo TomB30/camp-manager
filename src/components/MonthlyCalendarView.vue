@@ -29,7 +29,7 @@
               v-for="event in getVisibleEvents(day.events)"
               :key="event.id"
               class="event-item"
-              :style="{ backgroundColor: event.color || '#3B82F6' }"
+              :style="{ backgroundColor: event.colorId ? colorsStore.getColorById(event.colorId)?.hexValue : '#3B82F6' }"
               :title="event.title"
               @click.stop="$emit('select-event', event)"
             >
@@ -59,6 +59,7 @@ import {
   format 
 } from 'date-fns';
 import type { Event } from '@/types';
+import { useColorsStore } from '@/stores';
 
 interface CalendarDay {
   date: Date;
@@ -86,6 +87,7 @@ export default defineComponent({
     return {
       daysOfWeek: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       maxEventsPerDay: 3, // Maximum events to show before displaying "+x more"
+      colorsStore: useColorsStore(),
     };
   },
   computed: {

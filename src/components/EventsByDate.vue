@@ -12,7 +12,7 @@
             v-for="event in dateEvents"
             :key="event.id"
             class="event-item"
-            :style="{ borderLeftColor: event.color || '#2196F3' }"
+            :style="{ borderLeftColor: event.colorId ? colorsStore.getColorById(event.colorId)?.hexValue : '#2196F3' }"
             @click="$emit('event-click', event)"
           >
             <div class="event-item-title">{{ event.title }}</div>
@@ -48,7 +48,7 @@
 import { defineComponent, PropType } from 'vue';
 import { format } from 'date-fns';
 import type { Event } from '@/types';
-import { useEventsStore } from '@/stores';
+import { useColorsStore, useEventsStore } from '@/stores';
 
 export default defineComponent({
   name: 'EventsByDate',
@@ -77,7 +77,8 @@ export default defineComponent({
   emits: ['event-click'],
   setup() {
     const eventsStore = useEventsStore();
-    return { eventsStore };
+    const colorsStore = useColorsStore();
+    return { eventsStore, colorsStore };
   },
   computed: {
     groupedEvents(): Record<string, Event[]> {

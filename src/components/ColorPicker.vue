@@ -5,13 +5,13 @@
         v-for="color in colorOptions"
         :key="color.value"
         class="color-option"
-        :class="{ 'selected': modelValue === color.value }"
+        :class="{ 'selected': modelValue === color.id }"
       >
         <input 
           type="radio" 
-          :value="color.value"
-          :checked="modelValue === color.value"
-          @change="$emit('update:modelValue', color.value)"
+          :value="color.id"
+          :checked="modelValue === color.id"
+          @change="$emit('update:modelValue', color.id)"
           class="color-radio"
         />
         <div class="color-option-content">
@@ -45,25 +45,26 @@ export default defineComponent({
     return { colorsStore };
   },
   computed: {
-    colorOptions() {
+    colorOptions(): { name: string; value: string; id: string }[] {
       // If custom colors are configured, use them
       if (this.colorsStore.colors.length > 0) {
         return this.colorsStore.colors.map(color => ({
           name: color.name,
-          value: color.hexValue
+          value: color.hexValue,
+          id: color.id,
         }));
       }
       
       // Otherwise, use default colors
       return [
-        { name: 'Blue', value: '#6366F1' },
-        { name: 'Green', value: '#10B981' },
-        { name: 'Orange', value: '#F59E0B' },
-        { name: 'Purple', value: '#8B5CF6' },
-        { name: 'Pink', value: '#EC4899' },
-        { name: 'Red', value: '#EF4444' },
-        { name: 'Teal', value: '#14B8A6' },
-        { name: 'Indigo', value: '#4F46E5' },
+        { name: 'Blue', value: '#6366F1', id: 'color-001' },
+        { name: 'Green', value: '#10B981', id: 'color-002' },
+        { name: 'Orange', value: '#F59E0B', id: 'color-003' },
+        { name: 'Purple', value: '#8B5CF6', id: 'color-004' },
+        { name: 'Pink', value: '#EC4899', id: 'color-005' },
+        { name: 'Red', value: '#EF4444', id: 'color-006' },
+        { name: 'Teal', value: '#14B8A6', id: 'color-007' },
+        { name: 'Indigo', value: '#4F46E5', id: 'color-008' },
       ];
     }
   }

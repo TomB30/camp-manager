@@ -78,7 +78,7 @@
             v-for="event in sortedTodayEvents" 
             :key="event.id"
             class="timeline-event"
-            :style="{ borderLeftColor: event.color || '#2196F3' }"
+            :style="{ borderLeftColor: event.colorId ? colorsStore.getColorById(event.colorId)?.hexValue : '#2196F3' }"
           >
             <div class="timeline-time">
               {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}
@@ -153,7 +153,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampersStore, useStaffMembersStore, useLocationsStore, useEventsStore, useMainStore, useAreasStore } from '@/stores';
+import { useCampersStore, useStaffMembersStore, useLocationsStore, useEventsStore, useMainStore, useAreasStore, useColorsStore } from '@/stores';
 import { format } from 'date-fns';
 import Icon from '@/components/Icon.vue';
 import ViewHeader from '@/components/ViewHeader.vue';
@@ -183,6 +183,9 @@ export default defineComponent({
     },
     areasStore() {
       return useAreasStore();
+    },
+    colorsStore() {
+      return useColorsStore();
     },
     todayEvents(): Event[] {
       const today = new Date();

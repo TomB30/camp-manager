@@ -1,0 +1,70 @@
+type: object
+required:
+  - title
+  - eventDate
+  - startTime
+  - endTime
+properties:
+  title:
+    type: string
+    description: Title of the event
+  description:
+    type: string
+    description: Description of the event
+  startTime:
+    type: string
+    format: date-time
+    description: Start time of the event
+  endTime:
+    type: string
+    format: date-time
+    description: End time of the event
+  locationId:
+    type: string
+    format: uuid
+    description: ID of the location of the event
+  groupIds: 
+    type: array
+    items:
+      type: string
+      format: uuid
+      description: IDs of groups assigned to this event
+  excludeCamperIds:
+    type: array
+    items:
+      type: string
+      format: uuid
+    description: IDs of campers to exclude from assigned groups
+  excludeStaffIds:
+    type: array
+    items:
+      type: string
+      format: uuid
+    description: IDs of staff to exclude from assigned groups
+  requiredCertifications:
+    type: array
+    items:
+      type: string
+    description: IDs of staff certifications required for the event
+  programId:
+    type: string
+    format: uuid
+    description: ID of the program this event belongs to
+  activityId:
+    type: string
+    format: uuid
+    description: ID of the activity this event was created from
+  colorId:
+    type: string
+    format: uuid
+    description: ID of the color this event uses
+  capacity:
+    type: integer
+    description: Maximum number of campers this event can accommodate
+  recurrenceId:
+    type: string
+    format: uuid
+    description: ID of the recurrence this event belongs to
+  isRecurrenceParent:
+    type: boolean
+    description: Indicates if this is the parent event of a recurrence series

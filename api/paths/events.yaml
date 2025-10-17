@@ -27,8 +27,12 @@ post:
     content:
       application/json:
         schema:
-          $ref: '../schemas/Event.yaml'
+          $ref: '../schemas/EventCreationRequest.yaml'
   responses:
-    '201':
-      description: Created
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/Event.yaml'
 

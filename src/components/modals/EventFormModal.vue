@@ -8,7 +8,9 @@
       <form @submit.prevent="handleSave">
         <!-- Activity Template Selector (only show when creating new event) -->
         <div v-if="!isEditing" class="form-group">
-          <label class="form-label">Create from Activity Template (Optional)</label>
+          <label class="form-label"
+            >Create from Activity Template (Optional)</label
+          >
           <Autocomplete
             v-model="selectedActivityId"
             :options="activityOptions"
@@ -16,29 +18,50 @@
             @update:modelValue="applyActivityTemplate"
           />
           <div v-if="selectedActivityId" class="text-xs text-secondary mt-1">
-            Event details will be pre-filled from the activity template. You can still modify them.
+            Event details will be pre-filled from the activity template. You can
+            still modify them.
           </div>
         </div>
 
         <div class="form-group">
           <label class="form-label">Title</label>
-          <input v-model="localFormData.title" type="text" class="form-input" required />
+          <input
+            v-model="localFormData.title"
+            type="text"
+            class="form-input"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label class="form-label">Event Date</label>
-          <input v-model="localFormData.eventDate" type="date" class="form-input" required />
+          <input
+            v-model="localFormData.eventDate"
+            type="date"
+            class="form-input"
+            required
+          />
         </div>
 
         <div class="grid grid-cols-2">
           <div class="form-group">
             <label class="form-label">Start Time</label>
-            <input v-model="localFormData.startTime" type="time" class="form-input" required />
+            <input
+              v-model="localFormData.startTime"
+              type="time"
+              class="form-input"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label class="form-label">End Time</label>
-            <input v-model="localFormData.endTime" type="time" class="form-input" required />
+            <input
+              v-model="localFormData.endTime"
+              type="time"
+              class="form-input"
+              required
+            />
           </div>
         </div>
 
@@ -46,12 +69,12 @@
         <div v-if="!isEditing" class="form-group recurrence-section">
           <div class="recurrence-header">
             <label class="checkbox-label">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 v-model="recurrenceData.enabled"
                 class="checkbox-input"
               />
-              <span class="form-label" style="margin: 0;">Repeat Event</span>
+              <span class="form-label" style="margin: 0">Repeat Event</span>
             </label>
           </div>
 
@@ -60,21 +83,33 @@
             <div class="recurrence-row">
               <label class="recurrence-label">Repeat every</label>
               <div class="recurrence-inputs">
-                <NumberInput 
+                <NumberInput
                   v-model="recurrenceData.interval"
                   :min="1"
                   :max="99"
                 />
-                <select v-model="recurrenceData.frequency" class="frequency-select">
-                  <option value="daily">{{ recurrenceData.interval === 1 ? 'day' : 'days' }}</option>
-                  <option value="weekly">{{ recurrenceData.interval === 1 ? 'week' : 'weeks' }}</option>
-                  <option value="monthly">{{ recurrenceData.interval === 1 ? 'month' : 'months' }}</option>
+                <select
+                  v-model="recurrenceData.frequency"
+                  class="frequency-select"
+                >
+                  <option value="daily">
+                    {{ recurrenceData.interval === 1 ? "day" : "days" }}
+                  </option>
+                  <option value="weekly">
+                    {{ recurrenceData.interval === 1 ? "week" : "weeks" }}
+                  </option>
+                  <option value="monthly">
+                    {{ recurrenceData.interval === 1 ? "month" : "months" }}
+                  </option>
                 </select>
               </div>
             </div>
 
             <!-- Repeat On (for weekly) -->
-            <div v-if="recurrenceData.frequency === 'weekly'" class="recurrence-row">
+            <div
+              v-if="recurrenceData.frequency === 'weekly'"
+              class="recurrence-row"
+            >
               <label class="recurrence-label">Repeat on</label>
               <div class="days-selector">
                 <button
@@ -89,8 +124,8 @@
                 </button>
               </div>
               <p class="recurrence-help-text">
-                Select which days of the week this event should occur. 
-                Example: Select S, T, Th for every Sunday, Tuesday, and Thursday.
+                Select which days of the week this event should occur. Example:
+                Select S, T, Th for every Sunday, Tuesday, and Thursday.
               </p>
             </div>
 
@@ -99,9 +134,9 @@
               <label class="recurrence-label">Ends</label>
               <div class="ends-options">
                 <label class="radio-option">
-                  <input 
-                    type="radio" 
-                    value="never" 
+                  <input
+                    type="radio"
+                    value="never"
                     v-model="recurrenceData.endType"
                     class="radio-input"
                   />
@@ -109,16 +144,16 @@
                 </label>
 
                 <label class="radio-option">
-                  <input 
-                    type="radio" 
-                    value="on" 
+                  <input
+                    type="radio"
+                    value="on"
                     v-model="recurrenceData.endType"
                     class="radio-input"
                   />
                   <span>On</span>
-                  <input 
-                    v-model="recurrenceData.endDate" 
-                    type="date" 
+                  <input
+                    v-model="recurrenceData.endDate"
+                    type="date"
                     class="date-input"
                     :disabled="recurrenceData.endType !== 'on'"
                     :min="localFormData.eventDate"
@@ -126,14 +161,14 @@
                 </label>
 
                 <label class="radio-option">
-                  <input 
-                    type="radio" 
-                    value="after" 
+                  <input
+                    type="radio"
+                    value="after"
                     v-model="recurrenceData.endType"
                     class="radio-input"
                   />
                   <span>After</span>
-                  <NumberInput 
+                  <NumberInput
                     v-model="occurrencesValue"
                     :min="1"
                     :max="365"
@@ -146,8 +181,8 @@
             </div>
 
             <!-- Recurrence Summary -->
-            <div 
-              v-if="recurrenceSummary" 
+            <div
+              v-if="recurrenceSummary"
               class="recurrence-summary"
               :class="{ warning: recurrenceSummary.includes('⚠️') }"
             >
@@ -168,7 +203,13 @@
 
         <div class="form-group">
           <label class="form-label">Capacity</label>
-          <input v-model.number="localFormData.capacity" type="number" min="1" class="form-input" required />
+          <input
+            v-model.number="localFormData.capacity"
+            type="number"
+            min="1"
+            class="form-input"
+            required
+          />
         </div>
 
         <div class="form-group">
@@ -179,12 +220,15 @@
             placeholder="Select a program..."
             @update:modelValue="onProgramSelected"
           />
-          <p class="form-help-text">Selecting a program helps auto-suggest staff members from that program</p>
+          <p class="form-help-text">
+            Selecting a program helps auto-suggest staff members from that
+            program
+          </p>
         </div>
 
         <div class="form-group">
           <label class="form-label">Color</label>
-          <ColorPicker v-model="localFormData.color" />
+          <ColorPicker v-model="localFormData.colorId" />
         </div>
 
         <div class="form-group">
@@ -201,13 +245,16 @@
             :get-initials-fn="getCertificationInitials"
             :get-options-fn="getCertificationOption"
           />
-          <p class="form-help-text">Staff assigned to this event should have these certifications</p>
+          <p class="form-help-text">
+            Staff assigned to this event should have these certifications
+          </p>
         </div>
 
         <div class="form-group">
           <label class="form-label">Assign Groups (Optional)</label>
           <div class="help-text">
-            Select camper groups and family groups to assign to this event. Staff will be automatically included from family groups.
+            Select camper groups and family groups to assign to this event.
+            Staff will be automatically included from family groups.
           </div>
           <SelectionList
             v-model="localFormData.groupIds"
@@ -225,7 +272,9 @@
 
         <!-- Exclude Individual Campers -->
         <div v-if="localFormData.groupIds.length > 0" class="form-group">
-          <label class="form-label">Exclude Individual Campers (Optional)</label>
+          <label class="form-label"
+            >Exclude Individual Campers (Optional)</label
+          >
           <div class="help-text">
             Exclude specific campers from the assigned groups.
           </div>
@@ -267,24 +316,44 @@
 
     <template #footer>
       <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
-      <button class="btn btn-primary" @click="handleSave">{{ isEditing ? 'Save Changes' : 'Create Event' }}</button>
+      <button class="btn btn-primary" @click="handleSave">
+        {{ isEditing ? "Save Changes" : "Create Event" }}
+      </button>
     </template>
   </BaseModal>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import { useEventsStore, useCampersStore, useStaffMembersStore, useGroupsStore, useFamilyGroupsStore, useLocationsStore, useProgramsStore, useActivitiesStore, useColorsStore, useCertificationsStore } from '@/stores';
-import { conflictDetector } from '@/services/conflicts';
-import { useToast } from '@/composables/useToast';
-import BaseModal from '@/components/BaseModal.vue';
-import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import ColorPicker from '@/components/ColorPicker.vue';
-import SelectionList from '@/components/SelectionList.vue';
-import NumberInput from '@/components/NumberInput.vue';
-import type { Location, Camper, StaffMember } from '@/types';
-import type { CamperGroup, FamilyGroup, Certification } from '@/types';
-import { type RecurrenceData, type DayOfWeek, formatRecurrenceRule, validateRecurrenceRule } from '@/utils/recurrence';
+import { defineComponent, type PropType } from "vue";
+import {
+  useEventsStore,
+  useCampersStore,
+  useStaffMembersStore,
+  useGroupsStore,
+  useFamilyGroupsStore,
+  useLocationsStore,
+  useProgramsStore,
+  useActivitiesStore,
+  useColorsStore,
+  useCertificationsStore,
+} from "@/stores";
+import { conflictDetector } from "@/services/conflicts";
+import { useToast } from "@/composables/useToast";
+import BaseModal from "@/components/BaseModal.vue";
+import Autocomplete, {
+  type AutocompleteOption,
+} from "@/components/Autocomplete.vue";
+import ColorPicker from "@/components/ColorPicker.vue";
+import SelectionList from "@/components/SelectionList.vue";
+import NumberInput from "@/components/NumberInput.vue";
+import type { Location, Camper, StaffMember } from "@/types";
+import type { CamperGroup, FamilyGroup, Certification } from "@/types";
+import {
+  type RecurrenceData,
+  type DayOfWeek,
+  formatRecurrenceRule,
+  validateRecurrenceRule,
+} from "@/utils/recurrence";
 
 interface EventFormData {
   title: string;
@@ -293,7 +362,7 @@ interface EventFormData {
   endTime: string;
   locationId: string;
   capacity: number;
-  color: string;
+  colorId: string;
   requiredCertifications: string[];
   groupIds: string[];
   excludeCamperIds: string[];
@@ -303,13 +372,13 @@ interface EventFormData {
 }
 
 export default defineComponent({
-  name: 'EventFormModal',
+  name: "EventFormModal",
   components: {
     BaseModal,
     Autocomplete,
     ColorPicker,
     SelectionList,
-    NumberInput
+    NumberInput,
   },
   props: {
     show: {
@@ -334,22 +403,22 @@ export default defineComponent({
     },
     rooms: {
       type: Array as PropType<Location[]>,
-      required: true
+      required: true,
     },
     staffMembers: {
       type: Array as PropType<StaffMember[]>,
-      required: true
+      required: true,
     },
     camperGroups: {
       type: Array as PropType<CamperGroup[]>,
-      required: true
+      required: true,
     },
     campers: {
       type: Array as PropType<Camper[]>,
-      required: true
-    }
+      required: true,
+    },
   },
-  emits: ['close', 'save'],
+  emits: ["close", "save"],
   setup() {
     const eventsStore = useEventsStore();
     const campersStore = useCampersStore();
@@ -362,125 +431,152 @@ export default defineComponent({
     const colorsStore = useColorsStore();
     const certificationsStore = useCertificationsStore();
     const toast = useToast();
-    return { eventsStore, campersStore, staffMembersStore, groupsStore, familyGroupsStore, locationsStore, programsStore, activitiesStore, colorsStore, certificationsStore, toast };
+    return {
+      eventsStore,
+      campersStore,
+      staffMembersStore,
+      groupsStore,
+      familyGroupsStore,
+      locationsStore,
+      programsStore,
+      activitiesStore,
+      colorsStore,
+      certificationsStore,
+      toast,
+    };
   },
   data() {
     return {
       localFormData: JSON.parse(JSON.stringify(this.formData)),
-      selectedActivityId: '',
+      selectedActivityId: "",
       selectedCertificationIds: [] as string[],
       recurrenceData: {
         enabled: false,
-        frequency: 'weekly' as 'daily' | 'weekly' | 'monthly',
+        frequency: "weekly" as "daily" | "weekly" | "monthly",
         interval: 1,
         daysOfWeek: [] as DayOfWeek[],
-        endType: 'never' as 'never' | 'on' | 'after',
-        endDate: '',
-        occurrences: 10
+        endType: "never" as "never" | "on" | "after",
+        endDate: "",
+        occurrences: 10,
       } as RecurrenceData,
-      daysOfWeek: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+      daysOfWeek: ["S", "M", "T", "W", "T", "F", "S"],
     };
   },
   computed: {
     programOptions(): AutocompleteOption[] {
       return [
-        { label: 'None', value: '' },
-        ...this.programsStore.programs.map(program => ({
+        { label: "None", value: "" },
+        ...this.programsStore.programs.map((program) => ({
           label: program.name,
-          value: program.id
-        }))
+          value: program.id,
+        })),
       ];
     },
     selectedProgramName(): string {
-      if (!this.localFormData.programId) return '';
-      const program = this.programsStore.getProgramById(this.localFormData.programId);
-      return program ? program.name : '';
+      if (!this.localFormData.programId) return "";
+      const program = this.programsStore.getProgramById(
+        this.localFormData.programId
+      );
+      return program ? program.name : "";
     },
     locationOptions(): AutocompleteOption[] {
-      return this.rooms.map(room => ({
+      return this.rooms.map((room) => ({
         label: `${room.name} (Capacity: ${room.capacity})`,
-        value: room.id
+        value: room.id,
       }));
     },
     activityOptions(): AutocompleteOption[] {
       // Group activities by program
       const optionsWithGroups: AutocompleteOption[] = [];
-      
-      this.programsStore.programs.forEach(program => {
-        const programActivities = this.activitiesStore.getActivitiesInProgram(program.id);
+
+      this.programsStore.programs.forEach((program) => {
+        const programActivities = this.activitiesStore.getActivitiesInProgram(
+          program.id
+        );
         if (programActivities.length > 0) {
-          programActivities.forEach(activity => {
+          programActivities.forEach((activity) => {
             optionsWithGroups.push({
               label: `(${program.name}) ${activity.name}`,
-              value: activity.id
+              value: activity.id,
             });
           });
         }
       });
-      
+
       return optionsWithGroups;
     },
     allGroups(): Array<CamperGroup | FamilyGroup> {
       // Combine camper groups and family groups into a single array
       const combined: Array<CamperGroup | FamilyGroup> = [];
-      
+
       // Add all camper groups
-      this.camperGroups.forEach(group => {
+      this.camperGroups.forEach((group) => {
         combined.push(group);
       });
-      
+
       // Add all family groups
-      this.familyGroupsStore.familyGroups.forEach(group => {
+      this.familyGroupsStore.familyGroups.forEach((group) => {
         combined.push(group);
       });
-      
+
       return combined;
     },
     campersInAssignedGroups(): Camper[] {
-      if (!this.localFormData.groupIds || this.localFormData.groupIds.length === 0) {
+      if (
+        !this.localFormData.groupIds ||
+        this.localFormData.groupIds.length === 0
+      ) {
         return [];
       }
 
       const camperIds = new Set<string>();
-      
+
       // Get campers from all assigned groups
       this.localFormData.groupIds.forEach((groupId: string) => {
         // Check if it's a camper group
         const camperGroup = this.groupsStore.getCamperGroupById(groupId);
         if (camperGroup) {
           const groupCampers = this.groupsStore.getCampersInGroup(groupId);
-          groupCampers.forEach(camper => camperIds.add(camper.id));
+          groupCampers.forEach((camper) => camperIds.add(camper.id));
         }
-        
+
         // Check if it's a family group
         const familyGroup = this.familyGroupsStore.getFamilyGroupById(groupId);
         if (familyGroup) {
-          const groupCampers = this.familyGroupsStore.getCampersInFamilyGroup(groupId);
-          groupCampers.forEach(camper => camperIds.add(camper.id));
+          const groupCampers =
+            this.familyGroupsStore.getCampersInFamilyGroup(groupId);
+          groupCampers.forEach((camper) => camperIds.add(camper.id));
         }
       });
 
       // Return full camper objects
-      return this.campersStore.campers.filter(c => camperIds.has(c.id));
+      return this.campersStore.campers.filter((c) => camperIds.has(c.id));
     },
 
     staffInAssignedGroups(): StaffMember[] {
-      if (!this.localFormData.groupIds || this.localFormData.groupIds.length === 0) {
+      if (
+        !this.localFormData.groupIds ||
+        this.localFormData.groupIds.length === 0
+      ) {
         return [];
       }
 
       const staffIds = new Set<string>();
-      
+
       // Get staff from all assigned family groups
       this.localFormData.groupIds.forEach((groupId: string) => {
         const familyGroup = this.familyGroupsStore.getFamilyGroupById(groupId);
         if (familyGroup && familyGroup.staffMemberIds) {
-          familyGroup.staffMemberIds.forEach(staffId => staffIds.add(staffId));
+          familyGroup.staffMemberIds.forEach((staffId) =>
+            staffIds.add(staffId)
+          );
         }
       });
 
       // Return full staff member objects
-      return this.staffMembersStore.staffMembers.filter(s => staffIds.has(s.id));
+      return this.staffMembersStore.staffMembers.filter((s) =>
+        staffIds.has(s.id)
+      );
     },
 
     availableStaffMembers(): StaffMember[] {
@@ -488,27 +584,33 @@ export default defineComponent({
       return this.staffMembers;
     },
     eventStartDateTime(): Date | null {
-      if (!this.localFormData.startTime || !this.localFormData.eventDate) return null;
-      const [hours, minutes] = this.localFormData.startTime.split(':').map(Number);
+      if (!this.localFormData.startTime || !this.localFormData.eventDate)
+        return null;
+      const [hours, minutes] = this.localFormData.startTime
+        .split(":")
+        .map(Number);
       const date = new Date(this.localFormData.eventDate);
       date.setHours(hours, minutes, 0, 0);
       return date;
     },
     eventEndDateTime(): Date | null {
-      if (!this.localFormData.endTime || !this.localFormData.eventDate) return null;
-      const [hours, minutes] = this.localFormData.endTime.split(':').map(Number);
+      if (!this.localFormData.endTime || !this.localFormData.eventDate)
+        return null;
+      const [hours, minutes] = this.localFormData.endTime
+        .split(":")
+        .map(Number);
       const date = new Date(this.localFormData.eventDate);
       date.setHours(hours, minutes, 0, 0);
       return date;
     },
     recurrenceSummary(): string | null {
       if (!this.recurrenceData.enabled) return null;
-      
+
       const validation = validateRecurrenceRule(this.recurrenceData);
       if (!validation.valid) {
         return `⚠️ ${validation.error}`;
       }
-      
+
       return formatRecurrenceRule(this.recurrenceData);
     },
     occurrencesValue: {
@@ -517,83 +619,102 @@ export default defineComponent({
       },
       set(value: number) {
         this.recurrenceData.occurrences = value;
-      }
-    }
+      },
+    },
   },
   watch: {
     formData: {
       handler(newVal) {
         this.localFormData = JSON.parse(JSON.stringify(newVal));
         // Initialize certification IDs from names
-        if (newVal.requiredCertifications && newVal.requiredCertifications.length > 0) {
-          this.selectedCertificationIds = this.getCertificationIdsFromNames(newVal.requiredCertifications);
+        if (
+          newVal.requiredCertifications &&
+          newVal.requiredCertifications.length > 0
+        ) {
+          this.selectedCertificationIds = this.getCertificationIdsFromNames(
+            newVal.requiredCertifications
+          );
         } else {
           this.selectedCertificationIds = [];
         }
       },
       deep: true,
-      immediate: true
+      immediate: true,
     },
-    'recurrenceData.frequency': {
+    "recurrenceData.frequency": {
       handler(newFrequency, oldFrequency) {
         // Auto-select the event's day when switching to weekly mode
-        if (newFrequency === 'weekly' && oldFrequency !== 'weekly') {
-          if (!this.recurrenceData.daysOfWeek || this.recurrenceData.daysOfWeek.length === 0) {
+        if (newFrequency === "weekly" && oldFrequency !== "weekly") {
+          if (
+            !this.recurrenceData.daysOfWeek ||
+            this.recurrenceData.daysOfWeek.length === 0
+          ) {
             // Get the day of week from the event date
             const eventDate = new Date(this.localFormData.eventDate);
             const dayOfWeek = eventDate.getDay() as DayOfWeek;
             this.recurrenceData.daysOfWeek = [dayOfWeek];
           }
         }
-      }
-    }
+      },
+    },
   },
   methods: {
     applyActivityTemplate(activityId: string) {
       if (!activityId) return;
-      
+
       const activity = this.activitiesStore.getActivityById(activityId);
       if (!activity) return;
-      
+
       // Auto-populate form fields from activity template
       this.localFormData.title = activity.name;
-      
+
       // Calculate end time based on start time and duration
       if (this.localFormData.startTime) {
-        const [hours, minutes] = this.localFormData.startTime.split(':').map(Number);
+        const [hours, minutes] = this.localFormData.startTime
+          .split(":")
+          .map(Number);
         const startDate = new Date();
         startDate.setHours(hours, minutes, 0, 0);
-        
-        const endDate = new Date(startDate.getTime() + activity.durationMinutes * 60000);
-        const endHours = endDate.getHours().toString().padStart(2, '0');
-        const endMinutes = endDate.getMinutes().toString().padStart(2, '0');
+
+        const endDate = new Date(
+          startDate.getTime() + activity.durationMinutes * 60000
+        );
+        const endHours = endDate.getHours().toString().padStart(2, "0");
+        const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
         this.localFormData.endTime = `${endHours}:${endMinutes}`;
       }
-      
+
       // Set default location if specified
       if (activity.defaultLocationId) {
         this.localFormData.locationId = activity.defaultLocationId;
       }
-      
+
       // Set default capacity if specified
       if (activity.defaultCapacity) {
         this.localFormData.capacity = activity.defaultCapacity;
       }
-      
+
       // Set color if specified
       if (activity.colorId) {
         const color = this.colorsStore.getColorById(activity.colorId);
         if (color) {
-          this.localFormData.color = color.hexValue;
+          this.localFormData.colorId = color.id;
         }
       }
-      
+
       // Set required certifications if specified
-      if (activity.requiredCertifications && activity.requiredCertifications.length > 0) {
-        this.localFormData.requiredCertifications = [...activity.requiredCertifications];
-        this.selectedCertificationIds = this.getCertificationIdsFromNames(activity.requiredCertifications);
+      if (
+        activity.requiredCertifications &&
+        activity.requiredCertifications.length > 0
+      ) {
+        this.localFormData.requiredCertifications = [
+          ...activity.requiredCertifications,
+        ];
+        this.selectedCertificationIds = this.getCertificationIdsFromNames(
+          activity.requiredCertifications
+        );
       }
-      
+
       // Set program and activity IDs for reference
       // Use the first program if activity belongs to multiple programs
       this.localFormData.programId = activity.programIds[0];
@@ -602,29 +723,39 @@ export default defineComponent({
     getGroupColor(group: any): string {
       if (group.colorId) {
         const color = this.colorsStore.getColorById(group.colorId);
-        return color?.hexValue || '#6366F1';
+        return color?.hexValue || "#6366F1";
       }
-      return '#6366F1';
+      return "#6366F1";
     },
     getGroupCamperCount(groupId: string): number {
-      const group = this.camperGroups.find(g => g.id === groupId);
+      const group = this.camperGroups.find((g) => g.id === groupId);
       if (!group) return 0;
-      
+
       // Get base campers
       let baseCampers: Camper[];
       if (group.familyGroupIds && group.familyGroupIds.length > 0) {
-        baseCampers = this.campers.filter(c => 
-          c.familyGroupId && group.familyGroupIds!.includes(c.familyGroupId)
+        baseCampers = this.campers.filter(
+          (c) =>
+            c.familyGroupId && group.familyGroupIds!.includes(c.familyGroupId)
         );
       } else {
         baseCampers = this.campers;
       }
-      
+
       // Apply filters
-      return baseCampers.filter(camper => {
-        if (group.filters.ageMin !== undefined && camper.age < group.filters.ageMin) return false;
-        if (group.filters.ageMax !== undefined && camper.age > group.filters.ageMax) return false;
-        if (group.filters.gender && camper.gender !== group.filters.gender) return false;
+      return baseCampers.filter((camper) => {
+        if (
+          group.filters.ageMin !== undefined &&
+          camper.age < group.filters.ageMin
+        )
+          return false;
+        if (
+          group.filters.ageMax !== undefined &&
+          camper.age > group.filters.ageMax
+        )
+          return false;
+        if (group.filters.gender && camper.gender !== group.filters.gender)
+          return false;
         if (group.filters.hasAllergies !== undefined) {
           const hasAllergies = camper.allergies && camper.allergies.length > 0;
           if (group.filters.hasAllergies !== hasAllergies) return false;
@@ -638,9 +769,9 @@ export default defineComponent({
     getFamilyGroupColor(group: FamilyGroup): string {
       if (group.colorId) {
         const color = this.colorsStore.getColorById(group.colorId);
-        return color?.hexValue || '#F59E0B';
+        return color?.hexValue || "#F59E0B";
       }
-      return '#F59E0B';
+      return "#F59E0B";
     },
     getFamilyGroupCamperCount(groupId: string): number {
       return this.familyGroupsStore.getCampersInFamilyGroup(groupId).length;
@@ -658,24 +789,26 @@ export default defineComponent({
     getCamperOption(camper: Camper): AutocompleteOption {
       return {
         label: `${camper.firstName} ${camper.lastName} (Age: ${camper.age})`,
-        value: camper.id
+        value: camper.id,
       };
     },
     getCertificationIdsFromNames(names: string[]): string[] {
       return names
-        .map(name => {
-          const cert = this.certificationsStore.certifications.find(c => c.name === name);
-          return cert ? cert.id : '';
+        .map((name) => {
+          const cert = this.certificationsStore.certifications.find(
+            (c) => c.name === name
+          );
+          return cert ? cert.id : "";
         })
-        .filter(id => id !== '');
+        .filter((id) => id !== "");
     },
     getCertificationNamesFromIds(ids: string[]): string[] {
       return ids
-        .map(id => {
+        .map((id) => {
           const cert = this.certificationsStore.getCertificationById(id);
-          return cert ? cert.name : '';
+          return cert ? cert.name : "";
         })
-        .filter(name => name !== '');
+        .filter((name) => name !== "");
     },
     getCertificationLabel(cert: Certification): string {
       return cert.name;
@@ -686,7 +819,7 @@ export default defineComponent({
     getCertificationOption(cert: Certification): AutocompleteOption {
       return {
         label: cert.name,
-        value: cert.id
+        value: cert.id,
       };
     },
     getGroupLabel(group: CamperGroup | FamilyGroup): string {
@@ -696,15 +829,17 @@ export default defineComponent({
         const camperCount = this.groupsStore.getCampersInGroup(group.id).length;
         return `${group.name} (${camperCount} campers)`;
       }
-      
+
       // It's a family group
       const familyGroup = this.familyGroupsStore.getFamilyGroupById(group.id);
       if (familyGroup) {
-        const camperCount = this.familyGroupsStore.getCampersInFamilyGroup(group.id).length;
+        const camperCount = this.familyGroupsStore.getCampersInFamilyGroup(
+          group.id
+        ).length;
         const staffCount = familyGroup.staffMemberIds?.length || 0;
         return `${group.name} (${camperCount} campers, ${staffCount} staff)`;
       }
-      
+
       return group.name;
     },
     getGroupInitials(group: CamperGroup | FamilyGroup): string {
@@ -714,20 +849,28 @@ export default defineComponent({
     getGroupOption(group: CamperGroup | FamilyGroup): AutocompleteOption {
       return {
         label: this.getGroupLabel(group),
-        value: group.id
+        value: group.id,
       };
     },
     isStaffInSelectedProgram(staff: StaffMember): boolean {
       if (!this.localFormData.programId) return false;
-      const program = this.programsStore.getProgramById(this.localFormData.programId);
+      const program = this.programsStore.getProgramById(
+        this.localFormData.programId
+      );
       return program ? program.staffMemberIds.includes(staff.id) : false;
     },
     staffHasRequiredCertifications(staff: StaffMember): boolean {
       if (this.selectedCertificationIds.length === 0) return true;
-      if (!staff.certificationIds || staff.certificationIds.length === 0) return false;
-      return this.selectedCertificationIds.every(certId => staff.certificationIds!.includes(certId));
+      if (!staff.certificationIds || staff.certificationIds.length === 0)
+        return false;
+      return this.selectedCertificationIds.every((certId) =>
+        staff.certificationIds!.includes(certId)
+      );
     },
-    isStaffAvailable(staff: StaffMember): { available: boolean; reason?: string } {
+    isStaffAvailable(staff: StaffMember): {
+      available: boolean;
+      reason?: string;
+    } {
       if (!this.eventStartDateTime || !this.eventEndDateTime) {
         return { available: true };
       }
@@ -737,7 +880,9 @@ export default defineComponent({
         this.eventEndDateTime,
         staff.id,
         this.eventsStore.events,
-        this.editingEventId ? new Map<string, string[]>([[this.editingEventId, []]]) : undefined
+        this.editingEventId
+          ? new Map<string, string[]>([[this.editingEventId, []]])
+          : undefined
       );
 
       return { available: result.canAssign, reason: result.reason };
@@ -745,27 +890,27 @@ export default defineComponent({
     getStaffLabel(staff: StaffMember): string {
       const baseLabel = `${staff.firstName} ${staff.lastName} - ${staff.role}`;
       const availability = this.isStaffAvailable(staff);
-      
-      let prefix = '';
-      
+
+      let prefix = "";
+
       // Check program membership
       if (this.isStaffInSelectedProgram(staff)) {
-        prefix = '🎯 ';
+        prefix = "🎯 ";
       }
-      
+
       // Check certifications
       if (this.selectedCertificationIds.length > 0) {
         const hasCerts = this.staffHasRequiredCertifications(staff);
         if (hasCerts) {
-          prefix = prefix ? prefix + '✓ ' : '✓ ';
+          prefix = prefix ? prefix + "✓ " : "✓ ";
         }
       }
-      
+
       // Check availability
       if (!availability.available) {
         return `⚠️ ${prefix}${baseLabel} (${availability.reason})`;
       }
-      
+
       return prefix + baseLabel;
     },
     getStaffInitials(staff: StaffMember): string {
@@ -774,47 +919,47 @@ export default defineComponent({
     getStaffOption(staff: StaffMember): AutocompleteOption {
       const baseLabel = `${staff.firstName} ${staff.lastName} - ${staff.role}`;
       const availability = this.isStaffAvailable(staff);
-      
-      let prefix = '';
-      
+
+      let prefix = "";
+
       // Check program membership
       if (this.isStaffInSelectedProgram(staff)) {
-        prefix = '🎯 ';
+        prefix = "🎯 ";
       }
-      
+
       // Check certifications
       if (this.selectedCertificationIds.length > 0) {
         const hasCerts = this.staffHasRequiredCertifications(staff);
         if (hasCerts) {
-          prefix = prefix ? prefix + '✓ ' : '✓ ';
+          prefix = prefix ? prefix + "✓ " : "✓ ";
         }
       }
-      
+
       // Check availability
       if (!availability.available) {
         return {
           label: `⚠️ ${prefix}${baseLabel} (${availability.reason})`,
-          value: staff.id
+          value: staff.id,
         };
       }
-      
+
       return {
         label: prefix + baseLabel,
-        value: staff.id
+        value: staff.id,
       };
     },
     onProgramSelected(programId: string) {
       if (!programId) return;
-      
+
       const program = this.programsStore.getProgramById(programId);
       if (!program) return;
-      
+
       // Auto-apply program color if event color is not set or is default
-      if (!this.localFormData.color || this.localFormData.color === '#6366F1') {
+      if (!this.localFormData.colorId || this.localFormData.colorId === "#6366F1") {
         if (program.colorId) {
           const color = this.colorsStore.getColorById(program.colorId);
           if (color) {
-            this.localFormData.color = color.hexValue;
+            this.localFormData.colorId = color.id;
           }
         }
       }
@@ -833,20 +978,21 @@ export default defineComponent({
     },
     handleSave() {
       // Convert certification IDs to names before saving
-      this.localFormData.requiredCertifications = this.getCertificationNamesFromIds(this.selectedCertificationIds);
-      
+      this.localFormData.requiredCertifications =
+        this.getCertificationNamesFromIds(this.selectedCertificationIds);
+
       // Validate recurrence if enabled
       if (this.recurrenceData.enabled) {
         const validation = validateRecurrenceRule(this.recurrenceData);
         if (!validation.valid) {
-          this.toast.error('Invalid recurrence settings', validation.error);
+          this.toast.error("Invalid recurrence settings", validation.error);
           return;
         }
       }
-      
-      this.$emit('save', { 
-        formData: this.localFormData, 
-        recurrence: this.recurrenceData.enabled ? this.recurrenceData : null 
+
+      this.$emit("save", {
+        formData: this.localFormData,
+        recurrence: this.recurrenceData.enabled ? this.recurrenceData : null,
       });
     },
   },
@@ -930,7 +1076,6 @@ export default defineComponent({
   padding: 1rem;
   background: var(--background);
 }
-
 
 .recurrence-header .checkbox-label {
   display: flex;
@@ -1085,13 +1230,13 @@ export default defineComponent({
   .days-selector {
     justify-content: space-between;
   }
-  
+
   .day-button {
     width: 36px;
     height: 36px;
     font-size: 0.85rem;
   }
-  
+
   .recurrence-help-text {
     font-size: 0.8rem;
   }
@@ -1103,4 +1248,3 @@ export default defineComponent({
   margin-bottom: 0.5rem;
 }
 </style>
-
