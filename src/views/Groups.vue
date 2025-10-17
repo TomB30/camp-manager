@@ -54,18 +54,10 @@
           type="empty"
           title="No Groups Yet"
           message="Create your first camper group to organize and manage campers more efficiently."
-          action-text="+ Group"
+          action-text="Group"
+          icon-name="FolderOpen"
           @action="showModal = true"
-        >
-          <template #icon>
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-          </template>
-        </EmptyState>
+        />
 
         <EmptyState
           v-if="filteredGroups.length === 0 && groupsStore.camperGroups.length > 0"
@@ -74,6 +66,8 @@
           message="No groups match your current filters. Try adjusting your search criteria."
           action-text="Clear Filters"
           action-button-class="btn-secondary"
+          hide-action-icon
+          icon-name="FolderOpen"
           @action="clearFilters"
         />
       </div>

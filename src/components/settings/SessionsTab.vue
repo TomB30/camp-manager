@@ -7,7 +7,7 @@
       @action="showAddModal = true"
     >
       <template #action-icon>
-        <Plus :size="18" />
+        <Icon name="Plus" :size="18" />
       </template>
     </TabHeader>
 
@@ -27,13 +27,10 @@
       type="empty"
       title="No Sessions Yet"
       message="Add your first session to define the registration periods for your camp."
-      action-text="+ Session"
+      action-text="Session"
       @action="showAddModal = true"
-    >
-      <template #icon>
-        <CalendarDays :size="64" stroke-width="1.5" />
-      </template>
-    </EmptyState>
+      icon-name="CalendarDays"
+    />
 
     <!-- Sessions List -->
     <div v-else class="sessions-list">
@@ -80,7 +77,7 @@
 import { defineComponent } from 'vue';
 import { useSessionsStore } from '@/stores';
 import type { CampSession } from '@/types';
-import { Plus, CalendarDays } from 'lucide-vue-next';
+import Icon from '@/components/Icon.vue';
 import TabHeader from '@/components/settings/TabHeader.vue';
 import SessionCard from '@/components/cards/SessionCard.vue';
 import SessionDetailModal from '@/components/modals/SessionDetailModal.vue';
@@ -93,8 +90,7 @@ import { useToast } from '@/composables/useToast';
 export default defineComponent({
   name: 'SessionsTab',
   components: {
-    Plus,
-    CalendarDays,
+    Icon,
     TabHeader,
     SessionCard,
     SessionDetailModal,

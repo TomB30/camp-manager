@@ -15,11 +15,11 @@
     
     <div class="card-stats">
       <span class="card-stat-item">
-        <Users :size="16" />
+        <Icon name="Users" :size="16" />
         {{ staffCount }} staff
       </span>
       <span class="card-stat-item">
-        <Home :size="16" />
+        <Icon name="Home" :size="16" />
         {{ locationsCount }} locations
       </span>
     </div>
@@ -30,13 +30,12 @@
 import { defineComponent, type PropType } from 'vue';
 import type { Program } from '@/types';
 import { useColorsStore } from '@/stores';
-import { Users, Home } from 'lucide-vue-next';
+import Icon from '../Icon.vue';
 
 export default defineComponent({
   name: 'ProgramCard',
   components: {
-    Users,
-    Home,
+    Icon,
   },
   props: {
     program: {

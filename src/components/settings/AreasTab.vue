@@ -7,7 +7,7 @@
       @action="showModal = true"
     >
       <template #action-icon>
-        <Plus :size="18" />
+        <Icon name="Plus" :size="18" />
       </template>
     </TabHeader>
 
@@ -28,16 +28,11 @@
     <!-- Empty State -->
     <EmptyState
       v-if="areasStore.areas.length === 0"
-      :icon="Map"
+      icon-name="Map"
       title="No areas configured"
       message="Add your first area to start organizing your camp spaces."
-      action-text="+ Area"
-    >
-      <button class="btn btn-primary" @click="showModal = true">
-        <Plus :size="18" />
-        Add Your First Area
-      </button>
-    </EmptyState>
+      action-text="Area"
+    />
 
     <!-- Grid View -->
     <div v-else-if="viewMode === 'grid'" class="areas-grid">
@@ -50,7 +45,7 @@
         @click="selectArea(area.id)"
       >
         <template #icon>
-          <component :is="AreaTypeIcon(area.type)" :size="24" :stroke-width="2" />
+          <Icon :name="AreaTypeIcon(area.type)" :size="24" :stroke-width="2" />
         </template>
       </AreaCard>
     </div>
@@ -67,7 +62,7 @@
       <template #cell-name="{ item }">
         <div class="area-name-content">
           <div class="area-icon-sm" :style="{ background: getAreaTypeColor(item.type) }">
-            <component :is="AreaTypeIcon(item.type)" :size="18" :stroke-width="2" />
+            <Icon :name="AreaTypeIcon(item.type)" :size="18" :stroke-width="2" />
           </div>
           <div class="area-name">{{ item.name }}</div>
         </div>
@@ -140,9 +135,10 @@ import ViewToggle from '@/components/ViewToggle.vue';
 import AreaDetailModal from '@/components/modals/AreaDetailModal.vue';
 import AreaFormModal from '@/components/modals/AreaFormModal.vue';
 import EmptyState from '@/components/EmptyState.vue';
-import { MapPin, Home, TreesIcon as Trees, Activity, Waves, MoreHorizontal, Plus } from 'lucide-vue-next';
+import Icon from '@/components/Icon.vue';
 import TabHeader from '@/components/settings/TabHeader.vue';
 import { useToast } from '@/composables/useToast';
+import type { IconName } from '@/components/Icon.vue';
 
 export default defineComponent({
   name: 'AreasTab',
@@ -155,8 +151,7 @@ export default defineComponent({
     AreaDetailModal,
     AreaFormModal,
     EmptyState,
-    MapPin,
-    Plus,
+    Icon,
     TabHeader,
   },
   setup() {
@@ -351,16 +346,16 @@ export default defineComponent({
       return colorMap[type] || '#6b7280';
     },
 
-    AreaTypeIcon(type: Area['type']) {
-      const iconMap: Record<Area['type'], any> = {
-        indoor: Home,
-        outdoor: Trees,
-        facility: Activity,
-        field: Activity,
-        water: Waves,
-        other: MoreHorizontal,
+    AreaTypeIcon(type: Area['type']): IconName {
+      const iconMap: Record<Area['type'], IconName> = {
+        indoor: 'Home',
+        outdoor: 'Trees',
+        facility: 'Activity',
+        field: 'Activity',
+        water: 'Waves',
+        other: 'MoreHorizontal',
       };
-      return iconMap[type] || MapPin;
+      return iconMap[type] || 'MapPin';
     },
   },
 });

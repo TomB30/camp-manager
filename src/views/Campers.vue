@@ -39,16 +39,10 @@
           type="empty"
           title="No Campers Yet"
           message="Add your first camper to start managing registrations and camp activities."
-          action-text="+ Camper"
+          action-text="Camper"
           @action="showModal = true"
-        >
-          <template #icon>
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </template>
-        </EmptyState>
+          icon-name="UsersRound"
+        />
 
         <EmptyState
           v-if="filteredCampers.length === 0 && campersStore.campers.length > 0"
@@ -56,8 +50,10 @@
           title="No Campers Found"
           message="No campers match your current filters. Try adjusting your search criteria."
           action-text="Clear Filters"
+          no-action-icon
           action-button-class="btn-secondary"
           @action="clearFilters"
+          icon-name="UsersRound"
         />
       </div>
 

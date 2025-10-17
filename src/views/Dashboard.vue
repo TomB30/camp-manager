@@ -104,15 +104,15 @@
           <h4 class="mb-2">Quick Actions</h4>
           <div class="flex flex-col gap-2">
             <button class="btn btn-primary" @click="$router.push('/calendar')">
-              <Calendar :size="18" />
+              <Icon name="Calendar" :size="18" />
               View Calendar
             </button>
             <button class="btn btn-secondary" @click="$router.push('/campers')">
-              <Users :size="18" />
+              <Icon name="Users" :size="18" />
               Manage Campers
             </button>
             <button class="btn btn-secondary" @click="$router.push('/staff')">
-              <UsersRound :size="18" />
+              <Icon name="UsersRound" :size="18" />
               Manage Staff
             </button>
           </div>
@@ -155,16 +155,14 @@
 import { defineComponent } from 'vue';
 import { useCampersStore, useStaffMembersStore, useLocationsStore, useEventsStore, useMainStore, useAreasStore } from '@/stores';
 import { format } from 'date-fns';
-import { Calendar, Users, UsersRound } from 'lucide-vue-next';
+import Icon from '@/components/Icon.vue';
 import ViewHeader from '@/components/ViewHeader.vue';
 import type { Event, Camper, Conflict } from '@/types';
 
 export default defineComponent({
   name: 'Dashboard',
   components: {
-    Calendar,
-    Users,
-    UsersRound,
+    Icon,
     ViewHeader
   },
   computed: {

@@ -19,11 +19,11 @@
     
     <div class="group-info mt-2">
       <div class="card-info-row">
-        <Bed :size="16" />
+        <Icon name="Bed" :size="16" />
         <span>{{ housingRoomName }}</span>
       </div>
       <div v-if="group.staffMemberIds.length > 0" class="card-info-row">
-        <Users :size="16" />
+        <Icon name="Users" :size="16" />
         <span>{{ group.staffMemberIds.length }} staff member(s)</span>
       </div>
     </div>
@@ -34,13 +34,12 @@
 import { defineComponent, type PropType } from 'vue';
 import type { FamilyGroup } from '@/types';
 import { useColorsStore } from '@/stores';
-import { Bed, Users } from 'lucide-vue-next';
+import Icon from '../Icon.vue';
 
 export default defineComponent({
   name: 'FamilyGroupCard',
   components: {
-    Bed,
-    Users,
+    Icon,
   },
   props: {
     group: {

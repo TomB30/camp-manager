@@ -35,7 +35,7 @@
         <div class="form-group">
           <label class="form-label">Campers in this Group</label>
           <div v-if="!localFormData.sessionId" class="info-message mb-2">
-            <Info :size="16" />
+            <Icon name="Info" :size="16" />
             Please select a session first to see available campers
           </div>
           <SelectionList
@@ -123,7 +123,7 @@ import type { Camper, StaffMember, HousingRoom } from '@/types';
 import type { FamilyGroup, CampSession } from '@/types';
 import type { AutocompleteOption } from '@/components/Autocomplete.vue';
 import { conflictDetector } from '@/services/conflicts';
-import { Info } from 'lucide-vue-next';
+import Icon from '@/components/Icon.vue';
 
 interface FamilyGroupFormData {
   name: string;
@@ -141,7 +141,7 @@ export default defineComponent({
     BaseModal,
     SelectionList,
     ColorPicker,
-    Info
+    Icon
   },
   props: {
     show: {

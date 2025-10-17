@@ -56,7 +56,8 @@
             type="empty"
             title="No Programs Yet"
             message="Create your first program to organize activities, staff, and locations."
-            action-text="+ Program"
+            action-text="Program"
+            icon-name="Boxes"
             @action="showProgramModal = true"
           />
 
@@ -68,6 +69,8 @@
             action-text="Clear Filters"
             action-button-class="btn-secondary"
             @action="clearFilters"
+            icon-name="Boxes"
+            hide-action-icon
           />
         </div>
 

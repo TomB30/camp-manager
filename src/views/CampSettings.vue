@@ -3,7 +3,7 @@
     <div class="settings-header">
       <div class="header-content">
         <div class="header-title">
-          <Settings :size="32" class="header-icon" />
+          <Icon name="Settings" :size="32" class="header-icon" />
           <div>
             <h1>Camp Settings</h1>
             <p class="header-description">Configure your camp's core settings and infrastructure</p>
@@ -21,7 +21,7 @@
         :class="{ 'active': activeTab === tab.id }"
         @click="activeTab = tab.id"
       >
-        <component :is="tab.icon" :size="20" />
+        <Icon :name="tab.icon" :size="20" />
         <span>{{ tab.label }}</span>
         <span v-if="tab.count !== undefined" class="tab-count">{{ tab.count }}</span>
       </button>
@@ -45,7 +45,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useColorsStore, useSessionsStore, useAreasStore, useHousingRoomsStore, useCertificationsStore, useLocationsStore, useLabelsStore } from '@/stores';
-import { Settings, Palette, CalendarDays, Map, Bed, Award, MapPin, Tag } from 'lucide-vue-next';
+import Icon from '@/components/Icon.vue';
+
 import ColorsTab from '@/components/settings/ColorsTab.vue';
 import SessionsTab from '@/components/settings/SessionsTab.vue';
 import AreasTab from '@/components/settings/AreasTab.vue';
@@ -57,7 +58,7 @@ import LabelsTab from '@/components/settings/LabelsTab.vue';
 export default defineComponent({
   name: 'CampSettings',
   components: {
-    Settings,
+    Icon,
     ColorsTab,
     SessionsTab,
     AreasTab,
@@ -92,43 +93,43 @@ export default defineComponent({
         {
           id: 'sessions' as const,
           label: 'Sessions',
-          icon: CalendarDays,
+          icon: 'CalendarDays',
           count: this.sessionsStore.sessions.length,
         },
         {
           id: 'locations' as const,
           label: 'Areas',
-          icon: Map,
+          icon: 'Map',
           count: this.areasStore.areas.length,
         },
         {
           id: 'rooms' as const,
           label: 'Locations',
-          icon: MapPin,
+          icon: 'MapPin',
           count: this.locationsStore.locations.length,
         },
         {
           id: 'cabins' as const,
           label: 'Housing',
-          icon: Bed,
+          icon: 'Bed',
           count: this.housingRoomsStore.housingRooms.length,
         },
         {
           id: 'certifications' as const,
           label: 'Certifications',
-          icon: Award,
+          icon: 'Award',
           count: this.certificationsStore.certifications.length,
         },
         {
           id: 'colors' as const,
           label: 'Colors',
-          icon: Palette,
+          icon: 'Palette',
           count: this.colorsStore.colors.length,
         },
         {
           id: 'labels' as const,
           label: 'Labels',
-          icon: Tag,
+          icon: 'Tag',
           count: this.labelsStore.labels.length,
         },
       ];

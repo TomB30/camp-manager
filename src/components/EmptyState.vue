@@ -1,17 +1,7 @@
 <template>
   <div class="empty-state">
     <slot name="icon">
-      <component v-if="icon" :is="icon" :size="iconSize" :stroke-width="1.5" />
-      <svg v-else-if="type === 'no-results'" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="11" cy="11" r="8"></circle>
-        <path d="m21 21-4.35-4.35"></path>
-      </svg>
-      <svg v-else width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <rect x="3" y="3" width="7" height="7"></rect>
-        <rect x="14" y="3" width="7" height="7"></rect>
-        <rect x="14" y="14" width="7" height="7"></rect>
-        <rect x="3" y="14" width="7" height="7"></rect>
-      </svg>
+      <Icon v-if="iconName" :name="iconName" :size="64" :stroke-width="1.5" />
     </slot>
     
     <h3 v-if="title">{{ title }}</h3>
@@ -23,6 +13,7 @@
         :class="['btn', actionButtonClass]" 
         @click="$emit('action')"
       >
+        <Icon v-if="!hideActionIcon" class="action-icon" name="Plus" color="white" :size="18" />
         {{ actionText }}
       </button>
     </slot>
@@ -31,21 +22,20 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-
+import Icon, { IconName } from '@/components/Icon.vue';
 export default defineComponent({
   name: 'EmptyState',
+  components: {
+    Icon,
+  },
   props: {
     type: {
       type: String as PropType<'empty' | 'no-results'>,
       default: 'empty',
     },
-    icon: {
-      type: Object,
+    iconName: {
+      type: String as PropType<IconName>,
       default: null,
-    },
-    iconSize: {
-      type: Number,
-      default: 64,
     },
     title: {
       type: String,
@@ -62,6 +52,10 @@ export default defineComponent({
     actionButtonClass: {
       type: String,
       default: 'btn-primary',
+    },
+    hideActionIcon: {
+      type: Boolean,
+      default: false,
     },
   },
   emits: ['action'],
@@ -80,8 +74,8 @@ export default defineComponent({
   min-height: 300px;
 }
 
-.empty-state svg,
-.empty-state :deep(svg) {
+.empty-state svg:not(.action-icon),
+.empty-state :deep(svg:not(.action-icon)) {
   margin-bottom: 1.5rem;
   opacity: 0.5;
 }

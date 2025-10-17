@@ -41,16 +41,8 @@
           message="Add your first staff member to start building your camp team and managing assignments."
           action-text="+ Staff Member"
           @action="showModal = true"
-        >
-          <template #icon>
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-          </template>
-        </EmptyState>
+          icon-name="Users"
+        />
 
         <EmptyState
           v-if="filteredMembers.length === 0 && staffMembersStore.staffMembers.length > 0"
@@ -60,6 +52,8 @@
           action-text="Clear Filters"
           action-button-class="btn-secondary"
           @action="clearFilters"
+          icon-name="Users"
+          hide-action-icon
         />
       </div>
 

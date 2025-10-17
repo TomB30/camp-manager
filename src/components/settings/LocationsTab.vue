@@ -7,7 +7,7 @@
       @action="showModal = true"
     >
       <template #action-icon>
-        <Plus :size="18" />
+        <Icon name="Plus" :size="18" />
       </template>
     </TabHeader>
 
@@ -29,17 +29,12 @@
     <!-- Empty State -->
     <EmptyState
       v-if="locationsStore.locations.length === 0"
-      :icon="MapPin"
+      icon-name="MapPin"
       title="No locations configured"
       message="Add your first location to start organizing your camp spaces."
-      action-text="+ Location"
+      action-text="Location"
       @action="showModal = true"
-    >
-      <button class="btn btn-primary" @click="showModal = true">
-        <Plus :size="18" />
-        Add Your First Location
-      </button>
-    </EmptyState>
+    />
 
     <!-- Grid View -->
     <div v-else-if="viewMode === 'grid'" class="locations-grid">
@@ -53,11 +48,7 @@
         @click="selectLocation(location.id)"
       >
         <template #icon>
-          <component
-            :is="LocationTypeIcon(location.type)"
-            :size="24"
-            :stroke-width="2"
-          />
+          <Icon :name="LocationTypeIcon(location.type)" :size="24" :stroke-width="2" />
         </template>
       </LocationCard>
     </div>
@@ -77,11 +68,7 @@
             class="location-icon-sm"
             :style="{ background: getLocationTypeColor(item.type) }"
           >
-            <component
-              :is="LocationTypeIcon(item.type)"
-              :size="18"
-              :stroke-width="2"
-            />
+            <Icon :name="LocationTypeIcon(item.type)" :size="18" :stroke-width="2" />
           </div>
           <div class="location-name">{{ item.name }}</div>
         </div>
@@ -199,18 +186,9 @@ import LocationDetailModal from "@/components/modals/LocationDetailModal.vue";
 import LocationFormModal from "@/components/modals/LocationFormModal.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
-import {
-  BookOpen,
-  Target,
-  Dumbbell,
-  Utensils,
-  Trees,
-  Palette,
-  Home,
-  Plus,
-  MapPin,
-} from "lucide-vue-next";
+import Icon from "../Icon.vue";
 import { useToast } from "@/composables/useToast";
+import type { IconName } from "../Icon.vue";
 
 export default defineComponent({
   name: "LocationsTab",
@@ -225,13 +203,14 @@ export default defineComponent({
     LocationFormModal,
     EmptyState,
     TabHeader,
+    Icon,
   },
   setup() {
     const locationsStore = useLocationsStore();
     const toast = useToast();
     const areasStore = useAreasStore();
     const eventsStore = useEventsStore();
-    return { locationsStore, toast, areasStore, eventsStore, MapPin, Plus };
+    return { locationsStore, toast, areasStore, eventsStore };
   },
   data() {
     return {
@@ -357,16 +336,16 @@ export default defineComponent({
     formatLocationType(type: string): string {
       return type.charAt(0).toUpperCase() + type.slice(1);
     },
-    LocationTypeIcon(type: Location["type"]) {
-      const iconMap: Record<Location["type"], any> = {
-        classroom: BookOpen,
-        activity: Target,
-        sports: Dumbbell,
-        dining: Utensils,
-        outdoor: Trees,
-        arts: Palette,
+    LocationTypeIcon(type: Location["type"]): IconName {
+      const iconMap: Record<Location["type"], IconName> = {
+        classroom: 'BookOpen',
+        activity: 'Target',
+        sports: 'Dumbbell',
+        dining: 'Utensils',
+        outdoor: 'Trees',
+        arts: 'Palette',
       };
-      return iconMap[type] || Home;
+      return iconMap[type] || 'MapPin';
     },
     getLocationTypeColor(type: Location["type"]): string {
       const colors: Record<Location["type"], string> = {

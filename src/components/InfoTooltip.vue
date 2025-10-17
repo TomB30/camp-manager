@@ -7,7 +7,7 @@
       @blur="hideTooltip"
       :aria-label="'Information'"
     >
-      <HelpCircle :size="20" />
+      <Icon name="HelpCircle" :size="20" />
     </button>
     <div v-if="isVisible" class="tooltip-content">
       <slot></slot>
@@ -17,12 +17,12 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { HelpCircle } from 'lucide-vue-next';
+import Icon from './Icon.vue';
 
 export default defineComponent({
   name: 'InfoTooltip',
   components: {
-    HelpCircle,
+    Icon,
   },
   data() {
     return {

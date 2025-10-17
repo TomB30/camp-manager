@@ -7,7 +7,7 @@
       @action="showModal = true"
     >
       <template #action-icon>
-        <Plus :size="18" />
+        <Icon name="Plus" :size="18" />
       </template>
     </TabHeader>
 
@@ -27,17 +27,12 @@
     <!-- Empty State -->
     <EmptyState
       v-if="housingRoomsStore.housingRooms.length === 0"
-      :icon="Bed"
+      icon-name="Bed"
       title="No housing configured"
       message="Add your first room to start managing sleeping accommodations for campers."
-      action-text="+ Room"
+      action-text="Room"
       @action="showModal = true"
-    >
-      <button class="btn btn-primary" @click="showModal = true">
-        <Plus :size="18" />
-        Add Your First Room
-      </button>
-    </EmptyState>
+    />
 
     <!-- Grid View -->
     <div v-else-if="viewMode === 'grid'" class="rooms-grid">
@@ -62,7 +57,7 @@
       <template #cell-name="{ item }">
         <div class="cabin-name-content">
           <div class="cabin-icon-sm">
-            <Bed :size="18" :stroke-width="2" />
+            <Icon name="Bed" :size="18" :stroke-width="2" />
           </div>
           <div class="cabin-name">{{ item.name }}</div>
         </div>
@@ -151,7 +146,7 @@ import ViewToggle from "@/components/ViewToggle.vue";
 import HousingRoomDetailModal from "@/components/modals/HousingRoomDetailModal.vue";
 import HousingRoomFormModal from "@/components/modals/HousingRoomFormModal.vue";
 import EmptyState from "@/components/EmptyState.vue";
-import { Bed, Plus } from "lucide-vue-next";
+import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import { useToast } from "@/composables/useToast";
 import { useAreasStore } from "@/stores";
@@ -168,6 +163,7 @@ export default defineComponent({
     HousingRoomFormModal,
     EmptyState,
     TabHeader,
+    Icon,
   },
   setup() {
     const housingRoomsStore = useHousingRoomsStore();
@@ -176,7 +172,7 @@ export default defineComponent({
     const campersStore = useCampersStore();
     const familyGroupsStore = useFamilyGroupsStore();
     const toast = useToast();
-    return { housingRoomsStore, areasStore, sessionsStore, campersStore, familyGroupsStore, toast, Bed, Plus };
+    return { housingRoomsStore, areasStore, sessionsStore, campersStore, familyGroupsStore, toast };
   },
   data() {
     return {

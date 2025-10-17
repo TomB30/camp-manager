@@ -6,10 +6,10 @@
     >
       <div class="label-overlay">
         <button class="icon-btn" @click.stop="$emit('edit', label)" title="Edit">
-          <Edit2 :size="18" />
+          <Icon name="Edit2" :size="18" />
         </button>
         <button class="icon-btn" @click.stop="$emit('delete', label)" title="Delete">
-          <Trash2 :size="18" />
+          <Icon name="Trash2" :size="18" />
         </button>
       </div>
     </div>
@@ -24,13 +24,12 @@
 import { defineComponent, type PropType } from 'vue';
 import type { Label } from '@/types';
 import { useColorsStore } from '@/stores';
-import { Edit2, Trash2 } from 'lucide-vue-next';
+import Icon from '../Icon.vue';
 
 export default defineComponent({
   name: 'LabelCard',
   components: {
-    Edit2,
-    Trash2,
+    Icon,
   },
   props: {
     label: {

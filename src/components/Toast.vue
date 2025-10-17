@@ -10,17 +10,17 @@
           @click="removeToast(toast.id)"
         >
           <div class="toast-icon">
-            <CheckCircle v-if="toast.type === 'success'" :size="20" />
-            <AlertCircle v-if="toast.type === 'error'" :size="20" />
-            <Info v-if="toast.type === 'info'" :size="20" />
-            <AlertTriangle v-if="toast.type === 'warning'" :size="20" />
+            <Icon name="CheckCircle" v-if="toast.type === 'success'" :size="20" />
+            <Icon name="AlertCircle" v-if="toast.type === 'error'" :size="20" />
+            <Icon name="Info" v-if="toast.type === 'info'" :size="20" />
+            <Icon name="AlertTriangle" v-if="toast.type === 'warning'" :size="20" />
           </div>
           <div class="toast-content">
             <div class="toast-message">{{ toast.message }}</div>
             <div v-if="toast.details" class="toast-details">{{ toast.details }}</div>
           </div>
           <button class="toast-close" @click.stop="removeToast(toast.id)">
-            <X :size="16" />
+            <Icon name="X" :size="16" />
           </button>
         </div>
       </TransitionGroup>
@@ -30,17 +30,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { CheckCircle, AlertCircle, Info, AlertTriangle, X } from 'lucide-vue-next';
+import Icon from './Icon.vue';
 import { useToastStore } from '@/stores/toastStore';
 
 export default defineComponent({
   name: 'Toast',
   components: {
-    CheckCircle,
-    AlertCircle,
-    Info,
-    AlertTriangle,
-    X,
+    Icon,
   },
   setup() {
     const toastStore = useToastStore();

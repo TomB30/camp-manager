@@ -5,7 +5,7 @@
   >
     <div class="card-icon" :style="{ background: iconColor }">
       <slot name="icon">
-        <MapPin :size="28" :stroke-width="2" />
+        <Icon name="MapPin" :size="28" :stroke-width="2" />
       </slot>
     </div>
     <div class="card-details">
@@ -15,7 +15,7 @@
           {{ formatType }}
         </span>
         <span v-if="area.capacity" class="badge badge-sm badge-secondary">
-          <Users :size="12" class="inline" /> {{ area.capacity }}
+          <Icon name="Users" :size="12" class="inline" /> {{ area.capacity }}
         </span>
       </div>
       <p v-if="area.description" class="card-description">
@@ -23,11 +23,11 @@
       </p>
       <div class="card-stats">
         <div v-if="area.equipment && area.equipment.length > 0" class="card-stat-item">
-          <Package :size="14" />
+          <Icon name="Package" :size="14" />
           <span>{{ area.equipment.length }} equipment</span>
         </div>
         <div v-if="area.notes" class="card-stat-item">
-          <FileText :size="14" />
+          <Icon name="FileText" :size="14" />
           <span>Has notes</span>
         </div>
       </div>
@@ -38,15 +38,12 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { Area } from '@/types';
-import { MapPin, Users, Package, FileText } from 'lucide-vue-next';
+import Icon from '../Icon.vue';
 
 export default defineComponent({
   name: 'AreaCard',
   components: {
-    MapPin,
-    Users,
-    Package,
-    FileText,
+    Icon,
   },
   props: {
     area: {

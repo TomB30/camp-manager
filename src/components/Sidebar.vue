@@ -2,25 +2,25 @@
   <aside class="sidebar" :class="{ 'sidebar-mobile-open': isMobileOpen }">
     <div class="sidebar-content">
       <div class="logo">
-        <Sun :size="20" class="logo-icon" />
+        <Icon name="Sun" :size="20" class="logo-icon" />
         <h1>Summer Camp</h1>
       </div>
       
       <nav class="nav">
         <RouterLink to="/" class="nav-link" @click="handleNavClick">
-          <LayoutDashboard :size="20" class="nav-icon" />
+          <Icon name="LayoutDashboard" :size="20" class="nav-icon" />
           <span class="nav-text">Dashboard</span>
         </RouterLink>
         <RouterLink to="/calendar" class="nav-link" @click="handleNavClick">
-          <Calendar :size="20" class="nav-icon" />
+          <Icon name="Calendar" :size="20" class="nav-icon" />
           <span class="nav-text">Calendar</span>
         </RouterLink>
         <RouterLink to="/programs" class="nav-link" @click="handleNavClick">
-          <Boxes :size="20" class="nav-icon" />
+          <Icon name="Boxes" :size="20" class="nav-icon" />
           <span class="nav-text">Programs</span>
         </RouterLink>
         <RouterLink to="/staff" class="nav-link" @click="handleNavClick">
-          <UsersRound :size="20" class="nav-icon" />
+          <Icon name="UsersRound" :size="20" class="nav-icon" />
           <span class="nav-text">Staff</span>
         </RouterLink>
         
@@ -32,10 +32,10 @@
             @click="toggleCampersSection"
             type="button"
           >
-            <Users :size="20" class="nav-icon" />
+            <Icon name="Users" :size="20" class="nav-icon" />
             <span class="nav-text">Campers</span>
             <span v-if="isCampersRouteActiveWhileCollapsed" class="active-indicator"></span>
-            <ChevronRight 
+            <Icon name="ChevronRight" 
               :size="16" 
               class="nav-chevron"
               :class="{ 'nav-chevron-expanded': isCampersSectionExpanded }"
@@ -44,15 +44,15 @@
           <Transition name="expand">
             <div v-if="isCampersSectionExpanded" class="nav-subsection">
               <RouterLink to="/campers" class="nav-link nav-sublink" @click="handleNavClick">
-                <Users :size="18" class="nav-icon" />
+                <Icon name="Users" :size="18" class="nav-icon" />
                 <span class="nav-text">All Campers</span>
               </RouterLink>
               <RouterLink to="/groups" class="nav-link nav-sublink" @click="handleNavClick">
-                <FolderOpen :size="18" class="nav-icon" />
+                <Icon name="FolderOpen" :size="18" class="nav-icon" />
                 <span class="nav-text">Camper Groups</span>
               </RouterLink>
               <RouterLink to="/family-groups" class="nav-link nav-sublink" @click="handleNavClick">
-                <UsersRound :size="18" class="nav-icon" />
+                <Icon name="UsersRound" :size="18" class="nav-icon" />
                 <span class="nav-text">Family Groups</span>
               </RouterLink>
             </div>
@@ -64,7 +64,7 @@
       <!-- Camp Settings (Bottom of Sidebar) -->
       <div class="settings-section">
         <RouterLink to="/settings" class="nav-link" @click="handleNavClick">
-          <Settings :size="20" class="nav-icon" />
+          <Icon name="Settings" :size="20" class="nav-icon" />
           <span class="nav-text">Camp Settings</span>
         </RouterLink>
       </div>
@@ -72,7 +72,7 @@
       <div v-if="mainStore.conflicts.length > 0" class="conflicts-section">
         <div class="conflicts-badge">
           <span class="badge badge-error">
-            <AlertTriangle :size="16" />
+            <Icon name="AlertTriangle" :size="16" />
             {{ mainStore.conflicts.length }} Conflict{{ mainStore.conflicts.length > 1 ? 's' : '' }}
           </span>
         </div>
@@ -84,40 +84,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useMainStore } from '@/stores';
-import { 
-  Sun, 
-  LayoutDashboard, 
-  Calendar, 
-  Users, 
-  UsersRound, 
-  Home, 
-  Bed, 
-  FolderOpen,
-  ChevronRight,
-  AlertTriangle,
-  Boxes,
-  Settings,
-  MapPin,
-  Award
-} from 'lucide-vue-next';
+import Icon from './Icon.vue';
 
 export default defineComponent({
   name: 'Sidebar',
   components: {
-    Sun,
-    LayoutDashboard,
-    Calendar,
-    Users,
-    UsersRound,
-    Home,
-    Bed,
-    FolderOpen,
-    ChevronRight,
-    AlertTriangle,
-    Boxes,
-    Settings,
-    MapPin,
-    Award
+    Icon,
   },
   props: {
     isMobileOpen: {

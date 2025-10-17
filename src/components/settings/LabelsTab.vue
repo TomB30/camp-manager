@@ -7,7 +7,7 @@
       @action="showAddModal = true"
     >
       <template #action-icon>
-        <Plus :size="18" />
+        <Icon name="Plus" :size="18" />
       </template>
     </TabHeader>
 
@@ -27,13 +27,10 @@
       type="empty"
       title="No Labels Yet"
       message="Add your first label to start categorizing and organizing your camp entities."
-      action-text="+ Label"
+      action-text="Label"
       @action="showAddModal = true"
-    >
-      <template #icon>
-        <Tag :size="64" stroke-width="1.5" />
-      </template>
-    </EmptyState>
+      icon-name="Tag"
+    />
 
     <!-- Labels Grid -->
     <div v-else class="labels-grid">
@@ -72,7 +69,7 @@
 import { defineComponent } from 'vue';
 import { useLabelsStore } from '@/stores';
 import type { Label } from '@/types';
-import { Plus, Tag } from 'lucide-vue-next';
+import Icon from '@/components/Icon.vue';
 import TabHeader from '@/components/settings/TabHeader.vue';
 import LabelCard from '@/components/cards/LabelCard.vue';
 import LabelFormModal from '@/components/modals/LabelFormModal.vue';
@@ -84,8 +81,7 @@ import { useToast } from '@/composables/useToast';
 export default defineComponent({
   name: 'LabelsTab',
   components: {
-    Plus,
-    Tag,
+    Icon,
     TabHeader,
     LabelCard,
     LabelFormModal,

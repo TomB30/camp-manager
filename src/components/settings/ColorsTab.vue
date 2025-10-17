@@ -7,7 +7,7 @@
       @action="showAddModal = true"
     >
       <template #action-icon>
-        <Plus :size="18" />
+        <Icon name="Plus" :size="18" />
       </template>
     </TabHeader>
 
@@ -27,13 +27,10 @@
       type="empty"
       title="No Colors Yet"
       message="Add your first color to start customizing your camp's color palette."
-      action-text="+ Color"
+      action-text="Color"
       @action="showAddModal = true"
-    >
-      <template #icon>
-        <Palette :size="64" stroke-width="1.5" />
-      </template>
-    </EmptyState>
+      icon-name="Palette"
+    />
 
     <!-- Colors Grid -->
     <div v-else class="colors-grid">
@@ -72,7 +69,7 @@
 import { defineComponent } from 'vue';
 import { useColorsStore } from '@/stores';
 import type { CampColor } from '@/types';
-import { Plus, Palette } from 'lucide-vue-next';
+import Icon from '@/components/Icon.vue';
 import TabHeader from '@/components/settings/TabHeader.vue';
 import ColorCard from '@/components/cards/ColorCard.vue';
 import ColorFormModal from '@/components/modals/ColorFormModal.vue';
@@ -84,8 +81,7 @@ import { useToast } from '@/composables/useToast';
 export default defineComponent({
   name: 'ColorsTab',
   components: {
-    Plus,
-    Palette,
+    Icon,
     TabHeader,
     ColorCard,
     ColorFormModal,

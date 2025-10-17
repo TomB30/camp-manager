@@ -13,7 +13,7 @@
         <span class="badge badge-success">Capacity: {{ location.capacity }}</span>
       </div>
       <div v-if="areaName" class="location-area text-sm text-secondary mt-1">
-        <MapPin :size="14" class="inline" />
+        <Icon name="MapPin" :size="14" class="inline" />
         {{ areaName }}
       </div>
       <div class="location-usage mt-2">
@@ -38,12 +38,12 @@
 import { defineComponent, type PropType } from 'vue';
 import type { Location } from '@/types';
 import { useAreasStore } from '@/stores';
-import { MapPin } from 'lucide-vue-next';
+import Icon from '../Icon.vue';
 
 export default defineComponent({
   name: 'LocationCard',
   components: {
-    MapPin,
+    Icon,
   },
   props: {
     location: {

@@ -4,14 +4,14 @@
     @click="$emit('click', room)"
   >
     <div class="card-icon" style="background: var(--accent-color)">
-      <Bed :size="32" :stroke-width="2" />
+      <Icon name="Bed" :size="32" :stroke-width="2" />
     </div>
     <div class="card-details">
       <h4>{{ room.name }}</h4>
       <div class="card-meta">
         <span class="badge badge-primary">{{ room.beds }} beds</span>
         <span v-if="locationName" class="text-sm text-secondary">
-          <MapPin :size="14" class="inline" />
+          <Icon name="MapPin" :size="14" class="inline" />
           {{ locationName }}
         </span>
       </div>
@@ -37,13 +37,12 @@ import { defineComponent, type PropType } from 'vue';
 import type { HousingRoom } from '@/types';
 import type { FamilyGroup } from '@/types';
 import { useAreasStore } from '@/stores';
-import { Bed, MapPin } from 'lucide-vue-next';
+import Icon from '../Icon.vue';
 
 export default defineComponent({
   name: 'HousingRoomCard',
   components: {
-    Bed,
-    MapPin,
+    Icon,
   },
   props: {
     room: {

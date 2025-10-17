@@ -2,18 +2,26 @@
   <div id="app">
     <!-- Mobile Header with Hamburger -->
     <header class="mobile-header">
-      <button class="hamburger-btn" @click="toggleMobileMenu" aria-label="Toggle menu">
-        <Menu :size="24" />
+      <button
+        class="hamburger-btn"
+        @click="toggleMobileMenu"
+        aria-label="Toggle menu"
+      >
+        <Icon name="Menu" :size="24" />
       </button>
       <div class="mobile-logo">
-        <Sun :size="20" />
+        <Icon name="Sun" :size="20" />
         <h1>Summer Camp</h1>
       </div>
       <div class="mobile-spacer"></div>
     </header>
 
     <!-- Backdrop overlay for mobile -->
-    <div v-if="isMobileMenuOpen" class="mobile-backdrop" @click="closeMobileMenu"></div>
+    <div
+      v-if="isMobileMenuOpen"
+      class="mobile-backdrop"
+      @click="closeMobileMenu"
+    ></div>
 
     <Sidebar :is-mobile-open="isMobileMenuOpen" @close="closeMobileMenu" />
     <main class="main-content">
@@ -24,24 +32,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import Sidebar from './components/Sidebar.vue';
-import Toast from './components/Toast.vue';
-import { useMainStore } from './stores';
-import { campersService, storageService } from './services';
-import { Menu, Sun } from 'lucide-vue-next';
+import { defineComponent } from "vue";
+import Sidebar from "./components/Sidebar.vue";
+import Toast from "./components/Toast.vue";
+import { useMainStore } from "./stores";
+import { campersService, storageService } from "./services";
+import Icon from "./components/Icon.vue";
 
 export default defineComponent({
-  name: 'App',
+  name: "App",
   components: {
     Sidebar,
     Toast,
-    Menu,
-    Sun
+    Icon,
   },
   data() {
     return {
-      isMobileMenuOpen: false
+      isMobileMenuOpen: false,
     };
   },
   methods: {
@@ -50,22 +57,22 @@ export default defineComponent({
     },
     closeMobileMenu() {
       this.isMobileMenuOpen = false;
-    }
+    },
   },
   async mounted(): Promise<void> {
     const mainStore = useMainStore();
-    
+
     // Check if we have data, if not, seed with mock data
     const existingCampers = await campersService.getCampers();
-    
+
     if (existingCampers.length === 0) {
       // Lazy load mock data only when needed
-      const { mockData } = await import('./data/mockData');
+      const { mockData } = await import("./data/mockData");
       await storageService.seedData(mockData);
     }
-    
+
     await mainStore.loadAll();
-  }
+  },
 });
 </script>
 
@@ -175,4 +182,3 @@ export default defineComponent({
   }
 }
 </style>
-

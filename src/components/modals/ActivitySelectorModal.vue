@@ -13,7 +13,7 @@
             @click="mode = 'create'"
           >
             <div class="option-icon">
-              <Plus :size="24" />
+              <Icon name="Plus" :size="24" />
             </div>
             <div class="option-content">
               <h3>Create New Activity</h3>
@@ -27,7 +27,7 @@
             @click="mode = 'existing'"
           >
             <div class="option-icon">
-              <ListPlus :size="24" />
+              <Icon name="ListPlus" :size="24" />
             </div>
             <div class="option-content">
               <h3>Add Existing Activity</h3>
@@ -126,7 +126,8 @@ import BaseModal from '@/components/BaseModal.vue';
 import ActivityForm, { type ActivityFormData } from '@/components/ActivityForm.vue';
 import { type AutocompleteOption } from '@/components/Autocomplete.vue';
 import DurationDisplay from '@/components/DurationDisplay.vue';
-import { Plus, ListPlus } from 'lucide-vue-next';
+import Icon from '@/components/Icon.vue';
+
 
 export default defineComponent({
   name: 'ActivitySelectorModal',
@@ -134,8 +135,7 @@ export default defineComponent({
     BaseModal,
     ActivityForm,
     DurationDisplay,
-    Plus,
-    ListPlus,
+    Icon,
   },
   props: {
     show: {

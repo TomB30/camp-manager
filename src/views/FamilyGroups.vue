@@ -43,13 +43,10 @@
           type="empty"
           title="No Family Groups Yet"
           message="Create your first family group to organize campers and assign them to housing rooms."
-          action-text="+ Family Group"
+          action-text="Family Group"
           @action="showModal = true"
-        >
-          <template #icon>
-            <Bed :size="64" stroke-width="1.5" />
-          </template>
-        </EmptyState>
+          icon-name="Bed"
+        />
 
         <EmptyState
           v-if="filteredFamilyGroups.length === 0 && familyGroupsStore.familyGroups.length > 0"
@@ -57,6 +54,8 @@
           title="No Family Groups Found"
           message="No family groups match your current filters. Try adjusting your search criteria."
           action-text="Clear Filters"
+          hide-action-icon
+          icon-name="Bed"
           action-button-class="btn-secondary"
           @action="clearFilters"
         />
@@ -87,14 +86,14 @@
         
         <template #cell-room="{ item }">
           <div class="room-content">
-            <Bed :size="14" />
+            <Icon name="Bed" :size="14" />
             <span>{{ getSleepingRoomName(item.housingRoomId) }}</span>
           </div>
         </template>
         
         <template #cell-staff="{ item }">
           <div class="staff-content">
-            <Users :size="14" />
+            <Icon name="Users" :size="14" />
             <span>{{ item.staffMemberIds.length }} staff</span>
           </div>
         </template>
@@ -217,7 +216,7 @@ import ViewToggle from '@/components/ViewToggle.vue';
 import InfoTooltip from '@/components/InfoTooltip.vue';
 import FamilyGroupDetailModal from '@/components/modals/FamilyGroupDetailModal.vue';
 import FamilyGroupFormModal from '@/components/modals/FamilyGroupFormModal.vue';
-import { Bed, Users } from 'lucide-vue-next';
+import Icon from '@/components/Icon.vue';
 
 export default defineComponent({
   name: 'FamilyGroups',
@@ -233,9 +232,7 @@ export default defineComponent({
     InfoTooltip,
     FamilyGroupDetailModal,
     FamilyGroupFormModal,
-  },
-  setup() {
-    return { Bed, Users };
+    Icon,
   },
   data() {
     return {

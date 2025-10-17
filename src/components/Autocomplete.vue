@@ -27,9 +27,9 @@
           @mousedown.prevent="clearSelection"
           tabindex="-1"
         >
-          <X :size="14" />
+          <Icon name="X" :size="14" />
         </button>
-        <ChevronDown 
+        <Icon name="ChevronDown" 
           :size="16" 
           class="autocomplete-arrow" 
           :class="{ 'is-open': isOpen }"
@@ -75,7 +75,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, watch, nextTick, onMounted, onUnmounted, type PropType } from 'vue';
-import { ChevronDown, X } from 'lucide-vue-next';
+import Icon from './Icon.vue';
 
 export interface AutocompleteOption {
   label: string;
@@ -87,8 +87,7 @@ export interface AutocompleteOption {
 export default defineComponent({
   name: 'Autocomplete',
   components: {
-    ChevronDown,
-    X
+    Icon
   },
   props: {
     modelValue: {

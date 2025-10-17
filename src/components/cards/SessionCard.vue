@@ -2,7 +2,7 @@
   <div class="session-card" @click="$emit('click', session.id)">
     <div class="session-header">
       <div class="session-icon">
-        <CalendarDays :size="24" />
+        <Icon name="CalendarDays" :size="24" />
       </div>
       <div class="session-title-section">
         <h3 class="session-name">{{ session.name }}</h3>
@@ -12,18 +12,18 @@
     
     <div class="session-details">
       <div class="session-detail">
-        <Calendar :size="16" class="detail-icon" />
+        <Icon name="Calendar" :size="16" class="detail-icon" />
         <span class="detail-label">Dates:</span>
         <span class="detail-value">{{ formatDate(session.startDate) }} - {{ formatDate(session.endDate) }}</span>
       </div>
       
       <div class="session-detail">
-        <Clock :size="16" class="detail-icon" />
+        <Icon name="Clock" :size="16" class="detail-icon" />
         <span class="detail-label">Duration:</span>
         <span class="detail-value">{{ calculateDuration(session.startDate, session.endDate) }}</span>
       </div>
       <div v-if="session.maxCampers" class="session-detail">
-        <Users :size="16" class="detail-icon" />
+        <Icon name="Users" :size="16" class="detail-icon" />
         <span class="detail-label">Max Campers:</span>
         <span class="detail-value">{{ session.maxCampers }}</span>
       </div>
@@ -34,15 +34,12 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { CampSession } from '@/types';
-import { CalendarDays, Calendar, Clock, Users } from 'lucide-vue-next';
+import Icon from '../Icon.vue';
 
 export default defineComponent({
   name: 'SessionCard',
   components: {
-    CalendarDays,
-    Calendar,
-    Clock,
-    Users,
+    Icon,
   },
   props: {
     session: {

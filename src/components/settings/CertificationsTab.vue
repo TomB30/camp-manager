@@ -7,7 +7,7 @@
       @action="showModal = true"
     >
       <template #action-icon>
-        <Plus :size="18" />
+        <Icon name="Plus"  :size="18" />
       </template>
     </TabHeader>
 
@@ -31,13 +31,10 @@
       type="empty"
       title="No Certifications Yet"
       message="Add your first certification to start tracking staff qualifications."
-      action-text="+ Certification"
+      action-text="Certification"
       @action="showModal = true"
-    >
-      <template #icon>
-        <Award :size="64" stroke-width="1.5" />
-      </template>
-    </EmptyState>
+      icon-name="Award"
+    />
 
     <!-- Grid View -->
     <div v-else-if="viewMode === 'grid'" class="certifications-grid">
@@ -65,7 +62,7 @@
       <template #cell-name="{ item }">
         <div class="certification-name-content">
           <div class="certification-icon-sm">
-            <Award :size="18" />
+            <Icon name="Award" :size="18" />
           </div>
           <div>{{ item.name }}</div>
         </div>
@@ -129,7 +126,7 @@
 import { defineComponent } from 'vue';
 import { useCertificationsStore } from '@/stores';
 import type { Certification } from '@/types';
-import { Plus, Edit2, Trash2, Award } from 'lucide-vue-next';
+import Icon from '@/components/Icon.vue';
 import TabHeader from '@/components/settings/TabHeader.vue';
 import CertificationCard from '@/components/cards/CertificationCard.vue';
 import CertificationDetailModal from '@/components/modals/CertificationDetailModal.vue';
@@ -144,10 +141,7 @@ import { useToast } from '@/composables/useToast';
 export default defineComponent({
   name: 'CertificationsTab',
   components: {
-    Plus,
-    Edit2,
-    Trash2,
-    Award,
+    Icon,
     TabHeader,
     CertificationCard,
     CertificationDetailModal,
