@@ -147,7 +147,6 @@ export default defineComponent({
       default: true
     }
   },
-  emits: ['update:searchQuery', 'clear'],
   data() {
     return {
       internalSearchQuery: this.searchQuery,

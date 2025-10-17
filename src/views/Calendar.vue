@@ -15,6 +15,7 @@
         v-model:filter-room="filterRoom"
         v-model:filter-program="filterProgram"
         v-model:filter-staff="filterStaff"
+        v-model:filter-group="filterGroup"
         :filters="eventFilters"
         :filtered-count="filteredEvents.length"
         :total-count="viewMode === 'daily' ? todayEvents.length : viewMode === 'weekly' ? weekEvents.length : monthEvents.length"
@@ -137,7 +138,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useEventsStore, useCampersStore, useStaffMembersStore, useLocationsStore, useColorsStore, useGroupsStore, useProgramsStore } from '@/stores';
+import { useEventsStore, useCampersStore, useStaffMembersStore, useLocationsStore, useColorsStore, useGroupsStore, useProgramsStore, useFamilyGroupsStore } from '@/stores';
 import { useToastStore } from '@/stores/toastStore';
 import { format, addDays, startOfWeek, addWeeks, addMonths } from 'date-fns';
 import ConfirmModal from '@/components/ConfirmModal.vue';
@@ -196,6 +197,7 @@ export default defineComponent({
       filterRoom: '',
       filterProgram: '',
       filterStaff: '',
+      filterGroup: '',
       sleepingRoomToAssign: ''
     };
   },
@@ -227,6 +229,9 @@ export default defineComponent({
     },
     groupsStore() {
       return useGroupsStore();
+    },
+    familyGroupsStore() {
+      return useFamilyGroupsStore();
     },
     programsStore() {
       return useProgramsStore();
@@ -273,6 +278,21 @@ export default defineComponent({
           })),
         },
         {
+          model: 'filterGroup',
+          value: this.filterGroup,
+          placeholder: 'Filter by Group',
+          options: [
+            ...this.groupsStore.camperGroups.map(group => ({
+              label: `${group.name} (Camper Group)`,
+              value: group.id,
+            })),
+            ...this.familyGroupsStore.familyGroups.map(group => ({
+              label: `${group.name} (Family Group)`,
+              value: group.id,
+            })),
+          ],
+        },
+        {
           model: 'filterStaff',
           value: this.filterStaff,
           placeholder: 'Filter by Staff',
@@ -315,7 +335,7 @@ export default defineComponent({
 
       // Early return if no filters are active
       if (!this.searchQuery && !this.filterProgram && 
-          !this.filterRoom && !this.filterStaff) {
+          !this.filterRoom && !this.filterStaff && !this.filterGroup) {
         return events;
       }
 
@@ -332,6 +352,12 @@ export default defineComponent({
         // Simple filters first (fastest to check)
         if (this.filterProgram && event.programId !== this.filterProgram) return false;
         if (this.filterRoom && event.locationId !== this.filterRoom) return false;
+        
+        if (this.filterGroup) {
+          if (!event.groupIds || !event.groupIds.includes(this.filterGroup)) {
+            return false;
+          }
+        }
         
         if (this.filterStaff) {
           const eventStaffIds = this.eventsStore.getEventStaffIds(event.id);
@@ -402,6 +428,7 @@ export default defineComponent({
       this.filterProgram = '';
       this.filterRoom = '';
       this.filterStaff = '';
+      this.filterGroup = '';
     },
     formatDate(date: Date): string {
       return format(date, 'EEEE, MMMM d, yyyy');
