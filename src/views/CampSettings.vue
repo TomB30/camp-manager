@@ -31,8 +31,8 @@
     <div class="tab-content">
       <Transition name="fade" mode="out-in">
         <SessionsTab v-if="activeTab === 'sessions'" key="sessions" />
-        <LocationsTab v-else-if="activeTab === 'rooms'" key="rooms" />
-        <AreasTab v-else-if="activeTab === 'locations'" key="locations" />
+        <AreasTab v-else-if="activeTab === 'areas'" key="areas" />
+        <LocationsTab v-else-if="activeTab === 'locations'" key="locations" />
         <HousingTab v-else-if="activeTab === 'cabins'" key="cabins" />
         <CertificationsTab v-else-if="activeTab === 'certifications'" key="certifications" />
         <ColorsTab v-else-if="activeTab === 'colors'" key="colors" />
@@ -77,14 +77,14 @@ export default defineComponent({
     const labelsStore = useLabelsStore();
     return { colorsStore, sessionsStore, areasStore, housingRoomsStore, certificationsStore, locationsStore, labelsStore };
   },
-  data(): { activeTab: 'colors' | 'sessions' | 'locations' | 'cabins' | 'certifications' | 'rooms' | 'labels' } {
+  data(): { activeTab: 'colors' | 'sessions' | 'areas' | 'locations' | 'cabins' | 'certifications' | 'labels' } {
     return {
       activeTab: 'sessions',
     };
   },
   computed: {
     tabs(): Array<{
-      id: 'colors' | 'sessions' | 'locations' | 'cabins' | 'certifications' | 'rooms' | 'labels';
+      id: 'colors' | 'sessions' | 'areas' | 'locations' | 'cabins' | 'certifications' | 'labels';
       label: string;
       icon: any;
       count: number;
@@ -97,13 +97,13 @@ export default defineComponent({
           count: this.sessionsStore.sessions.length,
         },
         {
-          id: 'locations' as const,
+          id: 'areas' as const,
           label: 'Areas',
           icon: 'Map',
           count: this.areasStore.areas.length,
         },
         {
-          id: 'rooms' as const,
+          id: 'locations' as const,
           label: 'Locations',
           icon: 'MapPin',
           count: this.locationsStore.locations.length,

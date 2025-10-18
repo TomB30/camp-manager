@@ -1,42 +1,41 @@
 /**
- * Groups Service (Camper Groups)
- * Handles all camper group-related operations
+ * Groups Service (Unified Groups)
+ * Handles all group-related operations for the unified Group type
  */
 
-import type { CamperGroup } from '@/types';
+import type { Group } from '@/types';
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './storageKeys';
 
 class GroupsService {
   /**
-   * Get all camper groups
+   * Get all groups
    */
-  async getCamperGroups(): Promise<CamperGroup[]> {
-    return storageService.getAll<CamperGroup>(STORAGE_KEYS.CAMPER_GROUPS);
+  async getGroups(): Promise<Group[]> {
+    return storageService.getAll<Group>(STORAGE_KEYS.GROUPS);
   }
 
   /**
-   * Get a camper group by ID
+   * Get a group by ID
    */
-  async getCamperGroup(id: string): Promise<CamperGroup | null> {
-    return storageService.getById<CamperGroup>(STORAGE_KEYS.CAMPER_GROUPS, id);
+  async getGroup(id: string): Promise<Group | null> {
+    return storageService.getById<Group>(STORAGE_KEYS.GROUPS, id);
   }
 
   /**
-   * Save a camper group (create or update)
+   * Save a group (create or update)
    */
-  async saveCamperGroup(group: CamperGroup): Promise<CamperGroup> {
+  async saveGroup(group: Group): Promise<Group> {
     const updatedGroup = { ...group, updatedAt: new Date().toISOString() };
-    return storageService.save<CamperGroup>(STORAGE_KEYS.CAMPER_GROUPS, updatedGroup);
+    return storageService.save<Group>(STORAGE_KEYS.GROUPS, updatedGroup);
   }
 
   /**
-   * Delete a camper group
+   * Delete a group
    */
-  async deleteCamperGroup(id: string): Promise<void> {
-    return storageService.delete(STORAGE_KEYS.CAMPER_GROUPS, id);
+  async deleteGroup(id: string): Promise<void> {
+    return storageService.delete(STORAGE_KEYS.GROUPS, id);
   }
 }
 
 export const groupsService = new GroupsService();
-

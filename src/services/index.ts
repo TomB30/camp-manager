@@ -14,7 +14,6 @@ export { eventsService } from './eventsService';
 export { locationsService } from './locationsService';
 export { housingRoomsService } from './housingRoomsService';
 export { groupsService } from './groupsService';
-export { familyGroupsService } from './familyGroupsService';
 export { programsService } from './programsService';
 export { activitiesService } from './activitiesService';
 export { areasService } from './areasService';

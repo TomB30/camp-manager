@@ -145,7 +145,7 @@
 import { defineComponent, type PropType } from 'vue';
 import { format } from 'date-fns';
 import BaseModal from '@/components/BaseModal.vue';
-import { useEventsStore, useCampersStore, useStaffMembersStore, useGroupsStore, useFamilyGroupsStore, useLocationsStore, useColorsStore } from '@/stores';
+import { useEventsStore, useCampersStore, useStaffMembersStore, useGroupsStore, useLocationsStore, useColorsStore } from '@/stores';
 import { useToastStore } from '@/stores/toastStore';
 import type { Event } from '@/types';
 
@@ -177,9 +177,6 @@ export default defineComponent({
     },
     groupsStore() {
       return useGroupsStore();
-    },
-    familyGroupsStore() {
-      return useFamilyGroupsStore();
     },
     locationsStore() {
       return useLocationsStore();
@@ -216,47 +213,28 @@ export default defineComponent({
       return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
     },
     getGroupName(groupId: string): string {
-      // Check camper groups
-      const camperGroup = this.groupsStore.getCamperGroupById(groupId);
-      if (camperGroup) return camperGroup.name;
-      
-      // Check family groups
-      const familyGroup = this.familyGroupsStore.getFamilyGroupById(groupId);
-      if (familyGroup) return familyGroup.name;
+      // Check groups
+      const group = this.groupsStore.getGroupById(groupId);
+      if (group) return group.name;
       
       return 'Unknown Group';
     },
     getGroupDetails(groupId: string): string {
-      // Check camper groups
-      const camperGroup = this.groupsStore.getCamperGroupById(groupId);
-      if (camperGroup) {
+      // Check groups
+      const group = this.groupsStore.getGroupById(groupId);
+      if (group) {
         const camperCount = this.groupsStore.getCampersInGroup(groupId).length;
         return `${camperCount} campers`;
-      }
-      
-      // Check family groups
-      const familyGroup = this.familyGroupsStore.getFamilyGroupById(groupId);
-      if (familyGroup) {
-        const camperCount = this.familyGroupsStore.getCampersInFamilyGroup(groupId).length;
-        const staffCount = familyGroup.staffMemberIds?.length || 0;
-        return `${camperCount} campers, ${staffCount} staff`;
       }
       
       return '';
     },
     getGroupColor(groupId: string): string {
-      // Check camper groups
-      const camperGroup = this.groupsStore.getCamperGroupById(groupId);
-      if (camperGroup && camperGroup.colorId) {
-        const color = this.colorsStore.getColorById(camperGroup.colorId);
+      // Check groups
+      const group = this.groupsStore.getGroupById(groupId);
+      if (group && group.colorId) {
+        const color = this.colorsStore.getColorById(group.colorId);
         return color?.hexValue || '#6366F1';
-      }
-      
-      // Check family groups
-      const familyGroup = this.familyGroupsStore.getFamilyGroupById(groupId);
-      if (familyGroup && familyGroup.colorId) {
-        const color = this.colorsStore.getColorById(familyGroup.colorId);
-        return color?.hexValue || '#F59E0B';
       }
       
       return '#6366F1';

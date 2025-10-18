@@ -5,7 +5,7 @@
         <Icon name="Sun" :size="20" class="logo-icon" />
         <h1>Summer Camp</h1>
       </div>
-      
+
       <nav class="nav">
         <RouterLink to="/" class="nav-link" @click="handleNavClick">
           <Icon name="LayoutDashboard" :size="20" class="nav-icon" />
@@ -23,42 +23,49 @@
           <Icon name="UsersRound" :size="20" class="nav-icon" />
           <span class="nav-text">Staff</span>
         </RouterLink>
-        
+
         <!-- Collapsible Campers Section -->
         <div class="nav-section">
-          <button 
-            class="nav-section-header" 
+          <button
+            class="nav-section-header"
             :class="{ 'has-active-route': isCampersRouteActiveWhileCollapsed }"
             @click="toggleCampersSection"
             type="button"
           >
             <Icon name="Users" :size="20" class="nav-icon" />
             <span class="nav-text">Campers</span>
-            <span v-if="isCampersRouteActiveWhileCollapsed" class="active-indicator"></span>
-            <Icon name="ChevronRight" 
-              :size="16" 
+            <span
+              v-if="isCampersRouteActiveWhileCollapsed"
+              class="active-indicator"
+            ></span>
+            <Icon
+              name="ChevronRight"
+              :size="16"
               class="nav-chevron"
               :class="{ 'nav-chevron-expanded': isCampersSectionExpanded }"
             />
           </button>
           <Transition name="expand">
             <div v-if="isCampersSectionExpanded" class="nav-subsection">
-              <RouterLink to="/campers" class="nav-link nav-sublink" @click="handleNavClick">
+              <RouterLink
+                to="/groups"
+                class="nav-link nav-sublink"
+                @click="handleNavClick"
+              >
+                <Icon name="FolderOpen" :size="18" class="nav-icon" />
+                <span class="nav-text">Groups</span>
+              </RouterLink>
+              <RouterLink
+                to="/campers"
+                class="nav-link nav-sublink"
+                @click="handleNavClick"
+              >
                 <Icon name="Users" :size="18" class="nav-icon" />
                 <span class="nav-text">All Campers</span>
-              </RouterLink>
-              <RouterLink to="/groups" class="nav-link nav-sublink" @click="handleNavClick">
-                <Icon name="FolderOpen" :size="18" class="nav-icon" />
-                <span class="nav-text">Camper Groups</span>
-              </RouterLink>
-              <RouterLink to="/family-groups" class="nav-link nav-sublink" @click="handleNavClick">
-                <Icon name="UsersRound" :size="18" class="nav-icon" />
-                <span class="nav-text">Family Groups</span>
               </RouterLink>
             </div>
           </Transition>
         </div>
-
       </nav>
 
       <!-- Camp Settings (Bottom of Sidebar) -->
@@ -73,7 +80,9 @@
         <div class="conflicts-badge">
           <span class="badge badge-error">
             <Icon name="AlertTriangle" :size="16" />
-            {{ mainStore.conflicts.length }} Conflict{{ mainStore.conflicts.length > 1 ? 's' : '' }}
+            {{ mainStore.conflicts.length }} Conflict{{
+              mainStore.conflicts.length > 1 ? "s" : ""
+            }}
           </span>
         </div>
       </div>
@@ -82,25 +91,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useMainStore } from '@/stores';
-import Icon from './Icon.vue';
+import { defineComponent } from "vue";
+import { useMainStore } from "@/stores";
+import Icon from "./Icon.vue";
 
 export default defineComponent({
-  name: 'Sidebar',
+  name: "Sidebar",
   components: {
     Icon,
   },
   props: {
     isMobileOpen: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  emits: ['close'],
+  emits: ["close"],
   data() {
     return {
-      isCampersSectionExpanded: false
+      isCampersSectionExpanded: false,
     };
   },
   computed: {
@@ -108,23 +117,26 @@ export default defineComponent({
       return useMainStore();
     },
     isCampersRouteActiveWhileCollapsed() {
-      const campersRoutes = ['/campers', '/groups', '/family-groups'];
-      return !this.isCampersSectionExpanded && campersRoutes.includes(this.$route.path);
-    }
+      const campersRoutes = ["/campers", "/groups", "/family-groups"];
+      return (
+        !this.isCampersSectionExpanded &&
+        campersRoutes.includes(this.$route.path)
+      );
+    },
   },
   watch: {
-    '$route.path': {
+    "$route.path": {
       immediate: true,
       handler(path: string) {
         this.updateExpandedSections(path);
-      }
-    }
+      },
+    },
   },
   methods: {
     updateExpandedSections(path: string) {
       // Define routes for each section
-      const campersRoutes = ['/campers', '/groups', '/family-groups'];
-      
+      const campersRoutes = ["/campers", "/groups", "/family-groups"];
+
       // Set expanded state based on current route
       this.isCampersSectionExpanded = campersRoutes.includes(path);
     },
@@ -134,10 +146,10 @@ export default defineComponent({
     handleNavClick() {
       // Close mobile menu when a nav link is clicked (on mobile only)
       if (window.innerWidth <= 768) {
-        this.$emit('close');
+        this.$emit("close");
       }
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -220,7 +232,7 @@ export default defineComponent({
 
 .nav-link.router-link-active {
   color: var(--accent-color);
-  background: #EFF6FF;
+  background: #eff6ff;
 }
 
 /* Collapsible Section Styles */
@@ -255,7 +267,7 @@ export default defineComponent({
 
 .nav-section-header.has-active-route {
   color: var(--accent-color);
-  background: #EFF6FF;
+  background: #eff6ff;
 }
 
 .active-indicator {
@@ -270,7 +282,8 @@ export default defineComponent({
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -392,4 +405,3 @@ export default defineComponent({
   }
 }
 </style>
-

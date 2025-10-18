@@ -21,46 +21,55 @@
 
         <div class="detail-section">
           <div class="detail-label">Family Groups</div>
-          <div v-if="familyGroups.length > 0">
+          <div v-if="groups.length > 0">
             <div class="groups-list">
-              <div 
-                v-for="familyGroup in familyGroups"
-                :key="familyGroup.id"
+              <div
+                v-for="group in groups"
+                :key="group.id"
                 class="group-assignment-item"
               >
                 <div class="group-info">
                   <div class="font-medium">
-                    {{ familyGroup.name }}
+                    {{ group.name }}
                   </div>
                   <div class="text-xs text-secondary">
-                    {{ familyGroup.camperCount }} campers
-                    <span v-if="familyGroup.staffCount > 0">
-                      • {{ familyGroup.staffCount }} staff
+                    {{ getGroupCamperCount(group.id) }} campers
+                    <span v-if="getGroupStaffCount(group.id) > 0">
+                      • {{ getGroupStaffCount(group.id) }} staff
                     </span>
                   </div>
                   <div class="text-xs group-dates">
-                    📅 {{ familyGroup.sessionName }} ({{ familyGroup.sessionDateRange }})
+                    📅 {{ getGroupSessionName(group.id) }} ({{
+                      getGroupSessionDateRange(group.id)
+                    }})
                   </div>
-                  <div v-if="familyGroup.description" class="text-xs text-secondary mt-1">
-                    {{ familyGroup.description }}
+                  <div
+                    v-if="group.description"
+                    class="text-xs text-secondary mt-1"
+                  >
+                    {{ group.description }}
                   </div>
                 </div>
-                <button 
+                <button
                   class="btn btn-sm btn-secondary"
-                  @click="$emit('view-family-group', familyGroup.id)"
+                  @click="$emit('view-group', group.id)"
                 >
                   View Details
                 </button>
               </div>
             </div>
           </div>
-          <div v-else class="text-secondary">No family groups assigned to this room</div>
+          <div v-else class="text-secondary">
+            No family groups assigned to this room
+          </div>
         </div>
       </div>
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete')">Delete Room</button>
+      <button class="btn btn-error" @click="$emit('delete')">
+        Delete Room
+      </button>
       <button class="btn btn-secondary" @click="$emit('edit')">Edit</button>
       <button class="btn btn-secondary" @click="$emit('close')">Close</button>
     </template>
@@ -68,52 +77,69 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import BaseModal from '@/components/BaseModal.vue';
-import type { HousingRoom } from '@/types';
-import { useAreasStore } from '@/stores';
-
-interface FamilyGroupInfo {
-  id: string;
-  name: string;
-  description?: string;
-  camperCount: number;
-  staffCount: number;
-  sessionId: string;
-  sessionName: string;
-  sessionDateRange: string;
-}
+import { defineComponent, type PropType } from "vue";
+import BaseModal from "@/components/BaseModal.vue";
+import type { Group, HousingRoom } from "@/types";
+import { useAreasStore, useGroupsStore, useSessionsStore } from "@/stores";
 
 export default defineComponent({
-  name: 'HousingRoomDetailModal',
+  name: "HousingRoomDetailModal",
   components: {
-    BaseModal
+    BaseModal,
   },
   props: {
     show: {
       type: Boolean,
-      required: true
+      required: true,
     },
     room: {
       type: Object as PropType<HousingRoom | null>,
-      default: null
+      default: null,
     },
-    familyGroups: {
-      type: Array as PropType<FamilyGroupInfo[]>,
-      default: () => []
-    }
+    groups: {
+      type: Array as PropType<Group[]>,
+      default: () => [],
+    },
   },
-  emits: ['close', 'edit', 'delete', 'view-family-group'],
+  emits: ["close", "edit", "delete", "view-group"],
   setup() {
     const areasStore = useAreasStore();
-    return { areasStore };
+    const groupsStore = useGroupsStore();
+    const sessionsStore = useSessionsStore();
+    return { areasStore, groupsStore, sessionsStore };
   },
   methods: {
     getAreaName(areaId: string): string {
       const area = this.areasStore.getAreaById(areaId);
-      return area?.name || 'Unknown';
-    }
-  }
+      return area?.name || "Unknown";
+    },
+    getGroupCamperCount(groupId: string): number {
+      return this.groupsStore.getCampersInGroup(groupId).length;
+    },
+    getGroupStaffCount(groupId: string): number {
+      return this.groupsStore.getStaffInGroup(groupId).length;
+    },
+    getGroupSessionName(sessionId: string): string {
+      return (
+        this.sessionsStore.sessions.find((s) => s.id === sessionId)?.name ||
+        "Unknown Session"
+      );
+    },
+    getGroupSessionDateRange(sessionId: string): string {
+      const session = this.sessionsStore.sessions.find(
+        (s) => s.id === sessionId
+      );
+      if (!session) return "Unknown";
+      return `${new Date(session.startDate).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      })} - ${new Date(session.endDate).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })}`;
+    },
+  },
 });
 </script>
 
@@ -159,4 +185,3 @@ export default defineComponent({
   margin-top: 0.25rem;
 }
 </style>
-

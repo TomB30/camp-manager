@@ -10,7 +10,6 @@ export { useEventsStore } from './eventsStore';
 export { useLocationsStore } from './locationsStore';
 export { useHousingRoomsStore } from './housingRoomsStore';
 export { useGroupsStore } from './groupsStore';
-export { useFamilyGroupsStore } from './familyGroupsStore';
 export { useProgramsStore } from './programsStore';
 export { useActivitiesStore } from './activitiesStore';
 export { useAreasStore } from './areasStore';

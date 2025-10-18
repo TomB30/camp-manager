@@ -2,8 +2,8 @@
   <div class="container">
     <div class="groups-view">
       <ViewHeader 
-        title="Camper Groups" 
-        tooltip="Create virtual groups of campers based on criteria like age, gender, or housing. Use these groups to quickly assign multiple campers to events."
+        title="Groups" 
+        tooltip="Create and manage groups with flexible assignment options. Groups can contain campers, staff, or even other groups. Use filters for automatic assignment or manually select members."
       >
         <template #actions>
           <button class="btn btn-primary" @click="showModal = true">+ Group</button>
@@ -13,12 +13,12 @@
       <!-- Search and Filters -->
       <FilterBar
         v-model:searchQuery="searchQuery"
-        v-model:filter-gender="filterGender"
-        v-model:filter-age-range="filterAgeRange"
+        v-model:filter-type="filterType"
+        v-model:filter-session="filterSession"
         v-model:filter-label="filterLabel"
         :filters="groupsFilters"
         :filtered-count="filteredGroups.length"
-        :total-count="groupsStore.camperGroups.length"
+        :total-count="groupsStore.groups.length"
         search-placeholder="Search groups..."
         @clear="clearFilters"
       >
@@ -34,33 +34,22 @@
           :key="group.id"
           :group="group"
           :campers-count="getCampersCount(group.id)"
+          :staff-count="getStaffCount(group.id)"
           @click="selectGroup(group.id)"
-        >
-          <template #filters>
-            <span v-if="group.filters.gender" class="filter-tag">
-              <strong>Gender:</strong> {{ formatGender(group.filters.gender) }}
-            </span>
-            <span v-if="group.filters.ageMin !== undefined || group.filters.ageMax !== undefined" class="filter-tag">
-              <strong>Age:</strong> {{ formatAgeRange(group.filters.ageMin, group.filters.ageMax) }}
-            </span>
-            <span v-if="group.filters.hasAllergies !== undefined" class="filter-tag">
-              <strong>Allergies:</strong> {{ group.filters.hasAllergies ? 'Has allergies' : 'No allergies' }}
-            </span>
-          </template>
-        </GroupCard>
+        />
 
         <EmptyState
-          v-if="filteredGroups.length === 0 && groupsStore.camperGroups.length === 0"
+          v-if="filteredGroups.length === 0 && groupsStore.groups.length === 0"
           type="empty"
           title="No Groups Yet"
-          message="Create your first camper group to organize and manage campers more efficiently."
+          message="Create your first group to organize campers and staff efficiently."
           action-text="Group"
           icon-name="FolderOpen"
           @action="showModal = true"
         />
 
         <EmptyState
-          v-if="filteredGroups.length === 0 && groupsStore.camperGroups.length > 0"
+          v-if="filteredGroups.length === 0 && groupsStore.groups.length > 0"
           type="no-results"
           title="No Groups Found"
           message="No groups match your current filters. Try adjusting your search criteria."
@@ -88,27 +77,34 @@
           </div>
         </template>
         
-        <template #cell-description="{ item }">
-          <span class="text-secondary">{{ item.description || 'No description' }}</span>
-        </template>
-        
-        <template #cell-criteria="{ item }">
-          <div class="criteria-tags">
-            <span v-if="item.filters.gender" class="badge badge-sm badge-primary">
-              {{ formatGender(item.filters.gender) }}
-            </span>
-            <span v-if="item.filters.ageMin !== undefined || item.filters.ageMax !== undefined" class="badge badge-sm badge-primary">
-              {{ formatAgeRange(item.filters.ageMin, item.filters.ageMax) }}
-            </span>
-            <span v-if="item.filters.hasAllergies !== undefined" class="badge badge-sm badge-warning">
-              {{ item.filters.hasAllergies ? 'Allergies' : 'No allergies' }}
-            </span>
-            <span v-if="!hasAnyFilters(item.filters)" class="text-secondary text-sm">All campers</span>
+        <template #cell-type="{ item }">
+          <div class="type-badges">
+            <span v-if="isNestedGroup(item)" class="badge badge-sm badge-info">Nested</span>
+            <span v-else-if="hasAutoAssignedCampers(item)" class="badge badge-sm badge-primary">Auto Campers</span>
+            <span v-else-if="hasManualCampers(item)" class="badge badge-sm badge-primary">Manual Campers</span>
+            <span v-else class="badge badge-sm badge-secondary">Empty</span>
+            
+            <span v-if="item.housingRoomId" class="badge badge-sm badge-secondary">Housing</span>
           </div>
         </template>
         
-        <template #cell-campers="{ item }">
-          <span class="camper-count">{{ getCampersCount(item.id) }}</span>
+        <template #cell-members="{ item }">
+          <div class="members-counts">
+            <span v-if="getCampersCount(item.id) > 0" class="count-badge camper-count">
+              {{ getCampersCount(item.id) }} campers
+            </span>
+            <span v-if="getStaffCount(item.id) > 0" class="count-badge staff-count">
+              {{ getStaffCount(item.id) }} staff
+            </span>
+            <span v-if="getCampersCount(item.id) === 0 && getStaffCount(item.id) === 0" class="text-secondary text-sm">
+              No members
+            </span>
+          </div>
+        </template>
+        
+        <template #cell-session="{ item }">
+          <span v-if="item.sessionId" class="text-secondary">{{ getSessionName(item.sessionId) }}</span>
+          <span v-else class="text-secondary text-sm">-</span>
         </template>
         
         <template #cell-actions="{ item }">
@@ -123,43 +119,25 @@
         :show="!!selectedGroupId"
         :group="selectedGroup"
         :campers="groupCampers"
+        :staff="groupStaff"
         @close="selectedGroupId = null"
         @edit="editGroup"
         @delete="deleteGroupConfirm"
-      >
-        <template #campers-list>
-          <div v-if="groupCampers.length > 0" class="campers-list">
-            <div 
-              v-for="camper in groupCampers" 
-              :key="camper.id"
-              class="camper-item"
-            >
-              <div class="camper-avatar-sm">
-                {{ camper.firstName.charAt(0) }}{{ camper.lastName.charAt(0) }}
-              </div>
-              <div class="camper-info">
-                <div class="camper-name">{{ camper.firstName }} {{ camper.lastName }}</div>
-                <div class="camper-meta text-sm text-secondary">
-                  Age {{ camper.age }} • {{ formatGender(camper.gender) }}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div v-else class="text-secondary">
-            No campers match the current filter criteria.
-          </div>
-        </template>
-      </GroupDetailModal>
+      />
 
       <!-- Add/Edit Group Modal -->
       <GroupFormModal
         :show="showModal"
         :is-editing="!!editingGroupId"
         :form-data="formData"
-        :preview-count="getPreviewCount()"
-        :family-groups="familyGroupsStore.familyGroups"
         :campers="campersStore.campers"
+        :staff-members="staffMembersStore.staffMembers"
+        :groups="groupsStore.groups"
         :labels="labelsStore.labels"
+        :sessions="sessionsStore.sessions"
+        :housing-rooms="housingRoomsStore.housingRooms"
+        :certifications="certificationsStore.certifications"
+        :editing-group-id="editingGroupId"
         @close="closeModal"
         @save="saveGroup"
       />
@@ -169,7 +147,7 @@
         :show="showConfirmModal"
         title="Delete Group"
         :message="`Are you sure you want to delete the group '${groupToDelete?.name}'?`"
-        details="This will not delete any campers, only the group definition."
+        details="This action cannot be undone. The group will be permanently deleted."
         confirm-text="Delete"
         :danger-mode="true"
         @confirm="handleConfirmDelete"
@@ -181,37 +159,40 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useGroupsStore, useCampersStore, useLabelsStore, useColorsStore, useFamilyGroupsStore } from '@/stores';
-import { format } from 'date-fns';
-import type { Camper, CamperGroup, CamperGroupFilter } from '@/types';
+import { 
+  useGroupsStore, 
+  useCampersStore, 
+  useStaffMembersStore,
+  useLabelsStore, 
+  useColorsStore, 
+  useSessionsStore,
+  useHousingRoomsStore,
+  useCertificationsStore
+} from '@/stores';
+import type { Group, Camper, StaffMember } from '@/types';
 import ViewHeader from '@/components/ViewHeader.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import ColorIndicator from '@/components/ColorIndicator.vue';
 import GroupCard from '@/components/cards/GroupCard.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
-import ColorPicker from '@/components/ColorPicker.vue';
 import FilterBar, { type Filter } from '@/components/FilterBar.vue';
 import DataTable from '@/components/DataTable.vue';
 import ViewToggle from '@/components/ViewToggle.vue';
-import Autocomplete from '@/components/Autocomplete.vue';
-import InfoTooltip from '@/components/InfoTooltip.vue';
 import GroupDetailModal from '@/components/modals/GroupDetailModal.vue';
 import GroupFormModal from '@/components/modals/GroupFormModal.vue';
+import { useToast } from '@/composables/useToast';
 
 export default defineComponent({
-  name: 'Groups',
+  name: 'GroupsNew',
   components: {
     ViewHeader,
     EmptyState,
     ColorIndicator,
     GroupCard,
     ConfirmModal,
-    ColorPicker,
     FilterBar,
     DataTable,
     ViewToggle,
-    Autocomplete,
-    InfoTooltip,
     GroupDetailModal,
     GroupFormModal,
   },
@@ -223,8 +204,8 @@ export default defineComponent({
       showConfirmModal: false,
       groupToDelete: null as { id: string; name: string } | null,
       searchQuery: '',
-      filterGender: '',
-      filterAgeRange: '',
+      filterType: '',
+      filterSession: '',
       filterLabel: '',
       viewMode: 'grid' as 'grid' | 'table',
       currentPage: 1,
@@ -233,25 +214,38 @@ export default defineComponent({
         name: '',
         description: '',
         color: '#6366F1',
-        filters: {
+        sessionId: '',
+        housingRoomId: '',
+        groupIds: [] as string[],
+        camperFilters: {
           ageMin: undefined as number | undefined,
           ageMax: undefined as number | undefined,
           gender: '' as '' | 'male' | 'female',
           hasAllergies: undefined as boolean | undefined,
+          familyGroupIds: [] as string[],
         },
-        familyGroupIds: [] as string[],
+        camperIds: [] as string[],
+        staffFilters: {
+          roles: [] as string[],
+          certificationIds: [] as string[],
+        },
+        staffIds: [] as string[],
         labelIds: [] as string[],
       },
       groupColumns: [
         { key: 'name', label: 'Group Name', width: '200px' },
-        { key: 'description', label: 'Description', width: '250px' },
-        { key: 'criteria', label: 'Filter Criteria', width: '250px' },
-        { key: 'campers', label: 'Campers', width: '100px' },
+        { key: 'type', label: 'Type', width: '180px' },
+        { key: 'members', label: 'Members', width: '180px' },
+        { key: 'session', label: 'Session', width: '150px' },
         { key: 'actions', label: 'Actions', width: '140px' },
       ]
     };
   },
-
+  mounted() {
+    if (this.$route.query.id) {
+      this.selectGroup(this.$route.query.id as string);
+    }
+  },
   computed: {
     groupsStore() {
       return useGroupsStore();
@@ -259,17 +253,47 @@ export default defineComponent({
     campersStore() {
       return useCampersStore();
     },
+    staffMembersStore() {
+      return useStaffMembersStore();
+    },
     labelsStore() {
       return useLabelsStore();
     },
     colorsStore() {
       return useColorsStore();
     },
-    familyGroupsStore() {
-      return useFamilyGroupsStore();
+    sessionsStore() {
+      return useSessionsStore();
+    },
+    housingRoomsStore() {
+      return useHousingRoomsStore();
+    },
+    certificationsStore() {
+      return useCertificationsStore();
     },
     groupsFilters(): Filter[] {
       return [
+        {
+          model: 'filterType',
+          value: this.filterType,
+          placeholder: 'Filter by Type',
+          options: [
+            { label: 'Nested Groups', value: 'nested' },
+            { label: 'Auto-assigned Campers', value: 'auto-campers' },
+            { label: 'Manual Campers', value: 'manual-campers' },
+            { label: 'With Housing', value: 'has-housing' },
+            { label: 'With Session', value: 'has-session' },
+          ],
+        },
+        {
+          model: 'filterSession',
+          value: this.filterSession,
+          placeholder: 'Filter by Session',
+          options: this.sessionsStore.sessions.map(session => ({
+            label: session.name,
+            value: session.id,
+          })),
+        },
         {
           model: 'filterLabel',
           value: this.filterLabel,
@@ -279,74 +303,64 @@ export default defineComponent({
             value: label.id,
           })),
         },
-        {
-          model: 'filterGender',
-          value: this.filterGender,
-          placeholder: 'Filter by Gender',
-          options: [
-            { label: 'Male', value: 'male' },
-            { label: 'Female', value: 'female' },
-          ],
-        },
-        {
-          model: 'filterAgeRange',
-          value: this.filterAgeRange,
-          placeholder: 'Filter by Age Range',
-          options: [
-            { label: '6-8 years', value: '6-8' },
-            { label: '9-11 years', value: '9-11' },
-            { label: '12-14 years', value: '12-14' },
-            { label: '15+ years', value: '15+' },
-          ],
-        },
       ];
     },
-    selectedGroup(): CamperGroup | null {
+    selectedGroup(): Group | null {
       if (!this.selectedGroupId) return null;
-      return this.groupsStore.getCamperGroupById(this.selectedGroupId) || null;
+      return this.groupsStore.getGroupById(this.selectedGroupId) || null;
     },
     groupCampers(): Camper[] {
       if (!this.selectedGroupId) return [];
       return this.groupsStore.getCampersInGroup(this.selectedGroupId);
     },
-    filteredGroups(): CamperGroup[] {
-      let groups: CamperGroup[] = this.groupsStore.camperGroups;
+    groupStaff(): StaffMember[] {
+      if (!this.selectedGroupId) return [];
+      return this.groupsStore.getStaffInGroup(this.selectedGroupId);
+    },
+    filteredGroups(): Group[] {
+      let groups: Group[] = this.groupsStore.groups;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        groups = groups.filter((group: CamperGroup) =>
+        groups = groups.filter((group: Group) =>
           group.name.toLowerCase().includes(query) ||
           (group.description && group.description.toLowerCase().includes(query))
         );
       }
 
+      // Type filter
+      if (this.filterType) {
+        groups = groups.filter((group: Group) => {
+          switch (this.filterType) {
+            case 'nested':
+              return !!(group.groupIds && group.groupIds.length > 0);
+            case 'auto-campers':
+              return !!(group.camperFilters && !group.camperIds);
+            case 'manual-campers':
+              return !!(group.camperIds && group.camperIds.length > 0);
+            case 'has-housing':
+              return !!group.housingRoomId;
+            case 'has-session':
+              return !!group.sessionId;
+            default:
+              return true;
+          }
+        });
+      }
+
+      // Session filter
+      if (this.filterSession) {
+        groups = groups.filter((group: Group) => 
+          group.sessionId === this.filterSession
+        );
+      }
+
       // Label filter
       if (this.filterLabel) {
-        groups = groups.filter((group: CamperGroup) => 
+        groups = groups.filter((group: Group) => 
           group.labelIds && group.labelIds.includes(this.filterLabel)
         );
-      }
-
-      // Gender filter
-      if (this.filterGender) {
-        groups = groups.filter((group: CamperGroup) => 
-          group.filters.gender === this.filterGender
-        );
-      }
-
-      // Age range filter
-      if (this.filterAgeRange) {
-        const [min, max] = this.filterAgeRange === '15+' 
-          ? [15, 999] 
-          : this.filterAgeRange.split('-').map(Number);
-        
-        groups = groups.filter((group: CamperGroup) => {
-          // Check if the group's age range overlaps with the filter
-          const groupMin = group.filters.ageMin ?? 0;
-          const groupMax = group.filters.ageMax ?? 999;
-          return !(groupMax < min || groupMin > max);
-        });
       }
 
       return groups;
@@ -356,11 +370,11 @@ export default defineComponent({
   methods: {
     clearFilters(): void {
       this.searchQuery = '';
-      this.filterGender = '';
-      this.filterAgeRange = '';
+      this.filterType = '';
+      this.filterSession = '';
       this.filterLabel = '';
     },
-    getItemColor(item: CamperGroup): string {
+    getItemColor(item: Group): string {
       if (item.colorId) {
         const color = this.colorsStore.getColorById(item.colorId);
         return color?.hexValue || '#6366F1';
@@ -370,63 +384,21 @@ export default defineComponent({
     getCampersCount(groupId: string): number {
       return this.groupsStore.getCampersInGroup(groupId).length;
     },
-    formatGender(gender: string): string {
-      return gender.charAt(0).toUpperCase() + gender.slice(1);
+    getStaffCount(groupId: string): number {
+      return this.groupsStore.getStaffInGroup(groupId).length;
     },
-    formatAgeRange(min?: number, max?: number): string {
-      if (min !== undefined && max !== undefined) {
-        return `${min}-${max} years`;
-      } else if (min !== undefined) {
-        return `${min}+ years`;
-      } else if (max !== undefined) {
-        return `Up to ${max} years`;
-      }
-      return 'Any age';
+    isNestedGroup(group: Group): boolean {
+      return !!(group.groupIds && group.groupIds.length > 0);
     },
-    formatDate(dateStr: string): string {
-      return format(new Date(dateStr), 'MMMM d, yyyy h:mm a');
+    hasAutoAssignedCampers(group: Group): boolean {
+      return !!(group.camperFilters && !group.camperIds);
     },
-    hasAnyFilters(filters: CamperGroupFilter): boolean {
-      return !!(
-        filters.ageMin !== undefined ||
-        filters.ageMax !== undefined ||
-        filters.gender ||
-        filters.hasAllergies !== undefined
-      );
+    hasManualCampers(group: Group): boolean {
+      return !!(group.camperIds && group.camperIds.length > 0);
     },
-    getPreviewCount(): number {
-      // Determine base set of campers to filter
-      let baseCampers: Camper[];
-      
-      if (this.formData.familyGroupIds && this.formData.familyGroupIds.length > 0) {
-        // If family groups are selected, only consider campers from those family groups
-        baseCampers = this.campersStore.campers.filter(camper => 
-          camper.familyGroupId && this.formData.familyGroupIds.includes(camper.familyGroupId)
-        );
-      } else {
-        // If no family groups selected, consider all campers
-        baseCampers = this.campersStore.campers;
-      }
-
-      // Create a temporary filter to preview count
-      const filters: CamperGroupFilter = {
-        ageMin: this.formData.filters.ageMin,
-        ageMax: this.formData.filters.ageMax,
-        gender: this.formData.filters.gender || undefined,
-        hasAllergies: this.formData.filters.hasAllergies,
-      };
-
-      // Apply filters to the base set of campers
-      return baseCampers.filter(camper => {
-        if (filters.ageMin !== undefined && camper.age < filters.ageMin) return false;
-        if (filters.ageMax !== undefined && camper.age > filters.ageMax) return false;
-        if (filters.gender && camper.gender !== filters.gender) return false;
-        if (filters.hasAllergies !== undefined) {
-          const hasAllergies = camper.allergies && camper.allergies.length > 0;
-          if (filters.hasAllergies !== hasAllergies) return false;
-        }
-        return true;
-      }).length;
+    getSessionName(sessionId: string): string {
+      const session = this.sessionsStore.sessions.find(s => s.id === sessionId);
+      return session?.name || 'Unknown Session';
     },
     selectGroup(groupId: string): void {
       this.selectedGroupId = groupId;
@@ -435,17 +407,28 @@ export default defineComponent({
       if (!this.selectedGroup) return;
       
       this.editingGroupId = this.selectedGroup.id;
+      
+      // Map the group to form data
       this.formData = {
         name: this.selectedGroup.name,
         description: this.selectedGroup.description || '',
         color: this.getItemColor(this.selectedGroup),
-        filters: {
-          ageMin: this.selectedGroup.filters.ageMin,
-          ageMax: this.selectedGroup.filters.ageMax,
-          gender: this.selectedGroup.filters.gender || '',
-          hasAllergies: this.selectedGroup.filters.hasAllergies,
+        sessionId: this.selectedGroup.sessionId || '',
+        housingRoomId: this.selectedGroup.housingRoomId || '',
+        groupIds: this.selectedGroup.groupIds || [],
+        camperFilters: {
+          ageMin: this.selectedGroup.camperFilters?.ageMin,
+          ageMax: this.selectedGroup.camperFilters?.ageMax,
+          gender: this.selectedGroup.camperFilters?.gender || '',
+          hasAllergies: this.selectedGroup.camperFilters?.hasAllergies,
+          familyGroupIds: this.selectedGroup.camperFilters?.familyGroupIds || [],
         },
-        familyGroupIds: this.selectedGroup.familyGroupIds || [],
+        camperIds: this.selectedGroup.camperIds || [],
+        staffFilters: {
+          roles: this.selectedGroup.staffFilters?.roles || [],
+          certificationIds: this.selectedGroup.staffFilters?.certificationIds || [],
+        },
+        staffIds: this.selectedGroup.staffIds || [],
         labelIds: this.selectedGroup.labelIds || [],
       };
       
@@ -453,44 +436,92 @@ export default defineComponent({
       this.showModal = true;
     },
     async saveGroup(formData: typeof this.formData): Promise<void> {
-      const filters: CamperGroupFilter = {
-        ageMin: formData.filters.ageMin,
-        ageMax: formData.filters.ageMax,
-        gender: formData.filters.gender || undefined,
-        hasAllergies: formData.filters.hasAllergies,
-      };
-
+      const toast = useToast();
+      
       // Find or create colorId from the selected color
       let colorId = this.colorsStore.colors.find(c => c.hexValue === formData.color)?.id;
       if (!colorId && this.colorsStore.colors.length > 0) {
         colorId = this.colorsStore.colors[0].id; // fallback to first color
       }
 
-      const groupData: CamperGroup = {
+      // Build the group object
+      const groupData: Group = {
         id: this.editingGroupId || `group-${Date.now()}`,
         name: formData.name,
         description: formData.description || undefined,
         colorId,
-        filters,
-        familyGroupIds: formData.familyGroupIds.length > 0 ? formData.familyGroupIds : undefined,
+        sessionId: formData.sessionId || undefined,
+        housingRoomId: formData.housingRoomId || undefined,
+        groupIds: formData.groupIds.length > 0 ? formData.groupIds : undefined,
+        camperFilters: undefined,
+        camperIds: undefined,
+        staffFilters: undefined,
+        staffIds: undefined,
         labelIds: formData.labelIds && formData.labelIds.length > 0 ? formData.labelIds : undefined,
         createdAt: this.editingGroupId 
-          ? this.groupsStore.getCamperGroupById(this.editingGroupId)?.createdAt || new Date().toISOString()
+          ? this.groupsStore.getGroupById(this.editingGroupId)?.createdAt || new Date().toISOString()
           : new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
+      // Add camper assignment based on type
+      if (formData.camperIds.length > 0) {
+        groupData.camperIds = formData.camperIds;
+      } else if (this.hasAnyCamperFilters(formData.camperFilters)) {
+        groupData.camperFilters = {
+          ageMin: formData.camperFilters.ageMin,
+          ageMax: formData.camperFilters.ageMax,
+          gender: formData.camperFilters.gender || undefined,
+          hasAllergies: formData.camperFilters.hasAllergies,
+          familyGroupIds: formData.camperFilters.familyGroupIds?.length > 0 ? formData.camperFilters.familyGroupIds : undefined,
+        };
+      }
+
+      // Add staff assignment based on type
+      if (formData.staffIds.length > 0) {
+        groupData.staffIds = formData.staffIds;
+      } else if (this.hasAnyStaffFilters(formData.staffFilters)) {
+        groupData.staffFilters = {
+          roles: formData.staffFilters.roles.length > 0 ? formData.staffFilters.roles : undefined,
+          certificationIds: formData.staffFilters.certificationIds.length > 0 ? formData.staffFilters.certificationIds : undefined,
+        };
+      }
+
+      // Validate the group
+      const validation = this.groupsStore.validateGroup(groupData);
+      if (!validation.valid) {
+        validation.errors.forEach(error => toast.error(error));
+        return;
+      }
+
       if (this.editingGroupId) {
-        await this.groupsStore.updateCamperGroup(groupData);
+        await this.groupsStore.updateGroup(groupData);
+        toast.success('Group updated successfully');
       } else {
-        await this.groupsStore.addCamperGroup(groupData);
+        await this.groupsStore.addGroup(groupData);
+        toast.success('Group created successfully');
       }
 
       this.closeModal();
     },
+    hasAnyCamperFilters(filters: typeof this.formData.camperFilters): boolean {
+      return !!(
+        filters.ageMin !== undefined ||
+        filters.ageMax !== undefined ||
+        filters.gender ||
+        filters.hasAllergies !== undefined ||
+        (filters.familyGroupIds && filters.familyGroupIds.length > 0)
+      );
+    },
+    hasAnyStaffFilters(filters: typeof this.formData.staffFilters): boolean {
+      return !!(
+        filters.roles.length > 0 ||
+        filters.certificationIds.length > 0
+      );
+    },
     deleteGroupConfirm(): void {
       if (!this.selectedGroupId) return;
-      const group = this.groupsStore.getCamperGroupById(this.selectedGroupId);
+      const group = this.groupsStore.getGroupById(this.selectedGroupId);
       if (!group) return;
       
       this.groupToDelete = {
@@ -502,7 +533,10 @@ export default defineComponent({
     async handleConfirmDelete(): Promise<void> {
       if (!this.groupToDelete) return;
       
-      await this.groupsStore.deleteCamperGroup(this.groupToDelete.id);
+      const toast = useToast();
+      await this.groupsStore.deleteGroup(this.groupToDelete.id);
+      toast.success('Group deleted successfully');
+      
       this.selectedGroupId = null;
       this.showConfirmModal = false;
       this.groupToDelete = null;
@@ -518,13 +552,22 @@ export default defineComponent({
         name: '',
         description: '',
         color: '#6366F1',
-        filters: {
+        sessionId: '',
+        housingRoomId: '',
+        groupIds: [],
+        camperFilters: {
           ageMin: undefined,
           ageMax: undefined,
           gender: '',
           hasAllergies: undefined,
+          familyGroupIds: [],
         },
-        familyGroupIds: [],
+        camperIds: [],
+        staffFilters: {
+          roles: [],
+          certificationIds: [],
+        },
+        staffIds: [],
         labelIds: [],
       };
     }
@@ -544,167 +587,8 @@ export default defineComponent({
   gap: 1.5rem;
 }
 
-.filter-tag {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  background: var(--background-secondary);
-  border-radius: var(--radius);
-  font-size: 0.875rem;
-}
-
-.filter-tag strong {
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
 .empty-state {
   grid-column: 1 / -1;
-  text-align: center;
-  padding: 4rem 2rem;
-}
-
-.empty-state svg {
-  margin: 0 auto 1.5rem;
-  color: var(--text-secondary);
-  opacity: 0.5;
-}
-
-.empty-state h3 {
-  margin-bottom: 0.5rem;
-}
-
-.empty-state p {
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
-}
-
-.detail-section {
-  margin-bottom: 1.5rem;
-}
-
-.detail-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 0.75rem;
-}
-
-.campers-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.camper-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background: var(--background-secondary);
-  border-radius: var(--radius);
-}
-
-.camper-avatar-sm {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.camper-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.camper-name {
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.camper-meta {
-  margin-top: 0.25rem;
-}
-
-.modal-large {
-  max-width: 700px;
-}
-
-.form-divider {
-  margin: 1.5rem 0;
-  text-align: center;
-  position: relative;
-}
-
-.form-divider::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--border-color);
-}
-
-.form-divider span {
-  position: relative;
-  background: var(--background);
-  padding: 0 1rem;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.color-picker {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-height: 200px;
-  overflow-y: auto;
-  padding: 0.5rem;
-  background: var(--background-secondary);
-  border-radius: var(--radius);
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-}
-
-.checkbox-label input[type="checkbox"] {
-  cursor: pointer;
-}
-
-.form-info {
-  padding: 1rem;
-  background: var(--info-bg, #EFF6FF);
-  border: 1px solid var(--info-border, #BFDBFE);
-  border-radius: var(--radius);
-  color: var(--info-text, #1E40AF);
-  font-size: 0.875rem;
-}
-
-.grid-cols-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
 }
 
 /* Table View Styles */
@@ -714,22 +598,39 @@ export default defineComponent({
   gap: 0.75rem;
 }
 
-.color-indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
 .group-name-text {
   font-weight: 500;
   color: var(--text-primary);
 }
 
-.criteria-tags {
+.type-badges {
   display: flex;
   flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.members-counts {
+  display: flex;
+  flex-direction: column;
   gap: 0.25rem;
+}
+
+.count-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.camper-count {
+  background: var(--primary-color);
+  color: white;
+}
+
+.staff-count {
+  background: #10B981;
+  color: white;
 }
 
 .badge-sm {
@@ -737,18 +638,14 @@ export default defineComponent({
   padding: 0.25rem 0.5rem;
 }
 
-.camper-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 28px;
-  height: 28px;
-  padding: 0 8px;
-  background: var(--primary-color);
+.badge-info {
+  background-color: #3B82F6;
   color: white;
-  border-radius: 14px;
-  font-size: 0.875rem;
-  font-weight: 600;
+}
+
+.badge-secondary {
+  background-color: #64748B;
+  color: white;
 }
 </style>
 

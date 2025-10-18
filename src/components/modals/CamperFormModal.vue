@@ -53,15 +53,15 @@
         <div class="form-group">
           <label class="form-label">Family Group</label>
           <Autocomplete
-            v-model="localFormData.familyGroupId"
-            :options="availableFamilyGroupOptions"
+            v-model="localFormData.groupId"
+            :options="availableGroupOptions"
             placeholder="Select a family group..."
             :disabled="!localFormData.sessionId"
           />
           <div v-if="!localFormData.sessionId" class="text-xs text-secondary mt-1">
             Please select a session first
           </div>
-          <div v-else-if="availableFamilyGroupOptions.length === 0" class="text-xs text-warning mt-1">
+          <div v-else-if="availableGroupOptions.length === 0" class="text-xs text-warning mt-1">
             No family groups available for this session
           </div>
         </div>
@@ -91,7 +91,7 @@
 import { defineComponent, type PropType } from 'vue';
 import BaseModal from '@/components/BaseModal.vue';
 import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import type { FamilyGroup, CampSession } from '@/types';
+import type { CampSession, Group } from '@/types';
 
 interface CamperFormData {
   firstName: string;
@@ -102,7 +102,7 @@ interface CamperFormData {
   allergies: string[];
   medicalNotes: string;
   sessionId?: string;
-  familyGroupId?: string;
+  groupId?: string;
 }
 
 export default defineComponent({
@@ -124,8 +124,8 @@ export default defineComponent({
       type: Object as PropType<CamperFormData>,
       required: true
     },
-    familyGroups: {
-      type: Array as PropType<FamilyGroup[]>,
+    groups: {
+      type: Array as PropType<Group[]>,
       required: true
     },
     sessions: {
@@ -155,13 +155,13 @@ export default defineComponent({
         };
       });
     },
-    availableFamilyGroupOptions(): AutocompleteOption[] {
+    availableGroupOptions(): AutocompleteOption[] {
       // Only show family groups that match the selected session
       if (!this.localFormData.sessionId) {
         return [];
       }
       
-      const filteredGroups = this.familyGroups.filter(
+      const filteredGroups = this.groups.filter(
         group => group.sessionId === this.localFormData.sessionId
       );
       
@@ -181,10 +181,10 @@ export default defineComponent({
     },
     // When session changes, clear family group if it doesn't match
     'localFormData.sessionId'(newSessionId: string, oldSessionId: string) {
-      if (newSessionId !== oldSessionId && this.localFormData.familyGroupId) {
-        const currentGroup = this.familyGroups.find(g => g.id === this.localFormData.familyGroupId);
+      if (newSessionId !== oldSessionId && this.localFormData.groupId) {
+        const currentGroup = this.groups.find(g => g.id === this.localFormData.groupId);
         if (currentGroup && currentGroup.sessionId !== newSessionId) {
-          this.localFormData.familyGroupId = undefined;
+          this.localFormData.groupId = undefined;
         }
       }
     }

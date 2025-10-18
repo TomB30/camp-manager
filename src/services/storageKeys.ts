@@ -9,8 +9,7 @@ export const STORAGE_KEYS = {
   LOCATIONS: 'camp_locations',
   HOUSING_ROOMS: 'camp_housing_rooms',
   EVENTS: 'camp_events',
-  CAMPER_GROUPS: 'camp_camper_groups',
-  FAMILY_GROUPS: 'camp_family_groups',
+  GROUPS: 'camp_groups', // Unified groups
   PROGRAMS: 'camp_programs',
   ACTIVITIES: 'camp_activities',
   AREAS: 'camp_areas',

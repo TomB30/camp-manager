@@ -15,27 +15,26 @@
           {{ locationName }}
         </span>
       </div>
-      <div v-if="familyGroups.length > 0" class="assigned-groups mt-2">
+      <div v-if="groups.length > 0" class="assigned-groups mt-2">
         <div class="text-xs text-secondary mb-1">Family Groups:</div>
         <div class="flex gap-1 flex-wrap">
           <span 
-            v-for="familyGroup in familyGroups" 
-            :key="familyGroup.id" 
+            v-for="group in groups" 
+            :key="group.id" 
             class="badge badge-success badge-sm"
           >
-            {{ familyGroup.name }}
+            {{ group.name }}
           </span>
         </div>
       </div>
-      <div v-else class="text-xs text-secondary mt-2">No family groups assigned</div>
+      <div v-else class="text-xs text-secondary mt-2">No groups assigned</div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import type { HousingRoom } from '@/types';
-import type { FamilyGroup } from '@/types';
+import type { HousingRoom, Group } from '@/types';
 import { useAreasStore } from '@/stores';
 import Icon from '../Icon.vue';
 
@@ -49,8 +48,8 @@ export default defineComponent({
       type: Object as PropType<HousingRoom>,
       required: true,
     },
-    familyGroups: {
-      type: Array as PropType<FamilyGroup[]>,
+    groups: {
+      type: Array as PropType<Group[]>,
       default: () => [],
     },
   },

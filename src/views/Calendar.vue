@@ -116,7 +116,7 @@
       :form-data="eventFormData"
       :rooms="locationsStore.locations"
       :staff-members="staffMembersStore.staffMembers"
-      :camper-groups="groupsStore.camperGroups"
+      :groups="groupsStore.groups"
       :campers="campersStore.campers"
       @close="closeEventModal"
       @save="saveEvent"
@@ -138,7 +138,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useEventsStore, useCampersStore, useStaffMembersStore, useLocationsStore, useColorsStore, useGroupsStore, useProgramsStore, useFamilyGroupsStore } from '@/stores';
+import { useEventsStore, useCampersStore, useStaffMembersStore, useLocationsStore, useColorsStore, useGroupsStore, useProgramsStore } from '@/stores';
 import { useToastStore } from '@/stores/toastStore';
 import { format, addDays, startOfWeek, addWeeks, addMonths } from 'date-fns';
 import ConfirmModal from '@/components/ConfirmModal.vue';
@@ -230,9 +230,6 @@ export default defineComponent({
     groupsStore() {
       return useGroupsStore();
     },
-    familyGroupsStore() {
-      return useFamilyGroupsStore();
-    },
     programsStore() {
       return useProgramsStore();
     },
@@ -282,12 +279,8 @@ export default defineComponent({
           value: this.filterGroup,
           placeholder: 'Filter by Group',
           options: [
-            ...this.groupsStore.camperGroups.map(group => ({
+            ...this.groupsStore.groups.map(group => ({
               label: `${group.name} (Camper Group)`,
-              value: group.id,
-            })),
-            ...this.familyGroupsStore.familyGroups.map(group => ({
-              label: `${group.name} (Family Group)`,
               value: group.id,
             })),
           ],

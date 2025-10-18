@@ -59,6 +59,9 @@ export type CampColor = components["schemas"]["CampColor"];
 // Camp session types
 export type CampSession = components["schemas"]["CampSession"];
 
+// Unified Group types (new)
+export type Group = components["schemas"]["Group"];
+export type StaffFilter = components["schemas"]["StaffFilter"];
 
 // Re-export the components type for advanced usage
 export type { components };

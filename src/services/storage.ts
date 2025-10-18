@@ -113,6 +113,7 @@ class StorageService {
     rooms?: any[];
     sleepingRooms?: any[];
     events?: any[];
+    groups?: any[];
     camperGroups?: any[];
     familyGroups?: any[];
     programs?: any[];
@@ -140,11 +141,8 @@ class StorageService {
     if (data.events) {
       localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(data.events));
     }
-    if (data.camperGroups) {
-      localStorage.setItem(STORAGE_KEYS.CAMPER_GROUPS, JSON.stringify(data.camperGroups));
-    }
-    if (data.familyGroups) {
-      localStorage.setItem(STORAGE_KEYS.FAMILY_GROUPS, JSON.stringify(data.familyGroups));
+    if (data.groups) {
+      localStorage.setItem(STORAGE_KEYS.GROUPS, JSON.stringify(data.groups));
     }
     if (data.programs) {
       localStorage.setItem(STORAGE_KEYS.PROGRAMS, JSON.stringify(data.programs));

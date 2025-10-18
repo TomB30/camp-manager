@@ -787,6 +787,60 @@ export interface components {
       /** Format: date-time */
       updatedAt?: string;
     };
+    StaffFilter: {
+      /** @description Filter by staff roles */
+      roles?: string[];
+      /** @description Filter by required certifications */
+      certificationIds?: string[];
+      /** @description Minimum age for staff members */
+      minAge?: number;
+      /** @description Maximum age for staff members */
+      maxAge?: number;
+    };
+    Group: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      description?: string;
+      /** Format: uuid */
+      colorId?: string;
+      /**
+       * Format: uuid
+       * @description Optional session this group belongs to
+       */
+      sessionId?: string;
+      /**
+       * Format: uuid
+       * @description Optional housing room assignment for this group
+       */
+      housingRoomId?: string;
+      /** @description Filter criteria to automatically match campers */
+      camperFilters?: {
+        ageMin?: number;
+        ageMax?: number;
+        /** @enum {string} */
+        gender?: "male" | "female";
+        hasAllergies?: boolean;
+        /** Format: uuid */
+        sessionId?: string;
+        /** @description Filter by specific family groups */
+        familyGroupIds?: string[];
+      };
+      /** @description Manually selected camper IDs (mutually exclusive with camperFilters) */
+      camperIds?: string[];
+      /** @description Filter criteria to automatically match staff members */
+      staffFilters?: components["schemas"]["StaffFilter"];
+      /** @description Manually selected staff IDs (mutually exclusive with staffFilters) */
+      staffIds?: string[];
+      /** @description Child group IDs for creating groups of groups */
+      groupIds?: string[];
+      /** @description IDs of labels assigned to this group */
+      labelIds?: string[];
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
+    };
     Activity: {
       /** Format: uuid */
       id: string;

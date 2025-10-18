@@ -7,7 +7,6 @@ import { useEventsStore } from './eventsStore';
 import { useLocationsStore } from './locationsStore';
 import { useHousingRoomsStore } from './housingRoomsStore';
 import { useGroupsStore } from './groupsStore';
-import { useFamilyGroupsStore } from './familyGroupsStore';
 import { useProgramsStore } from './programsStore';
 import { useActivitiesStore } from './activitiesStore';
 import { useAreasStore } from './areasStore';
@@ -39,7 +38,6 @@ export const useMainStore = defineStore('main', {
         const locationsStore = useLocationsStore();
         const housingRoomsStore = useHousingRoomsStore();
         const groupsStore = useGroupsStore();
-        const familyGroupsStore = useFamilyGroupsStore();
         const programsStore = useProgramsStore();
         const activitiesStore = useActivitiesStore();
         const areasStore = useAreasStore();
@@ -54,8 +52,7 @@ export const useMainStore = defineStore('main', {
           eventsStore.loadEvents(),
           locationsStore.loadLocations(),
           housingRoomsStore.loadHousingRooms(),
-          groupsStore.loadCamperGroups(),
-          familyGroupsStore.loadFamilyGroups(),
+          groupsStore.loadGroups(),
           programsStore.loadPrograms(),
           activitiesStore.loadActivities(),
           areasStore.loadAreas(),

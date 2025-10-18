@@ -330,7 +330,6 @@ import {
   useCampersStore,
   useStaffMembersStore,
   useGroupsStore,
-  useFamilyGroupsStore,
   useLocationsStore,
   useProgramsStore,
   useActivitiesStore,
@@ -346,8 +345,8 @@ import Autocomplete, {
 import ColorPicker from "@/components/ColorPicker.vue";
 import SelectionList from "@/components/SelectionList.vue";
 import NumberInput from "@/components/NumberInput.vue";
-import type { Location, Camper, StaffMember } from "@/types";
-import type { CamperGroup, FamilyGroup, Certification } from "@/types";
+import type { Location, Camper, StaffMember, Group } from "@/types";
+import type { Certification } from "@/types";
 import {
   type RecurrenceData,
   type DayOfWeek,
@@ -409,8 +408,8 @@ export default defineComponent({
       type: Array as PropType<StaffMember[]>,
       required: true,
     },
-    camperGroups: {
-      type: Array as PropType<CamperGroup[]>,
+    groups: {
+      type: Array as PropType<Group[]>,
       required: true,
     },
     campers: {
@@ -424,7 +423,6 @@ export default defineComponent({
     const campersStore = useCampersStore();
     const staffMembersStore = useStaffMembersStore();
     const groupsStore = useGroupsStore();
-    const familyGroupsStore = useFamilyGroupsStore();
     const locationsStore = useLocationsStore();
     const programsStore = useProgramsStore();
     const activitiesStore = useActivitiesStore();
@@ -436,7 +434,6 @@ export default defineComponent({
       campersStore,
       staffMembersStore,
       groupsStore,
-      familyGroupsStore,
       locationsStore,
       programsStore,
       activitiesStore,
@@ -505,21 +502,8 @@ export default defineComponent({
 
       return optionsWithGroups;
     },
-    allGroups(): Array<CamperGroup | FamilyGroup> {
-      // Combine camper groups and family groups into a single array
-      const combined: Array<CamperGroup | FamilyGroup> = [];
-
-      // Add all camper groups
-      this.camperGroups.forEach((group) => {
-        combined.push(group);
-      });
-
-      // Add all family groups
-      this.familyGroupsStore.familyGroups.forEach((group) => {
-        combined.push(group);
-      });
-
-      return combined;
+    allGroups(): Array<Group> {
+      return this.groups;
     },
     campersInAssignedGroups(): Camper[] {
       if (
@@ -534,18 +518,10 @@ export default defineComponent({
       // Get campers from all assigned groups
       this.localFormData.groupIds.forEach((groupId: string) => {
         // Check if it's a camper group
-        const camperGroup = this.groupsStore.getCamperGroupById(groupId);
-        if (camperGroup) {
-          const groupCampers = this.groupsStore.getCampersInGroup(groupId);
-          groupCampers.forEach((camper) => camperIds.add(camper.id));
-        }
-
-        // Check if it's a family group
-        const familyGroup = this.familyGroupsStore.getFamilyGroupById(groupId);
-        if (familyGroup) {
-          const groupCampers =
-            this.familyGroupsStore.getCampersInFamilyGroup(groupId);
-          groupCampers.forEach((camper) => camperIds.add(camper.id));
+        const group = this.groupsStore.getGroupById(groupId);
+        if (group) {
+          const campers = this.groupsStore.getCampersInGroup(groupId);
+          campers.forEach((camper) => camperIds.add(camper.id));
         }
       });
 
@@ -565,11 +541,12 @@ export default defineComponent({
 
       // Get staff from all assigned family groups
       this.localFormData.groupIds.forEach((groupId: string) => {
-        const familyGroup = this.familyGroupsStore.getFamilyGroupById(groupId);
-        if (familyGroup && familyGroup.staffMemberIds) {
-          familyGroup.staffMemberIds.forEach((staffId) =>
-            staffIds.add(staffId)
-          );
+        const group = this.groupsStore.getGroupById(groupId);
+        if (group && group.staffIds) {
+          group.staffIds.forEach((staffId: string) => staffIds.add(staffId));
+        } else if (group && group.staffFilters) {
+          const staff = this.staffMembersStore.getStaffMembersByFilters(group.staffFilters);
+          staff.forEach((s: StaffMember) => staffIds.add(s.id));
         }
       });
 
@@ -728,57 +705,10 @@ export default defineComponent({
       return "#6366F1";
     },
     getGroupCamperCount(groupId: string): number {
-      const group = this.camperGroups.find((g) => g.id === groupId);
-      if (!group) return 0;
-
-      // Get base campers
-      let baseCampers: Camper[];
-      if (group.familyGroupIds && group.familyGroupIds.length > 0) {
-        baseCampers = this.campers.filter(
-          (c) =>
-            c.familyGroupId && group.familyGroupIds!.includes(c.familyGroupId)
-        );
-      } else {
-        baseCampers = this.campers;
-      }
-
-      // Apply filters
-      return baseCampers.filter((camper) => {
-        if (
-          group.filters.ageMin !== undefined &&
-          camper.age < group.filters.ageMin
-        )
-          return false;
-        if (
-          group.filters.ageMax !== undefined &&
-          camper.age > group.filters.ageMax
-        )
-          return false;
-        if (group.filters.gender && camper.gender !== group.filters.gender)
-          return false;
-        if (group.filters.hasAllergies !== undefined) {
-          const hasAllergies = camper.allergies && camper.allergies.length > 0;
-          if (group.filters.hasAllergies !== hasAllergies) return false;
-        }
-        return true;
-      }).length;
+      return this.groupsStore.getCampersInGroup(groupId).length;
     },
     getTotalCampersFromGroups(): number {
       return this.campersInAssignedGroups.length;
-    },
-    getFamilyGroupColor(group: FamilyGroup): string {
-      if (group.colorId) {
-        const color = this.colorsStore.getColorById(group.colorId);
-        return color?.hexValue || "#F59E0B";
-      }
-      return "#F59E0B";
-    },
-    getFamilyGroupCamperCount(groupId: string): number {
-      return this.familyGroupsStore.getCampersInFamilyGroup(groupId).length;
-    },
-    getFamilyGroupStaffCount(groupId: string): number {
-      const group = this.familyGroupsStore.getFamilyGroupById(groupId);
-      return group?.staffMemberIds?.length || 0;
     },
     getCamperLabel(camper: Camper): string {
       return `${camper.firstName} ${camper.lastName} (Age: ${camper.age})`;
@@ -822,33 +752,18 @@ export default defineComponent({
         value: cert.id,
       };
     },
-    getGroupLabel(group: CamperGroup | FamilyGroup): string {
+    getGroupLabel(group: Group): string {
       // Check if it's a camper group or family group
-      const camperGroup = this.groupsStore.getCamperGroupById(group.id);
-      if (camperGroup) {
-        const camperCount = this.groupsStore.getCampersInGroup(group.id).length;
-        return `${group.name} (${camperCount} campers)`;
-      }
-
-      // It's a family group
-      const familyGroup = this.familyGroupsStore.getFamilyGroupById(group.id);
-      if (familyGroup) {
-        const camperCount = this.familyGroupsStore.getCampersInFamilyGroup(
-          group.id
-        ).length;
-        const staffCount = familyGroup.staffMemberIds?.length || 0;
-        return `${group.name} (${camperCount} campers, ${staffCount} staff)`;
-      }
-
-      return group.name;
+      const camperCount = this.groupsStore.getCampersInGroup(group.id).length;
+      return `${group.name} (${camperCount} campers)`;
     },
-    getGroupInitials(group: CamperGroup | FamilyGroup): string {
+    getGroupInitials(group: Group): string {
       // Use first two letters of the group name
       return group.name.substring(0, 2).toUpperCase();
     },
-    getGroupOption(group: CamperGroup | FamilyGroup): AutocompleteOption {
+    getGroupOption(group: Group): AutocompleteOption {
       return {
-        label: this.getGroupLabel(group),
+        label: group.name,
         value: group.id,
       };
     },
@@ -955,7 +870,10 @@ export default defineComponent({
       if (!program) return;
 
       // Auto-apply program color if event color is not set or is default
-      if (!this.localFormData.colorId || this.localFormData.colorId === "#6366F1") {
+      if (
+        !this.localFormData.colorId ||
+        this.localFormData.colorId === "#6366F1"
+      ) {
         if (program.colorId) {
           const color = this.colorsStore.getColorById(program.colorId);
           if (color) {

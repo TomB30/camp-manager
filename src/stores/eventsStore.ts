@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
-import type { Event } from '@/types';
+import type { Event, StaffMember } from '@/types';
 import { eventsService } from '@/services';
 import { filterEventsByDate } from '@/utils/dateUtils';
 import { useGroupsStore } from './groupsStore';
-import { useFamilyGroupsStore } from './familyGroupsStore';
+import { useStaffMembersStore } from './staffMembersStore';
 
 export const useEventsStore = defineStore('events', {
   state: () => ({
@@ -34,23 +34,15 @@ export const useEventsStore = defineStore('events', {
         if (!event || !event.groupIds || event.groupIds.length === 0) return [];
 
         const groupsStore = useGroupsStore();
-        const familyGroupsStore = useFamilyGroupsStore();
         
         const camperIds = new Set<string>();
         
         // Collect campers from all assigned groups
         event.groupIds.forEach(groupId => {
           // Check if it's a camper group
-          const camperGroup = groupsStore.getCamperGroupById(groupId);
+          const camperGroup = groupsStore.getGroupById(groupId);
           if (camperGroup) {
             const groupCampers = groupsStore.getCampersInGroup(groupId);
-            groupCampers.forEach(camper => camperIds.add(camper.id));
-          }
-          
-          // Check if it's a family group
-          const familyGroup = familyGroupsStore.getFamilyGroupById(groupId);
-          if (familyGroup) {
-            const groupCampers = familyGroupsStore.getCampersInFamilyGroup(groupId);
             groupCampers.forEach(camper => camperIds.add(camper.id));
           }
         });
@@ -71,16 +63,17 @@ export const useEventsStore = defineStore('events', {
       return (eventId: string): string[] => {
         const event = this.events.find(e => e.id === eventId);
         if (!event || !event.groupIds || event.groupIds.length === 0) return [];
-
-        const familyGroupsStore = useFamilyGroupsStore();
         
         const staffIds = new Set<string>();
         
         // Collect staff from all assigned family groups
         event.groupIds.forEach(groupId => {
-          const familyGroup = familyGroupsStore.getFamilyGroupById(groupId);
-          if (familyGroup && familyGroup.staffMemberIds) {
-            familyGroup.staffMemberIds.forEach(staffId => staffIds.add(staffId));
+          const group = useGroupsStore().getGroupById(groupId);
+          if (group && group.staffIds) {
+            group.staffIds.forEach(staffId => staffIds.add(staffId));
+          } else if (group && group.staffFilters) {
+            const staff = useStaffMembersStore().getStaffMembersByFilters(group.staffFilters);
+            staff.forEach((s: StaffMember) => staffIds.add(s.id));
           }
         });
 

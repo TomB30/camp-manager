@@ -40,7 +40,7 @@
         v-for="room in filteredRooms"
         :key="room.id"
         :room="room"
-        :family-groups="getFamilyGroupsForRoom(room.id)"
+        :groups="getGroupsForRoom(room.id)"
         @click="selectRoom(room.id)"
       />
     </div>
@@ -76,15 +76,15 @@
 
       <template #cell-groups="{ item }">
         <div
-          v-if="getFamilyGroupsForRoom(item.id).length > 0"
+          v-if="getGroupsForRoom(item.id).length > 0"
           class="flex gap-1 flex-wrap"
         >
           <span
-            v-for="familyGroup in getFamilyGroupsForRoom(item.id)"
-            :key="familyGroup.id"
+            v-for="group in getGroupsForRoom(item.id)"
+            :key="group.id"
             class="badge badge-success badge-sm"
           >
-            {{ familyGroup.name }}
+            {{ group.name }}
           </span>
         </div>
         <span v-else class="text-secondary">None</span>
@@ -104,11 +104,11 @@
     <HousingRoomDetailModal
       :show="!!selectedRoomId"
       :room="selectedRoom"
-      :family-groups="selectedRoomFamilyGroups"
+      :groups="selectedRoomGroups"
       @close="selectedRoomId = null"
       @edit="editRoom"
       @delete="deleteRoomConfirm"
-      @view-family-group="viewFamilyGroup"
+      @view-group="viewGroup"
     />
 
     <!-- Add/Edit Room Modal -->
@@ -136,8 +136,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useCampersStore, useFamilyGroupsStore, useHousingRoomsStore, useSessionsStore } from "@/stores";
-import type { FamilyGroup, HousingRoom, Camper } from "@/types";
+import { useGroupsStore, useHousingRoomsStore, useSessionsStore } from "@/stores";
+import type { HousingRoom, Group } from "@/types";
 import HousingRoomCard from "@/components/cards/HousingRoomCard.vue";
 import FilterBar from "@/components/FilterBar.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
@@ -169,10 +169,9 @@ export default defineComponent({
     const housingRoomsStore = useHousingRoomsStore();
     const areasStore = useAreasStore();
     const sessionsStore = useSessionsStore();
-    const campersStore = useCampersStore();
-    const familyGroupsStore = useFamilyGroupsStore();
     const toast = useToast();
-    return { housingRoomsStore, areasStore, sessionsStore, campersStore, familyGroupsStore, toast };
+    const groupsStore = useGroupsStore();
+    return { housingRoomsStore, areasStore, sessionsStore, toast, groupsStore };
   },
   data() {
     return {
@@ -228,20 +227,20 @@ export default defineComponent({
 
       return rooms;
     },
-    selectedRoomFamilyGroups(): Array<any> {
+    selectedRoomGroups(): Array<any> {
       if (!this.selectedRoomId) return [];
-      return this.getFamilyGroupsForRoom(this.selectedRoomId).map(
-        (fg: FamilyGroup) => {
+      return this.getGroupsForRoom(this.selectedRoomId).map(
+        (g: Group) => {
           const session = this.sessionsStore.sessions.find(
-            (s) => s.id === fg.sessionId
+            (s) => s.id === g.sessionId
           );
           return {
-            id: fg.id,
-            name: fg.name,
-            description: fg.description,
-            camperCount: this.getCampersInFamilyGroup(fg.id).length,
-            staffCount: fg.staffMemberIds.length,
-            sessionId: fg.sessionId,
+            id: g.id,
+            name: g.name,
+            description: g.description,
+            camperCount: this.groupsStore.getCampersInGroup(g.id).length,
+            staffCount: g.staffIds?.length || 0,
+            sessionId: g.sessionId,
             sessionName: session?.name || "Unknown Session",
             sessionDateRange: session
               ? `${new Date(session.startDate).toLocaleDateString("en-US", {
@@ -259,17 +258,14 @@ export default defineComponent({
     },
   },
   methods: {
+    viewGroup(groupId: string): void {
+      this.$router.push(`/groups?id=${groupId}`);
+    },
     clearFilters(): void {
       this.searchQuery = "";
     },
-    getFamilyGroupsForRoom(housingRoomId: string): FamilyGroup[] {
-      return this.familyGroupsStore.getFamilyGroupsInRoom(housingRoomId);
-    },
-    getCampersInFamilyGroup(familyGroupId: string): Camper[] {
-      return this.campersStore.getCampersInFamilyGroup(familyGroupId);
-    },
-    viewFamilyGroup(familyGroupId: string): void {
-      this.$router.push(`/family-groups?id=${familyGroupId}`);
+    getGroupsForRoom(housingRoomId: string): Group[] {
+      return this.groupsStore.getGroupsByType({ hasHousing: true, hasSession: true }).filter(g => g.housingRoomId === housingRoomId);
     },
     selectRoom(housingRoomId: string): void {
       this.selectedRoomId = housingRoomId;
@@ -311,7 +307,7 @@ export default defineComponent({
     deleteRoomConfirm(): void {
       if (!this.selectedRoomId) return;
 
-      const familyGroupCount = this.getFamilyGroupsForRoom(
+      const groupCount = this.getGroupsForRoom(
         this.selectedRoomId
       ).length;
 
@@ -319,8 +315,8 @@ export default defineComponent({
       this.confirmModalTitle = "Delete Room";
       this.confirmModalMessage = "Are you sure you want to delete this room?";
       this.confirmModalDetails =
-        familyGroupCount > 0
-          ? `This room has ${familyGroupCount} family group(s) assigned. You will need to reassign them to another room.`
+        groupCount > 0
+          ? `This room has ${groupCount} group(s) assigned. You will need to reassign them to another room.`
           : "";
 
       this.confirmAction = async () => {

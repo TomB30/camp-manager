@@ -29,11 +29,6 @@ const router = createRouter({
       component: () => import('../views/Groups.vue'),
     },
     {
-      path: '/family-groups',
-      name: 'family-groups',
-      component: () => import('../views/FamilyGroups.vue'),
-    },
-    {
       path: '/programs',
       name: 'programs',
       component: () => import('../views/Programs.vue'),

@@ -122,17 +122,17 @@
           <div v-else class="text-secondary">Not registered for a session</div>
         </template>
         <template #family-group>
-          <div v-if="selectedCamper?.familyGroupId && getFamilyGroup(selectedCamper.familyGroupId)">
+          <div v-if="selectedCamper?.familyGroupId && getGroupById(selectedCamper.familyGroupId)">
             <div class="family-group-info">
               <span 
-                v-if="getFamilyGroup(selectedCamper.familyGroupId)" 
+                v-if="getGroupById(selectedCamper.familyGroupId)" 
                 class="badge" 
-                :style="{ background: getFamilyGroupColor(getFamilyGroup(selectedCamper.familyGroupId)!) }"
+                :style="{ background: getGroupColor(getGroupById(selectedCamper.familyGroupId)!) }"
               >
-                {{ getFamilyGroup(selectedCamper.familyGroupId)!.name }}
+                {{ getGroupById(selectedCamper.familyGroupId)!.name }}
               </span>
-              <div v-if="getFamilyGroup(selectedCamper.familyGroupId)?.housingRoomId" class="text-xs text-secondary mt-1">
-                Room: {{ getSleepingRoomName(getFamilyGroup(selectedCamper.familyGroupId)?.housingRoomId || '') }}
+              <div v-if="getGroupById(selectedCamper.familyGroupId)?.housingRoomId" class="text-xs text-secondary mt-1">
+                Room: {{ getSleepingRoomName(getGroupById(selectedCamper.familyGroupId)?.housingRoomId || '') }}
               </div>
             </div>
           </div>
@@ -151,7 +151,7 @@
         :show="showModal"
         :is-editing="!!editingCamperId"
         :form-data="formData"
-        :family-groups="familyGroupsStore.familyGroups"
+        :groups="groupsStore.getGroupsByType({ hasHousing: true, hasSession: true })"
         :sessions="sessionsStore.sessions"
         @close="closeModal"
         @save="saveCamper"
@@ -174,9 +174,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useCampersStore, useSessionsStore, useEventsStore, useFamilyGroupsStore, useHousingRoomsStore, useColorsStore } from '@/stores';
+import { useCampersStore, useSessionsStore, useEventsStore, useHousingRoomsStore, useColorsStore, useGroupsStore } from '@/stores';
 import { format } from 'date-fns';
-import type { Camper, Event, FamilyGroup } from '@/types';
+import type { Camper, Event, Group } from '@/types';
 import ViewHeader from '@/components/ViewHeader.vue';
 import AvatarInitials from '@/components/AvatarInitials.vue';
 import CamperCard from '@/components/cards/CamperCard.vue';
@@ -253,14 +253,14 @@ export default defineComponent({
     eventsStore() {
       return useEventsStore();
     },
-    familyGroupsStore() {
-      return useFamilyGroupsStore();
-    },
     housingRoomsStore() {
       return useHousingRoomsStore();
     },
     colorsStore() {
       return useColorsStore();
+    },
+    groupsStore() {
+      return useGroupsStore();
     },
     campersFilters(): Filter[] {
       return [
@@ -340,9 +340,9 @@ export default defineComponent({
       this.filterAge = '';
       this.filterSession = '';
     },
-    getFamilyGroupColor(familyGroup: FamilyGroup): string {
-      if (familyGroup.colorId) {
-        const color = this.colorsStore.getColorById(familyGroup.colorId);
+    getGroupColor(group: Group): string {
+      if (group.colorId) {
+        const color = this.colorsStore.getColorById(group.colorId);
         return color?.hexValue || '#6366F1';
       }
       return '#6366F1';
@@ -358,8 +358,8 @@ export default defineComponent({
       const room = this.housingRoomsStore.getHousingRoomById(housingRoomId);
       return room?.name || 'Unknown Room';
     },
-    getFamilyGroup(familyGroupId: string): FamilyGroup | null | undefined {
-      return this.familyGroupsStore.getFamilyGroupById(familyGroupId);
+    getGroupById(groupId: string): Group | null | undefined {
+      return this.groupsStore.getGroupById(groupId);
     },
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
