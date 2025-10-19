@@ -1,4 +1,4 @@
-import type { Camper, StaffMember, Location, HousingRoom, Event, Area, Label, CamperGroup, FamilyGroup, Program, Activity, Certification, CampColor, CampSession, Group } from '@/types';
+import type { Camper, StaffMember, Location, HousingRoom, Event, Area, Label, CamperGroup, Program, Activity, Certification, CampColor, CampSession, Group } from '@/types';
 
 // Generate consistent IDs
 const generateId = (prefix: string, index: number) => `${prefix}-${String(index).padStart(3, '0')}`;
@@ -380,39 +380,461 @@ const generateSleepingRooms = (count: number): HousingRoom[] => {
 
 export const mockSleepingRooms: HousingRoom[] = generateSleepingRooms(24);
 
-// Family Groups - fundamental organizational units (one per housing room)
-const generateFamilyGroups = (sleepingRooms: HousingRoom[]): FamilyGroup[] => {
-  const groups: FamilyGroup[] = [];
-  
-  sleepingRooms.forEach((room, index) => {
-    // Distribute family groups across the 5 sessions evenly
-    const sessionIndex = (index % 5) + 1;
-    const staffCount = 1 + (index % 2); // 1 or 2 staff per family
-    const staffIds: string[] = [];
-    
-    // Assign staff members (we'll have more staff now)
-    for (let s = 0; s < staffCount; s++) {
-      const staffId = ((index * 2 + s) % 48) + 2; // Cycle through staff 2-49 (excluding director)
-      staffIds.push(generateId('staff', staffId));
-    }
-    
-    groups.push({
-      id: generateId('family', index + 1),
-      name: `${cabinNames[index]} Family`,
-      description: `Family group for Cabin ${index + 1}`,
-      housingRoomId: room.id,
-      staffMemberIds: staffIds,
-      sessionId: generateId('session', sessionIndex),
-      colorId: mockColors[index % mockColors.length].id,
-      createdAt: new Date(2025, 5, 1).toISOString(),
-      updatedAt: new Date(2025, 5, 1).toISOString(),
-    });
-  });
-  
-  return groups;
-};
-
-export const mockFamilyGroups: FamilyGroup[] = generateFamilyGroups(mockSleepingRooms);
+// Unified Groups - demonstrates all types of groups
+export const mockGroups: Group[] = [
+  // Filter-based camper group - Junior age range
+  {
+    id: 'unified-group-001',
+    name: 'Junior Explorers',
+    description: 'Auto-assigned group for younger campers aged 6-9',
+    colorId: generateId('color', 2), // Forest Green
+    camperFilters: {
+      ageMin: 6,
+      ageMax: 9,
+    },
+    labelIds: [generateId('label', 1)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Manual camper selection with housing and session (Family Group style)
+  {
+    id: 'unified-group-002',
+    name: 'Eagles Family',
+    description: 'Family group in Cabin A with specific campers and staff',
+    colorId: generateId('color', 1), // Ocean Blue
+    sessionId: generateId('session', 1),
+    housingRoomId: generateId('sleeping', 1),
+    camperIds: [
+      generateId('camper', 1), 
+      generateId('camper', 2), 
+      generateId('camper', 3),
+      generateId('camper', 4)
+    ],
+    staffIds: [generateId('staff', 1), generateId('staff', 2)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Another family group style
+  {
+    id: 'unified-group-003',
+    name: 'Hawks Family',
+    description: 'Family group in Cabin B',
+    colorId: generateId('color', 4), // Royal Purple
+    sessionId: generateId('session', 1),
+    housingRoomId: generateId('sleeping', 2),
+    camperIds: [
+      generateId('camper', 5), 
+      generateId('camper', 6), 
+      generateId('camper', 7)
+    ],
+    staffIds: [generateId('staff', 3), generateId('staff', 4)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Auto-assigned staff group based on certifications
+  {
+    id: 'unified-group-004',
+    name: 'Certified Lifeguards',
+    description: 'All staff with lifeguard certification for water activities',
+    colorId: generateId('color', 7), // Teal Wave
+    staffFilters: {
+      certificationIds: [generateId('cert', 2)], // Lifeguard cert
+    },
+    labelIds: [generateId('label', 3)], // Water Activities
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Filter-based campers from specific session
+  {
+    id: 'unified-group-005',
+    name: 'Session 1 Teens',
+    description: 'Teenage campers from Week 1',
+    colorId: generateId('color', 6), // Fire Red
+    sessionId: generateId('session', 1),
+    camperFilters: {
+      ageMin: 13,
+      sessionId: generateId('session', 1),
+    },
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Middle age campers
+  {
+    id: 'unified-group-006',
+    name: 'Middle Age Adventurers',
+    description: 'Campers aged 10-12 for age-appropriate activities',
+    colorId: generateId('color', 3), // Sunset Orange
+    camperFilters: {
+      ageMin: 10,
+      ageMax: 12,
+    },
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Combined campers and staff with filters
+  {
+    id: 'unified-group-007',
+    name: 'Aquatics Program',
+    description: 'Water activities group with qualified instructors',
+    colorId: generateId('color', 7), // Teal Wave
+    camperFilters: {
+      ageMin: 10,
+    },
+    staffFilters: {
+      roles: ['instructor'],
+      certificationIds: [generateId('cert', 2)], // Lifeguard
+    },
+    labelIds: [generateId('label', 3)], // Water Activities
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Nested group combining age groups
+  {
+    id: 'unified-group-008',
+    name: 'All Youth Campers',
+    description: 'Combined group of junior and middle age campers',
+    colorId: generateId('color', 4), // Royal Purple
+    groupIds: ['unified-group-001', 'unified-group-006'], // Junior Explorers + Middle Age Adventurers
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Female campers filter
+  {
+    id: 'unified-group-009',
+    name: 'Girls Camp',
+    description: 'All female campers',
+    colorId: generateId('color', 5), // Flamingo Pink
+    camperFilters: {
+      gender: 'female',
+    },
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Male campers filter
+  {
+    id: 'unified-group-010',
+    name: 'Boys Camp',
+    description: 'All male campers',
+    colorId: generateId('color', 1), // Ocean Blue
+    camperFilters: {
+      gender: 'male',
+    },
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Counselors group
+  {
+    id: 'unified-group-011',
+    name: 'Camp Counselors',
+    description: 'All counselor staff members',
+    colorId: generateId('color', 2), // Forest Green
+    staffFilters: {
+      roles: ['counselor'],
+    },
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Campers with allergies
+  {
+    id: 'unified-group-012',
+    name: 'Special Dietary Needs',
+    description: 'Campers requiring dietary accommodations',
+    colorId: generateId('color', 6), // Fire Red
+    camperFilters: {
+      hasAllergies: true,
+    },
+    labelIds: [generateId('label', 2)], // Special needs
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Session 2 family group
+  {
+    id: 'unified-group-013',
+    name: 'Dolphins Family',
+    description: 'Week 2 family group',
+    colorId: generateId('color', 7), // Teal Wave
+    sessionId: generateId('session', 2),
+    housingRoomId: generateId('sleeping', 3),
+    camperIds: [
+      generateId('camper', 50), 
+      generateId('camper', 51), 
+      generateId('camper', 52)
+    ],
+    staffIds: [generateId('staff', 5)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Arts program group
+  {
+    id: 'unified-group-014',
+    name: 'Creative Arts Crew',
+    description: 'Campers interested in arts and crafts',
+    colorId: generateId('color', 5), // Flamingo Pink
+    camperFilters: {
+      ageMin: 8,
+    },
+    staffFilters: {
+      roles: ['instructor'],
+    },
+    labelIds: [generateId('label', 4)], // Arts
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Sports program group
+  {
+    id: 'unified-group-015',
+    name: 'Sports Champions',
+    description: 'Athletic program participants',
+    colorId: generateId('color', 3), // Sunset Orange
+    camperFilters: {
+      ageMin: 9,
+    },
+    labelIds: [generateId('label', 5)], // Sports
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  // Additional Family Groups with Housing (to cover all campers)
+  {
+    id: 'unified-group-016',
+    name: 'Wolves Family',
+    description: 'Family group in Cabin 3',
+    colorId: generateId('color', 2), // Forest Green
+    sessionId: generateId('session', 1),
+    housingRoomId: generateId('sleeping', 3),
+    camperIds: [
+      generateId('camper', 8), 
+      generateId('camper', 9), 
+      generateId('camper', 10)
+    ],
+    staffIds: [generateId('staff', 5), generateId('staff', 6)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-017',
+    name: 'Butterflies Family',
+    description: 'Family group in Cabin 4',
+    colorId: generateId('color', 5), // Flamingo Pink
+    sessionId: generateId('session', 1),
+    housingRoomId: generateId('sleeping', 4),
+    camperIds: [
+      generateId('camper', 11), 
+      generateId('camper', 12), 
+      generateId('camper', 13)
+    ],
+    staffIds: [generateId('staff', 7), generateId('staff', 8)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-018',
+    name: 'Fireflies Family',
+    description: 'Family group in Cabin 5',
+    colorId: generateId('color', 3), // Sunset Orange
+    sessionId: generateId('session', 2),
+    housingRoomId: generateId('sleeping', 5),
+    camperIds: [
+      generateId('camper', 14), 
+      generateId('camper', 15), 
+      generateId('camper', 16)
+    ],
+    staffIds: [generateId('staff', 9)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-019',
+    name: 'Tigers Family',
+    description: 'Family group in Cabin 6',
+    colorId: generateId('color', 1), // Ocean Blue
+    sessionId: generateId('session', 2),
+    housingRoomId: generateId('sleeping', 6),
+    camperIds: [
+      generateId('camper', 17), 
+      generateId('camper', 18), 
+      generateId('camper', 19)
+    ],
+    staffIds: [generateId('staff', 10), generateId('staff', 11)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-020',
+    name: 'Bears Family',
+    description: 'Family group in Cabin 7',
+    colorId: generateId('color', 6), // Fire Red
+    sessionId: generateId('session', 2),
+    housingRoomId: generateId('sleeping', 7),
+    camperIds: [
+      generateId('camper', 20), 
+      generateId('camper', 21), 
+      generateId('camper', 22)
+    ],
+    staffIds: [generateId('staff', 12)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-021',
+    name: 'Panthers Family',
+    description: 'Family group in Cabin 8',
+    colorId: generateId('color', 4), // Royal Purple
+    sessionId: generateId('session', 3),
+    housingRoomId: generateId('sleeping', 8),
+    camperIds: [
+      generateId('camper', 23), 
+      generateId('camper', 24), 
+      generateId('camper', 25)
+    ],
+    staffIds: [generateId('staff', 13), generateId('staff', 14)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-022',
+    name: 'Foxes Family',
+    description: 'Family group in Cabin 9',
+    colorId: generateId('color', 7), // Teal Wave
+    sessionId: generateId('session', 3),
+    housingRoomId: generateId('sleeping', 9),
+    camperIds: [
+      generateId('camper', 26), 
+      generateId('camper', 27), 
+      generateId('camper', 28)
+    ],
+    staffIds: [generateId('staff', 15)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-023',
+    name: 'Owls Family',
+    description: 'Family group in Cabin 10',
+    colorId: generateId('color', 8), // Indigo Night
+    sessionId: generateId('session', 3),
+    housingRoomId: generateId('sleeping', 10),
+    camperIds: [
+      generateId('camper', 29), 
+      generateId('camper', 30), 
+      generateId('camper', 31)
+    ],
+    staffIds: [generateId('staff', 16), generateId('staff', 17)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-024',
+    name: 'Ravens Family',
+    description: 'Family group in Cabin 11',
+    colorId: generateId('color', 2), // Forest Green
+    sessionId: generateId('session', 4),
+    housingRoomId: generateId('sleeping', 11),
+    camperIds: [
+      generateId('camper', 32), 
+      generateId('camper', 33), 
+      generateId('camper', 34)
+    ],
+    staffIds: [generateId('staff', 18)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-025',
+    name: 'Falcons Family',
+    description: 'Family group in Cabin 12',
+    colorId: generateId('color', 1), // Ocean Blue
+    sessionId: generateId('session', 4),
+    housingRoomId: generateId('sleeping', 12),
+    camperIds: [
+      generateId('camper', 35), 
+      generateId('camper', 36), 
+      generateId('camper', 37)
+    ],
+    staffIds: [generateId('staff', 19), generateId('staff', 20)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-026',
+    name: 'Cougars Family',
+    description: 'Family group in Cabin 13',
+    colorId: generateId('color', 5), // Flamingo Pink
+    sessionId: generateId('session', 4),
+    housingRoomId: generateId('sleeping', 13),
+    camperIds: [
+      generateId('camper', 38), 
+      generateId('camper', 39), 
+      generateId('camper', 40)
+    ],
+    staffIds: [generateId('staff', 21)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-027',
+    name: 'Lynx Family',
+    description: 'Family group in Cabin 14',
+    colorId: generateId('color', 3), // Sunset Orange
+    sessionId: generateId('session', 5),
+    housingRoomId: generateId('sleeping', 14),
+    camperIds: [
+      generateId('camper', 41), 
+      generateId('camper', 42), 
+      generateId('camper', 43)
+    ],
+    staffIds: [generateId('staff', 22), generateId('staff', 23)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-028',
+    name: 'Otters Family',
+    description: 'Family group in Cabin 15',
+    colorId: generateId('color', 6), // Fire Red
+    sessionId: generateId('session', 5),
+    housingRoomId: generateId('sleeping', 15),
+    camperIds: [
+      generateId('camper', 44), 
+      generateId('camper', 45), 
+      generateId('camper', 46)
+    ],
+    staffIds: [generateId('staff', 24)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-029',
+    name: 'Beavers Family',
+    description: 'Family group in Cabin 16',
+    colorId: generateId('color', 4), // Royal Purple
+    sessionId: generateId('session', 5),
+    housingRoomId: generateId('sleeping', 16),
+    camperIds: [
+      generateId('camper', 47), 
+      generateId('camper', 48), 
+      generateId('camper', 49)
+    ],
+    staffIds: [generateId('staff', 25), generateId('staff', 26)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+  {
+    id: 'unified-group-030',
+    name: 'Moose Family',
+    description: 'Family group in Cabin 17',
+    colorId: generateId('color', 7), // Teal Wave
+    sessionId: generateId('session', 1),
+    housingRoomId: generateId('sleeping', 17),
+    camperIds: [
+      generateId('camper', 53), 
+      generateId('camper', 54), 
+      generateId('camper', 55)
+    ],
+    staffIds: [generateId('staff', 27)],
+    createdAt: new Date(2025, 5, 1).toISOString(),
+    updatedAt: new Date(2025, 5, 1).toISOString(),
+  },
+];
 
 // Generate many campers - expanded name lists
 const firstNames = {
@@ -442,7 +864,7 @@ const lastNames = [
 
 const allergies = ['Peanuts', 'Tree nuts', 'Dairy', 'Eggs', 'Soy', 'Wheat', 'Fish', 'Shellfish', 'Sesame', 'Gluten'];
 
-const generateCampers = (count: number, totalFamilyGroups: number): Camper[] => {
+const generateCampers = (count: number, familyGroupIds: string[]): Camper[] => {
   const campers: Camper[] = [];
   let maleCount = 0;
   let femaleCount = 0;
@@ -463,10 +885,9 @@ const generateCampers = (count: number, totalFamilyGroups: number): Camper[] => 
     const lastName = lastNames[lastNameIndex];
     const age = 6 + (i % 10); // Ages 6-15
     
-    // Distribute campers evenly across family groups (~10-12 per group)
-    const campersPerGroup = Math.ceil(count / totalFamilyGroups);
-    const familyGroupIndex = Math.floor((i - 1) / campersPerGroup) % totalFamilyGroups;
-    const familyGroupId = generateId('family', familyGroupIndex + 1);
+    // Distribute campers evenly across family groups with housing
+    const groupIndex = (i - 1) % familyGroupIds.length;
+    const groupId = familyGroupIds[groupIndex];
     
     // 20% chance of having an allergy
     const hasAllergy = (i * 7) % 100 < 20;
@@ -486,7 +907,7 @@ const generateCampers = (count: number, totalFamilyGroups: number): Camper[] => 
       allergies: camperAllergies,
       medicalNotes: hasAllergy ? `Please avoid ${camperAllergies[0]}` : undefined,
       registrationDate: new Date(2025, 5, 1 + (i % 7)).toISOString(),
-      familyGroupId,
+      familyGroupId: groupId,
       sessionId,
     });
   }
@@ -494,7 +915,29 @@ const generateCampers = (count: number, totalFamilyGroups: number): Camper[] => 
   return campers;
 };
 
-export const mockCampers: Camper[] = generateCampers(350, mockFamilyGroups.length);
+// Family groups with housing - only these should be assigned to campers
+const familyGroupsWithHousing = [
+  'unified-group-002', // Eagles Family
+  'unified-group-003', // Hawks Family
+  'unified-group-013', // Dolphins Family
+  'unified-group-016', // Wolves Family
+  'unified-group-017', // Butterflies Family
+  'unified-group-018', // Fireflies Family
+  'unified-group-019', // Tigers Family
+  'unified-group-020', // Bears Family
+  'unified-group-021', // Panthers Family
+  'unified-group-022', // Foxes Family
+  'unified-group-023', // Owls Family
+  'unified-group-024', // Ravens Family
+  'unified-group-025', // Falcons Family
+  'unified-group-026', // Cougars Family
+  'unified-group-027', // Lynx Family
+  'unified-group-028', // Otters Family
+  'unified-group-029', // Beavers Family
+  'unified-group-030', // Moose Family
+];
+
+export const mockCampers: Camper[] = generateCampers(350, familyGroupsWithHousing);
 
 // Generate staff members
 const staffFirstNames = [
@@ -2028,221 +2471,6 @@ mockPrograms[8].activityIds = [generateId('activity', 31), generateId('activity'
 mockPrograms[9].activityIds = [generateId('activity', 34), generateId('activity', 35)];
 
 
-// Unified Groups - demonstrates all types of groups
-export const mockGroups: Group[] = [
-  // Filter-based camper group - Junior age range
-  {
-    id: 'unified-group-001',
-    name: 'Junior Explorers',
-    description: 'Auto-assigned group for younger campers aged 6-9',
-    colorId: generateId('color', 2), // Forest Green
-    camperFilters: {
-      ageMin: 6,
-      ageMax: 9,
-    },
-    labelIds: [generateId('label', 1)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Manual camper selection with housing and session (Family Group style)
-  {
-    id: 'unified-group-002',
-    name: 'Eagles Family',
-    description: 'Family group in Cabin A with specific campers and staff',
-    colorId: generateId('color', 1), // Ocean Blue
-    sessionId: generateId('session', 1),
-    housingRoomId: generateId('sleeping', 1),
-    camperIds: [
-      generateId('camper', 1), 
-      generateId('camper', 2), 
-      generateId('camper', 3),
-      generateId('camper', 4)
-    ],
-    staffIds: [generateId('staff', 1), generateId('staff', 2)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Another family group style
-  {
-    id: 'unified-group-003',
-    name: 'Hawks Family',
-    description: 'Family group in Cabin B',
-    colorId: generateId('color', 4), // Royal Purple
-    sessionId: generateId('session', 1),
-    housingRoomId: generateId('sleeping', 2),
-    camperIds: [
-      generateId('camper', 5), 
-      generateId('camper', 6), 
-      generateId('camper', 7)
-    ],
-    staffIds: [generateId('staff', 3), generateId('staff', 4)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Auto-assigned staff group based on certifications
-  {
-    id: 'unified-group-004',
-    name: 'Certified Lifeguards',
-    description: 'All staff with lifeguard certification for water activities',
-    colorId: generateId('color', 7), // Teal Wave
-    staffFilters: {
-      certificationIds: [generateId('cert', 2)], // Lifeguard cert
-    },
-    labelIds: [generateId('label', 3)], // Water Activities
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Filter-based campers from specific session
-  {
-    id: 'unified-group-005',
-    name: 'Session 1 Teens',
-    description: 'Teenage campers from Week 1',
-    colorId: generateId('color', 6), // Fire Red
-    sessionId: generateId('session', 1),
-    camperFilters: {
-      ageMin: 13,
-      sessionId: generateId('session', 1),
-    },
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Middle age campers
-  {
-    id: 'unified-group-006',
-    name: 'Middle Age Adventurers',
-    description: 'Campers aged 10-12 for age-appropriate activities',
-    colorId: generateId('color', 3), // Sunset Orange
-    camperFilters: {
-      ageMin: 10,
-      ageMax: 12,
-    },
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Combined campers and staff with filters
-  {
-    id: 'unified-group-007',
-    name: 'Aquatics Program',
-    description: 'Water activities group with qualified instructors',
-    colorId: generateId('color', 7), // Teal Wave
-    camperFilters: {
-      ageMin: 10,
-    },
-    staffFilters: {
-      roles: ['instructor'],
-      certificationIds: [generateId('cert', 2)], // Lifeguard
-    },
-    labelIds: [generateId('label', 3)], // Water Activities
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Nested group combining age groups
-  {
-    id: 'unified-group-008',
-    name: 'All Youth Campers',
-    description: 'Combined group of junior and middle age campers',
-    colorId: generateId('color', 4), // Royal Purple
-    groupIds: ['unified-group-001', 'unified-group-006'], // Junior Explorers + Middle Age Adventurers
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Female campers filter
-  {
-    id: 'unified-group-009',
-    name: 'Girls Camp',
-    description: 'All female campers',
-    colorId: generateId('color', 5), // Flamingo Pink
-    camperFilters: {
-      gender: 'female',
-    },
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Male campers filter
-  {
-    id: 'unified-group-010',
-    name: 'Boys Camp',
-    description: 'All male campers',
-    colorId: generateId('color', 1), // Ocean Blue
-    camperFilters: {
-      gender: 'male',
-    },
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Counselors group
-  {
-    id: 'unified-group-011',
-    name: 'Camp Counselors',
-    description: 'All counselor staff members',
-    colorId: generateId('color', 2), // Forest Green
-    staffFilters: {
-      roles: ['counselor'],
-    },
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Campers with allergies
-  {
-    id: 'unified-group-012',
-    name: 'Special Dietary Needs',
-    description: 'Campers requiring dietary accommodations',
-    colorId: generateId('color', 6), // Fire Red
-    camperFilters: {
-      hasAllergies: true,
-    },
-    labelIds: [generateId('label', 2)], // Special needs
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Session 2 family group
-  {
-    id: 'unified-group-013',
-    name: 'Dolphins Family',
-    description: 'Week 2 family group',
-    colorId: generateId('color', 7), // Teal Wave
-    sessionId: generateId('session', 2),
-    housingRoomId: generateId('sleeping', 3),
-    camperIds: [
-      generateId('camper', 50), 
-      generateId('camper', 51), 
-      generateId('camper', 52)
-    ],
-    staffIds: [generateId('staff', 5)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Arts program group
-  {
-    id: 'unified-group-014',
-    name: 'Creative Arts Crew',
-    description: 'Campers interested in arts and crafts',
-    colorId: generateId('color', 5), // Flamingo Pink
-    camperFilters: {
-      ageMin: 8,
-    },
-    staffFilters: {
-      roles: ['instructor'],
-    },
-    labelIds: [generateId('label', 4)], // Arts
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Sports program group
-  {
-    id: 'unified-group-015',
-    name: 'Sports Champions',
-    description: 'Athletic program participants',
-    colorId: generateId('color', 3), // Sunset Orange
-    camperFilters: {
-      ageMin: 9,
-    },
-    labelIds: [generateId('label', 5)], // Sports
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-];
-
 // Export all mock data together for easy import
 export const mockData = {
   campers: mockCampers,
@@ -2250,8 +2478,6 @@ export const mockData = {
   rooms: mockRooms,
   sleepingRooms: mockSleepingRooms,
   events: mockEvents,
-  camperGroups: mockCamperGroups,
-  familyGroups: mockFamilyGroups,
   groups: mockGroups,
   programs: mockPrograms,
   activities: mockActivities,
