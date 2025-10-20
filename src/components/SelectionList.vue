@@ -31,18 +31,11 @@
     <div v-if="showAddSection" class="add-item-section">
       <Autocomplete
         v-model="selectedToAdd"
+        @update:model-value="addItem"
         :options="availableOptions"
         :placeholder="placeholder"
         :disabled="disabled"
       />
-      <button 
-        type="button"
-        class="btn btn-sm btn-primary"
-        @click="addItem"
-        :disabled="!selectedToAdd"
-      >
-        {{ addButtonText }}
-      </button>
     </div>
   </div>
 </template>
@@ -178,7 +171,6 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 1rem;
   max-height: 200px;
   overflow-y: auto;
 }
@@ -224,8 +216,9 @@ export default defineComponent({
   height: 24px;
   border-radius: 50%;
   border: none;
-  background: var(--error-color, #ef4444);
-  color: white;
+  background: transparent;
+  border: 1px solid #ef4444;
+  color: #ef4444;
   font-size: 0.875rem;
   cursor: pointer;
   display: flex;
@@ -237,7 +230,6 @@ export default defineComponent({
 }
 
 .btn-remove:hover:not(:disabled) {
-  background: #dc2626;
   transform: scale(1.1);
 }
 
@@ -249,6 +241,7 @@ export default defineComponent({
 .add-item-section {
   display: flex;
   gap: 0.5rem;
+  margin-top: 0.5rem;
   align-items: center;
 }
 
