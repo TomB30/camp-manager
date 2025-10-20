@@ -1,860 +1,431 @@
-import type { Camper, StaffMember, Location, HousingRoom, Event, Area, Label, CamperGroup, Program, Activity, Certification, CampColor, CampSession, Group } from '@/types';
+/**
+ * Mock data for the camp manager application
+ * This file contains all the sample data used for development and testing
+ */
 
-// Generate consistent IDs
-const generateId = (prefix: string, index: number) => `${prefix}-${String(index).padStart(3, '0')}`;
+import type {
+  Camper,
+  StaffMember,
+  Location,
+  HousingRoom,
+  Event,
+  Area,
+  Group,
+  Program,
+  Activity,
+  Certification,
+  CampColor,
+  CampSession
+} from '@/types';
 
-// Colors - Setup first for use throughout the system
-export const mockColors: CampColor[] = [
+// Helper function to generate UUIDs (simple version for mock data)
+let idCounter = 0;
+const generateId = (): string => {
+  idCounter++;
+  return `00000000-0000-0000-0000-${idCounter.toString().padStart(12, '0')}`;
+};
+
+// Helper to format date for October 2025
+const octoberDate = (day: number, hour: number = 9, minute: number = 0): string => {
+  return new Date(2025, 9, day, hour, minute).toISOString();
+};
+
+// Colors
+export const colors: CampColor[] = [
+  { id: generateId(), name: 'Ocean Blue', hexValue: '#0891B2', createdAt: octoberDate(1) },
+  { id: generateId(), name: 'Sunset Orange', hexValue: '#F97316', createdAt: octoberDate(1) },
+  { id: generateId(), name: 'Forest Green', hexValue: '#16A34A', createdAt: octoberDate(1) },
+  { id: generateId(), name: 'Berry Purple', hexValue: '#9333EA', createdAt: octoberDate(1) },
+  { id: generateId(), name: 'Coral Pink', hexValue: '#EC4899', createdAt: octoberDate(1) },
+  { id: generateId(), name: 'Sky Blue', hexValue: '#3B82F6', createdAt: octoberDate(1) },
+  { id: generateId(), name: 'Lemon Yellow', hexValue: '#EAB308', createdAt: octoberDate(1) },
+  { id: generateId(), name: 'Cherry Red', hexValue: '#DC2626', createdAt: octoberDate(1) },
+  { id: generateId(), name: 'Mint Green', hexValue: '#10B981', createdAt: octoberDate(1) },
+  { id: generateId(), name: 'Lavender', hexValue: '#A855F7', createdAt: octoberDate(1) },
+];
+
+// Camp Sessions (6 sessions)
+export const sessions: CampSession[] = [
   {
-    id: generateId('color', 1),
-    name: 'Ocean Blue',
-    hexValue: '#3B82F6',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
+    id: generateId(),
+    name: 'Early Fall Session',
+    startDate: '2025-10-01',
+    endDate: '2025-10-05',
+    description: 'Perfect start to fall activities',
+    maxCampers: 40,
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('color', 2),
-    name: 'Forest Green',
-    hexValue: '#10B981',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
+    id: generateId(),
+    name: 'Mid Fall Session A',
+    startDate: '2025-10-06',
+    endDate: '2025-10-10',
+    description: 'Mid-fall adventures',
+    maxCampers: 45,
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('color', 3),
-    name: 'Sunset Orange',
-    hexValue: '#F59E0B',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
+    id: generateId(),
+    name: 'Mid Fall Session B',
+    startDate: '2025-10-11',
+    endDate: '2025-10-15',
+    description: 'Continued fall fun',
+    maxCampers: 40,
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('color', 4),
-    name: 'Royal Purple',
-    hexValue: '#8B5CF6',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
+    id: generateId(),
+    name: 'Late Fall Session A',
+    startDate: '2025-10-16',
+    endDate: '2025-10-20',
+    description: 'Late fall exploration',
+    maxCampers: 38,
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('color', 5),
-    name: 'Flamingo Pink',
-    hexValue: '#EC4899',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
+    id: generateId(),
+    name: 'Late Fall Session B',
+    startDate: '2025-10-21',
+    endDate: '2025-10-25',
+    description: 'Halloween prep week',
+    maxCampers: 42,
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('color', 6),
-    name: 'Fire Red',
-    hexValue: '#EF4444',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('color', 7),
-    name: 'Teal Wave',
-    hexValue: '#14B8A6',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('color', 8),
-    name: 'Indigo Night',
-    hexValue: '#6366F1',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
+    id: generateId(),
+    name: 'Halloween Week',
+    startDate: '2025-10-26',
+    endDate: '2025-10-31',
+    description: 'Spooky fun and festivities',
+    maxCampers: 50,
+    createdAt: octoberDate(1)
   },
 ];
 
-// Sessions - Define camp registration periods
-export const mockSessions: CampSession[] = [
+// Areas (4 areas)
+export const areas: Area[] = [
   {
-    id: generateId('session', 1),
-    name: 'Week 1: Adventure Begins',
-    startDate: new Date(2025, 5, 15).toISOString().split('T')[0], // June 15, 2025
-    endDate: new Date(2025, 5, 21).toISOString().split('T')[0], // June 21, 2025
-    description: 'Opening week of summer camp - perfect for first-time campers',
-    maxCampers: 150,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('session', 2),
-    name: 'Week 2: Explorer\'s Quest',
-    startDate: new Date(2025, 5, 22).toISOString().split('T')[0], // June 22, 2025
-    endDate: new Date(2025, 5, 28).toISOString().split('T')[0], // June 28, 2025
-    description: 'Focus on outdoor adventure and nature exploration',
-    maxCampers: 150,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('session', 3),
-    name: 'Week 3-4: Summer Spectacular',
-    startDate: new Date(2025, 5, 29).toISOString().split('T')[0], // June 29, 2025
-    endDate: new Date(2025, 6, 12).toISOString().split('T')[0], // July 12, 2025
-    description: 'Extended two-week session with special programming',
-    maxCampers: 175,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('session', 4),
-    name: 'Week 5: Arts & Performance',
-    startDate: new Date(2025, 6, 13).toISOString().split('T')[0], // July 13, 2025
-    endDate: new Date(2025, 6, 19).toISOString().split('T')[0], // July 19, 2025
-    description: 'Creative arts, theater, and performance showcase',
-    maxCampers: 150,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('session', 5),
-    name: 'Week 6: Grand Finale',
-    startDate: new Date(2025, 6, 20).toISOString().split('T')[0], // July 20, 2025
-    endDate: new Date(2025, 6, 26).toISOString().split('T')[0], // July 26, 2025
-    description: 'Closing week with camp-wide games and celebrations',
-    maxCampers: 150,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-];
-
-// Certifications - Setup first as they're referenced by staff
-export const mockCertifications: Certification[] = [
-  {
-    id: generateId('cert', 1),
-    name: 'First Aid',
-    description: 'Basic first aid training for emergency response',
-    expirationRequired: true,
-    validityPeriodMonths: 24,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('cert', 2),
-    name: 'CPR',
-    description: 'Cardiopulmonary resuscitation certification',
-    expirationRequired: true,
-    validityPeriodMonths: 24,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('cert', 3),
-    name: 'Wilderness First Aid',
-    description: 'Advanced first aid for wilderness and outdoor settings',
-    expirationRequired: true,
-    validityPeriodMonths: 36,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('cert', 4),
-    name: 'Lifeguard',
-    description: 'Certified lifeguard for pool and waterfront supervision',
-    expirationRequired: true,
-    validityPeriodMonths: 24,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('cert', 5),
-    name: 'Swimming Instructor',
-    description: 'Certified to teach swimming lessons',
-    expirationRequired: true,
-    validityPeriodMonths: 36,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('cert', 6),
-    name: 'Climbing Instructor',
-    description: 'Certified rock climbing and bouldering instructor',
-    expirationRequired: true,
-    validityPeriodMonths: 24,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('cert', 7),
-    name: 'Archery Instructor',
-    description: 'Certified archery safety and instruction',
-    expirationRequired: true,
-    validityPeriodMonths: 36,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('cert', 8),
-    name: 'Ropes Course Instructor',
-    description: 'High and low ropes course facilitation',
-    expirationRequired: true,
-    validityPeriodMonths: 24,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('cert', 9),
-    name: 'Boat Driver',
-    description: 'Licensed boat operation for water activities',
-    expirationRequired: true,
-    validityPeriodMonths: 60,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('cert', 10),
-    name: 'Food Handler',
-    description: 'Food safety and handling certification',
-    expirationRequired: true,
-    validityPeriodMonths: 36,
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-];
-
-// Areas - Setup before locations and housing rooms
-export const mockLocations: Area[] = [
-  {
-    id: generateId('location', 1),
-    name: 'Main Building A',
-    description: 'Primary administrative and activity building',
-    type: 'indoor',
-    capacity: 100,
-    equipment: ['HVAC', 'Fire Suppression', 'Emergency Exits'],
-    notes: 'Central location with easy access',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('location', 2),
-    name: 'Arts & Crafts Building B',
-    description: 'Dedicated arts and creative activities building',
-    type: 'indoor',
-    capacity: 50,
-    equipment: ['Sinks', 'Storage Cabinets', 'Ventilation'],
-    notes: 'Near the main hall',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('location', 3),
-    name: 'Education Building C',
-    description: 'Classrooms and learning spaces',
-    type: 'indoor',
-    capacity: 60,
-    equipment: ['WiFi', 'Projectors', 'Whiteboards'],
-    notes: 'Quiet zone for focused activities',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('location', 4),
-    name: 'Sports Field Alpha',
-    description: 'Large outdoor field for sports and games',
-    type: 'field',
-    capacity: 50,
-    equipment: ['Goals', 'Field Markings', 'Benches'],
-    notes: 'Grass field with irrigation',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('location', 5),
-    name: 'Recreation Center',
-    description: 'Indoor recreation facility with pool',
+    id: generateId(),
+    name: 'North Campus',
+    description: 'Main activity area with classrooms and sports facilities',
     type: 'facility',
-    capacity: 80,
-    equipment: ['Showers', 'Lockers', 'First Aid Station'],
-    notes: 'Pool area requires lifeguard on duty',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
+    capacity: 150,
+    equipment: ['Tables', 'Chairs', 'Whiteboards', 'Projectors'],
+    notes: 'Primary area for structured activities',
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('location', 6),
-    name: 'Central Plaza',
-    description: 'Outdoor gathering space',
-    type: 'outdoor',
-    capacity: 100,
-    equipment: ['Shade Structures', 'Benches', 'Water Fountains'],
-    notes: 'Weather dependent activities',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('location', 7),
-    name: 'Basketball Court',
-    description: 'Outdoor basketball court',
-    type: 'outdoor',
-    capacity: 30,
-    equipment: ['Hoops', 'Court Lines', 'Scoreboard'],
-    notes: 'Well-lit for evening activities',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('location', 8),
-    name: 'North Cabin Area',
-    description: 'North wing sleeping quarters - Floor 1',
-    type: 'indoor',
-    capacity: 20,
-    equipment: ['Climate Control', 'Bathroom Facilities'],
-    notes: 'Ground floor cabins',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('location', 9),
-    name: 'North Cabin Area - Upper',
-    description: 'North wing sleeping quarters - Floor 2',
-    type: 'indoor',
-    capacity: 20,
-    equipment: ['Climate Control', 'Bathroom Facilities'],
-    notes: 'Second floor cabins',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('location', 10),
-    name: 'South Cabin Area',
-    description: 'South wing sleeping quarters - Floor 1',
-    type: 'indoor',
-    capacity: 20,
-    equipment: ['Climate Control', 'Bathroom Facilities'],
-    notes: 'Ground floor cabins',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('location', 11),
-    name: 'South Cabin Area - Upper',
-    description: 'South wing sleeping quarters - Floor 2',
-    type: 'indoor',
-    capacity: 20,
-    equipment: ['Climate Control', 'Bathroom Facilities'],
-    notes: 'Second floor cabins',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('location', 12),
+    id: generateId(),
     name: 'Lakefront',
-    description: 'Waterfront area with dock and beach',
+    description: 'Waterfront area for aquatic activities',
     type: 'water',
-    capacity: 40,
-    equipment: ['Dock', 'Boat Launch', 'Life Jackets', 'Safety Equipment'],
-    notes: 'Requires lifeguard supervision at all times',
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
+    capacity: 60,
+    equipment: ['Kayaks', 'Life jackets', 'Canoes', 'Swimming platforms'],
+    notes: 'Requires lifeguard certification',
+    createdAt: octoberDate(1)
+  },
+  {
+    id: generateId(),
+    name: 'Forest Trail',
+    description: 'Outdoor adventure area with hiking trails',
+    type: 'outdoor',
+    capacity: 80,
+    equipment: ['Trail markers', 'First aid stations', 'Binoculars'],
+    notes: 'Great for nature exploration',
+    createdAt: octoberDate(1)
+  },
+  {
+    id: generateId(),
+    name: 'Central Commons',
+    description: 'Indoor gathering space and dining area',
+    type: 'indoor',
+    capacity: 200,
+    equipment: ['Tables', 'Chairs', 'Kitchen facilities', 'Stage'],
+    notes: 'Main dining and assembly area',
+    createdAt: octoberDate(1)
   },
 ];
 
-// Extended housing rooms for more campers (20 rooms total)
-const cabinNames = [
-  'Eagles', 'Hawks', 'Wolves', 'Butterflies', 'Fireflies', 'Dolphins',
-  'Tigers', 'Bears', 'Panthers', 'Foxes', 'Owls', 'Ravens',
-  'Falcons', 'Cougars', 'Lynx', 'Otters', 'Beavers', 'Moose',
-  'Elk', 'Bison', 'Cardinals', 'Blue Jays', 'Sparrows', 'Swallows'
-];
-
-const generateSleepingRooms = (count: number): HousingRoom[] => {
-  const rooms: HousingRoom[] = [];
-  const locations = [
-    { id: 8, name: 'North Wing, Floor 1' },
-    { id: 9, name: 'North Wing, Floor 2' },
-    { id: 10, name: 'South Wing, Floor 1' },
-    { id: 11, name: 'South Wing, Floor 2' },
-  ];
+// Locations (16 locations distributed across areas)
+export const locations: Location[] = [
+  // North Campus locations
+  { id: generateId(), name: 'Classroom A', capacity: 25, type: 'classroom', areaId: areas[0].id, equipment: ['Projector', 'Whiteboard'], notes: 'Main classroom' },
+  { id: generateId(), name: 'Classroom B', capacity: 25, type: 'classroom', areaId: areas[0].id, equipment: ['Projector', 'Whiteboard'], notes: 'Science lab' },
+  { id: generateId(), name: 'Art Studio', capacity: 20, type: 'arts', areaId: areas[0].id, equipment: ['Easels', 'Paint supplies', 'Clay'], notes: 'Creative space' },
+  { id: generateId(), name: 'Basketball Court', capacity: 30, type: 'sports', areaId: areas[0].id, equipment: ['Basketballs', 'Hoops'], notes: 'Indoor court' },
+  { id: generateId(), name: 'Soccer Field', capacity: 40, type: 'sports', areaId: areas[0].id, equipment: ['Soccer balls', 'Goals', 'Cones'], notes: 'Outdoor field' },
   
-  for (let i = 1; i <= count; i++) {
-    const locationIndex = (i - 1) % locations.length;
-    const location = locations[locationIndex];
-    rooms.push({
-      id: generateId('sleeping', i),
-      name: `Cabin ${i} - ${cabinNames[i - 1]}`,
-      beds: i <= 16 ? 12 : 10, // First 16 cabins have 12 beds, rest have 10
-      areaId: generateId('location', location.id),
-    });
-  }
+  // Lakefront locations
+  { id: generateId(), name: 'Swimming Area', capacity: 30, type: 'outdoor', areaId: areas[1].id, equipment: ['Life jackets', 'Floats'], notes: 'Supervised swimming' },
+  { id: generateId(), name: 'Boating Dock', capacity: 20, type: 'outdoor', areaId: areas[1].id, equipment: ['Kayaks', 'Canoes', 'Paddles'], notes: 'Water activities' },
+  { id: generateId(), name: 'Beach Area', capacity: 40, type: 'outdoor', areaId: areas[1].id, equipment: ['Beach toys', 'Umbrellas'], notes: 'Sandy beach' },
   
-  return rooms;
-};
+  // Forest Trail locations
+  { id: generateId(), name: 'North Trail Head', capacity: 25, type: 'outdoor', areaId: areas[2].id, equipment: ['Trail maps', 'First aid kit'], notes: 'Hiking start point' },
+  { id: generateId(), name: 'Nature Center', capacity: 30, type: 'activity', areaId: areas[2].id, equipment: ['Microscopes', 'Field guides', 'Specimens'], notes: 'Educational center' },
+  { id: generateId(), name: 'Campfire Circle', capacity: 50, type: 'outdoor', areaId: areas[2].id, equipment: ['Fire pit', 'Benches', 'S\'more supplies'], notes: 'Evening activities' },
+  
+  // Central Commons locations
+  { id: generateId(), name: 'Main Dining Hall', capacity: 150, type: 'dining', areaId: areas[3].id, equipment: ['Tables', 'Chairs', 'Serving stations'], notes: 'All meals served here' },
+  { id: generateId(), name: 'Assembly Hall', capacity: 200, type: 'activity', areaId: areas[3].id, equipment: ['Stage', 'Sound system', 'Projector'], notes: 'Large gatherings' },
+  { id: generateId(), name: 'Game Room', capacity: 30, type: 'activity', areaId: areas[3].id, equipment: ['Board games', 'Video games', 'Pool table'], notes: 'Recreation' },
+  { id: generateId(), name: 'Craft Workshop', capacity: 25, type: 'arts', areaId: areas[3].id, equipment: ['Craft supplies', 'Tools', 'Workbenches'], notes: 'Hands-on projects' },
+  { id: generateId(), name: 'Music Room', capacity: 20, type: 'activity', areaId: areas[3].id, equipment: ['Instruments', 'Music stands', 'Speakers'], notes: 'Music activities' },
+];
 
-export const mockSleepingRooms: HousingRoom[] = generateSleepingRooms(24);
+// Housing Rooms (6 rooms distributed across areas)
+export const housingRooms: HousingRoom[] = [
+  { id: generateId(), name: 'Eagles Nest', beds: 10, areaId: areas[0].id },
+  { id: generateId(), name: 'Bears Den', beds: 10, areaId: areas[0].id },
+  { id: generateId(), name: 'Wolves Lodge', beds: 8, areaId: areas[1].id },
+  { id: generateId(), name: 'Hawks Haven', beds: 8, areaId: areas[1].id },
+  { id: generateId(), name: 'Deer Cabin', beds: 10, areaId: areas[2].id },
+  { id: generateId(), name: 'Fox Den', beds: 4, areaId: areas[3].id },
+];
 
-// Unified Groups - demonstrates all types of groups
-export const mockGroups: Group[] = [
-  // Filter-based camper group - Junior age range
+// Certifications
+export const certifications: Certification[] = [
   {
-    id: 'unified-group-001',
-    name: 'Junior Explorers',
-    description: 'Auto-assigned group for younger campers aged 6-9',
-    colorId: generateId('color', 2), // Forest Green
-    camperFilters: {
-      ageMin: 6,
-      ageMax: 9,
-    },
-    labelIds: [generateId('label', 1)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Manual camper selection with housing and session (Family Group style)
-  {
-    id: 'unified-group-002',
-    name: 'Eagles Family',
-    description: 'Family group in Cabin A with specific campers and staff',
-    colorId: generateId('color', 1), // Ocean Blue
-    sessionId: generateId('session', 1),
-    housingRoomId: generateId('sleeping', 1),
-    camperIds: [
-      generateId('camper', 1), 
-      generateId('camper', 2), 
-      generateId('camper', 3),
-      generateId('camper', 4)
-    ],
-    staffIds: [generateId('staff', 1), generateId('staff', 2)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Another family group style
-  {
-    id: 'unified-group-003',
-    name: 'Hawks Family',
-    description: 'Family group in Cabin B',
-    colorId: generateId('color', 4), // Royal Purple
-    sessionId: generateId('session', 1),
-    housingRoomId: generateId('sleeping', 2),
-    camperIds: [
-      generateId('camper', 5), 
-      generateId('camper', 6), 
-      generateId('camper', 7)
-    ],
-    staffIds: [generateId('staff', 3), generateId('staff', 4)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Auto-assigned staff group based on certifications
-  {
-    id: 'unified-group-004',
-    name: 'Certified Lifeguards',
-    description: 'All staff with lifeguard certification for water activities',
-    colorId: generateId('color', 7), // Teal Wave
-    staffFilters: {
-      certificationIds: [generateId('cert', 2)], // Lifeguard cert
-    },
-    labelIds: [generateId('label', 3)], // Water Activities
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Filter-based campers from specific session
-  {
-    id: 'unified-group-005',
-    name: 'Session 1 Teens',
-    description: 'Teenage campers from Week 1',
-    colorId: generateId('color', 6), // Fire Red
-    sessionId: generateId('session', 1),
-    camperFilters: {
-      ageMin: 13,
-      sessionId: generateId('session', 1),
-    },
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Middle age campers
-  {
-    id: 'unified-group-006',
-    name: 'Middle Age Adventurers',
-    description: 'Campers aged 10-12 for age-appropriate activities',
-    colorId: generateId('color', 3), // Sunset Orange
-    camperFilters: {
-      ageMin: 10,
-      ageMax: 12,
-    },
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Combined campers and staff with filters
-  {
-    id: 'unified-group-007',
-    name: 'Aquatics Program',
-    description: 'Water activities group with qualified instructors',
-    colorId: generateId('color', 7), // Teal Wave
-    camperFilters: {
-      ageMin: 10,
-    },
-    staffFilters: {
-      roles: ['instructor'],
-      certificationIds: [generateId('cert', 2)], // Lifeguard
-    },
-    labelIds: [generateId('label', 3)], // Water Activities
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Nested group combining age groups
-  {
-    id: 'unified-group-008',
-    name: 'All Youth Campers',
-    description: 'Combined group of junior and middle age campers',
-    colorId: generateId('color', 4), // Royal Purple
-    groupIds: ['unified-group-001', 'unified-group-006'], // Junior Explorers + Middle Age Adventurers
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Female campers filter
-  {
-    id: 'unified-group-009',
-    name: 'Girls Camp',
-    description: 'All female campers',
-    colorId: generateId('color', 5), // Flamingo Pink
-    camperFilters: {
-      gender: 'female',
-    },
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Male campers filter
-  {
-    id: 'unified-group-010',
-    name: 'Boys Camp',
-    description: 'All male campers',
-    colorId: generateId('color', 1), // Ocean Blue
-    camperFilters: {
-      gender: 'male',
-    },
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Counselors group
-  {
-    id: 'unified-group-011',
-    name: 'Camp Counselors',
-    description: 'All counselor staff members',
-    colorId: generateId('color', 2), // Forest Green
-    staffFilters: {
-      roles: ['counselor'],
-    },
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Campers with allergies
-  {
-    id: 'unified-group-012',
-    name: 'Special Dietary Needs',
-    description: 'Campers requiring dietary accommodations',
-    colorId: generateId('color', 6), // Fire Red
-    camperFilters: {
-      hasAllergies: true,
-    },
-    labelIds: [generateId('label', 2)], // Special needs
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Session 2 family group
-  {
-    id: 'unified-group-013',
-    name: 'Dolphins Family',
-    description: 'Week 2 family group',
-    colorId: generateId('color', 7), // Teal Wave
-    sessionId: generateId('session', 2),
-    housingRoomId: generateId('sleeping', 3),
-    camperIds: [
-      generateId('camper', 50), 
-      generateId('camper', 51), 
-      generateId('camper', 52)
-    ],
-    staffIds: [generateId('staff', 5)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Arts program group
-  {
-    id: 'unified-group-014',
-    name: 'Creative Arts Crew',
-    description: 'Campers interested in arts and crafts',
-    colorId: generateId('color', 5), // Flamingo Pink
-    camperFilters: {
-      ageMin: 8,
-    },
-    staffFilters: {
-      roles: ['instructor'],
-    },
-    labelIds: [generateId('label', 4)], // Arts
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Sports program group
-  {
-    id: 'unified-group-015',
-    name: 'Sports Champions',
-    description: 'Athletic program participants',
-    colorId: generateId('color', 3), // Sunset Orange
-    camperFilters: {
-      ageMin: 9,
-    },
-    labelIds: [generateId('label', 5)], // Sports
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Additional Family Groups with Housing (to cover all campers)
-  {
-    id: 'unified-group-016',
-    name: 'Wolves Family',
-    description: 'Family group in Cabin 3',
-    colorId: generateId('color', 2), // Forest Green
-    sessionId: generateId('session', 1),
-    housingRoomId: generateId('sleeping', 3),
-    camperIds: [
-      generateId('camper', 8), 
-      generateId('camper', 9), 
-      generateId('camper', 10)
-    ],
-    staffIds: [generateId('staff', 5), generateId('staff', 6)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+    id: generateId(),
+    name: 'First Aid',
+    description: 'Basic first aid and CPR certification',
+    expirationRequired: true,
+    validityPeriodMonths: 24,
+    createdAt: octoberDate(1)
   },
   {
-    id: 'unified-group-017',
-    name: 'Butterflies Family',
-    description: 'Family group in Cabin 4',
-    colorId: generateId('color', 5), // Flamingo Pink
-    sessionId: generateId('session', 1),
-    housingRoomId: generateId('sleeping', 4),
-    camperIds: [
-      generateId('camper', 11), 
-      generateId('camper', 12), 
-      generateId('camper', 13)
-    ],
-    staffIds: [generateId('staff', 7), generateId('staff', 8)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+    id: generateId(),
+    name: 'Lifeguard',
+    description: 'Certified lifeguard for water activities',
+    expirationRequired: true,
+    validityPeriodMonths: 12,
+    createdAt: octoberDate(1)
   },
   {
-    id: 'unified-group-018',
-    name: 'Fireflies Family',
-    description: 'Family group in Cabin 5',
-    colorId: generateId('color', 3), // Sunset Orange
-    sessionId: generateId('session', 2),
-    housingRoomId: generateId('sleeping', 5),
-    camperIds: [
-      generateId('camper', 14), 
-      generateId('camper', 15), 
-      generateId('camper', 16)
-    ],
-    staffIds: [generateId('staff', 9)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+    id: generateId(),
+    name: 'Wilderness Survival',
+    description: 'Outdoor survival and navigation skills',
+    expirationRequired: false,
+    createdAt: octoberDate(1)
   },
   {
-    id: 'unified-group-019',
-    name: 'Tigers Family',
-    description: 'Family group in Cabin 6',
-    colorId: generateId('color', 1), // Ocean Blue
-    sessionId: generateId('session', 2),
-    housingRoomId: generateId('sleeping', 6),
-    camperIds: [
-      generateId('camper', 17), 
-      generateId('camper', 18), 
-      generateId('camper', 19)
-    ],
-    staffIds: [generateId('staff', 10), generateId('staff', 11)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+    id: generateId(),
+    name: 'Archery Instructor',
+    description: 'Certified to teach archery',
+    expirationRequired: true,
+    validityPeriodMonths: 36,
+    createdAt: octoberDate(1)
   },
   {
-    id: 'unified-group-020',
-    name: 'Bears Family',
-    description: 'Family group in Cabin 7',
-    colorId: generateId('color', 6), // Fire Red
-    sessionId: generateId('session', 2),
-    housingRoomId: generateId('sleeping', 7),
-    camperIds: [
-      generateId('camper', 20), 
-      generateId('camper', 21), 
-      generateId('camper', 22)
-    ],
-    staffIds: [generateId('staff', 12)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: 'unified-group-021',
-    name: 'Panthers Family',
-    description: 'Family group in Cabin 8',
-    colorId: generateId('color', 4), // Royal Purple
-    sessionId: generateId('session', 3),
-    housingRoomId: generateId('sleeping', 8),
-    camperIds: [
-      generateId('camper', 23), 
-      generateId('camper', 24), 
-      generateId('camper', 25)
-    ],
-    staffIds: [generateId('staff', 13), generateId('staff', 14)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: 'unified-group-022',
-    name: 'Foxes Family',
-    description: 'Family group in Cabin 9',
-    colorId: generateId('color', 7), // Teal Wave
-    sessionId: generateId('session', 3),
-    housingRoomId: generateId('sleeping', 9),
-    camperIds: [
-      generateId('camper', 26), 
-      generateId('camper', 27), 
-      generateId('camper', 28)
-    ],
-    staffIds: [generateId('staff', 15)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: 'unified-group-023',
-    name: 'Owls Family',
-    description: 'Family group in Cabin 10',
-    colorId: generateId('color', 8), // Indigo Night
-    sessionId: generateId('session', 3),
-    housingRoomId: generateId('sleeping', 10),
-    camperIds: [
-      generateId('camper', 29), 
-      generateId('camper', 30), 
-      generateId('camper', 31)
-    ],
-    staffIds: [generateId('staff', 16), generateId('staff', 17)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: 'unified-group-024',
-    name: 'Ravens Family',
-    description: 'Family group in Cabin 11',
-    colorId: generateId('color', 2), // Forest Green
-    sessionId: generateId('session', 4),
-    housingRoomId: generateId('sleeping', 11),
-    camperIds: [
-      generateId('camper', 32), 
-      generateId('camper', 33), 
-      generateId('camper', 34)
-    ],
-    staffIds: [generateId('staff', 18)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: 'unified-group-025',
-    name: 'Falcons Family',
-    description: 'Family group in Cabin 12',
-    colorId: generateId('color', 1), // Ocean Blue
-    sessionId: generateId('session', 4),
-    housingRoomId: generateId('sleeping', 12),
-    camperIds: [
-      generateId('camper', 35), 
-      generateId('camper', 36), 
-      generateId('camper', 37)
-    ],
-    staffIds: [generateId('staff', 19), generateId('staff', 20)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: 'unified-group-026',
-    name: 'Cougars Family',
-    description: 'Family group in Cabin 13',
-    colorId: generateId('color', 5), // Flamingo Pink
-    sessionId: generateId('session', 4),
-    housingRoomId: generateId('sleeping', 13),
-    camperIds: [
-      generateId('camper', 38), 
-      generateId('camper', 39), 
-      generateId('camper', 40)
-    ],
-    staffIds: [generateId('staff', 21)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: 'unified-group-027',
-    name: 'Lynx Family',
-    description: 'Family group in Cabin 14',
-    colorId: generateId('color', 3), // Sunset Orange
-    sessionId: generateId('session', 5),
-    housingRoomId: generateId('sleeping', 14),
-    camperIds: [
-      generateId('camper', 41), 
-      generateId('camper', 42), 
-      generateId('camper', 43)
-    ],
-    staffIds: [generateId('staff', 22), generateId('staff', 23)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: 'unified-group-028',
-    name: 'Otters Family',
-    description: 'Family group in Cabin 15',
-    colorId: generateId('color', 6), // Fire Red
-    sessionId: generateId('session', 5),
-    housingRoomId: generateId('sleeping', 15),
-    camperIds: [
-      generateId('camper', 44), 
-      generateId('camper', 45), 
-      generateId('camper', 46)
-    ],
-    staffIds: [generateId('staff', 24)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: 'unified-group-029',
-    name: 'Beavers Family',
-    description: 'Family group in Cabin 16',
-    colorId: generateId('color', 4), // Royal Purple
-    sessionId: generateId('session', 5),
-    housingRoomId: generateId('sleeping', 16),
-    camperIds: [
-      generateId('camper', 47), 
-      generateId('camper', 48), 
-      generateId('camper', 49)
-    ],
-    staffIds: [generateId('staff', 25), generateId('staff', 26)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: 'unified-group-030',
-    name: 'Moose Family',
-    description: 'Family group in Cabin 17',
-    colorId: generateId('color', 7), // Teal Wave
-    sessionId: generateId('session', 1),
-    housingRoomId: generateId('sleeping', 17),
-    camperIds: [
-      generateId('camper', 53), 
-      generateId('camper', 54), 
-      generateId('camper', 55)
-    ],
-    staffIds: [generateId('staff', 27)],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+    id: generateId(),
+    name: 'Arts & Crafts Instructor',
+    description: 'Art education and safety certification',
+    expirationRequired: false,
+    createdAt: octoberDate(1)
   },
 ];
 
-// Generate many campers - expanded name lists
-const firstNames = {
-  male: [
-    'Liam', 'Noah', 'Oliver', 'Elijah', 'James', 'William', 'Benjamin', 'Lucas', 'Henry', 'Alexander',
-    'Mason', 'Michael', 'Ethan', 'Daniel', 'Jacob', 'Logan', 'Jackson', 'Levi', 'Sebastian', 'Mateo',
-    'Jack', 'Owen', 'Theodore', 'Aiden', 'Samuel', 'Joseph', 'John', 'David', 'Wyatt', 'Matthew',
-    'Luke', 'Asher', 'Carter', 'Julian', 'Grayson', 'Leo', 'Jayden', 'Gabriel', 'Isaac', 'Lincoln',
-    'Anthony', 'Hudson', 'Dylan', 'Ezra', 'Thomas', 'Charles', 'Christopher', 'Jaxon', 'Maverick', 'Josiah'
-  ],
-  female: [
-    'Emma', 'Olivia', 'Ava', 'Isabella', 'Sophia', 'Charlotte', 'Mia', 'Amelia', 'Harper', 'Evelyn',
-    'Abigail', 'Emily', 'Elizabeth', 'Mila', 'Ella', 'Avery', 'Sofia', 'Camila', 'Aria', 'Scarlett',
-    'Victoria', 'Madison', 'Luna', 'Grace', 'Chloe', 'Penelope', 'Layla', 'Riley', 'Zoey', 'Nora',
-    'Lily', 'Eleanor', 'Hannah', 'Lillian', 'Addison', 'Aubrey', 'Ellie', 'Stella', 'Natalie', 'Zoe',
-    'Leah', 'Hazel', 'Violet', 'Aurora', 'Savannah', 'Audrey', 'Brooklyn', 'Bella', 'Claire', 'Skylar'
-  ]
-};
+// Staff Members (10 staff)
+export const staffMembers: StaffMember[] = [
+  {
+    id: generateId(),
+    firstName: 'Sarah',
+    lastName: 'Johnson',
+    role: 'director',
+    email: 'sarah.johnson@camp.com',
+    phone: '555-0101',
+    certificationIds: [certifications[0].id, certifications[2].id],
+    photoUrl: 'https://i.pravatar.cc/150?u=sarah'
+  },
+  {
+    id: generateId(),
+    firstName: 'Michael',
+    lastName: 'Chen',
+    role: 'supervisor',
+    email: 'michael.chen@camp.com',
+    phone: '555-0102',
+    certificationIds: [certifications[0].id, certifications[1].id],
+    photoUrl: 'https://i.pravatar.cc/150?u=michael'
+  },
+  {
+    id: generateId(),
+    firstName: 'Emily',
+    lastName: 'Rodriguez',
+    role: 'counselor',
+    email: 'emily.rodriguez@camp.com',
+    phone: '555-0103',
+    certificationIds: [certifications[0].id, certifications[4].id],
+    photoUrl: 'https://i.pravatar.cc/150?u=emily'
+  },
+  {
+    id: generateId(),
+    firstName: 'David',
+    lastName: 'Thompson',
+    role: 'counselor',
+    email: 'david.thompson@camp.com',
+    phone: '555-0104',
+    certificationIds: [certifications[0].id, certifications[1].id],
+    photoUrl: 'https://i.pravatar.cc/150?u=david'
+  },
+  {
+    id: generateId(),
+    firstName: 'Jessica',
+    lastName: 'Martinez',
+    role: 'nurse',
+    email: 'jessica.martinez@camp.com',
+    phone: '555-0105',
+    certificationIds: [certifications[0].id],
+    photoUrl: 'https://i.pravatar.cc/150?u=jessica'
+  },
+  {
+    id: generateId(),
+    firstName: 'Ryan',
+    lastName: 'Anderson',
+    role: 'instructor',
+    email: 'ryan.anderson@camp.com',
+    phone: '555-0106',
+    certificationIds: [certifications[0].id, certifications[3].id],
+    photoUrl: 'https://i.pravatar.cc/150?u=ryan'
+  },
+  {
+    id: generateId(),
+    firstName: 'Amanda',
+    lastName: 'White',
+    role: 'counselor',
+    email: 'amanda.white@camp.com',
+    phone: '555-0107',
+    certificationIds: [certifications[0].id, certifications[2].id],
+    photoUrl: 'https://i.pravatar.cc/150?u=amanda'
+  },
+  {
+    id: generateId(),
+    firstName: 'Christopher',
+    lastName: 'Lee',
+    role: 'instructor',
+    email: 'chris.lee@camp.com',
+    phone: '555-0108',
+    certificationIds: [certifications[0].id, certifications[4].id],
+    photoUrl: 'https://i.pravatar.cc/150?u=chris'
+  },
+  {
+    id: generateId(),
+    firstName: 'Rachel',
+    lastName: 'Brown',
+    role: 'counselor',
+    email: 'rachel.brown@camp.com',
+    phone: '555-0109',
+    certificationIds: [certifications[0].id, certifications[1].id],
+    photoUrl: 'https://i.pravatar.cc/150?u=rachel'
+  },
+  {
+    id: generateId(),
+    firstName: 'Daniel',
+    lastName: 'Wilson',
+    role: 'counselor',
+    email: 'daniel.wilson@camp.com',
+    phone: '555-0110',
+    certificationIds: [certifications[0].id, certifications[2].id],
+    photoUrl: 'https://i.pravatar.cc/150?u=daniel'
+  },
+];
 
-const lastNames = [
+// Set manager IDs after array creation
+staffMembers[1].managerId = staffMembers[0].id; // Michael reports to Sarah
+staffMembers[2].managerId = staffMembers[1].id; // Emily reports to Michael
+staffMembers[3].managerId = staffMembers[1].id; // David reports to Michael
+staffMembers[4].managerId = staffMembers[0].id; // Jessica reports to Sarah
+staffMembers[5].managerId = staffMembers[1].id; // Ryan reports to Michael
+staffMembers[6].managerId = staffMembers[1].id; // Amanda reports to Michael
+staffMembers[7].managerId = staffMembers[1].id; // Christopher reports to Michael
+staffMembers[8].managerId = staffMembers[1].id; // Rachel reports to Michael
+staffMembers[9].managerId = staffMembers[1].id; // Daniel reports to Michael
+
+// Groups (6 groups with housing rooms)
+export const groups: Group[] = [
+  {
+    id: generateId(),
+    name: 'Eagles Group',
+    description: 'Adventurous group in Eagles Nest',
+    housingRoomId: housingRooms[0].id,
+    staffIds: [staffMembers[2].id, staffMembers[3].id],
+    sessionId: sessions[0].id,
+    colorId: colors[0].id,
+    camperIds: [], // Will be populated after campers are created
+    labelIds: [],
+    createdAt: octoberDate(1)
+  },
+  {
+    id: generateId(),
+    name: 'Bears Group',
+    description: 'Strong and brave Bears group',
+    housingRoomId: housingRooms[1].id,
+    staffIds: [staffMembers[6].id, staffMembers[7].id],
+    sessionId: sessions[1].id,
+    colorId: colors[1].id,
+    camperIds: [],
+    labelIds: [],
+    createdAt: octoberDate(1)
+  },
+  {
+    id: generateId(),
+    name: 'Wolves Group',
+    description: 'Pack-minded Wolves team',
+    housingRoomId: housingRooms[2].id,
+    staffIds: [staffMembers[8].id],
+    sessionId: sessions[2].id,
+    colorId: colors[2].id,
+    camperIds: [],
+    labelIds: [],
+    createdAt: octoberDate(1)
+  },
+  {
+    id: generateId(),
+    name: 'Hawks Group',
+    description: 'Sharp-eyed Hawks group',
+    housingRoomId: housingRooms[3].id,
+    staffIds: [staffMembers[9].id],
+    sessionId: sessions[3].id,
+    colorId: colors[3].id,
+    camperIds: [],
+    labelIds: [],
+    createdAt: octoberDate(1)
+  },
+  {
+    id: generateId(),
+    name: 'Deer Group',
+    description: 'Graceful and gentle Deer cabin',
+    housingRoomId: housingRooms[4].id,
+    staffIds: [staffMembers[2].id],
+    sessionId: sessions[4].id,
+    colorId: colors[4].id,
+    camperIds: [],
+    labelIds: [],
+    createdAt: octoberDate(1)
+  },
+  {
+    id: generateId(),
+    name: 'Fox Group',
+    description: 'Clever Fox Den residents',
+    housingRoomId: housingRooms[5].id,
+    staffIds: [staffMembers[6].id],
+    sessionId: sessions[5].id,
+    colorId: colors[5].id,
+    camperIds: [],
+    labelIds: [],
+    createdAt: octoberDate(1)
+  },
+];
+
+// Campers (50 campers, distributed across groups)
+const camperFirstNames = [
+  'Alex', 'Bailey', 'Charlie', 'Dakota', 'Ellis', 'Finley', 'Gray', 'Harper', 'Indigo', 'Jordan',
+  'Kai', 'Logan', 'Morgan', 'Noah', 'Olive', 'Parker', 'Quinn', 'River', 'Sage', 'Taylor',
+  'Uma', 'Val', 'Wren', 'Xander', 'Yuki', 'Zara', 'Avery', 'Blake', 'Casey', 'Drew',
+  'Emery', 'Frankie', 'Genesis', 'Hayden', 'Iris', 'Jules', 'Kendall', 'Lane', 'Marley', 'Noel',
+  'Ocean', 'Peyton', 'Quincy', 'Reese', 'Skylar', 'Tatum', 'Unity', 'Vienna', 'Winter', 'Zion'
+];
+
+const camperLastNames = [
   'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
   'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
   'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson',
@@ -862,1628 +433,399 @@ const lastNames = [
   'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts'
 ];
 
-const allergies = ['Peanuts', 'Tree nuts', 'Dairy', 'Eggs', 'Soy', 'Wheat', 'Fish', 'Shellfish', 'Sesame', 'Gluten'];
+export const campers: Camper[] = [];
 
-const generateCampers = (count: number, familyGroupIds: string[]): Camper[] => {
-  const campers: Camper[] = [];
-  let maleCount = 0;
-  let femaleCount = 0;
-  
-  // Create a more unique name pairing by using different cycling rates
-  // This ensures that first and last names don't repeat in the same pattern
-  for (let i = 1; i <= count; i++) {
-    const gender: 'male' | 'female' = i % 2 === 0 ? 'male' : 'female';
-    const genderNames = firstNames[gender];
-    const nameIndex = gender === 'male' ? maleCount++ : femaleCount++;
+// Distribute campers across groups
+const campersPerGroup = [10, 10, 8, 8, 10, 4]; // Matches housing room bed counts
+
+let camperIndex = 0;
+groups.forEach((group, groupIndex) => {
+  const numCampers = campersPerGroup[groupIndex];
+  for (let i = 0; i < numCampers; i++) {
+    const gender = Math.random() > 0.5 ? 'male' : 'female';
+    const age = 8 + Math.floor(Math.random() * 7); // Ages 8-14
+    const hasAllergies = Math.random() > 0.8;
     
-    // Use different offsets for first and last names to create more unique combinations
-    const firstNameIndex = nameIndex % genderNames.length;
-    // Use a prime number offset (17) to ensure different pairing patterns
-    const lastNameIndex = ((i - 1) * 17) % lastNames.length;
-    
-    const firstName = genderNames[firstNameIndex];
-    const lastName = lastNames[lastNameIndex];
-    const age = 6 + (i % 10); // Ages 6-15
-    
-    // Distribute campers evenly across family groups with housing
-    const groupIndex = (i - 1) % familyGroupIds.length;
-    const groupId = familyGroupIds[groupIndex];
-    
-    // 20% chance of having an allergy
-    const hasAllergy = (i * 7) % 100 < 20;
-    const camperAllergies = hasAllergy ? [allergies[i % allergies.length]] : [];
-    
-    // Distribute campers across 5 sessions evenly
-    const sessionIndex = (i % 5) + 1;
-    const sessionId = generateId('session', sessionIndex);
-    
-    campers.push({
-      id: generateId('camper', i),
-      firstName,
-      lastName,
+    const camper: Camper = {
+      id: generateId(),
+      firstName: camperFirstNames[camperIndex],
+      lastName: camperLastNames[camperIndex],
       age,
       gender,
-      parentContact: `parent${i}@example.com`,
-      allergies: camperAllergies,
-      medicalNotes: hasAllergy ? `Please avoid ${camperAllergies[0]}` : undefined,
-      registrationDate: new Date(2025, 5, 1 + (i % 7)).toISOString(),
-      familyGroupId: groupId,
-      sessionId,
-    });
+      parentContact: `parent${camperIndex + 1}@email.com`,
+      allergies: hasAllergies ? ['Peanuts', 'Dairy'].slice(0, Math.ceil(Math.random() * 2)) : [],
+      medicalNotes: hasAllergies ? 'Please check meal ingredients' : undefined,
+      photoUrl: `https://i.pravatar.cc/150?u=camper${camperIndex}`,
+      registrationDate: octoberDate(1, 10, camperIndex),
+      sessionId: group.sessionId,
+      housingRoomId: group.housingRoomId
+    };
+    
+    campers.push(camper);
+    group.camperIds!.push(camper.id); // Add camper ID to group
+    
+    camperIndex++;
   }
-  
-  return campers;
-};
+});
 
-// Family groups with housing - only these should be assigned to campers
-const familyGroupsWithHousing = [
-  'unified-group-002', // Eagles Family
-  'unified-group-003', // Hawks Family
-  'unified-group-013', // Dolphins Family
-  'unified-group-016', // Wolves Family
-  'unified-group-017', // Butterflies Family
-  'unified-group-018', // Fireflies Family
-  'unified-group-019', // Tigers Family
-  'unified-group-020', // Bears Family
-  'unified-group-021', // Panthers Family
-  'unified-group-022', // Foxes Family
-  'unified-group-023', // Owls Family
-  'unified-group-024', // Ravens Family
-  'unified-group-025', // Falcons Family
-  'unified-group-026', // Cougars Family
-  'unified-group-027', // Lynx Family
-  'unified-group-028', // Otters Family
-  'unified-group-029', // Beavers Family
-  'unified-group-030', // Moose Family
-];
-
-export const mockCampers: Camper[] = generateCampers(350, familyGroupsWithHousing);
-
-// Generate staff members
-const staffFirstNames = [
-  'Sarah', 'James', 'Mike', 'Jessica', 'David', 'Rachel', 'Tom', 'Amanda', 'Chris', 'Emily',
-  'Marcus', 'Lisa', 'Brian', 'Jennifer', 'Kevin', 'Nicole', 'Ryan', 'Ashley', 'Eric', 'Melissa',
-  'Daniel', 'Laura', 'Justin', 'Stephanie', 'Matthew', 'Michelle', 'Andrew', 'Angela', 'Joshua', 'Heather',
-  'Brandon', 'Amber', 'Tyler', 'Rebecca', 'Jason', 'Christina', 'Aaron', 'Megan', 'Adam', 'Kimberly',
-  'Nathan', 'Amy', 'Zachary', 'Brittany', 'Kyle', 'Samantha', 'Jacob', 'Katherine', 'Patrick', 'Christine'
-];
-
-const staffLastNames = [
-  'Connor', 'Rodriguez', 'Peterson', 'Lee', 'Chen', 'Martinez', 'Wilson', 'Foster', 'Bryant', 'Davis',
-  'Thompson', 'Kim', 'Anderson', 'White', 'Harris', 'Clark', 'Lewis', 'Walker', 'Hall', 'Allen',
-  'Young', 'King', 'Wright', 'Lopez', 'Hill', 'Scott', 'Green', 'Adams', 'Baker', 'Gonzalez',
-  'Nelson', 'Carter', 'Mitchell', 'Perez', 'Roberts', 'Turner', 'Phillips', 'Campbell', 'Parker', 'Evans',
-  'Edwards', 'Collins', 'Stewart', 'Sanchez', 'Morris', 'Rogers', 'Reed', 'Cook', 'Morgan', 'Bell'
-];
-
-const certificationCombos = [
-  [1, 2, 3, 6], // First Aid, CPR, Wilderness First Aid, Climbing Instructor
-  [1, 2, 3, 8], // First Aid, CPR, Wilderness First Aid, Ropes Course
-  [1, 2, 7], // First Aid, CPR, Archery
-  [4, 5, 2, 1], // Lifeguard, Swimming Instructor, CPR, First Aid
-  [4, 5, 9, 2, 1], // Lifeguard, Swimming Instructor, Boat Driver, CPR, First Aid
-  [1, 2, 4, 9], // First Aid, CPR, Lifeguard, Boat Driver
-  [1, 2, 8, 6], // First Aid, CPR, Ropes Course, Climbing
-  [4, 5, 2, 1], // Lifeguard, Swimming Instructor, CPR, First Aid (repeat for more coverage)
-  [1, 2, 6], // First Aid, CPR, Climbing Instructor (more climbing instructors)
-  [1, 2, 7], // First Aid, CPR, Archery (more archery instructors)
-];
-
-const generateStaff = (count: number): StaffMember[] => {
-  const staff: StaffMember[] = [];
-  
-  // Director
-  staff.push({
-    id: generateId('staff', 1),
-    firstName: 'Sarah',
-    lastName: 'Connor',
-    role: 'director',
-    email: 'sarah.connor@camp.com',
-    phone: '555-0101',
-    certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3), generateId('cert', 6)],
-    managerId: undefined,
-  });
-  
-  // Supervisors (4 total - reporting to director)
-  for (let i = 2; i <= 5; i++) {
-    const certCombo = certificationCombos[(i - 2) % certificationCombos.length];
-    staff.push({
-      id: generateId('staff', i),
-      firstName: staffFirstNames[i - 1],
-      lastName: staffLastNames[i - 1],
-    role: 'supervisor',
-      email: `${staffFirstNames[i - 1].toLowerCase()}.${staffLastNames[i - 1].toLowerCase()}@camp.com`,
-      phone: `555-${String(100 + i).padStart(4, '0')}`,
-      certificationIds: certCombo.map(c => generateId('cert', c)),
-      managerId: generateId('staff', 1),
-    });
-  }
-  
-  // Nurses (2 - reporting to director)
-  for (let i = 6; i <= 7; i++) {
-    staff.push({
-      id: generateId('staff', i),
-      firstName: staffFirstNames[i - 1],
-      lastName: staffLastNames[i - 1],
-    role: 'nurse',
-      email: `${staffFirstNames[i - 1].toLowerCase()}.${staffLastNames[i - 1].toLowerCase()}@camp.com`,
-      phone: `555-${String(100 + i).padStart(4, '0')}`,
-      certificationIds: [generateId('cert', 1), generateId('cert', 2), generateId('cert', 3)],
-      managerId: generateId('staff', 1),
-    });
-  }
-  
-  // Rest of staff (counselors and instructors - reporting to supervisors)
-  const roles: Array<'counselor' | 'instructor'> = ['counselor', 'instructor'];
-  for (let i = 8; i <= count; i++) {
-    const role = roles[(i - 8) % 2];
-    const supervisorId = 2 + ((i - 8) % 4); // Cycle through supervisors 2-5
-    const certCombo = certificationCombos[(i - 8) % certificationCombos.length];
-    
-    staff.push({
-      id: generateId('staff', i),
-      firstName: staffFirstNames[i % staffFirstNames.length],
-      lastName: staffLastNames[i % staffLastNames.length],
-      role,
-      email: `${staffFirstNames[i % staffFirstNames.length].toLowerCase()}.${staffLastNames[i % staffLastNames.length].toLowerCase()}@camp.com`,
-      phone: `555-${String(100 + i).padStart(4, '0')}`,
-      certificationIds: certCombo.map(c => generateId('cert', c)),
-      managerId: generateId('staff', supervisorId),
-    });
-  }
-  
-  return staff;
-};
-
-export const mockStaffMembers: StaffMember[] = generateStaff(50);
-
-export const mockRooms: Location[] = [
+// Programs (4 programs)
+export const programs: Program[] = [
   {
-    id: generateId('room', 1),
-    name: 'Main Hall',
-    capacity: 50,
-    type: 'activity',
-    areaId: generateId('location', 1),
-    equipment: ['Projector', 'Sound System', 'Tables', 'Chairs'],
+    id: generateId(),
+    name: 'Outdoor Adventures',
+    description: 'Hiking, camping, and wilderness exploration',
+    colorId: colors[2].id,
+    activityIds: [], // Will be filled after activities are created
+    staffMemberIds: [staffMembers[5].id, staffMembers[6].id, staffMembers[9].id],
+    locationIds: [locations[8].id, locations[9].id, locations[10].id],
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('room', 2),
-    name: 'Art Studio',
-    capacity: 15,
-    type: 'arts',
-    areaId: generateId('location', 2),
-    equipment: ['Easels', 'Paint Supplies', 'Clay', 'Kiln'],
+    id: generateId(),
+    name: 'Water Sports',
+    description: 'Swimming, kayaking, and water safety',
+    colorId: colors[0].id,
+    activityIds: [],
+    staffMemberIds: [staffMembers[3].id, staffMembers[8].id],
+    locationIds: [locations[5].id, locations[6].id, locations[7].id],
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('room', 3),
-    name: 'Sports Field',
-    capacity: 30,
-    type: 'sports',
-    areaId: generateId('location', 4),
-    equipment: ['Soccer Goals', 'Cones', 'Balls'],
+    id: generateId(),
+    name: 'Arts & Creativity',
+    description: 'Painting, crafts, music, and creative expression',
+    colorId: colors[4].id,
+    activityIds: [],
+    staffMemberIds: [staffMembers[2].id, staffMembers[7].id],
+    locationIds: [locations[2].id, locations[14].id, locations[15].id],
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('room', 4),
-    name: 'Swimming Pool',
-    capacity: 20,
-    type: 'sports',
-    areaId: generateId('location', 5),
-    equipment: ['Pool Noodles', 'Kickboards', 'Life Vests'],
-  },
-  {
-    id: generateId('room', 5),
-    name: 'Classroom A',
-    capacity: 20,
-    type: 'classroom',
-    areaId: generateId('location', 3),
-    equipment: ['Whiteboard', 'Desks', 'Books', 'Computers'],
-  },
-  {
-    id: generateId('room', 6),
-    name: 'Dining Hall',
-    capacity: 60,
-    type: 'dining',
-    areaId: generateId('location', 3),
-    equipment: ['Tables', 'Benches', 'Kitchen Access'],
-  },
-  {
-    id: generateId('room', 7),
-    name: 'Outdoor Plaza',
-    capacity: 40,
-    type: 'outdoor',
-    areaId: generateId('location', 6),
-    equipment: ['Picnic Tables', 'Shade Structures', 'Water Fountain'],
-  },
-  {
-    id: generateId('room', 8),
-    name: 'Music Room',
-    capacity: 15,
-    type: 'arts',
-    areaId: generateId('location', 2),
-    equipment: ['Piano', 'Guitars', 'Drums', 'Microphones'],
-  },
-  {
-    id: generateId('room', 9),
-    name: 'Basketball Court',
-    capacity: 20,
-    type: 'sports',
-    areaId: generateId('location', 7),
-    equipment: ['Basketballs', 'Scoreboard', 'Benches'],
-  },
-  {
-    id: generateId('room', 10),
-    name: 'Theater Stage',
-    capacity: 25,
-    type: 'arts',
-    areaId: generateId('location', 1),
-    equipment: ['Stage', 'Costumes', 'Props', 'Lighting'],
+    id: generateId(),
+    name: 'Sports & Games',
+    description: 'Team sports, games, and physical activities',
+    colorId: colors[1].id,
+    activityIds: [],
+    staffMemberIds: [staffMembers[3].id, staffMembers[5].id, staffMembers[9].id],
+    locationIds: [locations[3].id, locations[4].id, locations[13].id],
+    createdAt: octoberDate(1)
   },
 ];
 
-// Helper to create events for the month
-const createEvent = (
-  id: number,
-  title: string,
-  dayOffset: number, // 0 = today, 1 = tomorrow, etc.
-  startHour: number,
-  durationHours: number,
-  locationId: string,
-  capacity: number,
-  groupIds: string[],
-  colorId: string,
-  requiredCerts?: string[],
-  programId?: string,
-  activityId?: string,
-  excludeStaffIds?: string[],
-  excludeCamperIds?: string[]
-): Event => {
-  const today = new Date();
-  const eventDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + dayOffset, startHour, 0);
-  const endTime = new Date(eventDate.getTime() + durationHours * 60 * 60 * 1000);
-
-  return {
-    id: generateId('event', id),
-    title,
-    startTime: eventDate.toISOString(),
-    endTime: endTime.toISOString(),
-    locationId,
-    capacity,
-    groupIds,
-    excludeStaffIds,
-    excludeCamperIds,
-    colorId,
-    requiredCertifications: requiredCerts,
-    programId,
-    activityId,
-  };
-};
-
-// Generate a full month of varied events
-const generateMonthEvents = (): Event[] => {
-  const events: Event[] = [];
-  let eventId = 1;
-  
-  // Helper to get groups for events
-  const getGroups = (count: number, startIdx: number, includeFamilyGroups: boolean = true) => {
-    const groups = [];
-    
-    // Mix of camper groups (5 total) and family groups (24 total)
-    if (count <= 2) {
-      // Small events: use 1-2 camper groups
-      for (let i = 0; i < count; i++) {
-        const groupIdx = ((startIdx + i) % 5) + 1;
-        groups.push(generateId('group', groupIdx));
-      }
-    } else if (count <= 5 && includeFamilyGroups) {
-      // Medium events: use 2-5 family groups
-      for (let i = 0; i < count; i++) {
-        const familyIdx = ((startIdx + i) % 24) + 1;
-        groups.push(generateId('family', familyIdx));
-      }
-    } else {
-      // Large events: mix of camper groups and some family groups
-      const camperGroupCount = Math.min(3, Math.floor(count / 2));
-      const familyGroupCount = Math.min(count - camperGroupCount, 6);
-      
-      for (let i = 0; i < camperGroupCount; i++) {
-        const groupIdx = ((startIdx + i) % 5) + 1;
-        groups.push(generateId('group', groupIdx));
-      }
-      
-      if (includeFamilyGroups) {
-        for (let i = 0; i < familyGroupCount; i++) {
-          const familyIdx = ((startIdx + i) % 24) + 1;
-          groups.push(generateId('family', familyIdx));
-        }
-      }
-    }
-    
-    return groups;
-  };
-  
-  // Get current month details
-  const today = new Date();
-  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-  const startDay = 1 - today.getDate(); // Start from the 1st of the month
-  
-  // Generate events for all days in the month
-  for (let day = startDay; day < startDay + daysInMonth; day++) {
-    const dayMod = Math.abs(day) % 7;
-    const groupOffset = Math.abs(day);
-    
-    // Morning Assembly (9:00-9:30) - Large groups (not every day)
-    if (dayMod === 1 || dayMod === 3 || dayMod === 5) {
-      events.push(createEvent(
-        eventId++,
-        'Morning Assembly',
-        day,
-        9,
-        0.5,
-        generateId('room', 1),
-        150,
-        getGroups(8, groupOffset), // All camper groups + some family groups
-        mockColors[7].id,
-      ));
-    }
-    
-    // Morning Activities Block 1 (10:00-11:30)
-    // Multiple concurrent activities with different groups
-    if (dayMod === 0 || dayMod === 3) {
-      // Pottery from Arts & Crafts Program - Junior Campers
-      events.push(createEvent(
-        eventId++,
-        'Pottery',
-        day,
-        10,
-        1.5,
-        generateId('room', 2),
-        15,
-        [generateId('group', 1)], // Junior Campers
-        mockColors[5].id,
-        undefined,
-        generateId('program', 2),
-        generateId('activity', 5)
-      ));
-      // Soccer - Middle Age and some family groups
-      events.push(createEvent(
-        eventId++,
-        'Soccer',
-        day,
-        10,
-        1.5,
-        generateId('room', 3),
-        25,
-        [generateId('group', 3), generateId('family', 1 + (groupOffset % 24))],
-        mockColors[3].id,
-        undefined,
-        generateId('program', 6),
-        generateId('activity', 21)
-      ));
-      // Theater Workshop - Senior Campers
-      events.push(createEvent(
-        eventId++,
-        'Theater Workshop',
-        day,
-        10,
-        1.5,
-        generateId('room', 10),
-        20,
-        [generateId('group', 2)], // Senior Campers
-        mockColors[4].id,
-        undefined,
-        generateId('program', 4),
-        generateId('activity', 13)
-      ));
-      // Nature Hike - Mixed groups
-      events.push(createEvent(
-        eventId++,
-        'Nature Hike',
-        day,
-        10,
-        2,
-        generateId('room', 7),
-        20,
-        getGroups(3, groupOffset + 1),
-        mockColors[7].id,
-        undefined,
-        generateId('program', 5),
-        generateId('activity', 17)
-      ));
-    } else if (dayMod === 1 || dayMod === 4) {
-      // Swimming Lessons from Watersports Program
-      events.push(createEvent(
-        eventId++,
-        'Swimming Lessons',
-        day,
-        10,
-        1,
-        generateId('room', 4),
-        15,
-        [generateId('family', 1 + (groupOffset % 24)), generateId('family', 1 + ((groupOffset + 1) % 24))],
-        mockColors[7].id,
-        ['Lifeguard', 'Swimming Instructor'],
-        generateId('program', 1),
-        generateId('activity', 2)
-      ));
-      // Painting Workshop - Girls Power group
-      events.push(createEvent(
-        eventId++,
-        'Painting Workshop',
-        day,
-        10,
-        1.25,
-        generateId('room', 2),
-        18,
-        [generateId('group', 4)], // Girls Power
-        mockColors[5].id,
-        undefined,
-        generateId('program', 2),
-        generateId('activity', 6)
-      ));
-      // Basketball - Mixed groups
-      events.push(createEvent(
-        eventId++,
-        'Basketball',
-        day,
-        10,
-        1.5,
-        generateId('room', 9),
-        20,
-        getGroups(2, groupOffset + 2),
-        mockColors[3].id,
-        undefined,
-        generateId('program', 6),
-        generateId('activity', 22)
-      ));
-      // Coding Basics - Junior and Middle Age
-      events.push(createEvent(
-        eventId++,
-        'Coding Basics',
-        day,
-        10,
-        1.5,
-        generateId('room', 5),
-        15,
-        [generateId('group', 1), generateId('group', 3)],
-        mockColors[2].id,
-        undefined,
-        generateId('program', 9),
-        generateId('activity', 31)
-      ));
-    } else if (dayMod === 2 || dayMod === 5) {
-      // Rock Climbing from Adventure Sports Program
-      events.push(createEvent(
-        eventId++,
-        'Rock Climbing',
-        day,
-        10,
-        1.5,
-        generateId('room', 3),
-        12,
-        [generateId('group', 2)], // Senior Campers
-        mockColors[2].id,
-        ['Climbing Instructor', 'First Aid'],
-        generateId('program', 3),
-        generateId('activity', 9)
-      ));
-      // Archery - Multiple groups
-      events.push(createEvent(
-        eventId++,
-        'Archery',
-        day,
-        10,
-        1,
-        generateId('room', 7),
-        15,
-        [generateId('group', 3), generateId('family', 1 + (groupOffset % 24))],
-        mockColors[2].id,
-        ['Archery Instructor'],
-        generateId('program', 3),
-        generateId('activity', 10)
-      ));
-      // Music Jam Session - Family groups
-      events.push(createEvent(
-        eventId++,
-        'Music Jam Session',
-        day,
-        10,
-        1,
-        generateId('room', 8),
-        15,
-        getGroups(2, groupOffset + 3),
-        mockColors[4].id,
-        undefined,
-        generateId('program', 4),
-        generateId('activity', 14)
-      ));
-      // Baking Class - Allergy-Aware Group with some exclusions
-      const excludedCampers = day === startDay ? [generateId('camper', 1), generateId('camper', 15)] : undefined;
-      events.push(createEvent(
-        eventId++,
-        'Baking Class',
-        day,
-        10,
-        1.5,
-        generateId('room', 6),
-        12,
-        [generateId('group', 5)], // Allergy-Aware Group
-        mockColors[6].id,
-        undefined,
-        generateId('program', 8),
-        generateId('activity', 28),
-        undefined,
-        excludedCampers
-      ));
-    } else {
-      // General Soccer Practice
-      events.push(createEvent(
-        eventId++,
-        'Soccer',
-        day,
-        10,
-        1.5,
-        generateId('room', 3),
-        25,
-        getGroups(3, groupOffset),
-        mockColors[3].id,
-        undefined,
-        generateId('program', 6),
-        generateId('activity', 21)
-      ));
-      // Yoga - Large mixed group
-      events.push(createEvent(
-        eventId++,
-        'Yoga',
-        day,
-        10,
-        1,
-        generateId('room', 1),
-        25,
-        getGroups(4, groupOffset + 1),
-        mockColors[4].id,
-        undefined,
-        generateId('program', 10),
-        generateId('activity', 34)
-      ));
-      // Tie-Dye - Girls Power
-      events.push(createEvent(
-        eventId++,
-        'Tie-Dye',
-        day,
-        10,
-        1.5,
-        generateId('room', 2),
-        20,
-        [generateId('group', 4)], // Girls Power
-        mockColors[5].id,
-        undefined,
-        generateId('program', 2),
-        generateId('activity', 8)
-      ));
-    }
-    
-    // Lunch (12:00-1:00) - Everyone (can accommodate all)
-    events.push(createEvent(
-      eventId++,
-      'Lunch',
-      day,
-      12,
-      1,
-      generateId('room', 6),
-      400,
-      getGroups(10, groupOffset), // All groups
-      mockColors[0].id,
-    ));
-    
-    // Afternoon Activities Block 1 (2:00-4:00) - Multiple concurrent activities
-    if (dayMod === 0 || dayMod === 2 || dayMod === 4) {
-      // Wakeboarding from Watersports Program - Senior Campers
-      events.push(createEvent(
-        eventId++,
-        'Wakeboarding',
-        day,
-        14,
-        2,
-        generateId('room', 5),
-        8,
-        [generateId('group', 2)], // Senior Campers
-        mockColors[0].id,
-        ['Lifeguard', 'Boat Driver'],
-        generateId('program', 1),
-        generateId('activity', 1)
-      ));
-      // Music Class - Family groups
-      events.push(createEvent(
-        eventId++,
-        'Music Class',
-        day,
-        14,
-        1,
-        generateId('room', 8),
-        15,
-        getGroups(2, groupOffset + 4),
-        mockColors[3].id,
-      ));
-    } else if (dayMod === 1 || dayMod === 3) {
-      // Painting Workshop from Arts & Crafts Program - Girls Power
-      events.push(createEvent(
-        eventId++,
-        'Painting Workshop',
-        day,
-        14,
-        1.25,
-        generateId('room', 9),
-        15,
-        [generateId('group', 4)], // Girls Power
-        mockColors[5].id,
-        undefined,
-        generateId('program', 2),
-        generateId('activity', 5)
-      ));
-      // Basketball - Mixed groups
-      events.push(createEvent(
-        eventId++,
-        'Basketball',
-        day,
-        14,
-        1.5,
-        generateId('room', 3),
-        20,
-        getGroups(2, groupOffset + 5),
-        mockColors[6].id,
-      ));
-    } else {
-      // Kayaking from Watersports Program - Multiple family groups
-      events.push(createEvent(
-        eventId++,
-        'Kayaking',
-        day,
-        14,
-        1.5,
-        generateId('room', 5),
-        10,
-        [generateId('family', 1 + (groupOffset % 24)), generateId('family', 1 + ((groupOffset + 2) % 24))],
-        mockColors[0].id,
-        ['Lifeguard'],
-        generateId('program', 1),
-        generateId('activity', 3)
-      ));
-    }
-    
-    // Afternoon Activities Block 2 (4:00-5:30)
-    if (dayMod % 2 === 0) {
-      // Archery from Adventure Sports Program - Middle Age with staff exclusion on first day
-      const excludedStaff = day === startDay ? [generateId('staff', 2)] : undefined;
-      events.push(createEvent(
-        eventId++,
-        'Archery',
-        day,
-        16,
-        1.5,
-        generateId('room', 7),
-        12,
-        [generateId('group', 3), generateId('family', 1 + (groupOffset % 24))],
-        mockColors[2].id,
-        ['Archery Instructor'],
-        generateId('program', 3),
-        generateId('activity', 8),
-        excludedStaff
-      ));
-      
-      // Jewelry Making from Arts & Crafts Program - Girls Power
-      events.push(createEvent(
-        eventId++,
-        'Jewelry Making',
-        day,
-        16,
-        1,
-        generateId('room', 9),
-        12,
-        [generateId('group', 4)], // Girls Power
-        mockColors[5].id,
-        undefined,
-        generateId('program', 2),
-        generateId('activity', 6)
-      ));
-    } else {
-      // Basketball - Mixed groups
-      events.push(createEvent(
-        eventId++,
-        'Basketball',
-        day,
-        16,
-        1.5,
-        generateId('room', 3),
-        20,
-        getGroups(3, groupOffset + 6),
-        mockColors[6].id,
-      ));
-    }
-    
-    // Dinner (6:00-7:00) - Everyone (can accommodate all)
-    events.push(createEvent(
-      eventId++,
-      'Dinner',
-      day,
-      18,
-      1,
-      generateId('room', 6),
-      400,
-      getGroups(10, groupOffset + 1), // All groups
-      mockColors[0].id,
-    ));
-    
-    // Evening Activity (7:30-8:30) - Not every day
-    if (dayMod === 2 || dayMod === 5) {
-      events.push(createEvent(
-        eventId++,
-        'Campfire & Songs',
-        day,
-        19.5,
-        1,
-        generateId('room', 7),
-        150,
-        getGroups(7, groupOffset + 7),
-        mockColors[3].id,
-      ));
-    } else if (dayMod === 6) {
-      events.push(createEvent(
-        eventId++,
-        'Talent Show',
-        day,
-        19.5,
-        1.5,
-        generateId('room', 10),
-        100,
-        getGroups(6, groupOffset + 8),
-        mockColors[4].id,
-      ));
-    } else if (dayMod === 4) {
-      const movieNightGroups = getGroups(7, groupOffset + 9);
-      events.push(createEvent(
-        eventId++,
-        'Movie Night',
-        day,
-        19.5,
-        2,
-        generateId('room', 1),
-        150,
-        movieNightGroups,
-        mockColors[4].id,
-      ));
-      // Intentionally create ONE conflict for demonstration - overlap on day 7
-      if (day === startDay + 7) {
-        events.push(createEvent(
-          eventId++,
-          'Game Night',
-          day,
-          20,
-          1.5,
-          generateId('room', 8),
-          40,
-          [movieNightGroups[0], movieNightGroups[1]], // Same groups as Movie Night - creates conflict!
-          mockColors[4].id,
-        ));
-      }
-    }
-    
-    // Quiet Time (9:00 PM) - Most days
-    if (dayMod !== 6) {
-      events.push(createEvent(
-        eventId++,
-        'Quiet Time',
-        day,
-        21,
-        1,
-        generateId('room', 1),
-        200,
-        getGroups(8, groupOffset + 10),
-        mockColors[0].id,
-      ));
-    }
-  }
-  
-  return events;
-};
-
-export const mockEvents: Event[] = generateMonthEvents();
-
-// Example Camper Groups
-export const mockCamperGroups: CamperGroup[] = [
+// Activities (distributed across programs)
+export const activities: Activity[] = [
+  // Outdoor Adventures activities
   {
-    id: generateId('group', 1),
-    name: 'Junior Campers',
-    description: 'Campers ages 6-9 for age-appropriate activities',
-    colorId: generateId('color', 2), // Forest Green
-    filters: {
-      ageMin: 6,
-      ageMax: 9,
-    },
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('group', 2),
-    name: 'Senior Campers',
-    description: 'Campers ages 13+ for advanced activities',
-    colorId: generateId('color', 8), // Indigo Night
-    filters: {
-      ageMin: 13,
-    },
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('group', 3),
-    name: 'Middle Age Campers',
-    description: 'Campers ages 10-12 for age-appropriate activities',
-    colorId: generateId('color', 3), // Sunset Orange
-    filters: {
-      ageMin: 10,
-      ageMax: 12,
-    },
-    createdAt: new Date(2025, 5, 2).toISOString(),
-    updatedAt: new Date(2025, 5, 2).toISOString(),
-  },
-  {
-    id: generateId('group', 4),
-    name: 'Girls Power',
-    description: 'All female campers for girls-only activities',
-    colorId: generateId('color', 5), // Flamingo Pink
-    filters: {
-      gender: 'female',
-    },
-    createdAt: new Date(2025, 5, 2).toISOString(),
-    updatedAt: new Date(2025, 5, 2).toISOString(),
-  },
-  {
-    id: generateId('group', 5),
-    name: 'Allergy-Aware Group',
-    description: 'Campers with allergies for special meal planning',
-    colorId: generateId('color', 6), // Fire Red
-    filters: {
-      hasAllergies: true,
-    },
-    createdAt: new Date(2025, 5, 3).toISOString(),
-    updatedAt: new Date(2025, 5, 3).toISOString(),
-  },
-];
-
-// Programs - Expanded to 10 programs
-export const mockPrograms: Program[] = [
-  {
-    id: generateId('program', 1),
-    name: 'Watersports',
-    description: 'Water-based activities including wakeboarding, kayaking, and swimming',
-    colorId: generateId('color', 1), // Ocean Blue
-    activityIds: [],
-    staffMemberIds: ['staff-008', 'staff-010', 'staff-012', 'staff-016', 'staff-020'],
-    locationIds: ['room-004', 'room-010'],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('program', 2),
-    name: 'Arts & Crafts',
-    description: 'Creative activities including pottery, painting, and jewelry making',
-    colorId: generateId('color', 5), // Flamingo Pink
-    activityIds: [],
-    staffMemberIds: ['staff-014', 'staff-018', 'staff-022'],
-    locationIds: ['room-002', 'room-008'],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('program', 3),
-    name: 'Adventure Sports',
-    description: 'High-energy outdoor activities including rock climbing, archery, and ropes course',
-    colorId: generateId('color', 2), // Forest Green
-    activityIds: [],
-    staffMemberIds: ['staff-009', 'staff-011', 'staff-015', 'staff-019'],
-    locationIds: ['room-003', 'room-007'],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('program', 4),
-    name: 'Performing Arts',
-    description: 'Theater, music, dance, and performance activities',
-    colorId: generateId('color', 4), // Royal Purple
-    activityIds: [],
-    staffMemberIds: ['staff-013', 'staff-017', 'staff-024'],
-    locationIds: ['room-008', 'room-010'],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('program', 5),
-    name: 'Science & Nature',
-    description: 'Outdoor education, biology, astronomy, and environmental science',
-    colorId: generateId('color', 7), // Teal Wave
-    activityIds: [],
-    staffMemberIds: ['staff-021', 'staff-025', 'staff-029'],
-    locationIds: ['room-005', 'room-007'],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('program', 6),
-    name: 'Team Sports',
-    description: 'Soccer, basketball, volleyball, and other team-based sports',
-    colorId: generateId('color', 3), // Sunset Orange
-    activityIds: [],
-    staffMemberIds: ['staff-026', 'staff-030', 'staff-034'],
-    locationIds: ['room-003', 'room-009'],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('program', 7),
-    name: 'Leadership Development',
-    description: 'Team building, leadership skills, and communication workshops',
-    colorId: generateId('color', 8), // Indigo Night
-    activityIds: [],
-    staffMemberIds: ['staff-027', 'staff-031', 'staff-035'],
-    locationIds: ['room-001', 'room-005'],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('program', 8),
-    name: 'Cooking & Culinary',
-    description: 'Baking, cooking classes, and food science',
-    colorId: generateId('color', 6), // Fire Red
-    activityIds: [],
-    staffMemberIds: ['staff-028', 'staff-032'],
-    locationIds: ['room-006'],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('program', 9),
-    name: 'Technology & Gaming',
-    description: 'Coding, robotics, video production, and board games',
-    colorId: generateId('color', 7), // Teal Wave
-    activityIds: [],
-    staffMemberIds: ['staff-033', 'staff-037', 'staff-041'],
-    locationIds: ['room-005'],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('program', 10),
-    name: 'Wellness & Mindfulness',
-    description: 'Yoga, meditation, fitness, and mental health activities',
-    colorId: generateId('color', 4), // Royal Purple
-    activityIds: [],
-    staffMemberIds: ['staff-036', 'staff-040', 'staff-044'],
-    locationIds: ['room-001', 'room-007'],
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-];
-
-// Activities - Expanded to 35 activities across all programs
-export const mockActivities: Activity[] = [
-  // Watersports Activities (Program 1)
-  {
-    id: generateId('activity', 1),
-    name: 'Wakeboarding',
-    description: 'Learn wakeboarding basics or improve your skills on the lake',
-    programIds: [generateId('program', 1)],
-    durationMinutes: 120,
-    defaultLocationId: 'room-004',
-    requiredCertifications: ['Lifeguard', 'Boat Driver'],
-    minStaff: 2,
-    maxStaff: 3,
-    defaultCapacity: 8,
-    colorId: generateId('color', 1), // Ocean Blue
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 2),
-    name: 'Swimming Lessons',
-    description: 'Structured swimming instruction for all skill levels',
-    programIds: [generateId('program', 1)],
-    durationMinutes: 60,
-    defaultLocationId: 'room-004',
-    requiredCertifications: ['Lifeguard', 'Swimming Instructor'],
-    minStaff: 2,
-    maxStaff: 2,
-    defaultCapacity: 12,
-    colorId: generateId('color', 1), // Ocean Blue
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 3),
-    name: 'Kayaking',
-    description: 'Explore the lake in kayaks with guided instruction',
-    programIds: [generateId('program', 1)],
-    durationMinutes: 90,
-    defaultLocationId: 'room-004',
-    requiredCertifications: ['Lifeguard'],
-    minStaff: 2,
-    maxStaff: 3,
-    defaultCapacity: 10,
-    colorId: generateId('color', 1), // Ocean Blue
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 4),
-    name: 'Stand-Up Paddleboarding',
-    description: 'Balance and paddle on stand-up paddleboards',
-    programIds: [generateId('program', 1)],
-    durationMinutes: 75,
-    defaultLocationId: 'room-004',
-    requiredCertifications: ['Lifeguard'],
-    minStaff: 2,
-    maxStaff: 2,
-    defaultCapacity: 10,
-    colorId: generateId('color', 1), // Ocean Blue
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Arts & Crafts Activities (Program 2)
-  {
-    id: generateId('activity', 5),
-    name: 'Pottery',
-    description: 'Create your own pottery pieces on the wheel',
-    programIds: [generateId('program', 2)],
-    durationMinutes: 90,
-    defaultLocationId: 'room-002',
-    minStaff: 1,
-    maxStaff: 2,
-    defaultCapacity: 10,
-    colorId: generateId('color', 5), // Flamingo Pink
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 6),
-    name: 'Painting Workshop',
-    description: 'Express yourself through various painting techniques',
-    programIds: [generateId('program', 2)],
-    durationMinutes: 75,
-    defaultLocationId: 'room-002',
-    minStaff: 1,
-    maxStaff: 2,
-    defaultCapacity: 15,
-    colorId: generateId('color', 5), // Flamingo Pink
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 7),
-    name: 'Jewelry Making',
-    description: 'Design and create your own jewelry pieces',
-    programIds: [generateId('program', 2)],
-    durationMinutes: 60,
-    defaultLocationId: 'room-002',
-    minStaff: 1,
-    maxStaff: 1,
-    defaultCapacity: 12,
-    colorId: generateId('color', 5), // Flamingo Pink
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 8),
-    name: 'Tie-Dye',
-    description: 'Create colorful tie-dye shirts and accessories',
-    programIds: [generateId('program', 2)],
-    durationMinutes: 90,
-    defaultLocationId: 'room-002',
-    minStaff: 1,
-    maxStaff: 2,
-    defaultCapacity: 20,
-    colorId: generateId('color', 5), // Flamingo Pink
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Adventure Sports Activities (Program 3)
-  {
-    id: generateId('activity', 9),
-    name: 'Rock Climbing',
-    description: 'Indoor rock climbing with safety instruction',
-    programIds: [generateId('program', 3)],
-    durationMinutes: 90,
-    defaultLocationId: 'room-003',
-    requiredCertifications: ['Climbing Instructor', 'First Aid'],
-    minStaff: 2,
-    maxStaff: 3,
-    defaultCapacity: 10,
-    colorId: generateId('color', 2), // Forest Green
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 10),
-    name: 'Archery',
-    description: 'Learn archery basics and target practice',
-    programIds: [generateId('program', 3)],
-    durationMinutes: 60,
-    defaultLocationId: 'room-007',
-    requiredCertifications: ['Archery Instructor'],
-    minStaff: 2,
-    maxStaff: 2,
-    defaultCapacity: 12,
-    colorId: generateId('color', 2), // Forest Green
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 11),
-    name: 'Ropes Course',
-    description: 'Challenge yourself on our high ropes course',
-    programIds: [generateId('program', 3)],
-    durationMinutes: 120,
-    defaultLocationId: 'room-007',
-    requiredCertifications: ['Ropes Course Instructor', 'First Aid'],
-    minStaff: 3,
-    maxStaff: 4,
-    defaultCapacity: 8,
-    colorId: generateId('color', 2), // Forest Green
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 12),
-    name: 'Orienteering',
-    description: 'Navigation and map reading in the wilderness',
-    programIds: [generateId('program', 3)],
-    durationMinutes: 120,
-    defaultLocationId: 'room-007',
-    minStaff: 2,
-    maxStaff: 3,
-    defaultCapacity: 15,
-    colorId: generateId('color', 2), // Forest Green
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Performing Arts Activities (Program 4)
-  {
-    id: generateId('activity', 13),
-    name: 'Theater Workshop',
-    description: 'Acting exercises and scene work',
-    programIds: [generateId('program', 4)],
-    durationMinutes: 90,
-    defaultLocationId: 'room-010',
-    minStaff: 1,
-    maxStaff: 2,
-    defaultCapacity: 20,
-    colorId: generateId('color', 4), // Royal Purple
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 14),
-    name: 'Music Jam Session',
-    description: 'Play instruments and create music together',
-    programIds: [generateId('program', 4)],
-    durationMinutes: 60,
-    defaultLocationId: 'room-008',
-    minStaff: 1,
-    maxStaff: 2,
-    defaultCapacity: 15,
-    colorId: generateId('color', 4), // Royal Purple
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 15),
-    name: 'Dance Class',
-    description: 'Learn various dance styles and choreography',
-    programIds: [generateId('program', 4)],
-    durationMinutes: 75,
-    defaultLocationId: 'room-001',
-    minStaff: 1,
-    maxStaff: 2,
-    defaultCapacity: 25,
-    colorId: generateId('color', 4), // Royal Purple
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 16),
-    name: 'Improv Comedy',
-    description: 'Quick thinking and comedy improvisation',
-    programIds: [generateId('program', 4)],
-    durationMinutes: 60,
-    defaultLocationId: 'room-010',
-    minStaff: 1,
-    maxStaff: 1,
-    defaultCapacity: 18,
-    colorId: generateId('color', 4), // Royal Purple
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Science & Nature Activities (Program 5)
-  {
-    id: generateId('activity', 17),
+    id: generateId(),
     name: 'Nature Hike',
-    description: 'Explore local trails and learn about ecology',
-    programIds: [generateId('program', 5)],
-    durationMinutes: 120,
-    defaultLocationId: 'room-007',
+    description: 'Guided nature walk through forest trails',
+    programIds: [programs[0].id],
+    durationMinutes: 90,
+    defaultLocationId: locations[8].id,
+    requiredCertifications: [certifications[2].id],
     minStaff: 2,
     maxStaff: 3,
-    defaultCapacity: 20,
-    colorId: generateId('color', 7), // Teal Wave
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+    defaultCapacity: 25,
+    colorId: colors[2].id,
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('activity', 18),
-    name: 'Stargazing',
-    description: 'Learn about constellations and astronomy',
-    programIds: [generateId('program', 5)],
-    durationMinutes: 90,
-    defaultLocationId: 'room-007',
+    id: generateId(),
+    name: 'Wildlife Discovery',
+    description: 'Learn about local wildlife and ecosystems',
+    programIds: [programs[0].id],
+    durationMinutes: 60,
+    defaultLocationId: locations[9].id,
     minStaff: 1,
     maxStaff: 2,
     defaultCapacity: 30,
-    colorId: generateId('color', 7), // Teal Wave
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+    colorId: colors[2].id,
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('activity', 19),
-    name: 'Biology Lab',
-    description: 'Hands-on experiments and microscope work',
-    programIds: [generateId('program', 5)],
-    durationMinutes: 75,
-    defaultLocationId: 'room-005',
-    minStaff: 1,
-    maxStaff: 2,
-    defaultCapacity: 15,
-    colorId: generateId('color', 7), // Teal Wave
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 20),
-    name: 'Gardening',
-    description: 'Learn about plants and sustainable gardening',
-    programIds: [generateId('program', 5)],
+    id: generateId(),
+    name: 'Campfire Stories',
+    description: 'Evening storytelling around the campfire',
+    programIds: [programs[0].id],
     durationMinutes: 60,
-    defaultLocationId: 'room-007',
+    defaultLocationId: locations[10].id,
     minStaff: 1,
     maxStaff: 2,
-    defaultCapacity: 12,
-    colorId: generateId('color', 7), // Teal Wave
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+    defaultCapacity: 50,
+    colorId: colors[2].id,
+    createdAt: octoberDate(1)
   },
-  // Team Sports Activities (Program 6)
   {
-    id: generateId('activity', 21),
-    name: 'Soccer',
-    description: 'Team soccer games and skill development',
-    programIds: [generateId('program', 6)],
-    durationMinutes: 90,
-    defaultLocationId: 'room-003',
+    id: generateId(),
+    name: 'Outdoor Survival Skills',
+    description: 'Learn basic wilderness survival techniques',
+    programIds: [programs[0].id],
+    durationMinutes: 120,
+    defaultLocationId: locations[8].id,
+    requiredCertifications: [certifications[2].id],
     minStaff: 2,
     maxStaff: 3,
-    defaultCapacity: 22,
-    colorId: generateId('color', 3), // Sunset Orange
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+    defaultCapacity: 20,
+    colorId: colors[2].id,
+    createdAt: octoberDate(1)
+  },
+  
+  // Water Sports activities
+  {
+    id: generateId(),
+    name: 'Swimming Lessons',
+    description: 'Learn to swim or improve swimming skills',
+    programIds: [programs[1].id],
+    durationMinutes: 60,
+    defaultLocationId: locations[5].id,
+    requiredCertifications: [certifications[1].id],
+    minStaff: 2,
+    maxStaff: 3,
+    defaultCapacity: 30,
+    colorId: colors[0].id,
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('activity', 22),
+    id: generateId(),
+    name: 'Kayaking Adventure',
+    description: 'Kayaking basics and water exploration',
+    programIds: [programs[1].id],
+    durationMinutes: 90,
+    defaultLocationId: locations[6].id,
+    requiredCertifications: [certifications[1].id],
+    minStaff: 2,
+    maxStaff: 3,
+    defaultCapacity: 20,
+    colorId: colors[0].id,
+    createdAt: octoberDate(1)
+  },
+  {
+    id: generateId(),
+    name: 'Beach Games',
+    description: 'Fun games and activities on the beach',
+    programIds: [programs[1].id],
+    durationMinutes: 60,
+    defaultLocationId: locations[7].id,
+    requiredCertifications: [certifications[1].id],
+    minStaff: 2,
+    maxStaff: 2,
+    defaultCapacity: 40,
+    colorId: colors[0].id,
+    createdAt: octoberDate(1)
+  },
+  
+  // Arts & Creativity activities
+  {
+    id: generateId(),
+    name: 'Painting Workshop',
+    description: 'Express yourself through watercolor and acrylics',
+    programIds: [programs[2].id],
+    durationMinutes: 90,
+    defaultLocationId: locations[2].id,
+    requiredCertifications: [certifications[4].id],
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 20,
+    colorId: colors[4].id,
+    createdAt: octoberDate(1)
+  },
+  {
+    id: generateId(),
+    name: 'Crafts & DIY',
+    description: 'Create handmade crafts and projects',
+    programIds: [programs[2].id],
+    durationMinutes: 60,
+    defaultLocationId: locations[14].id,
+    requiredCertifications: [certifications[4].id],
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 25,
+    colorId: colors[4].id,
+    createdAt: octoberDate(1)
+  },
+  {
+    id: generateId(),
+    name: 'Music Jam Session',
+    description: 'Learn instruments and make music together',
+    programIds: [programs[2].id],
+    durationMinutes: 60,
+    defaultLocationId: locations[15].id,
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 20,
+    colorId: colors[4].id,
+    createdAt: octoberDate(1)
+  },
+  {
+    id: generateId(),
+    name: 'Theater & Drama',
+    description: 'Acting, improvisation, and performance',
+    programIds: [programs[2].id],
+    durationMinutes: 90,
+    defaultLocationId: locations[12].id,
+    minStaff: 1,
+    maxStaff: 2,
+    defaultCapacity: 30,
+    colorId: colors[4].id,
+    createdAt: octoberDate(1)
+  },
+  
+  // Sports & Games activities
+  {
+    id: generateId(),
     name: 'Basketball',
-    description: 'Basketball drills and games',
-    programIds: [generateId('program', 6)],
-    durationMinutes: 90,
-    defaultLocationId: 'room-009',
-    minStaff: 1,
-    maxStaff: 2,
-    defaultCapacity: 20,
-    colorId: generateId('color', 3), // Sunset Orange
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 23),
-    name: 'Volleyball',
-    description: 'Volleyball techniques and matches',
-    programIds: [generateId('program', 6)],
-    durationMinutes: 75,
-    defaultLocationId: 'room-003',
-    minStaff: 1,
-    maxStaff: 2,
-    defaultCapacity: 16,
-    colorId: generateId('color', 3), // Sunset Orange
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 24),
-    name: 'Ultimate Frisbee',
-    description: 'Fast-paced team frisbee games',
-    programIds: [generateId('program', 6)],
+    description: 'Team basketball games and drills',
+    programIds: [programs[3].id],
     durationMinutes: 60,
-    defaultLocationId: 'room-003',
+    defaultLocationId: locations[3].id,
     minStaff: 1,
     maxStaff: 2,
-    defaultCapacity: 20,
-    colorId: generateId('color', 3), // Sunset Orange
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Leadership Development Activities (Program 7)
-  {
-    id: generateId('activity', 25),
-    name: 'Team Building Games',
-    description: 'Collaborative challenges and trust exercises',
-    programIds: [generateId('program', 7)],
-    durationMinutes: 90,
-    defaultLocationId: 'room-007',
-    minStaff: 2,
-    maxStaff: 3,
-    defaultCapacity: 25,
-    colorId: generateId('color', 8), // Indigo Night
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+    defaultCapacity: 30,
+    colorId: colors[1].id,
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('activity', 26),
-    name: 'Public Speaking',
-    description: 'Develop confidence and presentation skills',
-    programIds: [generateId('program', 7)],
+    id: generateId(),
+    name: 'Soccer Practice',
+    description: 'Soccer skills and friendly matches',
+    programIds: [programs[3].id],
     durationMinutes: 60,
-    defaultLocationId: 'room-005',
-    minStaff: 1,
-    maxStaff: 1,
-    defaultCapacity: 15,
-    colorId: generateId('color', 8), // Indigo Night
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 27),
-    name: 'Conflict Resolution',
-    description: 'Learn mediation and problem-solving skills',
-    programIds: [generateId('program', 7)],
-    durationMinutes: 75,
-    defaultLocationId: 'room-005',
+    defaultLocationId: locations[4].id,
     minStaff: 1,
     maxStaff: 2,
-    defaultCapacity: 20,
-    colorId: generateId('color', 8), // Indigo Night
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Cooking & Culinary Activities (Program 8)
-  {
-    id: generateId('activity', 28),
-    name: 'Baking Class',
-    description: 'Learn to bake cookies, cakes, and pastries',
-    programIds: [generateId('program', 8)],
-    durationMinutes: 90,
-    defaultLocationId: 'room-006',
-    minStaff: 2,
-    maxStaff: 2,
-    defaultCapacity: 12,
-    colorId: generateId('color', 6), // Fire Red
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+    defaultCapacity: 40,
+    colorId: colors[1].id,
+    createdAt: octoberDate(1)
   },
   {
-    id: generateId('activity', 29),
-    name: 'Cooking Workshop',
-    description: 'Prepare healthy meals and learn kitchen safety',
-    programIds: [generateId('program', 8)],
-    durationMinutes: 120,
-    defaultLocationId: 'room-006',
-    minStaff: 2,
-    maxStaff: 3,
-    defaultCapacity: 15,
-    colorId: generateId('color', 6), // Fire Red
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 30),
-    name: 'Food Science',
-    description: 'Explore the chemistry of cooking',
-    programIds: [generateId('program', 8)],
-    durationMinutes: 75,
-    defaultLocationId: 'room-006',
-    minStaff: 1,
-    maxStaff: 2,
-    defaultCapacity: 12,
-    colorId: generateId('color', 6), // Fire Red
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Technology & Gaming Activities (Program 9)
-  {
-    id: generateId('activity', 31),
-    name: 'Coding Basics',
-    description: 'Introduction to programming with Scratch or Python',
-    programIds: [generateId('program', 9)],
-    durationMinutes: 90,
-    defaultLocationId: 'room-005',
-    minStaff: 1,
-    maxStaff: 2,
-    defaultCapacity: 15,
-    colorId: generateId('color', 7), // Teal Wave
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 32),
-    name: 'Robotics',
-    description: 'Build and program simple robots',
-    programIds: [generateId('program', 9)],
-    durationMinutes: 120,
-    defaultLocationId: 'room-005',
-    minStaff: 2,
-    maxStaff: 2,
-    defaultCapacity: 12,
-    colorId: generateId('color', 7), // Teal Wave
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 33),
+    id: generateId(),
     name: 'Board Game Tournament',
-    description: 'Strategic board games and tournaments',
-    programIds: [generateId('program', 9)],
+    description: 'Strategy games and friendly competition',
+    programIds: [programs[3].id],
     durationMinutes: 90,
-    defaultLocationId: 'room-001',
-    minStaff: 1,
-    maxStaff: 2,
-    defaultCapacity: 20,
-    colorId: generateId('color', 7), // Teal Wave
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  // Wellness & Mindfulness Activities (Program 10)
-  {
-    id: generateId('activity', 34),
-    name: 'Yoga',
-    description: 'Gentle yoga practice for all levels',
-    programIds: [generateId('program', 10)],
-    durationMinutes: 60,
-    defaultLocationId: 'room-001',
-    minStaff: 1,
-    maxStaff: 1,
-    defaultCapacity: 25,
-    colorId: generateId('color', 4), // Royal Purple
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
-  },
-  {
-    id: generateId('activity', 35),
-    name: 'Meditation & Mindfulness',
-    description: 'Breathing exercises and guided meditation',
-    programIds: [generateId('program', 10)],
-    durationMinutes: 45,
-    defaultLocationId: 'room-007',
+    defaultLocationId: locations[13].id,
     minStaff: 1,
     maxStaff: 1,
     defaultCapacity: 30,
-    colorId: generateId('color', 4), // Royal Purple
-    createdAt: new Date(2025, 5, 1).toISOString(),
-    updatedAt: new Date(2025, 5, 1).toISOString(),
+    colorId: colors[1].id,
+    createdAt: octoberDate(1)
+  },
+  {
+    id: generateId(),
+    name: 'Team Building Games',
+    description: 'Cooperative games and challenges',
+    programIds: [programs[3].id],
+    durationMinutes: 60,
+    defaultLocationId: locations[4].id,
+    minStaff: 2,
+    maxStaff: 2,
+    defaultCapacity: 40,
+    colorId: colors[1].id,
+    createdAt: octoberDate(1)
   },
 ];
 
-// Labels - Define tags for categorizing entities
-export const mockLabels: Label[] = [
-  {
-    id: generateId('label', 1),
-    name: 'VIP',
-    description: 'VIP campers requiring special attention',
-    colorId: generateId('color', 4), // Royal Purple
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('label', 2),
-    name: 'First Timer',
-    description: 'New campers attending for the first time',
-    colorId: generateId('color', 1), // Ocean Blue
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('label', 3),
-    name: 'Advanced',
-    description: 'Advanced skill level participants',
-    colorId: generateId('color', 2), // Forest Green
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('label', 4),
-    name: 'Beginner',
-    description: 'Beginner skill level participants',
-    colorId: generateId('color', 3), // Sunset Orange
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('label', 5),
-    name: 'Leadership',
-    description: 'Leadership program participants',
-    colorId: generateId('color', 6), // Fire Red
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('label', 6),
-    name: 'Special Needs',
-    description: 'Participants requiring special accommodations',
-    colorId: generateId('color', 5), // Flamingo Pink
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('label', 7),
-    name: 'Outdoor Focus',
-    description: 'Programs and activities focused on outdoor experiences',
-    colorId: generateId('color', 2), // Forest Green
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('label', 8),
-    name: 'Indoor Focus',
-    description: 'Programs and activities focused on indoor experiences',
-    colorId: generateId('color', 8), // Indigo Night
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('label', 9),
-    name: 'High Energy',
-    description: 'Activities with high physical activity levels',
-    colorId: generateId('color', 3), // Sunset Orange
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-  {
-    id: generateId('label', 10),
-    name: 'Creative',
-    description: 'Creative arts and crafts focused',
-    colorId: generateId('color', 5), // Flamingo Pink
-    createdAt: new Date(2024, 0, 1).toISOString(),
-    updatedAt: new Date(2024, 0, 1).toISOString(),
-  },
-];
+// Update program activity IDs
+programs[0].activityIds = [activities[0].id, activities[1].id, activities[2].id, activities[3].id];
+programs[1].activityIds = [activities[4].id, activities[5].id, activities[6].id];
+programs[2].activityIds = [activities[7].id, activities[8].id, activities[9].id, activities[10].id];
+programs[3].activityIds = [activities[11].id, activities[12].id, activities[13].id, activities[14].id];
 
-// Update programs with activity IDs
-mockPrograms[0].activityIds = [generateId('activity', 1), generateId('activity', 2), generateId('activity', 3), generateId('activity', 4)];
-mockPrograms[1].activityIds = [generateId('activity', 5), generateId('activity', 6), generateId('activity', 7), generateId('activity', 8)];
-mockPrograms[2].activityIds = [generateId('activity', 9), generateId('activity', 10), generateId('activity', 11), generateId('activity', 12)];
-mockPrograms[3].activityIds = [generateId('activity', 13), generateId('activity', 14), generateId('activity', 15), generateId('activity', 16)];
-mockPrograms[4].activityIds = [generateId('activity', 17), generateId('activity', 18), generateId('activity', 19), generateId('activity', 20)];
-mockPrograms[5].activityIds = [generateId('activity', 21), generateId('activity', 22), generateId('activity', 23), generateId('activity', 24)];
-mockPrograms[6].activityIds = [generateId('activity', 25), generateId('activity', 26), generateId('activity', 27)];
-mockPrograms[7].activityIds = [generateId('activity', 28), generateId('activity', 29), generateId('activity', 30)];
-mockPrograms[8].activityIds = [generateId('activity', 31), generateId('activity', 32), generateId('activity', 33)];
-mockPrograms[9].activityIds = [generateId('activity', 34), generateId('activity', 35)];
+// Events (60 events across October 2025, distributed across all days)
+export const events: Event[] = [];
 
-
-// Export all mock data together for easy import
-export const mockData = {
-  campers: mockCampers,
-  staffMembers: mockStaffMembers,
-  rooms: mockRooms,
-  sleepingRooms: mockSleepingRooms,
-  events: mockEvents,
-  groups: mockGroups,
-  programs: mockPrograms,
-  activities: mockActivities,
-  locations: mockLocations,
-  certifications: mockCertifications,
-  colors: mockColors,
-  sessions: mockSessions,
-  labels: mockLabels,
+// Helper to create events for a specific day
+const createDailyEvents = (day: number, sessionIndex: number) => {
+  const session = sessions[sessionIndex];
+  const relevantGroups = groups.filter(g => g.sessionId === session.id);
+  
+  if (relevantGroups.length === 0) return;
+  
+  // Morning activities (9 AM - 12 PM)
+  const morningActivities = [
+    { activity: activities[0], time: { hour: 9, duration: 90 } },
+    { activity: activities[4], time: { hour: 9, duration: 60 } },
+    { activity: activities[11], time: { hour: 10, duration: 60 } },
+  ];
+  
+  // Afternoon activities (2 PM - 5 PM)
+  const afternoonActivities = [
+    { activity: activities[7], time: { hour: 14, duration: 90 } },
+    { activity: activities[12], time: { hour: 14, duration: 60 } },
+    { activity: activities[5], time: { hour: 15, duration: 90 } },
+  ];
+  
+  // Evening activities (7 PM - 9 PM)
+  const eveningActivities = [
+    { activity: activities[2], time: { hour: 19, duration: 60 } },
+    { activity: activities[10], time: { hour: 19, duration: 90 } },
+  ];
+  
+  const allDayActivities = [...morningActivities, ...afternoonActivities, ...eveningActivities];
+  
+  // Create 2-3 events per day
+  const numEvents = 2 + (day % 2); // Alternates between 2 and 3 events per day
+  
+  for (let i = 0; i < numEvents && i < allDayActivities.length; i++) {
+    const { activity, time } = allDayActivities[i];
+    const group = relevantGroups[i % relevantGroups.length];
+    
+    events.push({
+      id: generateId(),
+      title: activity.name,
+      description: activity.description,
+      startTime: octoberDate(day, time.hour, 0),
+      endTime: octoberDate(day, time.hour, time.duration),
+      locationId: activity.defaultLocationId || locations[0].id,
+      capacity: activity.defaultCapacity || 30,
+      groupIds: [group.id],
+      excludeStaffIds: [],
+      excludeCamperIds: [],
+      requiredCertifications: activity.requiredCertifications || [],
+      colorId: activity.colorId,
+      programId: activity.programIds[0],
+      activityId: activity.id
+    });
+  }
 };
+
+// Create events for each day of October
+for (let day = 1; day <= 31; day++) {
+  // Determine which session this day belongs to
+  let sessionIndex = 0;
+  if (day >= 1 && day <= 5) sessionIndex = 0;
+  else if (day >= 6 && day <= 10) sessionIndex = 1;
+  else if (day >= 11 && day <= 15) sessionIndex = 2;
+  else if (day >= 16 && day <= 20) sessionIndex = 3;
+  else if (day >= 21 && day <= 25) sessionIndex = 4;
+  else if (day >= 26 && day <= 31) sessionIndex = 5;
+  
+  createDailyEvents(day, sessionIndex);
+  
+  // Stop if we've reached 60 events
+  if (events.length >= 60) break;
+}
+
+// Trim to exactly 60 events
+while (events.length > 60) {
+  events.pop();
+}
+
+// Export all mock data
+export const mockData = {
+  colors,
+  sessions,
+  areas,
+  locations,
+  housingRooms,
+  certifications,
+  staffMembers,
+  campers,
+  programs,
+  activities,
+  groups,
+  events
+};
+
+export default mockData;
+

@@ -121,11 +121,11 @@
           <div class="text-sm text-secondary mb-1">Required Certifications</div>
           <div class="flex flex-wrap gap-1">
             <span 
-              v-for="cert in event.requiredCertifications" 
-              :key="cert"
+              v-for="certId in event.requiredCertifications" 
+              :key="certId"
               class="certification-badge"
             >
-              {{ cert }}
+              {{ getCertificationName(certId) }}
             </span>
           </div>
         </div>
@@ -145,7 +145,7 @@
 import { defineComponent, type PropType } from 'vue';
 import { format } from 'date-fns';
 import BaseModal from '@/components/BaseModal.vue';
-import { useEventsStore, useCampersStore, useStaffMembersStore, useGroupsStore, useLocationsStore, useColorsStore } from '@/stores';
+import { useEventsStore, useCampersStore, useStaffMembersStore, useGroupsStore, useLocationsStore, useColorsStore, useCertificationsStore } from '@/stores';
 import { useToastStore } from '@/stores/toastStore';
 import type { Event } from '@/types';
 
@@ -184,6 +184,9 @@ export default defineComponent({
     colorsStore() {
       return useColorsStore();
     },
+    certificationsStore() {
+      return useCertificationsStore();
+    },
     toast() {
       return useToastStore();
     },
@@ -197,6 +200,10 @@ export default defineComponent({
     },
   },
   methods: {
+    getCertificationName(certId: string): string {
+      const certification = this.certificationsStore.getCertificationById(certId);
+      return certification?.name || 'Unknown Certification';
+    },
     formatTime(dateStr: string): string {
       return format(new Date(dateStr), 'h:mm a');
     },

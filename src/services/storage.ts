@@ -110,15 +110,14 @@ class StorageService {
   async seedData(data: {
     campers?: any[];
     staffMembers?: any[];
-    rooms?: any[];
-    sleepingRooms?: any[];
+    locations?: any[];
+    housingRooms?: any[];
     events?: any[];
     groups?: any[];
     camperGroups?: any[];
-    familyGroups?: any[];
     programs?: any[];
     activities?: any[];
-    locations?: any[];
+    areas?: any[];
     certifications?: any[];
     colors?: any[];
     sessions?: any[];
@@ -132,11 +131,11 @@ class StorageService {
     if (data.staffMembers) {
       localStorage.setItem(STORAGE_KEYS.STAFF_MEMBERS, JSON.stringify(data.staffMembers));
     }
-    if (data.rooms) {
-      localStorage.setItem(STORAGE_KEYS.LOCATIONS, JSON.stringify(data.rooms));
+    if (data.locations) {
+      localStorage.setItem(STORAGE_KEYS.LOCATIONS, JSON.stringify(data.locations));
     }
-    if (data.sleepingRooms) {
-      localStorage.setItem(STORAGE_KEYS.HOUSING_ROOMS, JSON.stringify(data.sleepingRooms));
+    if (data.housingRooms) {
+      localStorage.setItem(STORAGE_KEYS.HOUSING_ROOMS, JSON.stringify(data.housingRooms));
     }
     if (data.events) {
       localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(data.events));
@@ -150,8 +149,8 @@ class StorageService {
     if (data.activities) {
       localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(data.activities));
     }
-    if (data.locations) {
-      localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(data.locations));
+    if (data.areas) {
+      localStorage.setItem(STORAGE_KEYS.AREAS, JSON.stringify(data.areas));
     }
     if (data.certifications) {
       localStorage.setItem(STORAGE_KEYS.CERTIFICATIONS, JSON.stringify(data.certifications));
