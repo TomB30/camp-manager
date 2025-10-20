@@ -2,6 +2,8 @@
  * Date utility functions to handle date comparisons without timezone issues
  */
 
+import type { Event } from "@/types";
+
 /**
  * Check if two dates are on the same day (ignoring time and timezone)
  * @param date1 First date to compare
@@ -22,7 +24,10 @@ export function isSameDay(date1: Date, date2: Date): boolean {
  * @param targetDate Date to compare against
  * @returns true if the date string represents the same day as targetDate
  */
-export function isDateStringSameDay(dateStr: string, targetDate: Date): boolean {
+export function isDateStringSameDay(
+  dateStr: string,
+  targetDate: Date,
+): boolean {
   const date = new Date(dateStr);
   return isSameDay(date, targetDate);
 }
@@ -53,7 +58,7 @@ export function matchesDateComponents(
   dateStr: string,
   year: number,
   month: number,
-  day: number
+  day: number,
 ): boolean {
   const date = new Date(dateStr);
   return (
@@ -73,7 +78,7 @@ export function matchesDateComponents(
 export function matchesDateAndHour(
   dateStr: string,
   targetDate: Date,
-  targetHour: number
+  targetHour: number,
 ): boolean {
   const date = new Date(dateStr);
   return (
@@ -91,8 +96,8 @@ export function matchesDateAndHour(
  */
 export function toLocalDateString(date: Date): string {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -107,20 +112,20 @@ export function isToday(date: Date): boolean {
 
 /**
  * Get events for a specific date from a list of events
- * @param events Array of events with startTime property
+ * @param events Array of events with startDate property
  * @param targetDate Date to filter by
  * @returns Events that occur on the target date
  */
-export function filterEventsByDate<T extends { startTime: string }>(
+export function filterEventsByDate<T extends { startDate: string }>(
   events: T[],
-  targetDate: Date
+  targetDate: Date,
 ): T[] {
   const targetYear = targetDate.getFullYear();
   const targetMonth = targetDate.getMonth();
   const targetDay = targetDate.getDate();
 
-  return events.filter(event => {
-    const eventDate = new Date(event.startTime);
+  return events.filter((event) => {
+    const eventDate = new Date(event.startDate);
     return (
       eventDate.getFullYear() === targetYear &&
       eventDate.getMonth() === targetMonth &&
@@ -131,22 +136,22 @@ export function filterEventsByDate<T extends { startTime: string }>(
 
 /**
  * Get events for a specific date and hour
- * @param events Array of events with startTime property
+ * @param events Array of events with startDate property
  * @param targetDate Date to filter by
  * @param targetHour Hour to filter by (0-23)
  * @returns Events that start on the target date and hour
  */
-export function filterEventsByDateAndHour<T extends { startTime: string }>(
+export function filterEventsByDateAndHour<T extends Event>(
   events: T[],
   targetDate: Date,
-  targetHour: number
+  targetHour: number,
 ): T[] {
   const targetYear = targetDate.getFullYear();
   const targetMonth = targetDate.getMonth();
   const targetDay = targetDate.getDate();
 
-  return events.filter(event => {
-    const eventDate = new Date(event.startTime);
+  return events.filter((event) => {
+    const eventDate = new Date(event.startDate);
     return (
       eventDate.getFullYear() === targetYear &&
       eventDate.getMonth() === targetMonth &&
@@ -155,4 +160,3 @@ export function filterEventsByDateAndHour<T extends { startTime: string }>(
     );
   });
 }
-

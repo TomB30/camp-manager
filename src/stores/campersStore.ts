@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia';
-import type { Camper } from '@/types';
-import { campersService } from '@/services';
+import { defineStore } from "pinia";
+import type { Camper } from "@/types";
+import { campersService } from "@/services";
 
-export const useCampersStore = defineStore('campers', {
+export const useCampersStore = defineStore("campers", {
   state: () => ({
     campers: [] as Camper[],
     loading: false,
@@ -11,19 +11,19 @@ export const useCampersStore = defineStore('campers', {
   getters: {
     getCamperById(state): (id: string) => Camper | undefined {
       return (id: string): Camper | undefined => {
-        return state.campers.find(c => c.id === id);
+        return state.campers.find((c) => c.id === id);
       };
     },
 
     getCampersInFamilyGroup(state): (familyGroupId: string) => Camper[] {
       return (familyGroupId: string): Camper[] => {
-        return state.campers.filter(c => c.familyGroupId === familyGroupId);
+        return state.campers.filter((c) => c.familyGroupId === familyGroupId);
       };
     },
 
     getCampersBySession(state): (sessionId: string) => Camper[] {
       return (sessionId: string): Camper[] => {
-        return state.campers.filter(c => c.sessionId === sessionId);
+        return state.campers.filter((c) => c.sessionId === sessionId);
       };
     },
   },
@@ -45,7 +45,7 @@ export const useCampersStore = defineStore('campers', {
 
     async updateCamper(camper: Camper): Promise<void> {
       await campersService.saveCamper(camper);
-      const index = this.campers.findIndex(c => c.id === camper.id);
+      const index = this.campers.findIndex((c) => c.id === camper.id);
       if (index >= 0) {
         this.campers[index] = camper;
       }
@@ -53,8 +53,7 @@ export const useCampersStore = defineStore('campers', {
 
     async deleteCamper(id: string): Promise<void> {
       await campersService.deleteCamper(id);
-      this.campers = this.campers.filter(c => c.id !== id);
+      this.campers = this.campers.filter((c) => c.id !== id);
     },
-  }
+  },
 });
-

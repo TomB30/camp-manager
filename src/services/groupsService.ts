@@ -3,9 +3,9 @@
  * Handles all group-related operations for the unified Group type
  */
 
-import type { Group } from '@/types';
-import { storageService } from './storage';
-import { STORAGE_KEYS } from './storageKeys';
+import type { Group } from "@/types";
+import { storageService } from "./storage";
+import { STORAGE_KEYS } from "./storageKeys";
 
 class GroupsService {
   /**

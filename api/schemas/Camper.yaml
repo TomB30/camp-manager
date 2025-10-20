@@ -46,4 +46,3 @@ properties:
     type: string
     format: uuid
     description: ID of the camp session this camper is registered for
-

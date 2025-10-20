@@ -67,15 +67,15 @@
     <template #footer>
       <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
       <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? 'Update' : 'Add' }} Session
+        {{ isEditing ? "Update" : "Add" }} Session
       </button>
     </template>
   </BaseModal>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import BaseModal from '@/components/BaseModal.vue';
+import { defineComponent, type PropType } from "vue";
+import BaseModal from "@/components/BaseModal.vue";
 
 interface SessionFormData {
   name: string;
@@ -86,28 +86,28 @@ interface SessionFormData {
 }
 
 export default defineComponent({
-  name: 'SessionFormModal',
+  name: "SessionFormModal",
   components: {
-    BaseModal
+    BaseModal,
   },
   props: {
     show: {
       type: Boolean,
-      required: true
+      required: true,
     },
     isEditing: {
       type: Boolean,
-      default: false
+      default: false,
     },
     formData: {
       type: Object as PropType<SessionFormData>,
-      required: true
-    }
+      required: true,
+    },
   },
-  emits: ['close', 'save'],
+  emits: ["close", "save"],
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData))
+      localFormData: JSON.parse(JSON.stringify(this.formData)),
     };
   },
   watch: {
@@ -115,14 +115,14 @@ export default defineComponent({
       handler(newVal) {
         this.localFormData = JSON.parse(JSON.stringify(newVal));
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   methods: {
     handleSave() {
-      this.$emit('save', this.localFormData);
-    }
-  }
+      this.$emit("save", this.localFormData);
+    },
+  },
 });
 </script>
 
@@ -142,4 +142,3 @@ export default defineComponent({
   }
 }
 </style>
-

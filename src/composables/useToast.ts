@@ -1,8 +1,8 @@
-import { useToastStore } from '@/stores/toastStore';
+import { useToastStore } from "@/stores/toastStore";
 
 /**
  * Composable for showing toast notifications
- * 
+ *
  * Usage:
  * ```ts
  * const toast = useToast();
@@ -57,4 +57,3 @@ export function useToast() {
     },
   };
 }
-

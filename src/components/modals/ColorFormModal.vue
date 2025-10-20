@@ -38,7 +38,10 @@
           <small class="form-hint">Format: #RRGGBB (e.g., #3B82F6)</small>
         </div>
 
-        <div class="color-preview-large" :style="{ background: localFormData.hexValue || '#CCCCCC' }">
+        <div
+          class="color-preview-large"
+          :style="{ background: localFormData.hexValue || '#CCCCCC' }"
+        >
           <span class="preview-label">Preview</span>
         </div>
       </form>
@@ -47,15 +50,15 @@
     <template #footer>
       <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
       <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? 'Update' : 'Add' }} Color
+        {{ isEditing ? "Update" : "Add" }} Color
       </button>
     </template>
   </BaseModal>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import BaseModal from '@/components/BaseModal.vue';
+import { defineComponent, type PropType } from "vue";
+import BaseModal from "@/components/BaseModal.vue";
 
 interface ColorFormData {
   name: string;
@@ -63,28 +66,28 @@ interface ColorFormData {
 }
 
 export default defineComponent({
-  name: 'ColorFormModal',
+  name: "ColorFormModal",
   components: {
-    BaseModal
+    BaseModal,
   },
   props: {
     show: {
       type: Boolean,
-      required: true
+      required: true,
     },
     isEditing: {
       type: Boolean,
-      default: false
+      default: false,
     },
     formData: {
       type: Object as PropType<ColorFormData>,
-      required: true
-    }
+      required: true,
+    },
   },
-  emits: ['close', 'save'],
+  emits: ["close", "save"],
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData))
+      localFormData: JSON.parse(JSON.stringify(this.formData)),
     };
   },
   watch: {
@@ -92,16 +95,16 @@ export default defineComponent({
       handler(newVal) {
         this.localFormData = JSON.parse(JSON.stringify(newVal));
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   methods: {
     handleSave() {
       // Normalize hex value to uppercase
       this.localFormData.hexValue = this.localFormData.hexValue.toUpperCase();
-      this.$emit('save', this.localFormData);
-    }
-  }
+      this.$emit("save", this.localFormData);
+    },
+  },
 });
 </script>
 
@@ -157,4 +160,3 @@ export default defineComponent({
   letter-spacing: 0.05em;
 }
 </style>
-

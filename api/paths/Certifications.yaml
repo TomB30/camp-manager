@@ -1,0 +1,26 @@
+get:
+  summary: List all certifications
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../schemas/Certification.yaml"
+post:
+  summary: Create a new certification
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/CertificationCreationRequest.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Certification.yaml"

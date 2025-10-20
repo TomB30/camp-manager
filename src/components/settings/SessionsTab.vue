@@ -74,21 +74,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useSessionsStore } from '@/stores';
-import type { CampSession } from '@/types';
-import Icon from '@/components/Icon.vue';
-import TabHeader from '@/components/settings/TabHeader.vue';
-import SessionCard from '@/components/cards/SessionCard.vue';
-import SessionDetailModal from '@/components/modals/SessionDetailModal.vue';
-import SessionFormModal from '@/components/modals/SessionFormModal.vue';
-import ConfirmModal from '@/components/ConfirmModal.vue';
-import FilterBar from '@/components/FilterBar.vue';
-import EmptyState from '@/components/EmptyState.vue';
-import { useToast } from '@/composables/useToast';
+import { defineComponent } from "vue";
+import { useSessionsStore } from "@/stores";
+import type { Session } from "@/types";
+import Icon from "@/components/Icon.vue";
+import TabHeader from "@/components/settings/TabHeader.vue";
+import SessionCard from "@/components/cards/SessionCard.vue";
+import SessionDetailModal from "@/components/modals/SessionDetailModal.vue";
+import SessionFormModal from "@/components/modals/SessionFormModal.vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
+import FilterBar from "@/components/FilterBar.vue";
+import EmptyState from "@/components/EmptyState.vue";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
-  name: 'SessionsTab',
+  name: "SessionsTab",
   components: {
     Icon,
     TabHeader,
@@ -109,39 +109,42 @@ export default defineComponent({
       showAddModal: false,
       showEditModal: false,
       showConfirmModal: false,
-      editingSession: null as CampSession | null,
+      editingSession: null as Session | null,
       selectedSessionId: null as string | null,
-      sessionToDelete: null as CampSession | null,
-      searchQuery: '',
+      sessionToDelete: null as Session | null,
+      searchQuery: "",
       formData: {
-        name: '',
-        startDate: '',
-        endDate: '',
-        description: '',
+        name: "",
+        startDate: "",
+        endDate: "",
+        description: "",
         maxCampers: undefined as number | undefined,
       },
     };
   },
   computed: {
-    filteredSessions(): CampSession[] {
+    filteredSessions(): Session[] {
       let filtered = this.sessionsStore.sessions;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        filtered = filtered.filter((session) =>
-          session.name.toLowerCase().includes(query) ||
-          session.description?.toLowerCase().includes(query)
+        filtered = filtered.filter(
+          (session) =>
+            session.name.toLowerCase().includes(query) ||
+            session.description?.toLowerCase().includes(query),
         );
       }
 
       // Sort by start date
       return [...filtered].sort((a, b) => {
-        return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+        return (
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        );
       });
     },
 
-    selectedSession(): CampSession | null {
+    selectedSession(): Session | null {
       if (!this.selectedSessionId) return null;
       return this.sessionsStore.getSessionById(this.selectedSessionId) || null;
     },
@@ -151,18 +154,18 @@ export default defineComponent({
       this.selectedSessionId = id;
     },
 
-    editSessionFromDetail(session: CampSession) {
+    editSessionFromDetail(session: Session) {
       this.selectedSessionId = null;
       this.editSession(session);
     },
 
-    editSession(session: CampSession) {
+    editSession(session: Session) {
       this.editingSession = session;
       this.formData = {
         name: session.name,
         startDate: session.startDate,
         endDate: session.endDate,
-        description: session.description || '',
+        description: session.description || "",
         maxCampers: session.maxCampers,
       };
       this.showEditModal = true;
@@ -179,18 +182,24 @@ export default defineComponent({
 
     async handleDeleteSession() {
       if (!this.sessionToDelete) return;
-      
+
       try {
         await this.sessionsStore.deleteSession(this.sessionToDelete.id);
-        this.toast.success('Session deleted successfully');
+        this.toast.success("Session deleted successfully");
         this.showConfirmModal = false;
         this.sessionToDelete = null;
       } catch (error: any) {
-        this.toast.error(error.message || 'Failed to delete session');
+        this.toast.error(error.message || "Failed to delete session");
       }
     },
 
-    async saveSession(data: { name: string; startDate: string; endDate: string; description: string; maxCampers?: number }) {
+    async saveSession(data: {
+      name: string;
+      startDate: string;
+      endDate: string;
+      description: string;
+      maxCampers?: number;
+    }) {
       try {
         if (this.editingSession) {
           // Update existing
@@ -203,7 +212,7 @@ export default defineComponent({
             maxCampers: data.maxCampers,
             updatedAt: new Date().toISOString(),
           });
-          this.toast.success('Session updated successfully');
+          this.toast.success("Session updated successfully");
         } else {
           // Create new
           await this.sessionsStore.addSession({
@@ -216,11 +225,11 @@ export default defineComponent({
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           });
-          this.toast.success('Session added successfully');
+          this.toast.success("Session added successfully");
         }
         this.closeModal();
       } catch (error: any) {
-        this.toast.error(error.message || 'Failed to save session');
+        this.toast.error(error.message || "Failed to save session");
       }
     },
 
@@ -229,16 +238,16 @@ export default defineComponent({
       this.showEditModal = false;
       this.editingSession = null;
       this.formData = {
-        name: '',
-        startDate: '',
-        endDate: '',
-        description: '',
+        name: "",
+        startDate: "",
+        endDate: "",
+        description: "",
         maxCampers: undefined,
       };
     },
 
     clearFilters() {
-      this.searchQuery = '';
+      this.searchQuery = "";
     },
   },
 });
@@ -282,4 +291,3 @@ export default defineComponent({
   }
 }
 </style>
-

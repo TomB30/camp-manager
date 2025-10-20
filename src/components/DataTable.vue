@@ -4,23 +4,27 @@
       <table class="table">
         <thead>
           <tr>
-            <th v-for="column in columns" :key="column.key" :style="column.width ? { width: column.width } : {}">
+            <th
+              v-for="column in columns"
+              :key="column.key"
+              :style="column.width ? { width: column.width } : {}"
+            >
               {{ column.label }}
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr 
+          <tr
             v-for="(item, index) in paginatedData"
             :key="getRowKey(item, index)"
             class="table-row"
-            :class="{ 'clickable': clickable }"
+            :class="{ clickable: clickable }"
             @click="handleRowClick(item)"
           >
             <td v-for="column in columns" :key="column.key">
-              <slot 
-                :name="`cell-${column.key}`" 
-                :item="item" 
+              <slot
+                :name="`cell-${column.key}`"
+                :item="item"
                 :value="getNestedValue(item, column.key)"
               >
                 {{ formatValue(item, column) }}
@@ -29,9 +33,7 @@
           </tr>
           <tr v-if="paginatedData.length === 0" class="empty-row">
             <td :colspan="columns.length" class="text-center text-secondary">
-              <slot name="empty">
-                No data available
-              </slot>
+              <slot name="empty"> No data available </slot>
             </td>
           </tr>
         </tbody>
@@ -46,8 +48,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import Pagination from './Pagination.vue';
+import { defineComponent, PropType } from "vue";
+import Pagination from "./Pagination.vue";
 
 export interface Column {
   key: string;
@@ -57,72 +59,72 @@ export interface Column {
 }
 
 export default defineComponent({
-  name: 'DataTable',
+  name: "DataTable",
   components: {
-    Pagination
+    Pagination,
   },
   props: {
     columns: {
       type: Array as PropType<Column[]>,
-      required: true
+      required: true,
     },
     data: {
       type: Array as PropType<any[]>,
-      required: true
+      required: true,
     },
     currentPage: {
       type: Number,
-      required: true
+      required: true,
     },
     pageSize: {
       type: Number,
-      required: true
+      required: true,
     },
     rowKey: {
       type: [String, Function] as PropType<string | ((item: any) => string)>,
-      default: undefined
+      default: undefined,
     },
     clickable: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  emits: ['update:currentPage', 'update:pageSize', 'row-click'],
+  emits: ["update:currentPage", "update:pageSize", "row-click"],
   computed: {
     currentPageModel: {
       get(): number {
         return this.currentPage;
       },
       set(value: number) {
-        this.$emit('update:currentPage', value);
-      }
+        this.$emit("update:currentPage", value);
+      },
     },
     pageSizeModel: {
       get(): number {
         return this.pageSize;
       },
       set(value: number) {
-        this.$emit('update:pageSize', value);
-      }
+        this.$emit("update:pageSize", value);
+      },
     },
     paginatedData(): any[] {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
       return this.data.slice(start, end);
-    }
+    },
   },
   methods: {
     getRowKey(item: any, index: number): string {
-      if (typeof this.rowKey === 'function') {
+      if (typeof this.rowKey === "function") {
         return this.rowKey(item);
       }
-      if (typeof this.rowKey === 'string') {
+      if (typeof this.rowKey === "string") {
         return item[this.rowKey];
       }
       return item.id || `row-${index}`;
     },
     getNestedValue(item: any, key: string): any {
-      const keys = key.split('.');
+      const keys = key.split(".");
       let value = item;
       for (const k of keys) {
         value = value?.[k];
@@ -135,14 +137,14 @@ export default defineComponent({
       if (column.formatter) {
         return column.formatter(value, item);
       }
-      return value ?? '—';
+      return value ?? "—";
     },
     handleRowClick(item: any) {
       if (this.clickable) {
-        this.$emit('row-click', item);
+        this.$emit("row-click", item);
       }
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -214,4 +216,3 @@ export default defineComponent({
   }
 }
 </style>
-

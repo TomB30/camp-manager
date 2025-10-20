@@ -14,11 +14,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import InfoTooltip from '@/components/InfoTooltip.vue';
+import { defineComponent } from "vue";
+import InfoTooltip from "@/components/InfoTooltip.vue";
 
 export default defineComponent({
-  name: 'ViewHeader',
+  name: "ViewHeader",
   components: {
     InfoTooltip,
   },
@@ -29,7 +29,7 @@ export default defineComponent({
     },
     tooltip: {
       type: String,
-      default: '',
+      default: "",
     },
   },
   computed: {
@@ -85,4 +85,3 @@ export default defineComponent({
   }
 }
 </style>
-

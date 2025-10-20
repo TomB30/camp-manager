@@ -1,14 +1,14 @@
 parameters:
-  - $ref: '../parameters/id.yaml'
+  - $ref: "../parameters/id.yaml"
 get:
   summary: Get event by ID
   responses:
-    '200':
+    "200":
       description: Success
       content:
         application/json:
           schema:
-            $ref: '../schemas/Event.yaml'
+            $ref: "../schemas/Event.yaml"
 put:
   summary: Update event
   requestBody:
@@ -16,13 +16,16 @@ put:
     content:
       application/json:
         schema:
-          $ref: '../schemas/Event.yaml'
+          $ref: "../schemas/EventUpdateRequest.yaml"
   responses:
-    '200':
-      description: Updated
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Event.yaml"
 delete:
   summary: Delete event
   responses:
-    '204':
+    "204":
       description: Deleted
-

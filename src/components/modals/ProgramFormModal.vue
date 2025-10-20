@@ -8,12 +8,12 @@
       <form @submit.prevent="handleSave">
         <div class="form-group">
           <label class="form-label">Program Name</label>
-          <input 
-            v-model="localFormData.name" 
-            type="text" 
-            class="form-input" 
+          <input
+            v-model="localFormData.name"
+            type="text"
+            class="form-input"
             placeholder="e.g., Watersports, Arts & Crafts"
-            required 
+            required
           />
         </div>
 
@@ -37,18 +37,18 @@
     <template #footer>
       <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
       <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? 'Save Changes' : 'Create Program' }}
+        {{ isEditing ? "Save Changes" : "Create Program" }}
       </button>
     </template>
   </BaseModal>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import BaseModal from '@/components/BaseModal.vue';
-import ColorPicker from '@/components/ColorPicker.vue';
-import { useColorsStore } from '@/stores';
-import type { Program } from '@/types';
+import { defineComponent, type PropType } from "vue";
+import BaseModal from "@/components/BaseModal.vue";
+import ColorPicker from "@/components/ColorPicker.vue";
+import { useColorsStore } from "@/stores";
+import type { Program, Color } from "@/types";
 
 interface ProgramFormData {
   name: string;
@@ -60,7 +60,7 @@ interface ProgramFormData {
 }
 
 export default defineComponent({
-  name: 'ProgramFormModal',
+  name: "ProgramFormModal",
   components: {
     BaseModal,
     ColorPicker,
@@ -75,7 +75,7 @@ export default defineComponent({
       default: null,
     },
   },
-  emits: ['close', 'save'],
+  emits: ["close", "save"],
   setup() {
     const colorsStore = useColorsStore();
     return { colorsStore };
@@ -83,9 +83,9 @@ export default defineComponent({
   data() {
     return {
       localFormData: {
-        name: '',
-        description: '',
-        color: '#6366F1',
+        name: "",
+        description: "",
+        color: "#6366F1",
         activityIds: [],
         staffMemberIds: [],
         locationIds: [],
@@ -108,25 +108,25 @@ export default defineComponent({
     resetForm() {
       if (this.program) {
         // Get color hex value from colorId
-        let colorHex = '#6366F1';
+        let colorHex = "#6366F1";
         if (this.program.colorId) {
           const color = this.colorsStore.getColorById(this.program.colorId);
-          colorHex = color?.hexValue || '#6366F1';
+          colorHex = color?.hexValue || "#6366F1";
         }
-        
+
         this.localFormData = {
           name: this.program.name,
-          description: this.program.description || '',
+          description: this.program.description || "",
           color: colorHex,
-          activityIds: [...this.program.activityIds],
-          staffMemberIds: [...this.program.staffMemberIds],
-          locationIds: [...this.program.locationIds],
+          activityIds: [...(this.program.activityIds || [])],
+          staffMemberIds: [...(this.program.staffMemberIds || [])],
+          locationIds: [...(this.program.locationIds || [])],
         };
       } else {
         this.localFormData = {
-          name: '',
-          description: '',
-          color: '#6366F1',
+          name: "",
+          description: "",
+          color: "#6366F1",
           activityIds: [],
           staffMemberIds: [],
           locationIds: [],
@@ -135,14 +135,16 @@ export default defineComponent({
     },
     handleSave() {
       const now = new Date().toISOString();
-      
+
       // Find color ID for the selected color
       let colorId: string | undefined = this.program?.colorId;
       if (this.localFormData.color) {
-        const color = this.colorsStore.colors.find((c: any) => c.hexValue === this.localFormData.color);
+        const color = this.colorsStore.colors.find(
+          (c: Color) => c.hexValue === this.localFormData.color,
+        );
         colorId = color?.id;
       }
-      
+
       const programData: Program = {
         id: this.program?.id || crypto.randomUUID(),
         name: this.localFormData.name,
@@ -155,10 +157,8 @@ export default defineComponent({
         updatedAt: now,
       };
 
-      this.$emit('save', programData);
+      this.$emit("save", programData);
     },
   },
 });
 </script>
-
-

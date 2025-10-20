@@ -9,12 +9,22 @@
         <div class="grid grid-cols-2">
           <div class="form-group">
             <label class="form-label">First Name</label>
-            <input v-model="localFormData.firstName" type="text" class="form-input" required />
+            <input
+              v-model="localFormData.firstName"
+              type="text"
+              class="form-input"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label class="form-label">Last Name</label>
-            <input v-model="localFormData.lastName" type="text" class="form-input" required />
+            <input
+              v-model="localFormData.lastName"
+              type="text"
+              class="form-input"
+              required
+            />
           </div>
         </div>
 
@@ -39,7 +49,11 @@
 
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input v-model="localFormData.email" type="email" class="form-input" />
+          <input
+            v-model="localFormData.email"
+            type="email"
+            class="form-input"
+          />
         </div>
 
         <div class="form-group">
@@ -61,7 +75,9 @@
             :get-initials-fn="(cert) => cert.name.substring(0, 2).toUpperCase()"
             :get-options-fn="(cert) => ({ label: cert.name, value: cert.id })"
           />
-          <p class="form-help-text">Select certifications from the prepared list</p>
+          <p class="form-help-text">
+            Select certifications from the prepared list
+          </p>
         </div>
       </form>
     </template>
@@ -69,24 +85,26 @@
     <template #footer>
       <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
       <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? 'Update' : 'Add' }} Member
+        {{ isEditing ? "Update" : "Add" }} Member
       </button>
     </template>
   </BaseModal>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import BaseModal from '@/components/BaseModal.vue';
-import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import SelectionList from '@/components/SelectionList.vue';
-import { useCertificationsStore } from '@/stores';
-import type { StaffMember } from '@/types';
+import { defineComponent, type PropType } from "vue";
+import BaseModal from "@/components/BaseModal.vue";
+import Autocomplete, {
+  type AutocompleteOption,
+} from "@/components/Autocomplete.vue";
+import SelectionList from "@/components/SelectionList.vue";
+import { useCertificationsStore } from "@/stores";
+import type { StaffMember } from "@/types";
 
 interface StaffMemberFormData {
   firstName: string;
   lastName: string;
-  role: StaffMember['role'];
+  roleId: StaffMember["roleId"];
   email: string;
   phone: string;
   certificationIds: string[];
@@ -94,35 +112,35 @@ interface StaffMemberFormData {
 }
 
 export default defineComponent({
-  name: 'StaffMemberFormModal',
+  name: "StaffMemberFormModal",
   components: {
     BaseModal,
     Autocomplete,
-    SelectionList
+    SelectionList,
   },
   props: {
     show: {
       type: Boolean,
-      required: true
+      required: true,
     },
     isEditing: {
       type: Boolean,
-      default: false
+      default: false,
     },
     formData: {
       type: Object as PropType<StaffMemberFormData>,
-      required: true
+      required: true,
     },
     staffMembers: {
       type: Array as PropType<StaffMember[]>,
-      required: true
+      required: true,
     },
     currentMemberId: {
       type: String,
-      default: ''
-    }
+      default: "",
+    },
   },
-  emits: ['close', 'save'],
+  emits: ["close", "save"],
   setup() {
     const certificationsStore = useCertificationsStore();
     return { certificationsStore };
@@ -131,38 +149,38 @@ export default defineComponent({
     return {
       localFormData: JSON.parse(JSON.stringify(this.formData)),
       roleOptions: [
-        { label: 'Counselor', value: 'counselor' },
-        { label: 'Supervisor', value: 'supervisor' },
-        { label: 'Director', value: 'director' },
-        { label: 'Nurse', value: 'nurse' },
-        { label: 'Instructor', value: 'instructor' }
-      ] as AutocompleteOption[]
+        { label: "Counselor", value: "counselor" },
+        { label: "Supervisor", value: "supervisor" },
+        { label: "Director", value: "director" },
+        { label: "Nurse", value: "nurse" },
+        { label: "Instructor", value: "instructor" },
+      ] as AutocompleteOption[],
     };
   },
   computed: {
     managerOptions(): AutocompleteOption[] {
       // Filter out the current member to prevent self-assignment
       return this.staffMembers
-        .filter(m => m.id !== this.currentMemberId)
-        .map(member => ({
-          label: `${member.firstName} ${member.lastName} (${member.role})`,
-          value: member.id
+        .filter((m) => m.id !== this.currentMemberId)
+        .map((member) => ({
+          label: `${member.firstName} ${member.lastName} (${member.roleId})`,
+          value: member.id,
         }));
-    }
+    },
   },
   watch: {
     formData: {
       handler(newVal) {
         this.localFormData = JSON.parse(JSON.stringify(newVal));
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   methods: {
     handleSave() {
-      this.$emit('save', this.localFormData);
-    }
-  }
+      this.$emit("save", this.localFormData);
+    },
+  },
 });
 </script>
 
@@ -173,4 +191,3 @@ export default defineComponent({
   color: var(--text-secondary);
 }
 </style>
-

@@ -136,7 +136,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useGroupsStore, useHousingRoomsStore, useSessionsStore } from "@/stores";
+import {
+  useGroupsStore,
+  useHousingRoomsStore,
+  useSessionsStore,
+} from "@/stores";
 import type { HousingRoom, Group } from "@/types";
 import HousingRoomCard from "@/components/cards/HousingRoomCard.vue";
 import FilterBar from "@/components/FilterBar.vue";
@@ -229,32 +233,30 @@ export default defineComponent({
     },
     selectedRoomGroups(): Array<any> {
       if (!this.selectedRoomId) return [];
-      return this.getGroupsForRoom(this.selectedRoomId).map(
-        (g: Group) => {
-          const session = this.sessionsStore.sessions.find(
-            (s) => s.id === g.sessionId
-          );
-          return {
-            id: g.id,
-            name: g.name,
-            description: g.description,
-            camperCount: this.groupsStore.getCampersInGroup(g.id).length,
-            staffCount: g.staffIds?.length || 0,
-            sessionId: g.sessionId,
-            sessionName: session?.name || "Unknown Session",
-            sessionDateRange: session
-              ? `${new Date(session.startDate).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })} - ${new Date(session.endDate).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}`
-              : "Unknown",
-          };
-        }
-      );
+      return this.getGroupsForRoom(this.selectedRoomId).map((g: Group) => {
+        const session = this.sessionsStore.sessions.find(
+          (s) => s.id === g.sessionId,
+        );
+        return {
+          id: g.id,
+          name: g.name,
+          description: g.description,
+          camperCount: this.groupsStore.getCampersInGroup(g.id).length,
+          staffCount: g.staffIds?.length || 0,
+          sessionId: g.sessionId,
+          sessionName: session?.name || "Unknown Session",
+          sessionDateRange: session
+            ? `${new Date(session.startDate).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })} - ${new Date(session.endDate).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}`
+            : "Unknown",
+        };
+      });
     },
   },
   methods: {
@@ -265,7 +267,9 @@ export default defineComponent({
       this.searchQuery = "";
     },
     getGroupsForRoom(housingRoomId: string): Group[] {
-      return this.groupsStore.getGroupsByType({ hasHousing: true, hasSession: true }).filter(g => g.housingRoomId === housingRoomId);
+      return this.groupsStore
+        .getGroupsByType({ hasHousing: true, hasSession: true })
+        .filter((g) => g.housingRoomId === housingRoomId);
     },
     selectRoom(housingRoomId: string): void {
       this.selectedRoomId = housingRoomId;
@@ -307,9 +311,7 @@ export default defineComponent({
     deleteRoomConfirm(): void {
       if (!this.selectedRoomId) return;
 
-      const groupCount = this.getGroupsForRoom(
-        this.selectedRoomId
-      ).length;
+      const groupCount = this.getGroupsForRoom(this.selectedRoomId).length;
 
       // Setup the confirm modal
       this.confirmModalTitle = "Delete Room";

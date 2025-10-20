@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="card card-clickable card-horizontal"
     @click="$emit('click', camper)"
   >
@@ -13,8 +13,13 @@
       <div class="card-meta">
         <span class="badge badge-primary">Age {{ camper.age }}</span>
         <span class="badge badge-primary">{{ formattedGender }}</span>
-        <span v-if="sessionName" class="badge badge-primary">{{ sessionName }}</span>
-        <span v-if="camper.allergies && camper.allergies.length > 0" class="badge badge-warning">
+        <span v-if="sessionName" class="badge badge-primary">{{
+          sessionName
+        }}</span>
+        <span
+          v-if="camper.allergies && camper.allergies.length > 0"
+          class="badge badge-warning"
+        >
           {{ camper.allergies.length }} Allergy(ies)
         </span>
       </div>
@@ -26,12 +31,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import type { Camper } from '@/types';
-import AvatarInitials from '@/components/AvatarInitials.vue';
+import { defineComponent, type PropType } from "vue";
+import type { Camper } from "@/types";
+import AvatarInitials from "@/components/AvatarInitials.vue";
 
 export default defineComponent({
-  name: 'CamperCard',
+  name: "CamperCard",
   components: {
     AvatarInitials,
   },
@@ -42,18 +47,17 @@ export default defineComponent({
     },
     formattedGender: {
       type: String,
-      default: '',
+      default: "",
     },
     sessionName: {
       type: String,
-      default: '',
+      default: "",
     },
   },
-  emits: ['click'],
+  emits: ["click"],
 });
 </script>
 
 <style scoped>
-@import './card-styles.css';
+@import "./card-styles.css";
 </style>
-

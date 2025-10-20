@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="card card-clickable card-horizontal"
     @click="$emit('click', room)"
   >
@@ -18,9 +18,9 @@
       <div v-if="groups.length > 0" class="assigned-groups mt-2">
         <div class="text-xs text-secondary mb-1">Family Groups:</div>
         <div class="flex gap-1 flex-wrap">
-          <span 
-            v-for="group in groups" 
-            :key="group.id" 
+          <span
+            v-for="group in groups"
+            :key="group.id"
             class="badge badge-success badge-sm"
           >
             {{ group.name }}
@@ -33,13 +33,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import type { HousingRoom, Group } from '@/types';
-import { useAreasStore } from '@/stores';
-import Icon from '../Icon.vue';
+import { defineComponent, type PropType } from "vue";
+import type { HousingRoom, Group } from "@/types";
+import { useAreasStore } from "@/stores";
+import Icon from "../Icon.vue";
 
 export default defineComponent({
-  name: 'HousingRoomCard',
+  name: "HousingRoomCard",
   components: {
     Icon,
   },
@@ -53,7 +53,7 @@ export default defineComponent({
       default: () => [],
     },
   },
-  emits: ['click'],
+  emits: ["click"],
   setup() {
     const areasStore = useAreasStore();
     return { areasStore };
@@ -64,13 +64,13 @@ export default defineComponent({
         return this.areasStore.getAreaById(this.room.areaId)?.name;
       }
       return undefined;
-    }
-  }
+    },
+  },
 });
 </script>
 
 <style scoped>
-@import './card-styles.css';
+@import "./card-styles.css";
 
 .assigned-groups {
   display: flex;
@@ -78,4 +78,3 @@ export default defineComponent({
   gap: 0.25rem;
 }
 </style>
-

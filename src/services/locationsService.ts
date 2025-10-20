@@ -3,9 +3,9 @@
  * Handles all location/room-related operations
  */
 
-import type { Location } from '@/types';
-import { storageService } from './storage';
-import { STORAGE_KEYS } from './storageKeys';
+import type { Location } from "@/types";
+import { storageService } from "./storage";
+import { STORAGE_KEYS } from "./storageKeys";
 
 class LocationsService {
   /**
@@ -41,17 +41,16 @@ class LocationsService {
    */
   async getLocationsByArea(areaId: string): Promise<Location[]> {
     const locations = await this.getLocations();
-    return locations.filter(l => l.areaId === areaId);
+    return locations.filter((l) => l.areaId === areaId);
   }
 
   /**
    * Get locations by type
    */
-  async getLocationsByType(type: Location['type']): Promise<Location[]> {
+  async getLocationsByType(type: Location["type"]): Promise<Location[]> {
     const locations = await this.getLocations();
-    return locations.filter(l => l.type === type);
+    return locations.filter((l) => l.type === type);
   }
 }
 
 export const locationsService = new LocationsService();
-

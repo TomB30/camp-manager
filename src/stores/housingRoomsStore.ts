@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia';
-import type { HousingRoom } from '@/types';
-import { housingRoomsService } from '@/services';
+import { defineStore } from "pinia";
+import type { HousingRoom } from "@/types";
+import { housingRoomsService } from "@/services";
 
-export const useHousingRoomsStore = defineStore('housingRooms', {
+export const useHousingRoomsStore = defineStore("housingRooms", {
   state: () => ({
     housingRooms: [] as HousingRoom[],
     loading: false,
@@ -11,13 +11,13 @@ export const useHousingRoomsStore = defineStore('housingRooms', {
   getters: {
     getHousingRoomById(state): (id: string) => HousingRoom | undefined {
       return (id: string): HousingRoom | undefined => {
-        return state.housingRooms.find(h => h.id === id);
+        return state.housingRooms.find((h) => h.id === id);
       };
     },
 
     getHousingRoomsByArea(state): (areaId: string) => HousingRoom[] {
       return (areaId: string): HousingRoom[] => {
-        return state.housingRooms.filter(r => r.areaId === areaId);
+        return state.housingRooms.filter((r) => r.areaId === areaId);
       };
     },
   },
@@ -39,7 +39,7 @@ export const useHousingRoomsStore = defineStore('housingRooms', {
 
     async updateHousingRoom(housingRoom: HousingRoom): Promise<void> {
       await housingRoomsService.saveHousingRoom(housingRoom);
-      const index = this.housingRooms.findIndex(r => r.id === housingRoom.id);
+      const index = this.housingRooms.findIndex((r) => r.id === housingRoom.id);
       if (index >= 0) {
         this.housingRooms[index] = housingRoom;
       }
@@ -47,8 +47,7 @@ export const useHousingRoomsStore = defineStore('housingRooms', {
 
     async deleteHousingRoom(id: string): Promise<void> {
       await housingRoomsService.deleteHousingRoom(id);
-      this.housingRooms = this.housingRooms.filter(r => r.id !== id);
+      this.housingRooms = this.housingRooms.filter((r) => r.id !== id);
     },
-  }
+  },
 });
-

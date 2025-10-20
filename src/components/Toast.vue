@@ -6,18 +6,31 @@
           v-for="toast in toasts"
           :key="toast.id"
           class="toast"
-          :class="[`toast-${toast.type}`, { 'toast-with-details': toast.details }]"
+          :class="[
+            `toast-${toast.type}`,
+            { 'toast-with-details': toast.details },
+          ]"
           @click="removeToast(toast.id)"
         >
           <div class="toast-icon">
-            <Icon name="CheckCircle" v-if="toast.type === 'success'" :size="20" />
+            <Icon
+              name="CheckCircle"
+              v-if="toast.type === 'success'"
+              :size="20"
+            />
             <Icon name="AlertCircle" v-if="toast.type === 'error'" :size="20" />
             <Icon name="Info" v-if="toast.type === 'info'" :size="20" />
-            <Icon name="AlertTriangle" v-if="toast.type === 'warning'" :size="20" />
+            <Icon
+              name="AlertTriangle"
+              v-if="toast.type === 'warning'"
+              :size="20"
+            />
           </div>
           <div class="toast-content">
             <div class="toast-message">{{ toast.message }}</div>
-            <div v-if="toast.details" class="toast-details">{{ toast.details }}</div>
+            <div v-if="toast.details" class="toast-details">
+              {{ toast.details }}
+            </div>
           </div>
           <button class="toast-close" @click.stop="removeToast(toast.id)">
             <Icon name="X" :size="16" />
@@ -29,12 +42,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import Icon from './Icon.vue';
-import { useToastStore } from '@/stores/toastStore';
+import { defineComponent } from "vue";
+import Icon from "./Icon.vue";
+import { useToastStore } from "@/stores/toastStore";
 
 export default defineComponent({
-  name: 'Toast',
+  name: "Toast",
   components: {
     Icon,
   },
@@ -73,7 +86,9 @@ export default defineComponent({
   padding: 1rem;
   border-radius: var(--radius);
   background: white;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--border-color);
   pointer-events: auto;
   cursor: pointer;
@@ -84,39 +99,41 @@ export default defineComponent({
 
 .toast:hover {
   transform: translateX(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .toast-success {
-  border-left: 4px solid #10B981;
+  border-left: 4px solid #10b981;
 }
 
 .toast-success .toast-icon {
-  color: #10B981;
+  color: #10b981;
 }
 
 .toast-error {
-  border-left: 4px solid #EF4444;
+  border-left: 4px solid #ef4444;
 }
 
 .toast-error .toast-icon {
-  color: #EF4444;
+  color: #ef4444;
 }
 
 .toast-info {
-  border-left: 4px solid #3B82F6;
+  border-left: 4px solid #3b82f6;
 }
 
 .toast-info .toast-icon {
-  color: #3B82F6;
+  color: #3b82f6;
 }
 
 .toast-warning {
-  border-left: 4px solid #F59E0B;
+  border-left: 4px solid #f59e0b;
 }
 
 .toast-warning .toast-icon {
-  color: #F59E0B;
+  color: #f59e0b;
 }
 
 .toast-icon {
@@ -164,8 +181,8 @@ export default defineComponent({
 }
 
 .toast-close:hover {
-  background: #FEF2F2;
-  color: #DC2626;
+  background: #fef2f2;
+  color: #dc2626;
 }
 
 /* Toast animations */
@@ -205,4 +222,3 @@ export default defineComponent({
   }
 }
 </style>
-

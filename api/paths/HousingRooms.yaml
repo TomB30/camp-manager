@@ -1,0 +1,26 @@
+get:
+  summary: List all housing rooms
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../schemas/HousingRoom.yaml"
+post:
+  summary: Create a new housing room
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/HousingRoomCreationRequest.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/HousingRoom.yaml"

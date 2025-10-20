@@ -7,7 +7,7 @@
       @action="showModal = true"
     >
       <template #action-icon>
-        <Icon name="Plus"  :size="18" />
+        <Icon name="Plus" :size="18" />
       </template>
     </TabHeader>
 
@@ -67,25 +67,28 @@
           <div>{{ item.name }}</div>
         </div>
       </template>
-      
+
       <template #cell-expirationRequired="{ item }">
-        <span 
-          class="badge badge-sm" 
+        <span
+          class="badge badge-sm"
           :class="item.expirationRequired ? 'badge-warning' : 'badge-success'"
         >
-          {{ item.expirationRequired ? 'Time-limited' : 'Permanent' }}
+          {{ item.expirationRequired ? "Time-limited" : "Permanent" }}
         </span>
       </template>
-      
+
       <template #cell-validityPeriodMonths="{ item }">
         <span v-if="item.expirationRequired && item.validityPeriodMonths">
           {{ item.validityPeriodMonths }} months
         </span>
         <span v-else class="text-secondary">N/A</span>
       </template>
-      
+
       <template #cell-actions="{ item }">
-        <button class="btn btn-sm btn-secondary" @click.stop="selectCertification(item.id)">
+        <button
+          class="btn btn-sm btn-secondary"
+          @click.stop="selectCertification(item.id)"
+        >
           View Details
         </button>
       </template>
@@ -123,23 +126,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useCertificationsStore } from '@/stores';
-import type { Certification } from '@/types';
-import Icon from '@/components/Icon.vue';
-import TabHeader from '@/components/settings/TabHeader.vue';
-import CertificationCard from '@/components/cards/CertificationCard.vue';
-import CertificationDetailModal from '@/components/modals/CertificationDetailModal.vue';
-import CertificationFormModal from '@/components/modals/CertificationFormModal.vue';
-import ConfirmModal from '@/components/ConfirmModal.vue';
-import DataTable from '@/components/DataTable.vue';
-import FilterBar, { type Filter } from '@/components/FilterBar.vue';
-import ViewToggle from '@/components/ViewToggle.vue';
-import EmptyState from '@/components/EmptyState.vue';
-import { useToast } from '@/composables/useToast';
+import { defineComponent } from "vue";
+import { useCertificationsStore } from "@/stores";
+import type { Certification } from "@/types";
+import Icon from "@/components/Icon.vue";
+import TabHeader from "@/components/settings/TabHeader.vue";
+import CertificationCard from "@/components/cards/CertificationCard.vue";
+import CertificationDetailModal from "@/components/modals/CertificationDetailModal.vue";
+import CertificationFormModal from "@/components/modals/CertificationFormModal.vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
+import DataTable from "@/components/DataTable.vue";
+import FilterBar, { type Filter } from "@/components/FilterBar.vue";
+import ViewToggle from "@/components/ViewToggle.vue";
+import EmptyState from "@/components/EmptyState.vue";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
-  name: 'CertificationsTab',
+  name: "CertificationsTab",
   components: {
     Icon,
     TabHeader,
@@ -164,23 +167,26 @@ export default defineComponent({
       editingCertificationId: null as string | null,
       selectedCertificationId: null as string | null,
       certificationToDelete: null as string | null,
-      searchQuery: '',
-      filterExpiration: '',
-      viewMode: 'grid' as 'grid' | 'table',
+      searchQuery: "",
+      filterExpiration: "",
+      viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
       formData: {
-        name: '',
-        description: '',
-        expirationRequired: false,
+        name: "",
+        description: "",
         validityPeriodMonths: undefined as number | undefined,
       },
-      
+
       certificationColumns: [
-        { key: 'name', label: 'Certification Name', sortable: true },
-        { key: 'expirationRequired', label: 'Type', sortable: true },
-        { key: 'validityPeriodMonths', label: 'Validity Period', sortable: true },
-        { key: 'actions', label: '', width: '120px' },
+        { key: "name", label: "Certification Name", sortable: true },
+        { key: "expirationRequired", label: "Type", sortable: true },
+        {
+          key: "validityPeriodMonths",
+          label: "Validity Period",
+          sortable: true,
+        },
+        { key: "actions", label: "", width: "120px" },
       ],
     };
   },
@@ -188,12 +194,12 @@ export default defineComponent({
     certificationFilters(): Filter[] {
       return [
         {
-          model: 'filterExpiration',
+          model: "filterExpiration",
           value: this.filterExpiration,
-          placeholder: 'Filter by Type',
+          placeholder: "Filter by Type",
           options: [
-            { value: 'time-limited', label: 'Time-limited' },
-            { value: 'permanent', label: 'Permanent' },
+            { value: "time-limited", label: "Time-limited" },
+            { value: "permanent", label: "Permanent" },
           ],
         },
       ];
@@ -205,18 +211,23 @@ export default defineComponent({
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        filtered = filtered.filter((cert) =>
-          cert.name.toLowerCase().includes(query) ||
-          cert.description?.toLowerCase().includes(query)
+        filtered = filtered.filter(
+          (cert) =>
+            cert.name.toLowerCase().includes(query) ||
+            cert.description?.toLowerCase().includes(query),
         );
       }
 
       // Expiration filter
-      if (this.filterExpiration && this.filterExpiration !== '') {
-        if (this.filterExpiration === 'time-limited') {
-          filtered = filtered.filter((cert) => cert.expirationRequired);
-        } else if (this.filterExpiration === 'permanent') {
-          filtered = filtered.filter((cert) => !cert.expirationRequired);
+      if (this.filterExpiration && this.filterExpiration !== "") {
+        if (this.filterExpiration === "time-limited") {
+          filtered = filtered.filter(
+            (cert) => cert.validityPeriodMonths !== undefined,
+          );
+        } else if (this.filterExpiration === "permanent") {
+          filtered = filtered.filter(
+            (cert) => cert.validityPeriodMonths === undefined,
+          );
         }
       }
 
@@ -225,7 +236,11 @@ export default defineComponent({
 
     selectedCertification(): Certification | null {
       if (!this.selectedCertificationId) return null;
-      return this.certificationsStore.getCertificationById(this.selectedCertificationId) || null;
+      return (
+        this.certificationsStore.getCertificationById(
+          this.selectedCertificationId,
+        ) || null
+      );
     },
   },
   methods: {
@@ -242,9 +257,8 @@ export default defineComponent({
       this.editingCertificationId = certification.id;
       this.formData = {
         name: certification.name,
-        description: certification.description || '',
-        expirationRequired: certification.expirationRequired,
-        validityPeriodMonths: certification.validityPeriodMonths,
+        description: certification.description || "",
+        validityPeriodMonths: certification.validityPeriodMonths || undefined,
       };
       this.showModal = true;
     },
@@ -257,48 +271,54 @@ export default defineComponent({
 
     async handleDeleteCertification() {
       if (!this.certificationToDelete) return;
-      
+
       try {
-        await this.certificationsStore.deleteCertification(this.certificationToDelete);
-        this.toast.success('Certification deleted successfully');
+        await this.certificationsStore.deleteCertification(
+          this.certificationToDelete,
+        );
+        this.toast.success("Certification deleted successfully");
         this.showConfirmModal = false;
         this.certificationToDelete = null;
       } catch (error: any) {
-        this.toast.error(error.message || 'Failed to delete certification');
+        this.toast.error(error.message || "Failed to delete certification");
       }
     },
 
-    async saveCertification(data: { name: string; description: string; expirationRequired: boolean; validityPeriodMonths?: number }) {
+    async saveCertification(data: {
+      name: string;
+      description: string;
+      validityPeriodMonths?: number;
+    }) {
       try {
         if (this.editingCertificationId) {
           // Update existing
-          const existing = this.certificationsStore.getCertificationById(this.editingCertificationId);
+          const existing = this.certificationsStore.getCertificationById(
+            this.editingCertificationId,
+          );
           await this.certificationsStore.updateCertification({
             id: this.editingCertificationId,
             name: data.name,
             description: data.description || undefined,
-            expirationRequired: data.expirationRequired,
             validityPeriodMonths: data.validityPeriodMonths,
             createdAt: existing?.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           });
-          this.toast.success('Certification updated successfully');
+          this.toast.success("Certification updated successfully");
         } else {
           // Create new
           await this.certificationsStore.addCertification({
             id: crypto.randomUUID(),
             name: data.name,
             description: data.description || undefined,
-            expirationRequired: data.expirationRequired,
-            validityPeriodMonths: data.validityPeriodMonths,
+            validityPeriodMonths: data.validityPeriodMonths || undefined,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           });
-          this.toast.success('Certification added successfully');
+          this.toast.success("Certification added successfully");
         }
         this.closeModal();
       } catch (error: any) {
-        this.toast.error(error.message || 'Failed to save certification');
+        this.toast.error(error.message || "Failed to save certification");
       }
     },
 
@@ -306,16 +326,15 @@ export default defineComponent({
       this.showModal = false;
       this.editingCertificationId = null;
       this.formData = {
-        name: '',
-        description: '',
-        expirationRequired: false,
+        name: "",
+        description: "",
         validityPeriodMonths: undefined,
       };
     },
 
     clearFilters() {
-      this.searchQuery = '';
-      this.filterExpiration = '';
+      this.searchQuery = "";
+      this.filterExpiration = "";
     },
   },
 });
@@ -409,4 +428,3 @@ export default defineComponent({
   }
 }
 </style>
-

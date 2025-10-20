@@ -61,31 +61,46 @@
     >
       <template #cell-name="{ item }">
         <div class="area-name-content">
-          <div class="area-icon-sm" :style="{ background: getAreaTypeColor(item.type) }">
-            <Icon :name="AreaTypeIcon(item.type)" :size="18" :stroke-width="2" />
+          <div
+            class="area-icon-sm"
+            :style="{ background: getAreaTypeColor(item.type) }"
+          >
+            <Icon
+              :name="AreaTypeIcon(item.type)"
+              :size="18"
+              :stroke-width="2"
+            />
           </div>
           <div class="area-name">{{ item.name }}</div>
         </div>
       </template>
-      
+
       <template #cell-type="{ item }">
-        <span class="badge badge-primary badge-sm">{{ formatAreaType(item.type) }}</span>
+        <span class="badge badge-primary badge-sm">{{
+          formatAreaType(item.type)
+        }}</span>
       </template>
-      
+
       <template #cell-capacity="{ item }">
         <span v-if="item.capacity">{{ item.capacity }}</span>
         <span v-else class="text-secondary">N/A</span>
       </template>
-      
+
       <template #cell-equipment="{ item }">
-        <span v-if="item.equipment && item.equipment.length > 0" class="badge badge-success badge-sm">
+        <span
+          v-if="item.equipment && item.equipment.length > 0"
+          class="badge badge-success badge-sm"
+        >
           {{ item.equipment.length }} item(s)
         </span>
         <span v-else class="text-secondary">None</span>
       </template>
-      
+
       <template #cell-actions="{ item }">
-        <button class="btn btn-sm btn-secondary" @click.stop="selectArea(item.id)">
+        <button
+          class="btn btn-sm btn-secondary"
+          @click.stop="selectArea(item.id)"
+        >
           View Details
         </button>
       </template>
@@ -123,25 +138,24 @@
 </template>
 
 <script lang="ts">
-
-import { defineComponent } from 'vue';
-import { useAreasStore } from '@/stores';
-import type { Area } from '@/types';
-import AreaCard from '@/components/cards/AreaCard.vue';
-import FilterBar, { type Filter } from '@/components/FilterBar.vue';
-import ConfirmModal from '@/components/ConfirmModal.vue';
-import DataTable from '@/components/DataTable.vue';
-import ViewToggle from '@/components/ViewToggle.vue';
-import AreaDetailModal from '@/components/modals/AreaDetailModal.vue';
-import AreaFormModal from '@/components/modals/AreaFormModal.vue';
-import EmptyState from '@/components/EmptyState.vue';
-import Icon from '@/components/Icon.vue';
-import TabHeader from '@/components/settings/TabHeader.vue';
-import { useToast } from '@/composables/useToast';
-import type { IconName } from '@/components/Icon.vue';
+import { defineComponent } from "vue";
+import { useAreasStore } from "@/stores";
+import type { Area } from "@/types";
+import AreaCard from "@/components/cards/AreaCard.vue";
+import FilterBar, { type Filter } from "@/components/FilterBar.vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
+import DataTable from "@/components/DataTable.vue";
+import ViewToggle from "@/components/ViewToggle.vue";
+import AreaDetailModal from "@/components/modals/AreaDetailModal.vue";
+import AreaFormModal from "@/components/modals/AreaFormModal.vue";
+import EmptyState from "@/components/EmptyState.vue";
+import Icon from "@/components/Icon.vue";
+import TabHeader from "@/components/settings/TabHeader.vue";
+import { useToast } from "@/composables/useToast";
+import type { IconName } from "@/components/Icon.vue";
 
 export default defineComponent({
-  name: 'AreasTab',
+  name: "AreasTab",
   components: {
     AreaCard,
     FilterBar,
@@ -165,20 +179,20 @@ export default defineComponent({
       showConfirmModal: false,
       editingAreaId: null as string | null,
       selectedAreaId: null as string | null,
-      searchQuery: '',
-      filterType: '',
-      viewMode: 'grid' as 'grid' | 'table',
+      searchQuery: "",
+      filterType: "",
+      viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
       formData: this.getEmptyFormData(),
       confirmAction: null as (() => void) | null,
-      
+
       areaColumns: [
-        { key: 'name', label: 'Area Name', sortable: true },
-        { key: 'type', label: 'Type', sortable: true },
-        { key: 'capacity', label: 'Capacity', sortable: true },
-        { key: 'equipment', label: 'Equipment' },
-        { key: 'actions', label: '', width: '120px' },
+        { key: "name", label: "Area Name", sortable: true },
+        { key: "type", label: "Type", sortable: true },
+        { key: "capacity", label: "Capacity", sortable: true },
+        { key: "equipment", label: "Equipment" },
+        { key: "actions", label: "", width: "120px" },
       ],
     };
   },
@@ -186,16 +200,16 @@ export default defineComponent({
     areaFilters(): Filter[] {
       return [
         {
-          model: 'filterType',
+          model: "filterType",
           value: this.filterType,
-          placeholder: 'Filter by Type',
+          placeholder: "Filter by Type",
           options: [
-            { value: 'indoor', label: 'Indoor' },
-            { value: 'outdoor', label: 'Outdoor' },
-            { value: 'facility', label: 'Facility' },
-            { value: 'field', label: 'Field' },
-            { value: 'water', label: 'Water' },
-            { value: 'other', label: 'Other' },
+            { value: "indoor", label: "Indoor" },
+            { value: "outdoor", label: "Outdoor" },
+            { value: "facility", label: "Facility" },
+            { value: "field", label: "Field" },
+            { value: "water", label: "Water" },
+            { value: "other", label: "Other" },
           ],
         },
       ];
@@ -207,14 +221,19 @@ export default defineComponent({
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        filtered = filtered.filter((area) =>
-          area.name.toLowerCase().includes(query) ||
-          area.description?.toLowerCase().includes(query)
+        filtered = filtered.filter(
+          (area) =>
+            area.name.toLowerCase().includes(query) ||
+            area.description?.toLowerCase().includes(query),
         );
       }
 
       // Type filter
-      if (this.filterType && this.filterType !== '' && this.filterType !== 'all') {
+      if (
+        this.filterType &&
+        this.filterType !== "" &&
+        this.filterType !== "all"
+      ) {
         filtered = filtered.filter((area) => area.type === this.filterType);
       }
 
@@ -229,12 +248,12 @@ export default defineComponent({
   methods: {
     getEmptyFormData() {
       return {
-        name: '',
-        description: '',
-        type: 'indoor' as Area['type'],
+        name: "",
+        description: "",
+        type: "indoor" as Area["type"],
         capacity: undefined,
         equipment: [] as string[],
-        notes: '',
+        notes: "",
       };
     },
 
@@ -246,11 +265,11 @@ export default defineComponent({
       this.editingAreaId = area.id;
       this.formData = {
         name: area.name,
-        description: area.description || '',
+        description: area.description || "",
         type: area.type,
         capacity: area.capacity,
         equipment: area.equipment || [],
-        notes: area.notes || '',
+        notes: area.notes || "",
       };
       this.selectedAreaId = null;
       this.showModal = true;
@@ -263,10 +282,12 @@ export default defineComponent({
           await this.areasStore.updateArea({
             id: this.editingAreaId,
             ...data,
-            createdAt: this.areasStore.getAreaById(this.editingAreaId)?.createdAt || new Date().toISOString(),
+            createdAt:
+              this.areasStore.getAreaById(this.editingAreaId)?.createdAt ||
+              new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           });
-          this.toast.success('Area updated successfully');
+          this.toast.success("Area updated successfully");
         } else {
           // Create new
           await this.areasStore.addArea({
@@ -275,11 +296,11 @@ export default defineComponent({
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           });
-          this.toast.success('Area added successfully');
+          this.toast.success("Area added successfully");
         }
         this.closeModal();
       } catch (error: any) {
-        this.toast.error(error.message || 'Failed to save area');
+        this.toast.error(error.message || "Failed to save area");
       }
     },
 
@@ -292,9 +313,9 @@ export default defineComponent({
     async deleteArea(id: string) {
       try {
         await this.areasStore.deleteArea(id);
-        this.toast.success('Area deleted successfully');
+        this.toast.success("Area deleted successfully");
       } catch (error: any) {
-        this.toast.error(error.message || 'Failed to delete area');
+        this.toast.error(error.message || "Failed to delete area");
       }
     },
 
@@ -305,8 +326,8 @@ export default defineComponent({
     },
 
     clearFilters() {
-      this.searchQuery = '';
-      this.filterType = '';
+      this.searchQuery = "";
+      this.filterType = "";
     },
 
     handleConfirmAction() {
@@ -322,40 +343,40 @@ export default defineComponent({
       this.showConfirmModal = false;
     },
 
-    formatAreaType(type: Area['type']): string {
-      const typeMap: Record<Area['type'], string> = {
-        indoor: 'Indoor',
-        outdoor: 'Outdoor',
-        facility: 'Facility',
-        field: 'Field',
-        water: 'Water',
-        other: 'Other',
+    formatAreaType(type: Area["type"]): string {
+      const typeMap: Record<NonNullable<Area["type"]>, string> = {
+        indoor: "Indoor",
+        outdoor: "Outdoor",
+        facility: "Facility",
+        field: "Field",
+        water: "Water",
+        other: "Other",
       };
-      return typeMap[type] || type;
+      return typeMap[type as NonNullable<Area["type"]>] || "";
     },
 
-    getAreaTypeColor(type: Area['type']): string {
-      const colorMap: Record<Area['type'], string> = {
-        indoor: '#3b82f6',
-        outdoor: '#10b981',
-        facility: '#6366f1',
-        field: '#f59e0b',
-        water: '#06b6d4',
-        other: '#6b7280',
+    getAreaTypeColor(type: Area["type"]): string {
+      const colorMap: Record<NonNullable<Area["type"]>, string> = {
+        indoor: "#3b82f6",
+        outdoor: "#10b981",
+        facility: "#6366f1",
+        field: "#f59e0b",
+        water: "#06b6d4",
+        other: "#6b7280",
       };
-      return colorMap[type] || '#6b7280';
+      return colorMap[type as NonNullable<Area["type"]>] || "#6b7280";
     },
 
-    AreaTypeIcon(type: Area['type']): IconName {
-      const iconMap: Record<Area['type'], IconName> = {
-        indoor: 'Home',
-        outdoor: 'Trees',
-        facility: 'Activity',
-        field: 'Activity',
-        water: 'Waves',
-        other: 'MoreHorizontal',
+    AreaTypeIcon(type: Area["type"]): IconName {
+      const iconMap: Record<NonNullable<Area["type"]>, IconName> = {
+        indoor: "Home",
+        outdoor: "Trees",
+        facility: "Activity",
+        field: "Activity",
+        water: "Waves",
+        other: "MoreHorizontal",
       };
-      return iconMap[type] || 'MapPin';
+      return iconMap[type as NonNullable<Area["type"]>] || "MapPin";
     },
   },
 });
@@ -416,4 +437,3 @@ export default defineComponent({
   }
 }
 </style>
-

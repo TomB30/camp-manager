@@ -3,7 +3,9 @@
     <div class="staff-view">
       <ViewHeader title="Staff Management">
         <template #actions>
-          <button class="btn btn-primary" @click="showModal = true">+ Staff Member</button>
+          <button class="btn btn-primary" @click="showModal = true">
+            + Staff Member
+          </button>
         </template>
       </ViewHeader>
 
@@ -29,13 +31,15 @@
           v-for="member in filteredMembers"
           :key="member.id"
           :member="member"
-          :formatted-role="formatRole(member.role)"
-          :role-color="getRoleColor(member.role)"
+          :formatted-role="formatRole(member.roleId)"
           @click="selectMember(member.id)"
         />
 
         <EmptyState
-          v-if="filteredMembers.length === 0 && staffMembersStore.staffMembers.length === 0"
+          v-if="
+            filteredMembers.length === 0 &&
+            staffMembersStore.staffMembers.length === 0
+          "
           type="empty"
           title="No Staff Members Yet"
           message="Add your first staff member to start building your camp team and managing assignments."
@@ -45,7 +49,10 @@
         />
 
         <EmptyState
-          v-if="filteredMembers.length === 0 && staffMembersStore.staffMembers.length > 0"
+          v-if="
+            filteredMembers.length === 0 &&
+            staffMembersStore.staffMembers.length > 0
+          "
           type="no-results"
           title="No Staff Members Found"
           message="No staff members match your current filters. Try adjusting your search criteria."
@@ -71,30 +78,39 @@
             <AvatarInitials
               :first-name="item.firstName"
               :last-name="item.lastName"
-              :color="getRoleColor(item.role)"
               size="sm"
             />
-            <div class="member-fullname">{{ item.firstName }} {{ item.lastName }}</div>
+            <div class="member-fullname">
+              {{ item.firstName }} {{ item.lastName }}
+            </div>
           </div>
         </template>
-        
+
         <template #cell-role="{ item }">
-          <span class="badge badge-primary badge-sm">{{ formatRole(item.role) }}</span>
+          <span class="badge badge-primary badge-sm">{{
+            formatRole(item.role)
+          }}</span>
         </template>
-        
+
         <template #cell-certifications="{ item }">
-          <span v-if="item.certificationIds && item.certificationIds.length > 0" class="badge badge-success badge-sm">
+          <span
+            v-if="item.certificationIds && item.certificationIds.length > 0"
+            class="badge badge-success badge-sm"
+          >
             {{ item.certificationIds.length }} cert(s)
           </span>
           <span v-else class="text-secondary">None</span>
         </template>
-        
+
         <template #cell-events="{ item }">
           <span class="event-count">{{ getMemberEvents(item.id).length }}</span>
         </template>
-        
+
         <template #cell-actions="{ item }">
-          <button class="btn btn-sm btn-secondary" @click.stop="selectMember(item.id)">
+          <button
+            class="btn btn-sm btn-secondary"
+            @click.stop="selectMember(item.id)"
+          >
             View Details
           </button>
         </template>
@@ -110,19 +126,30 @@
       >
         <template #manager-info>
           <div>
-            <span class="badge badge-success">{{ selectedMember ? getManagerName(selectedMember.managerId) : '' }}</span>
+            <span class="badge badge-success">{{
+              selectedMember ? getManagerName(selectedMember.managerId) : ""
+            }}</span>
           </div>
         </template>
         <template #direct-reports>
-          <div v-if="selectedMember && getDirectReports(selectedMember.id).length > 0" class="flex gap-1 flex-wrap">
-            <span v-for="report in getDirectReports(selectedMember.id)" :key="report.id" class="badge badge-primary">
+          <div
+            v-if="
+              selectedMember && getDirectReports(selectedMember.id).length > 0
+            "
+            class="flex gap-1 flex-wrap"
+          >
+            <span
+              v-for="report in getDirectReports(selectedMember.id)"
+              :key="report.id"
+              class="badge badge-primary"
+            >
               {{ report.firstName }} {{ report.lastName }}
             </span>
           </div>
           <div v-else class="text-secondary">No direct reports</div>
         </template>
         <template #events-list>
-          <EventsByDate 
+          <EventsByDate
             :events="selectedMember ? getMemberEvents(selectedMember.id) : []"
             :show-location="true"
             :get-location-name="getLocationName"
@@ -158,24 +185,33 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useStaffMembersStore, useCertificationsStore, useProgramsStore, useEventsStore, useAreasStore } from '@/stores';
-import type { StaffMember, Event } from '@/types';
-import ViewHeader from '@/components/ViewHeader.vue';
-import AvatarInitials from '@/components/AvatarInitials.vue';
-import StaffCard from '@/components/cards/StaffCard.vue';
-import FilterBar, { type Filter } from '@/components/FilterBar.vue';
-import EventsByDate from '@/components/EventsByDate.vue';
-import ConfirmModal from '@/components/ConfirmModal.vue';
-import DataTable from '@/components/DataTable.vue';
-import ViewToggle from '@/components/ViewToggle.vue';
-import Autocomplete, { AutocompleteOption } from '@/components/Autocomplete.vue';
-import EmptyState from '@/components/EmptyState.vue';
-import StaffMemberDetailModal from '@/components/modals/StaffMemberDetailModal.vue';
-import StaffMemberFormModal from '@/components/modals/StaffMemberFormModal.vue';
+import { defineComponent } from "vue";
+import {
+  useStaffMembersStore,
+  useCertificationsStore,
+  useProgramsStore,
+  useEventsStore,
+  useAreasStore,
+  useRolesStore,
+} from "@/stores";
+import type { StaffMember, Event } from "@/types";
+import ViewHeader from "@/components/ViewHeader.vue";
+import AvatarInitials from "@/components/AvatarInitials.vue";
+import StaffCard from "@/components/cards/StaffCard.vue";
+import FilterBar, { type Filter } from "@/components/FilterBar.vue";
+import EventsByDate from "@/components/EventsByDate.vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
+import DataTable from "@/components/DataTable.vue";
+import ViewToggle from "@/components/ViewToggle.vue";
+import Autocomplete, {
+  AutocompleteOption,
+} from "@/components/Autocomplete.vue";
+import EmptyState from "@/components/EmptyState.vue";
+import StaffMemberDetailModal from "@/components/modals/StaffMemberDetailModal.vue";
+import StaffMemberFormModal from "@/components/modals/StaffMemberFormModal.vue";
 
 export default defineComponent({
-  name: 'StaffMembers',
+  name: "StaffMembers",
   components: {
     ViewHeader,
     AvatarInitials,
@@ -188,41 +224,41 @@ export default defineComponent({
     Autocomplete,
     EmptyState,
     StaffMemberDetailModal,
-    StaffMemberFormModal
+    StaffMemberFormModal,
   },
   data() {
     return {
       selectedMemberId: null as string | null,
       showModal: false,
       editingMemberId: null as string | null,
-      viewMode: 'grid' as 'grid' | 'table',
+      viewMode: "grid" as "grid" | "table",
       expandedMembers: new Set<string>(),
       currentPage: 1,
       pageSize: 10,
       showConfirmModal: false,
       confirmAction: null as (() => void) | null,
       formData: {
-        firstName: '',
-        lastName: '',
-        role: 'counselor' as StaffMember['role'],
-        email: '',
-        phone: '',
+        firstName: "",
+        lastName: "",
+        roleId: "counselor" as StaffMember["roleId"],
+        email: "",
+        phone: "",
         certificationIds: [] as string[],
-        managerId: '',
+        managerId: "",
       },
-      searchQuery: '',
-      filterRole: '',
-      filterCertification: '',
-      filterProgram: '',
+      searchQuery: "",
+      filterRole: "",
+      filterCertification: "",
+      filterProgram: "",
       memberColumns: [
-        { key: 'name', label: 'Name', width: '200px' },
-        { key: 'role', label: 'Role', width: '140px' },
-        { key: 'email', label: 'Email', width: '200px' },
-        { key: 'phone', label: 'Phone', width: '150px' },
-        { key: 'certifications', label: 'Certifications', width: '140px' },
-        { key: 'events', label: 'Events', width: '100px' },
-        { key: 'actions', label: 'Actions', width: '140px' },
-      ]
+        { key: "name", label: "Name", width: "200px" },
+        { key: "role", label: "Role", width: "140px" },
+        { key: "email", label: "Email", width: "200px" },
+        { key: "phone", label: "Phone", width: "150px" },
+        { key: "certifications", label: "Certifications", width: "140px" },
+        { key: "events", label: "Events", width: "100px" },
+        { key: "actions", label: "Actions", width: "140px" },
+      ],
     };
   },
   computed: {
@@ -241,63 +277,67 @@ export default defineComponent({
     areasStore() {
       return useAreasStore();
     },
+    rolesStore() {
+      return useRolesStore();
+    },
     roleOptions(): Array<AutocompleteOption> {
       return [
-        { label: 'Counselor', value: 'counselor' },
-        { label: 'Supervisor', value: 'supervisor' },
-        { label: 'Director', value: 'director' },
-        { label: 'Nurse', value: 'nurse' },
-        { label: 'Instructor', value: 'instructor' }
+        { label: "Counselor", value: "counselor" },
+        { label: "Supervisor", value: "supervisor" },
+        { label: "Director", value: "director" },
+        { label: "Nurse", value: "nurse" },
+        { label: "Instructor", value: "instructor" },
       ];
     },
     managerOptions(): Array<AutocompleteOption> {
-      const options = [
-        { label: 'No Manager (Top Level)', value: '' }
-      ];
-      const managers: Array<AutocompleteOption> = this.staffMembersStore.staffMembers
-        .filter(m => m.id !== this.editingMemberId)
-        .map((member: StaffMember) => ({
-          label: `${member.firstName} ${member.lastName} (${this.formatRole(member.role)})`,
-          value: member.id
-        }));
+      const options = [{ label: "No Manager (Top Level)", value: "" }];
+      const managers: Array<AutocompleteOption> =
+        this.staffMembersStore.staffMembers
+          .filter((m) => m.id !== this.editingMemberId)
+          .map((member: StaffMember) => ({
+            label: `${member.firstName} ${member.lastName} (${this.formatRole(member.roleId)})`,
+            value: member.id,
+          }));
       return [...options, ...managers];
     },
     staffFilters(): Filter[] {
       return [
         {
-          model: 'filterRole',
+          model: "filterRole",
           value: this.filterRole,
-          placeholder: 'Filter by Role',
+          placeholder: "Filter by Role",
           options: [
-            { label: 'Counselor', value: 'counselor' },
-            { label: 'Activity Leader', value: 'activity-leader' },
-            { label: 'Medical Staff', value: 'medical-staff' },
-            { label: 'Administrator', value: 'administrator' },
+            { label: "Counselor", value: "counselor" },
+            { label: "Activity Leader", value: "activity-leader" },
+            { label: "Medical Staff", value: "medical-staff" },
+            { label: "Administrator", value: "administrator" },
           ],
         },
         {
-          model: 'filterCertification',
+          model: "filterCertification",
           value: this.filterCertification,
-          placeholder: 'Filter by Certification',
-          options: this.certificationsStore.certifications.map(cert => ({
+          placeholder: "Filter by Certification",
+          options: this.certificationsStore.certifications.map((cert) => ({
             label: cert.name,
-            value: cert.name
+            value: cert.name,
           })),
         },
         {
-          model: 'filterProgram',
+          model: "filterProgram",
           value: this.filterProgram,
-          placeholder: 'Filter by Program',
-          options: this.programsStore.programs.map(program => ({
+          placeholder: "Filter by Program",
+          options: this.programsStore.programs.map((program) => ({
             label: program.name,
-            value: program.id
+            value: program.id,
           })),
         },
       ];
     },
     selectedMember(): StaffMember | null {
       if (!this.selectedMemberId) return null;
-      return this.staffMembersStore.getStaffMemberById(this.selectedMemberId) || null;
+      return (
+        this.staffMembersStore.getStaffMemberById(this.selectedMemberId) || null
+      );
     },
     filteredMembers(): StaffMember[] {
       let members: StaffMember[] = this.staffMembersStore.staffMembers;
@@ -305,24 +345,29 @@ export default defineComponent({
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        members = members.filter((member: StaffMember) =>
-          member.firstName.toLowerCase().includes(query) ||
-          member.lastName.toLowerCase().includes(query) ||
-          `${member.firstName} ${member.lastName}`.toLowerCase().includes(query) ||
-          (member.email && member.email.toLowerCase().includes(query))
+        members = members.filter(
+          (member: StaffMember) =>
+            member.firstName.toLowerCase().includes(query) ||
+            member.lastName.toLowerCase().includes(query) ||
+            `${member.firstName} ${member.lastName}`
+              .toLowerCase()
+              .includes(query) ||
+            (member.email && member.email.toLowerCase().includes(query)),
         );
       }
 
       // Role filter
       if (this.filterRole) {
-        members = members.filter((member: StaffMember) => member.role === this.filterRole);
+        members = members.filter(
+          (member: StaffMember) => member.roleId === this.filterRole,
+        );
       }
 
       // Certification filter
       if (this.filterCertification) {
         members = members.filter((member: StaffMember) => {
           if (!member.certificationIds) return false;
-          return member.certificationIds.some(id => {
+          return member.certificationIds.some((id) => {
             const cert = this.certificationsStore.getCertificationById(id);
             return cert && cert.name === this.filterCertification;
           });
@@ -333,12 +378,14 @@ export default defineComponent({
       if (this.filterProgram) {
         members = members.filter((member: StaffMember) => {
           const program = this.programsStore.getProgramById(this.filterProgram);
-          return program && program.staffMemberIds.includes(member.id);
+          return (
+            (program && program.staffMemberIds?.includes(member.id)) || false
+          );
         });
       }
 
       return members;
-    }
+    },
   },
   watch: {
     searchQuery() {
@@ -352,11 +399,11 @@ export default defineComponent({
     },
     filterProgram() {
       this.currentPage = 1;
-    }
+    },
   },
   mounted() {
     // Auto-expand all members with reports
-    this.staffMembersStore.staffMembers.forEach(member => {
+    this.staffMembersStore.staffMembers.forEach((member) => {
       if (this.getDirectReports(member.id).length > 0) {
         this.expandedMembers.add(member.id);
       }
@@ -364,74 +411,62 @@ export default defineComponent({
   },
   methods: {
     clearFilters(): void {
-      this.searchQuery = '';
-      this.filterRole = '';
-      this.filterCertification = '';
-      this.filterProgram = '';
+      this.searchQuery = "";
+      this.filterRole = "";
+      this.filterCertification = "";
+      this.filterProgram = "";
     },
     getDirectReports(managerId: string): StaffMember[] {
-      return this.filteredMembers.filter(member => member.managerId === managerId);
+      return this.filteredMembers.filter(
+        (member) => member.managerId === managerId,
+      );
     },
     getManagerName(managerId: string | undefined): string {
-      if (!managerId) return 'None';
+      if (!managerId) return "None";
       const manager = this.staffMembersStore.getStaffMemberById(managerId);
-      return manager ? `${manager.firstName} ${manager.lastName}` : 'Unknown';
+      return manager ? `${manager.firstName} ${manager.lastName}` : "Unknown";
     },
-    formatRole(role: string): string {
-      return role.charAt(0).toUpperCase() + role.slice(1);
-    },
-    getRoleColor(role: StaffMember['role']): string {
-      const colors: Record<StaffMember['role'], string> = {
-        director: '#9C27B0',
-        supervisor: '#2196F3',
-        counselor: '#4CAF50',
-        nurse: '#F44336',
-        instructor: '#FF9800',
-      };
-      return colors[role] || '#757575';
+    formatRole(roleId: string): string {
+      const role = this.rolesStore.getRoleById(roleId);
+      return role
+        ? role.name.charAt(0).toUpperCase() + role.name.slice(1)
+        : "Unknown Role";
     },
     getMemberEvents(memberId: string): Event[] {
       return this.eventsStore.staffEvents(memberId);
     },
     getLocationName(locationId: string): string {
       const location = this.areasStore.getAreaById(locationId);
-      return location?.name || 'Unknown Location';
+      return location?.name || "Unknown Location";
     },
     selectMember(memberId: string): void {
       this.selectedMemberId = memberId;
     },
     editMember(): void {
       if (!this.selectedMember) return;
-      
+
       this.editingMemberId = this.selectedMember.id;
       this.formData = {
         firstName: this.selectedMember.firstName,
         lastName: this.selectedMember.lastName,
-        role: this.selectedMember.role,
-        email: this.selectedMember.email || '',
-        phone: this.selectedMember.phone || '',
+        roleId: this.selectedMember.roleId,
+        email: this.selectedMember.email || "",
+        phone: this.selectedMember.phone || "",
         certificationIds: this.selectedMember.certificationIds || [],
-        managerId: this.selectedMember.managerId || '',
+        managerId: this.selectedMember.managerId || "",
       };
-      
+
       this.selectedMemberId = null;
       this.showModal = true;
     },
     async saveMember(formData: typeof this.formData): Promise<void> {
-      // Get certification names for backward compatibility
-      const certifications = formData.certificationIds.map(id => {
-        const cert = this.certificationsStore.getCertificationById(id);
-        return cert ? cert.name : '';
-      }).filter(name => name.length > 0);
-
       const memberData: StaffMember = {
         id: this.editingMemberId || `staff-${Date.now()}`,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        role: formData.role,
+        roleId: formData.roleId,
         email: formData.email,
         phone: formData.phone,
-        certifications: certifications,
         certificationIds: formData.certificationIds,
         managerId: formData.managerId || undefined,
       };
@@ -469,20 +504,18 @@ export default defineComponent({
       this.showModal = false;
       this.editingMemberId = null;
       this.formData = {
-        firstName: '',
-        lastName: '',
-        role: 'counselor',
-        email: '',
-        phone: '',
+        firstName: "",
+        lastName: "",
+        roleId: "counselor" as StaffMember["roleId"],
+        email: "",
+        phone: "",
         certificationIds: [],
-        managerId: '',
+        managerId: "",
       };
-    }
-  }
+    },
+  },
 });
 </script>
-
-
 
 <style scoped>
 .staff-view {
@@ -601,7 +634,7 @@ export default defineComponent({
 }
 
 .tree-line::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   bottom: 0;
@@ -611,7 +644,7 @@ export default defineComponent({
 }
 
 .tree-line::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 20px;
@@ -725,4 +758,3 @@ export default defineComponent({
   opacity: 0.8;
 }
 </style>
-

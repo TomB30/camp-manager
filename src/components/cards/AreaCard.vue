@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="card card-clickable card-horizontal area-card"
     @click="$emit('click')"
   >
@@ -11,7 +11,10 @@
     <div class="card-details">
       <h4>{{ area.name }}</h4>
       <div class="card-meta">
-        <span class="badge badge-sm" :class="getTypeBadgeClass(area.type)">
+        <span
+          class="badge badge-sm"
+          :class="getTypeBadgeClass(area.type || 'other')"
+        >
           {{ formatType }}
         </span>
         <span v-if="area.capacity" class="badge badge-sm badge-secondary">
@@ -22,7 +25,10 @@
         {{ area.description }}
       </p>
       <div class="card-stats">
-        <div v-if="area.equipment && area.equipment.length > 0" class="card-stat-item">
+        <div
+          v-if="area.equipment && area.equipment.length > 0"
+          class="card-stat-item"
+        >
           <Icon name="Package" :size="14" />
           <span>{{ area.equipment.length }} equipment</span>
         </div>
@@ -36,12 +42,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import type { Area } from '@/types';
-import Icon from '../Icon.vue';
+import { defineComponent, type PropType } from "vue";
+import type { Area } from "@/types";
+import Icon from "../Icon.vue";
 
 export default defineComponent({
-  name: 'AreaCard',
+  name: "AreaCard",
   components: {
     Icon,
   },
@@ -52,32 +58,32 @@ export default defineComponent({
     },
     formatType: {
       type: String,
-      default: '',
+      default: "",
     },
     iconColor: {
       type: String,
-      default: '#3b82f6',
+      default: "#3b82f6",
     },
   },
-  emits: ['click'],
+  emits: ["click"],
   methods: {
     getTypeBadgeClass(type: string): string {
       const typeMap: Record<string, string> = {
-        indoor: 'badge-primary',
-        outdoor: 'badge-success',
-        facility: 'badge-info',
-        field: 'badge-warning',
-        water: 'badge-blue',
-        other: 'badge-secondary',
+        indoor: "badge-primary",
+        outdoor: "badge-success",
+        facility: "badge-info",
+        field: "badge-warning",
+        water: "badge-blue",
+        other: "badge-secondary",
       };
-      return typeMap[type] || 'badge-secondary';
+      return typeMap[type] || "badge-secondary";
     },
   },
 });
 </script>
 
 <style scoped>
-@import './card-styles.css';
+@import "./card-styles.css";
 
 .area-card {
   min-height: 120px;
@@ -89,4 +95,3 @@ export default defineComponent({
   margin-top: -2px;
 }
 </style>
-

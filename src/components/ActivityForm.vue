@@ -2,13 +2,13 @@
   <form @submit.prevent="$emit('submit')">
     <div class="form-group">
       <label class="form-label">Activity Name</label>
-      <input 
+      <input
         :value="modelValue.name"
         @input="updateField('name', ($event.target as HTMLInputElement).value)"
-        type="text" 
-        class="form-input" 
+        type="text"
+        class="form-input"
         placeholder="e.g., Wakeboarding, Pottery"
-        required 
+        required
       />
     </div>
 
@@ -16,7 +16,12 @@
       <label class="form-label">Description</label>
       <textarea
         :value="modelValue.description"
-        @input="updateField('description', ($event.target as HTMLTextAreaElement).value)"
+        @input="
+          updateField(
+            'description',
+            ($event.target as HTMLTextAreaElement).value,
+          )
+        "
         class="form-textarea"
         rows="3"
         placeholder="Describe this activity..."
@@ -26,26 +31,36 @@
     <div class="form-group">
       <label class="form-label">Duration (minutes)</label>
       <div class="duration-presets">
-        <button 
-          v-for="preset in durationPresets" 
+        <button
+          v-for="preset in durationPresets"
           :key="preset.minutes || 'custom'"
           type="button"
           class="duration-preset-btn"
-          :class="{ 'active': preset.minutes === null ? isCustomDuration : modelValue.durationMinutes === preset.minutes }"
+          :class="{
+            active:
+              preset.minutes === null
+                ? isCustomDuration
+                : modelValue.duration === preset.minutes,
+          }"
           @click="handleDurationPresetClick(preset)"
         >
           {{ preset.label }}
         </button>
       </div>
       <div v-if="isCustomDuration" class="custom-duration-input">
-        <input 
-          :value="modelValue.durationMinutes"
-          @input="updateField('durationMinutes', Number(($event.target as HTMLInputElement).value))"
-          type="number" 
-          class="form-input" 
+        <input
+          :value="modelValue.duration"
+          @input="
+            updateField(
+              'duration',
+              Number(($event.target as HTMLInputElement).value),
+            )
+          "
+          type="number"
+          class="form-input"
           min="1"
           placeholder="Enter custom duration in minutes"
-          required 
+          required
         />
       </div>
     </div>
@@ -62,11 +77,16 @@
 
     <div class="form-group">
       <label class="form-label">Default Capacity (Optional)</label>
-      <input 
+      <input
         :value="modelValue.defaultCapacity"
-        @input="updateField('defaultCapacity', Number(($event.target as HTMLInputElement).value))"
-        type="number" 
-        class="form-input" 
+        @input="
+          updateField(
+            'defaultCapacity',
+            Number(($event.target as HTMLInputElement).value),
+          )
+        "
+        type="number"
+        class="form-input"
         min="1"
         placeholder="Maximum number of campers"
       />
@@ -77,25 +97,23 @@
       <div class="grid grid-cols-2">
         <div>
           <label class="form-label text-xs">Minimum Staff</label>
-          <input 
+          <input
             :value="modelValue.minStaff"
-            @input="updateField('minStaff', Number(($event.target as HTMLInputElement).value))"
-            type="number" 
-            class="form-input" 
+            @input="
+              updateField(
+                'minStaff',
+                Number(($event.target as HTMLInputElement).value),
+              )
+            "
+            type="number"
+            class="form-input"
             min="0"
             placeholder="Min"
           />
         </div>
         <div>
-          <label class="form-label text-xs">Maximum Staff</label>
-          <input 
-            :value="modelValue.maxStaff"
-            @input="updateField('maxStaff', Number(($event.target as HTMLInputElement).value))"
-            type="number" 
-            class="form-input" 
-            min="0"
-            placeholder="Max"
-          />
+          <label class="form-label text-xs">Minimum Staff</label>
+          <input type="number" class="form-input" min="0" placeholder="Min" />
         </div>
       </div>
     </div>
@@ -115,12 +133,15 @@
         :get-initials-fn="(cert) => cert.name.substring(0, 2).toUpperCase()"
         :get-options-fn="(cert) => ({ label: cert.name, value: cert.id })"
       />
-      <p class="form-help-text">Staff assigned to events using this activity will need these certifications</p>
+      <p class="form-help-text">
+        Staff assigned to events using this activity will need these
+        certifications
+      </p>
     </div>
 
     <div class="form-group" :class="{ 'mb-2': compactMode }">
       <label class="form-label">Color</label>
-      <ColorPicker 
+      <ColorPicker
         :model-value="modelValue.color"
         @update:model-value="updateField('color', $event)"
       />
@@ -129,26 +150,27 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import Autocomplete, { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import ColorPicker from '@/components/ColorPicker.vue';
-import SelectionList from '@/components/SelectionList.vue';
-import type { Certification } from '@/types';
+import { defineComponent, type PropType } from "vue";
+import Autocomplete, {
+  type AutocompleteOption,
+} from "@/components/Autocomplete.vue";
+import ColorPicker from "@/components/ColorPicker.vue";
+import SelectionList from "@/components/SelectionList.vue";
+import type { Certification } from "@/types";
 
 export interface ActivityFormData {
   name: string;
   description: string;
-  durationMinutes: number;
+  duration: number;
   defaultLocationId: string;
-  requiredCertifications: string[];
+  requiredCertificationIds: string[];
   minStaff: number;
-  maxStaff: number;
   defaultCapacity: number;
   color: string;
 }
 
 export default defineComponent({
-  name: 'ActivityForm',
+  name: "ActivityForm",
   components: {
     Autocomplete,
     ColorPicker,
@@ -180,36 +202,44 @@ export default defineComponent({
       default: false,
     },
   },
-  emits: ['update:modelValue', 'update:selectedCertificationIds', 'update:isCustomDuration', 'submit'],
+  emits: [
+    "update:modelValue",
+    "update:selectedCertificationIds",
+    "update:isCustomDuration",
+    "submit",
+  ],
   data() {
     return {
       durationPresets: [
-        { label: '30 min', minutes: 30 },
-        { label: '1 hour', minutes: 60 },
-        { label: '1.5 hours', minutes: 90 },
-        { label: '2 hours', minutes: 120 },
-        { label: '3 hours', minutes: 180 },
-        { label: 'Half Day', minutes: 240 },
-        { label: 'Full Day', minutes: 480 },
-        { label: 'Custom', minutes: null },
+        { label: "30 min", minutes: 30 },
+        { label: "1 hour", minutes: 60 },
+        { label: "1.5 hours", minutes: 90 },
+        { label: "2 hours", minutes: 120 },
+        { label: "3 hours", minutes: 180 },
+        { label: "Half Day", minutes: 240 },
+        { label: "Full Day", minutes: 480 },
+        { label: "Custom", minutes: null },
       ],
     };
   },
   methods: {
     updateField(field: keyof ActivityFormData, value: any) {
-      this.$emit('update:modelValue', {
+      this.$emit("update:modelValue", {
         ...this.modelValue,
         [field]: value,
       });
     },
-    handleDurationPresetClick(preset: { label: string; minutes: number | null }) {
+    handleDurationPresetClick(preset: {
+      label: string;
+      minutes: number | null;
+    }) {
       if (preset.minutes === null) {
         // Custom option selected
-        this.$emit('update:isCustomDuration', true);
+        this.$emit("update:isCustomDuration", true);
       } else {
         // Preset option selected
-        this.$emit('update:isCustomDuration', false);
-        this.updateField('durationMinutes', preset.minutes);
+        this.$emit("update:isCustomDuration", false);
+        this.updateField("duration", preset.minutes);
       }
     },
   },
@@ -299,4 +329,3 @@ export default defineComponent({
   }
 }
 </style>
-

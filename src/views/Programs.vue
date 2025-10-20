@@ -52,7 +52,10 @@
           />
 
           <EmptyState
-            v-if="filteredPrograms.length === 0 && programsStore.programs.length === 0"
+            v-if="
+              filteredPrograms.length === 0 &&
+              programsStore.programs.length === 0
+            "
             type="empty"
             title="No Programs Yet"
             message="Create your first program to organize activities, staff, and locations."
@@ -62,7 +65,9 @@
           />
 
           <EmptyState
-            v-if="filteredPrograms.length === 0 && programsStore.programs.length > 0"
+            v-if="
+              filteredPrograms.length === 0 && programsStore.programs.length > 0
+            "
             type="no-results"
             title="No Programs Found"
             message="No programs match your search query."
@@ -194,7 +199,7 @@
               <div class="activity-meta">
                 <span class="meta-item">
                   <Clock :size="14" />
-                  <DurationDisplay :minutes="activity.durationMinutes" />
+                  <DurationDisplay :minutes="activity.duration || 0" />
                 </span>
                 <span v-if="activity.defaultLocationId" class="meta-item">
                   <Home :size="14" />
@@ -235,7 +240,7 @@
               :first-name="staff.firstName"
               :last-name="staff.lastName"
               :title="`${staff.firstName} ${staff.lastName}`"
-              :subtitle="formatRole(staff.role)"
+              :subtitle="formatRole(staff.roleId)"
               :removable="true"
               @remove="confirmRemoveStaff(staff.id)"
             >
@@ -294,7 +299,9 @@
                   <span>{{ formatLocationType(location.type) }}</span>
                   <span>•</span>
                   <span>Capacity: {{ location.capacity }}</span>
-                  <span v-if="location.areaId">• {{ getAreaName(location.areaId) }}</span>
+                  <span v-if="location.areaId"
+                    >• {{ getAreaName(location.areaId) }}</span
+                  >
                 </div>
               </template>
             </EntityListItem>
@@ -408,7 +415,16 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useProgramsStore, useActivitiesStore, useStaffMembersStore, useLocationsStore, useAreasStore, useCertificationsStore, useColorsStore } from '@/stores';
+import {
+  useProgramsStore,
+  useActivitiesStore,
+  useStaffMembersStore,
+  useLocationsStore,
+  useAreasStore,
+  useCertificationsStore,
+  useColorsStore,
+  useRolesStore,
+} from "@/stores";
 import { useToast } from "@/composables/useToast";
 import type { Program, Activity, StaffMember, Location } from "@/types";
 import {
@@ -517,6 +533,9 @@ export default defineComponent({
     colorsStore() {
       return useColorsStore();
     },
+    rolesStore() {
+      return useRolesStore();
+    },
     toast() {
       return useToast();
     },
@@ -528,7 +547,7 @@ export default defineComponent({
         (program) =>
           program.name.toLowerCase().includes(query) ||
           (program.description &&
-            program.description.toLowerCase().includes(query))
+            program.description.toLowerCase().includes(query)),
       );
     },
     selectedProgram() {
@@ -548,47 +567,54 @@ export default defineComponent({
     },
     programStaff(): StaffMember[] {
       if (!this.selectedProgram) return [];
-      return this.selectedProgram.staffMemberIds
-        .map((id) => this.staffMembersStore.getStaffMemberById(id))
-        .filter((staff) => staff !== undefined);
+      return (
+        this.selectedProgram.staffMemberIds
+          ?.map((id: string) => this.staffMembersStore.getStaffMemberById(id))
+          .filter((staff: StaffMember | undefined) => staff !== undefined) || []
+      );
     },
     programLocations(): Location[] {
       if (!this.selectedProgram) return [];
-      return this.selectedProgram.locationIds
-        .map((id) => this.locationsStore.getLocationById(id))
-        .filter((location) => location !== undefined);
+      return (
+        this.selectedProgram.locationIds
+          ?.map((id: string) => this.locationsStore.getLocationById(id))
+          .filter((location: Location | undefined) => location !== undefined) ||
+        []
+      );
     },
     availableStaff(): StaffMember[] {
       if (!this.selectedProgram) return [];
       return this.staffMembersStore.staffMembers.filter(
-        (staff) => !this.selectedProgram!.staffMemberIds.includes(staff.id)
+        (staff) =>
+          !this.selectedProgram!.staffMemberIds?.includes(staff.id) || false,
       );
     },
     availableLocations(): Location[] {
       if (!this.selectedProgram) return [];
       return this.locationsStore.locations.filter(
-        (location) => !this.selectedProgram!.locationIds.includes(location.id)
+        (location) =>
+          !this.selectedProgram!.locationIds?.includes(location.id) || false,
       );
     },
     programStaffIds: {
       get(): string[] {
-        return this.selectedProgram?.staffMemberIds || [];
+        return this.selectedProgram?.staffMemberIds || ([] as string[]);
       },
       set(value: string[]) {
         if (this.selectedProgram) {
           this.updateProgramStaff(value);
         }
-      }
+      },
     },
     programLocationIds: {
       get(): string[] {
-        return this.selectedProgram?.locationIds || [];
+        return this.selectedProgram?.locationIds || ([] as string[]);
       },
       set(value: string[]) {
         if (this.selectedProgram) {
           this.updateProgramLocations(value);
         }
-      }
+      },
     },
     deleteConfirmTitle() {
       if (!this.deleteTarget) return "";
@@ -611,13 +637,19 @@ export default defineComponent({
         const program = this.programsStore.getProgramById(this.deleteTarget.id);
         return `Are you sure you want to delete "${program?.name}"? This will also delete all activities in this program. This action cannot be undone.`;
       } else if (this.deleteTarget.type === "activity") {
-        const activity = this.activitiesStore.getActivityById(this.deleteTarget.id);
+        const activity = this.activitiesStore.getActivityById(
+          this.deleteTarget.id,
+        );
         return `Are you sure you want to delete "${activity?.name}"? This action cannot be undone.`;
       } else if (this.deleteTarget.type === "staff") {
-        const staff = this.staffMembersStore.getStaffMemberById(this.deleteTarget.id);
+        const staff = this.staffMembersStore.getStaffMemberById(
+          this.deleteTarget.id,
+        );
         return `Are you sure you want to remove "${staff?.firstName} ${staff?.lastName}" from this program?`;
       } else if (this.deleteTarget.type === "location") {
-        const location = this.locationsStore.getLocationById(this.deleteTarget.id);
+        const location = this.locationsStore.getLocationById(
+          this.deleteTarget.id,
+        );
         return `Are you sure you want to remove "${location?.name}" from this program?`;
       }
       return "";
@@ -633,20 +665,20 @@ export default defineComponent({
     getProgramColor(program: any): string {
       if (program.colorId) {
         const color = this.colorsStore.getColorById(program.colorId);
-        return color?.hexValue || '#6366F1';
+        return color?.hexValue || "#6366F1";
       }
-      return '#6366F1';
+      return "#6366F1";
     },
     getActivitiesCount(programId: string) {
       return this.activitiesStore.getActivitiesInProgram(programId).length;
     },
     getStaffCount(programId: string) {
       const program = this.programsStore.getProgramById(programId);
-      return program?.staffMemberIds.length || 0;
+      return program?.staffMemberIds?.length || 0;
     },
     getLocationsCount(programId: string) {
       const program = this.programsStore.getProgramById(programId);
-      return program?.locationIds.length || 0;
+      return program?.locationIds?.length || 0;
     },
     getLocationName(locationId: string) {
       const location = this.locationsStore.getLocationById(locationId);
@@ -656,17 +688,20 @@ export default defineComponent({
       const area = this.areasStore.getAreaById(areaId);
       return area?.name || "Unknown";
     },
-    formatRole(role: string) {
-      return role.charAt(0).toUpperCase() + role.slice(1);
+    formatRole(roleId: string) {
+      const role = this.rolesStore.getRoleById(roleId);
+      return role
+        ? role.name.charAt(0).toUpperCase() + role.name.slice(1)
+        : "Unknown Role";
     },
     getStaffCertificationNames(staff: any): string[] {
       if (!staff.certificationIds) return [];
-      return staff.certificationIds
-        .map((id: string) => {
+      return (
+        staff.certificationIds?.map((id: string) => {
           const cert = this.certificationsStore.getCertificationById(id);
-          return cert ? cert.name : '';
-        })
-        .filter((name: string) => name.length > 0);
+          return cert ? cert.name : "";
+        }) || []
+      ).filter((name: string) => name.length > 0);
     },
     formatLocationType(type: string) {
       return type
@@ -724,7 +759,10 @@ export default defineComponent({
       if (!this.selectedProgramId) return;
 
       try {
-        await this.activitiesStore.addActivityToProgram(activityId, this.selectedProgramId);
+        await this.activitiesStore.addActivityToProgram(
+          activityId,
+          this.selectedProgramId,
+        );
         this.toast.success("Activity added to program successfully");
       } catch (error: any) {
         this.toast.error(error.message || "Failed to add activity to program");
@@ -762,8 +800,8 @@ export default defineComponent({
 
       const updatedProgram = {
         ...this.selectedProgram,
-        staffMemberIds: this.selectedProgram.staffMemberIds.filter(
-          (id) => id !== staffId
+        staffMemberIds: this.selectedProgram.staffMemberIds?.filter(
+          (id: string) => id !== staffId,
         ),
       };
 
@@ -779,7 +817,9 @@ export default defineComponent({
 
       const updatedProgram = {
         ...this.selectedProgram,
-        locationIds: this.selectedProgram.locationIds.filter((id) => id !== locationId),
+        locationIds: this.selectedProgram.locationIds?.filter(
+          (id) => id !== locationId,
+        ),
       };
 
       try {
@@ -824,8 +864,8 @@ export default defineComponent({
     },
     getStaffOption(staff: any): AutocompleteOption {
       return {
-        label: `${staff.firstName} ${staff.lastName} (${this.formatRole(staff.role)})`,
-        value: staff.id
+        label: `${staff.firstName} ${staff.lastName} (${this.formatRole(staff.roleId)})`,
+        value: staff.id,
       };
     },
     // Location helper methods
@@ -833,7 +873,7 @@ export default defineComponent({
       return `${location.name}`;
     },
     getLocationInitials(location: any): string {
-      const words = location.name.split(' ');
+      const words = location.name.split(" ");
       if (words.length >= 2) {
         return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
       }
@@ -842,13 +882,13 @@ export default defineComponent({
     getLocationOption(location: any): AutocompleteOption {
       return {
         label: `${location.name} (${this.formatLocationType(location.type)} • Capacity: ${location.capacity})`,
-        value: location.id
+        value: location.id,
       };
     },
     // Update methods for SelectionList v-model binding
     async updateProgramStaff(staffIds: string[]) {
       if (!this.selectedProgram) return;
-      
+
       const updatedProgram = {
         ...this.selectedProgram,
         staffMemberIds: staffIds,
@@ -863,7 +903,7 @@ export default defineComponent({
     },
     async updateProgramLocations(locationIds: string[]) {
       if (!this.selectedProgram) return;
-      
+
       const updatedProgram = {
         ...this.selectedProgram,
         locationIds: locationIds,
@@ -873,7 +913,9 @@ export default defineComponent({
         await this.programsStore.updateProgram(updatedProgram);
         this.toast.success("Location assignments updated");
       } catch (error: any) {
-        this.toast.error(error.message || "Failed to update location assignments");
+        this.toast.error(
+          error.message || "Failed to update location assignments",
+        );
       }
     },
   },

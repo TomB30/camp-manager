@@ -1,25 +1,25 @@
 <template>
   <div class="number-input" :class="{ small: small }">
-    <button 
-      type="button" 
-      class="control-btn minus" 
+    <button
+      type="button"
+      class="control-btn minus"
       @click="decrement"
       :disabled="disabled || modelValue <= min"
     >
       −
     </button>
-    <input 
+    <input
       :value="modelValue"
       @input="handleInput"
-      type="number" 
-      :min="min" 
+      type="number"
+      :min="min"
       :max="max"
       :disabled="disabled"
       class="number-input-field"
     />
-    <button 
-      type="button" 
-      class="control-btn plus" 
+    <button
+      type="button"
+      class="control-btn plus"
       @click="increment"
       :disabled="disabled || modelValue >= max"
     >
@@ -29,42 +29,42 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'NumberInput',
+  name: "NumberInput",
   props: {
     modelValue: {
       type: Number,
-      required: true
+      required: true,
     },
     min: {
       type: Number,
-      default: 1
+      default: 1,
     },
     max: {
       type: Number,
-      default: 99
+      default: 99,
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     small: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  emits: ['update:modelValue'],
+  emits: ["update:modelValue"],
   methods: {
     increment() {
       if (this.modelValue < this.max) {
-        this.$emit('update:modelValue', this.modelValue + 1);
+        this.$emit("update:modelValue", this.modelValue + 1);
       }
     },
     decrement() {
       if (this.modelValue > this.min) {
-        this.$emit('update:modelValue', this.modelValue - 1);
+        this.$emit("update:modelValue", this.modelValue - 1);
       }
     },
     handleInput(event: Event) {
@@ -72,10 +72,10 @@ export default defineComponent({
       const value = parseInt(target.value, 10);
       if (!isNaN(value)) {
         const clampedValue = Math.max(this.min, Math.min(this.max, value));
-        this.$emit('update:modelValue', clampedValue);
+        this.$emit("update:modelValue", clampedValue);
       }
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -152,4 +152,3 @@ export default defineComponent({
   cursor: not-allowed;
 }
 </style>
-

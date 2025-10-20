@@ -1,0 +1,26 @@
+get:
+  summary: List all activities
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../schemas/Activity.yaml"
+post:
+  summary: Create a new activity
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/ActivityCreationRequest.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Activity.yaml"

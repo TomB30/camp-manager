@@ -1,27 +1,25 @@
 <template>
-  <BaseModal
-    :show="show"
-    :title="event?.title || ''"
-    @close="$emit('close')"
-  >
+  <BaseModal :show="show" :title="event?.title || ''" @close="$emit('close')">
     <template #body>
       <div v-if="event">
         <div class="mb-3">
           <div class="text-sm text-secondary mb-1">Time</div>
-          <div>{{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}</div>
+          <div>
+            {{ formatTime(event.startDate) }} - {{ formatTime(event.endDate) }}
+          </div>
         </div>
 
         <div class="mb-3">
           <div class="text-sm text-secondary mb-1">Location</div>
-          <div>{{ getLocationName(event.locationId) }}</div>
+          <div>{{ getLocationName(event.locationId || "") }}</div>
         </div>
 
         <div class="mb-3">
           <div class="text-sm text-secondary mb-1">Capacity</div>
           <div>
-            {{ enrolledCamperCount }}/{{ event.capacity }}
-            <span 
-              v-if="enrolledCamperCount >= event.capacity"
+            {{ enrolledCamperCount }}/{{ event.capacity || 0 }}
+            <span
+              v-if="enrolledCamperCount >= (event.capacity || 0)"
               class="badge badge-error ml-2"
             >
               Full
@@ -31,14 +29,17 @@
 
         <div class="mb-3">
           <div class="text-sm text-secondary mb-1">Assigned Groups</div>
-          <div v-if="event.groupIds && event.groupIds.length > 0" class="groups-list">
-            <div 
-              v-for="groupId in event.groupIds" 
+          <div
+            v-if="event.groupIds && event.groupIds.length > 0"
+            class="groups-list"
+          >
+            <div
+              v-for="groupId in event.groupIds"
               :key="groupId"
               class="group-item"
             >
               <div class="group-info">
-                <span 
+                <span
                   class="group-badge"
                   :style="{ background: getGroupColor(groupId) }"
                 >
@@ -48,7 +49,7 @@
                   {{ getGroupDetails(groupId) }}
                 </span>
               </div>
-              <button 
+              <button
                 class="btn btn-sm btn-secondary"
                 @click="removeGroup(groupId)"
               >
@@ -64,13 +65,21 @@
           <div class="participants-summary">
             <div class="participant-count">
               <span class="font-medium">{{ enrolledCamperCount }}</span> campers
-              <span v-if="event.excludeCamperIds && event.excludeCamperIds.length > 0" class="text-xs text-secondary ml-2">
+              <span
+                v-if="
+                  event.excludeCamperIds && event.excludeCamperIds.length > 0
+                "
+                class="text-xs text-secondary ml-2"
+              >
                 ({{ event.excludeCamperIds.length }} excluded)
               </span>
             </div>
             <div class="participant-count">
               <span class="font-medium">{{ assignedStaffCount }}</span> staff
-              <span v-if="event.excludeStaffIds && event.excludeStaffIds.length > 0" class="text-xs text-secondary ml-2">
+              <span
+                v-if="event.excludeStaffIds && event.excludeStaffIds.length > 0"
+                class="text-xs text-secondary ml-2"
+              >
                 ({{ event.excludeStaffIds.length }} excluded)
               </span>
             </div>
@@ -78,16 +87,19 @@
         </div>
 
         <!-- Excluded Campers -->
-        <div v-if="event.excludeCamperIds && event.excludeCamperIds.length > 0" class="mb-3">
+        <div
+          v-if="event.excludeCamperIds && event.excludeCamperIds.length > 0"
+          class="mb-3"
+        >
           <div class="text-sm text-secondary mb-1">Excluded Campers</div>
           <div class="exclusions-list">
-            <div 
-              v-for="camperId in event.excludeCamperIds" 
+            <div
+              v-for="camperId in event.excludeCamperIds"
               :key="camperId"
               class="exclusion-item"
             >
               <span>{{ getCamperName(camperId) }}</span>
-              <button 
+              <button
                 class="btn btn-xs btn-secondary"
                 @click="removeExclusion('camper', camperId)"
               >
@@ -98,16 +110,19 @@
         </div>
 
         <!-- Excluded Staff -->
-        <div v-if="event.excludeStaffIds && event.excludeStaffIds.length > 0" class="mb-3">
+        <div
+          v-if="event.excludeStaffIds && event.excludeStaffIds.length > 0"
+          class="mb-3"
+        >
           <div class="text-sm text-secondary mb-1">Excluded Staff</div>
           <div class="exclusions-list">
-            <div 
-              v-for="staffId in event.excludeStaffIds" 
+            <div
+              v-for="staffId in event.excludeStaffIds"
               :key="staffId"
               class="exclusion-item"
             >
               <span>{{ getStaffName(staffId) }}</span>
-              <button 
+              <button
                 class="btn btn-xs btn-secondary"
                 @click="removeExclusion('staff', staffId)"
               >
@@ -117,11 +132,17 @@
           </div>
         </div>
 
-        <div v-if="event.requiredCertifications && event.requiredCertifications.length > 0" class="mb-3">
+        <div
+          v-if="
+            event.requiredCertificationIds &&
+            event.requiredCertificationIds.length > 0
+          "
+          class="mb-3"
+        >
           <div class="text-sm text-secondary mb-1">Required Certifications</div>
           <div class="flex flex-wrap gap-1">
-            <span 
-              v-for="certId in event.requiredCertifications" 
+            <span
+              v-for="certId in event.requiredCertificationIds"
               :key="certId"
               class="certification-badge"
             >
@@ -129,12 +150,13 @@
             </span>
           </div>
         </div>
-
       </div>
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete')">Delete Event</button>
+      <button class="btn btn-error" @click="$emit('delete')">
+        Delete Event
+      </button>
       <button class="btn btn-secondary" @click="$emit('edit')">Edit</button>
       <button class="btn btn-secondary" @click="$emit('close')">Close</button>
     </template>
@@ -142,15 +164,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import { format } from 'date-fns';
-import BaseModal from '@/components/BaseModal.vue';
-import { useEventsStore, useCampersStore, useStaffMembersStore, useGroupsStore, useLocationsStore, useColorsStore, useCertificationsStore } from '@/stores';
-import { useToastStore } from '@/stores/toastStore';
-import type { Event } from '@/types';
+import { defineComponent, type PropType } from "vue";
+import { format } from "date-fns";
+import BaseModal from "@/components/BaseModal.vue";
+import {
+  useEventsStore,
+  useCampersStore,
+  useStaffMembersStore,
+  useGroupsStore,
+  useLocationsStore,
+  useColorsStore,
+  useCertificationsStore,
+} from "@/stores";
+import { useToastStore } from "@/stores/toastStore";
+import type { Event } from "@/types";
 
 export default defineComponent({
-  name: 'EventDetailModal',
+  name: "EventDetailModal",
   components: {
     BaseModal,
   },
@@ -164,7 +194,7 @@ export default defineComponent({
       default: null,
     },
   },
-  emits: ['close', 'edit', 'delete'],
+  emits: ["close", "edit", "delete"],
   computed: {
     eventsStore() {
       return useEventsStore();
@@ -201,30 +231,31 @@ export default defineComponent({
   },
   methods: {
     getCertificationName(certId: string): string {
-      const certification = this.certificationsStore.getCertificationById(certId);
-      return certification?.name || 'Unknown Certification';
+      const certification =
+        this.certificationsStore.getCertificationById(certId);
+      return certification?.name || "Unknown Certification";
     },
     formatTime(dateStr: string): string {
-      return format(new Date(dateStr), 'h:mm a');
+      return format(new Date(dateStr), "h:mm a");
     },
     getLocationName(locationId: string): string {
       const location = this.locationsStore.getLocationById(locationId);
-      return location?.name || 'Unknown Location';
+      return location?.name || "Unknown Location";
     },
     getCamperName(camperId: string): string {
       const camper = this.campersStore.getCamperById(camperId);
-      return camper ? `${camper.firstName} ${camper.lastName}` : 'Unknown';
+      return camper ? `${camper.firstName} ${camper.lastName}` : "Unknown";
     },
     getStaffName(staffId: string): string {
       const staff = this.staffMembersStore.getStaffMemberById(staffId);
-      return staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown';
+      return staff ? `${staff.firstName} ${staff.lastName}` : "Unknown";
     },
     getGroupName(groupId: string): string {
       // Check groups
       const group = this.groupsStore.getGroupById(groupId);
       if (group) return group.name;
-      
-      return 'Unknown Group';
+
+      return "Unknown Group";
     },
     getGroupDetails(groupId: string): string {
       // Check groups
@@ -233,42 +264,42 @@ export default defineComponent({
         const camperCount = this.groupsStore.getCampersInGroup(groupId).length;
         return `${camperCount} campers`;
       }
-      
-      return '';
+
+      return "";
     },
     getGroupColor(groupId: string): string {
       // Check groups
       const group = this.groupsStore.getGroupById(groupId);
       if (group && group.colorId) {
         const color = this.colorsStore.getColorById(group.colorId);
-        return color?.hexValue || '#6366F1';
+        return color?.hexValue || "#6366F1";
       }
-      
-      return '#6366F1';
+
+      return "#6366F1";
     },
     async removeGroup(groupId: string) {
       if (!this.event) return;
-      
+
       try {
         await this.eventsStore.removeGroupFromEvent(this.event.id, groupId);
-        this.toast.success('Group removed from event');
+        this.toast.success("Group removed from event");
       } catch (error: any) {
-        this.toast.error('Failed to remove group', error.message);
+        this.toast.error("Failed to remove group", error.message);
       }
     },
-    async removeExclusion(type: 'camper' | 'staff', id: string) {
+    async removeExclusion(type: "camper" | "staff", id: string) {
       if (!this.event) return;
-      
+
       try {
-        if (type === 'camper') {
+        if (type === "camper") {
           await this.eventsStore.removeExcludedCamper(this.event.id, id);
-          this.toast.success('Camper is now included in the event');
+          this.toast.success("Camper is now included in the event");
         } else {
           await this.eventsStore.removeExcludedStaff(this.event.id, id);
-          this.toast.success('Staff member is now included in the event');
+          this.toast.success("Staff member is now included in the event");
         }
       } catch (error: any) {
-        this.toast.error('Failed to remove exclusion', error.message);
+        this.toast.error("Failed to remove exclusion", error.message);
       }
     },
   },
@@ -404,4 +435,3 @@ export default defineComponent({
   font-size: 0.875rem;
 }
 </style>
-

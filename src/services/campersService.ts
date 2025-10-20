@@ -3,9 +3,9 @@
  * Handles all camper-related operations
  */
 
-import type { Camper } from '@/types';
-import { storageService } from './storage';
-import { STORAGE_KEYS } from './storageKeys';
+import type { Camper } from "@/types";
+import { storageService } from "./storage";
+import { STORAGE_KEYS } from "./storageKeys";
 
 class CampersService {
   /**
@@ -35,14 +35,17 @@ class CampersService {
   async deleteCamper(id: string): Promise<void> {
     // Delete the camper
     await storageService.delete(STORAGE_KEYS.CAMPERS, id);
-    
+
     // Clean up: Remove from all events
     const events = await storageService.getAll(STORAGE_KEYS.EVENTS);
-    const updatedEvents = events.map(event => ({
+    const updatedEvents = events.map((event) => ({
       ...event,
-      enrolledCamperIds: event.enrolledCamperIds?.filter((camperId: string) => camperId !== id) || [],
+      enrolledCamperIds:
+        event.enrolledCamperIds?.filter(
+          (camperId: string) => camperId !== id,
+        ) || [],
     }));
-    
+
     // Save all updated events
     for (const event of updatedEvents) {
       await storageService.save(STORAGE_KEYS.EVENTS, event);
@@ -54,7 +57,7 @@ class CampersService {
    */
   async getCampersByFamilyGroup(familyGroupId: string): Promise<Camper[]> {
     const campers = await this.getCampers();
-    return campers.filter(c => c.familyGroupId === familyGroupId);
+    return campers.filter((c) => c.familyGroupId === familyGroupId);
   }
 
   /**
@@ -62,9 +65,8 @@ class CampersService {
    */
   async getCampersBySession(sessionId: string): Promise<Camper[]> {
     const campers = await this.getCampers();
-    return campers.filter(c => c.sessionId === sessionId);
+    return campers.filter((c) => c.sessionId === sessionId);
   }
 }
 
 export const campersService = new CampersService();
-

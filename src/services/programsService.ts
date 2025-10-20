@@ -3,9 +3,9 @@
  * Handles all program-related operations
  */
 
-import type { Program, Activity } from '@/types';
-import { storageService } from './storage';
-import { STORAGE_KEYS } from './storageKeys';
+import type { Program, Activity } from "@/types";
+import { storageService } from "./storage";
+import { STORAGE_KEYS } from "./storageKeys";
 
 class ProgramsService {
   /**
@@ -35,28 +35,32 @@ class ProgramsService {
    */
   async deleteProgram(id: string): Promise<void> {
     // Remove program ID from all activities' programIds arrays
-    const activities = await storageService.getAll<Activity>(STORAGE_KEYS.ACTIVITIES);
+    const activities = await storageService.getAll<Activity>(
+      STORAGE_KEYS.ACTIVITIES,
+    );
     const updatedActivities = activities
-      .map(activity => {
+      .map((activity) => {
         if (activity.programIds.includes(id)) {
           return {
             ...activity,
-            programIds: activity.programIds.filter(pid => pid !== id)
+            programIds: activity.programIds.filter((pid) => pid !== id),
           };
         }
         return activity;
       })
-      .filter(activity => activity.programIds.length > 0); // Remove activities with no programs
-    
+      .filter((activity) => activity.programIds.length > 0); // Remove activities with no programs
+
     // Save updated activities
     for (const activity of updatedActivities) {
       await storageService.save(STORAGE_KEYS.ACTIVITIES, activity);
     }
 
     // Delete activities that have no remaining programs
-    const activitiesToDelete = activities
-      .filter(activity => activity.programIds.includes(id) && activity.programIds.length === 1);
-    
+    const activitiesToDelete = activities.filter(
+      (activity) =>
+        activity.programIds.includes(id) && activity.programIds.length === 1,
+    );
+
     for (const activity of activitiesToDelete) {
       await storageService.delete(STORAGE_KEYS.ACTIVITIES, activity.id);
     }
@@ -70,7 +74,7 @@ class ProgramsService {
    */
   async getProgramsForStaffMember(staffId: string): Promise<Program[]> {
     const programs = await this.getPrograms();
-    return programs.filter(p => p.staffMemberIds.includes(staffId));
+    return programs.filter((p) => p.staffMemberIds?.includes(staffId) || false);
   }
 
   /**
@@ -78,9 +82,8 @@ class ProgramsService {
    */
   async getProgramsForLocation(locationId: string): Promise<Program[]> {
     const programs = await this.getPrograms();
-    return programs.filter(p => p.locationIds.includes(locationId));
+    return programs.filter((p) => p.locationIds?.includes(locationId) || false);
   }
 }
 
 export const programsService = new ProgramsService();
-

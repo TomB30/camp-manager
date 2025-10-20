@@ -8,32 +8,35 @@
       <form @submit.prevent="handleSave">
         <div class="form-group">
           <label class="form-label">Certification Name</label>
-          <input v-model="localFormData.name" type="text" class="form-input" required />
+          <input
+            v-model="localFormData.name"
+            type="text"
+            class="form-input"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label class="form-label">Description</label>
-          <textarea v-model="localFormData.description" class="form-textarea" rows="3"></textarea>
+          <textarea
+            v-model="localFormData.description"
+            class="form-textarea"
+            rows="3"
+          ></textarea>
         </div>
 
         <div class="form-group">
-          <label class="form-checkbox-wrapper">
-            <input v-model="localFormData.expirationRequired" type="checkbox" class="form-checkbox" />
-            <span class="form-checkbox-label">Requires Expiration Tracking</span>
-          </label>
-          <p class="form-help-text">Check this if the certification needs to be renewed periodically</p>
-        </div>
-
-        <div v-if="localFormData.expirationRequired" class="form-group">
           <label class="form-label">Validity Period (months)</label>
-          <input 
-            v-model.number="localFormData.validityPeriodMonths" 
-            type="number" 
-            min="1" 
-            class="form-input" 
+          <input
+            v-model.number="localFormData.validityPeriodMonths"
+            type="number"
+            min="1"
+            class="form-input"
             placeholder="e.g., 12, 24, 36"
           />
-          <p class="form-help-text">How many months the certification remains valid</p>
+          <p class="form-help-text">
+            How many months the certification remains valid
+          </p>
         </div>
       </form>
     </template>
@@ -41,46 +44,45 @@
     <template #footer>
       <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
       <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? 'Update' : 'Add' }} Certification
+        {{ isEditing ? "Update" : "Add" }} Certification
       </button>
     </template>
   </BaseModal>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import BaseModal from '@/components/BaseModal.vue';
+import { defineComponent, type PropType } from "vue";
+import BaseModal from "@/components/BaseModal.vue";
 
 interface CertificationFormData {
   name: string;
   description: string;
-  expirationRequired: boolean;
-  validityPeriodMonths?: number;
+  validityPeriodMonths: number | undefined;
 }
 
 export default defineComponent({
-  name: 'CertificationFormModal',
+  name: "CertificationFormModal",
   components: {
-    BaseModal
+    BaseModal,
   },
   props: {
     show: {
       type: Boolean,
-      required: true
+      required: true,
     },
     isEditing: {
       type: Boolean,
-      default: false
+      default: false,
     },
     formData: {
       type: Object as PropType<CertificationFormData>,
-      required: true
-    }
+      required: true,
+    },
   },
-  emits: ['close', 'save'],
+  emits: ["close", "save"],
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData))
+      localFormData: JSON.parse(JSON.stringify(this.formData)),
     };
   },
   watch: {
@@ -88,14 +90,14 @@ export default defineComponent({
       handler(newVal) {
         this.localFormData = JSON.parse(JSON.stringify(newVal));
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   methods: {
     handleSave() {
-      this.$emit('save', this.localFormData);
-    }
-  }
+      this.$emit("save", this.localFormData);
+    },
+  },
 });
 </script>
 
@@ -124,4 +126,3 @@ export default defineComponent({
   color: var(--text-secondary);
 }
 </style>
-

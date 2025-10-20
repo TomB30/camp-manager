@@ -3,7 +3,7 @@ required:
   - id
   - firstName
   - lastName
-  - role
+  - roleId
 properties:
   id:
     type: string
@@ -12,19 +12,15 @@ properties:
     type: string
   lastName:
     type: string
-  role:
+  roleId:
     type: string
-    enum: [counselor, supervisor, director, nurse, instructor]
+    format: uuid
+    description: ID of the role this staff member has
   email:
     type: string
     format: email
   phone:
     type: string
-  certifications:
-    type: array
-    items:
-      type: string
-    description: Staff certifications (deprecated - use certificationIds)
   certificationIds:
     type: array
     items:
@@ -37,4 +33,3 @@ properties:
     type: string
     format: uuid
     description: ID of the staff member who manages this person
-

@@ -7,64 +7,158 @@ info:
 components:
   schemas:
     Camper:
-      $ref: './schemas/Camper.yaml'
+      $ref: "./schemas/Camper.yaml"
+    CamperCreationRequest:
+      $ref: "./schemas/CamperCreationRequest.yaml"
+    CamperUpdateRequest:
+      $ref: "./schemas/CamperUpdateRequest.yaml"
+
     StaffMember:
-      $ref: './schemas/StaffMember.yaml'
-    Location:
-      $ref: './schemas/Location.yaml'
-    HousingRoom:
-      $ref: './schemas/HousingRoom.yaml'
+      $ref: "./schemas/StaffMember.yaml"
+    StaffMemberCreationRequest:
+      $ref: "./schemas/StaffMemberCreationRequest.yaml"
+    StaffMemberUpdateRequest:
+      $ref: "./schemas/StaffMemberUpdateRequest.yaml"
+
+    Role:
+      $ref: "./schemas/Role.yaml"
+    RoleCreationRequest:
+      $ref: "./schemas/RoleCreationRequest.yaml"
+    RoleUpdateRequest:
+      $ref: "./schemas/RoleUpdateRequest.yaml"
+
     Area:
-      $ref: './schemas/Area.yaml'
-    Event:
-      $ref: './schemas/Event.yaml'
-    Conflict:
-      $ref: './schemas/Conflict.yaml'
-    Label:
-      $ref: './schemas/Label.yaml'
-    Group:
-      $ref: './schemas/Group.yaml'
-    Activity:
-      $ref: './schemas/Activity.yaml'
+      $ref: "./schemas/Area.yaml"
+    AreaCreationRequest:
+      $ref: "./schemas/AreaCreationRequest.yaml"
+    AreaUpdateRequest:
+      $ref: "./schemas/AreaUpdateRequest.yaml"
+
+    Location:
+      $ref: "./schemas/Location.yaml"
+    LocationCreationRequest:
+      $ref: "./schemas/LocationCreationRequest.yaml"
+    LocationUpdateRequest:
+      $ref: "./schemas/LocationUpdateRequest.yaml"
+
     Program:
-      $ref: './schemas/Program.yaml'
+      $ref: "./schemas/Program.yaml"
+    ProgramCreationRequest:
+      $ref: "./schemas/ProgramCreationRequest.yaml"
+    ProgramUpdateRequest:
+      $ref: "./schemas/ProgramUpdateRequest.yaml"
+
+    Activity:
+      $ref: "./schemas/Activity.yaml"
+    ActivityCreationRequest:
+      $ref: "./schemas/ActivityCreationRequest.yaml"
+    ActivityUpdateRequest:
+      $ref: "./schemas/ActivityUpdateRequest.yaml"
+
+    Color:
+      $ref: "./schemas/Color.yaml"
+    ColorCreationRequest:
+      $ref: "./schemas/ColorCreationRequest.yaml"
+    ColorUpdateRequest:
+      $ref: "./schemas/ColorUpdateRequest.yaml"
+
     Certification:
-      $ref: './schemas/Certification.yaml'
-    CampColor:
-      $ref: './schemas/CampColor.yaml'
-    CampSession:
-      $ref: './schemas/CampSession.yaml'
+      $ref: "./schemas/Certification.yaml"
+    CertificationCreationRequest:
+      $ref: "./schemas/CertificationCreationRequest.yaml"
+    CertificationUpdateRequest:
+      $ref: "./schemas/CertificationUpdateRequest.yaml"
+
+    HousingRoom:
+      $ref: "./schemas/HousingRoom.yaml"
+    HousingRoomCreationRequest:
+      $ref: "./schemas/HousingRoomCreationRequest.yaml"
+    HousingRoomUpdateRequest:
+      $ref: "./schemas/HousingRoomUpdateRequest.yaml"
+
+    Session:
+      $ref: "./schemas/Session.yaml"
+    SessionCreationRequest:
+      $ref: "./schemas/SessionCreationRequest.yaml"
+    SessionUpdateRequest:
+      $ref: "./schemas/SessionUpdateRequest.yaml"
+
+    Group:
+      $ref: "./schemas/Group.yaml"
+    GroupCreationRequest:
+      $ref: "./schemas/GroupCreationRequest.yaml"
+    GroupUpdateRequest:
+      $ref: "./schemas/GroupUpdateRequest.yaml"
+
+    Event:
+      $ref: "./schemas/Event.yaml"
+    EventCreationRequest:
+      $ref: "./schemas/EventCreationRequest.yaml"
+    EventUpdateRequest:
+      $ref: "./schemas/EventUpdateRequest.yaml"
 
 paths:
+  /sessions:
+    $ref: "./paths/Sessions.yaml"
+  /sessions/{id}:
+    $ref: "./paths/SessionsById.yaml"
+
   /campers:
-    $ref: './paths/campers.yaml'
+    $ref: "./paths/Campers.yaml"
   /campers/{id}:
-    $ref: './paths/campersById.yaml'
+    $ref: "./paths/CampersById.yaml"
+
   /staff-members:
-    $ref: './paths/staff-members.yaml'
+    $ref: "./paths/StaffMembers.yaml"
   /staff-members/{id}:
-    $ref: './paths/staff-membersById.yaml'
-  /rooms:
-    $ref: './paths/rooms.yaml'
-  /rooms/{id}:
-    $ref: './paths/roomsById.yaml'
-  /events:
-    $ref: './paths/events.yaml'
-  /events/{id}:
-    $ref: './paths/eventsById.yaml'
-  /events/{id}/enroll:
-    $ref: './paths/eventsByIdEnroll.yaml'
-  /events/{id}/unenroll:
-    $ref: './paths/eventsByIdUnenroll.yaml'
-  /conflicts:
-    $ref: './paths/conflicts.yaml'
-  /sleeping-rooms:
-    $ref: './paths/sleeping-rooms.yaml'
-  /sleeping-rooms/{id}:
-    $ref: './paths/sleeping-roomsById.yaml'
+    $ref: "./paths/StaffMembersById.yaml"
+
   /areas:
-    $ref: './paths/areas.yaml'
+    $ref: "./paths/Areas.yaml"
   /areas/{id}:
-    $ref: './paths/areasById.yaml'
+    $ref: "./paths/AreasById.yaml"
+
+  /locations:
+    $ref: "./paths/Locations.yaml"
+  /locations/{id}:
+    $ref: "./paths/LocationsById.yaml"
+
+  /programs:
+    $ref: "./paths/Programs.yaml"
+  /programs/{id}:
+    $ref: "./paths/ProgramsById.yaml"
+
+  /activities:
+    $ref: "./paths/Activities.yaml"
+  /activities/{id}:
+    $ref: "./paths/ActivitiesById.yaml"
+
+  /colors:
+    $ref: "./paths/Colors.yaml"
+  /colors/{id}:
+    $ref: "./paths/ColorsById.yaml"
+
+  /roles:
+    $ref: "./paths/Roles.yaml"
+  /roles/{id}:
+    $ref: "./paths/RolesById.yaml"
+
+  /certifications:
+    $ref: "./paths/Certifications.yaml"
+  /certifications/{id}:
+    $ref: "./paths/CertificationsById.yaml"
+
+  /housing-rooms:
+    $ref: "./paths/HousingRooms.yaml"
+  /housing-rooms/{id}:
+    $ref: "./paths/HousingRoomsById.yaml"
+
   /groups:
-    $ref: './paths/groups.yaml'
+    $ref: "./paths/Groups.yaml"
+  /groups/{id}:
+    $ref: "./paths/GroupsById.yaml"
+
+  /events:
+    $ref: "./paths/Events.yaml"
+  /events/{id}:
+    $ref: "./paths/EventsById.yaml"

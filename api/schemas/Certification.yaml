@@ -2,7 +2,6 @@ type: object
 required:
   - id
   - name
-  - expirationRequired
 properties:
   id:
     type: string
@@ -11,9 +10,6 @@ properties:
     type: string
   description:
     type: string
-  expirationRequired:
-    type: boolean
-    description: Whether this certification expires
   validityPeriodMonths:
     type: integer
     description: How long the certification is valid for
@@ -23,4 +19,3 @@ properties:
   updatedAt:
     type: string
     format: date-time
-

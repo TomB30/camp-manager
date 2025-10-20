@@ -3,9 +3,9 @@
  * Handles all certification-related operations
  */
 
-import type { Certification } from '@/types';
-import { storageService } from './storage';
-import { STORAGE_KEYS } from './storageKeys';
+import type { Certification } from "@/types";
+import { storageService } from "./storage";
+import { STORAGE_KEYS } from "./storageKeys";
 
 class CertificationsService {
   /**
@@ -19,15 +19,26 @@ class CertificationsService {
    * Get a certification by ID
    */
   async getCertification(id: string): Promise<Certification | null> {
-    return storageService.getById<Certification>(STORAGE_KEYS.CERTIFICATIONS, id);
+    return storageService.getById<Certification>(
+      STORAGE_KEYS.CERTIFICATIONS,
+      id,
+    );
   }
 
   /**
    * Save a certification (create or update)
    */
-  async saveCertification(certification: Certification): Promise<Certification> {
-    const updatedCertification = { ...certification, updatedAt: new Date().toISOString() };
-    return storageService.save<Certification>(STORAGE_KEYS.CERTIFICATIONS, updatedCertification);
+  async saveCertification(
+    certification: Certification,
+  ): Promise<Certification> {
+    const updatedCertification = {
+      ...certification,
+      updatedAt: new Date().toISOString(),
+    };
+    return storageService.save<Certification>(
+      STORAGE_KEYS.CERTIFICATIONS,
+      updatedCertification,
+    );
   }
 
   /**
@@ -42,9 +53,10 @@ class CertificationsService {
    */
   async getCertificationsWithExpiration(): Promise<Certification[]> {
     const certifications = await this.getCertifications();
-    return certifications.filter(c => c.expirationRequired);
+    return certifications.filter(
+      (c) => c.validityPeriodMonths && c.validityPeriodMonths > 0,
+    );
   }
 }
 
 export const certificationsService = new CertificationsService();
-

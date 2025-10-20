@@ -1,25 +1,45 @@
 <template>
   <div class="view-toggle">
-    <button 
-      class="btn btn-sm" 
-      :class="{ 'btn-primary': modelValue === 'grid', 'btn-secondary': modelValue !== 'grid' }"
+    <button
+      class="btn btn-sm"
+      :class="{
+        'btn-primary': modelValue === 'grid',
+        'btn-secondary': modelValue !== 'grid',
+      }"
       @click="$emit('update:modelValue', 'grid')"
       title="Grid View"
     >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
         <rect x="3" y="3" width="7" height="7" />
         <rect x="14" y="3" width="7" height="7" />
         <rect x="3" y="14" width="7" height="7" />
         <rect x="14" y="14" width="7" height="7" />
       </svg>
     </button>
-    <button 
-      class="btn btn-sm" 
-      :class="{ 'btn-primary': modelValue === 'table', 'btn-secondary': modelValue !== 'table' }"
+    <button
+      class="btn btn-sm"
+      :class="{
+        'btn-primary': modelValue === 'table',
+        'btn-secondary': modelValue !== 'table',
+      }"
       @click="$emit('update:modelValue', 'table')"
       title="Table View"
     >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
         <line x1="3" y1="6" x2="21" y2="6" />
         <line x1="3" y1="12" x2="21" y2="12" />
         <line x1="3" y1="18" x2="21" y2="18" />
@@ -29,17 +49,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'ViewToggle',
+  name: "ViewToggle",
   props: {
     modelValue: {
-      type: String as () => 'grid' | 'table',
-      default: 'grid'
-    }
+      type: String as () => "grid" | "table",
+      default: "grid",
+    },
   },
-  emits: ['update:modelValue']
+  emits: ["update:modelValue"],
 });
 </script>
 
@@ -61,4 +81,3 @@ export default defineComponent({
   justify-content: center;
 }
 </style>
-

@@ -1,0 +1,31 @@
+parameters:
+  - $ref: "../parameters/id.yaml"
+get:
+  summary: Get certification by ID
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Certification.yaml"
+put:
+  summary: Update certification by ID
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/CertificationUpdateRequest.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Certification.yaml"
+delete:
+  summary: Delete certification by ID
+  responses:
+    "204":
+      description: Deleted

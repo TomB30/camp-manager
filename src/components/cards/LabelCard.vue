@@ -1,33 +1,40 @@
 <template>
   <div class="label-card">
-    <div 
-      class="label-preview" 
-      :style="{ background: labelColor || '#6B7280' }"
-    >
+    <div class="label-preview" :style="{ background: labelColor || '#6B7280' }">
       <div class="label-overlay">
-        <button class="icon-btn" @click.stop="$emit('edit', label)" title="Edit">
+        <button
+          class="icon-btn"
+          @click.stop="$emit('edit', label)"
+          title="Edit"
+        >
           <Icon name="Edit2" :size="18" />
         </button>
-        <button class="icon-btn" @click.stop="$emit('delete', label)" title="Delete">
+        <button
+          class="icon-btn"
+          @click.stop="$emit('delete', label)"
+          title="Delete"
+        >
           <Icon name="Trash2" :size="18" />
         </button>
       </div>
     </div>
     <div class="label-info">
       <div class="label-name">{{ label.name }}</div>
-      <div v-if="label.description" class="label-description">{{ label.description }}</div>
+      <div v-if="label.description" class="label-description">
+        {{ label.description }}
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import type { Label } from '@/types';
-import { useColorsStore } from '@/stores';
-import Icon from '../Icon.vue';
+import { defineComponent, type PropType } from "vue";
+import type { Label } from "@/types";
+import { useColorsStore } from "@/stores";
+import Icon from "../Icon.vue";
 
 export default defineComponent({
-  name: 'LabelCard',
+  name: "LabelCard",
   components: {
     Icon,
   },
@@ -37,7 +44,7 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['edit', 'delete'],
+  emits: ["edit", "delete"],
   setup() {
     const colorsStore = useColorsStore();
     return { colorsStore };
@@ -46,9 +53,9 @@ export default defineComponent({
     labelColor(): string {
       if (this.label.colorId) {
         const color = this.colorsStore.getColorById(this.label.colorId);
-        return color?.hexValue || '#6B7280';
+        return color?.hexValue || "#6B7280";
       }
-      return '#6B7280';
+      return "#6B7280";
     },
   },
 });
@@ -137,11 +144,10 @@ export default defineComponent({
   .label-preview {
     height: 80px;
   }
-  
+
   .icon-btn {
     width: 32px;
     height: 32px;
   }
 }
 </style>
-

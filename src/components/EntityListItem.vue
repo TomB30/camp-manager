@@ -1,7 +1,7 @@
 <template>
   <div class="entity-list-item">
     <slot name="avatar">
-      <AvatarInitials 
+      <AvatarInitials
         v-if="firstName || lastName"
         :first-name="firstName"
         :last-name="lastName"
@@ -9,19 +9,21 @@
         size="md"
       />
     </slot>
-    
+
     <div class="entity-info">
       <slot>
         <div class="entity-name">{{ title }}</div>
-        <div v-if="subtitle" class="entity-subtitle text-secondary">{{ subtitle }}</div>
+        <div v-if="subtitle" class="entity-subtitle text-secondary">
+          {{ subtitle }}
+        </div>
         <div v-if="$slots.metadata" class="entity-metadata">
           <slot name="metadata" />
         </div>
       </slot>
     </div>
-    
+
     <slot name="actions">
-      <button 
+      <button
         v-if="removable"
         class="btn btn-sm btn-danger-outline"
         @click.stop="$emit('remove')"
@@ -33,41 +35,41 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import AvatarInitials from '@/components/AvatarInitials.vue';
+import { defineComponent } from "vue";
+import AvatarInitials from "@/components/AvatarInitials.vue";
 
 export default defineComponent({
-  name: 'EntityListItem',
+  name: "EntityListItem",
   components: {
     AvatarInitials,
   },
   props: {
     title: {
       type: String,
-      default: '',
+      default: "",
     },
     subtitle: {
       type: String,
-      default: '',
+      default: "",
     },
     firstName: {
       type: String,
-      default: '',
+      default: "",
     },
     lastName: {
       type: String,
-      default: '',
+      default: "",
     },
     avatarColor: {
       type: String,
-      default: '',
+      default: "",
     },
     removable: {
       type: Boolean,
       default: false,
     },
   },
-  emits: ['remove'],
+  emits: ["remove"],
 });
 </script>
 
@@ -101,4 +103,3 @@ export default defineComponent({
   margin-top: 0.5rem;
 }
 </style>
-

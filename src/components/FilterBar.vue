@@ -3,11 +3,21 @@
     <div class="filter-bar-content">
       <!-- Search Box (if enabled) -->
       <div v-if="showSearch" class="search-box">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <circle cx="11" cy="11" r="8"></circle>
           <path d="m21 21-4.35-4.35"></path>
         </svg>
-        <input 
+        <input
           :value="internalSearchQuery"
           @input="handleSearchInput"
           type="text"
@@ -23,15 +33,29 @@
           class="btn btn-sm btn-secondary add-filter-btn"
           ref="addFilterButton"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
           Add Filter
         </button>
-        
+
         <!-- Dropdown Menu -->
-        <div v-if="showAddFilterDropdown" class="add-filter-dropdown" ref="addFilterDropdown">
+        <div
+          v-if="showAddFilterDropdown"
+          class="add-filter-dropdown"
+          ref="addFilterDropdown"
+        >
           <button
             v-for="filter in availableFilters"
             :key="filter.model"
@@ -52,7 +76,9 @@
         >
           <Autocomplete
             :model-value="filter.value"
-            @update:model-value="(value) => handleFilterChange(filter.model, value)"
+            @update:model-value="
+              (value) => handleFilterChange(filter.model, value)
+            "
             :options="getFilterOptions(filter)"
             :placeholder="filter.placeholder"
             :show-clear="false"
@@ -63,7 +89,17 @@
             class="remove-filter-btn"
             :title="`Remove ${filter.placeholder} filter`"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -73,7 +109,7 @@
 
       <!-- Actions -->
       <div class="filter-actions">
-        <button 
+        <button
           v-if="hasActiveFilters"
           @click="$emit('clear')"
           class="btn btn-sm btn-secondary"
@@ -93,8 +129,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import Autocomplete from './Autocomplete.vue';
+import { defineComponent, PropType } from "vue";
+import Autocomplete from "./Autocomplete.vue";
 
 export interface FilterOption {
   label: string;
@@ -109,50 +145,50 @@ export interface Filter {
 }
 
 export default defineComponent({
-  name: 'FilterBar',
+  name: "FilterBar",
   components: {
-    Autocomplete
+    Autocomplete,
   },
   props: {
     showSearch: {
       type: Boolean,
-      default: true
+      default: true,
     },
     searchQuery: {
       type: String,
-      default: ''
+      default: "",
     },
     searchPlaceholder: {
       type: String,
-      default: 'Search...'
+      default: "Search...",
     },
     searchDebounce: {
       type: Number,
-      default: 300
+      default: 300,
     },
     filters: {
       type: Array as PropType<Filter[]>,
-      required: true
+      required: true,
     },
     filteredCount: {
       type: Number,
-      default: 0
+      default: 0,
     },
     totalCount: {
       type: Number,
-      default: 0
+      default: 0,
     },
     showCount: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
       internalSearchQuery: this.searchQuery,
       searchDebounceTimer: null as ReturnType<typeof setTimeout> | null,
       addedFilterModels: [] as string[],
-      showAddFilterDropdown: false
+      showAddFilterDropdown: false,
     };
   },
   computed: {
@@ -160,15 +196,19 @@ export default defineComponent({
       return !!this.searchQuery || this.filters.some((f: Filter) => f.value);
     },
     activeFilters(): Filter[] {
-      return this.filters.filter(f => this.addedFilterModels.includes(f.model));
+      return this.filters.filter((f) =>
+        this.addedFilterModels.includes(f.model),
+      );
     },
     availableFilters(): Filter[] {
-      return this.filters.filter(f => !this.addedFilterModels.includes(f.model));
-    }
+      return this.filters.filter(
+        (f) => !this.addedFilterModels.includes(f.model),
+      );
+    },
   },
   mounted() {
     // Add click outside listener
-    document.addEventListener('click', this.handleClickOutside);
+    document.addEventListener("click", this.handleClickOutside);
   },
   beforeUnmount() {
     // Clear debounce timer
@@ -176,7 +216,7 @@ export default defineComponent({
       clearTimeout(this.searchDebounceTimer);
     }
     // Remove click outside listener
-    document.removeEventListener('click', this.handleClickOutside);
+    document.removeEventListener("click", this.handleClickOutside);
   },
   watch: {
     searchQuery(newValue: string) {
@@ -188,45 +228,45 @@ export default defineComponent({
     filters: {
       handler(newFilters: Filter[]) {
         // Remove filters that no longer exist in the filters array
-        this.addedFilterModels = this.addedFilterModels.filter(model =>
-          newFilters.some(f => f.model === model)
+        this.addedFilterModels = this.addedFilterModels.filter((model) =>
+          newFilters.some((f) => f.model === model),
         );
-        
+
         // Auto-remove filters that have been cleared
-        this.addedFilterModels = this.addedFilterModels.filter(model => {
-          const filter = newFilters.find(f => f.model === model);
+        this.addedFilterModels = this.addedFilterModels.filter((model) => {
+          const filter = newFilters.find((f) => f.model === model);
           return filter && filter.value;
         });
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   methods: {
     getFilterOptions(filter: Filter): Array<FilterOption> {
       // Add empty option for placeholder behavior
-      return [
-        { label: filter.placeholder, value: '' },
-        ...filter.options
-      ];
+      return [{ label: filter.placeholder, value: "" }, ...filter.options];
     },
     handleSearchInput(event: Event): void {
       const target = event.target as HTMLInputElement;
       const value = target.value;
-      
+
       // Update internal query immediately for responsive UI
       this.internalSearchQuery = value;
-      
+
       // Clear existing timer
       if (this.searchDebounceTimer) {
         clearTimeout(this.searchDebounceTimer);
       }
-      
+
       // Set new timer to emit the update after delay
       this.searchDebounceTimer = setTimeout(() => {
-        this.$emit('update:searchQuery', value);
+        this.$emit("update:searchQuery", value);
       }, this.searchDebounce);
     },
-    handleFilterChange(model: string, value: string | number | boolean | null): void {
+    handleFilterChange(
+      model: string,
+      value: string | number | boolean | null,
+    ): void {
       this.$emit(`update:${model}` as any, value);
     },
     addFilter(model: string): void {
@@ -241,7 +281,7 @@ export default defineComponent({
         this.addedFilterModels.splice(index, 1);
       }
       // Clear the filter value
-      this.handleFilterChange(model, '');
+      this.handleFilterChange(model, "");
     },
     toggleAddFilterDropdown(): void {
       this.showAddFilterDropdown = !this.showAddFilterDropdown;
@@ -250,16 +290,18 @@ export default defineComponent({
       const target = event.target as HTMLElement;
       const addFilterButton = this.$refs.addFilterButton as HTMLElement;
       const addFilterDropdown = this.$refs.addFilterDropdown as HTMLElement;
-      
-      if (this.showAddFilterDropdown && 
-          addFilterButton && 
-          !addFilterButton.contains(target) &&
-          addFilterDropdown &&
-          !addFilterDropdown.contains(target)) {
+
+      if (
+        this.showAddFilterDropdown &&
+        addFilterButton &&
+        !addFilterButton.contains(target) &&
+        addFilterDropdown &&
+        !addFilterDropdown.contains(target)
+      ) {
         this.showAddFilterDropdown = false;
       }
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -433,11 +475,10 @@ export default defineComponent({
     justify-content: space-between;
     margin-left: 0;
   }
-  
+
   .add-filter-dropdown {
     left: auto;
     right: 0;
   }
 }
 </style>
-

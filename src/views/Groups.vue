@@ -1,12 +1,14 @@
 <template>
   <div class="container">
     <div class="groups-view">
-      <ViewHeader 
-        title="Groups" 
+      <ViewHeader
+        title="Groups"
         tooltip="Create and manage groups with flexible assignment options. Groups can contain campers, staff, or even other groups. Use filters for automatic assignment or manually select members."
       >
         <template #actions>
-          <button class="btn btn-primary" @click="showModal = true">+ Group</button>
+          <button class="btn btn-primary" @click="showModal = true">
+            + Group
+          </button>
         </template>
       </ViewHeader>
 
@@ -76,39 +78,69 @@
             <div class="group-name-text">{{ item.name }}</div>
           </div>
         </template>
-        
+
         <template #cell-type="{ item }">
           <div class="type-badges">
-            <span v-if="isNestedGroup(item)" class="badge badge-sm badge-info">Nested</span>
-            <span v-else-if="hasAutoAssignedCampers(item)" class="badge badge-sm badge-primary">Auto Campers</span>
-            <span v-else-if="hasManualCampers(item)" class="badge badge-sm badge-primary">Manual Campers</span>
+            <span v-if="isNestedGroup(item)" class="badge badge-sm badge-info"
+              >Nested</span
+            >
+            <span
+              v-else-if="hasAutoAssignedCampers(item)"
+              class="badge badge-sm badge-primary"
+              >Auto Campers</span
+            >
+            <span
+              v-else-if="hasManualCampers(item)"
+              class="badge badge-sm badge-primary"
+              >Manual Campers</span
+            >
             <span v-else class="badge badge-sm badge-secondary">Empty</span>
-            
-            <span v-if="item.housingRoomId" class="badge badge-sm badge-secondary">Housing</span>
+
+            <span
+              v-if="item.housingRoomId"
+              class="badge badge-sm badge-secondary"
+              >Housing</span
+            >
           </div>
         </template>
-        
+
         <template #cell-members="{ item }">
           <div class="members-counts">
-            <span v-if="getCampersCount(item.id) > 0" class="count-badge camper-count">
+            <span
+              v-if="getCampersCount(item.id) > 0"
+              class="count-badge camper-count"
+            >
               {{ getCampersCount(item.id) }} campers
             </span>
-            <span v-if="getStaffCount(item.id) > 0" class="count-badge staff-count">
+            <span
+              v-if="getStaffCount(item.id) > 0"
+              class="count-badge staff-count"
+            >
               {{ getStaffCount(item.id) }} staff
             </span>
-            <span v-if="getCampersCount(item.id) === 0 && getStaffCount(item.id) === 0" class="text-secondary text-sm">
+            <span
+              v-if="
+                getCampersCount(item.id) === 0 && getStaffCount(item.id) === 0
+              "
+              class="text-secondary text-sm"
+            >
               No members
             </span>
           </div>
         </template>
-        
+
         <template #cell-session="{ item }">
-          <span v-if="item.sessionId" class="text-secondary">{{ getSessionName(item.sessionId) }}</span>
+          <span v-if="item.sessionId" class="text-secondary">{{
+            getSessionName(item.sessionId)
+          }}</span>
           <span v-else class="text-secondary text-sm">-</span>
         </template>
-        
+
         <template #cell-actions="{ item }">
-          <button class="btn btn-sm btn-secondary" @click.stop="selectGroup(item.id)">
+          <button
+            class="btn btn-sm btn-secondary"
+            @click.stop="selectGroup(item.id)"
+          >
             View Details
           </button>
         </template>
@@ -158,32 +190,32 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { 
-  useGroupsStore, 
-  useCampersStore, 
+import { defineComponent } from "vue";
+import {
+  useGroupsStore,
+  useCampersStore,
   useStaffMembersStore,
-  useLabelsStore, 
-  useColorsStore, 
+  useLabelsStore,
+  useColorsStore,
   useSessionsStore,
   useHousingRoomsStore,
-  useCertificationsStore
-} from '@/stores';
-import type { Group, Camper, StaffMember } from '@/types';
-import ViewHeader from '@/components/ViewHeader.vue';
-import EmptyState from '@/components/EmptyState.vue';
-import ColorIndicator from '@/components/ColorIndicator.vue';
-import GroupCard from '@/components/cards/GroupCard.vue';
-import ConfirmModal from '@/components/ConfirmModal.vue';
-import FilterBar, { type Filter } from '@/components/FilterBar.vue';
-import DataTable from '@/components/DataTable.vue';
-import ViewToggle from '@/components/ViewToggle.vue';
-import GroupDetailModal from '@/components/modals/GroupDetailModal.vue';
-import GroupFormModal from '@/components/modals/GroupFormModal.vue';
-import { useToast } from '@/composables/useToast';
+  useCertificationsStore,
+} from "@/stores";
+import type { Group, Camper, StaffMember, Label, Session } from "@/types";
+import ViewHeader from "@/components/ViewHeader.vue";
+import EmptyState from "@/components/EmptyState.vue";
+import ColorIndicator from "@/components/ColorIndicator.vue";
+import GroupCard from "@/components/cards/GroupCard.vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
+import FilterBar, { type Filter } from "@/components/FilterBar.vue";
+import DataTable from "@/components/DataTable.vue";
+import ViewToggle from "@/components/ViewToggle.vue";
+import GroupDetailModal from "@/components/modals/GroupDetailModal.vue";
+import GroupFormModal from "@/components/modals/GroupFormModal.vue";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
-  name: 'GroupsNew',
+  name: "GroupsNew",
   components: {
     ViewHeader,
     EmptyState,
@@ -203,24 +235,24 @@ export default defineComponent({
       editingGroupId: null as string | null,
       showConfirmModal: false,
       groupToDelete: null as { id: string; name: string } | null,
-      searchQuery: '',
-      filterType: '',
-      filterSession: '',
-      filterLabel: '',
-      viewMode: 'grid' as 'grid' | 'table',
+      searchQuery: "",
+      filterType: "",
+      filterSession: "",
+      filterLabel: "",
+      viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
       formData: {
-        name: '',
-        description: '',
-        color: '#6366F1',
-        sessionId: '',
-        housingRoomId: '',
+        name: "",
+        description: "",
+        color: "#6366F1",
+        sessionId: "",
+        housingRoomId: "",
         groupIds: [] as string[],
         camperFilters: {
           ageMin: undefined as number | undefined,
           ageMax: undefined as number | undefined,
-          gender: '' as '' | 'male' | 'female',
+          gender: "" as "" | "male" | "female",
           hasAllergies: undefined as boolean | undefined,
           familyGroupIds: [] as string[],
         },
@@ -233,12 +265,12 @@ export default defineComponent({
         labelIds: [] as string[],
       },
       groupColumns: [
-        { key: 'name', label: 'Group Name', width: '200px' },
-        { key: 'type', label: 'Type', width: '180px' },
-        { key: 'members', label: 'Members', width: '180px' },
-        { key: 'session', label: 'Session', width: '150px' },
-        { key: 'actions', label: 'Actions', width: '140px' },
-      ]
+        { key: "name", label: "Group Name", width: "200px" },
+        { key: "type", label: "Type", width: "180px" },
+        { key: "members", label: "Members", width: "180px" },
+        { key: "session", label: "Session", width: "150px" },
+        { key: "actions", label: "Actions", width: "140px" },
+      ],
     };
   },
   mounted() {
@@ -274,31 +306,31 @@ export default defineComponent({
     groupsFilters(): Filter[] {
       return [
         {
-          model: 'filterType',
+          model: "filterType",
           value: this.filterType,
-          placeholder: 'Filter by Type',
+          placeholder: "Filter by Type",
           options: [
-            { label: 'Nested Groups', value: 'nested' },
-            { label: 'Auto-assigned Campers', value: 'auto-campers' },
-            { label: 'Manual Campers', value: 'manual-campers' },
-            { label: 'With Housing', value: 'has-housing' },
-            { label: 'With Session', value: 'has-session' },
+            { label: "Nested Groups", value: "nested" },
+            { label: "Auto-assigned Campers", value: "auto-campers" },
+            { label: "Manual Campers", value: "manual-campers" },
+            { label: "With Housing", value: "has-housing" },
+            { label: "With Session", value: "has-session" },
           ],
         },
         {
-          model: 'filterSession',
+          model: "filterSession",
           value: this.filterSession,
-          placeholder: 'Filter by Session',
-          options: this.sessionsStore.sessions.map(session => ({
+          placeholder: "Filter by Session",
+          options: this.sessionsStore.sessions.map((session: Session) => ({
             label: session.name,
             value: session.id,
           })),
         },
         {
-          model: 'filterLabel',
+          model: "filterLabel",
           value: this.filterLabel,
-          placeholder: 'Filter by Label',
-          options: this.labelsStore.labels.map(label => ({
+          placeholder: "Filter by Label",
+          options: this.labelsStore.labels.map((label: Label) => ({
             label: label.name,
             value: label.id,
           })),
@@ -323,9 +355,11 @@ export default defineComponent({
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        groups = groups.filter((group: Group) =>
-          group.name.toLowerCase().includes(query) ||
-          (group.description && group.description.toLowerCase().includes(query))
+        groups = groups.filter(
+          (group: Group) =>
+            group.name.toLowerCase().includes(query) ||
+            (group.description &&
+              group.description.toLowerCase().includes(query)),
         );
       }
 
@@ -333,15 +367,15 @@ export default defineComponent({
       if (this.filterType) {
         groups = groups.filter((group: Group) => {
           switch (this.filterType) {
-            case 'nested':
+            case "nested":
               return !!(group.groupIds && group.groupIds.length > 0);
-            case 'auto-campers':
+            case "auto-campers":
               return !!(group.camperFilters && !group.camperIds);
-            case 'manual-campers':
+            case "manual-campers":
               return !!(group.camperIds && group.camperIds.length > 0);
-            case 'has-housing':
+            case "has-housing":
               return !!group.housingRoomId;
-            case 'has-session':
+            case "has-session":
               return !!group.sessionId;
             default:
               return true;
@@ -351,15 +385,16 @@ export default defineComponent({
 
       // Session filter
       if (this.filterSession) {
-        groups = groups.filter((group: Group) => 
-          group.sessionId === this.filterSession
+        groups = groups.filter(
+          (group: Group) => group.sessionId === this.filterSession,
         );
       }
 
       // Label filter
       if (this.filterLabel) {
-        groups = groups.filter((group: Group) => 
-          group.labelIds && group.labelIds.includes(this.filterLabel)
+        groups = groups.filter(
+          (group: Group) =>
+            group.labelIds && group.labelIds.includes(this.filterLabel),
         );
       }
 
@@ -369,17 +404,17 @@ export default defineComponent({
 
   methods: {
     clearFilters(): void {
-      this.searchQuery = '';
-      this.filterType = '';
-      this.filterSession = '';
-      this.filterLabel = '';
+      this.searchQuery = "";
+      this.filterType = "";
+      this.filterSession = "";
+      this.filterLabel = "";
     },
     getItemColor(item: Group): string {
       if (item.colorId) {
         const color = this.colorsStore.getColorById(item.colorId);
-        return color?.hexValue || '#6366F1';
+        return color?.hexValue || "#6366F1";
       }
-      return '#6366F1';
+      return "#6366F1";
     },
     getCampersCount(groupId: string): number {
       return this.groupsStore.getCampersInGroup(groupId).length;
@@ -397,49 +432,55 @@ export default defineComponent({
       return !!(group.camperIds && group.camperIds.length > 0);
     },
     getSessionName(sessionId: string): string {
-      const session = this.sessionsStore.sessions.find(s => s.id === sessionId);
-      return session?.name || 'Unknown Session';
+      const session = this.sessionsStore.sessions.find(
+        (s) => s.id === sessionId,
+      );
+      return session?.name || "Unknown Session";
     },
     selectGroup(groupId: string): void {
       this.selectedGroupId = groupId;
     },
     editGroup(): void {
       if (!this.selectedGroup) return;
-      
+
       this.editingGroupId = this.selectedGroup.id;
-      
+
       // Map the group to form data
       this.formData = {
         name: this.selectedGroup.name,
-        description: this.selectedGroup.description || '',
+        description: this.selectedGroup.description || "",
         color: this.getItemColor(this.selectedGroup),
-        sessionId: this.selectedGroup.sessionId || '',
-        housingRoomId: this.selectedGroup.housingRoomId || '',
+        sessionId: this.selectedGroup.sessionId || "",
+        housingRoomId: this.selectedGroup.housingRoomId || "",
         groupIds: this.selectedGroup.groupIds || [],
         camperFilters: {
           ageMin: this.selectedGroup.camperFilters?.ageMin,
           ageMax: this.selectedGroup.camperFilters?.ageMax,
-          gender: this.selectedGroup.camperFilters?.gender || '',
+          gender: this.selectedGroup.camperFilters?.gender || "",
           hasAllergies: this.selectedGroup.camperFilters?.hasAllergies,
-          familyGroupIds: this.selectedGroup.camperFilters?.familyGroupIds || [],
+          familyGroupIds:
+            this.selectedGroup.camperFilters?.familyGroupIds || [],
         },
         camperIds: this.selectedGroup.camperIds || [],
         staffFilters: {
           roles: this.selectedGroup.staffFilters?.roles || [],
-          certificationIds: this.selectedGroup.staffFilters?.certificationIds || [],
+          certificationIds:
+            this.selectedGroup.staffFilters?.certificationIds || [],
         },
         staffIds: this.selectedGroup.staffIds || [],
         labelIds: this.selectedGroup.labelIds || [],
       };
-      
+
       this.selectedGroupId = null;
       this.showModal = true;
     },
     async saveGroup(formData: typeof this.formData): Promise<void> {
       const toast = useToast();
-      
+
       // Find or create colorId from the selected color
-      let colorId = this.colorsStore.colors.find(c => c.hexValue === formData.color)?.id;
+      let colorId = this.colorsStore.colors.find(
+        (c) => c.hexValue === formData.color,
+      )?.id;
       if (!colorId && this.colorsStore.colors.length > 0) {
         colorId = this.colorsStore.colors[0].id; // fallback to first color
       }
@@ -457,9 +498,13 @@ export default defineComponent({
         camperIds: undefined,
         staffFilters: undefined,
         staffIds: undefined,
-        labelIds: formData.labelIds && formData.labelIds.length > 0 ? formData.labelIds : undefined,
-        createdAt: this.editingGroupId 
-          ? this.groupsStore.getGroupById(this.editingGroupId)?.createdAt || new Date().toISOString()
+        labelIds:
+          formData.labelIds && formData.labelIds.length > 0
+            ? formData.labelIds
+            : undefined,
+        createdAt: this.editingGroupId
+          ? this.groupsStore.getGroupById(this.editingGroupId)?.createdAt ||
+            new Date().toISOString()
           : new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -473,7 +518,10 @@ export default defineComponent({
           ageMax: formData.camperFilters.ageMax,
           gender: formData.camperFilters.gender || undefined,
           hasAllergies: formData.camperFilters.hasAllergies,
-          familyGroupIds: formData.camperFilters.familyGroupIds?.length > 0 ? formData.camperFilters.familyGroupIds : undefined,
+          familyGroupIds:
+            formData.camperFilters.familyGroupIds?.length > 0
+              ? formData.camperFilters.familyGroupIds
+              : undefined,
         };
       }
 
@@ -482,24 +530,30 @@ export default defineComponent({
         groupData.staffIds = formData.staffIds;
       } else if (this.hasAnyStaffFilters(formData.staffFilters)) {
         groupData.staffFilters = {
-          roles: formData.staffFilters.roles.length > 0 ? formData.staffFilters.roles : undefined,
-          certificationIds: formData.staffFilters.certificationIds.length > 0 ? formData.staffFilters.certificationIds : undefined,
+          roles:
+            formData.staffFilters.roles.length > 0
+              ? formData.staffFilters.roles
+              : undefined,
+          certificationIds:
+            formData.staffFilters.certificationIds.length > 0
+              ? formData.staffFilters.certificationIds
+              : undefined,
         };
       }
 
       // Validate the group
       const validation = this.groupsStore.validateGroup(groupData);
       if (!validation.valid) {
-        validation.errors.forEach(error => toast.error(error));
+        validation.errors.forEach((error) => toast.error(error));
         return;
       }
 
       if (this.editingGroupId) {
         await this.groupsStore.updateGroup(groupData);
-        toast.success('Group updated successfully');
+        toast.success("Group updated successfully");
       } else {
         await this.groupsStore.addGroup(groupData);
-        toast.success('Group created successfully');
+        toast.success("Group created successfully");
       }
 
       this.closeModal();
@@ -515,28 +569,27 @@ export default defineComponent({
     },
     hasAnyStaffFilters(filters: typeof this.formData.staffFilters): boolean {
       return !!(
-        filters.roles.length > 0 ||
-        filters.certificationIds.length > 0
+        filters.roles.length > 0 || filters.certificationIds.length > 0
       );
     },
     deleteGroupConfirm(): void {
       if (!this.selectedGroupId) return;
       const group = this.groupsStore.getGroupById(this.selectedGroupId);
       if (!group) return;
-      
+
       this.groupToDelete = {
         id: this.selectedGroupId,
-        name: group.name
+        name: group.name,
       };
       this.showConfirmModal = true;
     },
     async handleConfirmDelete(): Promise<void> {
       if (!this.groupToDelete) return;
-      
+
       const toast = useToast();
       await this.groupsStore.deleteGroup(this.groupToDelete.id);
-      toast.success('Group deleted successfully');
-      
+      toast.success("Group deleted successfully");
+
       this.selectedGroupId = null;
       this.showConfirmModal = false;
       this.groupToDelete = null;
@@ -549,16 +602,16 @@ export default defineComponent({
       this.showModal = false;
       this.editingGroupId = null;
       this.formData = {
-        name: '',
-        description: '',
-        color: '#6366F1',
-        sessionId: '',
-        housingRoomId: '',
+        name: "",
+        description: "",
+        color: "#6366F1",
+        sessionId: "",
+        housingRoomId: "",
         groupIds: [],
         camperFilters: {
           ageMin: undefined,
           ageMax: undefined,
-          gender: '',
+          gender: "",
           hasAllergies: undefined,
           familyGroupIds: [],
         },
@@ -570,8 +623,8 @@ export default defineComponent({
         staffIds: [],
         labelIds: [],
       };
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -629,7 +682,7 @@ export default defineComponent({
 }
 
 .staff-count {
-  background: #10B981;
+  background: #10b981;
   color: white;
 }
 
@@ -639,13 +692,12 @@ export default defineComponent({
 }
 
 .badge-info {
-  background-color: #3B82F6;
+  background-color: #3b82f6;
   color: white;
 }
 
 .badge-secondary {
-  background-color: #64748B;
+  background-color: #64748b;
   color: white;
 }
 </style>
-

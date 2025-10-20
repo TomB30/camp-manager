@@ -2,10 +2,8 @@ type: object
 required:
   - id
   - title
-  - startTime
-  - endTime
-  - locationId
-  - capacity
+  - startDate
+  - endDate
 properties:
   id:
     type: string
@@ -14,10 +12,10 @@ properties:
     type: string
   description:
     type: string
-  startTime:
+  startDate:
     type: string
     format: date-time
-  endTime:
+  endDate:
     type: string
     format: date-time
   locationId:
@@ -44,8 +42,9 @@ properties:
       type: string
       format: uuid
     description: IDs of campers to exclude from assigned groups
-  requiredCertifications:
+  requiredCertificationIds:
     type: array
+    description: IDs of certifications required for this event
     items:
       type: string
       format: uuid
@@ -65,4 +64,3 @@ properties:
   isRecurrenceParent:
     type: boolean
     description: Indicates if this is the parent event of a recurrence series
-

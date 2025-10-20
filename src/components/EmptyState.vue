@@ -3,17 +3,23 @@
     <slot name="icon">
       <Icon v-if="iconName" :name="iconName" :size="64" :stroke-width="1.5" />
     </slot>
-    
+
     <h3 v-if="title">{{ title }}</h3>
     <p v-if="message">{{ message }}</p>
-    
+
     <slot name="action">
-      <button 
-        v-if="actionText" 
-        :class="['btn', actionButtonClass]" 
+      <button
+        v-if="actionText"
+        :class="['btn', actionButtonClass]"
         @click="$emit('action')"
       >
-        <Icon v-if="!hideActionIcon" class="action-icon" name="Plus" color="white" :size="18" />
+        <Icon
+          v-if="!hideActionIcon"
+          class="action-icon"
+          name="Plus"
+          color="white"
+          :size="18"
+        />
         {{ actionText }}
       </button>
     </slot>
@@ -21,17 +27,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import Icon, { IconName } from '@/components/Icon.vue';
+import { defineComponent, type PropType } from "vue";
+import Icon, { IconName } from "@/components/Icon.vue";
 export default defineComponent({
-  name: 'EmptyState',
+  name: "EmptyState",
   components: {
     Icon,
   },
   props: {
     type: {
-      type: String as PropType<'empty' | 'no-results'>,
-      default: 'empty',
+      type: String as PropType<"empty" | "no-results">,
+      default: "empty",
     },
     iconName: {
       type: String as PropType<IconName>,
@@ -39,26 +45,26 @@ export default defineComponent({
     },
     title: {
       type: String,
-      default: '',
+      default: "",
     },
     message: {
       type: String,
-      default: '',
+      default: "",
     },
     actionText: {
       type: String,
-      default: '',
+      default: "",
     },
     actionButtonClass: {
       type: String,
-      default: 'btn-primary',
+      default: "btn-primary",
     },
     hideActionIcon: {
       type: Boolean,
       default: false,
     },
   },
-  emits: ['action'],
+  emits: ["action"],
 });
 </script>
 
@@ -98,4 +104,3 @@ export default defineComponent({
   margin-top: 0.5rem;
 }
 </style>
-

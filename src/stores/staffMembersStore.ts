@@ -15,11 +15,11 @@ export const useStaffMembersStore = defineStore("staffMembers", {
     },
 
     getStaffMembersByCertification(
-      state
+      state,
     ): (certificationId: string) => StaffMember[] {
       return (certificationId: string): StaffMember[] => {
         return state.staffMembers.filter((s) =>
-          s.certificationIds?.includes(certificationId)
+          s.certificationIds?.includes(certificationId),
         );
       };
     },
@@ -30,15 +30,17 @@ export const useStaffMembersStore = defineStore("staffMembers", {
       };
     },
 
-    getStaffMembersByFilters(state): (filters: GroupStaffFilters) => StaffMember[] {
+    getStaffMembersByFilters(
+      state,
+    ): (filters: GroupStaffFilters) => StaffMember[] {
       return (filters: GroupStaffFilters | undefined): StaffMember[] => {
         if (!filters) return [];
         return state.staffMembers.filter((s) => {
           if (filters.roles && filters.roles.length > 0) {
-            if (!filters.roles.includes(s.role)) return false;
+            if (!filters.roles.includes(s.roleId)) return false;
           }
           if (filters.certificationIds && filters.certificationIds.length > 0) {
-            if (!s.certificationIds || s.certificationIds.length === 0)
+            if (!s.certificationIds || s.certificationIds?.length === 0)
               return false;
           }
           return true;
@@ -58,12 +60,16 @@ export const useStaffMembersStore = defineStore("staffMembers", {
 
     async addStaffMember(member: StaffMember): Promise<void> {
       await staffMembersService.saveStaffMember(member);
-      this.staffMembers.push(member);
+      this.staffMembers = this.staffMembers
+        ? [...this.staffMembers, member]
+        : [member];
     },
 
     async updateStaffMember(member: StaffMember): Promise<void> {
       await staffMembersService.saveStaffMember(member);
-      const index = this.staffMembers.findIndex((m) => m.id === member.id);
+      const index = this.staffMembers.findIndex(
+        (m: StaffMember) => m.id === member.id,
+      );
       if (index >= 0) {
         this.staffMembers[index] = member;
       }
@@ -71,7 +77,8 @@ export const useStaffMembersStore = defineStore("staffMembers", {
 
     async deleteStaffMember(id: string): Promise<void> {
       await staffMembersService.deleteStaffMember(id);
-      this.staffMembers = this.staffMembers.filter((m) => m.id !== id);
+      this.staffMembers =
+        this.staffMembers?.filter((m: StaffMember) => m.id !== id) || [];
     },
   },
 });

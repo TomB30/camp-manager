@@ -6,8 +6,23 @@
       <!-- Stats Cards -->
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-icon" style="background: #EFF6FF; color: #3B82F6;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <div class="stat-icon" style="background: #eff6ff; color: #3b82f6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
           </div>
           <div class="stat-content">
             <div class="stat-label">Total Campers</div>
@@ -16,18 +31,48 @@
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon" style="background: #ECFDF5; color: #10B981;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <div class="stat-icon" style="background: #ecfdf5; color: #10b981">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
           </div>
           <div class="stat-content">
             <div class="stat-label">Staff Members</div>
-            <div class="stat-value">{{ staffMembersStore.staffMembers.length }}</div>
+            <div class="stat-value">
+              {{ staffMembersStore.staffMembers.length }}
+            </div>
           </div>
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon" style="background: #F3E8FF; color: #9333EA;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"></path></svg>
+          <div class="stat-icon" style="background: #f3e8ff; color: #9333ea">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M9 3v18"></path>
+            </svg>
           </div>
           <div class="stat-content">
             <div class="stat-label">Locations</div>
@@ -36,8 +81,23 @@
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon" style="background: #FEF3C7; color: #D97706;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <div class="stat-icon" style="background: #fef3c7; color: #d97706">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
           </div>
           <div class="stat-content">
             <div class="stat-label">Today's Events</div>
@@ -47,18 +107,24 @@
       </div>
 
       <!-- Conflicts Alert -->
-      <div v-if="mainStore.conflicts.length > 0" class="conflicts-section" style="border-left: 4px solid var(--error-color);">
+      <div
+        v-if="mainStore.conflicts.length > 0"
+        class="conflicts-section"
+        style="border-left: 4px solid var(--error-color)"
+      >
         <div class="card-header">
           <h3>⚠️ Scheduling Conflicts ({{ mainStore.conflicts.length }})</h3>
         </div>
         <div class="conflicts-list">
-          <div 
-            v-for="conflict in mainStore.conflicts" 
-            :key="conflict.entityId" 
+          <div
+            v-for="conflict in mainStore.conflicts"
+            :key="conflict.entityId"
             class="conflict-item"
             @click="goToConflictEvent(conflict)"
           >
-            <span class="badge badge-error">{{ formatConflictType(conflict.type) }}</span>
+            <span class="badge badge-error">{{
+              formatConflictType(conflict.type)
+            }}</span>
             <span class="conflict-message">{{ conflict.message }}</span>
             <span class="conflict-action">View Event →</span>
           </div>
@@ -74,23 +140,31 @@
           <p class="text-secondary">No events scheduled for today</p>
         </div>
         <div v-else class="events-timeline">
-          <div 
-            v-for="event in sortedTodayEvents" 
+          <div
+            v-for="event in sortedTodayEvents"
             :key="event.id"
             class="timeline-event"
-            :style="{ borderLeftColor: event.colorId ? colorsStore.getColorById(event.colorId)?.hexValue : '#2196F3' }"
+            :style="{
+              borderLeftColor: event.colorId
+                ? colorsStore.getColorById(event.colorId)?.hexValue
+                : '#2196F3',
+            }"
           >
             <div class="timeline-time">
-              {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}
+              {{ formatTime(event.startDate) }} -
+              {{ formatTime(event.endDate) }}
             </div>
             <div class="timeline-content">
               <div class="timeline-title">{{ event.title }}</div>
               <div class="timeline-meta">
                 <span class="badge badge-primary">
-                  {{ getLocationName(event.locationId) }}
+                  {{ getLocationName(event.locationId || "") }}
                 </span>
                 <span class="text-secondary text-sm">
-                  {{ eventsStore.getEventCamperIds(event.id).length }}/{{ event.capacity }} campers
+                  {{ eventsStore.getEventCamperIds(event.id).length }}/{{
+                    event.capacity
+                  }}
+                  campers
                 </span>
               </div>
             </div>
@@ -121,8 +195,14 @@
         <div class="card">
           <h4 class="mb-2">Recent Enrollments</h4>
           <div class="recent-list">
-            <div v-for="camper in recentCampers" :key="camper.id" class="recent-item">
-              <span class="font-medium">{{ camper.firstName }} {{ camper.lastName }}</span>
+            <div
+              v-for="camper in recentCampers"
+              :key="camper.id"
+              class="recent-item"
+            >
+              <span class="font-medium"
+                >{{ camper.firstName }} {{ camper.lastName }}</span
+              >
               <span class="text-xs text-secondary">Age {{ camper.age }}</span>
             </div>
           </div>
@@ -131,18 +211,27 @@
         <div class="card">
           <h4 class="mb-2">Room Capacity</h4>
           <div class="capacity-list">
-            <div v-for="room in locationsStore.locations.slice(0, 5)" :key="room.id" class="capacity-item">
+            <div
+              v-for="room in locationsStore.locations.slice(0, 5)"
+              :key="room.id"
+              class="capacity-item"
+            >
               <div class="capacity-name">{{ room.name }}</div>
               <div class="capacity-bar">
-                <div 
+                <div
                   class="capacity-fill"
-                  :style="{ 
+                  :style="{
                     width: `${getRoomUsage(room.id)}%`,
-                    background: getRoomUsage(room.id) > 80 ? 'var(--error-color)' : 'var(--success-color)'
+                    background:
+                      getRoomUsage(room.id) > 80
+                        ? 'var(--error-color)'
+                        : 'var(--success-color)',
                   }"
                 ></div>
               </div>
-              <div class="capacity-text text-xs">{{ getRoomUsage(room.id).toFixed(0) }}% used</div>
+              <div class="capacity-text text-xs">
+                {{ getRoomUsage(room.id).toFixed(0) }}% used
+              </div>
             </div>
           </div>
         </div>
@@ -152,18 +241,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useCampersStore, useStaffMembersStore, useLocationsStore, useEventsStore, useMainStore, useAreasStore, useColorsStore } from '@/stores';
-import { format } from 'date-fns';
-import Icon from '@/components/Icon.vue';
-import ViewHeader from '@/components/ViewHeader.vue';
-import type { Event, Camper, Conflict } from '@/types';
+import { defineComponent } from "vue";
+import {
+  useCampersStore,
+  useStaffMembersStore,
+  useLocationsStore,
+  useEventsStore,
+  useMainStore,
+  useAreasStore,
+  useColorsStore,
+} from "@/stores";
+import { format } from "date-fns";
+import Icon from "@/components/Icon.vue";
+import ViewHeader from "@/components/ViewHeader.vue";
+import type { Event, Camper, Conflict } from "@/types";
 
 export default defineComponent({
-  name: 'Dashboard',
+  name: "Dashboard",
   components: {
     Icon,
-    ViewHeader
+    ViewHeader,
   },
   computed: {
     campersStore() {
@@ -192,71 +289,87 @@ export default defineComponent({
       return this.eventsStore.eventsForDate(today);
     },
     sortedTodayEvents(): Event[] {
-      return [...this.todayEvents].sort((a, b) => 
-        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+      return [...this.todayEvents].sort(
+        (a, b) =>
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
       );
     },
     recentCampers(): Camper[] {
       return [...this.campersStore.campers]
         .sort((a, b) => {
-          const dateA = a.registrationDate ? new Date(a.registrationDate).getTime() : 0;
-          const dateB = b.registrationDate ? new Date(b.registrationDate).getTime() : 0;
+          const dateA = a.registrationDate
+            ? new Date(a.registrationDate).getTime()
+            : 0;
+          const dateB = b.registrationDate
+            ? new Date(b.registrationDate).getTime()
+            : 0;
           return dateB - dateA;
         })
         .slice(0, 5);
-    }
+    },
   },
   methods: {
     formatTime(dateStr: string): string {
-      return format(new Date(dateStr), 'h:mm a');
+      return format(new Date(dateStr), "h:mm a");
     },
     formatConflictType(type?: string): string {
-      if (!type) return 'Unknown';
-      return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      if (!type) return "Unknown";
+      return type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
     },
     getLocationName(locationId: string): string | null | undefined {
       const location = this.areasStore.getAreaById(locationId);
-      return location?.name || 'Unknown Location';
+      return location?.name || "Unknown Location";
     },
     getRoomUsage(locationId: string): number {
       const roomEvents = this.eventsStore.locationEvents(locationId);
       if (roomEvents.length === 0) return 0;
-      
+
       const room = this.areasStore.getAreaById(locationId);
       if (!room || !room.capacity) return 0;
-      
+
       // Calculate average capacity usage
       const totalUsage = roomEvents.reduce((sum, event) => {
-        return sum + (this.eventsStore.getEventCamperIds(event.id).length / room.capacity!) * 100;
+        return (
+          sum +
+          (this.eventsStore.getEventCamperIds(event.id).length /
+            room.capacity!) *
+            100
+        );
       }, 0);
-      
+
       return totalUsage / roomEvents.length;
     },
     goToConflictEvent(conflict: Conflict): void {
       // Determine which event ID to use based on conflict type
       let eventId: string | undefined;
-      
-      if (conflict.type === 'event_overcapacity' || conflict.type === 'missing_certification') {
+
+      if (
+        conflict.type === "event_overcapacity" ||
+        conflict.type === "missing_certification"
+      ) {
         // For event-specific conflicts, entityId is the event ID
         eventId = conflict.entityId;
-      } else if (conflict.conflictingIds && conflict.conflictingIds.length > 0) {
+      } else if (
+        conflict.conflictingIds &&
+        conflict.conflictingIds.length > 0
+      ) {
         // For other conflicts (camper/staff double booking, room overcapacity), use first conflicting event
         eventId = conflict.conflictingIds[0];
       }
-      
+
       if (!eventId) return;
-      
+
       // Get the event to determine its date
       const event = this.eventsStore.getEventById(eventId);
       if (!event) return;
-      
+
       // Navigate to calendar with event ID as query parameter
       this.$router.push({
-        path: '/calendar',
-        query: { eventId }
+        path: "/calendar",
+        query: { eventId },
       });
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -477,7 +590,9 @@ export default defineComponent({
 
 .capacity-fill {
   height: 100%;
-  transition: width 0.3s, background 0.3s;
+  transition:
+    width 0.3s,
+    background 0.3s;
 }
 
 .capacity-text {
@@ -504,4 +619,3 @@ export default defineComponent({
   }
 }
 </style>
-

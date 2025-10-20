@@ -29,16 +29,9 @@
 
         <div class="form-group">
           <label class="form-label">Color</label>
-          <select
-            v-model="localFormData.colorId"
-            class="form-input"
-          >
+          <select v-model="localFormData.colorId" class="form-input">
             <option value="">No Color</option>
-            <option 
-              v-for="color in colors" 
-              :key="color.id" 
-              :value="color.id"
-            >
+            <option v-for="color in colors" :key="color.id" :value="color.id">
               {{ color.name }}
             </option>
           </select>
@@ -47,8 +40,14 @@
           </small>
         </div>
 
-        <div v-if="selectedColor" class="color-preview-large" :style="{ background: selectedColor.hexValue }">
-          <span class="preview-label">{{ localFormData.name || 'Label Preview' }}</span>
+        <div
+          v-if="selectedColor"
+          class="color-preview-large"
+          :style="{ background: selectedColor.hexValue }"
+        >
+          <span class="preview-label">{{
+            localFormData.name || "Label Preview"
+          }}</span>
         </div>
       </form>
     </template>
@@ -56,17 +55,17 @@
     <template #footer>
       <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
       <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? 'Update' : 'Add' }} Label
+        {{ isEditing ? "Update" : "Add" }} Label
       </button>
     </template>
   </BaseModal>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import BaseModal from '@/components/BaseModal.vue';
-import { useColorsStore } from '@/stores';
-import type { CampColor } from '@/types';
+import { defineComponent, type PropType } from "vue";
+import BaseModal from "@/components/BaseModal.vue";
+import { useColorsStore } from "@/stores";
+import type { Color } from "@/types";
 
 interface LabelFormData {
   name: string;
@@ -75,58 +74,58 @@ interface LabelFormData {
 }
 
 export default defineComponent({
-  name: 'LabelFormModal',
+  name: "LabelFormModal",
   components: {
-    BaseModal
+    BaseModal,
   },
   props: {
     show: {
       type: Boolean,
-      required: true
+      required: true,
     },
     isEditing: {
       type: Boolean,
-      default: false
+      default: false,
     },
     formData: {
       type: Object as PropType<LabelFormData>,
-      required: true
-    }
+      required: true,
+    },
   },
-  emits: ['close', 'save'],
+  emits: ["close", "save"],
   setup() {
     const colorsStore = useColorsStore();
     return { colorsStore };
   },
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData))
+      localFormData: JSON.parse(JSON.stringify(this.formData)),
     };
   },
   computed: {
-    colors(): CampColor[] {
+    colors(): Color[] {
       return this.colorsStore.colors;
     },
-    selectedColor(): CampColor | undefined {
+    selectedColor(): Color | undefined {
       if (this.localFormData.colorId) {
         return this.colorsStore.getColorById(this.localFormData.colorId);
       }
       return undefined;
-    }
+    },
   },
   watch: {
     formData: {
       handler(newVal) {
         this.localFormData = JSON.parse(JSON.stringify(newVal));
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   methods: {
     handleSave() {
-      this.$emit('save', this.localFormData);
-    }
-  }
+      this.$emit("save", this.localFormData);
+    },
+  },
 });
 </script>
 
@@ -161,4 +160,3 @@ export default defineComponent({
   border-radius: var(--radius);
 }
 </style>
-

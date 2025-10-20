@@ -29,14 +29,15 @@
         >
           <Icon name="X" :size="14" />
         </button>
-        <Icon name="ChevronDown" 
-          :size="16" 
-          class="autocomplete-arrow" 
+        <Icon
+          name="ChevronDown"
+          :size="16"
+          class="autocomplete-arrow"
           :class="{ 'is-open': isOpen }"
         />
       </div>
     </div>
-    
+
     <Teleport to="body">
       <Transition name="dropdown-fade">
         <div
@@ -45,28 +46,31 @@
           :style="dropdownStyle"
           @mousedown.prevent
         >
-        <div class="autocomplete-options">
-          <div
-            v-for="(option, index) in filteredOptions"
-            :key="getOptionValue(option)"
-            class="autocomplete-option"
-            :class="{ 
-              'highlighted': index === highlightedIndex,
-              'selected': isSelected(option),
-              'disabled': isOptionDisabled(option)
-            }"
-            @click="selectOption(option)"
-            @mouseenter="highlightedIndex = index"
-          >
-            <slot name="option" :option="option" :index="index">
-              {{ getOptionLabel(option) }}
-            </slot>
+          <div class="autocomplete-options">
+            <div
+              v-for="(option, index) in filteredOptions"
+              :key="getOptionValue(option)"
+              class="autocomplete-option"
+              :class="{
+                highlighted: index === highlightedIndex,
+                selected: isSelected(option),
+                disabled: isOptionDisabled(option),
+              }"
+              @click="selectOption(option)"
+              @mouseenter="highlightedIndex = index"
+            >
+              <slot name="option" :option="option" :index="index">
+                {{ getOptionLabel(option) }}
+              </slot>
+            </div>
           </div>
-        </div>
-        
-        <div v-if="filteredOptions.length === 0 && searchQuery" class="autocomplete-empty">
-          No matches found
-        </div>
+
+          <div
+            v-if="filteredOptions.length === 0 && searchQuery"
+            class="autocomplete-empty"
+          >
+            No matches found
+          </div>
         </div>
       </Transition>
     </Teleport>
@@ -74,8 +78,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, watch, nextTick, onMounted, onUnmounted, type PropType } from 'vue';
-import Icon from './Icon.vue';
+import {
+  defineComponent,
+  ref,
+  computed,
+  watch,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  type PropType,
+} from "vue";
+import Icon from "./Icon.vue";
 
 export interface AutocompleteOption {
   label: string;
@@ -85,73 +98,75 @@ export interface AutocompleteOption {
 }
 
 export default defineComponent({
-  name: 'Autocomplete',
+  name: "Autocomplete",
   components: {
-    Icon
+    Icon,
   },
   props: {
     modelValue: {
-      type: [String, Number, Boolean] as PropType<string | number | boolean | null>,
-      default: null
+      type: [String, Number, Boolean] as PropType<
+        string | number | boolean | null
+      >,
+      default: null,
     },
     options: {
       type: Array as PropType<AutocompleteOption[] | any[]>,
-      required: true
+      required: true,
     },
     placeholder: {
       type: String,
-      default: 'Search...'
+      default: "Search...",
     },
     required: {
       type: Boolean,
-      default: false
+      default: false,
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     // If true, options are plain strings/numbers, not objects
     primitive: {
       type: Boolean,
-      default: false
+      default: false,
     },
     // Custom function to get the label from an option
     optionLabel: {
       type: [String, Function] as PropType<string | ((option: any) => string)>,
-      default: 'label'
+      default: "label",
     },
     // Custom function to get the value from an option
     optionValue: {
       type: [String, Function] as PropType<string | ((option: any) => any)>,
-      default: 'value'
+      default: "value",
     },
     // Custom function to check if option is disabled
     optionDisabled: {
       type: [String, Function] as PropType<string | ((option: any) => boolean)>,
-      default: 'disabled'
+      default: "disabled",
     },
     // Filter mode: 'contains' or 'startsWith'
     filterMode: {
-      type: String as PropType<'contains' | 'startsWith'>,
-      default: 'contains'
+      type: String as PropType<"contains" | "startsWith">,
+      default: "contains",
     },
     // Maximum height for dropdown
     maxHeight: {
       type: Number,
-      default: 300
+      default: 300,
     },
     // Show clear button
     showClear: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
-  emits: ['update:modelValue', 'change'],
+  emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
     const autocompleteRef = ref<HTMLElement | null>(null);
     const inputRef = ref<HTMLInputElement | null>(null);
     const isOpen = ref(false);
-    const searchQuery = ref('');
+    const searchQuery = ref("");
     const highlightedIndex = ref(0);
     const dropdownStyle = ref({});
     const isFocused = ref(false);
@@ -159,16 +174,16 @@ export default defineComponent({
     // Get option label
     const getOptionLabel = (option: any): string => {
       if (props.primitive) return String(option);
-      if (typeof props.optionLabel === 'function') {
+      if (typeof props.optionLabel === "function") {
         return props.optionLabel(option);
       }
-      return option[props.optionLabel as string] || '';
+      return option[props.optionLabel as string] || "";
     };
 
     // Get option value
     const getOptionValue = (option: any): any => {
       if (props.primitive) return option;
-      if (typeof props.optionValue === 'function') {
+      if (typeof props.optionValue === "function") {
         return props.optionValue(option);
       }
       return option[props.optionValue as string];
@@ -177,7 +192,7 @@ export default defineComponent({
     // Check if option is disabled
     const isOptionDisabled = (option: any): boolean => {
       if (props.primitive) return false;
-      if (typeof props.optionDisabled === 'function') {
+      if (typeof props.optionDisabled === "function") {
         return props.optionDisabled(option);
       }
       return option[props.optionDisabled as string] || false;
@@ -185,8 +200,15 @@ export default defineComponent({
 
     // Get selected option
     const selectedOption = computed(() => {
-      if (!props.modelValue && props.modelValue !== 0 && props.modelValue !== false) return null;
-      return props.options.find(opt => getOptionValue(opt) === props.modelValue);
+      if (
+        !props.modelValue &&
+        props.modelValue !== 0 &&
+        props.modelValue !== false
+      )
+        return null;
+      return props.options.find(
+        (opt) => getOptionValue(opt) === props.modelValue,
+      );
     });
 
     // Display placeholder or selected value
@@ -201,9 +223,9 @@ export default defineComponent({
       if (!searchQuery.value) return props.options;
 
       const query = searchQuery.value.toLowerCase();
-      return props.options.filter(option => {
+      return props.options.filter((option) => {
         const label = getOptionLabel(option).toLowerCase();
-        if (props.filterMode === 'startsWith') {
+        if (props.filterMode === "startsWith") {
           return label.startsWith(query);
         }
         return label.includes(query);
@@ -220,7 +242,7 @@ export default defineComponent({
       if (props.disabled) return;
       isFocused.value = true;
       isOpen.value = true;
-      searchQuery.value = '';
+      searchQuery.value = "";
       highlightedIndex.value = 0;
       updateDropdownPosition();
     };
@@ -234,7 +256,7 @@ export default defineComponent({
         if (selectedOption.value) {
           searchQuery.value = getOptionLabel(selectedOption.value);
         } else {
-          searchQuery.value = '';
+          searchQuery.value = "";
         }
       }, 200);
     };
@@ -285,10 +307,10 @@ export default defineComponent({
     // Select option
     const selectOption = (option: any) => {
       if (isOptionDisabled(option)) return;
-      
+
       const value = getOptionValue(option);
-      emit('update:modelValue', value);
-      emit('change', value);
+      emit("update:modelValue", value);
+      emit("change", value);
       searchQuery.value = getOptionLabel(option);
       isOpen.value = false;
       inputRef.value?.blur();
@@ -296,9 +318,9 @@ export default defineComponent({
 
     // Clear selection
     const clearSelection = () => {
-      emit('update:modelValue', '');
-      emit('change', '');
-      searchQuery.value = '';
+      emit("update:modelValue", "");
+      emit("change", "");
+      searchQuery.value = "";
       isOpen.value = false;
       inputRef.value?.focus();
     };
@@ -313,22 +335,28 @@ export default defineComponent({
     const updateDropdownPosition = () => {
       nextTick(() => {
         if (!autocompleteRef.value) return;
-        
+
         const rect = autocompleteRef.value.getBoundingClientRect();
         const spaceBelow = window.innerHeight - rect.bottom;
         const spaceAbove = rect.top;
-        const dropdownHeight = Math.min(props.maxHeight, filteredOptions.value.length * 40);
-        
+        const dropdownHeight = Math.min(
+          props.maxHeight,
+          filteredOptions.value.length * 40,
+        );
+
         // Decide whether to show above or below
-        const showAbove = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
-        
+        const showAbove =
+          spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
+
         dropdownStyle.value = {
-          position: 'fixed',
-          top: showAbove ? `${rect.top - dropdownHeight - 4}px` : `${rect.bottom + 4}px`,
+          position: "fixed",
+          top: showAbove
+            ? `${rect.top - dropdownHeight - 4}px`
+            : `${rect.bottom + 4}px`,
           left: `${rect.left}px`,
           width: `${rect.width}px`,
           maxHeight: `${props.maxHeight}px`,
-          zIndex: 9999
+          zIndex: 9999,
         };
       });
     };
@@ -336,12 +364,14 @@ export default defineComponent({
     // Scroll to highlighted option
     const scrollToHighlighted = () => {
       nextTick(() => {
-        const dropdown = document.querySelector('.autocomplete-dropdown');
-        const highlighted = dropdown?.querySelector('.autocomplete-option.highlighted') as HTMLElement;
+        const dropdown = document.querySelector(".autocomplete-dropdown");
+        const highlighted = dropdown?.querySelector(
+          ".autocomplete-option.highlighted",
+        ) as HTMLElement;
         if (dropdown && highlighted) {
           const dropdownRect = dropdown.getBoundingClientRect();
           const highlightedRect = highlighted.getBoundingClientRect();
-          
+
           if (highlightedRect.bottom > dropdownRect.bottom) {
             dropdown.scrollTop += highlightedRect.bottom - dropdownRect.bottom;
           } else if (highlightedRect.top < dropdownRect.top) {
@@ -359,32 +389,39 @@ export default defineComponent({
     };
 
     // Initialize display value
-    watch(() => props.modelValue, (newValue) => {
-      if (newValue && !isFocused.value) {
-        const option = selectedOption.value;
-        if (option) {
-          searchQuery.value = getOptionLabel(option);
+    watch(
+      () => props.modelValue,
+      (newValue) => {
+        if (newValue && !isFocused.value) {
+          const option = selectedOption.value;
+          if (option) {
+            searchQuery.value = getOptionLabel(option);
+          }
+        } else if (!newValue && !isFocused.value) {
+          searchQuery.value = "";
         }
-      } else if (!newValue && !isFocused.value) {
-        searchQuery.value = '';
-      }
-    }, { immediate: true });
+      },
+      { immediate: true },
+    );
 
     // Watch options changes
-    watch(() => props.options, () => {
-      if (isOpen.value) {
-        highlightedIndex.value = 0;
-      }
-    });
+    watch(
+      () => props.options,
+      () => {
+        if (isOpen.value) {
+          highlightedIndex.value = 0;
+        }
+      },
+    );
 
     onMounted(() => {
-      window.addEventListener('resize', handleWindowEvent);
-      window.addEventListener('scroll', handleWindowEvent, true);
+      window.addEventListener("resize", handleWindowEvent);
+      window.addEventListener("scroll", handleWindowEvent, true);
     });
 
     onUnmounted(() => {
-      window.removeEventListener('resize', handleWindowEvent);
-      window.removeEventListener('scroll', handleWindowEvent, true);
+      window.removeEventListener("resize", handleWindowEvent);
+      window.removeEventListener("scroll", handleWindowEvent, true);
     });
 
     return {
@@ -409,9 +446,9 @@ export default defineComponent({
       selectHighlighted,
       selectOption,
       clearSelection,
-      closeDropdown
+      closeDropdown,
     };
-  }
+  },
 });
 </script>
 
@@ -462,7 +499,7 @@ export default defineComponent({
 
 .autocomplete-clear:hover {
   background: var(--background-secondary);
-  color: var(--error-color, #EF4444);
+  color: var(--error-color, #ef4444);
 }
 
 .autocomplete-arrow {
@@ -478,11 +515,15 @@ export default defineComponent({
 
 /* Dropdown fade animation */
 .dropdown-fade-enter-active {
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
 .dropdown-fade-leave-active {
-  transition: opacity 0.1s ease, transform 0.1s ease;
+  transition:
+    opacity 0.1s ease,
+    transform 0.1s ease;
 }
 
 .dropdown-fade-enter-from {
@@ -555,7 +596,7 @@ export default defineComponent({
 }
 
 .autocomplete-option.disabled .option-description {
-  color: var(--error-color, #EF4444);
+  color: var(--error-color, #ef4444);
   font-weight: 500;
 }
 
@@ -585,4 +626,3 @@ export default defineComponent({
   background: var(--text-secondary);
 }
 </style>
-

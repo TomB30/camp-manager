@@ -2,7 +2,6 @@ type: object
 required:
   - id
   - name
-  - capacity
   - type
 properties:
   id:
@@ -10,12 +9,12 @@ properties:
     format: uuid
   name:
     type: string
-  capacity:
-    type: integer
-    minimum: 1
   type:
     type: string
     enum: [classroom, activity, sports, dining, outdoor, arts]
+  capacity:
+    type: integer
+    minimum: 1
   areaId:
     type: string
     format: uuid
@@ -26,4 +25,3 @@ properties:
       type: string
   notes:
     type: string
-

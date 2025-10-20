@@ -62,7 +62,10 @@
 
           <div v-if="availableActivities.length === 0" class="empty-message">
             <p v-if="searchQuery">No activities match your search.</p>
-            <p v-else>No activities available to add. All existing activities are already in this program.</p>
+            <p v-else>
+              No activities available to add. All existing activities are
+              already in this program.
+            </p>
           </div>
 
           <div v-else class="activities-list">
@@ -76,7 +79,9 @@
               <div class="activity-info">
                 <div class="activity-header">
                   <h4>{{ activity.name }}</h4>
-                  <span class="activity-duration"><DurationDisplay :minutes="activity.durationMinutes" /></span>
+                  <span class="activity-duration"
+                    ><DurationDisplay :minutes="activity.duration || 0"
+                  /></span>
                 </div>
                 <p v-if="activity.description" class="activity-description">
                   {{ activity.description }}
@@ -119,18 +124,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useActivitiesStore, useProgramsStore, useLocationsStore, useColorsStore, useCertificationsStore } from '@/stores';
-import type { Activity } from '@/types';
-import BaseModal from '@/components/BaseModal.vue';
-import ActivityForm, { type ActivityFormData } from '@/components/ActivityForm.vue';
-import { type AutocompleteOption } from '@/components/Autocomplete.vue';
-import DurationDisplay from '@/components/DurationDisplay.vue';
-import Icon from '@/components/Icon.vue';
-
+import { defineComponent } from "vue";
+import {
+  useActivitiesStore,
+  useProgramsStore,
+  useLocationsStore,
+  useColorsStore,
+  useCertificationsStore,
+} from "@/stores";
+import type { Activity } from "@/types";
+import BaseModal from "@/components/BaseModal.vue";
+import ActivityForm, {
+  type ActivityFormData,
+} from "@/components/ActivityForm.vue";
+import { type AutocompleteOption } from "@/components/Autocomplete.vue";
+import DurationDisplay from "@/components/DurationDisplay.vue";
+import Icon from "@/components/Icon.vue";
 
 export default defineComponent({
-  name: 'ActivitySelectorModal',
+  name: "ActivitySelectorModal",
   components: {
     BaseModal,
     ActivityForm,
@@ -147,30 +159,35 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['close', 'create-new', 'add-existing'],
+  emits: ["close", "create-new", "add-existing"],
   setup() {
     const activitiesStore = useActivitiesStore();
     const programsStore = useProgramsStore();
     const locationsStore = useLocationsStore();
     const colorsStore = useColorsStore();
     const certificationsStore = useCertificationsStore();
-    return { activitiesStore, programsStore, locationsStore, colorsStore, certificationsStore };
+    return {
+      activitiesStore,
+      programsStore,
+      locationsStore,
+      colorsStore,
+      certificationsStore,
+    };
   },
   data() {
     return {
-      mode: 'create' as 'create' | 'existing',
+      mode: "create" as "create" | "existing",
       selectedActivityId: null as string | null,
-      searchQuery: '',
+      searchQuery: "",
       formData: {
-        name: '',
-        description: '',
-        durationMinutes: 60,
-        defaultLocationId: '',
-        requiredCertifications: [],
+        name: "",
+        description: "",
+        duration: 60,
+        defaultLocationId: "",
+        requiredCertificationIds: [],
         minStaff: 0,
-        maxStaff: 0,
         defaultCapacity: 0,
-        color: '#6366F1',
+        color: "#6366F1",
       } as ActivityFormData,
       selectedCertificationIds: [] as string[],
       isCustomDuration: false,
@@ -181,12 +198,12 @@ export default defineComponent({
       return this.activitiesStore.getActivitiesInProgram(this.programId);
     },
     programActivityIds() {
-      return new Set(this.programActivities.map(a => a.id));
+      return new Set(this.programActivities.map((a) => a.id));
     },
     filteredActivities(): Activity[] {
       // Get all activities not in this program
       const activities = this.activitiesStore.activities.filter(
-        a => !a.programIds.includes(this.programId)
+        (a) => !a.programIds.includes(this.programId),
       );
 
       // Apply search filter
@@ -196,16 +213,17 @@ export default defineComponent({
 
       const query = this.searchQuery.toLowerCase().trim();
       return activities.filter(
-        activity =>
+        (activity) =>
           activity.name.toLowerCase().includes(query) ||
-          (activity.description && activity.description.toLowerCase().includes(query))
+          (activity.description &&
+            activity.description.toLowerCase().includes(query)),
       );
     },
     availableActivities(): Activity[] {
       return this.filteredActivities;
     },
     roomOptions(): AutocompleteOption[] {
-      return this.locationsStore.locations.map(room => ({
+      return this.locationsStore.locations.map((room) => ({
         value: room.id,
         label: `${room.name} (${room.type})`,
       }));
@@ -220,19 +238,18 @@ export default defineComponent({
   },
   methods: {
     resetForm() {
-      this.mode = 'create';
+      this.mode = "create";
       this.selectedActivityId = null;
-      this.searchQuery = '';
+      this.searchQuery = "";
       this.formData = {
-        name: '',
-        description: '',
-        durationMinutes: 60,
-        defaultLocationId: '',
-        requiredCertifications: [],
+        name: "",
+        description: "",
+        duration: 60,
+        defaultLocationId: "",
+        requiredCertificationIds: [],
         minStaff: 0,
-        maxStaff: 0,
         defaultCapacity: 0,
-        color: '#6366F1',
+        color: "#6366F1",
       };
       this.selectedCertificationIds = [];
       this.isCustomDuration = false;
@@ -242,53 +259,57 @@ export default defineComponent({
     },
     getCertificationNamesFromIds(ids: string[]): string[] {
       return ids
-        .map(id => {
+        .map((id) => {
           const cert = this.certificationsStore.getCertificationById(id);
-          return cert ? cert.name : '';
+          return cert ? cert.name : "";
         })
-        .filter(name => name !== '');
+        .filter((name) => name !== "");
     },
     handleCreateNew() {
       const now = new Date().toISOString();
-      
+
       // Convert selected certification IDs to names
-      const certifications = this.getCertificationNamesFromIds(this.selectedCertificationIds);
-      
+      const certifications = this.getCertificationNamesFromIds(
+        this.selectedCertificationIds,
+      );
+
       // Find color ID for the selected color
       let colorId: string | undefined;
       if (this.formData.color) {
-        const color = this.colorsStore.colors.find(c => c.hexValue === this.formData.color);
+        const color = this.colorsStore.colors.find(
+          (c) => c.hexValue === this.formData.color,
+        );
         colorId = color?.id;
       }
-      
+
       const activityData: Activity = {
         id: crypto.randomUUID(),
         name: this.formData.name,
         description: this.formData.description || undefined,
         programIds: [this.programId],
-        durationMinutes: this.formData.durationMinutes,
+        duration: this.formData.duration,
         defaultLocationId: this.formData.defaultLocationId || undefined,
-        requiredCertifications: certifications.length > 0 ? certifications : undefined,
+        requiredCertificationIds:
+          certifications.length > 0 ? this.selectedCertificationIds : undefined,
         minStaff: this.formData.minStaff || undefined,
-        maxStaff: this.formData.maxStaff || undefined,
         defaultCapacity: this.formData.defaultCapacity || undefined,
         colorId: colorId,
         createdAt: now,
         updatedAt: now,
       };
 
-      this.$emit('create-new', activityData);
-      this.$emit('close');
+      this.$emit("create-new", activityData);
+      this.$emit("close");
     },
     handleAddExisting() {
       if (this.selectedActivityId) {
-        this.$emit('add-existing', this.selectedActivityId);
-        this.$emit('close');
+        this.$emit("add-existing", this.selectedActivityId);
+        this.$emit("close");
       }
     },
     getProgramName(programId: string): string {
       const program = this.programsStore.getProgramById(programId);
-      return program?.name || 'Unknown Program';
+      return program?.name || "Unknown Program";
     },
   },
 });
@@ -468,4 +489,3 @@ export default defineComponent({
   }
 }
 </style>
-

@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="entity-card card"
     :class="{ 'card-clickable': clickable }"
     :style="colorBorderStyle"
@@ -11,15 +11,15 @@
         <span v-if="badge" class="badge badge-primary">{{ badge }}</span>
       </slot>
     </div>
-    
+
     <p v-if="description" class="card-description">{{ description }}</p>
-    
+
     <slot />
-    
+
     <div v-if="hasStats" class="card-stats">
       <slot name="stats" />
     </div>
-    
+
     <div v-if="hasFooter" class="card-footer">
       <slot name="footer" />
     </div>
@@ -27,36 +27,36 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'EntityCard',
+  name: "EntityCard",
   props: {
     title: {
       type: String,
-      default: '',
+      default: "",
     },
     description: {
       type: String,
-      default: '',
+      default: "",
     },
     badge: {
       type: String,
-      default: '',
+      default: "",
     },
     color: {
       type: String,
-      default: '',
+      default: "",
     },
     clickable: {
       type: Boolean,
       default: true,
     },
   },
-  emits: ['click'],
+  emits: ["click"],
   computed: {
     hasHeader(): boolean {
-      return !!(this.title || this.$slots['header-badge']);
+      return !!(this.title || this.$slots["header-badge"]);
     },
     hasStats(): boolean {
       return !!this.$slots.stats;
@@ -68,13 +68,13 @@ export default defineComponent({
       if (this.color) {
         return `border-left: 4px solid ${this.color}`;
       }
-      return '';
+      return "";
     },
   },
   methods: {
     handleClick() {
       if (this.clickable) {
-        this.$emit('click');
+        this.$emit("click");
       }
     },
   },
@@ -144,4 +144,3 @@ export default defineComponent({
   border-top: 1px solid var(--border-light);
 }
 </style>
-

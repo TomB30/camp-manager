@@ -83,7 +83,11 @@
               :items="availableHousingRooms"
               item-type="housing room"
               placeholder="Select a room..."
-              :empty-text="!localFormData.sessionId ? 'select a session to view available housing rooms' : 'No housing room'"
+              :empty-text="
+                !localFormData.sessionId
+                  ? 'select a session to view available housing rooms'
+                  : 'No housing room'
+              "
               add-button-text="Select"
               mode="single"
               :get-label-fn="getRoomLabel"
@@ -443,7 +447,7 @@ import type {
   StaffMember,
   Label,
   Group,
-  CampSession,
+  Session,
   HousingRoom,
   Certification,
 } from "@/types";
@@ -510,7 +514,7 @@ export default defineComponent({
       default: () => [],
     },
     sessions: {
-      type: Array as PropType<CampSession[]>,
+      type: Array as PropType<Session[]>,
       default: () => [],
     },
     housingRooms: {
@@ -587,7 +591,9 @@ export default defineComponent({
         baseCampers = baseCampers.filter(
           (c) =>
             c.familyGroupId &&
-            this.localFormData.camperFilters.groupIds!.includes(c.familyGroupId)
+            this.localFormData.camperFilters.groupIds!.includes(
+              c.familyGroupId,
+            ),
         );
       }
 
@@ -622,7 +628,7 @@ export default defineComponent({
       return this.staffMembers.filter((staff) => {
         // Role filter
         if (this.localFormData.staffFilters.roles.length > 0) {
-          if (!this.localFormData.staffFilters.roles.includes(staff.role))
+          if (!this.localFormData.staffFilters.roles.includes(staff.roleId))
             return false;
         }
 
@@ -632,7 +638,7 @@ export default defineComponent({
             return false;
           const hasAllCerts =
             this.localFormData.staffFilters.certificationIds.every(
-              (certId: string) => staff.certificationIds!.includes(certId)
+              (certId: string) => staff.certificationIds!.includes(certId),
             );
           if (!hasAllCerts) return false;
         }
@@ -650,14 +656,14 @@ export default defineComponent({
       },
       deep: true,
     },
-    'localFormData.sessionId'() {
+    "localFormData.sessionId"() {
       // Clear housing room if it's no longer available for the selected session
       if (this.localFormData.housingRoomId) {
         const isRoomAvailable = this.availableHousingRooms.some(
-          (room) => room.id === this.localFormData.housingRoomId
+          (room) => room.id === this.localFormData.housingRoomId,
         );
         if (!isRoomAvailable) {
-          this.localFormData.housingRoomId = '';
+          this.localFormData.housingRoomId = "";
         }
       }
     },
@@ -773,20 +779,20 @@ export default defineComponent({
     },
 
     // Session methods
-    getSessionLabel(session: CampSession): string {
+    getSessionLabel(session: Session): string {
       return session.name;
     },
-    getSessionInitials(session: CampSession): string {
+    getSessionInitials(session: Session): string {
       const words = session.name.split(" ");
       if (words.length >= 2) {
         return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
       }
       return session.name.substring(0, 2).toUpperCase();
     },
-    getSessionOption(session: CampSession): AutocompleteOption {
+    getSessionOption(session: Session): AutocompleteOption {
       const startDate = new Date(session.startDate).toLocaleDateString(
         "en-US",
-        { month: "short", day: "numeric" }
+        { month: "short", day: "numeric" },
       );
       const endDate = new Date(session.endDate).toLocaleDateString("en-US", {
         month: "short",
@@ -813,9 +819,9 @@ export default defineComponent({
     getRoomOption(room: HousingRoom): AutocompleteOption {
       // Check if room is available for the selected session
       const selectedSession = this.sessions.find(
-        (s) => s.id === this.localFormData.sessionId
+        (s) => s.id === this.localFormData.sessionId,
       );
-      
+
       if (!selectedSession) {
         return {
           label: `${room.name} (${room.beds} beds)`,
@@ -840,7 +846,9 @@ export default defineComponent({
           return false;
         }
 
-        const groupSession = this.sessions.find((s) => s.id === group.sessionId);
+        const groupSession = this.sessions.find(
+          (s) => s.id === group.sessionId,
+        );
         if (!groupSession) {
           return false;
         }
@@ -916,14 +924,14 @@ export default defineComponent({
 
     // Staff methods
     getStaffLabel(staff: StaffMember): string {
-      return `${staff.firstName} ${staff.lastName} (${staff.role})`;
+      return `${staff.firstName} ${staff.lastName} (${staff.roleId})`;
     },
     getStaffInitials(staff: StaffMember): string {
       return `${staff.firstName.charAt(0)}${staff.lastName.charAt(0)}`;
     },
     getStaffOption(staff: StaffMember): AutocompleteOption {
       return {
-        label: `${staff.firstName} ${staff.lastName} (${staff.role})`,
+        label: `${staff.firstName} ${staff.lastName} (${staff.roleId})`,
         value: staff.id,
       };
     },

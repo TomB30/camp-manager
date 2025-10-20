@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia';
-import type { Label } from '@/types';
-import { labelsService } from '@/services';
+import { defineStore } from "pinia";
+import type { Label } from "@/types";
+import { labelsService } from "@/services";
 
-export const useLabelsStore = defineStore('labels', {
+export const useLabelsStore = defineStore("labels", {
   state: () => ({
     labels: [] as Label[],
     loading: false,
@@ -11,13 +11,15 @@ export const useLabelsStore = defineStore('labels', {
   getters: {
     getLabelById(state): (id: string) => Label | undefined {
       return (id: string): Label | undefined => {
-        return state.labels.find(l => l.id === id);
+        return state.labels.find((l: Label) => l.id === id);
       };
     },
 
     getLabelByName(state): (name: string) => Label | undefined {
       return (name: string): Label | undefined => {
-        return state.labels.find(l => l.name.toLowerCase() === name.toLowerCase());
+        return state.labels.find(
+          (l: Label) => l.name.toLowerCase() === name.toLowerCase(),
+        );
       };
     },
   },
@@ -34,12 +36,12 @@ export const useLabelsStore = defineStore('labels', {
 
     async addLabel(label: Label): Promise<void> {
       await labelsService.saveLabel(label);
-      this.labels.push(label);
+      this.labels = this.labels ? [...this.labels, label] : [label];
     },
 
     async updateLabel(label: Label): Promise<void> {
       await labelsService.saveLabel(label);
-      const index = this.labels.findIndex(l => l.id === label.id);
+      const index = this.labels.findIndex((l: Label) => l.id === label.id);
       if (index >= 0) {
         this.labels[index] = label;
       }
@@ -47,8 +49,7 @@ export const useLabelsStore = defineStore('labels', {
 
     async deleteLabel(id: string): Promise<void> {
       await labelsService.deleteLabel(id);
-      this.labels = this.labels.filter(l => l.id !== id);
+      this.labels = this.labels?.filter((l: Label) => l.id !== id) || [];
     },
-  }
+  },
 });
-

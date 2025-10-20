@@ -17,4 +17,9 @@ properties:
     type: string
     format: uuid
     description: ID of the physical area where this housing room is located
-
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time

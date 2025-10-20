@@ -1,0 +1,26 @@
+get:
+  summary: List all programs
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../schemas/Program.yaml"
+post:
+  summary: Create a new program
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/ProgramCreationRequest.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Program.yaml"

@@ -3,42 +3,38 @@ required:
   - id
   - name
   - programIds
-  - durationMinutes
 properties:
   id:
     type: string
     format: uuid
   name:
     type: string
-  description:
-    type: string
   programIds:
     type: array
     items:
       type: string
       format: uuid
-    description: References to programs this activity belongs to
-  durationMinutes:
+    description: IDs of programs this activity belongs to
+  description:
+    type: string
+  duration:
     type: integer
-    description: Default duration
+    description: Default duration in minutes
   defaultLocationId:
     type: string
     format: uuid
-    description: Default location
-  requiredCertifications:
+    description: ID of the default location
+  requiredCertificationIds:
     type: array
     items:
       type: string
-    description: Required staff certifications
+    description: IDs of required staff certifications
   minStaff:
     type: integer
     description: Minimum number of staff required
-  maxStaff:
-    type: integer
-    description: Maximum number of staff allowed
   defaultCapacity:
     type: integer
-    description: Default camper capacity
+    description: Default activity capacity
   colorId:
     type: string
     format: uuid
@@ -48,4 +44,3 @@ properties:
   updatedAt:
     type: string
     format: date-time
-

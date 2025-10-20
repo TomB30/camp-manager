@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="card card-clickable card-horizontal"
     @click="$emit('click', location)"
   >
@@ -10,7 +10,9 @@
       <h4>{{ location.name }}</h4>
       <div class="card-meta">
         <span class="badge badge-primary">{{ formattedType }}</span>
-        <span class="badge badge-success">Capacity: {{ location.capacity }}</span>
+        <span class="badge badge-success"
+          >Capacity: {{ location.capacity }}</span
+        >
       </div>
       <div v-if="areaName" class="location-area text-sm text-secondary mt-1">
         <Icon name="MapPin" :size="14" class="inline" />
@@ -18,11 +20,14 @@
       </div>
       <div class="location-usage mt-2">
         <div class="usage-bar">
-          <div 
+          <div
             class="usage-fill"
-            :style="{ 
+            :style="{
               width: `${usagePercent}%`,
-              background: usagePercent > 80 ? 'var(--error-color)' : 'var(--success-color)'
+              background:
+                usagePercent > 80
+                  ? 'var(--error-color)'
+                  : 'var(--success-color)',
             }"
           ></div>
         </div>
@@ -35,13 +40,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import type { Location } from '@/types';
-import { useAreasStore } from '@/stores';
-import Icon from '../Icon.vue';
+import { defineComponent, type PropType } from "vue";
+import type { Location } from "@/types";
+import { useAreasStore } from "@/stores";
+import Icon from "../Icon.vue";
 
 export default defineComponent({
-  name: 'LocationCard',
+  name: "LocationCard",
   components: {
     Icon,
   },
@@ -63,7 +68,7 @@ export default defineComponent({
       default: 0,
     },
   },
-  emits: ['click'],
+  emits: ["click"],
   setup() {
     const areasStore = useAreasStore();
     return { areasStore };
@@ -74,13 +79,13 @@ export default defineComponent({
         return this.areasStore.getAreaById(this.location.areaId)?.name;
       }
       return undefined;
-    }
-  }
+    },
+  },
 });
 </script>
 
 <style scoped>
-@import './card-styles.css';
+@import "./card-styles.css";
 
 .usage-bar {
   height: 6px;
@@ -94,4 +99,3 @@ export default defineComponent({
   transition: width 0.3s ease;
 }
 </style>
-

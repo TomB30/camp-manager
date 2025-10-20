@@ -3,9 +3,9 @@
  * Handles all label-related operations
  */
 
-import type { Label } from '@/types';
-import { storageService } from './storage';
-import { STORAGE_KEYS } from './storageKeys';
+import type { Label } from "@/types";
+import { storageService } from "./storage";
+import { STORAGE_KEYS } from "./storageKeys";
 
 class LabelsService {
   /**
@@ -42,9 +42,10 @@ class LabelsService {
    */
   async getLabelByName(name: string): Promise<Label | null> {
     const labels = await this.getLabels();
-    return labels.find(l => l.name.toLowerCase() === name.toLowerCase()) || null;
+    return (
+      labels.find((l) => l.name.toLowerCase() === name.toLowerCase()) || null
+    );
   }
 }
 
 export const labelsService = new LabelsService();
-

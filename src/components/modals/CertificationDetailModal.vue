@@ -14,17 +14,30 @@
         <div class="detail-section">
           <div class="detail-label">Type</div>
           <div>
-            <span class="badge badge-sm" :class="certification.expirationRequired ? 'badge-warning' : 'badge-success'">
-              {{ certification.expirationRequired ? 'Time-limited' : 'Permanent' }}
+            <span
+              class="badge badge-sm"
+              :class="
+                certification.validityPeriodMonths
+                  ? 'badge-warning'
+                  : 'badge-success'
+              "
+            >
+              {{
+                certification.validityPeriodMonths
+                  ? "Time-limited"
+                  : "Permanent"
+              }}
             </span>
           </div>
         </div>
 
-        <div v-if="certification.expirationRequired" class="detail-section">
-          <div class="detail-label">Expiration Tracking</div>
+        <div v-if="certification.validityPeriodMonths" class="detail-section">
+          <div class="detail-label">Validity Period</div>
           <div>
             <span v-if="certification.validityPeriodMonths">
-              Valid for <strong>{{ certification.validityPeriodMonths }} months</strong> from issue date
+              Valid for
+              <strong>{{ certification.validityPeriodMonths }} months</strong>
+              from issue date
             </span>
             <span v-else>
               Requires expiration tracking (no specific validity period set)
@@ -45,46 +58,50 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete', certification?.id)">Delete Certification</button>
-      <button class="btn btn-secondary" @click="$emit('edit', certification)">Edit</button>
+      <button class="btn btn-error" @click="$emit('delete', certification?.id)">
+        Delete Certification
+      </button>
+      <button class="btn btn-secondary" @click="$emit('edit', certification)">
+        Edit
+      </button>
       <button class="btn btn-secondary" @click="$emit('close')">Close</button>
     </template>
   </BaseModal>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import BaseModal from '@/components/BaseModal.vue';
-import type { Certification } from '@/types';
+import { defineComponent, type PropType } from "vue";
+import BaseModal from "@/components/BaseModal.vue";
+import type { Certification } from "@/types";
 
 export default defineComponent({
-  name: 'CertificationDetailModal',
+  name: "CertificationDetailModal",
   components: {
-    BaseModal
+    BaseModal,
   },
   props: {
     show: {
       type: Boolean,
-      required: true
+      required: true,
     },
     certification: {
       type: Object as PropType<Certification | null>,
-      default: null
-    }
+      default: null,
+    },
   },
-  emits: ['close', 'edit', 'delete'],
+  emits: ["close", "edit", "delete"],
   methods: {
     formatDate(dateString: string): string {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -100,4 +117,3 @@ export default defineComponent({
   margin-bottom: 0.5rem;
 }
 </style>
-

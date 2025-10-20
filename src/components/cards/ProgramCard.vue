@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="card card-clickable"
     :style="{ borderLeft: `4px solid ${programColor}` }"
     @click="$emit('click', program)"
@@ -7,12 +7,16 @@
     <div class="card-header">
       <h4>{{ program.name }}</h4>
       <div>
-        <span class="badge badge-primary">{{ activitiesCount }} activities</span>
+        <span class="badge badge-primary"
+          >{{ activitiesCount }} activities</span
+        >
       </div>
     </div>
-    
-    <p v-if="program.description" class="card-description">{{ program.description }}</p>
-    
+
+    <p v-if="program.description" class="card-description">
+      {{ program.description }}
+    </p>
+
     <div class="card-stats">
       <span class="card-stat-item">
         <Icon name="Users" :size="16" />
@@ -27,13 +31,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import type { Program } from '@/types';
-import { useColorsStore } from '@/stores';
-import Icon from '../Icon.vue';
+import { defineComponent, type PropType } from "vue";
+import type { Program } from "@/types";
+import { useColorsStore } from "@/stores";
+import Icon from "../Icon.vue";
 
 export default defineComponent({
-  name: 'ProgramCard',
+  name: "ProgramCard",
   components: {
     Icon,
   },
@@ -55,7 +59,7 @@ export default defineComponent({
       default: 0,
     },
   },
-  emits: ['click'],
+  emits: ["click"],
   setup() {
     const colorsStore = useColorsStore();
     return { colorsStore };
@@ -64,15 +68,14 @@ export default defineComponent({
     programColor(): string {
       if (this.program.colorId) {
         const color = this.colorsStore.getColorById(this.program.colorId);
-        return color?.hexValue || '#6366F1';
+        return color?.hexValue || "#6366F1";
       }
-      return '#6366F1';
-    }
-  }
+      return "#6366F1";
+    },
+  },
 });
 </script>
 
 <style scoped>
-@import './card-styles.css';
+@import "./card-styles.css";
 </style>
-

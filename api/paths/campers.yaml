@@ -1,14 +1,14 @@
 get:
   summary: List all campers
   responses:
-    '200':
+    "200":
       description: Success
       content:
         application/json:
           schema:
             type: array
             items:
-              $ref: '../schemas/Camper.yaml'
+              $ref: "../schemas/Camper.yaml"
 post:
   summary: Create a new camper
   requestBody:
@@ -16,8 +16,11 @@ post:
     content:
       application/json:
         schema:
-          $ref: '../schemas/Camper.yaml'
+          $ref: "../schemas/CamperCreationRequest.yaml"
   responses:
-    '201':
-      description: Created
-
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Camper.yaml"

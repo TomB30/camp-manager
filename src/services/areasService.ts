@@ -3,9 +3,9 @@
  * Handles all area-related operations
  */
 
-import type { Area } from '@/types';
-import { storageService } from './storage';
-import { STORAGE_KEYS } from './storageKeys';
+import type { Area } from "@/types";
+import { storageService } from "./storage";
+import { STORAGE_KEYS } from "./storageKeys";
 
 class AreasService {
   /**
@@ -40,11 +40,10 @@ class AreasService {
   /**
    * Get areas by type
    */
-  async getAreasByType(type: Area['type']): Promise<Area[]> {
+  async getAreasByType(type: Area["type"]): Promise<Area[]> {
     const areas = await this.getAreas();
-    return areas.filter(a => a.type === type);
+    return areas.filter((a) => a.type === type);
   }
 }
 
 export const areasService = new AreasService();
-

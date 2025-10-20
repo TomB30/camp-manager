@@ -1,0 +1,31 @@
+parameters:
+  - $ref: "../parameters/id.yaml"
+get:
+  summary: Get group by ID
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Group.yaml"
+put:
+  summary: Update group by ID
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/GroupUpdateRequest.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Group.yaml"
+delete:
+  summary: Delete group by ID
+  responses:
+    "204":
+      description: Deleted

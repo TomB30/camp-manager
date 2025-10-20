@@ -6,21 +6,28 @@
       </div>
       <div class="session-title-section">
         <h3 class="session-name">{{ session.name }}</h3>
-        <p v-if="session.description" class="session-description">{{ session.description }}</p>
+        <p v-if="session.description" class="session-description">
+          {{ session.description }}
+        </p>
       </div>
     </div>
-    
+
     <div class="session-details">
       <div class="session-detail">
         <Icon name="Calendar" :size="16" class="detail-icon" />
         <span class="detail-label">Dates:</span>
-        <span class="detail-value">{{ formatDate(session.startDate) }} - {{ formatDate(session.endDate) }}</span>
+        <span class="detail-value"
+          >{{ formatDate(session.startDate) }} -
+          {{ formatDate(session.endDate) }}</span
+        >
       </div>
-      
+
       <div class="session-detail">
         <Icon name="Clock" :size="16" class="detail-icon" />
         <span class="detail-label">Duration:</span>
-        <span class="detail-value">{{ calculateDuration(session.startDate, session.endDate) }}</span>
+        <span class="detail-value">{{
+          calculateDuration(session.startDate, session.endDate)
+        }}</span>
       </div>
       <div v-if="session.maxCampers" class="session-detail">
         <Icon name="Users" :size="16" class="detail-icon" />
@@ -32,29 +39,29 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import type { CampSession } from '@/types';
-import Icon from '../Icon.vue';
+import { defineComponent, type PropType } from "vue";
+import type { Session } from "@/types";
+import Icon from "../Icon.vue";
 
 export default defineComponent({
-  name: 'SessionCard',
+  name: "SessionCard",
   components: {
     Icon,
   },
   props: {
     session: {
-      type: Object as PropType<CampSession>,
+      type: Object as PropType<Session>,
       required: true,
     },
   },
-  emits: ['click'],
+  emits: ["click"],
   methods: {
     formatDate(dateString: string): string {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       });
     },
 
@@ -63,18 +70,18 @@ export default defineComponent({
       const end = new Date(endDate);
       const diffTime = Math.abs(end.getTime() - start.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      if (diffDays === 0) return '1 day';
-      if (diffDays === 1) return '2 days';
+
+      if (diffDays === 0) return "1 day";
+      if (diffDays === 1) return "2 days";
       if (diffDays < 7) return `${diffDays + 1} days`;
-      
+
       const weeks = Math.floor((diffDays + 1) / 7);
       const remainingDays = (diffDays + 1) % 7;
-      
+
       if (remainingDays === 0) {
-        return weeks === 1 ? '1 week' : `${weeks} weeks`;
+        return weeks === 1 ? "1 week" : `${weeks} weeks`;
       } else {
-        return `${weeks} week${weeks > 1 ? 's' : ''}, ${remainingDays} day${remainingDays > 1 ? 's' : ''}`;
+        return `${weeks} week${weeks > 1 ? "s" : ""}, ${remainingDays} day${remainingDays > 1 ? "s" : ""}`;
       }
     },
   },
@@ -177,4 +184,3 @@ export default defineComponent({
   }
 }
 </style>
-

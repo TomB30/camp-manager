@@ -1,6 +1,6 @@
 <template>
-  <div 
-    class="avatar-initials" 
+  <div
+    class="avatar-initials"
     :class="[sizeClass]"
     :style="{ background: backgroundColor }"
   >
@@ -9,31 +9,32 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'AvatarInitials',
+  name: "AvatarInitials",
   props: {
     firstName: {
       type: String,
-      default: '',
+      default: "",
     },
     lastName: {
       type: String,
-      default: '',
+      default: "",
     },
     text: {
       type: String,
-      default: '',
+      default: "",
     },
     size: {
       type: String,
-      default: 'md',
-      validator: (value: string) => ['xs', 'sm', 'md', 'lg', 'xl'].includes(value),
+      default: "md",
+      validator: (value: string) =>
+        ["xs", "sm", "md", "lg", "xl"].includes(value),
     },
     color: {
       type: String,
-      default: '',
+      default: "",
     },
   },
   computed: {
@@ -41,13 +42,13 @@ export default defineComponent({
       if (this.text) {
         return this.text.substring(0, 2).toUpperCase();
       }
-      
+
       const first = this.firstName.charAt(0).toUpperCase();
       const last = this.lastName.charAt(0).toUpperCase();
       return `${first}${last}`;
     },
     backgroundColor(): string {
-      return this.color || 'var(--accent-color)';
+      return this.color || "var(--accent-color)";
     },
     sizeClass(): string {
       return `avatar-${this.size}`;
@@ -97,4 +98,3 @@ export default defineComponent({
   font-size: 1.5rem;
 }
 </style>
-

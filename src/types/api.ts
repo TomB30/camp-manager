@@ -5,6 +5,93 @@
 
 
 export interface paths {
+  "/sessions": {
+    /** List all sessions */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Session"][];
+          };
+        };
+      };
+    };
+    /** Create a new session */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["SessionCreationRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Session"];
+          };
+        };
+      };
+    };
+  };
+  "/sessions/{id}": {
+    /** Get session by ID */
+    get: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Session"];
+          };
+        };
+      };
+    };
+    /** Update session by ID */
+    put: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["SessionUpdateRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Session"];
+          };
+        };
+      };
+    };
+    /** Delete session by ID */
+    delete: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: components["parameters"]["id"];
+      };
+    };
+  };
   "/campers": {
     /** List all campers */
     get: {
@@ -21,13 +108,15 @@ export interface paths {
     post: {
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Camper"];
+          "application/json": components["schemas"]["CamperCreationRequest"];
         };
       };
       responses: {
-        /** @description Created */
-        201: {
-          content: never;
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Camper"];
+          };
         };
       };
     };
@@ -58,13 +147,15 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Camper"];
+          "application/json": components["schemas"]["CamperUpdateRequest"];
         };
       };
       responses: {
-        /** @description Updated */
+        /** @description Success */
         200: {
-          content: never;
+          content: {
+            "application/json": components["schemas"]["Camper"];
+          };
         };
       };
     };
@@ -104,13 +195,15 @@ export interface paths {
     post: {
       requestBody: {
         content: {
-          "application/json": components["schemas"]["StaffMember"];
+          "application/json": components["schemas"]["StaffMemberCreationRequest"];
         };
       };
       responses: {
-        /** @description Created */
-        201: {
-          content: never;
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["StaffMember"];
+          };
         };
       };
     };
@@ -132,7 +225,7 @@ export interface paths {
         };
       };
     };
-    /** Update staff member */
+    /** Update staff member by ID */
     put: {
       parameters: {
         path: {
@@ -141,17 +234,19 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["StaffMember"];
+          "application/json": components["schemas"]["StaffMemberUpdateRequest"];
         };
       };
       responses: {
-        /** @description Updated */
+        /** @description Success */
         200: {
-          content: never;
+          content: {
+            "application/json": components["schemas"]["StaffMember"];
+          };
         };
       };
     };
-    /** Delete staff member */
+    /** Delete staff member by ID */
     delete: {
       parameters: {
         path: {
@@ -171,8 +266,95 @@ export interface paths {
       };
     };
   };
-  "/rooms": {
-    /** List all rooms */
+  "/areas": {
+    /** List all areas */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Area"][];
+          };
+        };
+      };
+    };
+    /** Create a new area */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["AreaCreationRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Area"];
+          };
+        };
+      };
+    };
+  };
+  "/areas/{id}": {
+    /** Get area by ID */
+    get: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Area"];
+          };
+        };
+      };
+    };
+    /** Update area */
+    put: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["AreaUpdateRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Area"];
+          };
+        };
+      };
+    };
+    /** Delete area */
+    delete: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: components["parameters"]["id"];
+      };
+    };
+  };
+  "/locations": {
+    /** List all locations */
     get: {
       responses: {
         /** @description Success */
@@ -183,23 +365,25 @@ export interface paths {
         };
       };
     };
-    /** Create a new room */
+    /** Create a new location */
     post: {
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Location"];
+          "application/json": components["schemas"]["LocationCreationRequest"];
         };
       };
       responses: {
-        /** @description Created */
-        201: {
-          content: never;
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Location"];
+          };
         };
       };
     };
   };
-  "/rooms/{id}": {
-    /** Get room by ID */
+  "/locations/{id}": {
+    /** Get location by ID */
     get: {
       parameters: {
         path: {
@@ -215,7 +399,7 @@ export interface paths {
         };
       };
     };
-    /** Update room */
+    /** Update location by ID */
     put: {
       parameters: {
         path: {
@@ -224,17 +408,628 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Location"];
+          "application/json": components["schemas"]["LocationUpdateRequest"];
         };
       };
       responses: {
-        /** @description Updated */
+        /** @description Success */
         200: {
+          content: {
+            "application/json": components["schemas"]["Location"];
+          };
+        };
+      };
+    };
+    /** Delete location by ID */
+    delete: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
           content: never;
         };
       };
     };
-    /** Delete room */
+    parameters: {
+      path: {
+        id: components["parameters"]["id"];
+      };
+    };
+  };
+  "/programs": {
+    /** List all programs */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Program"][];
+          };
+        };
+      };
+    };
+    /** Create a new program */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["ProgramCreationRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Program"];
+          };
+        };
+      };
+    };
+  };
+  "/programs/{id}": {
+    /** Get program by ID */
+    get: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Program"];
+          };
+        };
+      };
+    };
+    /** Update program by ID */
+    put: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["ProgramUpdateRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Program"];
+          };
+        };
+      };
+    };
+    /** Delete program by ID */
+    delete: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: components["parameters"]["id"];
+      };
+    };
+  };
+  "/activities": {
+    /** List all activities */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Activity"][];
+          };
+        };
+      };
+    };
+    /** Create a new activity */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["ActivityCreationRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Activity"];
+          };
+        };
+      };
+    };
+  };
+  "/activities/{id}": {
+    /** Get activity by ID */
+    get: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Activity"];
+          };
+        };
+      };
+    };
+    /** Update activity by ID */
+    put: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["ActivityUpdateRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Activity"];
+          };
+        };
+      };
+    };
+    /** Delete activity by ID */
+    delete: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: components["parameters"]["id"];
+      };
+    };
+  };
+  "/colors": {
+    /** List all colors */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Color"][];
+          };
+        };
+      };
+    };
+    /** Create a new color */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["ColorCreationRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Color"];
+          };
+        };
+      };
+    };
+  };
+  "/colors/{id}": {
+    /** Get color by ID */
+    get: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Color"];
+          };
+        };
+      };
+    };
+    /** Update color by ID */
+    put: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["ColorUpdateRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Color"];
+          };
+        };
+      };
+    };
+    /** Delete color by ID */
+    delete: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: components["parameters"]["id"];
+      };
+    };
+  };
+  "/roles": {
+    /** List all roles */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Role"][];
+          };
+        };
+      };
+    };
+    /** Create a new role */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["RoleCreationRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Role"];
+          };
+        };
+      };
+    };
+  };
+  "/roles/{id}": {
+    /** Get role by ID */
+    get: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Role"];
+          };
+        };
+      };
+    };
+    /** Update role by ID */
+    put: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["RoleUpdateRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Role"];
+          };
+        };
+      };
+    };
+    /** Delete role by ID */
+    delete: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: components["parameters"]["id"];
+      };
+    };
+  };
+  "/certifications": {
+    /** List all certifications */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Certification"][];
+          };
+        };
+      };
+    };
+    /** Create a new certification */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["CertificationCreationRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Certification"];
+          };
+        };
+      };
+    };
+  };
+  "/certifications/{id}": {
+    /** Get certification by ID */
+    get: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Certification"];
+          };
+        };
+      };
+    };
+    /** Update certification by ID */
+    put: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["CertificationUpdateRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Certification"];
+          };
+        };
+      };
+    };
+    /** Delete certification by ID */
+    delete: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: components["parameters"]["id"];
+      };
+    };
+  };
+  "/housing-rooms": {
+    /** List all housing rooms */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["HousingRoom"][];
+          };
+        };
+      };
+    };
+    /** Create a new housing room */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["HousingRoomCreationRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["HousingRoom"];
+          };
+        };
+      };
+    };
+  };
+  "/housing-rooms/{id}": {
+    /** Get housing room by ID */
+    get: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["HousingRoom"];
+          };
+        };
+      };
+    };
+    /** Update housing room */
+    put: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["HousingRoomUpdateRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["HousingRoom"];
+          };
+        };
+      };
+    };
+    /** Delete housing room by ID */
+    delete: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Deleted */
+        204: {
+          content: never;
+        };
+      };
+    };
+    parameters: {
+      path: {
+        id: components["parameters"]["id"];
+      };
+    };
+  };
+  "/groups": {
+    /** List all groups */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Group"][];
+          };
+        };
+      };
+    };
+    /** Create a new group */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["GroupCreationRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Group"];
+          };
+        };
+      };
+    };
+  };
+  "/groups/{id}": {
+    /** Get group by ID */
+    get: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Group"];
+          };
+        };
+      };
+    };
+    /** Update group by ID */
+    put: {
+      parameters: {
+        path: {
+          id: components["parameters"]["id"];
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["GroupUpdateRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Group"];
+          };
+        };
+      };
+    };
+    /** Delete group by ID */
     delete: {
       parameters: {
         path: {
@@ -257,12 +1052,6 @@ export interface paths {
   "/events": {
     /** List all events */
     get: {
-      parameters: {
-        query?: {
-          startDate?: string;
-          endDate?: string;
-        };
-      };
       responses: {
         /** @description Success */
         200: {
@@ -315,13 +1104,15 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["Event"];
+          "application/json": components["schemas"]["EventUpdateRequest"];
         };
       };
       responses: {
-        /** @description Updated */
+        /** @description Success */
         200: {
-          content: never;
+          content: {
+            "application/json": components["schemas"]["Event"];
+          };
         };
       };
     };
@@ -342,276 +1133,6 @@ export interface paths {
     parameters: {
       path: {
         id: components["parameters"]["id"];
-      };
-    };
-  };
-  "/events/{id}/enroll": {
-    /** Enroll a camper in an event */
-    post: {
-      parameters: {
-        path: {
-          id: components["parameters"]["id"];
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            /** Format: uuid */
-            camperId?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Enrolled */
-        200: {
-          content: never;
-        };
-        /** @description Conflict */
-        409: {
-          content: {
-            "application/json": components["schemas"]["Conflict"];
-          };
-        };
-      };
-    };
-    parameters: {
-      path: {
-        id: components["parameters"]["id"];
-      };
-    };
-  };
-  "/events/{id}/unenroll": {
-    /** Unenroll a camper from an event */
-    post: {
-      parameters: {
-        path: {
-          id: components["parameters"]["id"];
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            /** Format: uuid */
-            camperId?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Unenrolled */
-        200: {
-          content: never;
-        };
-      };
-    };
-    parameters: {
-      path: {
-        id: components["parameters"]["id"];
-      };
-    };
-  };
-  "/conflicts": {
-    /** Check for scheduling conflicts */
-    get: {
-      responses: {
-        /** @description List of conflicts */
-        200: {
-          content: {
-            "application/json": components["schemas"]["Conflict"][];
-          };
-        };
-      };
-    };
-  };
-  "/sleeping-rooms": {
-    /** List all sleeping rooms */
-    get: {
-      responses: {
-        /** @description Success */
-        200: {
-          content: {
-            "application/json": components["schemas"]["HousingRoom"][];
-          };
-        };
-      };
-    };
-    /** Create a new sleeping room */
-    post: {
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["HousingRoom"];
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          content: never;
-        };
-      };
-    };
-  };
-  "/sleeping-rooms/{id}": {
-    /** Get sleeping room by ID */
-    get: {
-      parameters: {
-        path: {
-          id: components["parameters"]["id"];
-        };
-      };
-      responses: {
-        /** @description Success */
-        200: {
-          content: {
-            "application/json": components["schemas"]["HousingRoom"];
-          };
-        };
-      };
-    };
-    /** Update sleeping room */
-    put: {
-      parameters: {
-        path: {
-          id: components["parameters"]["id"];
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["HousingRoom"];
-        };
-      };
-      responses: {
-        /** @description Updated */
-        200: {
-          content: never;
-        };
-      };
-    };
-    /** Delete sleeping room */
-    delete: {
-      parameters: {
-        path: {
-          id: components["parameters"]["id"];
-        };
-      };
-      responses: {
-        /** @description Deleted */
-        204: {
-          content: never;
-        };
-      };
-    };
-    parameters: {
-      path: {
-        id: components["parameters"]["id"];
-      };
-    };
-  };
-  "/areas": {
-    /** List all areas */
-    get: {
-      responses: {
-        /** @description Success */
-        200: {
-          content: {
-            "application/json": components["schemas"]["Area"][];
-          };
-        };
-      };
-    };
-    /** Create a new area */
-    post: {
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["Area"];
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          content: never;
-        };
-      };
-    };
-  };
-  "/areas/{id}": {
-    /** Get area by ID */
-    get: {
-      parameters: {
-        path: {
-          id: components["parameters"]["id"];
-        };
-      };
-      responses: {
-        /** @description Success */
-        200: {
-          content: {
-            "application/json": components["schemas"]["Area"];
-          };
-        };
-      };
-    };
-    /** Update area */
-    put: {
-      parameters: {
-        path: {
-          id: components["parameters"]["id"];
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["Area"];
-        };
-      };
-      responses: {
-        /** @description Updated */
-        200: {
-          content: never;
-        };
-      };
-    };
-    /** Delete area */
-    delete: {
-      parameters: {
-        path: {
-          id: components["parameters"]["id"];
-        };
-      };
-      responses: {
-        /** @description Deleted */
-        204: {
-          content: never;
-        };
-      };
-    };
-    parameters: {
-      path: {
-        id: components["parameters"]["id"];
-      };
-    };
-  };
-  "/groups": {
-    /** List all groups */
-    get: {
-      responses: {
-        /** @description Success */
-        200: {
-          content: {
-            "application/json": components["schemas"]["Group"][];
-          };
-        };
-      };
-    };
-    /** Create a new group */
-    post: {
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["Group"];
-        };
-      };
-      responses: {
-        /** @description Created */
-        201: {
-          content: never;
-        };
       };
     };
   };
@@ -651,18 +1172,75 @@ export interface components {
        */
       sessionId?: string;
     };
+    CamperCreationRequest: {
+      firstName: string;
+      lastName: string;
+      age: number;
+      /** @enum {string} */
+      gender: "male" | "female";
+      parentContact: string;
+      /**
+       * Format: uuid
+       * @description ID of the camp session this camper is registered in
+       */
+      sessionId: string;
+      allergies?: string[];
+      medicalNotes?: string;
+      photoUrl?: string;
+      /** Format: date-time */
+      registrationDate?: string;
+      /**
+       * Format: uuid
+       * @description ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
+       */
+      housingRoomId?: string;
+      /**
+       * Format: uuid
+       * @description ID of the family group this camper belongs to
+       */
+      familyGroupId?: string;
+    };
+    CamperUpdateRequest: {
+      firstName: string;
+      lastName: string;
+      age: number;
+      /** @enum {string} */
+      gender: "male" | "female";
+      parentContact: string;
+      /**
+       * Format: uuid
+       * @description ID of the camp session this camper is registered in
+       */
+      sessionId: string;
+      allergies?: string[];
+      medicalNotes?: string;
+      photoUrl?: string;
+      /** Format: date-time */
+      registrationDate?: string;
+      /**
+       * Format: uuid
+       * @description ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
+       */
+      housingRoomId?: string;
+      /**
+       * Format: uuid
+       * @description ID of the family group this camper belongs to
+       */
+      familyGroupId?: string;
+    };
     StaffMember: {
       /** Format: uuid */
       id: string;
       firstName: string;
       lastName: string;
-      /** @enum {string} */
-      role: "counselor" | "supervisor" | "director" | "nurse" | "instructor";
+      /**
+       * Format: uuid
+       * @description ID of the role this staff member has
+       */
+      roleId: string;
       /** Format: email */
       email?: string;
       phone?: string;
-      /** @description Staff certifications (deprecated - use certificationIds) */
-      certifications?: string[];
       /** @description IDs of certifications this staff member holds */
       certificationIds?: string[];
       photoUrl?: string;
@@ -672,13 +1250,104 @@ export interface components {
        */
       managerId?: string;
     };
+    StaffMemberCreationRequest: {
+      firstName: string;
+      lastName: string;
+      /**
+       * Format: uuid
+       * @description ID of the role this staff member has
+       */
+      roleId: string;
+      /** Format: email */
+      email?: string;
+      phone?: string;
+      /** @description IDs of certifications this staff member holds */
+      certificationIds?: string[];
+      photoUrl?: string;
+      /**
+       * Format: uuid
+       * @description ID of the staff member who manages this person
+       */
+      managerId?: string;
+    };
+    StaffMemberUpdateRequest: {
+      firstName: string;
+      lastName: string;
+      /**
+       * Format: uuid
+       * @description ID of the role this staff member has
+       */
+      roleId: string;
+      /** Format: email */
+      email?: string;
+      phone?: string;
+      /** @description IDs of certifications this staff member holds */
+      certificationIds?: string[];
+      photoUrl?: string;
+      /**
+       * Format: uuid
+       * @description ID of the staff member who manages this person
+       */
+      managerId?: string;
+    };
+    Role: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      description?: string;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
+    };
+    RoleCreationRequest: {
+      name: string;
+      description?: string;
+    };
+    RoleUpdateRequest: {
+      name: string;
+      description?: string;
+    };
+    Area: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      description?: string;
+      /** @enum {string} */
+      type?: "indoor" | "outdoor" | "facility" | "field" | "water" | "other";
+      capacity?: number;
+      equipment?: string[];
+      notes?: string;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
+    };
+    AreaCreationRequest: {
+      name: string;
+      description?: string;
+      /** @enum {string} */
+      type?: "indoor" | "outdoor" | "facility" | "field" | "water" | "other";
+      capacity?: number;
+      equipment?: string[];
+      notes?: string;
+    };
+    AreaUpdateRequest: {
+      name: string;
+      description?: string;
+      /** @enum {string} */
+      type?: "indoor" | "outdoor" | "facility" | "field" | "water" | "other";
+      capacity?: number;
+      equipment?: string[];
+      notes?: string;
+    };
     Location: {
       /** Format: uuid */
       id: string;
       name: string;
-      capacity: number;
       /** @enum {string} */
       type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
+      capacity?: number;
       /**
        * Format: uuid
        * @description ID of the physical area where this location is situated
@@ -686,6 +1355,188 @@ export interface components {
       areaId?: string;
       equipment?: string[];
       notes?: string;
+    };
+    LocationCreationRequest: {
+      name: string;
+      /** @enum {string} */
+      type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
+      capacity?: number;
+      /**
+       * Format: uuid
+       * @description ID of the physical area where this location is situated
+       */
+      areaId?: string;
+      equipment?: string[];
+      notes?: string;
+    };
+    LocationUpdateRequest: {
+      name: string;
+      /** @enum {string} */
+      type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
+      capacity?: number;
+      /**
+       * Format: uuid
+       * @description ID of the physical area where this location is situated
+       */
+      areaId?: string;
+      equipment?: string[];
+      notes?: string;
+    };
+    Program: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      description?: string;
+      /** Format: uuid */
+      colorId?: string;
+      /** @description Activities belonging to this program */
+      activityIds?: string[];
+      /** @description Staff members associated with this program */
+      staffMemberIds?: string[];
+      /** @description Locations associated with this program */
+      locationIds?: string[];
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
+    };
+    ProgramCreationRequest: {
+      name: string;
+      description?: string;
+      /** Format: uuid */
+      colorId?: string;
+      /** @description Activities belonging to this program */
+      activityIds?: string[];
+      /** @description Staff members associated with this program */
+      staffMemberIds?: string[];
+      /** @description Locations associated with this program */
+      locationIds?: string[];
+    };
+    ProgramUpdateRequest: {
+      name: string;
+      description?: string;
+      /** Format: uuid */
+      colorId?: string;
+      /** @description Activities belonging to this program */
+      activityIds?: string[];
+      /** @description Staff members associated with this program */
+      staffMemberIds?: string[];
+      /** @description Locations associated with this program */
+      locationIds?: string[];
+    };
+    Activity: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      /** @description IDs of programs this activity belongs to */
+      programIds: string[];
+      description?: string;
+      /** @description Default duration in minutes */
+      duration?: number;
+      /**
+       * Format: uuid
+       * @description ID of the default location
+       */
+      defaultLocationId?: string;
+      /** @description IDs of required staff certifications */
+      requiredCertificationIds?: string[];
+      /** @description Minimum number of staff required */
+      minStaff?: number;
+      /** @description Default activity capacity */
+      defaultCapacity?: number;
+      /** Format: uuid */
+      colorId?: string;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
+    };
+    ActivityCreationRequest: {
+      name: string;
+      /** @description IDs of programs this activity belongs to */
+      programIds: string[];
+      description?: string;
+      /** @description Default duration in minutes */
+      duration?: number;
+      /**
+       * Format: uuid
+       * @description ID of the default location
+       */
+      defaultLocationId?: string;
+      /** @description IDs of required staff certifications */
+      requiredCertificationIds?: string[];
+      /** @description Minimum number of staff required */
+      minStaff?: number;
+      /** @description Default activity capacity */
+      defaultCapacity?: number;
+      /** Format: uuid */
+      colorId?: string;
+    };
+    ActivityUpdateRequest: {
+      name: string;
+      /** @description IDs of programs this activity belongs to */
+      programIds: string[];
+      description?: string;
+      /** @description Default duration in minutes */
+      duration?: number;
+      /**
+       * Format: uuid
+       * @description ID of the default location
+       */
+      defaultLocationId?: string;
+      /** @description IDs of required staff certifications */
+      requiredCertificationIds?: string[];
+      /** @description Minimum number of staff required */
+      minStaff?: number;
+      /** @description Default activity capacity */
+      defaultCapacity?: number;
+      /** Format: uuid */
+      colorId?: string;
+    };
+    Color: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      /** @description Hex color value (e.g., "#FF5733") */
+      hexValue: string;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
+    };
+    ColorCreationRequest: {
+      name: string;
+      /** @description Hex color value (e.g., "#FF5733") */
+      hexValue: string;
+    };
+    ColorUpdateRequest: {
+      name: string;
+      /** @description Hex color value (e.g., "#FF5733") */
+      hexValue: string;
+    };
+    Certification: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      description?: string;
+      /** @description How long the certification is valid for */
+      validityPeriodMonths?: number;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
+    };
+    CertificationCreationRequest: {
+      name: string;
+      description?: string;
+      /** @description How long the certification is valid for */
+      validityPeriodMonths?: number;
+    };
+    CertificationUpdateRequest: {
+      name: string;
+      description?: string;
+      /** @description How long the certification is valid for */
+      validityPeriodMonths?: number;
     };
     HousingRoom: {
       /** Format: uuid */
@@ -698,73 +1549,66 @@ export interface components {
        * @description ID of the physical area where this housing room is located
        */
       areaId?: string;
-    };
-    Area: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      description?: string;
-      /** @enum {string} */
-      type: "indoor" | "outdoor" | "facility" | "field" | "water" | "other";
-      capacity?: number;
-      equipment?: string[];
-      notes?: string;
       /** Format: date-time */
       createdAt?: string;
       /** Format: date-time */
       updatedAt?: string;
     };
-    Event: {
-      /** Format: uuid */
-      id: string;
-      title: string;
-      description?: string;
-      /** Format: date-time */
-      startTime: string;
-      /** Format: date-time */
-      endTime: string;
-      /** Format: uuid */
-      locationId: string;
-      capacity: number;
-      /** @description IDs of groups assigned to this event */
-      groupIds?: string[];
-      /** @description IDs of staff members to exclude from assigned groups */
-      excludeStaffIds?: string[];
-      /** @description IDs of campers to exclude from assigned groups */
-      excludeCamperIds?: string[];
-      requiredCertifications?: string[];
-      /** Format: uuid */
-      colorId?: string;
-      /** Format: uuid */
-      programId?: string;
-      /** Format: uuid */
-      activityId?: string;
+    HousingRoomCreationRequest: {
+      name: string;
+      /** @description Number of beds in this housing room */
+      beds: number;
       /**
        * Format: uuid
-       * @description Recurrence rule ID - links this event to a recurrence series
+       * @description ID of the physical area where this housing room is located
        */
-      recurrenceId?: string;
-      /** @description Indicates if this is the parent event of a recurrence series */
-      isRecurrenceParent?: boolean;
+      areaId?: string;
     };
-    Conflict: {
-      /** @enum {string} */
-      type?: "room_overcapacity" | "event_overcapacity" | "camper_double_booked" | "staff_double_booked" | "missing_certification";
-      message?: string;
-      entityId?: string;
-      conflictingIds?: string[];
+    HousingRoomUpdateRequest: {
+      name: string;
+      /** @description Number of beds in this housing room */
+      beds: number;
+      /**
+       * Format: uuid
+       * @description ID of the physical area where this housing room is located
+       */
+      areaId?: string;
     };
-    Label: {
+    Session: {
       /** Format: uuid */
       id: string;
       name: string;
+      /** Format: date */
+      startDate: string;
+      /** Format: date */
+      endDate: string;
       description?: string;
-      /** Format: uuid */
-      colorId?: string;
+      /** @description Optional max capacity for this session */
+      maxCampers?: number;
       /** Format: date-time */
       createdAt?: string;
       /** Format: date-time */
       updatedAt?: string;
+    };
+    SessionCreationRequest: {
+      name: string;
+      /** Format: date */
+      startDate: string;
+      /** Format: date */
+      endDate: string;
+      description?: string;
+      /** @description Optional max capacity for this session */
+      maxCampers?: number;
+    };
+    SessionUpdateRequest: {
+      name: string;
+      /** Format: date */
+      startDate: string;
+      /** Format: date */
+      endDate: string;
+      description?: string;
+      /** @description Optional max capacity for this session */
+      maxCampers?: number;
     };
     Group: {
       /** Format: uuid */
@@ -818,147 +1662,191 @@ export interface components {
       /** Format: date-time */
       updatedAt?: string;
     };
-    Activity: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      description?: string;
-      /** @description References to programs this activity belongs to */
-      programIds: string[];
-      /** @description Default duration */
-      durationMinutes: number;
-      /**
-       * Format: uuid
-       * @description Default location
-       */
-      defaultLocationId?: string;
-      /** @description Required staff certifications */
-      requiredCertifications?: string[];
-      /** @description Minimum number of staff required */
-      minStaff?: number;
-      /** @description Maximum number of staff allowed */
-      maxStaff?: number;
-      /** @description Default camper capacity */
-      defaultCapacity?: number;
-      /** Format: uuid */
-      colorId?: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-    };
-    Program: {
-      /** Format: uuid */
-      id: string;
+    GroupCreationRequest: {
       name: string;
       description?: string;
       /** Format: uuid */
       colorId?: string;
-      /** @description Activities belonging to this program */
-      activityIds: string[];
-      /** @description Staff members associated with this program */
-      staffMemberIds: string[];
-      /** @description Locations associated with this program */
-      locationIds: string[];
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-    };
-    Certification: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      description?: string;
-      /** @description Whether this certification expires */
-      expirationRequired: boolean;
-      /** @description How long the certification is valid for */
-      validityPeriodMonths?: number;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-    };
-    CampColor: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      /** @description Hex color value (e.g., "#FF5733") */
-      hexValue: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-    };
-    CampSession: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      /**
-       * Format: date
-       * @description ISO date string
-       */
-      startDate: string;
-      /**
-       * Format: date
-       * @description ISO date string
-       */
-      endDate: string;
-      description?: string;
-      /** @description Optional max capacity for this session */
-      maxCampers?: number;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-    };
-    EventCreationRequest: {
-      /** @description Title of the event */
-      title: string;
-      /** @description Description of the event */
-      description?: string;
-      /**
-       * Format: date-time
-       * @description Start time of the event
-       */
-      startTime: string;
-      /**
-       * Format: date-time
-       * @description End time of the event
-       */
-      endTime: string;
       /**
        * Format: uuid
-       * @description ID of the location of the event
+       * @description Optional session this group belongs to
        */
-      locationId?: string;
+      sessionId?: string;
+      /**
+       * Format: uuid
+       * @description Optional housing room assignment for this group
+       */
+      housingRoomId?: string;
+      /** @description Filter criteria to automatically match campers */
+      camperFilters?: {
+        ageMin?: number;
+        ageMax?: number;
+        /** @enum {string} */
+        gender?: "male" | "female";
+        hasAllergies?: boolean;
+        /**
+         * Format: uuid
+         * @description Filter by specific session
+         */
+        sessionId?: string;
+        /** @description Filter by specific family groups */
+        familyGroupIds?: string[];
+      };
+      /** @description Manually selected camper IDs (mutually exclusive with camperFilters) */
+      camperIds?: string[];
+      /** @description Filter criteria to automatically match staff members */
+      staffFilters?: {
+        /** @description Filter by staff roles */
+        roles?: string[];
+        /** @description Filter by certifications */
+        certificationIds?: string[];
+      };
+      /** @description Manually selected staff IDs (mutually exclusive with staffFilters) */
+      staffIds?: string[];
+      /** @description Child group IDs for creating groups of groups */
       groupIds?: string[];
+      /** @description IDs of labels assigned to this group */
+      labelIds?: string[];
+    };
+    GroupUpdateRequest: {
+      name: string;
+      description?: string;
+      /** Format: uuid */
+      colorId?: string;
+      /**
+       * Format: uuid
+       * @description Optional session this group belongs to
+       */
+      sessionId?: string;
+      /**
+       * Format: uuid
+       * @description Optional housing room assignment for this group
+       */
+      housingRoomId?: string;
+      /** @description Filter criteria to automatically match campers */
+      camperFilters?: {
+        ageMin?: number;
+        ageMax?: number;
+        /** @enum {string} */
+        gender?: "male" | "female";
+        hasAllergies?: boolean;
+        /**
+         * Format: uuid
+         * @description Filter by specific session
+         */
+        sessionId?: string;
+        /** @description Filter by specific family groups */
+        familyGroupIds?: string[];
+      };
+      /** @description Manually selected camper IDs (mutually exclusive with camperFilters) */
+      camperIds?: string[];
+      /** @description Filter criteria to automatically match staff members */
+      staffFilters?: {
+        /** @description Filter by staff roles */
+        roles?: string[];
+        /** @description Filter by certifications */
+        certificationIds?: string[];
+      };
+      /** @description Manually selected staff IDs (mutually exclusive with staffFilters) */
+      staffIds?: string[];
+      /** @description Child group IDs for creating groups of groups */
+      groupIds?: string[];
+      /** @description IDs of labels assigned to this group */
+      labelIds?: string[];
+    };
+    Event: {
+      /** Format: uuid */
+      id: string;
+      title: string;
+      description?: string;
+      /** Format: date-time */
+      startDate: string;
+      /** Format: date-time */
+      endDate: string;
+      /** Format: uuid */
+      locationId?: string;
+      capacity?: number;
+      /** @description IDs of groups assigned to this event */
+      groupIds?: string[];
+      /** @description IDs of staff members to exclude from assigned groups */
+      excludeStaffIds?: string[];
       /** @description IDs of campers to exclude from assigned groups */
       excludeCamperIds?: string[];
-      /** @description IDs of staff to exclude from assigned groups */
-      excludeStaffIds?: string[];
-      /** @description IDs of staff certifications required for the event */
-      requiredCertifications?: string[];
-      /**
-       * Format: uuid
-       * @description ID of the program this event belongs to
-       */
+      /** @description IDs of certifications required for this event */
+      requiredCertificationIds?: string[];
+      /** Format: uuid */
+      colorId?: string;
+      /** Format: uuid */
       programId?: string;
-      /**
-       * Format: uuid
-       * @description ID of the activity this event was created from
-       */
+      /** Format: uuid */
       activityId?: string;
       /**
        * Format: uuid
-       * @description ID of the color this event uses
+       * @description Recurrence rule ID - links this event to a recurrence series
        */
-      colorId?: string;
-      /** @description Maximum number of campers this event can accommodate */
+      recurrenceId?: string;
+      /** @description Indicates if this is the parent event of a recurrence series */
+      isRecurrenceParent?: boolean;
+    };
+    EventCreationRequest: {
+      title: string;
+      description?: string;
+      /** Format: date-time */
+      startDate: string;
+      /** Format: date-time */
+      endDate: string;
+      /** Format: uuid */
+      locationId?: string;
       capacity?: number;
+      /** @description IDs of groups assigned to this event */
+      groupIds?: string[];
+      /** @description IDs of staff members to exclude from assigned groups */
+      excludeStaffIds?: string[];
+      /** @description IDs of campers to exclude from assigned groups */
+      excludeCamperIds?: string[];
+      /** @description IDs of certifications required for this event */
+      requiredCertificationIds?: string[];
+      /** Format: uuid */
+      colorId?: string;
+      /** Format: uuid */
+      programId?: string;
+      /** Format: uuid */
+      activityId?: string;
       /**
        * Format: uuid
-       * @description ID of the recurrence this event belongs to
+       * @description Recurrence rule ID - links this event to a recurrence series
+       */
+      recurrenceId?: string;
+      /** @description Indicates if this is the parent event of a recurrence series */
+      isRecurrenceParent?: boolean;
+    };
+    EventUpdateRequest: {
+      title: string;
+      description?: string;
+      /** Format: date-time */
+      startDate: string;
+      /** Format: date-time */
+      endDate: string;
+      /** Format: uuid */
+      locationId?: string;
+      capacity?: number;
+      /** @description IDs of groups assigned to this event */
+      groupIds?: string[];
+      /** @description IDs of staff members to exclude from assigned groups */
+      excludeStaffIds?: string[];
+      /** @description IDs of campers to exclude from assigned groups */
+      excludeCamperIds?: string[];
+      /** @description IDs of certifications required for this event */
+      requiredCertificationIds?: string[];
+      /** Format: uuid */
+      colorId?: string;
+      /** Format: uuid */
+      programId?: string;
+      /** Format: uuid */
+      activityId?: string;
+      /**
+       * Format: uuid
+       * @description Recurrence rule ID - links this event to a recurrence series
        */
       recurrenceId?: string;
       /** @description Indicates if this is the parent event of a recurrence series */

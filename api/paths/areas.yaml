@@ -1,14 +1,14 @@
 get:
   summary: List all areas
   responses:
-    '200':
+    "200":
       description: Success
       content:
         application/json:
           schema:
             type: array
             items:
-              $ref: '../schemas/Area.yaml'
+              $ref: "../schemas/Area.yaml"
 post:
   summary: Create a new area
   requestBody:
@@ -16,8 +16,11 @@ post:
     content:
       application/json:
         schema:
-          $ref: '../schemas/Area.yaml'
+          $ref: "../schemas/AreaCreationRequest.yaml"
   responses:
-    '201':
-      description: Created
-
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Area.yaml"

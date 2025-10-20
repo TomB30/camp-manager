@@ -1,33 +1,55 @@
 <template>
   <div class="events-by-date">
     <div v-if="events.length > 0" class="events-list">
-      <div 
+      <div
         v-for="(dateEvents, dateKey) in groupedEvents"
         :key="dateKey"
         class="event-date-group"
       >
         <div class="event-date-header">{{ formatDateHeader(dateKey) }}</div>
         <div class="event-date-items">
-          <div 
+          <div
             v-for="event in dateEvents"
             :key="event.id"
             class="event-item"
-            :style="{ borderLeftColor: event.colorId ? colorsStore.getColorById(event.colorId)?.hexValue : '#2196F3' }"
+            :style="{
+              borderLeftColor: event.colorId
+                ? colorsStore.getColorById(event.colorId)?.hexValue
+                : '#2196F3',
+            }"
             @click="$emit('event-click', event)"
           >
             <div class="event-item-title">{{ event.title }}</div>
             <div class="event-item-details">
               <div class="event-item-time">
-                {{ formatTime(event.startTime) }} - {{ formatTime(event.endTime) }}
+                {{ formatTime(event.startDate) }} -
+                {{ formatTime(event.endDate) }}
               </div>
-              <div v-if="showLocation && event.locationId" class="event-item-location">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <div
+                v-if="showLocation && event.locationId"
+                class="event-item-location"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 </svg>
                 {{ getLocationName(event.locationId) }}
               </div>
               <div v-if="showEnrollment" class="event-item-enrollment">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                   <circle cx="9" cy="7" r="4" />
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -45,36 +67,36 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { format } from 'date-fns';
-import type { Event } from '@/types';
-import { useColorsStore, useEventsStore } from '@/stores';
+import { defineComponent, PropType } from "vue";
+import { format } from "date-fns";
+import type { Event } from "@/types";
+import { useColorsStore, useEventsStore } from "@/stores";
 
 export default defineComponent({
-  name: 'EventsByDate',
+  name: "EventsByDate",
   props: {
     events: {
       type: Array as PropType<Event[]>,
-      required: true
+      required: true,
     },
     emptyMessage: {
       type: String,
-      default: 'No events'
+      default: "No events",
     },
     showLocation: {
       type: Boolean,
-      default: false
+      default: false,
     },
     showEnrollment: {
       type: Boolean,
-      default: false
+      default: false,
     },
     getLocationName: {
       type: Function as PropType<(locationId: string) => string>,
-      default: () => () => 'Unknown Location'
-    }
+      default: () => () => "Unknown Location",
+    },
   },
-  emits: ['event-click'],
+  emits: ["event-click"],
   setup() {
     const eventsStore = useEventsStore();
     const colorsStore = useColorsStore();
@@ -83,25 +105,26 @@ export default defineComponent({
   computed: {
     groupedEvents(): Record<string, Event[]> {
       // Sort events by start time
-      const sortedEvents = [...this.events].sort((a, b) => 
-        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+      const sortedEvents = [...this.events].sort(
+        (a, b) =>
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
       );
-      
+
       // Group by date
       const grouped: Record<string, Event[]> = {};
-      
-      sortedEvents.forEach(event => {
-        const eventDate = new Date(event.startTime);
-        const dateKey = format(eventDate, 'yyyy-MM-dd');
-        
+
+      sortedEvents.forEach((event) => {
+        const eventDate = new Date(event.startDate);
+        const dateKey = format(eventDate, "yyyy-MM-dd");
+
         if (!grouped[dateKey]) {
           grouped[dateKey] = [];
         }
         grouped[dateKey].push(event);
       });
-      
+
       return grouped;
-    }
+    },
   },
   methods: {
     formatDateHeader(dateKey: string): string {
@@ -109,22 +132,22 @@ export default defineComponent({
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
-      
+
       if (date.toDateString() === today.toDateString()) {
-        return `Today, ${format(date, 'EEEE, MMMM d')}`;
+        return `Today, ${format(date, "EEEE, MMMM d")}`;
       } else if (date.toDateString() === tomorrow.toDateString()) {
-        return `Tomorrow, ${format(date, 'EEEE, MMMM d')}`;
+        return `Tomorrow, ${format(date, "EEEE, MMMM d")}`;
       } else {
-        return format(date, 'EEEE, MMMM d, yyyy');
+        return format(date, "EEEE, MMMM d, yyyy");
       }
     },
     formatTime(dateStr: string): string {
-      return format(new Date(dateStr), 'h:mm a');
+      return format(new Date(dateStr), "h:mm a");
     },
     getEnrolledCount(event: Event): number {
       return this.eventsStore.getEventCamperIds(event.id).length;
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -225,4 +248,3 @@ export default defineComponent({
   font-style: italic;
 }
 </style>
-

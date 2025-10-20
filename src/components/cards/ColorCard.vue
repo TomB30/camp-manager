@@ -2,10 +2,18 @@
   <div class="color-card">
     <div class="color-preview" :style="{ background: color.hexValue }">
       <div class="color-overlay">
-        <button class="icon-btn" @click.stop="$emit('edit', color)" title="Edit">
+        <button
+          class="icon-btn"
+          @click.stop="$emit('edit', color)"
+          title="Edit"
+        >
           <Icon name="Edit2" :size="18" />
         </button>
-        <button class="icon-btn" @click.stop="$emit('delete', color)" title="Delete">
+        <button
+          class="icon-btn"
+          @click.stop="$emit('delete', color)"
+          title="Delete"
+        >
           <Icon name="Trash2" :size="18" />
         </button>
       </div>
@@ -18,22 +26,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import type { CampColor } from '@/types';
-import Icon from '../Icon.vue';
+import { defineComponent, type PropType } from "vue";
+import type { Color } from "@/types";
+import Icon from "../Icon.vue";
 
 export default defineComponent({
-  name: 'ColorCard',
+  name: "ColorCard",
   components: {
     Icon,
   },
   props: {
     color: {
-      type: Object as PropType<CampColor>,
+      type: Object as PropType<Color>,
       required: true,
     },
   },
-  emits: ['edit', 'delete'],
+  emits: ["edit", "delete"],
 });
 </script>
 
@@ -112,18 +120,17 @@ export default defineComponent({
 .color-hex {
   font-size: 0.8125rem;
   color: var(--text-secondary);
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 }
 
 @media (max-width: 768px) {
   .color-preview {
     height: 100px;
   }
-  
+
   .icon-btn {
     width: 32px;
     height: 32px;
   }
 }
 </style>
-

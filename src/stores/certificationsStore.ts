@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia';
-import type { Certification } from '@/types';
-import { certificationsService } from '@/services';
+import { defineStore } from "pinia";
+import type { Certification } from "@/types";
+import { certificationsService } from "@/services";
 
-export const useCertificationsStore = defineStore('certifications', {
+export const useCertificationsStore = defineStore("certifications", {
   state: () => ({
     certifications: [] as Certification[],
     loading: false,
@@ -11,12 +11,12 @@ export const useCertificationsStore = defineStore('certifications', {
   getters: {
     getCertificationById(state): (id: string) => Certification | undefined {
       return (id: string): Certification | undefined => {
-        return state.certifications.find(c => c.id === id);
+        return state.certifications.find((c) => c.id === id);
       };
     },
 
     certificationsWithExpiration(state): Certification[] {
-      return state.certifications.filter(c => c.expirationRequired);
+      return state.certifications.filter((c) => !!c.validityPeriodMonths);
     },
   },
 
@@ -32,12 +32,16 @@ export const useCertificationsStore = defineStore('certifications', {
 
     async addCertification(certification: Certification): Promise<void> {
       await certificationsService.saveCertification(certification);
-      this.certifications.push(certification);
+      this.certifications = this.certifications
+        ? [...this.certifications, certification]
+        : [certification];
     },
 
     async updateCertification(certification: Certification): Promise<void> {
       await certificationsService.saveCertification(certification);
-      const index = this.certifications.findIndex(c => c.id === certification.id);
+      const index = this.certifications.findIndex(
+        (c) => c.id === certification.id,
+      );
       if (index >= 0) {
         this.certifications[index] = certification;
       }
@@ -45,8 +49,8 @@ export const useCertificationsStore = defineStore('certifications', {
 
     async deleteCertification(id: string): Promise<void> {
       await certificationsService.deleteCertification(id);
-      this.certifications = this.certifications.filter(c => c.id !== id);
+      this.certifications =
+        this.certifications?.filter((c) => c.id !== id) || [];
     },
-  }
+  },
 });
-

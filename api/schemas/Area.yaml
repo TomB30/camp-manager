@@ -2,7 +2,6 @@ type: object
 required:
   - id
   - name
-  - type
 properties:
   id:
     type: string
@@ -29,4 +28,3 @@ properties:
   updatedAt:
     type: string
     format: date-time
-

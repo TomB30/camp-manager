@@ -3,16 +3,16 @@
     <div class="pagination-info">
       Showing {{ startItem }} - {{ endItem }} of {{ totalItems }}
     </div>
-    
+
     <div class="pagination-controls">
-      <button 
+      <button
         class="btn btn-sm btn-secondary"
         :disabled="currentPage === 1"
         @click="$emit('update:currentPage', currentPage - 1)"
       >
         ← Previous
       </button>
-      
+
       <div class="pagination-pages">
         <button
           v-for="page in visiblePages"
@@ -24,8 +24,8 @@
           {{ page }}
         </button>
       </div>
-      
-      <button 
+
+      <button
         class="btn btn-sm btn-secondary"
         :disabled="currentPage === totalPages"
         @click="$emit('update:currentPage', currentPage + 1)"
@@ -33,10 +33,10 @@
         Next →
       </button>
     </div>
-    
+
     <div class="pagination-size">
       <label class="text-sm text-secondary">Items per page:</label>
-      <select 
+      <select
         :value="pageSize"
         @change="handlePageSizeChange"
         class="form-select"
@@ -51,25 +51,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'Pagination',
+  name: "Pagination",
   props: {
     currentPage: {
       type: Number,
-      required: true
+      required: true,
     },
     pageSize: {
       type: Number,
-      required: true
+      required: true,
     },
     totalItems: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
-  emits: ['update:currentPage', 'update:pageSize'],
+  emits: ["update:currentPage", "update:pageSize"],
   computed: {
     totalPages(): number {
       return Math.ceil(this.totalItems / this.pageSize);
@@ -85,7 +85,7 @@ export default defineComponent({
     visiblePages(): number[] {
       const pages: number[] = [];
       const maxVisible = 5;
-      
+
       if (this.totalPages <= maxVisible) {
         // Show all pages if total is less than max
         for (let i = 1; i <= this.totalPages; i++) {
@@ -95,30 +95,30 @@ export default defineComponent({
         // Show current page and surrounding pages
         let start = Math.max(1, this.currentPage - 2);
         let end = Math.min(this.totalPages, this.currentPage + 2);
-        
+
         // Adjust if we're near the start or end
         if (this.currentPage <= 3) {
           end = maxVisible;
         } else if (this.currentPage >= this.totalPages - 2) {
           start = this.totalPages - maxVisible + 1;
         }
-        
+
         for (let i = start; i <= end; i++) {
           pages.push(i);
         }
       }
-      
+
       return pages;
-    }
+    },
   },
   methods: {
     handlePageSizeChange(event: Event) {
       const target = event.target as HTMLSelectElement | null;
       if (!target) return;
-      this.$emit('update:pageSize', Number(target.value));
-      this.$emit('update:currentPage', 1);
-    }
-  }
+      this.$emit("update:pageSize", Number(target.value));
+      this.$emit("update:currentPage", 1);
+    },
+  },
 });
 </script>
 
@@ -169,11 +169,11 @@ export default defineComponent({
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .pagination-controls {
     justify-content: center;
   }
-  
+
   .pagination-info,
   .pagination-size {
     justify-content: center;
@@ -181,4 +181,3 @@ export default defineComponent({
   }
 }
 </style>
-

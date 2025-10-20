@@ -3,9 +3,9 @@
  * Handles all housing/sleeping room-related operations
  */
 
-import type { HousingRoom } from '@/types';
-import { storageService } from './storage';
-import { STORAGE_KEYS } from './storageKeys';
+import type { HousingRoom } from "@/types";
+import { storageService } from "./storage";
+import { STORAGE_KEYS } from "./storageKeys";
 
 class HousingRoomsService {
   /**
@@ -26,7 +26,10 @@ class HousingRoomsService {
    * Save a housing room (create or update)
    */
   async saveHousingRoom(housingRoom: HousingRoom): Promise<HousingRoom> {
-    return storageService.save<HousingRoom>(STORAGE_KEYS.HOUSING_ROOMS, housingRoom);
+    return storageService.save<HousingRoom>(
+      STORAGE_KEYS.HOUSING_ROOMS,
+      housingRoom,
+    );
   }
 
   /**
@@ -41,9 +44,8 @@ class HousingRoomsService {
    */
   async getHousingRoomsByArea(areaId: string): Promise<HousingRoom[]> {
     const rooms = await this.getHousingRooms();
-    return rooms.filter(r => r.areaId === areaId);
+    return rooms.filter((r) => r.areaId === areaId);
   }
 }
 
 export const housingRoomsService = new HousingRoomsService();
-

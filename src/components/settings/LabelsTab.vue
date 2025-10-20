@@ -66,20 +66,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useLabelsStore } from '@/stores';
-import type { Label } from '@/types';
-import Icon from '@/components/Icon.vue';
-import TabHeader from '@/components/settings/TabHeader.vue';
-import LabelCard from '@/components/cards/LabelCard.vue';
-import LabelFormModal from '@/components/modals/LabelFormModal.vue';
-import ConfirmModal from '@/components/ConfirmModal.vue';
-import FilterBar from '@/components/FilterBar.vue';
-import EmptyState from '@/components/EmptyState.vue';
-import { useToast } from '@/composables/useToast';
+import { defineComponent } from "vue";
+import { useLabelsStore } from "@/stores";
+import type { Label } from "@/types";
+import Icon from "@/components/Icon.vue";
+import TabHeader from "@/components/settings/TabHeader.vue";
+import LabelCard from "@/components/cards/LabelCard.vue";
+import LabelFormModal from "@/components/modals/LabelFormModal.vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
+import FilterBar from "@/components/FilterBar.vue";
+import EmptyState from "@/components/EmptyState.vue";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
-  name: 'LabelsTab',
+  name: "LabelsTab",
   components: {
     Icon,
     TabHeader,
@@ -101,11 +101,11 @@ export default defineComponent({
       showConfirmModal: false,
       editingLabel: null as Label | null,
       labelToDelete: null as Label | null,
-      searchQuery: '',
+      searchQuery: "",
       formData: {
-        name: '',
-        description: '',
-        colorId: '',
+        name: "",
+        description: "",
+        colorId: "",
       },
     };
   },
@@ -116,9 +116,11 @@ export default defineComponent({
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        filtered = filtered.filter((label) =>
-          label.name.toLowerCase().includes(query) ||
-          (label.description && label.description.toLowerCase().includes(query))
+        filtered = filtered.filter(
+          (label: Label) =>
+            label.name.toLowerCase().includes(query) ||
+            (label.description &&
+              label.description.toLowerCase().includes(query)),
         );
       }
 
@@ -130,8 +132,8 @@ export default defineComponent({
       this.editingLabel = label;
       this.formData = {
         name: label.name,
-        description: label.description || '',
-        colorId: label.colorId || '',
+        description: label.description || "",
+        colorId: label.colorId || "",
       };
       this.showEditModal = true;
     },
@@ -143,18 +145,22 @@ export default defineComponent({
 
     async handleDeleteLabel() {
       if (!this.labelToDelete) return;
-      
+
       try {
         await this.labelsStore.deleteLabel(this.labelToDelete.id);
-        this.toast.success('Label deleted successfully');
+        this.toast.success("Label deleted successfully");
         this.showConfirmModal = false;
         this.labelToDelete = null;
       } catch (error: any) {
-        this.toast.error(error.message || 'Failed to delete label');
+        this.toast.error(error.message || "Failed to delete label");
       }
     },
 
-    async saveLabel(data: { name: string; description?: string; colorId?: string }) {
+    async saveLabel(data: {
+      name: string;
+      description?: string;
+      colorId?: string;
+    }) {
       try {
         if (this.editingLabel) {
           // Update existing
@@ -165,7 +171,7 @@ export default defineComponent({
             colorId: data.colorId || undefined,
             updatedAt: new Date().toISOString(),
           });
-          this.toast.success('Label updated successfully');
+          this.toast.success("Label updated successfully");
         } else {
           // Create new
           await this.labelsStore.addLabel({
@@ -176,11 +182,11 @@ export default defineComponent({
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           });
-          this.toast.success('Label added successfully');
+          this.toast.success("Label added successfully");
         }
         this.closeModal();
       } catch (error: any) {
-        this.toast.error(error.message || 'Failed to save label');
+        this.toast.error(error.message || "Failed to save label");
       }
     },
 
@@ -189,14 +195,14 @@ export default defineComponent({
       this.showEditModal = false;
       this.editingLabel = null;
       this.formData = {
-        name: '',
-        description: '',
-        colorId: '',
+        name: "",
+        description: "",
+        colorId: "",
       };
     },
 
     clearFilters() {
-      this.searchQuery = '';
+      this.searchQuery = "";
     },
   },
 });
@@ -235,4 +241,3 @@ export default defineComponent({
   }
 }
 </style>
-

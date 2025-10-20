@@ -2,20 +2,17 @@ type: object
 required:
   - id
   - name
-  - hexValue
 properties:
   id:
     type: string
     format: uuid
   name:
     type: string
-  hexValue:
+  description:
     type: string
-    description: Hex color value (e.g., "#FF5733")
   createdAt:
     type: string
     format: date-time
   updatedAt:
     type: string
     format: date-time
-

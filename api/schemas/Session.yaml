@@ -13,11 +13,9 @@ properties:
   startDate:
     type: string
     format: date
-    description: ISO date string
   endDate:
     type: string
     format: date
-    description: ISO date string
   description:
     type: string
   maxCampers:
@@ -29,4 +27,3 @@ properties:
   updatedAt:
     type: string
     format: date-time
-

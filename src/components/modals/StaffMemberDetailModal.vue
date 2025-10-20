@@ -9,7 +9,9 @@
         <div class="detail-section">
           <div class="detail-label">Role</div>
           <div>
-            <span class="badge badge-primary">{{ formatRole(member.role) }}</span>
+            <span class="badge badge-primary">{{
+              formatRole(member.roleId)
+            }}</span>
           </div>
         </div>
 
@@ -42,7 +44,11 @@
         <div v-if="certificationNames.length > 0" class="detail-section">
           <div class="detail-label">Certifications</div>
           <div class="flex gap-1 flex-wrap">
-            <span v-for="cert in certificationNames" :key="cert" class="badge badge-success">
+            <span
+              v-for="cert in certificationNames"
+              :key="cert"
+              class="badge badge-success"
+            >
               {{ cert }}
             </span>
           </div>
@@ -51,11 +57,14 @@
         <div class="detail-section">
           <div class="detail-label">Programs</div>
           <div v-if="memberPrograms.length > 0" class="flex gap-1 flex-wrap">
-            <span 
-              v-for="program in memberPrograms" 
-              :key="program.id" 
+            <span
+              v-for="program in memberPrograms"
+              :key="program.id"
               class="badge badge-program"
-              :style="{ backgroundColor: getProgramColor(program), color: 'white' }"
+              :style="{
+                backgroundColor: getProgramColor(program),
+                color: 'white',
+              }"
             >
               {{ program.name }}
             </span>
@@ -73,7 +82,9 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete')">Delete Member</button>
+      <button class="btn btn-error" @click="$emit('delete')">
+        Delete Member
+      </button>
       <button class="btn btn-secondary" @click="$emit('edit')">Edit</button>
       <button class="btn btn-secondary" @click="$emit('close')">Close</button>
     </template>
@@ -81,27 +92,31 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import BaseModal from '@/components/BaseModal.vue';
-import { useProgramsStore, useColorsStore, useCertificationsStore } from '@/stores';
-import type { StaffMember } from '@/types';
+import { defineComponent, type PropType } from "vue";
+import BaseModal from "@/components/BaseModal.vue";
+import {
+  useProgramsStore,
+  useColorsStore,
+  useCertificationsStore,
+} from "@/stores";
+import type { StaffMember } from "@/types";
 
 export default defineComponent({
-  name: 'StaffMemberDetailModal',
+  name: "StaffMemberDetailModal",
   components: {
-    BaseModal
+    BaseModal,
   },
   props: {
     show: {
       type: Boolean,
-      required: true
+      required: true,
     },
     member: {
       type: Object as PropType<StaffMember | null>,
-      default: null
-    }
+      default: null,
+    },
   },
-  emits: ['close', 'edit', 'delete'],
+  emits: ["close", "edit", "delete"],
   setup() {
     const programsStore = useProgramsStore();
     const colorsStore = useColorsStore();
@@ -111,31 +126,31 @@ export default defineComponent({
   computed: {
     certificationNames(): string[] {
       if (!this.member || !this.member.certificationIds) return [];
-      
+
       return this.member.certificationIds
-        .map(id => {
+        .map((id) => {
           const cert = this.certificationsStore.getCertificationById(id);
-          return cert ? cert.name : '';
+          return cert ? cert.name : "";
         })
-        .filter(name => name.length > 0);
+        .filter((name) => name.length > 0);
     },
     memberPrograms() {
       if (!this.member) return [];
       return this.programsStore.getProgramsForStaffMember(this.member.id);
-    }
+    },
   },
   methods: {
     getProgramColor(program: any): string {
       if (program.colorId) {
         const color = this.colorsStore.getColorById(program.colorId);
-        return color?.hexValue || '#6366F1';
+        return color?.hexValue || "#6366F1";
       }
-      return '#6366F1';
+      return "#6366F1";
     },
     formatRole(role: string): string {
       return role.charAt(0).toUpperCase() + role.slice(1);
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -158,4 +173,3 @@ export default defineComponent({
   font-size: 0.875rem;
 }
 </style>
-

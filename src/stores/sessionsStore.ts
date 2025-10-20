@@ -1,30 +1,30 @@
-import { defineStore } from 'pinia';
-import type { CampSession } from '@/types';
-import { sessionsService } from '@/services';
+import { defineStore } from "pinia";
+import type { Session } from "@/types";
+import { sessionsService } from "@/services";
 
-export const useSessionsStore = defineStore('sessions', {
+export const useSessionsStore = defineStore("sessions", {
   state: () => ({
-    sessions: [] as CampSession[],
+    sessions: [] as Session[],
     loading: false,
   }),
 
   getters: {
-    getSessionById(state): (id: string) => CampSession | undefined {
-      return (id: string): CampSession | undefined => {
-        return state.sessions.find(s => s.id === id);
+    getSessionById(state): (id: string) => Session | undefined {
+      return (id: string): Session | undefined => {
+        return state.sessions.find((s) => s.id === id);
       };
     },
 
-    activeSessions(state): CampSession[] {
+    activeSessions(state): Session[] {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      return state.sessions.filter(s => new Date(s.endDate) >= today);
+      return state.sessions.filter((s) => new Date(s.endDate) >= today);
     },
 
-    pastSessions(state): CampSession[] {
+    pastSessions(state): Session[] {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      return state.sessions.filter(s => new Date(s.endDate) < today);
+      return state.sessions.filter((s) => new Date(s.endDate) < today);
     },
   },
 
@@ -38,14 +38,14 @@ export const useSessionsStore = defineStore('sessions', {
       }
     },
 
-    async addSession(session: CampSession): Promise<void> {
+    async addSession(session: Session): Promise<void> {
       await sessionsService.saveSession(session);
       this.sessions.push(session);
     },
 
-    async updateSession(session: CampSession): Promise<void> {
+    async updateSession(session: Session): Promise<void> {
       await sessionsService.saveSession(session);
-      const index = this.sessions.findIndex(s => s.id === session.id);
+      const index = this.sessions.findIndex((s) => s.id === session.id);
       if (index >= 0) {
         this.sessions[index] = session;
       }
@@ -53,8 +53,7 @@ export const useSessionsStore = defineStore('sessions', {
 
     async deleteSession(id: string): Promise<void> {
       await sessionsService.deleteSession(id);
-      this.sessions = this.sessions.filter(s => s.id !== id);
+      this.sessions = this.sessions.filter((s) => s.id !== id);
     },
-  }
+  },
 });
-

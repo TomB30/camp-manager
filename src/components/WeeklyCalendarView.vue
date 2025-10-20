@@ -4,7 +4,11 @@
       <!-- Days headers -->
       <div class="week-header">
         <div class="time-col-header">Time</div>
-        <div v-for="day in weekDays" :key="day.toISOString()" class="day-header">
+        <div
+          v-for="day in weekDays"
+          :key="day.toISOString()"
+          class="day-header"
+        >
           <div class="day-name">{{ formatDayName(day) }}</div>
           <div class="day-date">{{ formatDayDate(day) }}</div>
         </div>
@@ -14,13 +18,13 @@
       <div class="week-body">
         <div v-for="hour in hours" :key="hour" class="week-row">
           <div class="time-col">{{ formatHour(hour) }}</div>
-          <div 
-            v-for="day in weekDays" 
-            :key="`${hour}-${day.toISOString()}`" 
+          <div
+            v-for="day in weekDays"
+            :key="`${hour}-${day.toISOString()}`"
             class="day-col"
           >
             <!-- Events for this hour and day -->
-            <div 
+            <div
               v-for="event in getEventsForDayAndHour(day, hour)"
               :key="event.id"
               class="week-event"
@@ -30,7 +34,7 @@
               <div class="week-event-title">{{ event.title }}</div>
               <div class="week-event-details">
                 <div class="week-event-room text-xs">
-                  {{ getLocationName(event.locationId) }}
+                  {{ getLocationName(event.locationId || "") }}
                 </div>
                 <div class="week-event-capacity text-xs">
                   {{ getEnrolledCount(event.id) }}/{{ event.capacity }}
@@ -45,14 +49,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import { format } from 'date-fns';
-import { filterEventsByDateAndHour } from '@/utils/dateUtils';
-import { useColorsStore, useEventsStore } from '@/stores';
-import type { Event, Location } from '@/types';
+import { defineComponent, type PropType } from "vue";
+import { format } from "date-fns";
+import { filterEventsByDateAndHour } from "@/utils/dateUtils";
+import { useColorsStore, useEventsStore } from "@/stores";
+import type { Event, Location } from "@/types";
 
 export default defineComponent({
-  name: 'WeeklyCalendarView',
+  name: "WeeklyCalendarView",
   props: {
     weekDays: {
       type: Array as PropType<Date[]>,
@@ -67,7 +71,7 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['select-event'],
+  emits: ["select-event"],
   setup() {
     const eventsStore = useEventsStore();
     const colorsStore = useColorsStore();
@@ -80,81 +84,92 @@ export default defineComponent({
   },
   methods: {
     formatHour(hour: number): string {
-      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const ampm = hour >= 12 ? "PM" : "AM";
       const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
       return `${displayHour}:00 ${ampm}`;
     },
     formatDayName(date: Date): string {
-      return format(date, 'EEEE');
+      return format(date, "EEEE");
     },
     formatDayDate(date: Date): string {
       const today = new Date();
       const isToday = date.toDateString() === today.toDateString();
-      return isToday ? `${format(date, 'MMM d')} (Today)` : format(date, 'MMM d');
+      return isToday
+        ? `${format(date, "MMM d")} (Today)`
+        : format(date, "MMM d");
     },
     getLocationName(locationId: string): string {
-      const location = this.rooms.find(r => r.id === locationId);
-      return location?.name || 'Unknown Location';
+      const location = this.rooms.find((r) => r.id === locationId);
+      return location?.name || "Unknown Location";
     },
     getEnrolledCount(eventId: string): number {
       return this.eventsStore.getEventCamperIds(eventId).length;
     },
-    getEventsForDayAndHour(day: Date, hour: number) {
+    getEventsForDayAndHour(day: Date, hour: number): Event[] {
       return filterEventsByDateAndHour(this.events, day, hour);
     },
     getWeekEventStyle(event: Event, _day: Date) {
-      const start = new Date(event.startTime);
-      const end = new Date(event.endTime);
-      
+      const start = new Date(event.startDate);
+      const end = new Date(event.endDate);
+
       const startMinutes = start.getHours() * 60 + start.getMinutes();
       const endMinutes = end.getHours() * 60 + end.getMinutes();
-      const durationMinutes = endMinutes - startMinutes;
-      
+      const duration = endMinutes - startMinutes;
+
       // Calculate height based on duration (80px per hour)
-      const heightPx = (durationMinutes / 60) * 80 - 4; // Subtract 4px for spacing
-      
+      const heightPx = (duration / 60) * 80 - 4; // Subtract 4px for spacing
+
       // Find overlapping events for the same day
-      const eventDate = start.toISOString().split('T')[0];
-      const dayEvents = this.events.filter(e => {
-        const eDate = new Date(e.startTime).toISOString().split('T')[0];
+      const eventDate = start.toISOString().split("T")[0];
+      const dayEvents = this.events.filter((e) => {
+        const eDate = new Date(e.startDate).toISOString().split("T")[0];
         return eDate === eventDate;
       });
-      
-      const overlappingEvents = dayEvents.filter(otherEvent => {
+
+      const overlappingEvents = dayEvents.filter((otherEvent) => {
         if (otherEvent.id === event.id) return false;
-        
-        const otherStart = new Date(otherEvent.startTime);
-        const otherEnd = new Date(otherEvent.endTime);
-        const otherStartMinutes = otherStart.getHours() * 60 + otherStart.getMinutes();
-        const otherEndMinutes = otherEnd.getHours() * 60 + otherEnd.getMinutes();
-        
+
+        const otherStart = new Date(otherEvent.startDate);
+        const otherEnd = new Date(otherEvent.endDate);
+        const otherStartMinutes =
+          otherStart.getHours() * 60 + otherStart.getMinutes();
+        const otherEndMinutes =
+          otherEnd.getHours() * 60 + otherEnd.getMinutes();
+
         // Check if they're in the same hour block
         const eventHour = start.getHours();
         const otherHour = otherStart.getHours();
-        
+
         // Check if events overlap
-        return eventHour === otherHour || (
-          startMinutes < otherEndMinutes && endMinutes > otherStartMinutes
+        return (
+          eventHour === otherHour ||
+          (startMinutes < otherEndMinutes && endMinutes > otherStartMinutes)
         );
       });
-      
+
       // Sort all overlapping events
       const allOverlapping = [event, ...overlappingEvents].sort((a, b) => {
-        const aStart = new Date(a.startTime).getTime();
-        const bStart = new Date(b.startTime).getTime();
+        const aStart = new Date(a.startDate).getTime();
+        const bStart = new Date(b.startDate).getTime();
         if (aStart !== bStart) return aStart - bStart;
         return a.id.localeCompare(b.id);
       });
-      
-      const eventIndex = allOverlapping.findIndex(e => e.id === event.id);
+
+      const eventIndex = allOverlapping.findIndex((e) => e.id === event.id);
       const totalOverlapping = allOverlapping.length;
-      
+
       // Calculate width and position for overlapping events
-      const width = totalOverlapping > 1 ? `${98 / totalOverlapping}%` : 'calc(100% - 4px)';
-      const left = totalOverlapping > 1 ? `${(eventIndex * 98) / totalOverlapping}%` : '2px';
-      
+      const width =
+        totalOverlapping > 1 ? `${98 / totalOverlapping}%` : "calc(100% - 4px)";
+      const left =
+        totalOverlapping > 1
+          ? `${(eventIndex * 98) / totalOverlapping}%`
+          : "2px";
+
       return {
-        background: event.colorId ? this.colorsStore.getColorById(event.colorId)?.hexValue : '#3B82F6',
+        background: event.colorId
+          ? this.colorsStore.getColorById(event.colorId)?.hexValue
+          : "#3B82F6",
         width,
         left,
         height: `${heightPx}px`,
@@ -318,4 +333,3 @@ export default defineComponent({
   line-height: 1.3;
 }
 </style>
-

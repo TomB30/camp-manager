@@ -7,7 +7,11 @@
       </div>
       <div v-if="actionText || $slots.actions" class="tab-header-actions">
         <slot name="actions"></slot>
-        <button v-if="actionText" class="btn btn-primary" @click="$emit('action')">
+        <button
+          v-if="actionText"
+          class="btn btn-primary"
+          @click="$emit('action')"
+        >
           <slot name="action-icon"></slot>
           {{ actionText }}
         </button>
@@ -17,10 +21,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'TabHeader',
+  name: "TabHeader",
   props: {
     title: {
       type: String,
@@ -32,10 +36,10 @@ export default defineComponent({
     },
     actionText: {
       type: String,
-      default: '',
+      default: "",
     },
   },
-  emits: ['action'],
+  emits: ["action"],
 });
 </script>
 
@@ -48,7 +52,6 @@ export default defineComponent({
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow);
 }
-
 
 .tab-header-content {
   display: flex;
@@ -81,11 +84,10 @@ export default defineComponent({
   .tab-header-content {
     flex-direction: column;
   }
-  
+
   .tab-header-actions {
     width: 100%;
     justify-content: space-between;
   }
 }
 </style>
-

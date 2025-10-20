@@ -12,16 +12,16 @@
     <div class="events-grid">
       <!-- Time grid background -->
       <div class="grid-lines">
-        <div 
-          v-for="hour in hours" 
-          :key="hour" 
+        <div
+          v-for="hour in hours"
+          :key="hour"
           class="grid-line"
           @click="handleTimeSlotClick(hour)"
         ></div>
       </div>
 
       <!-- Events -->
-      <div 
+      <div
         v-for="event in events"
         :key="event.id"
         class="event-block"
@@ -30,7 +30,9 @@
       >
         <div class="event-title">{{ event.title }}</div>
         <div class="event-details">
-          <div class="event-room text-xs">{{ getLocationName(event.locationId) }}</div>
+          <div class="event-room text-xs">
+            {{ getLocationName(event.locationId || "unknown") }}
+          </div>
           <div class="event-capacity text-xs">
             {{ getEnrolledCount(event.id) }}/{{ event.capacity }}
           </div>
@@ -41,12 +43,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import { useColorsStore, useEventsStore } from '@/stores';
-import type { Event, Location } from '@/types';
+import { defineComponent, type PropType } from "vue";
+import { useColorsStore, useEventsStore } from "@/stores";
+import type { Event, Location } from "@/types";
 
 export default defineComponent({
-  name: 'DailyCalendarView',
+  name: "DailyCalendarView",
   props: {
     events: {
       type: Array as PropType<Event[]>,
@@ -57,7 +59,7 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['select-event', 'create-event'],
+  emits: ["select-event", "create-event"],
   setup() {
     const eventsStore = useEventsStore();
     const colorsStore = useColorsStore();
@@ -70,72 +72,76 @@ export default defineComponent({
   },
   methods: {
     formatHour(hour: number): string {
-      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const ampm = hour >= 12 ? "PM" : "AM";
       const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
       return `${displayHour}:00 ${ampm}`;
     },
     getLocationName(locationId: string): string {
-      const location = this.rooms.find(r => r.id === locationId);
-      return location?.name || 'Unknown Location';
+      const location = this.rooms.find((r) => r.id === locationId);
+      return location?.name || "Unknown Location";
     },
     getEnrolledCount(eventId: string): number {
       return this.eventsStore.getEventCamperIds(eventId).length;
     },
     handleTimeSlotClick(hour: number) {
-      this.$emit('create-event', hour);
+      this.$emit("create-event", hour);
     },
     getEventStyle(event: Event) {
-      const start = new Date(event.startTime);
-      const end = new Date(event.endTime);
-      
+      const start = new Date(event.startDate);
+      const end = new Date(event.endDate);
+
       const startMinutes = start.getHours() * 60 + start.getMinutes();
       const endMinutes = end.getHours() * 60 + end.getMinutes();
       const dayStartMinutes = 7 * 60; // 7 AM
-      
+
       // Calculate position from top of grid (after header)
       const top = ((startMinutes - dayStartMinutes) / 60) * 80; // 80px per hour
       const height = ((endMinutes - startMinutes) / 60) * 80;
-      
+
       // Find overlapping events
-      const overlappingEvents = this.events.filter(otherEvent => {
+      const overlappingEvents = this.events.filter((otherEvent) => {
         if (otherEvent.id === event.id) return false;
-        
-        const otherStart = new Date(otherEvent.startTime);
-        const otherEnd = new Date(otherEvent.endTime);
-        const otherStartMinutes = otherStart.getHours() * 60 + otherStart.getMinutes();
-        const otherEndMinutes = otherEnd.getHours() * 60 + otherEnd.getMinutes();
-        
+
+        const otherStart = new Date(otherEvent.startDate);
+        const otherEnd = new Date(otherEvent.endDate);
+        const otherStartMinutes =
+          otherStart.getHours() * 60 + otherStart.getMinutes();
+        const otherEndMinutes =
+          otherEnd.getHours() * 60 + otherEnd.getMinutes();
+
         // Check if events overlap
-        return (
-          (startMinutes < otherEndMinutes && endMinutes > otherStartMinutes)
-        );
+        return startMinutes < otherEndMinutes && endMinutes > otherStartMinutes;
       });
-      
+
       // Sort all overlapping events (including current) by start time, then by id for consistency
       const allOverlapping = [event, ...overlappingEvents].sort((a, b) => {
-        const aStart = new Date(a.startTime).getTime();
-        const bStart = new Date(b.startTime).getTime();
+        const aStart = new Date(a.startDate).getTime();
+        const bStart = new Date(b.startDate).getTime();
         if (aStart !== bStart) return aStart - bStart;
         return a.id.localeCompare(b.id);
       });
-      
-      const eventIndex = allOverlapping.findIndex(e => e.id === event.id);
+
+      const eventIndex = allOverlapping.findIndex((e) => e.id === event.id);
       const totalOverlapping = allOverlapping.length;
-      
+
       // Calculate width and position - split the total single-event width among overlapping events
-      const width = totalOverlapping > 1 
-        ? `calc((100% - 32px) / ${totalOverlapping})` 
-        : 'calc(100% - 32px)';
-      const left = totalOverlapping > 1 
-        ? `calc(16px + (100% - 32px) * ${eventIndex} / ${totalOverlapping})` 
-        : '16px';
-      
+      const width =
+        totalOverlapping > 1
+          ? `calc((100% - 32px) / ${totalOverlapping})`
+          : "calc(100% - 32px)";
+      const left =
+        totalOverlapping > 1
+          ? `calc(16px + (100% - 32px) * ${eventIndex} / ${totalOverlapping})`
+          : "16px";
+
       return {
         top: `${top}px`,
         height: `${height}px`,
         width,
         left,
-        background: event.colorId ? this.colorsStore.getColorById(event.colorId)?.hexValue :  '#3B82F6',
+        background: event.colorId
+          ? this.colorsStore.getColorById(event.colorId)?.hexValue
+          : "#3B82F6",
       };
     },
   },
@@ -252,4 +258,3 @@ export default defineComponent({
   line-height: 1.4;
 }
 </style>
-

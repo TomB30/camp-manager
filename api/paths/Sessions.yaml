@@ -1,0 +1,26 @@
+get:
+  summary: List all sessions
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../schemas/Session.yaml"
+post:
+  summary: Create a new session
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/SessionCreationRequest.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Session.yaml"

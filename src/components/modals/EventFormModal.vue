@@ -47,7 +47,7 @@
           <div class="form-group">
             <label class="form-label">Start Time</label>
             <input
-              v-model="localFormData.startTime"
+              v-model="localFormData.startDate"
               type="time"
               class="form-input"
               required
@@ -57,7 +57,7 @@
           <div class="form-group">
             <label class="form-label">End Time</label>
             <input
-              v-model="localFormData.endTime"
+              v-model="localFormData.endDate"
               type="time"
               class="form-input"
               required
@@ -117,7 +117,11 @@
                   :key="index"
                   type="button"
                   class="day-button"
-                  :class="{ active: recurrenceData.daysOfWeek && recurrenceData.daysOfWeek.includes(index as any) }"
+                  :class="{
+                    active:
+                      recurrenceData.daysOfWeek &&
+                      recurrenceData.daysOfWeek.includes(index as any),
+                  }"
                   @click="toggleDay(index)"
                 >
                   {{ day }}
@@ -357,8 +361,8 @@ import {
 interface EventFormData {
   title: string;
   eventDate: string;
-  startTime: string;
-  endTime: string;
+  startDate: string;
+  endDate: string;
   locationId: string;
   capacity: number;
   colorId: string;
@@ -472,7 +476,7 @@ export default defineComponent({
     selectedProgramName(): string {
       if (!this.localFormData.programId) return "";
       const program = this.programsStore.getProgramById(
-        this.localFormData.programId
+        this.localFormData.programId,
       );
       return program ? program.name : "";
     },
@@ -488,7 +492,7 @@ export default defineComponent({
 
       this.programsStore.programs.forEach((program) => {
         const programActivities = this.activitiesStore.getActivitiesInProgram(
-          program.id
+          program.id,
         );
         if (programActivities.length > 0) {
           programActivities.forEach((activity) => {
@@ -545,14 +549,16 @@ export default defineComponent({
         if (group && group.staffIds) {
           group.staffIds.forEach((staffId: string) => staffIds.add(staffId));
         } else if (group && group.staffFilters) {
-          const staff = this.staffMembersStore.getStaffMembersByFilters(group.staffFilters);
+          const staff = this.staffMembersStore.getStaffMembersByFilters(
+            group.staffFilters,
+          );
           staff.forEach((s: StaffMember) => staffIds.add(s.id));
         }
       });
 
       // Return full staff member objects
       return this.staffMembersStore.staffMembers.filter((s) =>
-        staffIds.has(s.id)
+        staffIds.has(s.id),
       );
     },
 
@@ -561,9 +567,9 @@ export default defineComponent({
       return this.staffMembers;
     },
     eventStartDateTime(): Date | null {
-      if (!this.localFormData.startTime || !this.localFormData.eventDate)
+      if (!this.localFormData.startDate || !this.localFormData.eventDate)
         return null;
-      const [hours, minutes] = this.localFormData.startTime
+      const [hours, minutes] = this.localFormData.startDate
         .split(":")
         .map(Number);
       const date = new Date(this.localFormData.eventDate);
@@ -571,9 +577,9 @@ export default defineComponent({
       return date;
     },
     eventEndDateTime(): Date | null {
-      if (!this.localFormData.endTime || !this.localFormData.eventDate)
+      if (!this.localFormData.endDate || !this.localFormData.eventDate)
         return null;
-      const [hours, minutes] = this.localFormData.endTime
+      const [hours, minutes] = this.localFormData.endDate
         .split(":")
         .map(Number);
       const date = new Date(this.localFormData.eventDate);
@@ -609,7 +615,7 @@ export default defineComponent({
           newVal.requiredCertifications.length > 0
         ) {
           this.selectedCertificationIds = this.getCertificationIdsFromNames(
-            newVal.requiredCertifications
+            newVal.requiredCertifications,
           );
         } else {
           this.selectedCertificationIds = [];
@@ -646,19 +652,19 @@ export default defineComponent({
       this.localFormData.title = activity.name;
 
       // Calculate end time based on start time and duration
-      if (this.localFormData.startTime) {
-        const [hours, minutes] = this.localFormData.startTime
+      if (this.localFormData.startDate) {
+        const [hours, minutes] = this.localFormData.startDate
           .split(":")
           .map(Number);
         const startDate = new Date();
         startDate.setHours(hours, minutes, 0, 0);
 
         const endDate = new Date(
-          startDate.getTime() + activity.durationMinutes * 60000
+          startDate.getTime() + (activity.duration || 0) * 60000,
         );
         const endHours = endDate.getHours().toString().padStart(2, "0");
         const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
-        this.localFormData.endTime = `${endHours}:${endMinutes}`;
+        this.localFormData.endDate = `${endHours}:${endMinutes}`;
       }
 
       // Set default location if specified
@@ -681,14 +687,14 @@ export default defineComponent({
 
       // Set required certifications if specified
       if (
-        activity.requiredCertifications &&
-        activity.requiredCertifications.length > 0
+        activity.requiredCertificationIds &&
+        activity.requiredCertificationIds.length > 0
       ) {
-        this.localFormData.requiredCertifications = [
-          ...activity.requiredCertifications,
+        this.localFormData.requiredCertificationIds = [
+          ...activity.requiredCertificationIds,
         ];
         this.selectedCertificationIds = this.getCertificationIdsFromNames(
-          activity.requiredCertifications
+          activity.requiredCertificationIds,
         );
       }
 
@@ -726,7 +732,7 @@ export default defineComponent({
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.name === name
+            (c) => c.name === name,
           );
           return cert ? cert.id : "";
         })
@@ -770,16 +776,18 @@ export default defineComponent({
     isStaffInSelectedProgram(staff: StaffMember): boolean {
       if (!this.localFormData.programId) return false;
       const program = this.programsStore.getProgramById(
-        this.localFormData.programId
+        this.localFormData.programId,
       );
-      return program ? program.staffMemberIds.includes(staff.id) : false;
+      return program
+        ? program.staffMemberIds?.includes(staff.id) || false
+        : false;
     },
     staffHasRequiredCertifications(staff: StaffMember): boolean {
       if (this.selectedCertificationIds.length === 0) return true;
       if (!staff.certificationIds || staff.certificationIds.length === 0)
         return false;
       return this.selectedCertificationIds.every((certId) =>
-        staff.certificationIds!.includes(certId)
+        staff.certificationIds!.includes(certId),
       );
     },
     isStaffAvailable(staff: StaffMember): {
@@ -797,13 +805,13 @@ export default defineComponent({
         this.eventsStore.events,
         this.editingEventId
           ? new Map<string, string[]>([[this.editingEventId, []]])
-          : undefined
+          : undefined,
       );
 
       return { available: result.canAssign, reason: result.reason };
     },
     getStaffLabel(staff: StaffMember): string {
-      const baseLabel = `${staff.firstName} ${staff.lastName} - ${staff.role}`;
+      const baseLabel = `${staff.firstName} ${staff.lastName} - ${staff.roleId}`;
       const availability = this.isStaffAvailable(staff);
 
       let prefix = "";
@@ -832,7 +840,7 @@ export default defineComponent({
       return `${staff.firstName[0]}${staff.lastName[0]}`.toUpperCase();
     },
     getStaffOption(staff: StaffMember): AutocompleteOption {
-      const baseLabel = `${staff.firstName} ${staff.lastName} - ${staff.role}`;
+      const baseLabel = `${staff.firstName} ${staff.lastName} - ${staff.roleId}`;
       const availability = this.isStaffAvailable(staff);
 
       let prefix = "";

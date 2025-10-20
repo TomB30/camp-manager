@@ -48,7 +48,11 @@
         @click="selectLocation(location.id)"
       >
         <template #icon>
-          <Icon :name="LocationTypeIcon(location.type)" :size="24" :stroke-width="2" />
+          <Icon
+            :name="LocationTypeIcon(location.type)"
+            :size="24"
+            :stroke-width="2"
+          />
         </template>
       </LocationCard>
     </div>
@@ -68,7 +72,11 @@
             class="location-icon-sm"
             :style="{ background: getLocationTypeColor(item.type) }"
           >
-            <Icon :name="LocationTypeIcon(item.type)" :size="18" :stroke-width="2" />
+            <Icon
+              :name="LocationTypeIcon(item.type)"
+              :size="18"
+              :stroke-width="2"
+            />
           </div>
           <div class="location-name">{{ item.name }}</div>
         </div>
@@ -298,17 +306,23 @@ export default defineComponent({
       // Type filter
       if (this.filterType) {
         locations = locations.filter(
-          (location: Location) => location.type === this.filterType
+          (location: Location) => location.type === this.filterType,
         );
       }
 
       // Capacity filter
       if (this.filterCapacity) {
         locations = locations.filter((location: Location) => {
-          if (this.filterCapacity === "small") return location.capacity < 15;
+          if (this.filterCapacity === "small")
+            return location.capacity && location.capacity < 15;
           if (this.filterCapacity === "medium")
-            return location.capacity >= 15 && location.capacity <= 30;
-          if (this.filterCapacity === "large") return location.capacity > 30;
+            return (
+              location.capacity &&
+              location.capacity >= 15 &&
+              location.capacity <= 30
+            );
+          if (this.filterCapacity === "large")
+            return location.capacity && location.capacity > 30;
           return true;
         });
       }
@@ -338,14 +352,14 @@ export default defineComponent({
     },
     LocationTypeIcon(type: Location["type"]): IconName {
       const iconMap: Record<Location["type"], IconName> = {
-        classroom: 'BookOpen',
-        activity: 'Target',
-        sports: 'Dumbbell',
-        dining: 'Utensils',
-        outdoor: 'Trees',
-        arts: 'Palette',
+        classroom: "BookOpen",
+        activity: "Target",
+        sports: "Dumbbell",
+        dining: "Utensils",
+        outdoor: "Trees",
+        arts: "Palette",
       };
-      return iconMap[type] || 'MapPin';
+      return iconMap[type] || "MapPin";
     },
     getLocationTypeColor(type: Location["type"]): string {
       const colors: Record<Location["type"], string> = {
@@ -372,7 +386,9 @@ export default defineComponent({
       const totalUsage = locationEvents.reduce((sum, event) => {
         return (
           sum +
-          (this.eventsStore.getEventCamperIds(event.id).length / location.capacity) * 100
+          (this.eventsStore.getEventCamperIds(event.id).length /
+            (location.capacity || 0)) *
+            100
         );
       }, 0);
 
@@ -388,7 +404,7 @@ export default defineComponent({
       this.formData = {
         name: this.selectedLocation.name,
         type: this.selectedLocation.type,
-        capacity: this.selectedLocation.capacity,
+        capacity: this.selectedLocation.capacity || 0,
         areaId: this.selectedLocation.areaId,
         equipment: this.selectedLocation.equipment || [],
         notes: this.selectedLocation.notes || "",
@@ -398,7 +414,7 @@ export default defineComponent({
       this.showModal = true;
     },
     async saveLocation(
-      formData: typeof this.formData & { equipment: string[] }
+      formData: typeof this.formData & { equipment: string[] },
     ) {
       try {
         const locationData: Location = {
@@ -520,7 +536,9 @@ export default defineComponent({
 
 .usage-fill-sm {
   height: 100%;
-  transition: width 0.3s, background 0.3s;
+  transition:
+    width 0.3s,
+    background 0.3s;
 }
 
 .usage-text {

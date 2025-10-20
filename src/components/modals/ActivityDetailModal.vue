@@ -1,17 +1,13 @@
 <template>
-  <BaseModal
-    :show="show"
-    @close="$emit('close')"
-    modal-class="modal-large"
-  >
+  <BaseModal :show="show" @close="$emit('close')" modal-class="modal-large">
     <template #header>
       <div class="activity-title-header">
-        <div 
-          v-if="activity?.colorId" 
+        <div
+          v-if="activity?.colorId"
           class="activity-color-indicator"
           :style="{ background: activityColor }"
         ></div>
-        <h3>{{ activity?.name || 'Activity Details' }}</h3>
+        <h3>{{ activity?.name || "Activity Details" }}</h3>
       </div>
     </template>
 
@@ -27,45 +23,53 @@
           <div class="detail-grid">
             <div class="detail-item">
               <span class="detail-label">Duration</span>
-              <span class="detail-value"><DurationDisplay :minutes="activity.durationMinutes" format="long" /></span>
+              <span class="detail-value"
+                ><DurationDisplay
+                  :minutes="activity.duration || 0"
+                  format="long"
+              /></span>
             </div>
-            
+
             <div v-if="activity.defaultLocationId" class="detail-item">
               <span class="detail-label">Default Location</span>
-              <span class="detail-value">{{ getLocationName(activity.defaultLocationId) }}</span>
+              <span class="detail-value">{{
+                getLocationName(activity.defaultLocationId)
+              }}</span>
             </div>
-            
+
             <div v-if="activity.defaultCapacity" class="detail-item">
               <span class="detail-label">Default Capacity</span>
-              <span class="detail-value">{{ activity.defaultCapacity }} campers</span>
+              <span class="detail-value"
+                >{{ activity.defaultCapacity }} campers</span
+              >
             </div>
-            
-            <div v-if="activity.minStaff || activity.maxStaff" class="detail-item">
+
+            <div v-if="activity.minStaff" class="detail-item">
               <span class="detail-label">Staff Requirements</span>
               <span class="detail-value">
-                <template v-if="activity.minStaff && activity.maxStaff">
-                  {{ activity.minStaff }} - {{ activity.maxStaff }} staff
-                </template>
-                <template v-else-if="activity.minStaff">
+                <template v-if="activity.minStaff">
                   Min {{ activity.minStaff }} staff
-                </template>
-                <template v-else-if="activity.maxStaff">
-                  Max {{ activity.maxStaff }} staff
                 </template>
               </span>
             </div>
           </div>
         </div>
 
-        <div v-if="activity.requiredCertifications && activity.requiredCertifications.length > 0" class="detail-section">
+        <div
+          v-if="
+            activity.requiredCertificationIds &&
+            activity.requiredCertificationIds.length > 0
+          "
+          class="detail-section"
+        >
           <h4>Required Certifications</h4>
           <div class="certifications-list">
-            <span 
-              v-for="cert in activity.requiredCertifications" 
-              :key="cert"
+            <span
+              v-for="certId in activity.requiredCertificationIds"
+              :key="certId"
               class="certification-badge"
             >
-              {{ cert }}
+              {{ getCertificationName(certId) }}
             </span>
           </div>
         </div>
@@ -73,8 +77,8 @@
         <div class="detail-section">
           <h4>Programs</h4>
           <div class="programs-list">
-            <span 
-              v-for="programId in activity.programIds" 
+            <span
+              v-for="programId in activity.programIds"
               :key="programId"
               class="program-badge"
             >
@@ -87,21 +91,30 @@
 
     <template #footer>
       <button class="btn btn-secondary" @click="$emit('close')">Close</button>
-      <button class="btn btn-primary-outline" @click="$emit('edit', activity)">Edit Activity</button>
-      <button class="btn btn-danger-outline" @click="$emit('delete', activity)">Delete Activity</button>
+      <button class="btn btn-primary-outline" @click="$emit('edit', activity)">
+        Edit Activity
+      </button>
+      <button class="btn btn-danger-outline" @click="$emit('delete', activity)">
+        Delete Activity
+      </button>
     </template>
   </BaseModal>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import { useProgramsStore, useLocationsStore, useColorsStore, useCertificationsStore } from '@/stores';
-import BaseModal from '@/components/BaseModal.vue';
-import DurationDisplay from '@/components/DurationDisplay.vue';
-import type { Activity } from '@/types';
+import { defineComponent, type PropType } from "vue";
+import {
+  useProgramsStore,
+  useLocationsStore,
+  useColorsStore,
+  useCertificationsStore,
+} from "@/stores";
+import BaseModal from "@/components/BaseModal.vue";
+import DurationDisplay from "@/components/DurationDisplay.vue";
+import type { Activity } from "@/types";
 
 export default defineComponent({
-  name: 'ActivityDetailModal',
+  name: "ActivityDetailModal",
   components: {
     BaseModal,
     DurationDisplay,
@@ -116,7 +129,7 @@ export default defineComponent({
       default: null,
     },
   },
-  emits: ['close', 'edit', 'delete'],
+  emits: ["close", "edit", "delete"],
   setup() {
     const programsStore = useProgramsStore();
     const locationsStore = useLocationsStore();
@@ -128,19 +141,24 @@ export default defineComponent({
     activityColor(): string {
       if (this.activity?.colorId) {
         const color = this.colorsStore.getColorById(this.activity.colorId);
-        return color?.hexValue || '#6366F1';
+        return color?.hexValue || "#6366F1";
       }
-      return '#6366F1';
-    }
+      return "#6366F1";
+    },
   },
   methods: {
     getLocationName(locationId: string) {
       const location = this.locationsStore.getLocationById(locationId);
-      return location?.name || 'Unknown Location';
+      return location?.name || "Unknown Location";
     },
     getProgramName(programId: string) {
       const program = this.programsStore.getProgramById(programId);
-      return program?.name || 'Unknown Program';
+      return program?.name || "Unknown Program";
+    },
+    getCertificationName(certificationId: string) {
+      const certification =
+        this.certificationsStore.getCertificationById(certificationId);
+      return certification?.name || "Unknown Certification";
     },
   },
 });
@@ -257,4 +275,3 @@ export default defineComponent({
   font-weight: 500;
 }
 </style>
-

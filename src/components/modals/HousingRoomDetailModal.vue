@@ -127,7 +127,7 @@ export default defineComponent({
     },
     getSessionDateRange(sessionId: string): string {
       const session = this.sessionsStore.sessions.find(
-        (s) => s.id === sessionId
+        (s) => s.id === sessionId,
       );
       if (!session) return "Unknown";
       return `${new Date(session.startDate).toLocaleDateString("en-US", {

@@ -1,14 +1,14 @@
 parameters:
-  - $ref: '../parameters/id.yaml'
+  - $ref: "../parameters/id.yaml"
 get:
   summary: Get area by ID
   responses:
-    '200':
+    "200":
       description: Success
       content:
         application/json:
           schema:
-            $ref: '../schemas/Area.yaml'
+            $ref: "../schemas/Area.yaml"
 put:
   summary: Update area
   requestBody:
@@ -16,13 +16,16 @@ put:
     content:
       application/json:
         schema:
-          $ref: '../schemas/Area.yaml'
+          $ref: "../schemas/AreaUpdateRequest.yaml"
   responses:
-    '200':
-      description: Updated
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Area.yaml"
 delete:
   summary: Delete area
   responses:
-    '204':
+    "204":
       description: Deleted
-

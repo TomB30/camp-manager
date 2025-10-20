@@ -6,7 +6,9 @@
           <Icon name="Settings" :size="32" class="header-icon" />
           <div>
             <h1>Camp Settings</h1>
-            <p class="header-description">Configure your camp's core settings and infrastructure</p>
+            <p class="header-description">
+              Configure your camp's core settings and infrastructure
+            </p>
           </div>
         </div>
       </div>
@@ -14,16 +16,18 @@
 
     <!-- Tab Navigation -->
     <div class="tabs-navigation">
-      <button 
-        v-for="tab in tabs" 
+      <button
+        v-for="tab in tabs"
         :key="tab.id"
         class="tab-button"
-        :class="{ 'active': activeTab === tab.id }"
+        :class="{ active: activeTab === tab.id }"
         @click="activeTab = tab.id"
       >
         <Icon :name="tab.icon" :size="20" />
         <span>{{ tab.label }}</span>
-        <span v-if="tab.count !== undefined" class="tab-count">{{ tab.count }}</span>
+        <span v-if="tab.count !== undefined" class="tab-count">{{
+          tab.count
+        }}</span>
       </button>
     </div>
 
@@ -34,7 +38,10 @@
         <AreasTab v-else-if="activeTab === 'areas'" key="areas" />
         <LocationsTab v-else-if="activeTab === 'locations'" key="locations" />
         <HousingTab v-else-if="activeTab === 'cabins'" key="cabins" />
-        <CertificationsTab v-else-if="activeTab === 'certifications'" key="certifications" />
+        <CertificationsTab
+          v-else-if="activeTab === 'certifications'"
+          key="certifications"
+        />
         <ColorsTab v-else-if="activeTab === 'colors'" key="colors" />
         <LabelsTab v-else-if="activeTab === 'labels'" key="labels" />
       </Transition>
@@ -43,20 +50,28 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useColorsStore, useSessionsStore, useAreasStore, useHousingRoomsStore, useCertificationsStore, useLocationsStore, useLabelsStore } from '@/stores';
-import Icon from '@/components/Icon.vue';
+import { defineComponent } from "vue";
+import {
+  useColorsStore,
+  useSessionsStore,
+  useAreasStore,
+  useHousingRoomsStore,
+  useCertificationsStore,
+  useLocationsStore,
+  useLabelsStore,
+} from "@/stores";
+import Icon from "@/components/Icon.vue";
 
-import ColorsTab from '@/components/settings/ColorsTab.vue';
-import SessionsTab from '@/components/settings/SessionsTab.vue';
-import AreasTab from '@/components/settings/AreasTab.vue';
-import HousingTab from '@/components/settings/HousingTab.vue';
-import CertificationsTab from '@/components/settings/CertificationsTab.vue';
-import LocationsTab from '@/components/settings/LocationsTab.vue';
-import LabelsTab from '@/components/settings/LabelsTab.vue';
+import ColorsTab from "@/components/settings/ColorsTab.vue";
+import SessionsTab from "@/components/settings/SessionsTab.vue";
+import AreasTab from "@/components/settings/AreasTab.vue";
+import HousingTab from "@/components/settings/HousingTab.vue";
+import CertificationsTab from "@/components/settings/CertificationsTab.vue";
+import LocationsTab from "@/components/settings/LocationsTab.vue";
+import LabelsTab from "@/components/settings/LabelsTab.vue";
 
 export default defineComponent({
-  name: 'CampSettings',
+  name: "CampSettings",
   components: {
     Icon,
     ColorsTab,
@@ -75,61 +90,85 @@ export default defineComponent({
     const certificationsStore = useCertificationsStore();
     const locationsStore = useLocationsStore();
     const labelsStore = useLabelsStore();
-    return { colorsStore, sessionsStore, areasStore, housingRoomsStore, certificationsStore, locationsStore, labelsStore };
-  },
-  data(): { activeTab: 'colors' | 'sessions' | 'areas' | 'locations' | 'cabins' | 'certifications' | 'labels' } {
     return {
-      activeTab: 'sessions',
+      colorsStore,
+      sessionsStore,
+      areasStore,
+      housingRoomsStore,
+      certificationsStore,
+      locationsStore,
+      labelsStore,
+    };
+  },
+  data(): {
+    activeTab:
+      | "colors"
+      | "sessions"
+      | "areas"
+      | "locations"
+      | "cabins"
+      | "certifications"
+      | "labels";
+  } {
+    return {
+      activeTab: "sessions",
     };
   },
   computed: {
     tabs(): Array<{
-      id: 'colors' | 'sessions' | 'areas' | 'locations' | 'cabins' | 'certifications' | 'labels';
+      id:
+        | "colors"
+        | "sessions"
+        | "areas"
+        | "locations"
+        | "cabins"
+        | "certifications"
+        | "labels";
       label: string;
       icon: any;
       count: number;
     }> {
       return [
         {
-          id: 'sessions' as const,
-          label: 'Sessions',
-          icon: 'CalendarDays',
+          id: "sessions" as const,
+          label: "Sessions",
+          icon: "CalendarDays",
           count: this.sessionsStore.sessions.length,
         },
         {
-          id: 'areas' as const,
-          label: 'Areas',
-          icon: 'Map',
+          id: "areas" as const,
+          label: "Areas",
+          icon: "Map",
           count: this.areasStore.areas.length,
         },
         {
-          id: 'locations' as const,
-          label: 'Locations',
-          icon: 'MapPin',
+          id: "locations" as const,
+          label: "Locations",
+          icon: "MapPin",
           count: this.locationsStore.locations.length,
         },
         {
-          id: 'cabins' as const,
-          label: 'Housing',
-          icon: 'Bed',
+          id: "cabins" as const,
+          label: "Housing",
+          icon: "Bed",
           count: this.housingRoomsStore.housingRooms.length,
         },
         {
-          id: 'certifications' as const,
-          label: 'Certifications',
-          icon: 'Award',
+          id: "certifications" as const,
+          label: "Certifications",
+          icon: "Award",
           count: this.certificationsStore.certifications.length,
         },
         {
-          id: 'colors' as const,
-          label: 'Colors',
-          icon: 'Palette',
+          id: "colors" as const,
+          label: "Colors",
+          icon: "Palette",
           count: this.colorsStore.colors.length,
         },
         {
-          id: 'labels' as const,
-          label: 'Labels',
-          icon: 'Tag',
+          id: "labels" as const,
+          label: "Labels",
+          icon: "Tag",
           count: this.labelsStore.labels.length,
         },
       ];
@@ -298,4 +337,3 @@ export default defineComponent({
   }
 }
 </style>
-

@@ -1,4 +1,13 @@
-import type { Conflict, Event, Camper, StaffMember, Location, HousingRoom, Certification, Group } from '@/types';
+import type {
+  Conflict,
+  Event,
+  Camper,
+  StaffMember,
+  Location,
+  HousingRoom,
+  Certification,
+  Group,
+} from "@/types";
 
 export class ConflictDetector {
   /**
@@ -7,8 +16,8 @@ export class ConflictDetector {
    */
   private getEventCamperIds(event: Event): string[] {
     if (!event.groupIds || event.groupIds.length === 0) return [];
-    
-    // For this simplified version, we just return empty since actual computation 
+
+    // For this simplified version, we just return empty since actual computation
     // requires store access. In practice, this will be computed by the eventsStore
     return [];
   }
@@ -18,8 +27,8 @@ export class ConflictDetector {
    */
   private getEventStaffIds(event: Event): string[] {
     if (!event.groupIds || event.groupIds.length === 0) return [];
-    
-    // For this simplified version, we just return empty since actual computation 
+
+    // For this simplified version, we just return empty since actual computation
     // requires store access. In practice, this will be computed by the eventsStore
     return [];
   }
@@ -31,24 +40,25 @@ export class ConflictDetector {
     rooms: Location[],
     certifications: Certification[] = [],
     eventCamperMap?: Map<string, string[]>,
-    eventStaffMap?: Map<string, string[]>
+    eventStaffMap?: Map<string, string[]>,
   ): Conflict[] {
     const conflicts: Conflict[] = [];
 
     // Check for event capacity conflicts
-    events.forEach(event => {
-      const enrolledCamperIds = eventCamperMap?.get(event.id) || this.getEventCamperIds(event);
+    events.forEach((event) => {
+      const enrolledCamperIds =
+        eventCamperMap?.get(event.id) || this.getEventCamperIds(event);
       const enrolledCount = enrolledCamperIds.length;
-      if (enrolledCount > event.capacity) {
-        const eventDate = new Date(event.startTime);
-        const formattedDate = eventDate.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric',
-          year: 'numeric'
+      if (event.capacity && enrolledCount > event.capacity) {
+        const eventDate = new Date(event.startDate);
+        const formattedDate = eventDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
         });
-        
+
         conflicts.push({
-          type: 'event_overcapacity',
+          type: "event_overcapacity",
           message: `Event "${event.title}" on ${formattedDate} has ${enrolledCount} campers enrolled but capacity is ${event.capacity}`,
           entityId: event.id,
           conflictingIds: enrolledCamperIds,
@@ -58,15 +68,16 @@ export class ConflictDetector {
 
     // Check for room capacity conflicts (multiple events in same room at same time)
     const roomUsage = new Map<string, Event[]>();
-    events.forEach(event => {
+    events.forEach((event) => {
+      if (!event.locationId) return;
       if (!roomUsage.has(event.locationId)) {
-        roomUsage.set(event.locationId, []);
+        roomUsage.set(event.locationId!, []);
       }
-      roomUsage.get(event.locationId)!.push(event);
+      roomUsage.get(event.locationId!)!.push(event);
     });
 
     roomUsage.forEach((roomEvents, locationId) => {
-      const room = rooms.find(r => r.id === locationId);
+      const room = rooms.find((r) => r.id === locationId);
       if (!room) return;
 
       // Check for overlapping events in the same room
@@ -76,20 +87,23 @@ export class ConflictDetector {
           const event2 = roomEvents[j];
 
           if (this.eventsOverlap(event1, event2)) {
-            const event1CamperIds = eventCamperMap?.get(event1.id) || this.getEventCamperIds(event1);
-            const event2CamperIds = eventCamperMap?.get(event2.id) || this.getEventCamperIds(event2);
-            const totalCapacity = event1CamperIds.length + event2CamperIds.length;
+            const event1CamperIds =
+              eventCamperMap?.get(event1.id) || this.getEventCamperIds(event1);
+            const event2CamperIds =
+              eventCamperMap?.get(event2.id) || this.getEventCamperIds(event2);
+            const totalCapacity =
+              event1CamperIds.length + event2CamperIds.length;
 
-            if (totalCapacity > room.capacity) {
-              const eventDate = new Date(event1.startTime);
-              const formattedDate = eventDate.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric',
-                year: 'numeric'
+            if (room.capacity && totalCapacity > room.capacity) {
+              const eventDate = new Date(event1.startDate);
+              const formattedDate = eventDate.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
               });
-              
+
               conflicts.push({
-                type: 'room_overcapacity',
+                type: "room_overcapacity",
                 message: `Room "${room.name}" has overlapping events exceeding capacity on ${formattedDate} (${totalCapacity}/${room.capacity})`,
                 entityId: room.id,
                 conflictingIds: [event1.id, event2.id],
@@ -102,9 +116,10 @@ export class ConflictDetector {
 
     // Check for camper double-booking
     const camperSchedules = new Map<string, Event[]>();
-    events.forEach(event => {
-      const enrolledCamperIds = eventCamperMap?.get(event.id) || this.getEventCamperIds(event);
-      enrolledCamperIds.forEach(camperId => {
+    events.forEach((event) => {
+      const enrolledCamperIds =
+        eventCamperMap?.get(event.id) || this.getEventCamperIds(event);
+      enrolledCamperIds.forEach((camperId) => {
         if (!camperSchedules.has(camperId)) {
           camperSchedules.set(camperId, []);
         }
@@ -113,29 +128,33 @@ export class ConflictDetector {
     });
 
     camperSchedules.forEach((camperEvents, camperId) => {
-      const camper = campers.find(c => c.id === camperId);
+      const camper = campers.find((c) => c.id === camperId);
       if (!camper) return;
 
       for (let i = 0; i < camperEvents.length; i++) {
         for (let j = i + 1; j < camperEvents.length; j++) {
           if (this.eventsOverlap(camperEvents[i], camperEvents[j])) {
-            const eventDate = new Date(camperEvents[i].startTime);
-            const formattedDate = eventDate.toLocaleDateString('en-US', { 
-              month: 'short', 
-              day: 'numeric',
-              year: 'numeric'
+            const eventDate = new Date(camperEvents[i].startDate);
+            const formattedDate = eventDate.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
             });
-            const event1Time = new Date(camperEvents[i].startTime).toLocaleTimeString('en-US', { 
-              hour: 'numeric', 
-              minute: '2-digit' 
+            const event1Time = new Date(
+              camperEvents[i].startDate,
+            ).toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
             });
-            const event2Time = new Date(camperEvents[j].startTime).toLocaleTimeString('en-US', { 
-              hour: 'numeric', 
-              minute: '2-digit' 
+            const event2Time = new Date(
+              camperEvents[j].startDate,
+            ).toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
             });
-            
+
             conflicts.push({
-              type: 'camper_double_booked',
+              type: "camper_double_booked",
               message: `${camper.firstName} ${camper.lastName} is enrolled in overlapping events on ${formattedDate} ("${camperEvents[i].title}" at ${event1Time} and "${camperEvents[j].title}" at ${event2Time})`,
               entityId: camperId,
               conflictingIds: [camperEvents[i].id, camperEvents[j].id],
@@ -147,9 +166,10 @@ export class ConflictDetector {
 
     // Check for staff double-booking
     const staffSchedules = new Map<string, Event[]>();
-    events.forEach(event => {
-      const assignedStaffIds = eventStaffMap?.get(event.id) || this.getEventStaffIds(event);
-      assignedStaffIds.forEach(staffId => {
+    events.forEach((event) => {
+      const assignedStaffIds =
+        eventStaffMap?.get(event.id) || this.getEventStaffIds(event);
+      assignedStaffIds.forEach((staffId) => {
         if (!staffSchedules.has(staffId)) {
           staffSchedules.set(staffId, []);
         }
@@ -158,29 +178,33 @@ export class ConflictDetector {
     });
 
     staffSchedules.forEach((staffEvents, staffId) => {
-      const staff = staffMembers.find(m => m.id === staffId);
+      const staff = staffMembers.find((m) => m.id === staffId);
       if (!staff) return;
 
       for (let i = 0; i < staffEvents.length; i++) {
         for (let j = i + 1; j < staffEvents.length; j++) {
           if (this.eventsOverlap(staffEvents[i], staffEvents[j])) {
-            const eventDate = new Date(staffEvents[i].startTime);
-            const formattedDate = eventDate.toLocaleDateString('en-US', { 
-              month: 'short', 
-              day: 'numeric',
-              year: 'numeric'
+            const eventDate = new Date(staffEvents[i].startDate);
+            const formattedDate = eventDate.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
             });
-            const event1Time = new Date(staffEvents[i].startTime).toLocaleTimeString('en-US', { 
-              hour: 'numeric', 
-              minute: '2-digit' 
+            const event1Time = new Date(
+              staffEvents[i].startDate,
+            ).toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
             });
-            const event2Time = new Date(staffEvents[j].startTime).toLocaleTimeString('en-US', { 
-              hour: 'numeric', 
-              minute: '2-digit' 
+            const event2Time = new Date(
+              staffEvents[j].startDate,
+            ).toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
             });
-            
+
             conflicts.push({
-              type: 'staff_double_booked',
+              type: "staff_double_booked",
               message: `${staff.firstName} ${staff.lastName} is assigned to overlapping events on ${formattedDate} ("${staffEvents[i].title}" at ${event1Time} and "${staffEvents[j].title}" at ${event2Time})`,
               entityId: staffId,
               conflictingIds: [staffEvents[i].id, staffEvents[j].id],
@@ -191,22 +215,26 @@ export class ConflictDetector {
     });
 
     // Check for missing certifications
-    events.forEach(event => {
-      if (!event.requiredCertifications || event.requiredCertifications.length === 0) {
+    events.forEach((event) => {
+      if (
+        !event.requiredCertificationIds ||
+        event.requiredCertificationIds.length === 0
+      ) {
         return;
       }
 
-      const assignedStaffIds = eventStaffMap?.get(event.id) || this.getEventStaffIds(event);
-      const assignedStaff = staffMembers.filter(m => 
-        assignedStaffIds.includes(m.id)
+      const assignedStaffIds =
+        eventStaffMap?.get(event.id) || this.getEventStaffIds(event);
+      const assignedStaff = staffMembers.filter((m) =>
+        assignedStaffIds.includes(m.id),
       );
 
       // Collect all certifications from assigned staff
       const allCertifications = new Set<string>();
-      assignedStaff.forEach(staff => {
+      assignedStaff.forEach((staff) => {
         if (staff.certificationIds && staff.certificationIds.length > 0) {
-          staff.certificationIds.forEach(certId => {
-            const cert = certifications.find(c => c.id === certId);
+          staff.certificationIds.forEach((certId) => {
+            const cert = certifications.find((c) => c.id === certId);
             if (cert) {
               allCertifications.add(cert.name);
             }
@@ -214,23 +242,27 @@ export class ConflictDetector {
         }
       });
 
-      const missingCerts = event.requiredCertifications.filter(
-        cert => !allCertifications.has(cert)
+      const missingCerts = event.requiredCertificationIds.filter(
+        (cert) => !allCertifications.has(cert),
       );
 
       if (missingCerts.length > 0) {
-        const eventDate = new Date(event.startTime);
-        const formattedDate = eventDate.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric',
-          year: 'numeric'
+        const eventDate = new Date(event.startDate);
+        const formattedDate = eventDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
         });
-        
-        const assignedStaffIds = eventStaffMap?.get(event.id) || this.getEventStaffIds(event);
-        const missingCertNames = missingCerts.map(cert => certifications.find(c => c.id === cert)?.name || cert);
+
+        const assignedStaffIds =
+          eventStaffMap?.get(event.id) || this.getEventStaffIds(event);
+        const missingCertNames = missingCerts.map(
+          (certId) =>
+            certifications.find((c) => c.id === certId)?.name || certId,
+        );
         conflicts.push({
-          type: 'missing_certification',
-          message: `Event "${event.title}" on ${formattedDate} requires certifications: ${missingCertNames.join(', ')}`,
+          type: "missing_certification",
+          message: `Event "${event.title}" on ${formattedDate} requires certifications: ${missingCertNames.join(", ")}`,
           entityId: event.id,
           conflictingIds: assignedStaffIds,
         });
@@ -245,19 +277,19 @@ export class ConflictDetector {
    * Note: This method requires eventStaffMap to be passed when checking against existing events
    */
   canAssignStaff(
-    eventStartTime: string | Date, 
-    eventEndTime: string | Date, 
-    staffId: string, 
+    eventStartTime: string | Date,
+    eventEndTime: string | Date,
+    staffId: string,
     allEvents: Event[],
     eventStaffMap?: Map<string, string[]>,
-    excludeEventId?: string
-  ): { 
-    canAssign: boolean; 
+    excludeEventId?: string,
+  ): {
+    canAssign: boolean;
     reason?: string;
     conflictingEvent?: Event;
   } {
     // Get all events this staff member is assigned to
-    const staffEvents = allEvents.filter(e => {
+    const staffEvents = allEvents.filter((e) => {
       if (e.id === excludeEventId) return false;
       const staffIds = eventStaffMap?.get(e.id) || this.getEventStaffIds(e);
       return staffIds.includes(staffId);
@@ -265,20 +297,29 @@ export class ConflictDetector {
 
     // Create a temporary event object to check overlaps
     const tempEvent = {
-      startTime: typeof eventStartTime === 'string' ? eventStartTime : eventStartTime.toISOString(),
-      endTime: typeof eventEndTime === 'string' ? eventEndTime : eventEndTime.toISOString(),
+      startDate:
+        typeof eventStartTime === "string"
+          ? eventStartTime
+          : eventStartTime.toISOString(),
+      endDate:
+        typeof eventEndTime === "string"
+          ? eventEndTime
+          : eventEndTime.toISOString(),
     } as Event;
 
     // Check for time conflicts
     for (const existingEvent of staffEvents) {
       if (this.eventsOverlap(tempEvent, existingEvent)) {
-        const startTime = new Date(existingEvent.startTime).toLocaleTimeString('en-US', { 
-          hour: 'numeric', 
-          minute: '2-digit' 
-        });
+        const startDate = new Date(existingEvent.startDate).toLocaleTimeString(
+          "en-US",
+          {
+            hour: "numeric",
+            minute: "2-digit",
+          },
+        );
         return {
           canAssign: false,
-          reason: `Already assigned to "${existingEvent.title}" at ${startTime}`,
+          reason: `Already assigned to "${existingEvent.title}" at ${startDate}`,
           conflictingEvent: existingEvent,
         };
       }
@@ -288,10 +329,10 @@ export class ConflictDetector {
   }
 
   private eventsOverlap(event1: Event, event2: Event): boolean {
-    const start1 = new Date(event1.startTime).getTime();
-    const end1 = new Date(event1.endTime).getTime();
-    const start2 = new Date(event2.startTime).getTime();
-    const end2 = new Date(event2.endTime).getTime();
+    const start1 = new Date(event1.startDate).getTime();
+    const end1 = new Date(event1.endDate).getTime();
+    const start2 = new Date(event2.startDate).getTime();
+    const end2 = new Date(event2.endDate).getTime();
 
     return start1 < end2 && start2 < end1;
   }
@@ -305,10 +346,10 @@ export class ConflictDetector {
     _startDate: string,
     _endDate: string,
     familyGroups: Group[],
-    excludeGroupId?: string
+    excludeGroupId?: string,
   ): Group[] {
     // This method is deprecated - keeping for backward compatibility only
-    return familyGroups.filter(group => {
+    return familyGroups.filter((group) => {
       // Skip the group we're excluding (e.g., the one being edited)
       if (excludeGroupId && group.id === excludeGroupId) {
         return false;
@@ -323,7 +364,7 @@ export class ConflictDetector {
       return false;
     });
   }
-  
+
   /**
    * Get all family groups that conflict with a given session in a specific housing room
    */
@@ -331,9 +372,9 @@ export class ConflictDetector {
     housingRoomId: string,
     sessionId: string,
     familyGroups: Group[],
-    excludeGroupId?: string
+    excludeGroupId?: string,
   ): Group[] {
-    return familyGroups.filter(group => {
+    return familyGroups.filter((group) => {
       // Skip the group we're excluding (e.g., the one being edited)
       if (excludeGroupId && group.id === excludeGroupId) {
         return false;
@@ -358,21 +399,21 @@ export class ConflictDetector {
     startDate: string,
     endDate: string,
     familyGroups: Group[],
-    excludeGroupId?: string
+    excludeGroupId?: string,
   ): { canAssign: boolean; reason?: string; conflictingGroups?: Group[] } {
     const conflictingGroups = this.getFamilyGroupConflictsInRoom(
       housingRoomId,
       startDate,
       endDate,
       familyGroups,
-      excludeGroupId
+      excludeGroupId,
     );
 
     if (conflictingGroups.length > 0) {
       return {
         canAssign: false,
-        reason: `This room is already occupied by ${conflictingGroups.length === 1 ? 'another family group' : 'other family groups'} during these dates`,
-        conflictingGroups
+        reason: `This room is already occupied by ${conflictingGroups.length === 1 ? "another family group" : "other family groups"} during these dates`,
+        conflictingGroups,
       };
     }
 
@@ -386,20 +427,20 @@ export class ConflictDetector {
     housingRoomId: string,
     sessionId: string,
     familyGroups: Group[],
-    excludeFamilyGroupId?: string
+    excludeFamilyGroupId?: string,
   ): { canAssign: boolean; reason?: string; conflictingGroups?: Group[] } {
     const conflictingGroups = this.getFamilyGroupConflictsInRoomBySession(
       housingRoomId,
       sessionId,
       familyGroups,
-      excludeFamilyGroupId
+      excludeFamilyGroupId,
     );
 
     if (conflictingGroups.length > 0) {
       return {
         canAssign: false,
-        reason: `This room is already occupied by ${conflictingGroups.length === 1 ? 'another family group' : 'other family groups'} during this session`,
-        conflictingGroups
+        reason: `This room is already occupied by ${conflictingGroups.length === 1 ? "another family group" : "other family groups"} during this session`,
+        conflictingGroups,
       };
     }
 
@@ -414,15 +455,15 @@ export class ConflictDetector {
     endDate: string,
     allSleepingRooms: HousingRoom[],
     familyGroups: Group[],
-    excludeFamilyGroupId?: string
+    excludeFamilyGroupId?: string,
   ): HousingRoom[] {
-    return allSleepingRooms.filter(room => {
+    return allSleepingRooms.filter((room) => {
       const validation = this.canAssignFamilyGroupToRoom(
         room.id,
         startDate,
         endDate,
         familyGroups,
-        excludeFamilyGroupId
+        excludeFamilyGroupId,
       );
       return validation.canAssign;
     });
@@ -430,4 +471,3 @@ export class ConflictDetector {
 }
 
 export const conflictDetector = new ConflictDetector();
-

@@ -9,27 +9,27 @@
               <p v-if="subtitle" class="modal-subtitle">{{ subtitle }}</p>
             </slot>
           </div>
-          <button 
-            class="btn btn-icon btn-secondary" 
+          <button
+            class="btn btn-icon btn-secondary"
             @click="close"
             aria-label="Close modal"
           >
             ✕
           </button>
         </div>
-        
+
         <div class="modal-body">
           <slot name="body"></slot>
         </div>
-        
+
         <div v-if="$slots.footer || showDefaultFooter" class="modal-footer">
           <slot name="footer">
             <button class="btn btn-secondary" @click="close">
               {{ cancelText }}
             </button>
-            <button 
+            <button
               v-if="primaryAction"
-              class="btn btn-primary" 
+              class="btn btn-primary"
               @click="handlePrimaryAction"
               :disabled="primaryDisabled"
             >
@@ -43,56 +43,56 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'BaseModal',
+  name: "BaseModal",
   props: {
     show: {
       type: Boolean,
-      required: true
+      required: true,
     },
     title: {
       type: String,
-      default: ''
+      default: "",
     },
     subtitle: {
       type: String,
-      default: ''
+      default: "",
     },
     modalClass: {
       type: String,
-      default: ''
+      default: "",
     },
     closeOnOverlay: {
       type: Boolean,
-      default: true
+      default: true,
     },
     showDefaultFooter: {
       type: Boolean,
-      default: false
+      default: false,
     },
     primaryAction: {
       type: Boolean,
-      default: false
+      default: false,
     },
     primaryText: {
       type: String,
-      default: 'Save'
+      default: "Save",
     },
     primaryDisabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     cancelText: {
       type: String,
-      default: 'Cancel'
-    }
+      default: "Cancel",
+    },
   },
-  emits: ['close', 'primary-action'],
+  emits: ["close", "primary-action"],
   methods: {
     close() {
-      this.$emit('close');
+      this.$emit("close");
     },
     handleOverlayClick() {
       if (this.closeOnOverlay) {
@@ -100,9 +100,9 @@ export default defineComponent({
       }
     },
     handlePrimaryAction() {
-      this.$emit('primary-action');
-    }
-  }
+      this.$emit("primary-action");
+    },
+  },
 });
 </script>
 
@@ -123,4 +123,3 @@ export default defineComponent({
   margin: 0;
 }
 </style>
-

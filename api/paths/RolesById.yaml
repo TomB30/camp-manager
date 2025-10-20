@@ -1,0 +1,31 @@
+parameters:
+  - $ref: "../parameters/id.yaml"
+get:
+  summary: Get role by ID
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Role.yaml"
+put:
+  summary: Update role by ID
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/RoleUpdateRequest.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Role.yaml"
+delete:
+  summary: Delete role by ID
+  responses:
+    "204":
+      description: Deleted

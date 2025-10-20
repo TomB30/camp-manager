@@ -1,29 +1,33 @@
-import { defineStore } from 'pinia';
-import type { CampColor } from '@/types';
-import { colorsService } from '@/services';
+import { defineStore } from "pinia";
+import type { Color } from "@/types";
+import { colorsService } from "@/services";
 
-export const useColorsStore = defineStore('colors', {
+export const useColorsStore = defineStore("colors", {
   state: () => ({
-    colors: [] as CampColor[],
+    colors: [] as Color[],
     loading: false,
   }),
 
   getters: {
-    getColorById(state): (id: string) => CampColor | undefined {
-      return (id: string): CampColor | undefined => {
-        return state.colors.find(c => c.id === id);
+    getColorById(state): (id: string) => Color | undefined {
+      return (id: string): Color | undefined => {
+        return state.colors.find((c) => c.id === id);
       };
     },
 
-    getColorByName(state): (name: string) => CampColor | undefined {
-      return (name: string): CampColor | undefined => {
-        return state.colors.find(c => c.name.toLowerCase() === name.toLowerCase());
+    getColorByName(state): (name: string) => Color | undefined {
+      return (name: string): Color | undefined => {
+        return state.colors.find(
+          (c) => c.name.toLowerCase() === name.toLowerCase(),
+        );
       };
     },
 
-    getColorByHex(state): (hexValue: string) => CampColor | undefined {
-      return (hexValue: string): CampColor | undefined => {
-        return state.colors.find(c => c.hexValue.toLowerCase() === hexValue.toLowerCase());
+    getColorByHex(state): (hexValue: string) => Color | undefined {
+      return (hexValue: string): Color | undefined => {
+        return state.colors.find(
+          (c) => c.hexValue.toLowerCase() === hexValue.toLowerCase(),
+        );
       };
     },
   },
@@ -38,14 +42,14 @@ export const useColorsStore = defineStore('colors', {
       }
     },
 
-    async addColor(color: CampColor): Promise<void> {
+    async addColor(color: Color): Promise<void> {
       await colorsService.saveColor(color);
       this.colors.push(color);
     },
 
-    async updateColor(color: CampColor): Promise<void> {
+    async updateColor(color: Color): Promise<void> {
       await colorsService.saveColor(color);
-      const index = this.colors.findIndex(c => c.id === color.id);
+      const index = this.colors.findIndex((c) => c.id === color.id);
       if (index >= 0) {
         this.colors[index] = color;
       }
@@ -53,8 +57,7 @@ export const useColorsStore = defineStore('colors', {
 
     async deleteColor(id: string): Promise<void> {
       await colorsService.deleteColor(id);
-      this.colors = this.colors.filter(c => c.id !== id);
+      this.colors = this.colors.filter((c) => c.id !== id);
     },
-  }
+  },
 });
-

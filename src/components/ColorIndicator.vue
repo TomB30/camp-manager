@@ -1,30 +1,30 @@
 <template>
-  <div 
-    class="color-indicator" 
+  <div
+    class="color-indicator"
     :class="[typeClass, sizeClass]"
     :style="{ background: color }"
   />
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'ColorIndicator',
+  name: "ColorIndicator",
   props: {
     color: {
       type: String,
-      default: '#6366F1',
+      default: "#6366F1",
     },
     type: {
       type: String,
-      default: 'dot',
-      validator: (value: string) => ['dot', 'bar'].includes(value),
+      default: "dot",
+      validator: (value: string) => ["dot", "bar"].includes(value),
     },
     size: {
       type: String,
-      default: 'md',
-      validator: (value: string) => ['sm', 'md', 'lg'].includes(value),
+      default: "md",
+      validator: (value: string) => ["sm", "md", "lg"].includes(value),
     },
   },
   computed: {
@@ -81,4 +81,3 @@ export default defineComponent({
   width: 4px;
 }
 </style>
-

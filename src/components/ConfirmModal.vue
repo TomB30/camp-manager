@@ -11,9 +11,9 @@
         </div>
         <div class="modal-footer">
           <button class="btn btn-secondary" @click="cancel">Cancel</button>
-          <button 
-            class="btn" 
-            :class="dangerMode ? 'btn-error' : 'btn-primary'" 
+          <button
+            class="btn"
+            :class="dangerMode ? 'btn-error' : 'btn-primary'"
             @click="confirm"
           >
             {{ confirmText }}
@@ -25,45 +25,45 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'ConfirmModal',
+  name: "ConfirmModal",
   props: {
     show: {
       type: Boolean,
-      required: true
+      required: true,
     },
     title: {
       type: String,
-      required: true
+      required: true,
     },
     message: {
       type: String,
-      required: true
+      required: true,
     },
     details: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     confirmText: {
       type: String,
-      default: 'Confirm'
+      default: "Confirm",
     },
     dangerMode: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  emits: ['confirm', 'cancel'],
+  emits: ["confirm", "cancel"],
   methods: {
     confirm() {
-      this.$emit('confirm');
+      this.$emit("confirm");
     },
     cancel() {
-      this.$emit('cancel');
-    }
-  }
+      this.$emit("cancel");
+    },
+  },
 });
 </script>
 
@@ -90,4 +90,3 @@ export default defineComponent({
   border-left: 3px solid var(--warning-color);
 }
 </style>
-

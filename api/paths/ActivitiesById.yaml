@@ -1,0 +1,31 @@
+parameters:
+  - $ref: "../parameters/id.yaml"
+get:
+  summary: Get activity by ID
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Activity.yaml"
+put:
+  summary: Update activity by ID
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/ActivityUpdateRequest.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Activity.yaml"
+delete:
+  summary: Delete activity by ID
+  responses:
+    "204":
+      description: Deleted

@@ -1,9 +1,5 @@
 <template>
-  <BaseModal
-    :show="show"
-    :title="area?.name || ''"
-    @close="$emit('close')"
-  >
+  <BaseModal :show="show" :title="area?.name || ''" @close="$emit('close')">
     <template #body>
       <div v-if="area">
         <div v-if="area.description" class="detail-section">
@@ -14,7 +10,9 @@
         <div class="detail-section">
           <div class="detail-label">Type</div>
           <div>
-            <span class="badge badge-primary">{{ formatAreaType(area.type) }}</span>
+            <span class="badge badge-primary">{{
+              formatAreaType(area.type || "other")
+            }}</span>
           </div>
         </div>
 
@@ -23,10 +21,17 @@
           <div>{{ area.capacity }} people</div>
         </div>
 
-        <div v-if="area.equipment && area.equipment.length > 0" class="detail-section">
+        <div
+          v-if="area.equipment && area.equipment.length > 0"
+          class="detail-section"
+        >
           <div class="detail-label">Equipment</div>
           <div class="flex gap-1 flex-wrap">
-            <span v-for="item in area.equipment" :key="item" class="badge badge-success">
+            <span
+              v-for="item in area.equipment"
+              :key="item"
+              class="badge badge-success"
+            >
               {{ item }}
             </span>
           </div>
@@ -50,57 +55,61 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete', area?.id)">Delete Area</button>
-      <button class="btn btn-secondary" @click="$emit('edit', area)">Edit</button>
+      <button class="btn btn-error" @click="$emit('delete', area?.id)">
+        Delete Area
+      </button>
+      <button class="btn btn-secondary" @click="$emit('edit', area)">
+        Edit
+      </button>
       <button class="btn btn-secondary" @click="$emit('close')">Close</button>
     </template>
   </BaseModal>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import BaseModal from '@/components/BaseModal.vue';
-import type { Area } from '@/types';
+import { defineComponent, type PropType } from "vue";
+import BaseModal from "@/components/BaseModal.vue";
+import type { Area } from "@/types";
 
 export default defineComponent({
-  name: 'AreaDetailModal',
+  name: "AreaDetailModal",
   components: {
-    BaseModal
+    BaseModal,
   },
   props: {
     show: {
       type: Boolean,
-      required: true
+      required: true,
     },
     area: {
       type: Object as PropType<Area | null>,
-      default: null
-    }
+      default: null,
+    },
   },
-  emits: ['close', 'edit', 'delete'],
+  emits: ["close", "edit", "delete"],
   methods: {
     formatAreaType(type: string): string {
       const typeMap: Record<string, string> = {
-        indoor: 'Indoor',
-        outdoor: 'Outdoor',
-        facility: 'Facility',
-        field: 'Field',
-        water: 'Water',
-        other: 'Other',
+        indoor: "Indoor",
+        outdoor: "Outdoor",
+        facility: "Facility",
+        field: "Field",
+        water: "Water",
+        other: "Other",
       };
       return typeMap[type] || type.charAt(0).toUpperCase() + type.slice(1);
     },
     formatDate(dateString: string): string {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
-    }
-  }
+    },
+  },
 });
 </script>
 
@@ -116,4 +125,3 @@ export default defineComponent({
   margin-bottom: 0.5rem;
 }
 </style>
-

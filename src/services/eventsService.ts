@@ -3,9 +3,9 @@
  * Handles all event-related operations
  */
 
-import type { Event } from '@/types';
-import { storageService } from './storage';
-import { STORAGE_KEYS } from './storageKeys';
+import type { Event } from "@/types";
+import { storageService } from "./storage";
+import { STORAGE_KEYS } from "./storageKeys";
 
 class EventsService {
   /**
@@ -13,16 +13,16 @@ class EventsService {
    */
   async getEvents(startDate?: Date, endDate?: Date): Promise<Event[]> {
     let events = await storageService.getAll<Event>(STORAGE_KEYS.EVENTS);
-    
+
     if (startDate || endDate) {
-      events = events.filter(event => {
-        const eventStart = new Date(event.startTime);
+      events = events.filter((event) => {
+        const eventStart = new Date(event.startDate);
         if (startDate && eventStart < startDate) return false;
         if (endDate && eventStart > endDate) return false;
         return true;
       });
     }
-    
+
     return events;
   }
 
@@ -59,7 +59,7 @@ class EventsService {
    */
   async getEventsForLocation(locationId: string): Promise<Event[]> {
     const events = await this.getEvents();
-    return events.filter(event => event.locationId === locationId);
+    return events.filter((event) => event.locationId === locationId);
   }
 
   /**
@@ -67,9 +67,8 @@ class EventsService {
    */
   async getEventsForProgram(programId: string): Promise<Event[]> {
     const events = await this.getEvents();
-    return events.filter(event => event.programId === programId);
+    return events.filter((event) => event.programId === programId);
   }
 }
 
 export const eventsService = new EventsService();
-

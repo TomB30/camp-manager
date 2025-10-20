@@ -1,0 +1,31 @@
+parameters:
+  - $ref: "../parameters/id.yaml"
+get:
+  summary: Get location by ID
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Location.yaml"
+put:
+  summary: Update location by ID
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/LocationUpdateRequest.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Location.yaml"
+delete:
+  summary: Delete location by ID
+  responses:
+    "204":
+      description: Deleted

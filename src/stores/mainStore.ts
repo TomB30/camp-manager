@@ -1,25 +1,25 @@
-import { defineStore } from 'pinia';
-import type { Conflict } from '@/types';
-import { conflictDetector } from '@/services';
-import { useCampersStore } from './campersStore';
-import { useStaffMembersStore } from './staffMembersStore';
-import { useEventsStore } from './eventsStore';
-import { useLocationsStore } from './locationsStore';
-import { useHousingRoomsStore } from './housingRoomsStore';
-import { useGroupsStore } from './groupsStore';
-import { useProgramsStore } from './programsStore';
-import { useActivitiesStore } from './activitiesStore';
-import { useAreasStore } from './areasStore';
-import { useCertificationsStore } from './certificationsStore';
-import { useColorsStore } from './colorsStore';
-import { useSessionsStore } from './sessionsStore';
-import { useLabelsStore } from './labelsStore';
+import { defineStore } from "pinia";
+import type { Conflict } from "@/types";
+import { conflictDetector } from "@/services";
+import { useCampersStore } from "./campersStore";
+import { useStaffMembersStore } from "./staffMembersStore";
+import { useEventsStore } from "./eventsStore";
+import { useLocationsStore } from "./locationsStore";
+import { useHousingRoomsStore } from "./housingRoomsStore";
+import { useGroupsStore } from "./groupsStore";
+import { useProgramsStore } from "./programsStore";
+import { useActivitiesStore } from "./activitiesStore";
+import { useAreasStore } from "./areasStore";
+import { useCertificationsStore } from "./certificationsStore";
+import { useColorsStore } from "./colorsStore";
+import { useSessionsStore } from "./sessionsStore";
+import { useLabelsStore } from "./labelsStore";
 
 /**
  * Main Store
  * Coordinates all entity stores and handles cross-cutting concerns like conflicts
  */
-export const useMainStore = defineStore('main', {
+export const useMainStore = defineStore("main", {
   state: () => ({
     conflicts: [] as Conflict[],
     loading: false,
@@ -83,9 +83,8 @@ export const useMainStore = defineStore('main', {
         campersStore.campers,
         staffMembersStore.staffMembers,
         locationsStore.locations,
-        certificationsStore.certifications
+        certificationsStore.certifications,
       );
     },
-  }
+  },
 });
-

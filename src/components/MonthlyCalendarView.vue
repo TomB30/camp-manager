@@ -16,27 +16,36 @@
           class="day-cell"
           :class="{
             'other-month': !day.isCurrentMonth,
-            'today': day.isToday,
-            'has-events': day.eventCount > 0
+            today: day.isToday,
+            'has-events': day.eventCount > 0,
           }"
           @click="handleDayClick(day)"
         >
           <div class="day-number">{{ day.dayNumber }}</div>
-          
+
           <!-- Event list -->
           <div v-if="day.events.length > 0" class="event-list">
             <div
               v-for="event in getVisibleEvents(day.events)"
               :key="event.id"
               class="event-item"
-              :style="{ backgroundColor: event.colorId ? colorsStore.getColorById(event.colorId)?.hexValue : '#3B82F6' }"
+              :style="{
+                backgroundColor: event.colorId
+                  ? colorsStore.getColorById(event.colorId)?.hexValue
+                  : '#3B82F6',
+              }"
               :title="event.title"
               @click.stop="$emit('select-event', event)"
             >
-              <span class="event-time">{{ formatEventTime(event.startTime) }}</span>
+              <span class="event-time">{{
+                formatEventTime(event.startDate)
+              }}</span>
               <span class="event-title">{{ event.title }}</span>
             </div>
-            <div v-if="day.events.length > maxEventsPerDay" class="more-events-text">
+            <div
+              v-if="day.events.length > maxEventsPerDay"
+              class="more-events-text"
+            >
               +{{ day.events.length - maxEventsPerDay }} more events
             </div>
           </div>
@@ -47,19 +56,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import { 
-  startOfMonth, 
-  endOfMonth, 
-  startOfWeek, 
-  endOfWeek, 
+import { defineComponent, type PropType } from "vue";
+import {
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
   eachDayOfInterval,
   isSameMonth,
   isSameDay,
-  format 
-} from 'date-fns';
-import type { Event } from '@/types';
-import { useColorsStore } from '@/stores';
+  format,
+} from "date-fns";
+import type { Event } from "@/types";
+import { useColorsStore } from "@/stores";
 
 interface CalendarDay {
   date: Date;
@@ -71,7 +80,7 @@ interface CalendarDay {
 }
 
 export default defineComponent({
-  name: 'MonthlyCalendarView',
+  name: "MonthlyCalendarView",
   props: {
     selectedDate: {
       type: Date,
@@ -82,10 +91,10 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['select-day', 'select-event'],
+  emits: ["select-day", "select-event"],
   data() {
     return {
-      daysOfWeek: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      daysOfWeek: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
       maxEventsPerDay: 3, // Maximum events to show before displaying "+x more"
       colorsStore: useColorsStore(),
     };
@@ -96,16 +105,19 @@ export default defineComponent({
       const monthEnd = endOfMonth(this.selectedDate);
       const calendarStart = startOfWeek(monthStart);
       const calendarEnd = endOfWeek(monthEnd);
-      
-      const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+
+      const days = eachDayOfInterval({
+        start: calendarStart,
+        end: calendarEnd,
+      });
       const today = new Date();
-      
-      return days.map(date => {
-        const dayEvents = this.events.filter(event => {
-          const eventDate = new Date(event.startTime);
+
+      return days.map((date) => {
+        const dayEvents = this.events.filter((event) => {
+          const eventDate = new Date(event.startDate);
           return isSameDay(eventDate, date);
         });
-        
+
         return {
           date,
           dayNumber: date.getDate(),
@@ -119,15 +131,17 @@ export default defineComponent({
   },
   methods: {
     handleDayClick(day: CalendarDay) {
-      this.$emit('select-day', day.date);
+      this.$emit("select-day", day.date);
     },
     formatEventTime(dateStr: string): string {
-      return format(new Date(dateStr), 'h:mma');
+      return format(new Date(dateStr), "h:mma");
     },
     getVisibleEvents(events: Event[]) {
       // Sort events by start time
       const sortedEvents = [...events].sort((a, b) => {
-        return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
+        return (
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        );
       });
       return sortedEvents.slice(0, this.maxEventsPerDay);
     },
@@ -295,18 +309,17 @@ export default defineComponent({
   .month-body {
     grid-auto-rows: minmax(80px, 1fr);
   }
-  
+
   .day-cell {
     padding: 0.5rem;
   }
-  
+
   .event-count {
     font-size: 1.25rem;
   }
-  
+
   .event-label {
     font-size: 0.625rem;
   }
 }
 </style>
-
