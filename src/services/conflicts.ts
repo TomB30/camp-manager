@@ -227,9 +227,10 @@ export class ConflictDetector {
         });
         
         const assignedStaffIds = eventStaffMap?.get(event.id) || this.getEventStaffIds(event);
+        const missingCertNames = missingCerts.map(cert => certifications.find(c => c.id === cert)?.name || cert);
         conflicts.push({
           type: 'missing_certification',
-          message: `Event "${event.title}" on ${formattedDate} requires certifications: ${missingCerts.join(', ')}`,
+          message: `Event "${event.title}" on ${formattedDate} requires certifications: ${missingCertNames.join(', ')}`,
           entityId: event.id,
           conflictingIds: assignedStaffIds,
         });
