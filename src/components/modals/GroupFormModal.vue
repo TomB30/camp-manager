@@ -878,6 +878,36 @@ export default defineComponent({
       return `${camper.firstName.charAt(0)}${camper.lastName.charAt(0)}`;
     },
     getCamperOption(camper: Camper): AutocompleteOption {
+      // If this group has a housing room, check if the camper is already in another group with a housing room
+      if (this.hasHousingRoom) {
+        const occupyingGroup = this.groups.find((group) => {
+          // Skip the current group being edited
+          if (group.id === this.editingGroupId) {
+            return false;
+          }
+
+          // Check if this group has a housing room
+          if (!group.housingRoomId) {
+            return false;
+          }
+
+          // Check if this camper is in this group
+          if (group.camperIds && group.camperIds.includes(camper.id)) {
+            return true;
+          }
+
+          return false;
+        });
+
+        if (occupyingGroup) {
+          return {
+            label: `${camper.firstName} ${camper.lastName} (Age ${camper.age}) - Assigned to ${occupyingGroup.name}`,
+            value: camper.id,
+            disabled: true,
+          };
+        }
+      }
+
       return {
         label: `${camper.firstName} ${camper.lastName} (Age ${camper.age})`,
         value: camper.id,
