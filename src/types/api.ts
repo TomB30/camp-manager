@@ -588,6 +588,33 @@ export interface paths {
       };
     };
   };
+  "/groups": {
+    /** List all groups */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Group"][];
+          };
+        };
+      };
+    };
+    /** Create a new group */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["Group"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          content: never;
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -739,64 +766,6 @@ export interface components {
       /** Format: date-time */
       updatedAt?: string;
     };
-    CamperGroupFilter: {
-      ageMin?: number;
-      ageMax?: number;
-      /** @enum {string} */
-      gender?: "male" | "female";
-      hasAllergies?: boolean;
-    };
-    CamperGroup: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      description?: string;
-      /** Format: uuid */
-      colorId?: string;
-      filters: components["schemas"]["CamperGroupFilter"];
-      /** @description Optional array of family group IDs to include */
-      familyGroupIds?: string[];
-      /** @description IDs of labels assigned to this group */
-      labelIds?: string[];
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-    };
-    FamilyGroup: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      description?: string;
-      /**
-       * Format: uuid
-       * @description Required - each family group must be assigned to a housing room
-       */
-      housingRoomId: string;
-      /** @description Staff members assigned to this family group */
-      staffMemberIds: string[];
-      /**
-       * Format: uuid
-       * @description ID of the camp session this family group belongs to
-       */
-      sessionId: string;
-      /** Format: uuid */
-      colorId?: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-    };
-    StaffFilter: {
-      /** @description Filter by staff roles */
-      roles?: string[];
-      /** @description Filter by required certifications */
-      certificationIds?: string[];
-      /** @description Minimum age for staff members */
-      minAge?: number;
-      /** @description Maximum age for staff members */
-      maxAge?: number;
-    };
     Group: {
       /** Format: uuid */
       id: string;
@@ -821,7 +790,10 @@ export interface components {
         /** @enum {string} */
         gender?: "male" | "female";
         hasAllergies?: boolean;
-        /** Format: uuid */
+        /**
+         * Format: uuid
+         * @description Filter by specific session
+         */
         sessionId?: string;
         /** @description Filter by specific family groups */
         familyGroupIds?: string[];
@@ -829,7 +801,12 @@ export interface components {
       /** @description Manually selected camper IDs (mutually exclusive with camperFilters) */
       camperIds?: string[];
       /** @description Filter criteria to automatically match staff members */
-      staffFilters?: components["schemas"]["StaffFilter"];
+      staffFilters?: {
+        /** @description Filter by staff roles */
+        roles?: string[];
+        /** @description Filter by certifications */
+        certificationIds?: string[];
+      };
       /** @description Manually selected staff IDs (mutually exclusive with staffFilters) */
       staffIds?: string[];
       /** @description Child group IDs for creating groups of groups */

@@ -22,12 +22,8 @@ components:
       $ref: './schemas/Conflict.yaml'
     Label:
       $ref: './schemas/Label.yaml'
-    CamperGroupFilter:
-      $ref: './schemas/CamperGroupFilter.yaml'
-    CamperGroup:
-      $ref: './schemas/CamperGroup.yaml'
-    FamilyGroup:
-      $ref: './schemas/FamilyGroup.yaml'
+    Group:
+      $ref: './schemas/Group.yaml'
     Activity:
       $ref: './schemas/Activity.yaml'
     Program:
@@ -70,4 +66,5 @@ paths:
     $ref: './paths/areas.yaml'
   /areas/{id}:
     $ref: './paths/areasById.yaml'
-
+  /groups:
+    $ref: './paths/groups.yaml'

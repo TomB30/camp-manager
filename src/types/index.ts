@@ -35,15 +35,6 @@ export type Area = components["schemas"]["Area"];
 // Label types
 export type Label = components["schemas"]["Label"];
 
-// Camper group filter types
-export type CamperGroupFilter = components["schemas"]["CamperGroupFilter"];
-
-// Camper group types
-export type CamperGroup = components["schemas"]["CamperGroup"];
-
-// Family group types
-export type FamilyGroup = components["schemas"]["FamilyGroup"];
-
 // Activity types
 export type Activity = components["schemas"]["Activity"];
 
@@ -61,7 +52,8 @@ export type CampSession = components["schemas"]["CampSession"];
 
 // Unified Group types (new)
 export type Group = components["schemas"]["Group"];
-export type StaffFilter = components["schemas"]["StaffFilter"];
+export type GroupStaffFilters = components["schemas"]["Group"]["staffFilters"];
+export type GroupCamperFilters = components["schemas"]["Group"]["camperFilters"];
 
 // Re-export the components type for advanced usage
 export type { components };

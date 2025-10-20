@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { StaffFilter, StaffMember } from "@/types";
+import type { GroupStaffFilters, StaffMember } from "@/types";
 import { staffMembersService } from "@/services";
 
 export const useStaffMembersStore = defineStore("staffMembers", {
@@ -30,8 +30,9 @@ export const useStaffMembersStore = defineStore("staffMembers", {
       };
     },
 
-    getStaffMembersByFilters(state): (filters: StaffFilter) => StaffMember[] {
-      return (filters: StaffFilter): StaffMember[] => {
+    getStaffMembersByFilters(state): (filters: GroupStaffFilters) => StaffMember[] {
+      return (filters: GroupStaffFilters | undefined): StaffMember[] => {
+        if (!filters) return [];
         return state.staffMembers.filter((s) => {
           if (filters.roles && filters.roles.length > 0) {
             if (!filters.roles.includes(s.role)) return false;

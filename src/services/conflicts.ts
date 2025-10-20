@@ -1,4 +1,4 @@
-import type { Conflict, Event, Camper, StaffMember, Location, HousingRoom, FamilyGroup, Certification } from '@/types';
+import type { Conflict, Event, Camper, StaffMember, Location, HousingRoom, Certification, Group } from '@/types';
 
 export class ConflictDetector {
   /**
@@ -304,13 +304,13 @@ export class ConflictDetector {
     housingRoomId: string,
     _startDate: string,
     _endDate: string,
-    familyGroups: FamilyGroup[],
-    excludeFamilyGroupId?: string
-  ): FamilyGroup[] {
+    familyGroups: Group[],
+    excludeGroupId?: string
+  ): Group[] {
     // This method is deprecated - keeping for backward compatibility only
     return familyGroups.filter(group => {
       // Skip the group we're excluding (e.g., the one being edited)
-      if (excludeFamilyGroupId && group.id === excludeFamilyGroupId) {
+      if (excludeGroupId && group.id === excludeGroupId) {
         return false;
       }
 
@@ -330,12 +330,12 @@ export class ConflictDetector {
   getFamilyGroupConflictsInRoomBySession(
     housingRoomId: string,
     sessionId: string,
-    familyGroups: FamilyGroup[],
-    excludeFamilyGroupId?: string
-  ): FamilyGroup[] {
+    familyGroups: Group[],
+    excludeGroupId?: string
+  ): Group[] {
     return familyGroups.filter(group => {
       // Skip the group we're excluding (e.g., the one being edited)
-      if (excludeFamilyGroupId && group.id === excludeFamilyGroupId) {
+      if (excludeGroupId && group.id === excludeGroupId) {
         return false;
       }
 
@@ -357,15 +357,15 @@ export class ConflictDetector {
     housingRoomId: string,
     startDate: string,
     endDate: string,
-    familyGroups: FamilyGroup[],
-    excludeFamilyGroupId?: string
-  ): { canAssign: boolean; reason?: string; conflictingGroups?: FamilyGroup[] } {
+    familyGroups: Group[],
+    excludeGroupId?: string
+  ): { canAssign: boolean; reason?: string; conflictingGroups?: Group[] } {
     const conflictingGroups = this.getFamilyGroupConflictsInRoom(
       housingRoomId,
       startDate,
       endDate,
       familyGroups,
-      excludeFamilyGroupId
+      excludeGroupId
     );
 
     if (conflictingGroups.length > 0) {
@@ -385,9 +385,9 @@ export class ConflictDetector {
   canAssignFamilyGroupToRoomBySession(
     housingRoomId: string,
     sessionId: string,
-    familyGroups: FamilyGroup[],
+    familyGroups: Group[],
     excludeFamilyGroupId?: string
-  ): { canAssign: boolean; reason?: string; conflictingGroups?: FamilyGroup[] } {
+  ): { canAssign: boolean; reason?: string; conflictingGroups?: Group[] } {
     const conflictingGroups = this.getFamilyGroupConflictsInRoomBySession(
       housingRoomId,
       sessionId,
@@ -413,7 +413,7 @@ export class ConflictDetector {
     startDate: string,
     endDate: string,
     allSleepingRooms: HousingRoom[],
-    familyGroups: FamilyGroup[],
+    familyGroups: Group[],
     excludeFamilyGroupId?: string
   ): HousingRoom[] {
     return allSleepingRooms.filter(room => {
