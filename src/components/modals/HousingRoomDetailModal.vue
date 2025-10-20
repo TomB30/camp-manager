@@ -38,9 +38,9 @@
                       • {{ getGroupStaffCount(group.id) }} staff
                     </span>
                   </div>
-                  <div class="text-xs group-dates">
-                    📅 {{ getGroupSessionName(group.id) }} ({{
-                      getGroupSessionDateRange(group.id)
+                  <div class="text-xs group-dates" v-if="group.sessionId">
+                    📅 {{ getSessionName(group.sessionId) }} ({{
+                      getSessionDateRange(group.sessionId)
                     }})
                   </div>
                   <div
@@ -119,13 +119,13 @@ export default defineComponent({
     getGroupStaffCount(groupId: string): number {
       return this.groupsStore.getStaffInGroup(groupId).length;
     },
-    getGroupSessionName(sessionId: string): string {
+    getSessionName(sessionId: string): string {
       return (
         this.sessionsStore.sessions.find((s) => s.id === sessionId)?.name ||
         "Unknown Session"
       );
     },
-    getGroupSessionDateRange(sessionId: string): string {
+    getSessionDateRange(sessionId: string): string {
       const session = this.sessionsStore.sessions.find(
         (s) => s.id === sessionId
       );
