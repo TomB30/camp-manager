@@ -36,8 +36,8 @@ export async function insertMockData(): Promise<void> {
   console.log(`- ${mockData.certifications.length} certifications`);
   console.log(`- ${mockData.locations.length} locations`);
   console.log(`- ${mockData.staffMembers.length} staff members`);
-  console.log(`- ${mockData.rooms.length} rooms`);
-  console.log(`- ${mockData.sleepingRooms.length} housing rooms`);
+  console.log(`- ${mockData.areas.length} areas`);
+  console.log(`- ${mockData.housingRooms.length} housing rooms`);
   console.log(`- ${mockData.groups.length} groups`);
   console.log(`- ${mockData.campers.length} campers`);
   console.log(`- ${mockData.programs.length} programs`);
