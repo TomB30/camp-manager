@@ -58,7 +58,7 @@
           <span>Session & Housing (Optional)</span>
         </div>
 
-        <div class="grid grid-cols-2">
+        <div>
           <div class="form-group">
             <label class="form-label">Camp Session</label>
             <SelectionList
@@ -80,15 +80,16 @@
             <SelectionList
               v-model="localFormData.housingRoomId"
               @update:modelValue="handleHousingRoomChange"
-              :items="housingRooms"
+              :items="availableHousingRooms"
               item-type="housing room"
               placeholder="Select a room..."
-              empty-text="No housing room"
+              :empty-text="!localFormData.sessionId ? 'select a session to view available housing rooms' : 'No housing room'"
               add-button-text="Select"
               mode="single"
               :get-label-fn="getRoomLabel"
               :get-initials-fn="getRoomInitials"
               :get-options-fn="getRoomOption"
+              :disabled="!localFormData.sessionId"
             />
           </div>
         </div>
@@ -564,6 +565,15 @@ export default defineComponent({
       // Exclude the current group being edited and any that would cause circular references
       return this.groups.filter((g) => g.id !== this.editingGroupId);
     },
+    availableHousingRooms(): HousingRoom[] {
+      // If no session is selected, return empty array
+      if (!this.localFormData.sessionId) {
+        return [];
+      }
+
+      // Return all housing rooms - availability will be handled in getRoomOption
+      return this.housingRooms;
+    },
     previewCamperCount(): number {
       if (this.groupType !== "filter") return 0;
 
@@ -639,6 +649,17 @@ export default defineComponent({
         this.detectStaffType();
       },
       deep: true,
+    },
+    'localFormData.sessionId'() {
+      // Clear housing room if it's no longer available for the selected session
+      if (this.localFormData.housingRoomId) {
+        const isRoomAvailable = this.availableHousingRooms.some(
+          (room) => room.id === this.localFormData.housingRoomId
+        );
+        if (!isRoomAvailable) {
+          this.localFormData.housingRoomId = '';
+        }
+      }
     },
     groupType(newType) {
       // Clear conflicting fields when switching types
@@ -790,9 +811,62 @@ export default defineComponent({
       return room.name.substring(0, 2).toUpperCase();
     },
     getRoomOption(room: HousingRoom): AutocompleteOption {
+      // Check if room is available for the selected session
+      const selectedSession = this.sessions.find(
+        (s) => s.id === this.localFormData.sessionId
+      );
+      
+      if (!selectedSession) {
+        return {
+          label: `${room.name} (${room.beds} beds)`,
+          value: room.id,
+        };
+      }
+
+      // Find if any other group is using this room during overlapping dates
+      const occupyingGroup = this.groups.find((group) => {
+        // Skip the current group being edited
+        if (group.id === this.editingGroupId) {
+          return false;
+        }
+
+        // Check if this group is using the room
+        if (group.housingRoomId !== room.id) {
+          return false;
+        }
+
+        // Check if this group's session overlaps with the selected session
+        if (!group.sessionId) {
+          return false;
+        }
+
+        const groupSession = this.sessions.find((s) => s.id === group.sessionId);
+        if (!groupSession) {
+          return false;
+        }
+
+        // Check for date overlap
+        const selectedStart = new Date(selectedSession.startDate);
+        const selectedEnd = new Date(selectedSession.endDate);
+        const groupStart = new Date(groupSession.startDate);
+        const groupEnd = new Date(groupSession.endDate);
+
+        // Rooms overlap if: start1 <= end2 && start2 <= end1
+        return selectedStart <= groupEnd && groupStart <= selectedEnd;
+      });
+
+      if (occupyingGroup) {
+        return {
+          label: `${room.name} (${room.beds} beds) - (Occupied by ${occupyingGroup.name})`,
+          value: room.id,
+          disabled: true,
+        };
+      }
+
       return {
         label: `${room.name} (${room.beds} beds)`,
         value: room.id,
+        disabled: false,
       };
     },
 

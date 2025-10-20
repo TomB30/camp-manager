@@ -533,9 +533,30 @@ export default defineComponent({
 }
 
 .autocomplete-option.disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
   color: var(--text-secondary);
+}
+
+.option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.option-label {
+  font-weight: 500;
+}
+
+.option-description {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.autocomplete-option.disabled .option-description {
+  color: var(--error-color, #EF4444);
+  font-weight: 500;
 }
 
 .autocomplete-empty {

@@ -17,6 +17,7 @@
           class="btn-remove"
           @click="removeItem(itemId)"
           :title="`Remove ${itemType}`"
+          :disabled="disabled"
         >
           ✕
         </button>
@@ -32,6 +33,7 @@
         v-model="selectedToAdd"
         :options="availableOptions"
         :placeholder="placeholder"
+        :disabled="disabled"
       />
       <button 
         type="button"
@@ -95,6 +97,10 @@ export default defineComponent({
     getOptionsFn: {
       type: Function as PropType<(item: any) => AutocompleteOption>,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['update:modelValue'],
@@ -230,9 +236,14 @@ export default defineComponent({
   line-height: 1;
 }
 
-.btn-remove:hover {
+.btn-remove:hover:not(:disabled) {
   background: #dc2626;
   transform: scale(1.1);
+}
+
+.btn-remove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .add-item-section {
