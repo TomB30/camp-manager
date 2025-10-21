@@ -51,7 +51,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import { format } from "date-fns";
-import { filterEventsByDateAndHour } from "@/utils/dateUtils";
+import { dateUtils } from "@/utils/dateUtils";
 import { useColorsStore, useEventsStore } from "@/stores";
 import type { Event, Location } from "@/types";
 
@@ -106,7 +106,7 @@ export default defineComponent({
       return this.eventsStore.getEventCamperIds(eventId).length;
     },
     getEventsForDayAndHour(day: Date, hour: number): Event[] {
-      return filterEventsByDateAndHour(this.events, day, hour);
+      return dateUtils.filterEventsByDateAndHour(this.events, day, hour);
     },
     getWeekEventStyle(event: Event, _day: Date) {
       const start = new Date(event.startDate);

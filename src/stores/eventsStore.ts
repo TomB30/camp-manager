@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import type { Event, StaffMember } from "@/types";
 import { eventsService } from "@/services";
-import { filterEventsByDate } from "@/utils/dateUtils";
+import { dateUtils } from "@/utils/dateUtils";
 import { useGroupsStore } from "./groupsStore";
 import { useStaffMembersStore } from "./staffMembersStore";
 
@@ -21,7 +21,7 @@ export const useEventsStore = defineStore("events", {
 
     eventsForDate(state): (date: Date) => Event[] {
       return (date: Date): Event[] => {
-        return filterEventsByDate(state.events, date);
+        return dateUtils.filterEventsByDate(state.events, date);
       };
     },
 

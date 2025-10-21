@@ -4,14 +4,13 @@
       title="Camp Sessions"
       description="Define the time periods (weeks, months, or custom durations) that campers can register for at your camp."
       action-text="Session"
-      @action="showAddModal = true"
+      @action="showFormModal = true"
     >
       <template #action-icon>
         <Icon name="Plus" :size="18" />
       </template>
     </TabHeader>
 
-    <!-- Search and Filters -->
     <FilterBar
       v-if="sessionsStore.sessions.length > 0"
       v-model:searchQuery="searchQuery"
@@ -21,18 +20,16 @@
       @clear="clearFilters"
     />
 
-    <!-- Empty State -->
     <EmptyState
       v-if="sessionsStore.sessions.length === 0"
       type="empty"
       title="No Sessions Yet"
       message="Add your first session to define the registration periods for your camp."
       action-text="Session"
-      @action="showAddModal = true"
+      @action="showFormModal = true"
       icon-name="CalendarDays"
     />
 
-    <!-- Sessions List -->
     <div v-else class="sessions-list">
       <SessionCard
         v-for="session in filteredSessions"
@@ -42,25 +39,21 @@
       />
     </div>
 
-    <!-- Session Detail Modal -->
     <SessionDetailModal
-      :show="!!selectedSessionId"
+      v-if="!!selectedSession"
       :session="selectedSession"
       @close="selectedSessionId = null"
       @edit="editSessionFromDetail"
       @delete="deleteSessionConfirm"
     />
 
-    <!-- Add/Edit Session Modal -->
     <SessionFormModal
-      :show="showAddModal || showEditModal"
-      :is-editing="!!editingSession"
-      :form-data="formData"
+      v-if="showFormModal"
+      :session-id="editingSession?.id"
       @close="closeModal"
       @save="saveSession"
     />
 
-    <!-- Confirm Delete Modal -->
     <ConfirmModal
       :show="showConfirmModal"
       title="Delete Session"
@@ -76,7 +69,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useSessionsStore } from "@/stores";
-import type { Session } from "@/types";
+import type { Session, SessionCreationRequest } from "@/types";
 import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import SessionCard from "@/components/cards/SessionCard.vue";
@@ -106,20 +99,12 @@ export default defineComponent({
   },
   data() {
     return {
-      showAddModal: false,
-      showEditModal: false,
-      showConfirmModal: false,
+      showFormModal: false as boolean,
+      showConfirmModal: false as boolean,
       editingSession: null as Session | null,
       selectedSessionId: null as string | null,
       sessionToDelete: null as Session | null,
-      searchQuery: "",
-      formData: {
-        name: "",
-        startDate: "",
-        endDate: "",
-        description: "",
-        maxCampers: undefined as number | undefined,
-      },
+      searchQuery: "" as string,
     };
   },
   computed: {
@@ -143,35 +128,24 @@ export default defineComponent({
         );
       });
     },
-
     selectedSession(): Session | null {
       if (!this.selectedSessionId) return null;
       return this.sessionsStore.getSessionById(this.selectedSessionId) || null;
     },
   },
   methods: {
-    selectSession(id: string) {
+    selectSession(id: string): void {
       this.selectedSessionId = id;
     },
-
-    editSessionFromDetail(session: Session) {
+    editSessionFromDetail(session: Session): void {
       this.selectedSessionId = null;
       this.editSession(session);
     },
-
-    editSession(session: Session) {
+    editSession(session: Session): void {
       this.editingSession = session;
-      this.formData = {
-        name: session.name,
-        startDate: session.startDate,
-        endDate: session.endDate,
-        description: session.description || "",
-        maxCampers: session.maxCampers,
-      };
-      this.showEditModal = true;
+      this.showFormModal = true;
     },
-
-    deleteSessionConfirm(id: string) {
+    deleteSessionConfirm(id: string): void {
       const session = this.sessionsStore.getSessionById(id);
       if (session) {
         this.sessionToDelete = session;
@@ -179,8 +153,7 @@ export default defineComponent({
         this.showConfirmModal = true;
       }
     },
-
-    async handleDeleteSession() {
+    async handleDeleteSession(): Promise<void> {
       if (!this.sessionToDelete) return;
 
       try {
@@ -192,14 +165,7 @@ export default defineComponent({
         this.toast.error(error.message || "Failed to delete session");
       }
     },
-
-    async saveSession(data: {
-      name: string;
-      startDate: string;
-      endDate: string;
-      description: string;
-      maxCampers?: number;
-    }) {
+    async saveSession(data: SessionCreationRequest): Promise<void> {
       try {
         if (this.editingSession) {
           // Update existing
@@ -232,21 +198,11 @@ export default defineComponent({
         this.toast.error(error.message || "Failed to save session");
       }
     },
-
-    closeModal() {
-      this.showAddModal = false;
-      this.showEditModal = false;
+    closeModal(): void {
+      this.showFormModal = false;
       this.editingSession = null;
-      this.formData = {
-        name: "",
-        startDate: "",
-        endDate: "",
-        description: "",
-        maxCampers: undefined,
-      };
     },
-
-    clearFilters() {
+    clearFilters(): void {
       this.searchQuery = "";
     },
   },
