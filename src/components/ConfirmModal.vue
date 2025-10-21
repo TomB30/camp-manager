@@ -1,39 +1,32 @@
 <template>
-  <Teleport to="body">
-    <div v-if="show" class="modal-overlay" @click.self="cancel">
-      <div class="modal confirm-modal">
-        <div class="modal-header">
-          <h3>{{ title }}</h3>
-        </div>
-        <div class="modal-body">
-          <p>{{ message }}</p>
-          <p v-if="details" class="details">{{ details }}</p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" @click="cancel">Cancel</button>
-          <button
-            class="btn"
-            :class="dangerMode ? 'btn-error' : 'btn-primary'"
-            @click="confirm"
-          >
-            {{ confirmText }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </Teleport>
+  <BaseModal @close="cancel" modal-width="sm">
+    <template #header>
+      <h3>{{ title }}</h3>
+    </template>
+    <template #body>
+      <p>{{ message }}</p>
+      <p v-if="details" class="details">{{ details }}</p>
+    </template>
+    <template #footer>
+      <button class="btn btn-secondary" @click="cancel">Cancel</button>
+      <button
+        class="btn"
+        :class="dangerMode ? 'btn-error' : 'btn-primary'"
+        @click="confirm"
+      >
+        {{ confirmText }}
+      </button>
+    </template>
+  </BaseModal>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import BaseModal from "./BaseModal.vue";
 
 export default defineComponent({
   name: "ConfirmModal",
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     title: {
       type: String,
       required: true,
@@ -54,6 +47,9 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+  },
+  components: {
+    BaseModal,
   },
   emits: ["confirm", "cancel"],
   methods: {

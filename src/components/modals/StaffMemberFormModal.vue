@@ -1,9 +1,5 @@
 <template>
-  <BaseModal
-    :show="show"
-    :title="isEditing ? 'Edit Staff Member' : 'Add New Staff Member'"
-    @close="$emit('close')"
-  >
+  <BaseModal :title="isEditing ? 'Edit Staff Member' : 'Add New Staff Member'" @close="$emit('close')">
     <template #body>
       <form @submit.prevent="handleSave">
         <div class="grid grid-cols-2">
@@ -119,10 +115,6 @@ export default defineComponent({
     SelectionList,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     isEditing: {
       type: Boolean,
       default: false,

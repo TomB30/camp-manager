@@ -118,7 +118,7 @@
 
       <!-- Member Detail Modal -->
       <StaffMemberDetailModal
-        :show="!!selectedMemberId"
+        v-if="!!selectedMemberId"
         :member="selectedMember"
         @close="selectedMemberId = null"
         @edit="editMember"
@@ -160,7 +160,7 @@
 
       <!-- Add/Edit Member Modal -->
       <StaffMemberFormModal
-        :show="showModal"
+        v-if="showModal"
         :is-editing="!!editingMemberId"
         :form-data="formData"
         :staff-members="staffMembersStore.staffMembers"
@@ -171,7 +171,7 @@
 
       <!-- Confirm Delete Modal -->
       <ConfirmModal
-        :show="showConfirmModal"
+        v-if="showConfirmModal"
         title="Delete Staff Member"
         message="Are you sure you want to delete this staff member?"
         details="They will be removed from all events."

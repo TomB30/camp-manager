@@ -1,10 +1,5 @@
 <template>
-  <BaseModal
-    :show="show"
-    :title="room?.name || ''"
-    modal-class="modal-lg"
-    @close="$emit('close')"
-  >
+  <BaseModal :title="room?.name || ''" modal-class="modal-lg" @close="$emit('close')">
     <template #body>
       <div v-if="room">
         <div class="detail-section">
@@ -88,10 +83,6 @@ export default defineComponent({
     BaseModal,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     room: {
       type: Object as PropType<HousingRoom | null>,
       default: null,

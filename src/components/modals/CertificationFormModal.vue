@@ -1,9 +1,5 @@
 <template>
-  <BaseModal
-    :show="show"
-    :title="isEditing ? 'Edit Certification' : 'Add New Certification'"
-    @close="$emit('close')"
-  >
+  <BaseModal :title="isEditing ? 'Edit Certification' : 'Add New Certification'" @close="$emit('close')">
     <template #body>
       <form @submit.prevent="handleSave">
         <div class="form-group">
@@ -66,10 +62,6 @@ export default defineComponent({
     BaseModal,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     isEditing: {
       type: Boolean,
       default: false,

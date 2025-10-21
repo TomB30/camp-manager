@@ -1,9 +1,5 @@
 <template>
-  <BaseModal
-    :show="show"
-    :title="isEditing ? 'Edit Program' : 'Create New Program'"
-    @close="$emit('close')"
-  >
+  <BaseModal :title="isEditing ? 'Edit Program' : 'Create New Program'" @close="$emit('close')">
     <template #body>
       <form @submit.prevent="handleSave">
         <div class="form-group">
@@ -66,10 +62,6 @@ export default defineComponent({
     ColorPicker,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     program: {
       type: Object as PropType<Program | null>,
       default: null,
@@ -95,13 +87,6 @@ export default defineComponent({
   computed: {
     isEditing() {
       return !!this.program;
-    },
-  },
-  watch: {
-    show(newValue) {
-      if (newValue) {
-        this.resetForm();
-      }
     },
   },
   methods: {

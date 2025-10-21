@@ -1,57 +1,51 @@
 <template>
-  <Teleport to="body">
-    <div v-if="show" class="modal-overlay" @click.self="handleOverlayClick">
-      <div class="modal" :class="modalClass">
-        <div class="modal-header">
-          <div class="modal-header-content">
-            <slot name="header">
-              <h3>{{ title }}</h3>
-              <p v-if="subtitle" class="modal-subtitle">{{ subtitle }}</p>
-            </slot>
-          </div>
-          <button
-            class="btn btn-icon btn-secondary"
-            @click="close"
-            aria-label="Close modal"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <slot name="body"></slot>
-        </div>
-
-        <div v-if="$slots.footer || showDefaultFooter" class="modal-footer">
-          <slot name="footer">
-            <button class="btn btn-secondary" @click="close">
-              {{ cancelText }}
-            </button>
-            <button
-              v-if="primaryAction"
-              class="btn btn-primary"
-              @click="handlePrimaryAction"
-              :disabled="primaryDisabled"
-            >
-              {{ primaryText }}
-            </button>
+  <q-dialog model-value @hide="close">
+    <q-card class="modal" :style="{ width: modalWidthPx, maxWidth: modalWidthPx }">
+      <div class="modal-header">
+        <div class="modal-header-content">
+          <slot name="header">
+            <h3>{{ title }}</h3>
+            <p v-if="subtitle" class="modal-subtitle">{{ subtitle }}</p>
           </slot>
         </div>
+        <button
+          class="btn btn-icon btn-secondary"
+          @click="close"
+          aria-label="Close modal"
+        >
+          ✕
+        </button>
       </div>
-    </div>
-  </Teleport>
+
+      <div class="modal-body">
+        <slot name="body"></slot>
+      </div>
+
+      <div v-if="$slots.footer || showDefaultFooter" class="modal-footer">
+        <slot name="footer">
+          <button class="btn btn-secondary" @click="close">
+            {{ cancelText }}
+          </button>
+          <button
+            v-if="primaryAction"
+            class="btn btn-primary"
+            @click="handlePrimaryAction"
+            :disabled="primaryDisabled"
+          >
+            {{ primaryText }}
+          </button>
+        </slot>
+      </div>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 
 export default defineComponent({
   name: "BaseModal",
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     title: {
       type: String,
       default: "",
@@ -60,9 +54,9 @@ export default defineComponent({
       type: String,
       default: "",
     },
-    modalClass: {
-      type: String,
-      default: "",
+    modalWidth: {
+      type: String as PropType<"sm" | "md" | "lg">,
+      default: "md",
     },
     closeOnOverlay: {
       type: Boolean,
@@ -90,6 +84,20 @@ export default defineComponent({
     },
   },
   emits: ["close", "primary-action"],
+  computed: {
+    modalWidthPx(): string {
+      switch (this.modalWidth) {
+        case "sm":
+          return "400px";
+        case "md":
+          return "600px";
+        case "lg":
+          return "800px";
+        default:
+          return "800px";
+      }
+    },
+  },
   methods: {
     close() {
       this.$emit("close");
@@ -107,6 +115,18 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.modal-sm {
+  max-width: 400px !important;
+}
+
+.modal-md {
+  max-width: 600px !important;
+}
+
+.modal-lg {
+  max-width: 800px !important;
+}
+
 .modal-subtitle {
   font-size: 0.875rem;
   color: var(--text-secondary);

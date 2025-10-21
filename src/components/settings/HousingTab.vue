@@ -102,7 +102,7 @@
 
     <!-- Room Detail Modal -->
     <HousingRoomDetailModal
-      :show="!!selectedRoomId"
+      v-if="!!selectedRoomId"
       :room="selectedRoom"
       :groups="selectedRoomGroups"
       @close="selectedRoomId = null"
@@ -113,7 +113,7 @@
 
     <!-- Add/Edit Room Modal -->
     <HousingRoomFormModal
-      :show="showModal"
+      v-if="showModal"
       :is-editing="!!editingRoomId"
       :form-data="formData"
       @close="closeModal"
@@ -122,7 +122,7 @@
 
     <!-- Confirm Delete Modal -->
     <ConfirmModal
-      :show="showConfirmModal"
+      v-if="showConfirmModal"
       :title="confirmModalTitle"
       :message="confirmModalMessage"
       :details="confirmModalDetails"

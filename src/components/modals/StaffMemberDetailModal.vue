@@ -1,9 +1,5 @@
 <template>
-  <BaseModal
-    :show="show"
-    :title="member ? `${member.firstName} ${member.lastName}` : ''"
-    @close="$emit('close')"
-  >
+  <BaseModal :title="member ? `${member.firstName} ${member.lastName}` : ''" @close="$emit('close')">
     <template #body>
       <div v-if="member">
         <div class="detail-section">
@@ -107,10 +103,6 @@ export default defineComponent({
     BaseModal,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     member: {
       type: Object as PropType<StaffMember | null>,
       default: null,

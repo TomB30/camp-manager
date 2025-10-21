@@ -1,9 +1,5 @@
 <template>
-  <BaseModal
-    show
-    :title="isEditing ? 'Edit Color' : 'Add New Color'"
-    @close="$emit('close')"
-  >
+  <BaseModal :title="isEditing ? 'Edit Color' : 'Add New Color'" @close="$emit('close')">
     <template #body>
       <form @submit.prevent="handleSave">
         <div class="form-group">

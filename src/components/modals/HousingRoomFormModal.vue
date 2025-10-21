@@ -1,6 +1,5 @@
 <template>
   <BaseModal
-    :show="show"
     :title="isEditing ? 'Edit Room' : 'Add New Room'"
     @close="$emit('close')"
   >
@@ -73,10 +72,6 @@ export default defineComponent({
     Autocomplete,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     isEditing: {
       type: Boolean,
       default: false,

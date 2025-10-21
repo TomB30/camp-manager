@@ -1,6 +1,5 @@
 <template>
   <BaseModal
-    :show="show"
     :title="isEditing ? 'Edit Event' : 'Create New Event'"
     @close="$emit('close')"
   >
@@ -384,10 +383,6 @@ export default defineComponent({
     NumberInput,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     isEditing: {
       type: Boolean,
       default: false,

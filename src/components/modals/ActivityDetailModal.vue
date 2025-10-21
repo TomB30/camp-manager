@@ -1,5 +1,5 @@
 <template>
-  <BaseModal :show="show" @close="$emit('close')" modal-class="modal-large">
+  <BaseModal @close="$emit('close')">
     <template #header>
       <div class="activity-title-header">
         <div
@@ -120,10 +120,6 @@ export default defineComponent({
     DurationDisplay,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     activity: {
       type: Object as PropType<Activity | null>,
       default: null,

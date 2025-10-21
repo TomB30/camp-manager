@@ -96,7 +96,7 @@
 
     <!-- Certification Detail Modal -->
     <CertificationDetailModal
-      :show="!!selectedCertificationId"
+      v-if="!!selectedCertificationId"
       :certification="selectedCertification"
       @close="selectedCertificationId = null"
       @edit="editCertificationFromDetail"
@@ -105,7 +105,7 @@
 
     <!-- Add/Edit Certification Modal -->
     <CertificationFormModal
-      :show="showModal"
+      v-if="showModal"
       :is-editing="!!editingCertificationId"
       :form-data="formData"
       @close="closeModal"
@@ -114,7 +114,7 @@
 
     <!-- Confirm Delete Modal -->
     <ConfirmModal
-      :show="showConfirmModal"
+      v-if="showConfirmModal"
       title="Delete Certification"
       message="Are you sure you want to delete this certification?"
       confirm-text="Delete"

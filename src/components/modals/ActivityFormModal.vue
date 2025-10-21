@@ -1,9 +1,5 @@
 <template>
-  <BaseModal
-    :show="show"
-    :title="isEditing ? 'Edit Activity' : 'Create New Activity'"
-    @close="$emit('close')"
-  >
+  <BaseModal :title="isEditing ? 'Edit Activity' : 'Create New Activity'" @close="$emit('close')">
     <template #body>
       <ActivityForm
         v-model="localFormData"
@@ -46,10 +42,6 @@ export default defineComponent({
     ActivityForm,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     activity: {
       type: Object as PropType<Activity | null>,
       default: null,
@@ -99,13 +91,6 @@ export default defineComponent({
     },
     presetDurations(): number[] {
       return [30, 60, 90, 120, 180, 240, 480];
-    },
-  },
-  watch: {
-    show(newValue) {
-      if (newValue) {
-        this.resetForm();
-      }
     },
   },
   methods: {

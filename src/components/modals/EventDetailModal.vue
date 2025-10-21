@@ -1,5 +1,5 @@
 <template>
-  <BaseModal :show="show" :title="event?.title || ''" @close="$emit('close')">
+  <BaseModal :title="event?.title || ''" @close="$emit('close')">
     <template #body>
       <div v-if="event">
         <div class="mb-3">
@@ -185,10 +185,6 @@ export default defineComponent({
     BaseModal,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     event: {
       type: Object as PropType<Event | null>,
       default: null,

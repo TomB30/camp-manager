@@ -123,7 +123,7 @@
 
     <!-- Event Detail Modal -->
     <EventDetailModal
-      :show="!!selectedEventId"
+      v-if="!!selectedEventId"
       :event="selectedEvent"
       @close="selectedEventId = null"
       @edit="editEvent"
@@ -132,7 +132,7 @@
 
     <!-- Create/Edit Event Modal -->
     <EventFormModal
-      :show="showEventModal"
+      v-if="showEventModal"
       :is-editing="!!editingEventId"
       :editing-event-id="editingEventId || ''"
       :event-date="getEventFormDate()"
@@ -147,7 +147,7 @@
 
     <!-- Confirmation Modal -->
     <ConfirmModal
-      :show="showConfirmModal"
+      v-if="showConfirmModal"
       title="Delete Event"
       :message="`Are you sure you want to delete the event '${confirmAction?.data.eventName}'?`"
       details="This action cannot be undone. All assigned groups will be removed from this event."

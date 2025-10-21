@@ -148,7 +148,7 @@
 
       <!-- Group Detail Modal -->
       <GroupDetailModal
-        :show="!!selectedGroupId"
+        v-if="!!selectedGroupId"
         :group="selectedGroup"
         :campers="groupCampers"
         :staff="groupStaff"
@@ -159,7 +159,7 @@
 
       <!-- Add/Edit Group Modal -->
       <GroupFormModal
-        :show="showModal"
+        v-if="showModal"
         :is-editing="!!editingGroupId"
         :form-data="formData"
         :campers="campersStore.campers"
@@ -176,7 +176,7 @@
 
       <!-- Confirmation Modal -->
       <ConfirmModal
-        :show="showConfirmModal"
+        v-if="showConfirmModal"
         title="Delete Group"
         :message="`Are you sure you want to delete the group '${groupToDelete?.name}'?`"
         details="This action cannot be undone. The group will be permanently deleted."

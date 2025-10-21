@@ -1,9 +1,5 @@
 <template>
-  <BaseModal
-    :show="show"
-    :title="camper ? `${camper.firstName} ${camper.lastName}` : ''"
-    @close="$emit('close')"
-  >
+  <BaseModal :title="camper ? `${camper.firstName} ${camper.lastName}` : ''" @close="$emit('close')">
     <template #body>
       <div v-if="camper">
         <div class="detail-section">
@@ -96,10 +92,6 @@ export default defineComponent({
     BaseModal,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     camper: {
       type: Object as PropType<Camper | null>,
       default: null,

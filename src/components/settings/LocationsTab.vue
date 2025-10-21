@@ -141,7 +141,7 @@
 
     <!-- Location Detail Modal -->
     <LocationDetailModal
-      :show="!!selectedLocationId"
+      v-if="!!selectedLocationId"
       :location="selectedLocation"
       @close="selectedLocationId = null"
       @edit="editLocation"
@@ -160,7 +160,7 @@
 
     <!-- Add/Edit Location Modal -->
     <LocationFormModal
-      :show="showModal"
+      v-if="showModal"
       :is-editing="!!editingLocationId"
       :form-data="formData"
       @close="closeModal"
@@ -169,7 +169,7 @@
 
     <!-- Confirm Delete Modal -->
     <ConfirmModal
-      :show="showConfirmModal"
+      v-if="showConfirmModal"
       title="Delete Location"
       message="Are you sure you want to delete this location?"
       confirm-text="Delete"

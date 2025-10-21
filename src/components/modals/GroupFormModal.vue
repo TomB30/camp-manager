@@ -1,10 +1,5 @@
 <template>
-  <BaseModal
-    :show="show"
-    :title="isEditing ? 'Edit Group' : 'Create New Group'"
-    modal-class="modal-large"
-    @close="$emit('close')"
-  >
+  <BaseModal :title="isEditing ? 'Edit Group' : 'Create New Group'" @close="$emit('close')">
     <template #body>
       <form @submit.prevent="handleSave">
         <!-- Basic Info -->
@@ -485,10 +480,6 @@ export default defineComponent({
     SelectionList,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     isEditing: {
       type: Boolean,
       default: false,
@@ -1006,10 +997,6 @@ export default defineComponent({
   color: var(--info-text, #1e40af);
   font-size: 0.875rem;
   margin-top: 1rem;
-}
-
-.modal-large {
-  max-width: 800px;
 }
 
 .form-help-text {

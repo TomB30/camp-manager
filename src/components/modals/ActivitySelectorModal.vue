@@ -1,6 +1,5 @@
 <template>
   <BaseModal
-    :show="show"
     title="Add Activity to Program"
     @close="$emit('close')"
   >
@@ -150,10 +149,6 @@ export default defineComponent({
     Icon,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     programId: {
       type: String,
       required: true,
@@ -227,13 +222,6 @@ export default defineComponent({
         value: room.id,
         label: `${room.name} (${room.type})`,
       }));
-    },
-  },
-  watch: {
-    show(newValue) {
-      if (newValue) {
-        this.resetForm();
-      }
     },
   },
   methods: {

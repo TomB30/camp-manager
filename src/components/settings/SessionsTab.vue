@@ -55,7 +55,7 @@
     />
 
     <ConfirmModal
-      :show="showConfirmModal"
+      v-if="showConfirmModal"
       title="Delete Session"
       message="Are you sure you want to delete this session?"
       confirm-text="Delete"

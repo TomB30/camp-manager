@@ -1,5 +1,5 @@
 <template>
-  <BaseModal :show="show" :title="location?.name || ''" @close="$emit('close')">
+  <BaseModal :title="location?.name || ''" @close="$emit('close')">
     <template #body>
       <div v-if="location">
         <div class="detail-section">
@@ -73,10 +73,6 @@ export default defineComponent({
     BaseModal,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     location: {
       type: Object as PropType<Location | null>,
       default: null,

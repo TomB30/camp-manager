@@ -45,7 +45,7 @@
 
     <!-- Add/Edit Label Modal -->
     <LabelFormModal
-      :show="showAddModal || showEditModal"
+      v-if="showAddModal || showEditModal"
       :is-editing="!!editingLabel"
       :form-data="formData"
       @close="closeModal"
@@ -54,7 +54,7 @@
 
     <!-- Confirm Delete Modal -->
     <ConfirmModal
-      :show="showConfirmModal"
+      v-if="showConfirmModal"
       title="Delete Label"
       message="Are you sure you want to delete this label? It will be removed from all entities that use it."
       confirm-text="Delete"

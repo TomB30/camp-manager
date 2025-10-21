@@ -1,10 +1,6 @@
 <template>
   <BaseModal
-    :show="show"
-    :title="group?.name || 'Group Details'"
-    modal-class="modal-large"
-    @close="$emit('close')"
-  >
+    :title="group?.name || 'Group Details'" @close="$emit('close')">
     <template #body>
       <div v-if="group" class="group-details">
         <!-- Description -->
@@ -288,10 +284,6 @@ export default defineComponent({
     Icon,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     group: {
       type: Object as PropType<Group | null>,
       default: null,
@@ -614,9 +606,5 @@ export default defineComponent({
 .badge-success {
   background-color: #10b981;
   color: white;
-}
-
-.modal-large {
-  max-width: 700px;
 }
 </style>

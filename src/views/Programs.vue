@@ -316,14 +316,14 @@
 
     <!-- Modals -->
     <ProgramFormModal
-      :show="showProgramModal"
+      v-if="showProgramModal"
       :program="editingProgram"
       @close="closeProgramModal"
       @save="saveProgram"
     />
 
     <ActivitySelectorModal
-      :show="showActivitySelector"
+      v-if="showActivitySelector"
       :program-id="selectedProgramId || ''"
       @close="showActivitySelector = false"
       @create-new="handleCreateNewActivity"
@@ -331,7 +331,7 @@
     />
 
     <ActivityFormModal
-      :show="showActivityModal"
+      v-if="showActivityModal"
       :activity="editingActivity"
       :program-id="selectedProgramId || undefined"
       @close="closeActivityModal"
@@ -339,7 +339,7 @@
     />
 
     <ActivityDetailModal
-      :show="!!selectedActivityId"
+      v-if="!!selectedActivityId"
       :activity="selectedActivity"
       @close="selectedActivityId = null"
       @edit="editActivity"
@@ -348,7 +348,7 @@
 
     <!-- Staff Selector Modal -->
     <BaseModal
-      :show="showStaffSelector"
+      v-if="showStaffSelector"
       title="Assign Staff to Program"
       @close="showStaffSelector = false"
     >
@@ -375,7 +375,7 @@
 
     <!-- Location Selector Modal -->
     <BaseModal
-      :show="showLocationSelector"
+      v-if="showLocationSelector"
       title="Add Location to Program"
       @close="showLocationSelector = false"
     >
@@ -402,7 +402,7 @@
 
     <!-- Confirm Delete Modal -->
     <ConfirmModal
-      :show="showDeleteConfirm"
+      v-if="showDeleteConfirm"
       :title="deleteConfirmTitle"
       :message="deleteConfirmMessage"
       confirm-text="Delete"

@@ -1,9 +1,5 @@
 <template>
-  <BaseModal
-    :show="show"
-    :title="isEditing ? 'Edit Camper' : 'Add New Camper'"
-    @close="$emit('close')"
-  >
+  <BaseModal :title="isEditing ? 'Edit Camper' : 'Add New Camper'" @close="$emit('close')">
     <template #body>
       <form @submit.prevent="handleSave">
         <div class="grid grid-cols-2">
@@ -150,10 +146,6 @@ export default defineComponent({
     Autocomplete,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     isEditing: {
       type: Boolean,
       default: false,

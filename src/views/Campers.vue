@@ -118,7 +118,7 @@
 
       <!-- Camper Detail Modal -->
       <CamperDetailModal
-        :show="!!selectedCamperId"
+        v-if="!!selectedCamperId"
         :camper="selectedCamper"
         @close="selectedCamperId = null"
         @edit="editCamper"
@@ -182,7 +182,7 @@
 
       <!-- Add/Edit Camper Modal -->
       <CamperFormModal
-        :show="showModal"
+        v-if="showModal"
         :is-editing="!!editingCamperId"
         :form-data="formData"
         :groups="
@@ -195,7 +195,7 @@
 
       <!-- Confirmation Modal -->
       <ConfirmModal
-        :show="showConfirmModal"
+        v-if="showConfirmModal"
         title="Delete Camper"
         :message="`Are you sure you want to delete ${camperToDelete?.name}?`"
         details="This action cannot be undone. The camper will be removed from all events and their housing room assignment."

@@ -48,7 +48,7 @@
     />
     
     <ConfirmModal
-      :show="showConfirmModal"
+      v-if="showConfirmModal"
       title="Delete Color"
       message="Are you sure you want to delete this color?"
       confirm-text="Delete"

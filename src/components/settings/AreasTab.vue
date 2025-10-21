@@ -108,7 +108,7 @@
 
     <!-- Area Detail Modal -->
     <AreaDetailModal
-      :show="!!selectedAreaId"
+      v-if="!!selectedAreaId"
       :area="selectedArea"
       @close="selectedAreaId = null"
       @edit="editArea"
@@ -117,7 +117,7 @@
 
     <!-- Add/Edit Area Modal -->
     <AreaFormModal
-      :show="showModal"
+      v-if="showModal"
       :is-editing="!!editingAreaId"
       :form-data="formData"
       @close="closeModal"
@@ -126,7 +126,7 @@
 
     <!-- Confirm Delete Modal -->
     <ConfirmModal
-      :show="showConfirmModal"
+      v-if="showConfirmModal"
       title="Delete Area"
       message="Are you sure you want to delete this area?"
       confirm-text="Delete"

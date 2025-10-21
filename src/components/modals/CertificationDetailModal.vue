@@ -1,9 +1,5 @@
 <template>
-  <BaseModal
-    :show="show"
-    :title="certification?.name || ''"
-    @close="$emit('close')"
-  >
+  <BaseModal :title="certification?.name || ''" @close="$emit('close')">
     <template #body>
       <div v-if="certification">
         <div v-if="certification.description" class="detail-section">
@@ -80,10 +76,6 @@ export default defineComponent({
     BaseModal,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
     certification: {
       type: Object as PropType<Certification | null>,
       default: null,
