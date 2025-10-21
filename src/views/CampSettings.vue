@@ -43,7 +43,7 @@
           key="certifications"
         />
         <ColorsTab v-else-if="activeTab === 'colors'" key="colors" />
-        <LabelsTab v-else-if="activeTab === 'labels'" key="labels" />
+        <!-- <LabelsTab v-else-if="activeTab === 'labels'" key="labels" /> -->
       </Transition>
     </div>
   </div>
@@ -165,12 +165,12 @@ export default defineComponent({
           icon: "Palette",
           count: this.colorsStore.colors.length,
         },
-        {
-          id: "labels" as const,
-          label: "Labels",
-          icon: "Tag",
-          count: this.labelsStore.labels.length,
-        },
+        // {
+        //   id: "labels" as const,
+        //   label: "Labels",
+        //   icon: "Tag",
+        //   count: this.labelsStore.labels.length,
+        // },
       ];
     },
   },
