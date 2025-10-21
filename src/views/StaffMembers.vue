@@ -3,9 +3,7 @@
     <div class="staff-view">
       <ViewHeader title="Staff Management">
         <template #actions>
-          <button class="btn btn-primary" @click="showModal = true">
-            + Staff Member
-          </button>
+          <BaseButton color="primary" @click="showModal = true" label="Staff Member" icon="add"/>
         </template>
       </ViewHeader>
 
@@ -43,7 +41,7 @@
           type="empty"
           title="No Staff Members Yet"
           message="Add your first staff member to start building your camp team and managing assignments."
-          action-text="+ Staff Member"
+          action-text="Staff Member"
           @action="showModal = true"
           icon-name="Users"
         />
@@ -107,12 +105,7 @@
         </template>
 
         <template #cell-actions="{ item }">
-          <button
-            class="btn btn-sm btn-secondary"
-            @click.stop="selectMember(item.id)"
-          >
-            View Details
-          </button>
+          <BaseButton outline color="grey-8" size="sm" @click.stop="selectMember(item.id)" label="View Details" />
         </template>
       </DataTable>
 

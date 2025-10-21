@@ -93,16 +93,11 @@
         >
           {{ item.equipment.length }} item(s)
         </span>
-        <span v-else class="text-secondary">None</span>
+        <span v-else class="text-caption">None</span>
       </template>
 
       <template #cell-actions="{ item }">
-        <button
-          class="btn btn-sm btn-secondary"
-          @click.stop="selectArea(item.id)"
-        >
-          View Details
-        </button>
+        <BaseButton outline color="grey-8" size="sm" @click.stop="selectArea(item.id)" label="View Details" />
       </template>
     </DataTable>
 
@@ -250,7 +245,7 @@ export default defineComponent({
       return {
         name: "",
         description: "",
-        type: "indoor" as Area["type"],
+        type: null as Area["type"] | null,
         capacity: undefined,
         equipment: [] as string[],
         notes: "",

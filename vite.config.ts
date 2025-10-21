@@ -9,7 +9,9 @@ export default defineConfig(({ mode }) => ({
       template: { transformAssetUrls },
     }),
     quasar({
-      sassVariables: "src/quasar-variables.sass",
+      sassVariables: fileURLToPath(
+        new URL("./src/quasar-variables.scss", import.meta.url)
+      ),
     }),
   ],
   resolve: {

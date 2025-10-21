@@ -3,9 +3,7 @@
     <div class="calendar-view">
       <ViewHeader title="Event Calendar">
         <template #actions>
-          <button class="btn btn-primary" @click="openNewEventModal">
-            + Event
-          </button>
+          <BaseButton color="primary" @click="openNewEventModal" icon="add" label="Event" />
         </template>
       </ViewHeader>
 
@@ -186,6 +184,7 @@ import {
   generateRecurrenceDates,
   type RecurrenceData,
 } from "@/utils/recurrence";
+import BaseButton from "@/components/common/BaseButton.vue";
 
 export default defineComponent({
   name: "Calendar",
@@ -199,6 +198,7 @@ export default defineComponent({
     DailyCalendarView,
     WeeklyCalendarView,
     MonthlyCalendarView,
+    BaseButton,
   },
   data() {
     return {

@@ -1,40 +1,38 @@
 <template>
   <BaseModal :title="isEditing ? 'Edit Program' : 'Create New Program'" @close="$emit('close')">
     <template #body>
-      <form @submit.prevent="handleSave">
+      <q-form @submit.prevent="handleSave" ref="formRef">
         <div class="form-group">
           <label class="form-label">Program Name</label>
-          <input
+          <BaseInput
             v-model="localFormData.name"
-            type="text"
-            class="form-input"
             placeholder="e.g., Watersports, Arts & Crafts"
-            required
+            :rules="[(val: string) => !!val || 'Enter program name']"
           />
         </div>
 
         <div class="form-group">
           <label class="form-label">Description</label>
-          <textarea
-            v-model="localFormData.description"
-            class="form-textarea"
-            rows="3"
+          <BaseInput
+            v-model="descriptionModel"
+            type="textarea"
+            :rows="3"
             placeholder="Describe this program..."
-          ></textarea>
+          />
         </div>
 
         <div class="form-group">
           <label class="form-label">Color</label>
           <ColorPicker v-model="localFormData.color" />
         </div>
-      </form>
+      </q-form>
     </template>
 
     <template #footer>
-      <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
-      <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? "Save Changes" : "Create Program" }}
-      </button>
+      <div class="flex q-gutter-x-sm">
+        <BaseButton flat @click="$emit('close')" label="Cancel" />
+        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Save Changes' : 'Create Program'" />
+      </div>
     </template>
   </BaseModal>
 </template>
@@ -42,9 +40,12 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
+import BaseInput from "@/components/common/BaseInput.vue";
+import BaseButton from "@/components/common/BaseButton.vue";
 import ColorPicker from "@/components/ColorPicker.vue";
 import { useColorsStore } from "@/stores";
 import type { Program, Color } from "@/types";
+import type { QForm } from "quasar";
 
 interface ProgramFormData {
   name: string;
@@ -59,6 +60,8 @@ export default defineComponent({
   name: "ProgramFormModal",
   components: {
     BaseModal,
+    BaseInput,
+    BaseButton,
     ColorPicker,
   },
   props: {
@@ -82,11 +85,20 @@ export default defineComponent({
         staffMemberIds: [],
         locationIds: [],
       } as ProgramFormData,
+      formRef: null as any,
     };
   },
   computed: {
     isEditing() {
       return !!this.program;
+    },
+    descriptionModel: {
+      get(): string {
+        return this.localFormData.description || "";
+      },
+      set(value: string) {
+        this.localFormData.description = value || "";
+      },
     },
   },
   methods: {
@@ -118,7 +130,10 @@ export default defineComponent({
         };
       }
     },
-    handleSave() {
+    async handleSave() {
+      const isValid = await (this.$refs.formRef as QForm).validate();
+      if (!isValid) return;
+
       const now = new Date().toISOString();
 
       // Find color ID for the selected color

@@ -8,14 +8,13 @@
       <p v-if="details" class="details">{{ details }}</p>
     </template>
     <template #footer>
-      <button class="btn btn-secondary" @click="cancel">Cancel</button>
-      <button
-        class="btn"
-        :class="dangerMode ? 'btn-error' : 'btn-primary'"
+      <BaseButton @click="cancel" label="Cancel" flat />
+      <BaseButton
+        :color="dangerMode ? 'negative' : 'primary'"
+        outline
         @click="confirm"
-      >
-        {{ confirmText }}
-      </button>
+        :label="confirmText"
+      />
     </template>
   </BaseModal>
 </template>
@@ -23,6 +22,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import BaseModal from "./BaseModal.vue";
+import BaseButton from "./common/BaseButton.vue";
 
 export default defineComponent({
   name: "ConfirmModal",
@@ -50,6 +50,7 @@ export default defineComponent({
   },
   components: {
     BaseModal,
+    BaseButton,
   },
   emits: ["confirm", "cancel"],
   methods: {

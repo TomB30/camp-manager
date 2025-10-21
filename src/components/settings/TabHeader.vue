@@ -7,14 +7,16 @@
       </div>
       <div v-if="actionText || $slots.actions" class="tab-header-actions">
         <slot name="actions"></slot>
-        <button
-          v-if="actionText"
-          class="btn btn-primary"
+        <q-btn
+          no-caps
+          color="primary"
           @click="$emit('action')"
         >
-          <slot name="action-icon"></slot>
-          {{ actionText }}
-        </button>
+          <template #default>
+            <Icon name="Plus" :size="18" />
+            {{ actionText }}
+          </template>
+        </q-btn>
       </div>
     </div>
   </div>
@@ -22,9 +24,12 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-
+import Icon from "@/components/Icon.vue";
 export default defineComponent({
   name: "TabHeader",
+  components: {
+    Icon,
+  },
   props: {
     title: {
       type: String,

@@ -3,9 +3,7 @@
     <div class="campers-view">
       <ViewHeader title="Campers Management">
         <template #actions>
-          <button class="btn btn-primary" @click="showModal = true">
-            + Camper
-          </button>
+          <BaseButton color="primary" @click="showModal = true" label="Camper" icon="add"/>
         </template>
       </ViewHeader>
 
@@ -103,16 +101,11 @@
           >
             {{ item.allergies.length }} allergy(ies)
           </span>
-          <span v-else class="text-secondary">None</span>
+          <span v-else class="text-caption">None</span>
         </template>
 
         <template #cell-actions="{ item }">
-          <button
-            class="btn btn-sm btn-secondary"
-            @click.stop="selectCamper(item.id)"
-          >
-            View Details
-          </button>
+          <BaseButton outline color="grey-8" size="sm" @click.stop="selectCamper(item.id)" label="View Details" />
         </template>
       </DataTable>
 

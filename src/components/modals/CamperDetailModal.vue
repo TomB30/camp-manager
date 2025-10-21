@@ -71,11 +71,8 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete')">
-        Delete Camper
-      </button>
-      <button class="btn btn-secondary" @click="$emit('edit')">Edit</button>
-      <button class="btn btn-secondary" @click="$emit('close')">Close</button>
+      <BaseButton outline color="negative" @click="$emit('delete')" label="Delete" />
+      <BaseButton outline color="grey-8" @click="$emit('edit')" label="Edit" />
     </template>
   </BaseModal>
 </template>

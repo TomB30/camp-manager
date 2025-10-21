@@ -2,9 +2,7 @@
   <div class="view-header">
     <div v-if="hasTitle" class="view-title">
       <h2>{{ title }}</h2>
-      <InfoTooltip v-if="tooltip">
-        {{ tooltip }}
-      </InfoTooltip>
+      <InfoTooltip v-if="tooltip" :tooltip-text="tooltip" />
     </div>
     <h2 v-else>{{ title }}</h2>
     <div v-if="hasActions" class="header-actions">

@@ -4,7 +4,7 @@
     @close="$emit('close')"
   >
     <template #body>
-      <form @submit.prevent="handleSave">
+      <q-form @submit.prevent="handleSave" ref="formRef">
         <!-- Activity Template Selector (only show when creating new event) -->
         <div v-if="!isEditing" class="form-group">
           <label class="form-label"
@@ -24,42 +24,38 @@
 
         <div class="form-group">
           <label class="form-label">Title</label>
-          <input
+          <BaseInput
             v-model="localFormData.title"
-            type="text"
-            class="form-input"
-            required
+            placeholder="Enter event title"
+            :rules="[(val: string) => !!val || 'Enter event title']"
           />
         </div>
 
         <div class="form-group">
           <label class="form-label">Event Date</label>
-          <input
+          <BaseInput
             v-model="localFormData.eventDate"
             type="date"
-            class="form-input"
-            required
+            :rules="[(val: string) => !!val || 'Enter event date']"
           />
         </div>
 
         <div class="grid grid-cols-2">
           <div class="form-group">
             <label class="form-label">Start Time</label>
-            <input
+            <BaseInput
               v-model="localFormData.startDate"
               type="time"
-              class="form-input"
-              required
+              :rules="[(val: string) => !!val || 'Enter start time']"
             />
           </div>
 
           <div class="form-group">
             <label class="form-label">End Time</label>
-            <input
+            <BaseInput
               v-model="localFormData.endDate"
               type="time"
-              class="form-input"
-              required
+              :rules="[(val: string) => !!val || 'Enter end time']"
             />
           </div>
         </div>
@@ -206,12 +202,14 @@
 
         <div class="form-group">
           <label class="form-label">Capacity</label>
-          <input
-            v-model.number="localFormData.capacity"
+          <BaseInput
+            v-model="capacityModel"
             type="number"
-            min="1"
-            class="form-input"
-            required
+            placeholder="Enter capacity"
+            :rules="[
+              (val: string) => !!val || 'Enter capacity',
+              (val: string) => parseInt(val) > 0 || 'Must be greater than 0'
+            ]"
           />
         </div>
 
@@ -314,14 +312,14 @@
             :get-options-fn="getStaffOption"
           />
         </div>
-      </form>
+      </q-form>
     </template>
 
     <template #footer>
-      <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
-      <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? "Save Changes" : "Create Event" }}
-      </button>
+      <div class="flex q-gutter-x-sm">
+        <BaseButton flat @click="$emit('close')" label="Cancel" />
+        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Save Changes' : 'Create Event'" />
+      </div>
     </template>
   </BaseModal>
 </template>
@@ -342,6 +340,8 @@ import {
 import { conflictDetector } from "@/services/conflicts";
 import { useToast } from "@/composables/useToast";
 import BaseModal from "@/components/BaseModal.vue";
+import BaseInput from "@/components/common/BaseInput.vue";
+import BaseButton from "@/components/common/BaseButton.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
@@ -356,6 +356,7 @@ import {
   formatRecurrenceRule,
   validateRecurrenceRule,
 } from "@/utils/recurrence";
+import type { QForm } from "quasar";
 
 interface EventFormData {
   title: string;
@@ -377,6 +378,8 @@ export default defineComponent({
   name: "EventFormModal",
   components: {
     BaseModal,
+    BaseInput,
+    BaseButton,
     Autocomplete,
     ColorPicker,
     SelectionList,
@@ -446,6 +449,7 @@ export default defineComponent({
       localFormData: JSON.parse(JSON.stringify(this.formData)),
       selectedActivityId: "",
       selectedCertificationIds: [] as string[],
+      formRef: null as any,
       recurrenceData: {
         enabled: false,
         frequency: "weekly" as "daily" | "weekly" | "monthly",
@@ -459,6 +463,15 @@ export default defineComponent({
     };
   },
   computed: {
+    capacityModel: {
+      get(): string {
+        return this.localFormData.capacity?.toString() || "";
+      },
+      set(value: string) {
+        const num = parseInt(value);
+        this.localFormData.capacity = isNaN(num) ? 0 : num;
+      },
+    },
     programOptions(): AutocompleteOption[] {
       return [
         { label: "None", value: "" },
@@ -897,7 +910,10 @@ export default defineComponent({
         this.recurrenceData.daysOfWeek.sort((a, b) => a - b);
       }
     },
-    handleSave() {
+    async handleSave() {
+      const isValid = await (this.$refs.formRef as QForm).validate();
+      if (!isValid) return;
+
       // Convert certification IDs to names before saving
       this.localFormData.requiredCertifications =
         this.getCertificationNamesFromIds(this.selectedCertificationIds);

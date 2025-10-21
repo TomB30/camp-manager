@@ -1,25 +1,23 @@
 <template>
   <BaseModal :title="isEditing ? 'Edit Camper' : 'Add New Camper'" @close="$emit('close')">
     <template #body>
-      <form @submit.prevent="handleSave">
+      <q-form @submit.prevent="handleSave" ref="formRef">
         <div class="grid grid-cols-2">
           <div class="form-group">
             <label class="form-label">First Name</label>
-            <input
+            <BaseInput
               v-model="localFormData.firstName"
-              type="text"
-              class="form-input"
-              required
+              placeholder="Enter first name"
+              :rules="[(val: string) => !!val || 'Enter first name']"
             />
           </div>
 
           <div class="form-group">
             <label class="form-label">Last Name</label>
-            <input
+            <BaseInput
               v-model="localFormData.lastName"
-              type="text"
-              class="form-input"
-              required
+              placeholder="Enter last name"
+              :rules="[(val: string) => !!val || 'Enter last name']"
             />
           </div>
         </div>
@@ -27,13 +25,14 @@
         <div class="grid grid-cols-2">
           <div class="form-group">
             <label class="form-label">Age</label>
-            <input
-              v-model.number="localFormData.age"
+            <BaseInput
+              v-model="ageModel"
               type="number"
-              min="5"
-              max="18"
-              class="form-input"
-              required
+              placeholder="Enter age"
+              :rules="[
+                (val: string) => !!val || 'Enter age',
+                (val: string) => parseInt(val) >= 5 && parseInt(val) <= 18 || 'Age must be between 5 and 18'
+              ]"
             />
           </div>
 
@@ -50,11 +49,10 @@
 
         <div class="form-group">
           <label class="form-label">Parent Contact (Email/Phone)</label>
-          <input
+          <BaseInput
             v-model="localFormData.parentContact"
-            type="text"
-            class="form-input"
-            required
+            placeholder="Enter email or phone"
+            :rules="[(val: string) => !!val || 'Enter parent contact']"
           />
         </div>
 
@@ -92,29 +90,28 @@
 
         <div class="form-group">
           <label class="form-label">Allergies (comma-separated)</label>
-          <input
+          <BaseInput
             v-model="allergiesInput"
-            type="text"
-            class="form-input"
             placeholder="e.g., Peanuts, Dairy"
           />
         </div>
 
         <div class="form-group">
           <label class="form-label">Medical Notes</label>
-          <textarea
-            v-model="localFormData.medicalNotes"
-            class="form-textarea"
-          ></textarea>
+          <BaseInput
+            v-model="medicalNotesModel"
+            type="textarea"
+            placeholder="Optional medical notes"
+          />
         </div>
-      </form>
+      </q-form>
     </template>
 
     <template #footer>
-      <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
-      <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? "Update" : "Add" }} Camper
-      </button>
+      <div class="flex q-gutter-x-sm">
+        <BaseButton flat @click="$emit('close')" label="Cancel" />
+        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Update Camper' : 'Add Camper'" />
+      </div>
     </template>
   </BaseModal>
 </template>
@@ -122,10 +119,13 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
+import BaseInput from "@/components/common/BaseInput.vue";
+import BaseButton from "@/components/common/BaseButton.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
 import type { Session, Group } from "@/types";
+import type { QForm } from "quasar";
 
 interface CamperFormData {
   firstName: string;
@@ -143,6 +143,8 @@ export default defineComponent({
   name: "CamperFormModal",
   components: {
     BaseModal,
+    BaseInput,
+    BaseButton,
     Autocomplete,
   },
   props: {
@@ -172,9 +174,27 @@ export default defineComponent({
         { label: "Male", value: "male" },
         { label: "Female", value: "female" },
       ] as AutocompleteOption[],
+      formRef: null as any,
     };
   },
   computed: {
+    ageModel: {
+      get(): string {
+        return this.localFormData.age?.toString() || "";
+      },
+      set(value: string) {
+        const num = parseInt(value);
+        this.localFormData.age = isNaN(num) ? 0 : num;
+      },
+    },
+    medicalNotesModel: {
+      get(): string {
+        return this.localFormData.medicalNotes || "";
+      },
+      set(value: string) {
+        this.localFormData.medicalNotes = value || "";
+      },
+    },
     sessionOptions(): AutocompleteOption[] {
       return this.sessions.map((session) => {
         const startDate = new Date(session.startDate).toLocaleDateString(
@@ -229,7 +249,10 @@ export default defineComponent({
     },
   },
   methods: {
-    handleSave(): void {
+    async handleSave(): Promise<void> {
+      const isValid = await (this.$refs.formRef as QForm).validate();
+      if (!isValid) return;
+
       const allergies = this.allergiesInput
         .split(",")
         .map((a) => a.trim())
@@ -243,3 +266,20 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

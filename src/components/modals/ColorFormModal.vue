@@ -1,37 +1,38 @@
 <template>
-  <BaseModal :title="isEditing ? 'Edit Color' : 'Add New Color'" @close="$emit('close')">
+  <BaseModal
+    :title="isEditing ? 'Edit Color' : 'Add New Color'"
+    @close="$emit('close')"
+  >
     <template #body>
-      <form @submit.prevent="handleSave">
+      <q-form @submit.prevent="handleSave" ref="formRef">
         <div class="form-group">
           <label class="form-label">Color Name</label>
-          <input
+          <BaseInput
             v-model="formModel.name"
-            type="text"
-            class="form-input"
             placeholder="e.g., Ocean Blue"
-            required
+            :rules="[(val: string) => !!val || 'Enter color name']"
           />
         </div>
 
         <div class="form-group">
           <label class="form-label">Hex Value</label>
-          <div class="color-input-group">
-            <input
-              v-model="formModel.hexValue"
-              type="text"
-              class="form-input"
-              placeholder="#3B82F6"
-              pattern="^#[0-9A-Fa-f]{6}$"
-              required
-            />
-            <input
-              v-model="formModel.hexValue"
-              type="color"
-              class="color-picker-input"
-              title="Pick a color"
-            />
-          </div>
-          <small class="form-hint">Format: #RRGGBB (e.g., #3B82F6)</small>
+          <BaseInput
+            v-model="formModel.hexValue"
+            placeholder="#3B82F6"
+            :rules="[(val: string) => !!val || 'Enter hex value']"
+          >
+            <template v-slot:append>
+              <q-icon name="colorize" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-color v-model="formModel.hexValue" />
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </BaseInput>
         </div>
 
         <div
@@ -40,23 +41,13 @@
         >
           <span class="preview-label">Preview</span>
         </div>
-      </form>
+      </q-form>
     </template>
 
     <template #footer>
-      <div class="colors-form-modal-footer flex justify-between items-center">
-        <div v-if="hasErrors" class="text-error">
-          <p>Missing required fields.</p>
-        </div>
-
-        <div class="flex gap-2">
-          <button class="btn btn-secondary" @click="$emit('close')">
-            Cancel
-          </button>
-          <button class="btn btn-primary" @click="handleSave">
-            {{ isEditing ? "Update" : "Add" }} Color
-          </button>
-        </div>
+      <div class="flex q-gutter-x-sm">
+        <BaseButton flat @click="$emit('close')" label="Cancel" />
+        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Update color' : 'Create color'" />
       </div>
     </template>
   </BaseModal>
@@ -65,13 +56,18 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
+import BaseInput from "@/components/common/BaseInput.vue";
+import BaseButton from "@/components/common/BaseButton.vue";
 import type { ColorCreationRequest } from "@/types";
 import { useColorsStore } from "@/stores";
+import type { QForm } from "quasar";
 
 export default defineComponent({
   name: "ColorFormModal",
   components: {
     BaseModal,
+    BaseInput,
+    BaseButton,
   },
   props: {
     colorId: {
@@ -87,7 +83,7 @@ export default defineComponent({
         name: "",
         hexValue: "",
       } as ColorCreationRequest,
-      hasErrors: false,
+      formRef: null as any,
     };
   },
   created() {
@@ -107,16 +103,10 @@ export default defineComponent({
     },
   },
   methods: {
-    handleSave() {
-      if (
-        this.formModel.name.trim() === "" ||
-        this.formModel.hexValue.trim() === ""
-      ) {
-        this.hasErrors = true;
-        return;
-      } else {
-        this.hasErrors = false;
-      }
+    async handleSave() {
+      const isValid = await (this.$refs.formRef as QForm).validate();
+      if (!isValid) return;
+
       this.formModel.hexValue = this.formModel.hexValue.toUpperCase();
       this.$emit("save", this.formModel);
     },

@@ -32,7 +32,7 @@
             </td>
           </tr>
           <tr v-if="paginatedData.length === 0" class="empty-row">
-            <td :colspan="columns.length" class="text-center text-secondary">
+            <td :colspan="columns.length" class="text-center">
               <slot name="empty"> No data available </slot>
             </td>
           </tr>

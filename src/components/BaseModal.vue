@@ -8,13 +8,7 @@
             <p v-if="subtitle" class="modal-subtitle">{{ subtitle }}</p>
           </slot>
         </div>
-        <button
-          class="btn btn-icon btn-secondary"
-          @click="close"
-          aria-label="Close modal"
-        >
-          ✕
-        </button>
+        <CloseButton @click="close" />
       </div>
 
       <div class="modal-body">
@@ -42,9 +36,13 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-
+// Components
+import CloseButton from "./common/CloseButton.vue";
 export default defineComponent({
   name: "BaseModal",
+  components: {
+    CloseButton,
+  },
   props: {
     title: {
       type: String,

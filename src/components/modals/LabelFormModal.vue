@@ -1,36 +1,38 @@
 <template>
   <BaseModal :title="isEditing ? 'Edit Label' : 'Add New Label'" @close="$emit('close')">
     <template #body>
-      <form @submit.prevent="handleSave">
+      <q-form @submit.prevent="handleSave" ref="formRef">
         <div class="form-group">
           <label class="form-label">Label Name *</label>
-          <input
+          <BaseInput
             v-model="localFormData.name"
-            type="text"
-            class="form-input"
             placeholder="e.g., VIP, Beginner, Advanced"
-            required
+            :rules="[(val: string) => !!val || 'Enter label name']"
           />
         </div>
 
         <div class="form-group">
           <label class="form-label">Description</label>
-          <textarea
-            v-model="localFormData.description"
-            class="form-input"
+          <BaseInput
+            v-model="descriptionModel"
+            type="textarea"
+            :rows="2"
             placeholder="Optional description for this label"
-            rows="2"
           />
         </div>
 
         <div class="form-group">
           <label class="form-label">Color</label>
-          <select v-model="localFormData.colorId" class="form-input">
-            <option value="">No Color</option>
-            <option v-for="color in colors" :key="color.id" :value="color.id">
-              {{ color.name }}
-            </option>
-          </select>
+          <q-select
+            v-model="localFormData.colorId"
+            :options="colorOptions"
+            outlined
+            dense
+            emit-value
+            map-options
+            option-value="value"
+            option-label="label"
+          />
           <small v-if="!colors.length" class="form-hint text-secondary">
             No colors available. Create colors in the Colors tab first.
           </small>
@@ -45,14 +47,14 @@
             localFormData.name || "Label Preview"
           }}</span>
         </div>
-      </form>
+      </q-form>
     </template>
 
     <template #footer>
-      <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
-      <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? "Update" : "Add" }} Label
-      </button>
+      <div class="flex q-gutter-x-sm">
+        <BaseButton flat @click="$emit('close')" label="Cancel" />
+        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Update Label' : 'Add Label'" />
+      </div>
     </template>
   </BaseModal>
 </template>
@@ -60,8 +62,11 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
+import BaseInput from "@/components/common/BaseInput.vue";
+import BaseButton from "@/components/common/BaseButton.vue";
 import { useColorsStore } from "@/stores";
 import type { Color } from "@/types";
+import type { QForm } from "quasar";
 
 interface LabelFormData {
   name: string;
@@ -73,6 +78,8 @@ export default defineComponent({
   name: "LabelFormModal",
   components: {
     BaseModal,
+    BaseInput,
+    BaseButton,
   },
   props: {
     isEditing: {
@@ -92,11 +99,29 @@ export default defineComponent({
   data() {
     return {
       localFormData: JSON.parse(JSON.stringify(this.formData)),
+      formRef: null as any,
     };
   },
   computed: {
+    descriptionModel: {
+      get(): string {
+        return this.localFormData.description || "";
+      },
+      set(value: string) {
+        this.localFormData.description = value || undefined;
+      },
+    },
     colors(): Color[] {
       return this.colorsStore.colors;
+    },
+    colorOptions() {
+      return [
+        { label: "No Color", value: "" },
+        ...this.colors.map((color) => ({
+          label: color.name,
+          value: color.id,
+        })),
+      ];
     },
     selectedColor(): Color | undefined {
       if (this.localFormData.colorId) {
@@ -114,7 +139,10 @@ export default defineComponent({
     },
   },
   methods: {
-    handleSave() {
+    async handleSave() {
+      const isValid = await (this.$refs.formRef as QForm).validate();
+      if (!isValid) return;
+
       this.$emit("save", this.localFormData);
     },
   },

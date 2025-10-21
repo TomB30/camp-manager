@@ -27,7 +27,7 @@
                   <div class="font-medium">
                     {{ group.name }}
                   </div>
-                  <div class="text-xs text-secondary">
+                  <div class="text-xs text-grey-7 text-subtitle2">
                     {{ getGroupCamperCount(group.id) }} campers
                     <span v-if="getGroupStaffCount(group.id) > 0">
                       • {{ getGroupStaffCount(group.id) }} staff
@@ -40,21 +40,15 @@
                   </div>
                   <div
                     v-if="group.description"
-                    class="text-xs text-secondary mt-1"
+                    class="text-xs text-grey-7 text-subtitle2 mt-1"
                   >
                     {{ group.description }}
                   </div>
                 </div>
-                <button
-                  class="btn btn-sm btn-secondary"
-                  @click="$emit('view-group', group.id)"
-                >
-                  View Details
-                </button>
               </div>
             </div>
           </div>
-          <div v-else class="text-secondary">
+          <div v-else class="text-grey-7">
             No family groups assigned to this room
           </div>
         </div>
@@ -62,11 +56,8 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete')">
-        Delete Room
-      </button>
-      <button class="btn btn-secondary" @click="$emit('edit')">Edit</button>
-      <button class="btn btn-secondary" @click="$emit('close')">Close</button>
+      <BaseButton outline color="negative" @click="$emit('delete')" label="Delete" />
+      <BaseButton outline color="grey-8" @click="$emit('edit')" label="Edit" />
     </template>
   </BaseModal>
 </template>

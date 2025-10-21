@@ -2,11 +2,10 @@
   <form @submit.prevent="$emit('submit')">
     <div class="form-group">
       <label class="form-label">Activity Name</label>
-      <input
-        :value="modelValue.name"
-        @input="updateField('name', ($event.target as HTMLInputElement).value)"
+      <BaseInput
+        :model-value="modelValue.name"
+        @update:model-value="updateField('name', $event)"
         type="text"
-        class="form-input"
         placeholder="e.g., Wakeboarding, Pottery"
         required
       />
@@ -14,24 +13,19 @@
 
     <div class="form-group">
       <label class="form-label">Description</label>
-      <textarea
-        :value="modelValue.description"
-        @input="
-          updateField(
-            'description',
-            ($event.target as HTMLTextAreaElement).value,
-          )
-        "
-        class="form-textarea"
-        rows="3"
+      <BaseInput
+        :model-value="modelValue.description"
+        @update:model-value="updateField('description', $event)"
+        type="textarea"
+        :rows="3"
         placeholder="Describe this activity..."
-      ></textarea>
+      />
     </div>
 
     <div class="form-group">
       <label class="form-label">Duration (minutes)</label>
       <div class="duration-presets">
-        <button
+        <BaseButton
           v-for="preset in durationPresets"
           :key="preset.minutes || 'custom'"
           type="button"
@@ -45,20 +39,14 @@
           @click="handleDurationPresetClick(preset)"
         >
           {{ preset.label }}
-        </button>
+        </BaseButton>
       </div>
       <div v-if="isCustomDuration" class="custom-duration-input">
-        <input
-          :value="modelValue.duration"
-          @input="
-            updateField(
-              'duration',
-              Number(($event.target as HTMLInputElement).value),
-            )
-          "
+        <BaseInput
+          :model-value="String(modelValue.duration)"
+          @update:model-value="updateField('duration', Number($event))"
           type="number"
-          class="form-input"
-          min="1"
+          :min="1"
           placeholder="Enter custom duration in minutes"
           required
         />
@@ -77,17 +65,11 @@
 
     <div class="form-group">
       <label class="form-label">Default Capacity (Optional)</label>
-      <input
-        :value="modelValue.defaultCapacity"
-        @input="
-          updateField(
-            'defaultCapacity',
-            Number(($event.target as HTMLInputElement).value),
-          )
-        "
+      <BaseInput
+        :model-value="String(modelValue.defaultCapacity)"
+        @update:model-value="updateField('defaultCapacity', Number($event))"
         type="number"
-        class="form-input"
-        min="1"
+        :min="1"
         placeholder="Maximum number of campers"
       />
     </div>
@@ -97,23 +79,22 @@
       <div class="grid grid-cols-2">
         <div>
           <label class="form-label text-xs">Minimum Staff</label>
-          <input
-            :value="modelValue.minStaff"
-            @input="
-              updateField(
-                'minStaff',
-                Number(($event.target as HTMLInputElement).value),
-              )
-            "
+          <BaseInput
+            :model-value="String(modelValue.minStaff)"
+            @update:model-value="updateField('minStaff', Number($event))"
             type="number"
-            class="form-input"
-            min="0"
+            :min="0"
             placeholder="Min"
           />
         </div>
         <div>
           <label class="form-label text-xs">Minimum Staff</label>
-          <input type="number" class="form-input" min="0" placeholder="Min" />
+          <BaseInput
+            model-value=""
+            type="number"
+            :min="0"
+            placeholder="Min"
+          />
         </div>
       </div>
     </div>
@@ -156,6 +137,8 @@ import Autocomplete, {
 } from "@/components/Autocomplete.vue";
 import ColorPicker from "@/components/ColorPicker.vue";
 import SelectionList from "@/components/SelectionList.vue";
+import BaseButton from "@/components/common/BaseButton.vue";
+import BaseInput from "@/components/common/BaseInput.vue";
 import type { Certification } from "@/types";
 
 export interface ActivityFormData {
@@ -175,6 +158,8 @@ export default defineComponent({
     Autocomplete,
     ColorPicker,
     SelectionList,
+    BaseButton,
+    BaseInput,
   },
   props: {
     modelValue: {

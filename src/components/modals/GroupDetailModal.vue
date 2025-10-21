@@ -255,9 +255,8 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-secondary" @click="$emit('close')">Close</button>
-      <button class="btn btn-danger" @click="$emit('delete')">Delete</button>
-      <button class="btn btn-primary" @click="$emit('edit')">Edit</button>
+      <BaseButton outline color="negative" @click="$emit('delete')" label="Delete" />
+      <BaseButton outline color="grey-8" @click="$emit('edit')" label="Edit" />
     </template>
   </BaseModal>
 </template>

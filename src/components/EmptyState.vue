@@ -8,20 +8,14 @@
     <p v-if="message">{{ message }}</p>
 
     <slot name="action">
-      <button
+      <BaseButton
         v-if="actionText"
-        :class="['btn', actionButtonClass]"
+        color="primary"
+        size="sm"
+        icon="add"
+        :label="actionText"
         @click="$emit('action')"
-      >
-        <Icon
-          v-if="!hideActionIcon"
-          class="action-icon"
-          name="Plus"
-          color="white"
-          :size="18"
-        />
-        {{ actionText }}
-      </button>
+      />
     </slot>
   </div>
 </template>

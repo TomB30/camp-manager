@@ -9,7 +9,10 @@
 
         <div class="detail-section">
           <div class="detail-label">Dates</div>
-          <div>{{ formatDate(session.startDate) }} - {{ formatDate(session.endDate) }}</div>
+          <div>
+            {{ formatDate(session.startDate) }} -
+            {{ formatDate(session.endDate) }}
+          </div>
         </div>
 
         <div class="detail-section">
@@ -25,13 +28,18 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete', session?.id)">
-        Delete Session
-      </button>
-      <button class="btn btn-secondary" @click="$emit('edit', session)">
-        Edit
-      </button>
-      <button class="btn btn-secondary" @click="$emit('close')">Close</button>
+      <BaseButton
+        outline
+        color="negative"
+        @click="$emit('delete', session?.id)"
+        label="Delete"
+      />
+      <BaseButton
+        outline
+        color="grey-8"
+        @click="$emit('edit', session)"
+        label="Edit"
+      />
     </template>
   </BaseModal>
 </template>
@@ -50,7 +58,7 @@ export default defineComponent({
   props: {
     session: {
       type: Object as PropType<Session>,
-      required: true
+      required: true,
     },
   },
   emits: ["close", "edit", "delete"],

@@ -55,13 +55,8 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete', area?.id)">
-        Delete Area
-      </button>
-      <button class="btn btn-secondary" @click="$emit('edit', area)">
-        Edit
-      </button>
-      <button class="btn btn-secondary" @click="$emit('close')">Close</button>
+      <BaseButton outline color="negative" @click="$emit('delete', area?.id)" label="Delete" />
+      <BaseButton outline color="grey-8" @click="$emit('edit', area)" label="Edit" />
     </template>
   </BaseModal>
 </template>

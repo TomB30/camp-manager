@@ -1,74 +1,44 @@
 <template>
   <div class="filter-bar card">
     <div class="filter-bar-content">
-      <!-- Search Box (if enabled) -->
-      <div v-if="showSearch" class="search-box">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.35-4.35"></path>
-        </svg>
-        <input
-          :value="internalSearchQuery"
-          @input="handleSearchInput"
-          type="text"
-          :placeholder="searchPlaceholder"
-          class="form-input form-input-sm"
-        />
-      </div>
+      <BaseInput
+        v-model="internalSearchQuery"
+        :placeholder="searchPlaceholder"
+        @update:model-value="
+          (value: string | number | null) => handleSearchInput(value)
+        "
+      >
+      <template #prepend>
+        <Icon name="Search" :size="16" />
+      </template>
+    </BaseInput>
 
       <!-- Add Filter Button -->
-      <div class="add-filter-wrapper" v-if="availableFilters.length > 0">
-        <button
-          @click="toggleAddFilterDropdown"
-          class="btn btn-sm btn-secondary add-filter-btn"
-          ref="addFilterButton"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Add Filter
-        </button>
-
-        <!-- Dropdown Menu -->
-        <div
-          v-if="showAddFilterDropdown"
-          class="add-filter-dropdown"
-          ref="addFilterDropdown"
-        >
-          <button
-            v-for="filter in availableFilters"
-            :key="filter.model"
-            @click="addFilter(filter.model)"
-            class="add-filter-option"
-          >
-            {{ filter.placeholder }}
-          </button>
-        </div>
-      </div>
+      <!-- <BaseButton
+        v-if="availableFilters.length > 0"
+        color="grey-6"
+        flat
+        class="add-filter-btn"
+        icon="add"
+        label="Add Filter"
+      >
+        <q-menu>
+          <q-list style="min-width: 180px">
+            <q-item
+              v-for="filter in availableFilters"
+              :key="filter.model"
+              clickable
+              v-close-popup
+              @click="addFilter(filter.model)"
+            >
+              <q-item-section>{{ filter.placeholder }}</q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </BaseButton> -->
 
       <!-- Active Filters -->
-      <div class="filters-group">
+      <!-- <div class="filters-group">
         <div
           v-for="filter in activeFilters"
           :key="filter.model"
@@ -89,34 +59,21 @@
             class="remove-filter-btn"
             :title="`Remove ${filter.placeholder} filter`"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
+            
           </button>
         </div>
-      </div>
+      </div> -->
 
       <!-- Actions -->
       <div class="filter-actions">
-        <button
+        <!-- <button
           v-if="hasActiveFilters"
           @click="$emit('clear')"
           class="btn btn-sm btn-secondary"
         >
           Clear All
-        </button>
-        <span v-if="showCount" class="text-xs text-secondary count-badge">
+        </button> -->
+        <span v-if="showCount" class="text-caption">
           {{ filteredCount }}/{{ totalCount }}
         </span>
         <!-- Custom slot for additional controls (e.g., view toggle) -->
@@ -131,6 +88,9 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import Autocomplete from "./Autocomplete.vue";
+import Icon from "./Icon.vue";
+import BaseInput from "./common/BaseInput.vue";
+import BaseButton from "./common/BaseButton.vue";
 
 export interface FilterOption {
   label: string;
@@ -148,6 +108,9 @@ export default defineComponent({
   name: "FilterBar",
   components: {
     Autocomplete,
+    Icon,
+    BaseInput,
+    BaseButton,
   },
   props: {
     showSearch: {
@@ -188,7 +151,6 @@ export default defineComponent({
       internalSearchQuery: this.searchQuery,
       searchDebounceTimer: null as ReturnType<typeof setTimeout> | null,
       addedFilterModels: [] as string[],
-      showAddFilterDropdown: false,
     };
   },
   computed: {
@@ -197,26 +159,20 @@ export default defineComponent({
     },
     activeFilters(): Filter[] {
       return this.filters.filter((f) =>
-        this.addedFilterModels.includes(f.model),
+        this.addedFilterModels.includes(f.model)
       );
     },
     availableFilters(): Filter[] {
       return this.filters.filter(
-        (f) => !this.addedFilterModels.includes(f.model),
+        (f) => !this.addedFilterModels.includes(f.model)
       );
     },
-  },
-  mounted() {
-    // Add click outside listener
-    document.addEventListener("click", this.handleClickOutside);
   },
   beforeUnmount() {
     // Clear debounce timer
     if (this.searchDebounceTimer) {
       clearTimeout(this.searchDebounceTimer);
     }
-    // Remove click outside listener
-    document.removeEventListener("click", this.handleClickOutside);
   },
   watch: {
     searchQuery(newValue: string) {
@@ -229,7 +185,7 @@ export default defineComponent({
       handler(newFilters: Filter[]) {
         // Remove filters that no longer exist in the filters array
         this.addedFilterModels = this.addedFilterModels.filter((model) =>
-          newFilters.some((f) => f.model === model),
+          newFilters.some((f) => f.model === model)
         );
 
         // Auto-remove filters that have been cleared
@@ -246,12 +202,9 @@ export default defineComponent({
       // Add empty option for placeholder behavior
       return [{ label: filter.placeholder, value: "" }, ...filter.options];
     },
-    handleSearchInput(event: Event): void {
-      const target = event.target as HTMLInputElement;
-      const value = target.value;
-
+    handleSearchInput(value: string | number | null): void {
       // Update internal query immediately for responsive UI
-      this.internalSearchQuery = value;
+      this.internalSearchQuery = value as string;
 
       // Clear existing timer
       if (this.searchDebounceTimer) {
@@ -260,12 +213,12 @@ export default defineComponent({
 
       // Set new timer to emit the update after delay
       this.searchDebounceTimer = setTimeout(() => {
-        this.$emit("update:searchQuery", value);
+        this.$emit("update:searchQuery", value as string);
       }, this.searchDebounce);
     },
     handleFilterChange(
       model: string,
-      value: string | number | boolean | null,
+      value: string | number | boolean | null
     ): void {
       this.$emit(`update:${model}` as any, value);
     },
@@ -273,7 +226,6 @@ export default defineComponent({
       if (!this.addedFilterModels.includes(model)) {
         this.addedFilterModels.push(model);
       }
-      this.showAddFilterDropdown = false;
     },
     removeFilter(model: string): void {
       const index = this.addedFilterModels.indexOf(model);
@@ -282,24 +234,6 @@ export default defineComponent({
       }
       // Clear the filter value
       this.handleFilterChange(model, "");
-    },
-    toggleAddFilterDropdown(): void {
-      this.showAddFilterDropdown = !this.showAddFilterDropdown;
-    },
-    handleClickOutside(event: MouseEvent): void {
-      const target = event.target as HTMLElement;
-      const addFilterButton = this.$refs.addFilterButton as HTMLElement;
-      const addFilterDropdown = this.$refs.addFilterDropdown as HTMLElement;
-
-      if (
-        this.showAddFilterDropdown &&
-        addFilterButton &&
-        !addFilterButton.contains(target) &&
-        addFilterDropdown &&
-        !addFilterDropdown.contains(target)
-      ) {
-        this.showAddFilterDropdown = false;
-      }
     },
   },
 });
@@ -354,8 +288,7 @@ export default defineComponent({
 }
 
 .filter-autocomplete {
-  min-width: 150px;
-  max-width: 180px;
+  max-width: 200px;
 }
 
 .filter-autocomplete :deep(.autocomplete-input) {
@@ -384,52 +317,6 @@ export default defineComponent({
 .remove-filter-btn:hover {
   color: var(--danger);
   background: var(--danger-light);
-}
-
-.add-filter-wrapper {
-  position: relative;
-}
-
-.add-filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  white-space: nowrap;
-}
-
-.add-filter-dropdown {
-  position: absolute;
-  top: calc(100% + 0.25rem);
-  left: 0;
-  background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  z-index: 100;
-  min-width: 180px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.add-filter-option {
-  display: block;
-  width: 100%;
-  padding: 0.625rem 0.875rem;
-  text-align: left;
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: background-color 0.15s ease;
-}
-
-.add-filter-option:hover {
-  background: var(--background);
-}
-
-.add-filter-option:not(:last-child) {
-  border-bottom: 1px solid var(--border-light);
 }
 
 .form-input-sm,
@@ -474,11 +361,6 @@ export default defineComponent({
     width: 100%;
     justify-content: space-between;
     margin-left: 0;
-  }
-
-  .add-filter-dropdown {
-    left: auto;
-    right: 0;
   }
 }
 </style>

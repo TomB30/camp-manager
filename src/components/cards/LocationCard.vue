@@ -8,15 +8,15 @@
     </div>
     <div class="card-details">
       <h4>{{ location.name }}</h4>
-      <div class="card-meta">
+      <div class="card-meta row items-center">
         <span class="badge badge-primary">{{ formattedType }}</span>
         <span class="badge badge-success"
           >Capacity: {{ location.capacity }}</span
         >
-      </div>
-      <div v-if="areaName" class="location-area text-sm text-secondary mt-1">
-        <Icon name="MapPin" :size="14" class="inline" />
-        {{ areaName }}
+        <span v-if="areaName" class="text-sm text-grey-7 text-subtitle2 row items-center q-gutter-x-xs">
+          <Icon name="MapPin" :size="14" class="inline" />
+          <span>{{ areaName }}</span>
+        </span>
       </div>
       <div class="location-usage mt-2">
         <div class="usage-bar">
@@ -31,7 +31,7 @@
             }"
           ></div>
         </div>
-        <div class="text-xs text-secondary mt-1">
+        <div class="text-xs text-grey-7 text-subtitle2 mt-1">
           {{ usagePercent.toFixed(0) }}% average usage
         </div>
       </div>

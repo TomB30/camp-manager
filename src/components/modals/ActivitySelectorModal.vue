@@ -51,10 +51,8 @@
         <!-- Existing Activities List -->
         <div v-if="mode === 'existing'" class="existing-activities">
           <div class="search-box">
-            <input
+            <BaseInput
               v-model="searchQuery"
-              type="text"
-              class="form-input"
               placeholder="Search activities..."
             />
           </div>
@@ -102,22 +100,22 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
-      <button
-        v-if="mode === 'create'"
-        class="btn btn-primary"
-        @click="handleCreateNew"
-      >
-        Create New Activity
-      </button>
-      <button
-        v-if="mode === 'existing'"
-        class="btn btn-primary"
-        :disabled="!selectedActivityId"
-        @click="handleAddExisting"
-      >
-        Add Selected Activity
-      </button>
+      <div class="flex q-gutter-x-sm">
+        <BaseButton flat @click="$emit('close')" label="Cancel" />
+        <BaseButton
+          v-if="mode === 'create'"
+          color="primary"
+          @click="handleCreateNew"
+          label="Create Activity"
+        />
+        <BaseButton
+          v-if="mode === 'existing'"
+          color="primary"
+          :disabled="!selectedActivityId"
+          @click="handleAddExisting"
+          label="Add Activity"
+        />
+      </div>
     </template>
   </BaseModal>
 </template>
@@ -133,6 +131,8 @@ import {
 } from "@/stores";
 import type { Activity } from "@/types";
 import BaseModal from "@/components/BaseModal.vue";
+import BaseInput from "@/components/common/BaseInput.vue";
+import BaseButton from "@/components/common/BaseButton.vue";
 import ActivityForm, {
   type ActivityFormData,
 } from "@/components/ActivityForm.vue";
@@ -144,6 +144,8 @@ export default defineComponent({
   name: "ActivitySelectorModal",
   components: {
     BaseModal,
+    BaseInput,
+    BaseButton,
     ActivityForm,
     DurationDisplay,
     Icon,

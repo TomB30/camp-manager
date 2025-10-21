@@ -1,17 +1,8 @@
 <template>
   <div class="info-tooltip-wrapper">
-    <button
-      type="button"
-      class="info-icon"
-      @click="toggleTooltip"
-      @blur="hideTooltip"
-      :aria-label="'Information'"
-    >
-      <Icon name="HelpCircle" :size="20" />
-    </button>
-    <div v-if="isVisible" class="tooltip-content">
-      <slot></slot>
-    </div>
+    <BaseButton flat round dense color="grey-6" icon="info" aria-label="Information">
+      <q-tooltip max-width="400px">{{ tooltipText }}</q-tooltip>
+    </BaseButton>
   </div>
 </template>
 
@@ -23,6 +14,12 @@ export default defineComponent({
   name: "InfoTooltip",
   components: {
     Icon,
+  },
+  props: {
+    tooltipText: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {

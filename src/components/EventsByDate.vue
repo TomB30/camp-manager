@@ -62,7 +62,7 @@
         </div>
       </div>
     </div>
-    <div v-else class="text-secondary">{{ emptyMessage }}</div>
+    <div v-else class="text-grey-7">{{ emptyMessage }}</div>
   </div>
 </template>
 

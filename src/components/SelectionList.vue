@@ -8,24 +8,26 @@
           </div>
           <span>{{ getLabel(itemId) }}</span>
         </div>
-        <button
-          type="button"
-          class="btn-remove"
+        <BaseButton
+          outline
+          round
+          dense
+          color="red-9"
+          size="sm"
+          icon="close"
           @click="removeItem(itemId)"
-          :title="`Remove ${itemType}`"
           :disabled="disabled"
-        >
-          ✕
-        </button>
+        />
       </div>
       <slot name="after-items" />
     </div>
-    <div v-else class="text-sm text-secondary mb-2">
+    <div v-else>
       {{ emptyText }}
     </div>
 
     <div v-if="showAddSection" class="add-item-section">
       <Autocomplete
+        class="autocomplete-select"
         v-model="selectedToAdd"
         @update:model-value="addItem"
         :options="availableOptions"
@@ -152,7 +154,7 @@ export default defineComponent({
         const currentIds = this.modelValue as string[];
         this.$emit(
           "update:modelValue",
-          currentIds.filter((id) => id !== itemId),
+          currentIds.filter((id) => id !== itemId)
         );
       }
     },
@@ -160,7 +162,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .selection-container {
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
@@ -244,6 +246,10 @@ export default defineComponent({
   gap: 0.5rem;
   margin-top: 0.5rem;
   align-items: center;
+
+  .autocomplete-select {
+    width: 100%;
+  }
 }
 
 .mb-2 {

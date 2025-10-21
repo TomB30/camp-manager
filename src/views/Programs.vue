@@ -19,9 +19,7 @@
           tooltip="Programs are collections of activities, staff members, and locations. Create programs to organize your camp's offerings like 'Watersports', 'Arts & Crafts', or 'Adventure Sports'."
         >
           <template #actions>
-            <button class="btn btn-primary" @click="showProgramModal = true">
-              + Program
-            </button>
+            <BaseButton @click="showProgramModal = true" label="Program" icon="add" color="primary"/>
           </template>
         </ViewHeader>
 
@@ -99,7 +97,7 @@
           </template>
 
           <template #cell-description="{ item }">
-            <span class="text-secondary">{{
+            <span>{{
               item.description || "No description"
             }}</span>
           </template>
@@ -119,12 +117,13 @@
           </template>
 
           <template #cell-actions="{ item }">
-            <button
-              class="btn btn-sm btn-secondary"
+            <BaseButton
+              color="grey-8"
+              outline
+              label="View Details"
+              size="sm"
               @click.stop="selectProgram(item.id)"
-            >
-              View Details
-            </button>
+            />
           </template>
         </DataTable>
       </div>
@@ -149,20 +148,20 @@
               </div>
             </div>
             <div class="detail-header-actions">
-              <button
-                class="btn btn-secondary"
-                @click="editProgram(selectedProgram)"
-              >
-                <Edit :size="18" />
-                Edit Program
-              </button>
-              <button
-                class="btn btn-danger-outline"
+              <BaseButton
+                  color="grey-8"
+                  outline
+                  icon="edit"
+                  label="Edit"
+                  @click="editProgram(selectedProgram)"
+                />
+              <BaseButton
+                color="negative"
+                outline
+                icon="delete"
+                label="Delete"
                 @click="deleteProgramConfirm(selectedProgram)"
-              >
-                <Trash2 :size="18" />
-                Delete
-              </button>
+              />
             </div>
           </div>
           <div class=""></div>
@@ -175,12 +174,13 @@
               <ListChecks :size="20" />
               Activities
             </h3>
-            <button
-              class="btn btn-sm btn-secondary"
+            <BaseButton
+              color="grey-8"
+              outline
+              icon="add"
+              label="Activity"
               @click="showActivitySelector = true"
-            >
-              + Activity
-            </button>
+            />
           </div>
 
           <div v-if="programActivities.length > 0" class="activities-list">
@@ -192,7 +192,7 @@
             >
               <div class="activity-info">
                 <h4>{{ activity.name }}</h4>
-                <p v-if="activity.description" class="text-secondary">
+                <p v-if="activity.description" class="text-caption">
                   {{ activity.description }}
                 </p>
               </div>
@@ -225,12 +225,13 @@
               <UsersRound :size="20" />
               Staff Members
             </h3>
-            <button
-              class="btn btn-sm btn-secondary"
+            <BaseButton
+              color="grey-8"
+              outline
+              icon="add"
+              label="Staff Member"
               @click="showStaffSelector = true"
-            >
-              + Assign Staff
-            </button>
+            />
           </div>
 
           <div v-if="programStaff.length > 0" class="staff-list">
@@ -273,12 +274,13 @@
               <Home :size="20" />
               Locations
             </h3>
-            <button
-              class="btn btn-sm btn-secondary"
+            <BaseButton
+              color="grey-8"
+              outline
+              icon="add"
+              label="Location"
               @click="showLocationSelector = true"
-            >
-              + Location
-            </button>
+            />
           </div>
 
           <div v-if="programLocations.length > 0" class="locations-list">
@@ -295,7 +297,7 @@
                 </div>
               </template>
               <template #metadata>
-                <div class="location-meta text-secondary">
+                <div class="location-meta">
                   <span>{{ formatLocationType(location.type) }}</span>
                   <span>•</span>
                   <span>Capacity: {{ location.capacity }}</span>
@@ -367,9 +369,7 @@
         />
       </template>
       <template #footer>
-        <button class="btn btn-secondary" @click="showStaffSelector = false">
-          Close
-        </button>
+        <BaseButton outline color="grey-8" @click="showStaffSelector = false" label="Close" />
       </template>
     </BaseModal>
 
@@ -394,9 +394,7 @@
         />
       </template>
       <template #footer>
-        <button class="btn btn-secondary" @click="showLocationSelector = false">
-          Close
-        </button>
+        <BaseButton outline color="grey-8" @click="showLocationSelector = false" label="Close" />
       </template>
     </BaseModal>
 
@@ -547,7 +545,7 @@ export default defineComponent({
         (program) =>
           program.name.toLowerCase().includes(query) ||
           (program.description &&
-            program.description.toLowerCase().includes(query)),
+            program.description.toLowerCase().includes(query))
       );
     },
     selectedProgram() {
@@ -586,14 +584,14 @@ export default defineComponent({
       if (!this.selectedProgram) return [];
       return this.staffMembersStore.staffMembers.filter(
         (staff) =>
-          !this.selectedProgram!.staffMemberIds?.includes(staff.id) || false,
+          !this.selectedProgram!.staffMemberIds?.includes(staff.id) || false
       );
     },
     availableLocations(): Location[] {
       if (!this.selectedProgram) return [];
       return this.locationsStore.locations.filter(
         (location) =>
-          !this.selectedProgram!.locationIds?.includes(location.id) || false,
+          !this.selectedProgram!.locationIds?.includes(location.id) || false
       );
     },
     programStaffIds: {
@@ -638,17 +636,17 @@ export default defineComponent({
         return `Are you sure you want to delete "${program?.name}"? This will also delete all activities in this program. This action cannot be undone.`;
       } else if (this.deleteTarget.type === "activity") {
         const activity = this.activitiesStore.getActivityById(
-          this.deleteTarget.id,
+          this.deleteTarget.id
         );
         return `Are you sure you want to delete "${activity?.name}"? This action cannot be undone.`;
       } else if (this.deleteTarget.type === "staff") {
         const staff = this.staffMembersStore.getStaffMemberById(
-          this.deleteTarget.id,
+          this.deleteTarget.id
         );
         return `Are you sure you want to remove "${staff?.firstName} ${staff?.lastName}" from this program?`;
       } else if (this.deleteTarget.type === "location") {
         const location = this.locationsStore.getLocationById(
-          this.deleteTarget.id,
+          this.deleteTarget.id
         );
         return `Are you sure you want to remove "${location?.name}" from this program?`;
       }
@@ -761,7 +759,7 @@ export default defineComponent({
       try {
         await this.activitiesStore.addActivityToProgram(
           activityId,
-          this.selectedProgramId,
+          this.selectedProgramId
         );
         this.toast.success("Activity added to program successfully");
       } catch (error: any) {
@@ -801,7 +799,7 @@ export default defineComponent({
       const updatedProgram = {
         ...this.selectedProgram,
         staffMemberIds: this.selectedProgram.staffMemberIds?.filter(
-          (id: string) => id !== staffId,
+          (id: string) => id !== staffId
         ),
       };
 
@@ -818,7 +816,7 @@ export default defineComponent({
       const updatedProgram = {
         ...this.selectedProgram,
         locationIds: this.selectedProgram.locationIds?.filter(
-          (id) => id !== locationId,
+          (id) => id !== locationId
         ),
       };
 
@@ -914,7 +912,7 @@ export default defineComponent({
         this.toast.success("Location assignments updated");
       } catch (error: any) {
         this.toast.error(
-          error.message || "Failed to update location assignments",
+          error.message || "Failed to update location assignments"
         );
       }
     },

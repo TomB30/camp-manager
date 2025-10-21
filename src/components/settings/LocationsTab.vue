@@ -92,7 +92,7 @@
         <span v-if="item.areaId">
           {{ areasStore.getAreaById(item.areaId)?.name || "Unknown" }}
         </span>
-        <span v-else class="text-secondary">No area</span>
+        <span v-else class="text-caption">No area</span>
       </template>
 
       <template #cell-equipment="{ item }">
@@ -102,7 +102,7 @@
         >
           {{ item.equipment.length }} item(s)
         </span>
-        <span v-else class="text-secondary">None</span>
+        <span v-else class="text-caption">None</span>
       </template>
 
       <template #cell-usage="{ item }">
@@ -130,12 +130,7 @@
       </template>
 
       <template #cell-actions="{ item }">
-        <button
-          class="btn btn-sm btn-secondary"
-          @click.stop="selectLocation(item.id)"
-        >
-          View Details
-        </button>
+        <BaseButton outline color="grey-8" size="sm" @click.stop="selectLocation(item.id)" label="View Details" />
       </template>
     </DataTable>
 

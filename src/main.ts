@@ -7,8 +7,9 @@ import App from "./App.vue";
 import "quasar/dist/quasar.css";
 // Import icon libraries (optional - choose what you need)
 import "@quasar/extras/material-icons/material-icons.css";
-import "./style.css";
+import "./style.scss";
 import "./utils/devTools";
+import BaseButton from "./components/common/BaseButton.vue";
 
 
 const app = createApp(App);
@@ -18,5 +19,6 @@ app.use(router);
 app.use(Quasar, {
   plugins: {}, // import Quasar plugins and add here
 });
+app.component("BaseButton", BaseButton);
 
 app.mount("#app");

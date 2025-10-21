@@ -54,13 +54,8 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete', certification?.id)">
-        Delete Certification
-      </button>
-      <button class="btn btn-secondary" @click="$emit('edit', certification)">
-        Edit
-      </button>
-      <button class="btn btn-secondary" @click="$emit('close')">Close</button>
+      <BaseButton outline color="negative" @click="$emit('delete', certification?.id)" label="Delete" />
+      <BaseButton outline color="grey-8" @click="$emit('edit', certification)" label="Edit" />
     </template>
   </BaseModal>
 </template>

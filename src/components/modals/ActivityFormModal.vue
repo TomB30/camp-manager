@@ -12,10 +12,10 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
-      <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? "Save Changes" : "Create Activity" }}
-      </button>
+      <div class="flex q-gutter-x-sm">
+        <BaseButton flat @click="$emit('close')" label="Cancel" />
+        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Save Changes' : 'Create Activity'" />
+      </div>
     </template>
   </BaseModal>
 </template>
@@ -29,6 +29,7 @@ import {
   useCertificationsStore,
 } from "@/stores";
 import BaseModal from "@/components/BaseModal.vue";
+import BaseButton from "@/components/common/BaseButton.vue";
 import ActivityForm, {
   type ActivityFormData,
 } from "@/components/ActivityForm.vue";
@@ -39,6 +40,7 @@ export default defineComponent({
   name: "ActivityFormModal",
   components: {
     BaseModal,
+    BaseButton,
     ActivityForm,
   },
   props: {

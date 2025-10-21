@@ -90,13 +90,8 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-secondary" @click="$emit('close')">Close</button>
-      <button class="btn btn-primary-outline" @click="$emit('edit', activity)">
-        Edit Activity
-      </button>
-      <button class="btn btn-danger-outline" @click="$emit('delete', activity)">
-        Delete Activity
-      </button>
+      <BaseButton outline color="negative" @click="$emit('delete', activity)" label="Delete" />
+      <BaseButton outline color="grey-8" @click="$emit('edit', activity)" label="Edit" />
     </template>
   </BaseModal>
 </template>
@@ -112,6 +107,7 @@ import {
 import BaseModal from "@/components/BaseModal.vue";
 import DurationDisplay from "@/components/DurationDisplay.vue";
 import type { Activity } from "@/types";
+import BaseButton from "../common/BaseButton.vue";
 
 export default defineComponent({
   name: "ActivityDetailModal",

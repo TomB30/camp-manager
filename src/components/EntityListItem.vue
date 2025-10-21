@@ -23,13 +23,15 @@
     </div>
 
     <slot name="actions">
-      <button
+      <BaseButton
+        class="entity-remove-button"
         v-if="removable"
-        class="btn btn-sm btn-danger-outline"
+        color="negative"
+        outline
+        size="sm"
+        label="Remove"
         @click.stop="$emit('remove')"
-      >
-        Remove
-      </button>
+      />
     </slot>
   </div>
 </template>
@@ -101,5 +103,9 @@ export default defineComponent({
 
 .entity-metadata {
   margin-top: 0.5rem;
+}
+
+.entity-remove-button {
+  align-self: flex-start;
 }
 </style>

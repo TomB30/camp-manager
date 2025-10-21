@@ -6,9 +6,7 @@
         tooltip="Create and manage groups with flexible assignment options. Groups can contain campers, staff, or even other groups. Use filters for automatic assignment or manually select members."
       >
         <template #actions>
-          <button class="btn btn-primary" @click="showModal = true">
-            + Group
-          </button>
+          <BaseButton color="primary" @click="showModal = true" label="Group" icon="add"/>
         </template>
       </ViewHeader>
 
@@ -105,16 +103,16 @@
         </template>
 
         <template #cell-members="{ item }">
-          <div class="members-counts">
+          <div class="members-counts text-caption row items-center q-gutter-x-md">
             <span
               v-if="getCampersCount(item.id) > 0"
-              class="count-badge camper-count"
+              class="badge badge-success badge-sm"
             >
               {{ getCampersCount(item.id) }} campers
             </span>
             <span
               v-if="getStaffCount(item.id) > 0"
-              class="count-badge staff-count"
+              class="badge badge-success badge-sm"
             >
               {{ getStaffCount(item.id) }} staff
             </span>
@@ -122,7 +120,7 @@
               v-if="
                 getCampersCount(item.id) === 0 && getStaffCount(item.id) === 0
               "
-              class="text-secondary text-sm"
+              class="text-caption text-sm"
             >
               No members
             </span>
@@ -130,19 +128,14 @@
         </template>
 
         <template #cell-session="{ item }">
-          <span v-if="item.sessionId" class="text-secondary">{{
+          <span v-if="item.sessionId" class="text-caption">{{
             getSessionName(item.sessionId)
           }}</span>
-          <span v-else class="text-secondary text-sm">-</span>
+          <span v-else class="text-caption text-sm">-</span>
         </template>
 
         <template #cell-actions="{ item }">
-          <button
-            class="btn btn-sm btn-secondary"
-            @click.stop="selectGroup(item.id)"
-          >
-            View Details
-          </button>
+          <BaseButton outline color="grey-8" size="sm" @click.stop="selectGroup(item.id)" label="View Details" />
         </template>
       </DataTable>
 
@@ -662,29 +655,6 @@ export default defineComponent({
   gap: 0.375rem;
 }
 
-.members-counts {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.count-badge {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius);
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.camper-count {
-  background: var(--primary-color);
-  color: white;
-}
-
-.staff-count {
-  background: #10b981;
-  color: white;
-}
 
 .badge-sm {
   font-size: 0.75rem;

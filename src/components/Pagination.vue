@@ -35,7 +35,7 @@
     </div>
 
     <div class="pagination-size">
-      <label class="text-sm text-secondary">Items per page:</label>
+      <label class="text-sm">Items per page:</label>
       <select
         :value="pageSize"
         @change="handlePageSizeChange"

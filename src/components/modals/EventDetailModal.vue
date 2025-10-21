@@ -3,19 +3,19 @@
     <template #body>
       <div v-if="event">
         <div class="mb-3">
-          <div class="text-sm text-secondary mb-1">Time</div>
+          <div class="text-sm text-grey-7 text-subtitle2 mb-1">Time</div>
           <div>
             {{ formatTime(event.startDate) }} - {{ formatTime(event.endDate) }}
           </div>
         </div>
 
         <div class="mb-3">
-          <div class="text-sm text-secondary mb-1">Location</div>
+          <div class="text-sm text-grey-7 text-subtitle2 mb-1">Location</div>
           <div>{{ getLocationName(event.locationId || "") }}</div>
         </div>
 
         <div class="mb-3">
-          <div class="text-sm text-secondary mb-1">Capacity</div>
+          <div class="text-sm text-grey-7 text-subtitle2 mb-1">Capacity</div>
           <div>
             {{ enrolledCamperCount }}/{{ event.capacity || 0 }}
             <span
@@ -28,7 +28,9 @@
         </div>
 
         <div class="mb-3">
-          <div class="text-sm text-secondary mb-1">Assigned Groups</div>
+          <div class="text-sm text-grey-7 text-subtitle2 mb-1">
+            Assigned Groups
+          </div>
           <div
             v-if="event.groupIds && event.groupIds.length > 0"
             class="groups-list"
@@ -38,30 +40,30 @@
               :key="groupId"
               class="group-item"
             >
-              <div class="group-info">
-                <span
-                  class="group-badge"
-                  :style="{ background: getGroupColor(groupId) }"
-                >
-                  {{ getGroupName(groupId) }}
-                </span>
-                <span class="text-xs text-secondary">
-                  {{ getGroupDetails(groupId) }}
-                </span>
+              <div class="flex row justify-between items-center">
+                <div>
+                  <div
+                    class="group-badge"
+                    :style="{ background: getGroupColor(groupId) }"
+                  >
+                    {{ getGroupName(groupId) }}
+                  </div>
+                </div>
+                <div>
+                  <span class="text-xs text-grey-7 text-subtitle2">
+                    {{ getGroupDetails(groupId) }}
+                  </span>
+                </div>
               </div>
-              <button
-                class="btn btn-sm btn-secondary"
-                @click="removeGroup(groupId)"
-              >
-                Remove
-              </button>
             </div>
           </div>
-          <div v-else class="text-secondary">No groups assigned</div>
+          <div v-else class="text-grey-8">No groups assigned</div>
         </div>
 
         <div class="mb-3">
-          <div class="text-sm text-secondary mb-1">Participants</div>
+          <div class="text-sm text-grey-7 text-subtitle2 mb-1">
+            Participants
+          </div>
           <div class="participants-summary">
             <div class="participant-count">
               <span class="font-medium">{{ enrolledCamperCount }}</span> campers
@@ -69,7 +71,7 @@
                 v-if="
                   event.excludeCamperIds && event.excludeCamperIds.length > 0
                 "
-                class="text-xs text-secondary ml-2"
+                class="text-xs text-grey-7 text-subtitle2 ml-2"
               >
                 ({{ event.excludeCamperIds.length }} excluded)
               </span>
@@ -78,7 +80,7 @@
               <span class="font-medium">{{ assignedStaffCount }}</span> staff
               <span
                 v-if="event.excludeStaffIds && event.excludeStaffIds.length > 0"
-                class="text-xs text-secondary ml-2"
+                class="text-xs text-grey-7 text-subtitle2 ml-2"
               >
                 ({{ event.excludeStaffIds.length }} excluded)
               </span>
@@ -91,7 +93,9 @@
           v-if="event.excludeCamperIds && event.excludeCamperIds.length > 0"
           class="mb-3"
         >
-          <div class="text-sm text-secondary mb-1">Excluded Campers</div>
+          <div class="text-sm text-grey-7 text-subtitle2 mb-1">
+            Excluded Campers
+          </div>
           <div class="exclusions-list">
             <div
               v-for="camperId in event.excludeCamperIds"
@@ -99,12 +103,6 @@
               class="exclusion-item"
             >
               <span>{{ getCamperName(camperId) }}</span>
-              <button
-                class="btn btn-xs btn-secondary"
-                @click="removeExclusion('camper', camperId)"
-              >
-                Include
-              </button>
             </div>
           </div>
         </div>
@@ -114,7 +112,9 @@
           v-if="event.excludeStaffIds && event.excludeStaffIds.length > 0"
           class="mb-3"
         >
-          <div class="text-sm text-secondary mb-1">Excluded Staff</div>
+          <div class="text-sm text-grey-7 text-subtitle2 mb-1">
+            Excluded Staff
+          </div>
           <div class="exclusions-list">
             <div
               v-for="staffId in event.excludeStaffIds"
@@ -122,12 +122,6 @@
               class="exclusion-item"
             >
               <span>{{ getStaffName(staffId) }}</span>
-              <button
-                class="btn btn-xs btn-secondary"
-                @click="removeExclusion('staff', staffId)"
-              >
-                Include
-              </button>
             </div>
           </div>
         </div>
@@ -139,7 +133,9 @@
           "
           class="mb-3"
         >
-          <div class="text-sm text-secondary mb-1">Required Certifications</div>
+          <div class="text-sm text-grey-7 text-subtitle2 mb-1">
+            Required Certifications
+          </div>
           <div class="flex flex-wrap gap-1">
             <span
               v-for="certId in event.requiredCertificationIds"
@@ -154,11 +150,13 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-error" @click="$emit('delete')">
-        Delete Event
-      </button>
-      <button class="btn btn-secondary" @click="$emit('edit')">Edit</button>
-      <button class="btn btn-secondary" @click="$emit('close')">Close</button>
+      <BaseButton
+        outline
+        color="negative"
+        @click="$emit('delete')"
+        label="Delete"
+      />
+      <BaseButton outline color="grey-8" @click="$emit('edit')" label="Edit" />
     </template>
   </BaseModal>
 </template>
@@ -368,7 +366,7 @@ export default defineComponent({
 
 .staff-cert-status {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--text-grey-7 text-subtitle2);
 }
 
 .groups-list {
@@ -378,18 +376,16 @@ export default defineComponent({
 }
 
 .group-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 0.75rem;
-  background: var(--surface);
+  background: var(--surface-secondary);
   border-radius: var(--radius);
 }
 
 .group-info {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   gap: 0.25rem;
+  align-items: center;
 }
 
 .group-badge {
@@ -405,7 +401,7 @@ export default defineComponent({
   display: flex;
   gap: 1rem;
   padding: 0.75rem;
-  background: var(--background);
+  background: var(--surface-secondary);
   border-radius: var(--radius);
 }
 

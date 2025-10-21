@@ -1,27 +1,25 @@
 <template>
   <BaseModal :title="isEditing ? 'Edit Group' : 'Create New Group'" @close="$emit('close')">
     <template #body>
-      <form @submit.prevent="handleSave">
+      <q-form @submit.prevent="handleSave" ref="formRef">
         <!-- Basic Info -->
         <div class="form-group">
           <label class="form-label">Group Name *</label>
-          <input
+          <BaseInput
             v-model="localFormData.name"
-            type="text"
-            class="form-input"
-            required
             placeholder="e.g., Junior Campers"
+            :rules="[(val: string) => !!val || 'Enter group name']"
           />
         </div>
 
         <div class="form-group">
           <label class="form-label">Description</label>
-          <textarea
-            v-model="localFormData.description"
-            class="form-textarea"
-            rows="2"
+          <BaseInput
+            v-model="descriptionModel"
+            type="textarea"
+            :rows="2"
             placeholder="Optional description of this group"
-          ></textarea>
+          />
         </div>
 
         <div class="form-group">
@@ -89,6 +87,7 @@
               :get-initials-fn="getRoomInitials"
               :get-options-fn="getRoomOption"
               :disabled="!localFormData.sessionId"
+              disabled-tooltip="select a session to view available housing rooms"
             />
           </div>
         </div>
@@ -203,24 +202,18 @@
           <div class="grid grid-cols-2">
             <div class="form-group">
               <label class="form-label">Minimum Age</label>
-              <input
-                v-model.number="localFormData.camperFilters.ageMin"
+              <BaseInput
+                v-model="ageMinModel"
                 type="number"
-                min="5"
-                max="18"
-                class="form-input"
                 placeholder="No minimum"
               />
             </div>
 
             <div class="form-group">
               <label class="form-label">Maximum Age</label>
-              <input
-                v-model.number="localFormData.camperFilters.ageMax"
+              <BaseInput
+                v-model="ageMaxModel"
                 type="number"
-                min="5"
-                max="18"
-                class="form-input"
                 placeholder="No maximum"
               />
             </div>
@@ -417,14 +410,14 @@
             />
           </div>
         </div>
-      </form>
+      </q-form>
     </template>
 
     <template #footer>
-      <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
-      <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? "Update" : "Create" }} Group
-      </button>
+      <div class="flex q-gutter-x-sm">
+        <BaseButton flat @click="$emit('close')" label="Cancel" />
+        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Update Group' : 'Create Group'" />
+      </div>
     </template>
   </BaseModal>
 </template>
@@ -432,6 +425,8 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
+import BaseInput from "@/components/common/BaseInput.vue";
+import BaseButton from "@/components/common/BaseButton.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
@@ -447,6 +442,7 @@ import type {
   Certification,
 } from "@/types";
 import { useColorsStore } from "@/stores";
+import type { QForm } from "quasar";
 
 interface GroupFormData {
   name: string;
@@ -475,6 +471,8 @@ export default defineComponent({
   name: "GroupFormModal",
   components: {
     BaseModal,
+    BaseInput,
+    BaseButton,
     Autocomplete,
     ColorPicker,
     SelectionList,
@@ -527,6 +525,7 @@ export default defineComponent({
       localFormData: JSON.parse(JSON.stringify(this.formData)),
       groupType: "filter" as "nested" | "filter" | "manual" | "none",
       staffType: "none" as "none" | "filter" | "manual",
+      formRef: null as any,
       genderFilterOptions: [
         { label: "Any Gender", value: "" },
         { label: "Male", value: "male" },
@@ -549,6 +548,32 @@ export default defineComponent({
   computed: {
     colorsStore() {
       return useColorsStore();
+    },
+    descriptionModel: {
+      get(): string {
+        return this.localFormData.description || "";
+      },
+      set(value: string) {
+        this.localFormData.description = value || "";
+      },
+    },
+    ageMinModel: {
+      get(): string {
+        return this.localFormData.camperFilters.ageMin?.toString() || "";
+      },
+      set(value: string) {
+        const num = parseInt(value);
+        this.localFormData.camperFilters.ageMin = isNaN(num) ? undefined : num;
+      },
+    },
+    ageMaxModel: {
+      get(): string {
+        return this.localFormData.camperFilters.ageMax?.toString() || "";
+      },
+      set(value: string) {
+        const num = parseInt(value);
+        this.localFormData.camperFilters.ageMax = isNaN(num) ? undefined : num;
+      },
     },
     hasHousingRoom(): boolean {
       return !!(
@@ -942,7 +967,10 @@ export default defineComponent({
       };
     },
 
-    handleSave() {
+    async handleSave() {
+      const isValid = await (this.$refs.formRef as QForm).validate();
+      if (!isValid) return;
+
       this.$emit("save", this.localFormData);
     },
   },

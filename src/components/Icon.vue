@@ -51,6 +51,7 @@ import {
   Dumbbell,
   Utensils,
   BookOpen,
+  Search,
 } from "lucide-vue-next";
 
 export type IconName = keyof typeof icons;
@@ -96,6 +97,7 @@ const icons: Record<string, Component> = {
   Dumbbell,
   Utensils,
   BookOpen,
+  Search,
 } as const;
 
 export default defineComponent({

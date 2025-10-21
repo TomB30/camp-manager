@@ -1,25 +1,23 @@
 <template>
   <BaseModal :title="isEditing ? 'Edit Staff Member' : 'Add New Staff Member'" @close="$emit('close')">
     <template #body>
-      <form @submit.prevent="handleSave">
+      <q-form @submit.prevent="handleSave" ref="formRef">
         <div class="grid grid-cols-2">
           <div class="form-group">
             <label class="form-label">First Name</label>
-            <input
+            <BaseInput
               v-model="localFormData.firstName"
-              type="text"
-              class="form-input"
-              required
+              placeholder="Enter first name"
+              :rules="[(val: string) => !!val || 'Enter first name']"
             />
           </div>
 
           <div class="form-group">
             <label class="form-label">Last Name</label>
-            <input
+            <BaseInput
               v-model="localFormData.lastName"
-              type="text"
-              class="form-input"
-              required
+              placeholder="Enter last name"
+              :rules="[(val: string) => !!val || 'Enter last name']"
             />
           </div>
         </div>
@@ -45,16 +43,20 @@
 
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input
-            v-model="localFormData.email"
+          <BaseInput
+            v-model="emailModel"
             type="email"
-            class="form-input"
+            placeholder="Enter email"
           />
         </div>
 
         <div class="form-group">
           <label class="form-label">Phone</label>
-          <input v-model="localFormData.phone" type="tel" class="form-input" />
+          <BaseInput
+            v-model="phoneModel"
+            type="tel"
+            placeholder="Enter phone"
+          />
         </div>
 
         <div class="form-group">
@@ -75,14 +77,14 @@
             Select certifications from the prepared list
           </p>
         </div>
-      </form>
+      </q-form>
     </template>
 
     <template #footer>
-      <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
-      <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? "Update" : "Add" }} Member
-      </button>
+      <div class="flex q-gutter-x-sm">
+        <BaseButton flat @click="$emit('close')" label="Cancel" />
+        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Update Member' : 'Add Member'" />
+      </div>
     </template>
   </BaseModal>
 </template>
@@ -90,12 +92,15 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
+import BaseInput from "@/components/common/BaseInput.vue";
+import BaseButton from "@/components/common/BaseButton.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
 import SelectionList from "@/components/SelectionList.vue";
 import { useCertificationsStore } from "@/stores";
 import type { StaffMember } from "@/types";
+import type { QForm } from "quasar";
 
 interface StaffMemberFormData {
   firstName: string;
@@ -111,6 +116,8 @@ export default defineComponent({
   name: "StaffMemberFormModal",
   components: {
     BaseModal,
+    BaseInput,
+    BaseButton,
     Autocomplete,
     SelectionList,
   },
@@ -147,9 +154,26 @@ export default defineComponent({
         { label: "Nurse", value: "nurse" },
         { label: "Instructor", value: "instructor" },
       ] as AutocompleteOption[],
+      formRef: null as any,
     };
   },
   computed: {
+    emailModel: {
+      get(): string {
+        return this.localFormData.email || "";
+      },
+      set(value: string) {
+        this.localFormData.email = value || "";
+      },
+    },
+    phoneModel: {
+      get(): string {
+        return this.localFormData.phone || "";
+      },
+      set(value: string) {
+        this.localFormData.phone = value || "";
+      },
+    },
     managerOptions(): AutocompleteOption[] {
       // Filter out the current member to prevent self-assignment
       return this.staffMembers
@@ -169,7 +193,10 @@ export default defineComponent({
     },
   },
   methods: {
-    handleSave() {
+    async handleSave() {
+      const isValid = await (this.$refs.formRef as QForm).validate();
+      if (!isValid) return;
+
       this.$emit("save", this.localFormData);
     },
   },
@@ -181,5 +208,20 @@ export default defineComponent({
   margin-top: 0.375rem;
   font-size: 0.875rem;
   color: var(--text-secondary);
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
