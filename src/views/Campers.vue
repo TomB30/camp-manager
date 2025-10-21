@@ -122,11 +122,11 @@
             <span class="badge badge-info">
               {{ getSessionName(selectedCamper.sessionId) }}
             </span>
-            <div class="text-xs text-secondary mt-1">
+            <div class="text-xs text-caption mt-1">
               {{ getSessionDateRange(selectedCamper.sessionId) }}
             </div>
           </div>
-          <div v-else class="text-secondary">Not registered for a session</div>
+          <div v-else class="text-caption">Not registered for a session</div>
         </template>
         <template #family-group>
           <div
@@ -149,7 +149,7 @@
               </span>
               <div
                 v-if="getGroupById(selectedCamper.familyGroupId)?.housingRoomId"
-                class="text-xs text-secondary mt-1"
+                class="text-xs text-caption mt-1"
               >
                 Room:
                 {{
@@ -161,7 +161,7 @@
               </div>
             </div>
           </div>
-          <div v-else class="text-secondary">
+          <div v-else class="text-caption">
             Not assigned to a family group
           </div>
         </template>

@@ -23,7 +23,7 @@
         <div class="detail-section">
           <div class="detail-label">Direct Reports</div>
           <slot name="direct-reports">
-            <div class="text-secondary">No direct reports</div>
+            <div class="text-caption">No direct reports</div>
           </slot>
         </div>
 

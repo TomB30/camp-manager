@@ -129,6 +129,7 @@ class StorageService {
     activities?: any[];
     areas?: any[];
     certifications?: any[];
+    roles?: any[];
     colors?: any[];
     sessions?: any[];
     labels?: any[];
@@ -182,6 +183,9 @@ class StorageService {
         STORAGE_KEYS.CERTIFICATIONS,
         JSON.stringify(data.certifications),
       );
+    }
+    if (data.roles) {
+      localStorage.setItem(STORAGE_KEYS.ROLES, JSON.stringify(data.roles));
     }
     if (data.colors) {
       localStorage.setItem(STORAGE_KEYS.COLORS, JSON.stringify(data.colors));

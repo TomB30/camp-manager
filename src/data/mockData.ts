@@ -16,6 +16,7 @@ import type {
   Certification,
   Color,
   Session,
+  Role,
 } from "@/types";
 
 // Helper function to generate UUIDs (simple version for mock data)
@@ -402,13 +403,47 @@ export const certifications: Certification[] = [
   },
 ];
 
+// Roles
+export const roles: Role[] = [
+  {
+    id: generateId(),
+    name: "Camp Director",
+    description: "Overall camp management and leadership",
+    createdAt: octoberDate(1),
+  },
+  {
+    id: generateId(),
+    name: "Program Supervisor",
+    description: "Oversees program activities and staff coordination",
+    createdAt: octoberDate(1),
+  },
+  {
+    id: generateId(),
+    name: "Camp Counselor",
+    description: "Direct camper supervision and activity facilitation",
+    createdAt: octoberDate(1),
+  },
+  {
+    id: generateId(),
+    name: "Camp Nurse",
+    description: "Medical care and health management",
+    createdAt: octoberDate(1),
+  },
+  {
+    id: generateId(),
+    name: "Activity Instructor",
+    description: "Specialized activity instruction and skill development",
+    createdAt: octoberDate(1),
+  },
+];
+
 // Staff Members (10 staff)
 export const staffMembers: StaffMember[] = [
   {
     id: generateId(),
     firstName: "Sarah",
     lastName: "Johnson",
-    roleId: "director",
+    roleId: roles[0].id, // Camp Director
     email: "sarah.johnson@camp.com",
     phone: "555-0101",
     certificationIds: [certifications[0].id, certifications[2].id],
@@ -418,7 +453,7 @@ export const staffMembers: StaffMember[] = [
     id: generateId(),
     firstName: "Michael",
     lastName: "Chen",
-    roleId: "supervisor",
+    roleId: roles[1].id, // Program Supervisor
     email: "michael.chen@camp.com",
     phone: "555-0102",
     certificationIds: [certifications[0].id, certifications[1].id],
@@ -428,7 +463,7 @@ export const staffMembers: StaffMember[] = [
     id: generateId(),
     firstName: "Emily",
     lastName: "Rodriguez",
-    roleId: "counselor",
+    roleId: roles[2].id, // Camp Counselor
     email: "emily.rodriguez@camp.com",
     phone: "555-0103",
     certificationIds: [certifications[0].id, certifications[4].id],
@@ -438,7 +473,7 @@ export const staffMembers: StaffMember[] = [
     id: generateId(),
     firstName: "David",
     lastName: "Thompson",
-    roleId: "counselor",
+    roleId: roles[2].id, // Camp Counselor
     email: "david.thompson@camp.com",
     phone: "555-0104",
     certificationIds: [certifications[0].id, certifications[1].id],
@@ -448,7 +483,7 @@ export const staffMembers: StaffMember[] = [
     id: generateId(),
     firstName: "Jessica",
     lastName: "Martinez",
-    roleId: "nurse",
+    roleId: roles[3].id, // Camp Nurse
     email: "jessica.martinez@camp.com",
     phone: "555-0105",
     certificationIds: [certifications[0].id],
@@ -458,7 +493,7 @@ export const staffMembers: StaffMember[] = [
     id: generateId(),
     firstName: "Ryan",
     lastName: "Anderson",
-    roleId: "instructor",
+    roleId: roles[4].id, // Activity Instructor
     email: "ryan.anderson@camp.com",
     phone: "555-0106",
     certificationIds: [certifications[0].id, certifications[3].id],
@@ -468,7 +503,7 @@ export const staffMembers: StaffMember[] = [
     id: generateId(),
     firstName: "Amanda",
     lastName: "White",
-    roleId: "counselor",
+    roleId: roles[2].id, // Camp Counselor
     email: "amanda.white@camp.com",
     phone: "555-0107",
     certificationIds: [certifications[0].id, certifications[2].id],
@@ -478,7 +513,7 @@ export const staffMembers: StaffMember[] = [
     id: generateId(),
     firstName: "Christopher",
     lastName: "Lee",
-    roleId: "instructor",
+    roleId: roles[4].id, // Activity Instructor
     email: "chris.lee@camp.com",
     phone: "555-0108",
     certificationIds: [certifications[0].id, certifications[4].id],
@@ -488,7 +523,7 @@ export const staffMembers: StaffMember[] = [
     id: generateId(),
     firstName: "Rachel",
     lastName: "Brown",
-    roleId: "counselor",
+    roleId: roles[2].id, // Camp Counselor
     email: "rachel.brown@camp.com",
     phone: "555-0109",
     certificationIds: [certifications[0].id, certifications[1].id],
@@ -498,7 +533,7 @@ export const staffMembers: StaffMember[] = [
     id: generateId(),
     firstName: "Daniel",
     lastName: "Wilson",
-    roleId: "counselor",
+    roleId: roles[2].id, // Camp Counselor
     email: "daniel.wilson@camp.com",
     phone: "555-0110",
     certificationIds: [certifications[0].id, certifications[2].id],
@@ -1106,6 +1141,7 @@ export const mockData = {
   locations,
   housingRooms,
   certifications,
+  roles,
   staffMembers,
   campers,
   programs,

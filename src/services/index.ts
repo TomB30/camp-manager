@@ -18,6 +18,7 @@ export { programsService } from "./programsService";
 export { activitiesService } from "./activitiesService";
 export { areasService } from "./areasService";
 export { certificationsService } from "./certificationsService";
+export { rolesService } from "./rolesService";
 export { colorsService } from "./colorsService";
 export { sessionsService } from "./sessionsService";
 export { labelsService } from "./labelsService";

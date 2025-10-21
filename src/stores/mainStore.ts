@@ -11,6 +11,7 @@ import { useProgramsStore } from "./programsStore";
 import { useActivitiesStore } from "./activitiesStore";
 import { useAreasStore } from "./areasStore";
 import { useCertificationsStore } from "./certificationsStore";
+import { useRolesStore } from "./rolesStore";
 import { useColorsStore } from "./colorsStore";
 import { useSessionsStore } from "./sessionsStore";
 import { useLabelsStore } from "./labelsStore";
@@ -42,6 +43,7 @@ export const useMainStore = defineStore("main", {
         const activitiesStore = useActivitiesStore();
         const areasStore = useAreasStore();
         const certificationsStore = useCertificationsStore();
+        const rolesStore = useRolesStore();
         const colorsStore = useColorsStore();
         const sessionsStore = useSessionsStore();
         const labelsStore = useLabelsStore();
@@ -57,6 +59,7 @@ export const useMainStore = defineStore("main", {
           activitiesStore.loadActivities(),
           areasStore.loadAreas(),
           certificationsStore.loadCertifications(),
+          rolesStore.loadRoles(),
           colorsStore.loadColors(),
           sessionsStore.loadSessions(),
           labelsStore.loadLabels(),

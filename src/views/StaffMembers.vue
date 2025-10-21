@@ -97,7 +97,7 @@
           >
             {{ item.certificationIds.length }} cert(s)
           </span>
-          <span v-else class="text-secondary">None</span>
+          <span v-else class="text-caption">None</span>
         </template>
 
         <template #cell-events="{ item }">
@@ -139,7 +139,7 @@
               {{ report.firstName }} {{ report.lastName }}
             </span>
           </div>
-          <div v-else class="text-secondary">No direct reports</div>
+          <div v-else class="text-caption">No direct reports</div>
         </template>
         <template #events-list>
           <EventsByDate
@@ -233,7 +233,7 @@ export default defineComponent({
       formData: {
         firstName: "",
         lastName: "",
-        roleId: "counselor" as StaffMember["roleId"],
+        roleId: "" as StaffMember["roleId"],
         email: "",
         phone: "",
         certificationIds: [] as string[],
@@ -274,13 +274,10 @@ export default defineComponent({
       return useRolesStore();
     },
     roleOptions(): Array<AutocompleteOption> {
-      return [
-        { label: "Counselor", value: "counselor" },
-        { label: "Supervisor", value: "supervisor" },
-        { label: "Director", value: "director" },
-        { label: "Nurse", value: "nurse" },
-        { label: "Instructor", value: "instructor" },
-      ];
+      return this.rolesStore.roles.map((role) => ({
+        label: role.name,
+        value: role.id,
+      }));
     },
     managerOptions(): Array<AutocompleteOption> {
       const options = [{ label: "No Manager (Top Level)", value: "" }];
@@ -299,12 +296,10 @@ export default defineComponent({
           model: "filterRole",
           value: this.filterRole,
           placeholder: "Filter by Role",
-          options: [
-            { label: "Counselor", value: "counselor" },
-            { label: "Activity Leader", value: "activity-leader" },
-            { label: "Medical Staff", value: "medical-staff" },
-            { label: "Administrator", value: "administrator" },
-          ],
+          options: this.rolesStore.roles.map((role) => ({
+            label: role.name,
+            value: role.id,
+          })),
         },
         {
           model: "filterCertification",
@@ -401,6 +396,11 @@ export default defineComponent({
         this.expandedMembers.add(member.id);
       }
     });
+    
+    // Initialize formData with first available role
+    if (this.rolesStore.roles.length > 0 && !this.formData.roleId) {
+      this.formData.roleId = this.rolesStore.roles[0].id;
+    }
   },
   methods: {
     clearFilters(): void {
@@ -499,7 +499,7 @@ export default defineComponent({
       this.formData = {
         firstName: "",
         lastName: "",
-        roleId: "counselor" as StaffMember["roleId"],
+        roleId: (this.rolesStore.roles[0]?.id || "") as StaffMember["roleId"],
         email: "",
         phone: "",
         certificationIds: [],

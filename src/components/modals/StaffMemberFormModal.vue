@@ -98,7 +98,7 @@ import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
 import SelectionList from "@/components/SelectionList.vue";
-import { useCertificationsStore } from "@/stores";
+import { useCertificationsStore, useRolesStore } from "@/stores";
 import type { StaffMember } from "@/types";
 import type { QForm } from "quasar";
 
@@ -142,22 +142,22 @@ export default defineComponent({
   emits: ["close", "save"],
   setup() {
     const certificationsStore = useCertificationsStore();
-    return { certificationsStore };
+    const rolesStore = useRolesStore();
+    return { certificationsStore, rolesStore };
   },
   data() {
     return {
       localFormData: JSON.parse(JSON.stringify(this.formData)),
-      roleOptions: [
-        { label: "Counselor", value: "counselor" },
-        { label: "Supervisor", value: "supervisor" },
-        { label: "Director", value: "director" },
-        { label: "Nurse", value: "nurse" },
-        { label: "Instructor", value: "instructor" },
-      ] as AutocompleteOption[],
       formRef: null as any,
     };
   },
   computed: {
+    roleOptions(): AutocompleteOption[] {
+      return this.rolesStore.roles.map((role) => ({
+        label: role.name,
+        value: role.id,
+      }));
+    },
     emailModel: {
       get(): string {
         return this.localFormData.email || "";
@@ -178,10 +178,14 @@ export default defineComponent({
       // Filter out the current member to prevent self-assignment
       return this.staffMembers
         .filter((m) => m.id !== this.currentMemberId)
-        .map((member) => ({
-          label: `${member.firstName} ${member.lastName} (${member.roleId})`,
-          value: member.id,
-        }));
+        .map((member) => {
+          const role = this.rolesStore.getRoleById(member.roleId);
+          const roleName = role ? role.name : 'Unknown Role';
+          return {
+            label: `${member.firstName} ${member.lastName} (${roleName})`,
+            value: member.id,
+          };
+        });
     },
   },
   watch: {

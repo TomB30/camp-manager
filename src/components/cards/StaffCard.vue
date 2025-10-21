@@ -15,7 +15,7 @@
       </div>
       <div
         v-if="member.email"
-        class="member-contact text-sm text-secondary mt-1"
+        class="member-contact text-caption mt-1"
       >
         {{ member.email }}
       </div>
