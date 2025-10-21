@@ -4,14 +4,13 @@
       title="Color Palette"
       description="Manage the colors available throughout your camp system. These colors will be used in events, programs, groups, and more."
       action-text="Color"
-      @action="showAddModal = true"
+      @action="showFormModal = true"
     >
       <template #action-icon>
         <Icon name="Plus" :size="18" />
       </template>
     </TabHeader>
 
-    <!-- Search and Filters -->
     <FilterBar
       v-if="colorsStore.colors.length > 0"
       v-model:searchQuery="searchQuery"
@@ -21,18 +20,16 @@
       @clear="clearFilters"
     />
 
-    <!-- Empty State -->
     <EmptyState
       v-if="colorsStore.colors.length === 0"
       type="empty"
       title="No Colors Yet"
       message="Add your first color to start customizing your camp's color palette."
       action-text="Color"
-      @action="showAddModal = true"
+      @action="showFormModal = true"
       icon-name="Palette"
     />
 
-    <!-- Colors Grid -->
     <div v-else class="colors-grid">
       <ColorCard
         v-for="color in filteredColors"
@@ -43,16 +40,13 @@
       />
     </div>
 
-    <!-- Add/Edit Color Modal -->
     <ColorFormModal
-      :show="showAddModal || showEditModal"
-      :is-editing="!!editingColor"
-      :form-data="formData"
+      v-if="showFormModal"
+      :color-id="editingColor?.id"
       @close="closeModal"
       @save="saveColor"
     />
-
-    <!-- Confirm Delete Modal -->
+    
     <ConfirmModal
       :show="showConfirmModal"
       title="Delete Color"
@@ -67,8 +61,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+// Stores
 import { useColorsStore } from "@/stores";
+// Types
 import type { Color } from "@/types";
+// Components
 import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import ColorCard from "@/components/cards/ColorCard.vue";
@@ -76,6 +73,7 @@ import ColorFormModal from "@/components/modals/ColorFormModal.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar from "@/components/FilterBar.vue";
 import EmptyState from "@/components/EmptyState.vue";
+// Composables
 import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
@@ -96,16 +94,11 @@ export default defineComponent({
   },
   data() {
     return {
-      showAddModal: false,
-      showEditModal: false,
-      showConfirmModal: false,
+      showFormModal: false as boolean,
+      showConfirmModal: false as boolean,
       editingColor: null as Color | null,
       colorToDelete: null as Color | null,
-      searchQuery: "",
-      formData: {
-        name: "",
-        hexValue: "#3B82F6",
-      },
+      searchQuery: "" as string,
     };
   },
   computed: {
@@ -118,7 +111,7 @@ export default defineComponent({
         filtered = filtered.filter(
           (color) =>
             color.name.toLowerCase().includes(query) ||
-            color.hexValue.toLowerCase().includes(query),
+            color.hexValue.toLowerCase().includes(query)
         );
       }
 
@@ -128,18 +121,12 @@ export default defineComponent({
   methods: {
     editColor(color: Color) {
       this.editingColor = color;
-      this.formData = {
-        name: color.name,
-        hexValue: color.hexValue,
-      };
-      this.showEditModal = true;
+      this.showFormModal = true;
     },
-
     deleteColorConfirm(color: Color) {
       this.colorToDelete = color;
       this.showConfirmModal = true;
     },
-
     async handleDeleteColor() {
       if (!this.colorToDelete) return;
 
@@ -152,7 +139,6 @@ export default defineComponent({
         this.toast.error(error.message || "Failed to delete color");
       }
     },
-
     async saveColor(data: { name: string; hexValue: string }) {
       try {
         if (this.editingColor) {
@@ -173,24 +159,17 @@ export default defineComponent({
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           });
-          this.toast.success("Color added successfully");
+          this.toast.success("Color created successfully");
         }
         this.closeModal();
       } catch (error: any) {
         this.toast.error(error.message || "Failed to save color");
       }
     },
-
     closeModal() {
-      this.showAddModal = false;
-      this.showEditModal = false;
+      this.showFormModal = false;
       this.editingColor = null;
-      this.formData = {
-        name: "",
-        hexValue: "#3B82F6",
-      };
     },
-
     clearFilters() {
       this.searchQuery = "";
     },

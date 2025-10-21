@@ -5,30 +5,13 @@ import { colorsService } from "@/services";
 export const useColorsStore = defineStore("colors", {
   state: () => ({
     colors: [] as Color[],
+    colorsById: {} as Record<string, Color>,
     loading: false,
   }),
 
   getters: {
     getColorById(state): (id: string) => Color | undefined {
-      return (id: string): Color | undefined => {
-        return state.colors.find((c) => c.id === id);
-      };
-    },
-
-    getColorByName(state): (name: string) => Color | undefined {
-      return (name: string): Color | undefined => {
-        return state.colors.find(
-          (c) => c.name.toLowerCase() === name.toLowerCase(),
-        );
-      };
-    },
-
-    getColorByHex(state): (hexValue: string) => Color | undefined {
-      return (hexValue: string): Color | undefined => {
-        return state.colors.find(
-          (c) => c.hexValue.toLowerCase() === hexValue.toLowerCase(),
-        );
-      };
+      return (id: string): Color | undefined => state.colorsById[id];
     },
   },
 
@@ -37,6 +20,10 @@ export const useColorsStore = defineStore("colors", {
       this.loading = true;
       try {
         this.colors = await colorsService.getColors();
+        this.colorsById = this.colors.reduce((acc, color) => {
+          acc[color.id] = color;
+          return acc;
+        }, {} as Record<string, Color>);
       } finally {
         this.loading = false;
       }
@@ -45,6 +32,7 @@ export const useColorsStore = defineStore("colors", {
     async addColor(color: Color): Promise<void> {
       await colorsService.saveColor(color);
       this.colors.push(color);
+      this.colorsById[color.id] = color;
     },
 
     async updateColor(color: Color): Promise<void> {
@@ -53,6 +41,7 @@ export const useColorsStore = defineStore("colors", {
       if (index >= 0) {
         this.colors[index] = color;
       }
+      this.colorsById[color.id] = color;
     },
 
     async deleteColor(id: string): Promise<void> {

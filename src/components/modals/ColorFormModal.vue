@@ -1,15 +1,15 @@
 <template>
   <BaseModal
-    :show="show"
+    show
     :title="isEditing ? 'Edit Color' : 'Add New Color'"
     @close="$emit('close')"
   >
     <template #body>
       <form @submit.prevent="handleSave">
         <div class="form-group">
-          <label class="form-label">Color Name *</label>
+          <label class="form-label">Color Name</label>
           <input
-            v-model="localFormData.name"
+            v-model="formModel.name"
             type="text"
             class="form-input"
             placeholder="e.g., Ocean Blue"
@@ -18,10 +18,10 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Hex Value *</label>
+          <label class="form-label">Hex Value</label>
           <div class="color-input-group">
             <input
-              v-model="localFormData.hexValue"
+              v-model="formModel.hexValue"
               type="text"
               class="form-input"
               placeholder="#3B82F6"
@@ -29,7 +29,7 @@
               required
             />
             <input
-              v-model="localFormData.hexValue"
+              v-model="formModel.hexValue"
               type="color"
               class="color-picker-input"
               title="Pick a color"
@@ -40,7 +40,7 @@
 
         <div
           class="color-preview-large"
-          :style="{ background: localFormData.hexValue || '#CCCCCC' }"
+          :style="{ background: formModel.hexValue || '#CCCCCC' }"
         >
           <span class="preview-label">Preview</span>
         </div>
@@ -48,10 +48,20 @@
     </template>
 
     <template #footer>
-      <button class="btn btn-secondary" @click="$emit('close')">Cancel</button>
-      <button class="btn btn-primary" @click="handleSave">
-        {{ isEditing ? "Update" : "Add" }} Color
-      </button>
+      <div class="colors-form-modal-footer flex justify-between items-center">
+        <div v-if="hasErrors" class="text-error">
+          <p>Missing required fields.</p>
+        </div>
+
+        <div class="flex gap-2">
+          <button class="btn btn-secondary" @click="$emit('close')">
+            Cancel
+          </button>
+          <button class="btn btn-primary" @click="handleSave">
+            {{ isEditing ? "Update" : "Add" }} Color
+          </button>
+        </div>
+      </div>
     </template>
   </BaseModal>
 </template>
@@ -59,11 +69,8 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-
-interface ColorFormData {
-  name: string;
-  hexValue: string;
-}
+import type { ColorCreationRequest } from "@/types";
+import { useColorsStore } from "@/stores";
 
 export default defineComponent({
   name: "ColorFormModal",
@@ -71,38 +78,51 @@ export default defineComponent({
     BaseModal,
   },
   props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
-    isEditing: {
-      type: Boolean,
-      default: false,
-    },
-    formData: {
-      type: Object as PropType<ColorFormData>,
-      required: true,
+    colorId: {
+      type: String as PropType<string>,
+      required: false,
     },
   },
   emits: ["close", "save"],
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData)),
+      colorsStore: useColorsStore(),
+      formModel: {
+        name: "",
+        hexValue: "",
+      } as ColorCreationRequest,
+      hasErrors: false,
     };
   },
-  watch: {
-    formData: {
-      handler(newVal) {
-        this.localFormData = JSON.parse(JSON.stringify(newVal));
-      },
-      deep: true,
+  created() {
+    if (this.colorId) {
+      const editingColor = this.colorsStore.getColorById(this.colorId);
+      if (editingColor) {
+        this.formModel = {
+          name: editingColor.name,
+          hexValue: editingColor.hexValue,
+        };
+      }
+    }
+  },
+  computed: {
+    isEditing(): boolean {
+      return !!this.colorId;
     },
   },
   methods: {
     handleSave() {
-      // Normalize hex value to uppercase
-      this.localFormData.hexValue = this.localFormData.hexValue.toUpperCase();
-      this.$emit("save", this.localFormData);
+      if (
+        this.formModel.name.trim() === "" ||
+        this.formModel.hexValue.trim() === ""
+      ) {
+        this.hasErrors = true;
+        return;
+      } else {
+        this.hasErrors = false;
+      }
+      this.formModel.hexValue = this.formModel.hexValue.toUpperCase();
+      this.$emit("save", this.formModel);
     },
   },
 });
@@ -158,5 +178,9 @@ export default defineComponent({
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   font-size: 1.125rem;
   letter-spacing: 0.05em;
+}
+
+.colors-form-modal-footer {
+  width: 100%;
 }
 </style>
