@@ -107,7 +107,6 @@ import {
 import BaseModal from "@/components/BaseModal.vue";
 import DurationDisplay from "@/components/DurationDisplay.vue";
 import type { Activity } from "@/types";
-import BaseButton from "../common/BaseButton.vue";
 
 export default defineComponent({
   name: "ActivityDetailModal",
