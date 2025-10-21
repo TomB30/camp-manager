@@ -17,7 +17,7 @@ export const dateUtils = {
  */
 function filterEventsByDate<T extends { startDate: string }>(
   events: T[],
-  targetDate: Date
+  targetDate: Date,
 ): T[] {
   const targetYear = targetDate.getFullYear();
   const targetMonth = targetDate.getMonth();
@@ -43,7 +43,7 @@ function filterEventsByDate<T extends { startDate: string }>(
 function filterEventsByDateAndHour<T extends Event>(
   events: T[],
   targetDate: Date,
-  targetHour: number
+  targetHour: number,
 ): T[] {
   const targetYear = targetDate.getFullYear();
   const targetMonth = targetDate.getMonth();

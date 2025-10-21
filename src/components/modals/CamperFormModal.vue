@@ -1,5 +1,8 @@
 <template>
-  <BaseModal :title="isEditing ? 'Edit Camper' : 'Add New Camper'" @close="$emit('close')">
+  <BaseModal
+    :title="isEditing ? 'Edit Camper' : 'Add New Camper'"
+    @close="$emit('close')"
+  >
     <template #body>
       <q-form @submit.prevent="handleSave" ref="formRef">
         <div class="grid grid-cols-2">
@@ -31,7 +34,9 @@
               placeholder="Enter age"
               :rules="[
                 (val: string) => !!val || 'Enter age',
-                (val: string) => parseInt(val) >= 5 && parseInt(val) <= 18 || 'Age must be between 5 and 18'
+                (val: string) =>
+                  (parseInt(val) >= 5 && parseInt(val) <= 18) ||
+                  'Age must be between 5 and 18',
               ]"
             />
           </div>
@@ -110,7 +115,11 @@
     <template #footer>
       <div class="flex q-gutter-x-sm">
         <BaseButton flat @click="$emit('close')" label="Cancel" />
-        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Update Camper' : 'Add Camper'" />
+        <BaseButton
+          color="primary"
+          @click="handleSave"
+          :label="isEditing ? 'Update Camper' : 'Add Camper'"
+        />
       </div>
     </template>
   </BaseModal>

@@ -7,11 +7,7 @@
       </div>
       <div v-if="actionText || $slots.actions" class="tab-header-actions">
         <slot name="actions"></slot>
-        <q-btn
-          no-caps
-          color="primary"
-          @click="$emit('action')"
-        >
+        <q-btn no-caps color="primary" @click="$emit('action')">
           <template #default>
             <Icon name="Plus" :size="18" />
             {{ actionText }}

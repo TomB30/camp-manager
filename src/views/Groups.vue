@@ -6,7 +6,12 @@
         tooltip="Create and manage groups with flexible assignment options. Groups can contain campers, staff, or even other groups. Use filters for automatic assignment or manually select members."
       >
         <template #actions>
-          <BaseButton color="primary" @click="showModal = true" label="Group" icon="add"/>
+          <BaseButton
+            color="primary"
+            @click="showModal = true"
+            label="Group"
+            icon="add"
+          />
         </template>
       </ViewHeader>
 
@@ -103,7 +108,9 @@
         </template>
 
         <template #cell-members="{ item }">
-          <div class="members-counts text-caption row items-center q-gutter-x-md">
+          <div
+            class="members-counts text-caption row items-center q-gutter-x-md"
+          >
             <span
               v-if="getCampersCount(item.id) > 0"
               class="badge badge-success badge-sm"
@@ -135,7 +142,13 @@
         </template>
 
         <template #cell-actions="{ item }">
-          <BaseButton outline color="grey-8" size="sm" @click.stop="selectGroup(item.id)" label="View Details" />
+          <BaseButton
+            outline
+            color="grey-8"
+            size="sm"
+            @click.stop="selectGroup(item.id)"
+            label="View Details"
+          />
         </template>
       </DataTable>
 
@@ -654,7 +667,6 @@ export default defineComponent({
   flex-wrap: wrap;
   gap: 0.375rem;
 }
-
 
 .badge-sm {
   font-size: 0.75rem;

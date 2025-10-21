@@ -13,7 +13,10 @@
         <span class="badge badge-success"
           >Capacity: {{ location.capacity }}</span
         >
-        <span v-if="areaName" class="text-sm text-grey-7 text-subtitle2 row items-center q-gutter-x-xs">
+        <span
+          v-if="areaName"
+          class="text-sm text-grey-7 text-subtitle2 row items-center q-gutter-x-xs"
+        >
           <Icon name="MapPin" :size="14" class="inline" />
           <span>{{ areaName }}</span>
         </span>

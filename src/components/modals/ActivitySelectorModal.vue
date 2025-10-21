@@ -1,8 +1,5 @@
 <template>
-  <BaseModal
-    title="Add Activity to Program"
-    @close="$emit('close')"
-  >
+  <BaseModal title="Add Activity to Program" @close="$emit('close')">
     <template #body>
       <div class="selector-content">
         <div class="selector-options">

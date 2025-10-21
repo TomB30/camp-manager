@@ -47,7 +47,11 @@
     <template #footer>
       <div class="flex q-gutter-x-sm">
         <BaseButton flat @click="$emit('close')" label="Cancel" />
-        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Update color' : 'Create color'" />
+        <BaseButton
+          color="primary"
+          @click="handleSave"
+          :label="isEditing ? 'Update color' : 'Create color'"
+        />
       </div>
     </template>
   </BaseModal>

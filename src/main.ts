@@ -11,7 +11,6 @@ import "./style.scss";
 import "./utils/devTools";
 import BaseButton from "./components/common/BaseButton.vue";
 
-
 const app = createApp(App);
 
 app.use(createPinia());

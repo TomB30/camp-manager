@@ -1,5 +1,8 @@
 <template>
-  <BaseModal :title="isEditing ? 'Edit Program' : 'Create New Program'" @close="$emit('close')">
+  <BaseModal
+    :title="isEditing ? 'Edit Program' : 'Create New Program'"
+    @close="$emit('close')"
+  >
     <template #body>
       <q-form @submit.prevent="handleSave" ref="formRef">
         <div class="form-group">
@@ -31,7 +34,11 @@
     <template #footer>
       <div class="flex q-gutter-x-sm">
         <BaseButton flat @click="$emit('close')" label="Cancel" />
-        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Save Changes' : 'Create Program'" />
+        <BaseButton
+          color="primary"
+          @click="handleSave"
+          :label="isEditing ? 'Save Changes' : 'Create Program'"
+        />
       </div>
     </template>
   </BaseModal>

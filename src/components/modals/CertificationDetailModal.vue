@@ -54,8 +54,18 @@
     </template>
 
     <template #footer>
-      <BaseButton outline color="negative" @click="$emit('delete', certification?.id)" label="Delete" />
-      <BaseButton outline color="grey-8" @click="$emit('edit', certification)" label="Edit" />
+      <BaseButton
+        outline
+        color="negative"
+        @click="$emit('delete', certification?.id)"
+        label="Delete"
+      />
+      <BaseButton
+        outline
+        color="grey-8"
+        @click="$emit('edit', certification)"
+        label="Edit"
+      />
     </template>
   </BaseModal>
 </template>

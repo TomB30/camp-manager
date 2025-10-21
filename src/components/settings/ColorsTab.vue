@@ -46,7 +46,7 @@
       @close="closeModal"
       @save="saveColor"
     />
-    
+
     <ConfirmModal
       v-if="showConfirmModal"
       title="Delete Color"
@@ -111,7 +111,7 @@ export default defineComponent({
         filtered = filtered.filter(
           (color) =>
             color.name.toLowerCase().includes(query) ||
-            color.hexValue.toLowerCase().includes(query)
+            color.hexValue.toLowerCase().includes(query),
         );
       }
 

@@ -90,8 +90,18 @@
     </template>
 
     <template #footer>
-      <BaseButton outline color="negative" @click="$emit('delete', activity)" label="Delete" />
-      <BaseButton outline color="grey-8" @click="$emit('edit', activity)" label="Edit" />
+      <BaseButton
+        outline
+        color="negative"
+        @click="$emit('delete', activity)"
+        label="Delete"
+      />
+      <BaseButton
+        outline
+        color="grey-8"
+        @click="$emit('edit', activity)"
+        label="Edit"
+      />
     </template>
   </BaseModal>
 </template>

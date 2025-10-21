@@ -1,6 +1,9 @@
 <template>
   <q-dialog model-value @hide="close">
-    <q-card class="modal" :style="{ width: modalWidthPx, maxWidth: modalWidthPx }">
+    <q-card
+      class="modal"
+      :style="{ width: modalWidthPx, maxWidth: modalWidthPx }"
+    >
       <div class="modal-header">
         <div class="modal-header-content">
           <slot name="header">

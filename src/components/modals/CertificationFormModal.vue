@@ -1,5 +1,8 @@
 <template>
-  <BaseModal :title="isEditing ? 'Edit Certification' : 'Add New Certification'" @close="$emit('close')">
+  <BaseModal
+    :title="isEditing ? 'Edit Certification' : 'Add New Certification'"
+    @close="$emit('close')"
+  >
     <template #body>
       <q-form @submit.prevent="handleSave" ref="formRef">
         <div class="form-group">
@@ -37,7 +40,11 @@
     <template #footer>
       <div class="flex q-gutter-x-sm">
         <BaseButton flat @click="$emit('close')" label="Cancel" />
-        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Update Certification' : 'Add Certification'" />
+        <BaseButton
+          color="primary"
+          @click="handleSave"
+          :label="isEditing ? 'Update Certification' : 'Add Certification'"
+        />
       </div>
     </template>
   </BaseModal>

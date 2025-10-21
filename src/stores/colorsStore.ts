@@ -20,10 +20,13 @@ export const useColorsStore = defineStore("colors", {
       this.loading = true;
       try {
         this.colors = await colorsService.getColors();
-        this.colorsById = this.colors.reduce((acc, color) => {
-          acc[color.id] = color;
-          return acc;
-        }, {} as Record<string, Color>);
+        this.colorsById = this.colors.reduce(
+          (acc, color) => {
+            acc[color.id] = color;
+            return acc;
+          },
+          {} as Record<string, Color>,
+        );
       } finally {
         this.loading = false;
       }

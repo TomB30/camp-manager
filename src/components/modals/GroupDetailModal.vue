@@ -1,6 +1,5 @@
 <template>
-  <BaseModal
-    :title="group?.name || 'Group Details'" @close="$emit('close')">
+  <BaseModal :title="group?.name || 'Group Details'" @close="$emit('close')">
     <template #body>
       <div v-if="group" class="group-details">
         <!-- Description -->
@@ -255,7 +254,12 @@
     </template>
 
     <template #footer>
-      <BaseButton outline color="negative" @click="$emit('delete')" label="Delete" />
+      <BaseButton
+        outline
+        color="negative"
+        @click="$emit('delete')"
+        label="Delete"
+      />
       <BaseButton outline color="grey-8" @click="$emit('edit')" label="Edit" />
     </template>
   </BaseModal>

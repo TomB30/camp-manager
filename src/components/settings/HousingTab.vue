@@ -91,7 +91,13 @@
       </template>
 
       <template #cell-actions="{ item }">
-        <BaseButton outline color="grey-8" size="sm" @click.stop="selectRoom(item.id)" label="View Details" />
+        <BaseButton
+          outline
+          color="grey-8"
+          size="sm"
+          @click.stop="selectRoom(item.id)"
+          label="View Details"
+        />
       </template>
     </DataTable>
 

@@ -69,13 +69,13 @@
         <Icon name="Users" :size="16" />
         <span>{{ group.camperIds.length }} selected campers</span>
       </div>
-      
+
       <!-- Filter-based staff -->
       <div v-if="group.staffFilters" class="info-item">
         <Icon name="Filter" :size="16" />
         <span>Auto-assigned staff</span>
       </div>
-      
+
       <!-- Manual staff -->
       <div v-if="group.staffIds && group.staffIds.length > 0" class="info-item">
         <Icon name="Users" :size="16" />

@@ -13,10 +13,7 @@
       <div class="member-role">
         <span class="badge badge-primary">{{ formattedRole }}</span>
       </div>
-      <div
-        v-if="member.email"
-        class="member-contact text-caption mt-1"
-      >
+      <div v-if="member.email" class="member-contact text-caption mt-1">
         {{ member.email }}
       </div>
       <div v-if="certificationCount > 0" class="member-certs text-xs mt-2">

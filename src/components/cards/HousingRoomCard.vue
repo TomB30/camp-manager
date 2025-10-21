@@ -10,13 +10,18 @@
       <h4>{{ room.name }}</h4>
       <div class="card-meta row items-center">
         <span class="badge badge-primary">{{ room.beds }} beds</span>
-        <span v-if="locationName" class="text-sm text-grey-7 text-subtitle2 row items-center q-gutter-x-xs">
+        <span
+          v-if="locationName"
+          class="text-sm text-grey-7 text-subtitle2 row items-center q-gutter-x-xs"
+        >
           <Icon name="MapPin" :size="14" class="inline" />
           <span>{{ locationName }}</span>
         </span>
       </div>
       <div v-if="groups.length > 0" class="assigned-groups mt-2">
-        <div class="text-xs text-grey-7 text-subtitle2 mb-1">Family Groups:</div>
+        <div class="text-xs text-grey-7 text-subtitle2 mb-1">
+          Family Groups:
+        </div>
         <div class="flex gap-1 flex-wrap">
           <span
             v-for="group in groups"

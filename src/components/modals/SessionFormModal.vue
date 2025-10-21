@@ -31,7 +31,10 @@
               type="date"
               :rules="[
                 (val: string) => !!val || 'Enter end date',
-                (val: string) => !formModel.startDate || val >= formModel.startDate || 'End date must be after start date'
+                (val: string) =>
+                  !formModel.startDate ||
+                  val >= formModel.startDate ||
+                  'End date must be after start date',
               ]"
             />
           </div>
@@ -61,7 +64,11 @@
     <template #footer>
       <div class="flex q-gutter-x-sm">
         <BaseButton flat @click="$emit('close')" label="Cancel" />
-        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Update Session' : 'Create Session'" />
+        <BaseButton
+          color="primary"
+          @click="handleSave"
+          :label="isEditing ? 'Update Session' : 'Create Session'"
+        />
       </div>
     </template>
   </BaseModal>

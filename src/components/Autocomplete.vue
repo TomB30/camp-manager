@@ -110,7 +110,7 @@ export default defineComponent({
     selectedOption(): QSelectOption | null {
       return (
         this.options.find(
-          (option: QSelectOption) => option.value === this.modelValue
+          (option: QSelectOption) => option.value === this.modelValue,
         ) || null
       );
     },
@@ -118,7 +118,7 @@ export default defineComponent({
   methods: {
     filterFn(
       val: string | number | boolean | null,
-      update: (callback: () => void) => void
+      update: (callback: () => void) => void,
     ) {
       if (val === "") {
         update(() => {
@@ -132,7 +132,7 @@ export default defineComponent({
         console.log(needle);
         this.filteredOptions = this.filteredOptions.filter(
           (option: QSelectOption) =>
-            option.label.toLowerCase().indexOf(needle) > -1
+            option.label.toLowerCase().indexOf(needle) > -1,
         );
       });
     },

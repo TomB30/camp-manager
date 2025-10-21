@@ -1,5 +1,8 @@
 <template>
-  <BaseModal :title="isEditing ? 'Edit Staff Member' : 'Add New Staff Member'" @close="$emit('close')">
+  <BaseModal
+    :title="isEditing ? 'Edit Staff Member' : 'Add New Staff Member'"
+    @close="$emit('close')"
+  >
     <template #body>
       <q-form @submit.prevent="handleSave" ref="formRef">
         <div class="grid grid-cols-2">
@@ -83,7 +86,11 @@
     <template #footer>
       <div class="flex q-gutter-x-sm">
         <BaseButton flat @click="$emit('close')" label="Cancel" />
-        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Update Member' : 'Add Member'" />
+        <BaseButton
+          color="primary"
+          @click="handleSave"
+          :label="isEditing ? 'Update Member' : 'Add Member'"
+        />
       </div>
     </template>
   </BaseModal>
@@ -180,7 +187,7 @@ export default defineComponent({
         .filter((m) => m.id !== this.currentMemberId)
         .map((member) => {
           const role = this.rolesStore.getRoleById(member.roleId);
-          const roleName = role ? role.name : 'Unknown Role';
+          const roleName = role ? role.name : "Unknown Role";
           return {
             label: `${member.firstName} ${member.lastName} (${roleName})`,
             value: member.id,

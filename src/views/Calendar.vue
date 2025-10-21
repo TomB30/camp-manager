@@ -3,7 +3,12 @@
     <div class="calendar-view">
       <ViewHeader title="Event Calendar">
         <template #actions>
-          <BaseButton color="primary" @click="openNewEventModal" icon="add" label="Event" />
+          <BaseButton
+            color="primary"
+            @click="openNewEventModal"
+            icon="add"
+            label="Event"
+          />
         </template>
       </ViewHeader>
 

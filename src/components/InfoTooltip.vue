@@ -1,6 +1,13 @@
 <template>
   <div class="info-tooltip-wrapper">
-    <BaseButton flat round dense color="grey-6" icon="info" aria-label="Information">
+    <BaseButton
+      flat
+      round
+      dense
+      color="grey-6"
+      icon="info"
+      aria-label="Information"
+    >
       <q-tooltip max-width="400px">{{ tooltipText }}</q-tooltip>
     </BaseButton>
   </div>

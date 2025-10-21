@@ -154,7 +154,7 @@ export default defineComponent({
         const currentIds = this.modelValue as string[];
         this.$emit(
           "update:modelValue",
-          currentIds.filter((id) => id !== itemId)
+          currentIds.filter((id) => id !== itemId),
         );
       }
     },

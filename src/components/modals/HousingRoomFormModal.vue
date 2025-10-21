@@ -22,7 +22,7 @@
             placeholder="Enter number of beds"
             :rules="[
               (val: string) => !!val || 'Enter number of beds',
-              (val: string) => parseInt(val) >= 1 || 'Must be at least 1'
+              (val: string) => parseInt(val) >= 1 || 'Must be at least 1',
             ]"
           />
         </div>
@@ -36,7 +36,6 @@
             :required="false"
             hint="Select the physical area where this room is located"
           />
-          
         </div>
       </q-form>
     </template>
@@ -44,7 +43,11 @@
     <template #footer>
       <div class="flex q-gutter-x-sm">
         <BaseButton flat @click="$emit('close')" label="Cancel" />
-        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Update Room' : 'Add Room'" />
+        <BaseButton
+          color="primary"
+          @click="handleSave"
+          :label="isEditing ? 'Update Room' : 'Add Room'"
+        />
       </div>
     </template>
   </BaseModal>

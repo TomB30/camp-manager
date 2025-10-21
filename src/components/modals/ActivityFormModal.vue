@@ -1,5 +1,8 @@
 <template>
-  <BaseModal :title="isEditing ? 'Edit Activity' : 'Create New Activity'" @close="$emit('close')">
+  <BaseModal
+    :title="isEditing ? 'Edit Activity' : 'Create New Activity'"
+    @close="$emit('close')"
+  >
     <template #body>
       <ActivityForm
         v-model="localFormData"
@@ -14,7 +17,11 @@
     <template #footer>
       <div class="flex q-gutter-x-sm">
         <BaseButton flat @click="$emit('close')" label="Cancel" />
-        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Save Changes' : 'Create Activity'" />
+        <BaseButton
+          color="primary"
+          @click="handleSave"
+          :label="isEditing ? 'Save Changes' : 'Create Activity'"
+        />
       </div>
     </template>
   </BaseModal>

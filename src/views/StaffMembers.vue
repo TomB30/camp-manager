@@ -3,7 +3,12 @@
     <div class="staff-view">
       <ViewHeader title="Staff Management">
         <template #actions>
-          <BaseButton color="primary" @click="showModal = true" label="Staff Member" icon="add"/>
+          <BaseButton
+            color="primary"
+            @click="showModal = true"
+            label="Staff Member"
+            icon="add"
+          />
         </template>
       </ViewHeader>
 
@@ -105,7 +110,13 @@
         </template>
 
         <template #cell-actions="{ item }">
-          <BaseButton outline color="grey-8" size="sm" @click.stop="selectMember(item.id)" label="View Details" />
+          <BaseButton
+            outline
+            color="grey-8"
+            size="sm"
+            @click.stop="selectMember(item.id)"
+            label="View Details"
+          />
         </template>
       </DataTable>
 
@@ -396,7 +407,7 @@ export default defineComponent({
         this.expandedMembers.add(member.id);
       }
     });
-    
+
     // Initialize formData with first available role
     if (this.rolesStore.roles.length > 0 && !this.formData.roleId) {
       this.formData.roleId = this.rolesStore.roles[0].id;

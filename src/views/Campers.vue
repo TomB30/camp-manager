@@ -3,7 +3,12 @@
     <div class="campers-view">
       <ViewHeader title="Campers Management">
         <template #actions>
-          <BaseButton color="primary" @click="showModal = true" label="Camper" icon="add"/>
+          <BaseButton
+            color="primary"
+            @click="showModal = true"
+            label="Camper"
+            icon="add"
+          />
         </template>
       </ViewHeader>
 
@@ -105,7 +110,13 @@
         </template>
 
         <template #cell-actions="{ item }">
-          <BaseButton outline color="grey-8" size="sm" @click.stop="selectCamper(item.id)" label="View Details" />
+          <BaseButton
+            outline
+            color="grey-8"
+            size="sm"
+            @click.stop="selectCamper(item.id)"
+            label="View Details"
+          />
         </template>
       </DataTable>
 
@@ -161,9 +172,7 @@
               </div>
             </div>
           </div>
-          <div v-else class="text-caption">
-            Not assigned to a family group
-          </div>
+          <div v-else class="text-caption">Not assigned to a family group</div>
         </template>
         <template #events>
           <EventsByDate

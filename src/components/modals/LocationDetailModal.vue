@@ -52,7 +52,12 @@
     </template>
 
     <template #footer>
-      <BaseButton outline color="negative" @click="$emit('delete')" label="Delete" />
+      <BaseButton
+        outline
+        color="negative"
+        @click="$emit('delete')"
+        label="Delete"
+      />
       <BaseButton outline color="grey-8" @click="$emit('edit')" label="Edit" />
     </template>
   </BaseModal>

@@ -8,10 +8,10 @@
           (value: string | number | null) => handleSearchInput(value)
         "
       >
-      <template #prepend>
-        <Icon name="Search" :size="16" />
-      </template>
-    </BaseInput>
+        <template #prepend>
+          <Icon name="Search" :size="16" />
+        </template>
+      </BaseInput>
 
       <!-- Add Filter Button -->
       <!-- <BaseButton
@@ -159,12 +159,12 @@ export default defineComponent({
     },
     activeFilters(): Filter[] {
       return this.filters.filter((f) =>
-        this.addedFilterModels.includes(f.model)
+        this.addedFilterModels.includes(f.model),
       );
     },
     availableFilters(): Filter[] {
       return this.filters.filter(
-        (f) => !this.addedFilterModels.includes(f.model)
+        (f) => !this.addedFilterModels.includes(f.model),
       );
     },
   },
@@ -185,7 +185,7 @@ export default defineComponent({
       handler(newFilters: Filter[]) {
         // Remove filters that no longer exist in the filters array
         this.addedFilterModels = this.addedFilterModels.filter((model) =>
-          newFilters.some((f) => f.model === model)
+          newFilters.some((f) => f.model === model),
         );
 
         // Auto-remove filters that have been cleared
@@ -218,7 +218,7 @@ export default defineComponent({
     },
     handleFilterChange(
       model: string,
-      value: string | number | boolean | null
+      value: string | number | boolean | null,
     ): void {
       this.$emit(`update:${model}` as any, value);
     },

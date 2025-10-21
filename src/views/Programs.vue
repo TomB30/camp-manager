@@ -19,7 +19,12 @@
           tooltip="Programs are collections of activities, staff members, and locations. Create programs to organize your camp's offerings like 'Watersports', 'Arts & Crafts', or 'Adventure Sports'."
         >
           <template #actions>
-            <BaseButton @click="showProgramModal = true" label="Program" icon="add" color="primary"/>
+            <BaseButton
+              @click="showProgramModal = true"
+              label="Program"
+              icon="add"
+              color="primary"
+            />
           </template>
         </ViewHeader>
 
@@ -97,9 +102,7 @@
           </template>
 
           <template #cell-description="{ item }">
-            <span>{{
-              item.description || "No description"
-            }}</span>
+            <span>{{ item.description || "No description" }}</span>
           </template>
 
           <template #cell-activities="{ item }">
@@ -149,12 +152,12 @@
             </div>
             <div class="detail-header-actions">
               <BaseButton
-                  color="grey-8"
-                  outline
-                  icon="edit"
-                  label="Edit"
-                  @click="editProgram(selectedProgram)"
-                />
+                color="grey-8"
+                outline
+                icon="edit"
+                label="Edit"
+                @click="editProgram(selectedProgram)"
+              />
               <BaseButton
                 color="negative"
                 outline
@@ -369,7 +372,12 @@
         />
       </template>
       <template #footer>
-        <BaseButton outline color="grey-8" @click="showStaffSelector = false" label="Close" />
+        <BaseButton
+          outline
+          color="grey-8"
+          @click="showStaffSelector = false"
+          label="Close"
+        />
       </template>
     </BaseModal>
 
@@ -394,7 +402,12 @@
         />
       </template>
       <template #footer>
-        <BaseButton outline color="grey-8" @click="showLocationSelector = false" label="Close" />
+        <BaseButton
+          outline
+          color="grey-8"
+          @click="showLocationSelector = false"
+          label="Close"
+        />
       </template>
     </BaseModal>
 
@@ -545,7 +558,7 @@ export default defineComponent({
         (program) =>
           program.name.toLowerCase().includes(query) ||
           (program.description &&
-            program.description.toLowerCase().includes(query))
+            program.description.toLowerCase().includes(query)),
       );
     },
     selectedProgram() {
@@ -584,14 +597,14 @@ export default defineComponent({
       if (!this.selectedProgram) return [];
       return this.staffMembersStore.staffMembers.filter(
         (staff) =>
-          !this.selectedProgram!.staffMemberIds?.includes(staff.id) || false
+          !this.selectedProgram!.staffMemberIds?.includes(staff.id) || false,
       );
     },
     availableLocations(): Location[] {
       if (!this.selectedProgram) return [];
       return this.locationsStore.locations.filter(
         (location) =>
-          !this.selectedProgram!.locationIds?.includes(location.id) || false
+          !this.selectedProgram!.locationIds?.includes(location.id) || false,
       );
     },
     programStaffIds: {
@@ -636,17 +649,17 @@ export default defineComponent({
         return `Are you sure you want to delete "${program?.name}"? This will also delete all activities in this program. This action cannot be undone.`;
       } else if (this.deleteTarget.type === "activity") {
         const activity = this.activitiesStore.getActivityById(
-          this.deleteTarget.id
+          this.deleteTarget.id,
         );
         return `Are you sure you want to delete "${activity?.name}"? This action cannot be undone.`;
       } else if (this.deleteTarget.type === "staff") {
         const staff = this.staffMembersStore.getStaffMemberById(
-          this.deleteTarget.id
+          this.deleteTarget.id,
         );
         return `Are you sure you want to remove "${staff?.firstName} ${staff?.lastName}" from this program?`;
       } else if (this.deleteTarget.type === "location") {
         const location = this.locationsStore.getLocationById(
-          this.deleteTarget.id
+          this.deleteTarget.id,
         );
         return `Are you sure you want to remove "${location?.name}" from this program?`;
       }
@@ -759,7 +772,7 @@ export default defineComponent({
       try {
         await this.activitiesStore.addActivityToProgram(
           activityId,
-          this.selectedProgramId
+          this.selectedProgramId,
         );
         this.toast.success("Activity added to program successfully");
       } catch (error: any) {
@@ -799,7 +812,7 @@ export default defineComponent({
       const updatedProgram = {
         ...this.selectedProgram,
         staffMemberIds: this.selectedProgram.staffMemberIds?.filter(
-          (id: string) => id !== staffId
+          (id: string) => id !== staffId,
         ),
       };
 
@@ -816,7 +829,7 @@ export default defineComponent({
       const updatedProgram = {
         ...this.selectedProgram,
         locationIds: this.selectedProgram.locationIds?.filter(
-          (id) => id !== locationId
+          (id) => id !== locationId,
         ),
       };
 
@@ -912,7 +925,7 @@ export default defineComponent({
         this.toast.success("Location assignments updated");
       } catch (error: any) {
         this.toast.error(
-          error.message || "Failed to update location assignments"
+          error.message || "Failed to update location assignments",
         );
       }
     },

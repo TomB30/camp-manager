@@ -89,12 +89,7 @@
         </div>
         <div>
           <label class="form-label text-xs">Minimum Staff</label>
-          <BaseInput
-            model-value=""
-            type="number"
-            :min="0"
-            placeholder="Min"
-          />
+          <BaseInput model-value="" type="number" :min="0" placeholder="Min" />
         </div>
       </div>
     </div>

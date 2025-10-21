@@ -208,7 +208,7 @@
             placeholder="Enter capacity"
             :rules="[
               (val: string) => !!val || 'Enter capacity',
-              (val: string) => parseInt(val) > 0 || 'Must be greater than 0'
+              (val: string) => parseInt(val) > 0 || 'Must be greater than 0',
             ]"
           />
         </div>
@@ -318,7 +318,11 @@
     <template #footer>
       <div class="flex q-gutter-x-sm">
         <BaseButton flat @click="$emit('close')" label="Cancel" />
-        <BaseButton color="primary" @click="handleSave" :label="isEditing ? 'Save Changes' : 'Create Event'" />
+        <BaseButton
+          color="primary"
+          @click="handleSave"
+          :label="isEditing ? 'Save Changes' : 'Create Event'"
+        />
       </div>
     </template>
   </BaseModal>
