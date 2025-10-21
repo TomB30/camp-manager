@@ -18,18 +18,23 @@
     "generate-types": "npm run api:generate-types"
   },
   "dependencies": {
+    "@quasar/extras": "^1.17.0",
     "date-fns": "^3.3.1",
     "lucide-vue-next": "^0.545.0",
     "pinia": "^2.1.7",
+    "quasar": "^2.18.5",
     "uuid": "^9.0.1",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
+    "@quasar/vite-plugin": "^1.10.0",
+    "@types/node": "^24.9.1",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/tsconfig": "^0.5.1",
     "openapi-typescript": "^6.7.4",
     "prettier": "^3.6.2",
+    "sass": "^1.93.2",
     "typescript": "^5.4.2",
     "vite": "^5.1.6",
     "vue-tsc": "^2.0.6"
