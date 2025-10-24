@@ -448,7 +448,7 @@ import type {
   HousingRoom,
   Certification,
 } from "@/types";
-import { useColorsStore } from "@/stores";
+import { useColorsStore, useSessionsStore, useGroupsStore, useHousingRoomsStore } from "@/stores";
 import type { QForm } from "quasar";
 
 interface GroupFormData {
@@ -501,20 +501,8 @@ export default defineComponent({
       type: Array as PropType<StaffMember[]>,
       required: true,
     },
-    groups: {
-      type: Array as PropType<Group[]>,
-      default: () => [],
-    },
     labels: {
       type: Array as PropType<Label[]>,
-      default: () => [],
-    },
-    sessions: {
-      type: Array as PropType<Session[]>,
-      default: () => [],
-    },
-    housingRooms: {
-      type: Array as PropType<HousingRoom[]>,
       default: () => [],
     },
     certifications: {
@@ -553,6 +541,24 @@ export default defineComponent({
     };
   },
   computed: {
+    sessionsStore() {
+      return useSessionsStore();
+    },
+    sessions(): Session[] {
+      return this.sessionsStore.sessions;
+    },
+    groupsStore() {
+      return useGroupsStore();
+    },
+    groups(): Group[] {
+      return this.groupsStore.groups;
+    },
+    housingRoomsStore() {
+      return useHousingRoomsStore();
+    },
+    housingRooms(): HousingRoom[] {
+      return this.housingRoomsStore.housingRooms;
+    },
     colorsStore() {
       return useColorsStore();
     },
@@ -849,6 +855,7 @@ export default defineComponent({
         return {
           label: `${room.name} (${room.beds} beds)`,
           value: room.id,
+          disabled: false,
         };
       }
 

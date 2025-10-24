@@ -34,6 +34,7 @@ import {
   useLocationsStore,
   useColorsStore,
   useCertificationsStore,
+  useActivitiesStore,
 } from "@/stores";
 import BaseModal from "@/components/BaseModal.vue";
 import BaseButton from "@/components/common/BaseButton.vue";
@@ -51,17 +52,17 @@ export default defineComponent({
     ActivityForm,
   },
   props: {
-    activity: {
-      type: Object as PropType<Activity | null>,
-      default: null,
+    activityId: {
+      type: String,
+      required: false,
     },
     programId: {
       type: String,
-      default: null,
+      required: true,
     },
     programIds: {
       type: Array as PropType<string[]>,
-      default: null,
+      required: true,
     },
   },
   emits: ["close", "save"],
@@ -70,7 +71,14 @@ export default defineComponent({
     const locationsStore = useLocationsStore();
     const colorsStore = useColorsStore();
     const certificationsStore = useCertificationsStore();
-    return { programsStore, locationsStore, colorsStore, certificationsStore };
+    const activitiesStore = useActivitiesStore();
+    return {
+      programsStore,
+      locationsStore,
+      colorsStore,
+      certificationsStore,
+      activitiesStore,
+    };
   },
   data() {
     return {
@@ -86,11 +94,31 @@ export default defineComponent({
       } as ActivityFormData,
       selectedCertificationIds: [] as string[],
       isCustomDuration: false,
+      editingActivity: null as Activity | null,
     };
+  },
+  created() {
+    if (this.activityId) {
+      console.log("activityId ====>", this.activityId);
+      console.log("activitiesStore.activities ====>", this.activitiesStore.activities);
+      const activity = this.activitiesStore.getActivityById(this.activityId);
+      if (!activity) return;
+      this.editingActivity = activity;
+      this.localFormData = {
+        name: activity.name,
+        description: activity.description || "",
+        duration: activity.duration || 60,
+        defaultLocationId: activity.defaultLocationId || "",
+        requiredCertificationIds: activity.requiredCertificationIds || [],
+        minStaff: activity.minStaff || 0,
+        defaultCapacity: activity.defaultCapacity || 0,
+        color: activity.colorId || "#6366F1",
+      };
+    }
   },
   computed: {
     isEditing() {
-      return !!this.activity;
+      return !!this.activityId;
     },
     roomOptions(): AutocompleteOption[] {
       return this.locationsStore.locations.map((room) => ({
@@ -103,55 +131,11 @@ export default defineComponent({
     },
   },
   methods: {
-    resetForm() {
-      if (this.activity) {
-        // Get color hex value from colorId
-        let colorHex = "#6366F1";
-        if (this.activity.colorId) {
-          const color = this.colorsStore.getColorById(this.activity.colorId);
-          colorHex = color?.hexValue || "#6366F1";
-        }
-
-        this.localFormData = {
-          name: this.activity.name,
-          description: this.activity.description || "",
-          duration: this.activity.duration || 0,
-          defaultLocationId: this.activity.defaultLocationId || "",
-          requiredCertificationIds: this.activity.requiredCertificationIds
-            ? [...this.activity.requiredCertificationIds]
-            : [],
-          minStaff: this.activity.minStaff || 0,
-          defaultCapacity: this.activity.defaultCapacity || 0,
-          color: colorHex,
-        };
-        // Convert certification names to IDs for the SelectionList
-        this.selectedCertificationIds = this.getCertificationIdsFromNames(
-          this.activity.requiredCertificationIds || [],
-        );
-        // Check if duration matches any preset
-        this.isCustomDuration = !this.presetDurations.includes(
-          this.activity!.duration || 0,
-        );
-      } else {
-        this.localFormData = {
-          name: "",
-          description: "",
-          duration: 60,
-          defaultLocationId: "",
-          requiredCertificationIds: [],
-          minStaff: 0,
-          defaultCapacity: 0,
-          color: "#6366F1",
-        };
-        this.selectedCertificationIds = [];
-        this.isCustomDuration = false;
-      }
-    },
     getCertificationIdsFromNames(names: string[]): string[] {
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.name === name,
+            (c) => c.name === name
           );
           return cert ? cert.id : "";
         })
@@ -169,9 +153,9 @@ export default defineComponent({
       // Determine programIds for the activity
       let activityProgramIds: string[];
 
-      if (this.activity) {
+      if (this.editingActivity) {
         // Editing existing activity - keep its current programIds
-        activityProgramIds = this.activity.programIds;
+        activityProgramIds = this.editingActivity.programIds;
       } else if (this.programIds && this.programIds.length > 0) {
         // Creating new activity with specified programIds
         activityProgramIds = this.programIds;
@@ -187,20 +171,20 @@ export default defineComponent({
 
       // Convert selected certification IDs to names
       const certifications = this.getCertificationNamesFromIds(
-        this.selectedCertificationIds,
+        this.selectedCertificationIds
       );
 
       // Find or create color ID for the selected color
-      let colorId: string | undefined = this.activity?.colorId;
+      let colorId: string | undefined = this.editingActivity?.colorId;
       if (this.localFormData.color) {
         const color = this.colorsStore.colors.find(
-          (c) => c.hexValue === this.localFormData.color,
+          (c) => c.hexValue === this.localFormData.color
         );
         colorId = color?.id;
       }
 
       const activityData: Activity = {
-        id: this.activity?.id || crypto.randomUUID(),
+        id: this.editingActivity?.id || crypto.randomUUID(),
         name: this.localFormData.name,
         description: this.localFormData.description || undefined,
         programIds: activityProgramIds,
@@ -211,7 +195,7 @@ export default defineComponent({
         minStaff: this.localFormData.minStaff || undefined,
         defaultCapacity: this.localFormData.defaultCapacity || undefined,
         colorId: colorId,
-        createdAt: this.activity?.createdAt || now,
+        createdAt: this.editingActivity?.createdAt || now,
         updatedAt: now,
       };
 

@@ -26,7 +26,7 @@
 
         <div class="form-group">
           <label class="form-label">Color</label>
-          <ColorPicker v-model="localFormData.color" />
+          <ColorPicker v-model="localFormData.colorId" />
         </div>
       </q-form>
     </template>
@@ -50,18 +50,11 @@ import BaseModal from "@/components/BaseModal.vue";
 import BaseInput from "@/components/common/BaseInput.vue";
 import BaseButton from "@/components/common/BaseButton.vue";
 import ColorPicker from "@/components/ColorPicker.vue";
-import { useColorsStore } from "@/stores";
-import type { Program, Color } from "@/types";
+import { useColorsStore, useProgramsStore } from "@/stores";
+import type { Program } from "@/types";
 import type { QForm } from "quasar";
+import type { ProgramCreationRequest } from "@/types";
 
-interface ProgramFormData {
-  name: string;
-  description: string;
-  color: string;
-  activityIds: string[];
-  staffMemberIds: string[];
-  locationIds: string[];
-}
 
 export default defineComponent({
   name: "ProgramFormModal",
@@ -72,32 +65,50 @@ export default defineComponent({
     ColorPicker,
   },
   props: {
-    program: {
-      type: Object as PropType<Program | null>,
-      default: null,
+    programId: {
+      type: String as PropType<string>,
+      required: false
     },
   },
   emits: ["close", "save"],
   setup() {
     const colorsStore = useColorsStore();
-    return { colorsStore };
+    const programsStore = useProgramsStore();
+    return { colorsStore, programsStore };
   },
   data() {
     return {
+      editingProgram: null as Program | null,
       localFormData: {
         name: "",
         description: "",
-        color: "#6366F1",
+        colorId: "",
         activityIds: [],
         staffMemberIds: [],
         locationIds: [],
-      } as ProgramFormData,
+      } as ProgramCreationRequest,
       formRef: null as any,
     };
   },
+  created() {
+    if (this.programId) {
+      const program = this.programsStore.getProgramById(this.programId);
+      if (!program) return;
+
+      this.editingProgram = program;
+      this.localFormData = {
+        name: program.name,
+        description: program.description || "",
+        colorId: program.colorId || "",
+        activityIds: program.activityIds,
+        staffMemberIds: program.staffMemberIds,
+        locationIds: program.locationIds,
+      };
+    }
+  },
   computed: {
     isEditing() {
-      return !!this.program;
+      return !!this.programId;
     },
     descriptionModel: {
       get(): string {
@@ -109,58 +120,21 @@ export default defineComponent({
     },
   },
   methods: {
-    resetForm() {
-      if (this.program) {
-        // Get color hex value from colorId
-        let colorHex = "#6366F1";
-        if (this.program.colorId) {
-          const color = this.colorsStore.getColorById(this.program.colorId);
-          colorHex = color?.hexValue || "#6366F1";
-        }
-
-        this.localFormData = {
-          name: this.program.name,
-          description: this.program.description || "",
-          color: colorHex,
-          activityIds: [...(this.program.activityIds || [])],
-          staffMemberIds: [...(this.program.staffMemberIds || [])],
-          locationIds: [...(this.program.locationIds || [])],
-        };
-      } else {
-        this.localFormData = {
-          name: "",
-          description: "",
-          color: "#6366F1",
-          activityIds: [],
-          staffMemberIds: [],
-          locationIds: [],
-        };
-      }
-    },
     async handleSave() {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
 
       const now = new Date().toISOString();
 
-      // Find color ID for the selected color
-      let colorId: string | undefined = this.program?.colorId;
-      if (this.localFormData.color) {
-        const color = this.colorsStore.colors.find(
-          (c: Color) => c.hexValue === this.localFormData.color,
-        );
-        colorId = color?.id;
-      }
-
       const programData: Program = {
-        id: this.program?.id || crypto.randomUUID(),
+        id: this.programId || crypto.randomUUID(),
         name: this.localFormData.name,
         description: this.localFormData.description || undefined,
-        colorId: colorId,
+        colorId: this.localFormData.colorId,
         activityIds: this.localFormData.activityIds,
         staffMemberIds: this.localFormData.staffMemberIds,
         locationIds: this.localFormData.locationIds,
-        createdAt: this.program?.createdAt || now,
+        createdAt: this.editingProgram?.createdAt || now,
         updatedAt: now,
       };
 

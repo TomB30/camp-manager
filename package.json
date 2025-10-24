@@ -15,7 +15,16 @@
     "api:serve": "cd api && python3 -m http.server 8080",
     "api:generate-types": "npm run api:bundle && openapi-typescript api/openapi-bundled.yaml -o src/types/api.ts",
     "api:build": "npm run api:lint && npm run api:bundle",
-    "generate-types": "npm run api:generate-types"
+    "generate-types": "npm run api:generate-types",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:unit": "vitest run --dir src/tests/unit",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:all": "npm run test:unit && npm run test:e2e",
+    "test:watch": "vitest watch"
   },
   "dependencies": {
     "@quasar/extras": "^1.17.0",
@@ -28,15 +37,26 @@
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
+    "@mswjs/data": "^0.16.2",
+    "@playwright/test": "^1.56.1",
     "@quasar/vite-plugin": "^1.10.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@testing-library/vue": "^8.1.0",
     "@types/node": "^24.9.1",
     "@vitejs/plugin-vue": "^5.0.4",
+    "@vitest/coverage-v8": "^4.0.1",
+    "@vitest/ui": "^4.0.1",
+    "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.5.1",
+    "happy-dom": "^20.0.8",
+    "msw": "^2.11.6",
     "openapi-typescript": "^6.7.4",
+    "playwright": "^1.56.1",
     "prettier": "^3.6.2",
     "sass": "^1.93.2",
     "typescript": "^5.4.2",
     "vite": "^5.1.6",
+    "vitest": "^4.0.1",
     "vue-tsc": "^2.0.6"
   }
 }

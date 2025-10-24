@@ -322,7 +322,7 @@
     <!-- Modals -->
     <ProgramFormModal
       v-if="showProgramModal"
-      :program="editingProgram"
+      :program-id="selectedProgramId || undefined"
       @close="closeProgramModal"
       @save="saveProgram"
     />
@@ -338,7 +338,9 @@
     <ActivityFormModal
       v-if="showActivityModal"
       :activity="editingActivity"
-      :program-id="selectedProgramId || undefined"
+      :activity-id="selectedActivityId || undefined"
+      :program-id="selectedProgramId || ''"
+      :program-ids="selectedProgram?.id ? [selectedProgram.id] : []"
       @close="closeActivityModal"
       @save="saveActivity"
     />
@@ -558,7 +560,7 @@ export default defineComponent({
         (program) =>
           program.name.toLowerCase().includes(query) ||
           (program.description &&
-            program.description.toLowerCase().includes(query)),
+            program.description.toLowerCase().includes(query))
       );
     },
     selectedProgram() {
@@ -597,14 +599,14 @@ export default defineComponent({
       if (!this.selectedProgram) return [];
       return this.staffMembersStore.staffMembers.filter(
         (staff) =>
-          !this.selectedProgram!.staffMemberIds?.includes(staff.id) || false,
+          !this.selectedProgram!.staffMemberIds?.includes(staff.id) || false
       );
     },
     availableLocations(): Location[] {
       if (!this.selectedProgram) return [];
       return this.locationsStore.locations.filter(
         (location) =>
-          !this.selectedProgram!.locationIds?.includes(location.id) || false,
+          !this.selectedProgram!.locationIds?.includes(location.id) || false
       );
     },
     programStaffIds: {
@@ -649,17 +651,17 @@ export default defineComponent({
         return `Are you sure you want to delete "${program?.name}"? This will also delete all activities in this program. This action cannot be undone.`;
       } else if (this.deleteTarget.type === "activity") {
         const activity = this.activitiesStore.getActivityById(
-          this.deleteTarget.id,
+          this.deleteTarget.id
         );
         return `Are you sure you want to delete "${activity?.name}"? This action cannot be undone.`;
       } else if (this.deleteTarget.type === "staff") {
         const staff = this.staffMembersStore.getStaffMemberById(
-          this.deleteTarget.id,
+          this.deleteTarget.id
         );
         return `Are you sure you want to remove "${staff?.firstName} ${staff?.lastName}" from this program?`;
       } else if (this.deleteTarget.type === "location") {
         const location = this.locationsStore.getLocationById(
-          this.deleteTarget.id,
+          this.deleteTarget.id
         );
         return `Are you sure you want to remove "${location?.name}" from this program?`;
       }
@@ -756,7 +758,7 @@ export default defineComponent({
     editActivity(activity: Activity) {
       this.editingActivity = activity;
       this.showActivityModal = true;
-      this.selectedActivityId = null;
+      this.selectedActivityId = activity.id;
     },
     async handleCreateNewActivity(activity: Activity) {
       try {
@@ -772,7 +774,7 @@ export default defineComponent({
       try {
         await this.activitiesStore.addActivityToProgram(
           activityId,
-          this.selectedProgramId,
+          this.selectedProgramId
         );
         this.toast.success("Activity added to program successfully");
       } catch (error: any) {
@@ -812,7 +814,7 @@ export default defineComponent({
       const updatedProgram = {
         ...this.selectedProgram,
         staffMemberIds: this.selectedProgram.staffMemberIds?.filter(
-          (id: string) => id !== staffId,
+          (id: string) => id !== staffId
         ),
       };
 
@@ -829,7 +831,7 @@ export default defineComponent({
       const updatedProgram = {
         ...this.selectedProgram,
         locationIds: this.selectedProgram.locationIds?.filter(
-          (id) => id !== locationId,
+          (id) => id !== locationId
         ),
       };
 
@@ -925,7 +927,7 @@ export default defineComponent({
         this.toast.success("Location assignments updated");
       } catch (error: any) {
         this.toast.error(
-          error.message || "Failed to update location assignments",
+          error.message || "Failed to update location assignments"
         );
       }
     },

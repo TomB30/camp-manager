@@ -63,7 +63,7 @@ export default defineComponent({
     const mainStore = useMainStore();
 
     // Check if we have data, if not, seed with mock data
-    const existingCampers = await campersService.getCampers();
+    const existingCampers = await campersService.listCampers();
 
     if (existingCampers.length === 0) {
       // Lazy load mock data only when needed
