@@ -31,6 +31,3 @@ properties:
   defaultCapacity:
     type: integer
     description: Default activity capacity
-  colorId:
-    type: string
-    format: uuid

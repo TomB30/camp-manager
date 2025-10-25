@@ -228,11 +228,6 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Color</label>
-          <ColorPicker v-model="formData.colorId" />
-        </div>
-
-        <div class="form-group">
           <label class="form-label">Required Certifications (Optional)</label>
           <SelectionList
             v-model="selectedCertificationIds"
@@ -353,7 +348,6 @@ import BaseModal from "@/components/BaseModal.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import ColorPicker from "@/components/ColorPicker.vue";
 import SelectionList from "@/components/SelectionList.vue";
 import NumberInput from "@/components/NumberInput.vue";
 import type {
@@ -378,7 +372,6 @@ export default defineComponent({
   components: {
     BaseModal,
     Autocomplete,
-    ColorPicker,
     SelectionList,
     NumberInput,
   },
@@ -485,6 +478,14 @@ export default defineComponent({
         programId: event.programId,
         activityId: event.activityId,
       };
+    } else {
+      // For new events (not created from activity template), set default color
+      if (!this.formData.colorId) {
+        const defaultColor = this.colorsStore.getDefaultColor;
+        if (defaultColor) {
+          this.formData.colorId = defaultColor.id;
+        }
+      }
     }
   },
   computed: {
@@ -739,11 +740,11 @@ export default defineComponent({
         this.formData.capacity = activity.defaultCapacity;
       }
 
-      // Set color if specified
-      if (activity.colorId) {
-        const color = this.colorsStore.getColorById(activity.colorId);
-        if (color) {
-          this.formData.colorId = color.id;
+      // Inherit color from the program (use first program)
+      if (activity.programIds && activity.programIds.length > 0) {
+        const program = this.programsStore.getProgramById(activity.programIds[0]);
+        if (program && program.colorId) {
+          this.formData.colorId = program.colorId;
         }
       }
 

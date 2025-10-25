@@ -1444,8 +1444,6 @@ export interface components {
       minStaff?: number;
       /** @description Default activity capacity */
       defaultCapacity?: number;
-      /** Format: uuid */
-      colorId?: string;
       /** Format: date-time */
       createdAt?: string;
       /** Format: date-time */
@@ -1469,8 +1467,6 @@ export interface components {
       minStaff?: number;
       /** @description Default activity capacity */
       defaultCapacity?: number;
-      /** Format: uuid */
-      colorId?: string;
     };
     ActivityUpdateRequest: {
       name: string;
@@ -1490,8 +1486,6 @@ export interface components {
       minStaff?: number;
       /** @description Default activity capacity */
       defaultCapacity?: number;
-      /** Format: uuid */
-      colorId?: string;
     };
     Color: {
       /** Format: uuid */
@@ -1499,6 +1493,8 @@ export interface components {
       name: string;
       /** @description Hex color value (e.g., "#FF5733") */
       hexValue: string;
+      /** @description Whether this is the default color for events */
+      default?: boolean;
       /** Format: date-time */
       createdAt?: string;
       /** Format: date-time */
@@ -1508,11 +1504,15 @@ export interface components {
       name: string;
       /** @description Hex color value (e.g., "#FF5733") */
       hexValue: string;
+      /** @description Whether this is the default color for events */
+      default?: boolean;
     };
     ColorUpdateRequest: {
       name: string;
       /** @description Hex color value (e.g., "#FF5733") */
       hexValue: string;
+      /** @description Whether this is the default color for events */
+      default?: boolean;
     };
     Certification: {
       /** Format: uuid */
@@ -1615,8 +1615,6 @@ export interface components {
       id: string;
       name: string;
       description?: string;
-      /** Format: uuid */
-      colorId?: string;
       /**
        * Format: uuid
        * @description Optional session this group belongs to
@@ -1665,8 +1663,6 @@ export interface components {
     GroupCreationRequest: {
       name: string;
       description?: string;
-      /** Format: uuid */
-      colorId?: string;
       /**
        * Format: uuid
        * @description Optional session this group belongs to
@@ -1711,8 +1707,6 @@ export interface components {
     GroupUpdateRequest: {
       name: string;
       description?: string;
-      /** Format: uuid */
-      colorId?: string;
       /**
        * Format: uuid
        * @description Optional session this group belongs to

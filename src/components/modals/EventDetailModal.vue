@@ -44,7 +44,6 @@
                 <div>
                   <div
                     class="group-badge"
-                    :style="{ background: getGroupColor(groupId) }"
                   >
                     {{ getGroupName(groupId) }}
                   </div>
@@ -260,16 +259,6 @@ export default defineComponent({
       }
 
       return "";
-    },
-    getGroupColor(groupId: string): string {
-      // Check groups
-      const group = this.groupsStore.getGroupById(groupId);
-      if (group && group.colorId) {
-        const color = this.colorsStore.getColorById(group.colorId);
-        return color?.hexValue || "#6366F1";
-      }
-
-      return "#6366F1";
     },
     async removeGroup(groupId: string) {
       if (!this.event) return;

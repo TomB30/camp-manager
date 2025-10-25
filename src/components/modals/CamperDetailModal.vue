@@ -71,9 +71,6 @@
             <div class="family-group-info">
               <span
                 class="badge"
-                :style="{
-                  background: getGroupColor(getGroupById(camper.familyGroupId)!),
-                }"
               >
                 {{ getGroupById(camper.familyGroupId)!.name }}
               </span>
@@ -192,13 +189,6 @@ export default defineComponent({
     },
     getGroupById(groupId: string): Group | null | undefined {
       return this.groupsStore.getGroupById(groupId);
-    },
-    getGroupColor(group: Group): string {
-      if (group.colorId) {
-        const color = this.colorsStore.getColorById(group.colorId);
-        return color?.hexValue || "#6366F1";
-      }
-      return "#6366F1";
     },
     getSleepingRoomName(housingRoomId: string): string {
       const room = this.housingRoomsStore.getHousingRoomById(housingRoomId);

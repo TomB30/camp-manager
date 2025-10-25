@@ -1,7 +1,6 @@
 <template>
   <div
     class="card card-clickable"
-    :style="{ borderLeft: `4px solid ${groupColor}` }"
     @click="$emit('click', group)"
   >
     <div class="card-header">
@@ -192,13 +191,6 @@ export default defineComponent({
     },
     sessionsStore() {
       return useSessionsStore();
-    },
-    groupColor(): string {
-      if (this.group.colorId) {
-        const color = this.colorsStore.getColorById(this.group.colorId);
-        return color?.hexValue || "#6366F1";
-      }
-      return "#6366F1";
     },
     isNestedGroup(): boolean {
       return !!(this.group.groupIds && this.group.groupIds.length > 0);

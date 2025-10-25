@@ -108,7 +108,6 @@ export default defineComponent({
         requiredCertificationIds: activity.requiredCertificationIds || [],
         minStaff: activity.minStaff || 0,
         defaultCapacity: activity.defaultCapacity || 0,
-        color: activity.colorId || "#6366F1",
       };
     }
   },
@@ -167,15 +166,6 @@ export default defineComponent({
         this.selectedCertificationIds
       );
 
-      // Find or create color ID for the selected color
-      let colorId: string | undefined = this.editingActivity?.colorId;
-      if (this.localFormData.color) {
-        const color = this.colorsStore.colors.find(
-          (c) => c.hexValue === this.localFormData.color
-        );
-        colorId = color?.id;
-      }
-
       const activityData: Activity = {
         id: this.editingActivity?.id || crypto.randomUUID(),
         name: this.localFormData.name,
@@ -187,7 +177,6 @@ export default defineComponent({
           certifications.length > 0 ? this.selectedCertificationIds : undefined,
         minStaff: this.localFormData.minStaff || undefined,
         defaultCapacity: this.localFormData.defaultCapacity || undefined,
-        colorId: colorId,
         createdAt: this.editingActivity?.createdAt || now,
         updatedAt: now,
       };

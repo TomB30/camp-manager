@@ -26,11 +26,6 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Color</label>
-          <ColorPicker v-model="localFormData.color" />
-        </div>
-
-        <div class="form-group">
           <label class="form-label">Labels (Optional)</label>
           <p class="form-help-text">
             Tag this group with labels for easy filtering and organization
@@ -435,7 +430,6 @@ import BaseModal from "@/components/BaseModal.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import ColorPicker from "@/components/ColorPicker.vue";
 import SelectionList from "@/components/SelectionList.vue";
 import type {
   Camper,
@@ -452,7 +446,6 @@ import type { QForm } from "quasar";
 interface GroupFormData {
   name: string;
   description: string;
-  color: string;
   sessionId: string;
   housingRoomId: string;
   groupIds: string[];
@@ -477,7 +470,6 @@ export default defineComponent({
   components: {
     BaseModal,
     Autocomplete,
-    ColorPicker,
     SelectionList,
   },
   props: {

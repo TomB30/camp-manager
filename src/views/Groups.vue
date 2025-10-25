@@ -74,7 +74,6 @@
       >
         <template #cell-name="{ item }">
           <div class="group-name-content">
-            <ColorIndicator :color="getItemColor(item)" type="dot" size="md" />
             <div class="group-name-text">{{ item.name }}</div>
           </div>
         </template>
@@ -196,7 +195,6 @@ import {
   useCampersStore,
   useStaffMembersStore,
   useLabelsStore,
-  useColorsStore,
   useSessionsStore,
   useHousingRoomsStore,
   useCertificationsStore,
@@ -204,7 +202,6 @@ import {
 import type { Group, Camper, StaffMember, Label, Session } from "@/types";
 import ViewHeader from "@/components/ViewHeader.vue";
 import EmptyState from "@/components/EmptyState.vue";
-import ColorIndicator from "@/components/ColorIndicator.vue";
 import GroupCard from "@/components/cards/GroupCard.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar, { type Filter } from "@/components/FilterBar.vue";
@@ -219,7 +216,6 @@ export default defineComponent({
   components: {
     ViewHeader,
     EmptyState,
-    ColorIndicator,
     GroupCard,
     ConfirmModal,
     FilterBar,
@@ -245,7 +241,6 @@ export default defineComponent({
       formData: {
         name: "",
         description: "",
-        color: "#6366F1",
         sessionId: "",
         housingRoomId: "",
         groupIds: [] as string[],
@@ -290,9 +285,6 @@ export default defineComponent({
     },
     labelsStore() {
       return useLabelsStore();
-    },
-    colorsStore() {
-      return useColorsStore();
     },
     sessionsStore() {
       return useSessionsStore();
@@ -409,13 +401,6 @@ export default defineComponent({
       this.filterSession = "";
       this.filterLabel = "";
     },
-    getItemColor(item: Group): string {
-      if (item.colorId) {
-        const color = this.colorsStore.getColorById(item.colorId);
-        return color?.hexValue || "#6366F1";
-      }
-      return "#6366F1";
-    },
     getCampersCount(groupId: string): number {
       return this.groupsStore.getCampersInGroup(groupId).length;
     },
@@ -449,7 +434,6 @@ export default defineComponent({
       this.formData = {
         name: this.selectedGroup.name,
         description: this.selectedGroup.description || "",
-        color: this.getItemColor(this.selectedGroup),
         sessionId: this.selectedGroup.sessionId || "",
         housingRoomId: this.selectedGroup.housingRoomId || "",
         groupIds: this.selectedGroup.groupIds || [],
@@ -477,20 +461,11 @@ export default defineComponent({
     async saveGroup(formData: typeof this.formData): Promise<void> {
       const toast = useToast();
 
-      // Find or create colorId from the selected color
-      let colorId = this.colorsStore.colors.find(
-        (c) => c.hexValue === formData.color,
-      )?.id;
-      if (!colorId && this.colorsStore.colors.length > 0) {
-        colorId = this.colorsStore.colors[0].id; // fallback to first color
-      }
-
       // Build the group object
       const groupData: Group = {
         id: this.editingGroupId || `group-${Date.now()}`,
         name: formData.name,
         description: formData.description || undefined,
-        colorId,
         sessionId: formData.sessionId || undefined,
         housingRoomId: formData.housingRoomId || undefined,
         groupIds: formData.groupIds.length > 0 ? formData.groupIds : undefined,
@@ -604,7 +579,6 @@ export default defineComponent({
       this.formData = {
         name: "",
         description: "",
-        color: "#6366F1",
         sessionId: "",
         housingRoomId: "",
         groupIds: [],

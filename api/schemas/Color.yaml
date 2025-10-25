@@ -12,6 +12,9 @@ properties:
   hexValue:
     type: string
     description: Hex color value (e.g., "#FF5733")
+  default:
+    type: boolean
+    description: Whether this is the default color for events
   createdAt:
     type: string
     format: date-time

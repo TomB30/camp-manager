@@ -79,7 +79,6 @@ export const buildGroup = (overrides: Partial<Group> = {}): Group => ({
   id: generateTestId("group"),
   name: "Test Group",
   description: "A test group",
-  colorId: "color-1",
   sessionId: "session-2",
   housingRoomId: "room-1",
   camperFilters: {

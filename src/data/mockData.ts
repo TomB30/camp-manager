@@ -41,6 +41,7 @@ export const colors: Color[] = [
     id: generateId(),
     name: "Ocean Blue",
     hexValue: "#0891B2",
+    default: true,
     createdAt: octoberDate(1),
   },
   {
@@ -561,7 +562,6 @@ export const groups: Group[] = [
     housingRoomId: housingRooms[0].id,
     staffIds: [staffMembers[2].id, staffMembers[3].id],
     sessionId: sessions[0].id,
-    colorId: colors[0].id,
     camperIds: [], // Will be populated after campers are created
     labelIds: [],
     createdAt: octoberDate(1),
@@ -573,7 +573,6 @@ export const groups: Group[] = [
     housingRoomId: housingRooms[1].id,
     staffIds: [staffMembers[6].id, staffMembers[7].id],
     sessionId: sessions[1].id,
-    colorId: colors[1].id,
     camperIds: [],
     labelIds: [],
     createdAt: octoberDate(1),
@@ -585,7 +584,6 @@ export const groups: Group[] = [
     housingRoomId: housingRooms[2].id,
     staffIds: [staffMembers[8].id],
     sessionId: sessions[2].id,
-    colorId: colors[2].id,
     camperIds: [],
     labelIds: [],
     createdAt: octoberDate(1),
@@ -597,7 +595,6 @@ export const groups: Group[] = [
     housingRoomId: housingRooms[3].id,
     staffIds: [staffMembers[9].id],
     sessionId: sessions[3].id,
-    colorId: colors[3].id,
     camperIds: [],
     labelIds: [],
     createdAt: octoberDate(1),
@@ -609,7 +606,6 @@ export const groups: Group[] = [
     housingRoomId: housingRooms[4].id,
     staffIds: [staffMembers[2].id],
     sessionId: sessions[4].id,
-    colorId: colors[4].id,
     camperIds: [],
     labelIds: [],
     createdAt: octoberDate(1),
@@ -621,7 +617,6 @@ export const groups: Group[] = [
     housingRoomId: housingRooms[5].id,
     staffIds: [staffMembers[6].id],
     sessionId: sessions[5].id,
-    colorId: colors[5].id,
     camperIds: [],
     labelIds: [],
     createdAt: octoberDate(1),
@@ -838,7 +833,6 @@ export const activities: Activity[] = [
     requiredCertificationIds: [certifications[2].id],
     minStaff: 2,
     defaultCapacity: 25,
-    colorId: colors[2].id,
     createdAt: octoberDate(1),
   },
   {
@@ -851,7 +845,6 @@ export const activities: Activity[] = [
     requiredCertificationIds: [certifications[2].id],
     minStaff: 1,
     defaultCapacity: 30,
-    colorId: colors[2].id,
     createdAt: octoberDate(1),
   },
   {
@@ -864,7 +857,6 @@ export const activities: Activity[] = [
     requiredCertificationIds: [certifications[2].id],
     minStaff: 1,
     defaultCapacity: 50,
-    colorId: colors[2].id,
     createdAt: octoberDate(1),
   },
   {
@@ -877,7 +869,6 @@ export const activities: Activity[] = [
     requiredCertificationIds: [certifications[2].id],
     minStaff: 2,
     defaultCapacity: 20,
-    colorId: colors[2].id,
     createdAt: octoberDate(1),
   },
 
@@ -892,7 +883,6 @@ export const activities: Activity[] = [
     requiredCertificationIds: [certifications[1].id],
     minStaff: 2,
     defaultCapacity: 30,
-    colorId: colors[0].id,
     createdAt: octoberDate(1),
   },
   {
@@ -905,7 +895,6 @@ export const activities: Activity[] = [
     requiredCertificationIds: [certifications[1].id],
     minStaff: 2,
     defaultCapacity: 20,
-    colorId: colors[0].id,
     createdAt: octoberDate(1),
   },
   {
@@ -918,7 +907,6 @@ export const activities: Activity[] = [
     requiredCertificationIds: [certifications[1].id],
     minStaff: 2,
     defaultCapacity: 40,
-    colorId: colors[0].id,
     createdAt: octoberDate(1),
   },
 
@@ -933,7 +921,6 @@ export const activities: Activity[] = [
     requiredCertificationIds: [certifications[4].id],
     minStaff: 1,
     defaultCapacity: 20,
-    colorId: colors[4].id,
     createdAt: octoberDate(1),
   },
   {
@@ -946,7 +933,6 @@ export const activities: Activity[] = [
     requiredCertificationIds: [certifications[4].id],
     minStaff: 1,
     defaultCapacity: 25,
-    colorId: colors[4].id,
     createdAt: octoberDate(1),
   },
   {
@@ -958,7 +944,6 @@ export const activities: Activity[] = [
     defaultLocationId: locations[15].id,
     minStaff: 1,
     defaultCapacity: 20,
-    colorId: colors[4].id,
     createdAt: octoberDate(1),
   },
   {
@@ -970,7 +955,6 @@ export const activities: Activity[] = [
     defaultLocationId: locations[12].id,
     minStaff: 1,
     defaultCapacity: 30,
-    colorId: colors[4].id,
     createdAt: octoberDate(1),
   },
 
@@ -984,7 +968,6 @@ export const activities: Activity[] = [
     defaultLocationId: locations[3].id,
     minStaff: 1,
     defaultCapacity: 30,
-    colorId: colors[1].id,
     createdAt: octoberDate(1),
   },
   {
@@ -996,7 +979,6 @@ export const activities: Activity[] = [
     defaultLocationId: locations[4].id,
     minStaff: 1,
     defaultCapacity: 40,
-    colorId: colors[1].id,
     createdAt: octoberDate(1),
   },
   {
@@ -1008,7 +990,6 @@ export const activities: Activity[] = [
     defaultLocationId: locations[13].id,
     minStaff: 1,
     defaultCapacity: 30,
-    colorId: colors[1].id,
     createdAt: octoberDate(1),
   },
   {
@@ -1020,7 +1001,6 @@ export const activities: Activity[] = [
     defaultLocationId: locations[4].id,
     minStaff: 2,
     defaultCapacity: 40,
-    colorId: colors[1].id,
     createdAt: octoberDate(1),
   },
 ];
@@ -1092,6 +1072,10 @@ const createDailyEvents = (day: number, sessionIndex: number) => {
   for (let i = 0; i < numEvents && i < allDayActivities.length; i++) {
     const { activity, time } = allDayActivities[i];
     const group = relevantGroups[i % relevantGroups.length];
+    
+    // Get color from the activity's program
+    const program = programs.find(p => p.id === activity.programIds[0]);
+    const eventColorId = program?.colorId;
 
     events.push({
       id: generateId(),
@@ -1105,7 +1089,7 @@ const createDailyEvents = (day: number, sessionIndex: number) => {
       excludeStaffIds: [],
       excludeCamperIds: [],
       requiredCertificationIds: activity.requiredCertificationIds || [],
-      colorId: activity.colorId,
+      colorId: eventColorId,
       programId: activity.programIds[0],
       activityId: activity.id,
     });

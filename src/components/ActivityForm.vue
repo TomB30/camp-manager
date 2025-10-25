@@ -107,14 +107,6 @@
         certifications
       </p>
     </div>
-
-    <div class="form-group" :class="{ 'mb-2': compactMode }">
-      <label class="form-label">Color</label>
-      <ColorPicker
-        :model-value="modelValue.color"
-        @update:model-value="updateField('color', $event)"
-      />
-    </div>
   </form>
 </template>
 
@@ -123,7 +115,6 @@ import { defineComponent, type PropType } from "vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import ColorPicker from "@/components/ColorPicker.vue";
 import SelectionList from "@/components/SelectionList.vue";
 import type { Certification } from "@/types";
 
@@ -135,14 +126,12 @@ export interface ActivityFormData {
   requiredCertificationIds: string[];
   minStaff: number;
   defaultCapacity: number;
-  color: string;
 }
 
 export default defineComponent({
   name: "ActivityForm",
   components: {
     Autocomplete,
-    ColorPicker,
     SelectionList,
   },
   props: {

@@ -6,9 +6,6 @@ properties:
     type: string
   description:
     type: string
-  colorId:
-    type: string
-    format: uuid
   sessionId:
     type: string
     format: uuid

@@ -177,7 +177,6 @@ export default defineComponent({
         requiredCertificationIds: [],
         minStaff: 0,
         defaultCapacity: 0,
-        color: "#6366F1",
       } as ActivityFormData,
       selectedCertificationIds: [] as string[],
       isCustomDuration: false,
@@ -232,7 +231,6 @@ export default defineComponent({
         requiredCertificationIds: [],
         minStaff: 0,
         defaultCapacity: 0,
-        color: "#6366F1",
       };
       this.selectedCertificationIds = [];
       this.isCustomDuration = false;
@@ -256,15 +254,6 @@ export default defineComponent({
         this.selectedCertificationIds,
       );
 
-      // Find color ID for the selected color
-      let colorId: string | undefined;
-      if (this.formData.color) {
-        const color = this.colorsStore.colors.find(
-          (c) => c.hexValue === this.formData.color,
-        );
-        colorId = color?.id;
-      }
-
       const activityData: Activity = {
         id: crypto.randomUUID(),
         name: this.formData.name,
@@ -276,7 +265,6 @@ export default defineComponent({
           certifications.length > 0 ? this.selectedCertificationIds : undefined,
         minStaff: this.formData.minStaff || undefined,
         defaultCapacity: this.formData.defaultCapacity || undefined,
-        colorId: colorId,
         createdAt: now,
         updatedAt: now,
       };

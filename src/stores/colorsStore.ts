@@ -13,6 +13,9 @@ export const useColorsStore = defineStore("colors", {
     getColorById(state): (id: string) => Color | undefined {
       return (id: string): Color | undefined => state.colors.find((c) => c.id === id);
     },
+    getDefaultColor(state): Color | undefined {
+      return state.colors.find((c) => c.default === true);
+    },
   },
 
   actions: {
@@ -33,6 +36,29 @@ export const useColorsStore = defineStore("colors", {
     },
 
     async createColor(colorRequest: ColorCreationRequest): Promise<Color> {
+      // If this color is being set as default, unset all other defaults
+      if (colorRequest.default) {
+        const updatePromises = this.colors
+          .filter((c) => c.default)
+          .map((c) =>
+            colorsService.updateColor(c.id, {
+              name: c.name,
+              hexValue: c.hexValue,
+              default: false,
+            })
+          );
+        
+        // Update all other default colors to false in the backend
+        await Promise.all(updatePromises);
+        
+        // Update local state
+        this.colors.forEach((c) => {
+          if (c.default) {
+            c.default = false;
+          }
+        });
+      }
+      
       const color = await colorsService.createColor(colorRequest);
       this.colors.push(color);
       this.colorsById[color.id] = color;
@@ -40,6 +66,29 @@ export const useColorsStore = defineStore("colors", {
     },
 
     async updateColor(id: string, colorUpdate: ColorUpdateRequest): Promise<void> {
+      // If this color is being set as default, unset all other defaults
+      if (colorUpdate.default) {
+        const updatePromises = this.colors
+          .filter((c) => c.id !== id && c.default)
+          .map((c) =>
+            colorsService.updateColor(c.id, {
+              name: c.name,
+              hexValue: c.hexValue,
+              default: false,
+            })
+          );
+        
+        // Update all other default colors to false in the backend
+        await Promise.all(updatePromises);
+        
+        // Update local state
+        this.colors.forEach((c) => {
+          if (c.id !== id && c.default) {
+            c.default = false;
+          }
+        });
+      }
+      
       const color = await colorsService.updateColor(id, colorUpdate);
       const index = this.colors.findIndex((c) => c.id === id);
       if (index >= 0) {

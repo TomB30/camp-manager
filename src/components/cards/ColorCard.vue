@@ -21,6 +21,7 @@
     <div class="color-info">
       <div class="color-name">{{ color.name }}</div>
       <div class="color-hex">{{ color.hexValue }}</div>
+      <span v-if="color.default" class="badge badge-default">Default</span>
     </div>
   </div>
 </template>
@@ -121,6 +122,19 @@ export default defineComponent({
   font-size: 0.8125rem;
   color: var(--text-secondary);
   font-family: "Courier New", monospace;
+}
+
+.badge-default {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  background: var(--primary-color);
+  border-radius: var(--radius);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
 @media (max-width: 768px) {

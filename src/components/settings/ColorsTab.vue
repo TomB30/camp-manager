@@ -2,7 +2,7 @@
   <div class="colors-tab">
     <TabHeader
       title="Color Palette"
-      description="Manage the colors available throughout your camp system. These colors will be used in events, programs, groups, and more."
+      description="Manage the colors available for programs and events. Set a default color for events not created from activity templates."
       action-text="Color"
       @action="showFormModal = true"
     >

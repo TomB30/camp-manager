@@ -224,19 +224,6 @@ describe("GroupCard", () => {
 
       expect(wrapper.classes()).toContain("card-clickable");
     });
-
-    it("applies border color based on group color", () => {
-      const group = groupsFixture[0];
-      const wrapper = createWrapper(GroupCard, {
-        props: { group },
-        pinia,
-      });
-
-      const style = wrapper.attributes("style");
-      // Check that a border color is applied (should be default #6366F1 or custom color)
-      expect(style).toContain("border-left");
-      expect(style).toContain("#");
-    });
   });
 });
 

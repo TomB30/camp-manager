@@ -35,6 +35,16 @@
           </BaseInput>
         </div>
 
+        <div class="form-group">
+          <q-checkbox
+            v-model="formModel.default"
+            label="Set as default color"
+          />
+          <p class="form-help-text">
+            The default color will be used for events not created from activity templates. Only one color can be set as default.
+          </p>
+        </div>
+
         <div
           class="color-preview-large"
           :style="{ background: formModel.hexValue || '#CCCCCC' }"
@@ -86,6 +96,7 @@ export default defineComponent({
       formModel: {
         name: "",
         hexValue: "",
+        default: false,
       } as ColorCreationRequest,
       formRef: null as any,
       loading: false as boolean,
@@ -98,6 +109,7 @@ export default defineComponent({
         this.formModel = {
           name: editingColor.name,
           hexValue: editingColor.hexValue,
+          default: editingColor.default || false,
         };
       }
     }
@@ -177,6 +189,12 @@ export default defineComponent({
 .form-hint {
   display: block;
   margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.form-help-text {
+  margin-top: 0.375rem;
   font-size: 0.875rem;
   color: var(--text-secondary);
 }
