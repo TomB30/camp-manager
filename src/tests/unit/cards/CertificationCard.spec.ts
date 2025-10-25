@@ -26,7 +26,10 @@ describe("CertificationCard", () => {
     });
 
     it("does not show description when not provided", () => {
-      const certification = { ...certificationsFixture[0], description: undefined };
+      const certification = {
+        ...certificationsFixture[0],
+        description: undefined,
+      };
       const wrapper = createWrapper(CertificationCard, {
         props: { certification },
       });
@@ -61,7 +64,9 @@ describe("CertificationCard", () => {
       });
 
       if (certification.validityPeriodMonths) {
-        expect(wrapper.text()).toContain(`${certification.validityPeriodMonths}mo`);
+        expect(wrapper.text()).toContain(
+          `${certification.validityPeriodMonths}mo`,
+        );
       }
     });
 
@@ -72,7 +77,9 @@ describe("CertificationCard", () => {
       });
 
       if (certification.validityPeriodMonths) {
-        expect(wrapper.text()).toContain(`Valid for ${certification.validityPeriodMonths} months`);
+        expect(wrapper.text()).toContain(
+          `Valid for ${certification.validityPeriodMonths} months`,
+        );
       }
     });
 
@@ -121,7 +128,9 @@ describe("CertificationCard", () => {
       const cardIcon = wrapper.find(".card-icon");
       const style = cardIcon.attributes("style");
       expect(style).toContain("background");
-      expect(style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)")).toBe(true);
+      expect(
+        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)"),
+      ).toBe(true);
     });
 
     it("uses default icon color when not provided", () => {
@@ -214,4 +223,3 @@ describe("CertificationCard", () => {
     });
   });
 });
-

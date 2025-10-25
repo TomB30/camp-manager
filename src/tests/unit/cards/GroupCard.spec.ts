@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createWrapper, setupTestPinia } from "@/tests/utils";
 import GroupCard from "@/components/cards/GroupCard.vue";
-import { groupsFixture, housingRoomsFixture, sessionsFixture } from "@/tests/fixtures";
+import {
+  groupsFixture,
+  housingRoomsFixture,
+  sessionsFixture,
+} from "@/tests/fixtures";
 import { useHousingRoomsStore, useSessionsStore } from "@/stores";
 
 describe("GroupCard", () => {
@@ -71,7 +75,7 @@ describe("GroupCard", () => {
     it("shows housing badge when group has housing room", () => {
       const housingStore = useHousingRoomsStore();
       housingStore.housingRooms = housingRoomsFixture;
-      
+
       const group = groupsFixture[0]; // Has housing room
       const wrapper = createWrapper(GroupCard, {
         props: { group },
@@ -84,21 +88,23 @@ describe("GroupCard", () => {
     it("displays housing room name when housing is assigned", () => {
       const housingStore = useHousingRoomsStore();
       housingStore.housingRooms = housingRoomsFixture;
-      
+
       const group = groupsFixture[0];
       const wrapper = createWrapper(GroupCard, {
         props: { group },
         pinia,
       });
 
-      const roomName = housingRoomsFixture.find(r => r.id === group.housingRoomId)?.name;
+      const roomName = housingRoomsFixture.find(
+        (r) => r.id === group.housingRoomId,
+      )?.name;
       expect(wrapper.text()).toContain(roomName!);
     });
 
     it("does not show housing badge when no housing room", () => {
       const housingStore = useHousingRoomsStore();
       housingStore.housingRooms = housingRoomsFixture;
-      
+
       const group = groupsFixture[2]; // No housing room
       const wrapper = createWrapper(GroupCard, {
         props: { group },
@@ -113,14 +119,16 @@ describe("GroupCard", () => {
     it("displays session name when session is assigned", () => {
       const sessionsStore = useSessionsStore();
       sessionsStore.sessions = sessionsFixture;
-      
+
       const group = groupsFixture[0];
       const wrapper = createWrapper(GroupCard, {
         props: { group },
         pinia,
       });
 
-      const sessionName = sessionsFixture.find(s => s.id === group.sessionId)?.name;
+      const sessionName = sessionsFixture.find(
+        (s) => s.id === group.sessionId,
+      )?.name;
       expect(wrapper.text()).toContain(sessionName!);
     });
   });
@@ -226,4 +234,3 @@ describe("GroupCard", () => {
     });
   });
 });
-

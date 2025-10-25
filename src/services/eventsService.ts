@@ -28,11 +28,11 @@ async function createEvent(event: EventCreationRequest): Promise<Event> {
 
 async function updateEvent(
   id: string,
-  event: EventUpdateRequest
+  event: EventUpdateRequest,
 ): Promise<Event> {
   const existingEvent = await storageService.getById<Event>(
     STORAGE_KEYS.EVENTS,
-    id
+    id,
   );
   if (!existingEvent) {
     throw new Error(`Event with id ${id} not found`);
@@ -68,7 +68,7 @@ async function getEventsForProgram(programId: string): Promise<Event[]> {
 
 async function getEventsByDateRange(
   startDate?: Date,
-  endDate?: Date
+  endDate?: Date,
 ): Promise<Event[]> {
   let events = await listEvents();
 

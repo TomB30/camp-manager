@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
-import type { Certification, CertificationCreationRequest, CertificationUpdateRequest } from "@/types";
+import type {
+  Certification,
+  CertificationCreationRequest,
+  CertificationUpdateRequest,
+} from "@/types";
 import { certificationsService } from "@/services";
 
 export const useCertificationsStore = defineStore("certifications", {
@@ -30,17 +34,25 @@ export const useCertificationsStore = defineStore("certifications", {
       }
     },
 
-    async createCertification(certificationRequest: CertificationCreationRequest): Promise<Certification> {
-      const certification: Certification = await certificationsService.createCertification(certificationRequest);
+    async createCertification(
+      certificationRequest: CertificationCreationRequest,
+    ): Promise<Certification> {
+      const certification: Certification =
+        await certificationsService.createCertification(certificationRequest);
       this.certifications.push(certification);
       return certification;
     },
 
-    async updateCertification(id: string, certificationUpdate: CertificationUpdateRequest): Promise<void> {
-      const certification: Certification = await certificationsService.updateCertification(id, certificationUpdate);
-      const index = this.certifications.findIndex(
-        (c) => c.id === id,
-      );
+    async updateCertification(
+      id: string,
+      certificationUpdate: CertificationUpdateRequest,
+    ): Promise<void> {
+      const certification: Certification =
+        await certificationsService.updateCertification(
+          id,
+          certificationUpdate,
+        );
+      const index = this.certifications.findIndex((c) => c.id === id);
       if (index >= 0) {
         this.certifications[index] = certification;
       }

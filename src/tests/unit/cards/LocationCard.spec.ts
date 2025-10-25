@@ -68,7 +68,7 @@ describe("LocationCard", () => {
         pinia,
       });
 
-      const areaName = areasFixture.find(a => a.id === location.areaId)?.name;
+      const areaName = areasFixture.find((a) => a.id === location.areaId)?.name;
       if (areaName) {
         expect(wrapper.text()).toContain(areaName);
       }
@@ -87,8 +87,8 @@ describe("LocationCard", () => {
 
       // Area name should not be displayed
       const text = wrapper.text();
-      const areaNames = areasFixture.map(a => a.name);
-      areaNames.forEach(areaName => {
+      const areaNames = areasFixture.map((a) => a.name);
+      areaNames.forEach((areaName) => {
         expect(text).not.toContain(areaName);
       });
     });
@@ -189,7 +189,9 @@ describe("LocationCard", () => {
       const cardIcon = wrapper.find(".card-icon");
       const style = cardIcon.attributes("style");
       expect(style).toContain("background");
-      expect(style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)")).toBe(true);
+      expect(
+        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)"),
+      ).toBe(true);
     });
 
     it("has card-clickable class", () => {
@@ -274,4 +276,3 @@ describe("LocationCard", () => {
     });
   });
 });
-

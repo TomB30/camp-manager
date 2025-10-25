@@ -414,7 +414,7 @@ export default defineComponent({
     const defaultDate = new Date(this.defaultEventDate);
     const startHours = defaultDate.getHours().toString().padStart(2, "0");
     const startMinutes = defaultDate.getMinutes().toString().padStart(2, "0");
-    
+
     return {
       formData: {
         title: "",
@@ -430,7 +430,7 @@ export default defineComponent({
         programId: "",
         activityId: "",
       } as EventCreationRequest,
-      internalEventDate: defaultDate.toISOString().split('T')[0],
+      internalEventDate: defaultDate.toISOString().split("T")[0],
       internalStartTime: `${startHours}:${startMinutes}`,
       internalEndTime: "",
       selectedActivityId: "",
@@ -452,18 +452,18 @@ export default defineComponent({
     if (this.eventId) {
       const event = this.eventsStore.getEventById(this.eventId);
       if (!event) return;
-      
+
       // Parse the start and end dates
       const startDate = new Date(event.startDate);
       const endDate = new Date(event.endDate);
-      
+
       // Extract date part (YYYY-MM-DD)
-      this.internalEventDate = startDate.toISOString().split('T')[0];
-      
+      this.internalEventDate = startDate.toISOString().split("T")[0];
+
       // Extract time parts (HH:MM)
       this.internalStartTime = `${startDate.getHours().toString().padStart(2, "0")}:${startDate.getMinutes().toString().padStart(2, "0")}`;
       this.internalEndTime = `${endDate.getHours().toString().padStart(2, "0")}:${endDate.getMinutes().toString().padStart(2, "0")}`;
-      
+
       this.formData = {
         title: event.title,
         startDate: event.startDate,
@@ -594,7 +594,7 @@ export default defineComponent({
 
       this.programsStore.programs.forEach((program) => {
         const programActivities = this.activitiesStore.getActivitiesInProgram(
-          program.id
+          program.id,
         );
         if (programActivities.length > 0) {
           programActivities.forEach((activity) => {
@@ -645,7 +645,7 @@ export default defineComponent({
           group.staffIds.forEach((staffId: string) => staffIds.add(staffId));
         } else if (group && group.staffFilters) {
           const staff = this.staffMembersStore.getStaffMembersByFilters(
-            group.staffFilters
+            group.staffFilters,
           );
           staff.forEach((s: StaffMember) => staffIds.add(s.id));
         }
@@ -653,7 +653,7 @@ export default defineComponent({
 
       // Return full staff member objects
       return this.staffMembersStore.staffMembers.filter((s) =>
-        staffIds.has(s.id)
+        staffIds.has(s.id),
       );
     },
     recurrenceSummary(): string | null {
@@ -697,12 +697,16 @@ export default defineComponent({
     updateFormDataDates() {
       // Combine date and time into ISO datetime strings
       if (this.internalEventDate && this.internalStartTime) {
-        const startDateTime = new Date(`${this.internalEventDate}T${this.internalStartTime}:00`);
+        const startDateTime = new Date(
+          `${this.internalEventDate}T${this.internalStartTime}:00`,
+        );
         this.formData.startDate = startDateTime.toISOString();
       }
-      
+
       if (this.internalEventDate && this.internalEndTime) {
-        const endDateTime = new Date(`${this.internalEventDate}T${this.internalEndTime}:00`);
+        const endDateTime = new Date(
+          `${this.internalEventDate}T${this.internalEndTime}:00`,
+        );
         this.formData.endDate = endDateTime.toISOString();
       }
     },
@@ -722,7 +726,7 @@ export default defineComponent({
         startDate.setHours(hours, minutes, 0, 0);
 
         const endDate = new Date(
-          startDate.getTime() + (activity.duration || 0) * 60000
+          startDate.getTime() + (activity.duration || 0) * 60000,
         );
         const endHours = endDate.getHours().toString().padStart(2, "0");
         const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
@@ -742,7 +746,9 @@ export default defineComponent({
 
       // Inherit color from the program (use first program)
       if (activity.programIds && activity.programIds.length > 0) {
-        const program = this.programsStore.getProgramById(activity.programIds[0]);
+        const program = this.programsStore.getProgramById(
+          activity.programIds[0],
+        );
         if (program && program.colorId) {
           this.formData.colorId = program.colorId;
         }
@@ -757,7 +763,7 @@ export default defineComponent({
           ...activity.requiredCertificationIds,
         ];
         this.selectedCertificationIds = this.getCertificationIdsFromNames(
-          activity.requiredCertificationIds
+          activity.requiredCertificationIds,
         );
       }
 
@@ -782,7 +788,7 @@ export default defineComponent({
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.name === name
+            (c) => c.name === name,
           );
           return cert ? cert.id : "";
         })
@@ -826,7 +832,7 @@ export default defineComponent({
     isStaffInSelectedProgram(staff: StaffMember): boolean {
       if (!this.formData.programId) return false;
       const program = this.programsStore.getProgramById(
-        this.formData.programId
+        this.formData.programId,
       );
       return program
         ? program.staffMemberIds?.includes(staff.id) || false
@@ -837,7 +843,7 @@ export default defineComponent({
       if (!staff.certificationIds || staff.certificationIds.length === 0)
         return false;
       return this.selectedCertificationIds.every((certId) =>
-        staff.certificationIds!.includes(certId)
+        staff.certificationIds!.includes(certId),
       );
     },
     isStaffAvailable(staff: StaffMember): {
@@ -855,7 +861,7 @@ export default defineComponent({
         this.eventsStore.events,
         this.eventId
           ? new Map<string, string[]>([[this.eventId, []]])
-          : undefined
+          : undefined,
       );
 
       return { available: result.canAssign, reason: result.reason };
@@ -968,7 +974,7 @@ export default defineComponent({
       if (this.isEditing) {
         return this.updateEvent();
       }
-        return this.createEvent();
+      return this.createEvent();
     },
     async updateEvent(): Promise<void> {
       if (!this.eventId) return;
@@ -983,7 +989,12 @@ export default defineComponent({
     },
     async createEvent(): Promise<void> {
       if (this.recurrenceData.enabled) {
-        return this.createRecurringEvents(this.formData, this.recurrenceData, new Date(this.formData.startDate), new Date(this.formData.endDate));
+        return this.createRecurringEvents(
+          this.formData,
+          this.recurrenceData,
+          new Date(this.formData.startDate),
+          new Date(this.formData.endDate),
+        );
       } else {
         return this.createSingleEvent();
       }
@@ -992,7 +1003,7 @@ export default defineComponent({
       formData: any,
       recurrence: RecurrenceData,
       startDate: Date,
-      endDate: Date
+      endDate: Date,
     ): Promise<void> {
       try {
         // Generate all occurrence dates
@@ -1006,7 +1017,7 @@ export default defineComponent({
         // Show loading toast for large batches
         if (occurrenceDates.length > 10) {
           this.toast.info(
-            `Creating ${occurrenceDates.length} recurring events...`
+            `Creating ${occurrenceDates.length} recurring events...`,
           );
         }
 
@@ -1017,7 +1028,8 @@ export default defineComponent({
         const duration = endDate.getTime() - startDate.getTime();
 
         // Create all events in memory first (fast)
-        const eventCreationRequestsPromises: Promise<EventCreationRequest>[] = [];
+        const eventCreationRequestsPromises: Promise<EventCreationRequest>[] =
+          [];
 
         for (let i = 0; i < occurrenceDates.length; i++) {
           const occurrenceStart = occurrenceDates[i];
@@ -1044,12 +1056,14 @@ export default defineComponent({
             isRecurrenceParent: i === 0, // First event is the parent
           };
 
-          eventCreationRequestsPromises.push(this.eventsStore.createEvent(event));
+          eventCreationRequestsPromises.push(
+            this.eventsStore.createEvent(event),
+          );
         }
 
         await Promise.all(eventCreationRequestsPromises);
         this.toast.success(
-          `Successfully created ${occurrenceDates.length} recurring events`
+          `Successfully created ${occurrenceDates.length} recurring events`,
         );
       } catch (error: any) {
         this.toast.error("Failed to create recurring events", error.message);

@@ -18,7 +18,7 @@ const defaultProps = {
   activity: null,
   programId: programsFixture[0].id,
   programIds: programsFixture.map((program) => program.id),
-}
+};
 
 describe("ActivityFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
@@ -57,7 +57,7 @@ describe("ActivityFormModal", () => {
 
       // ActivityFormModal uses ActivityForm component
       expect(wrapper.findComponent({ name: "ActivityForm" }).exists()).toBe(
-        true
+        true,
       );
     });
   });
@@ -99,7 +99,7 @@ describe("ActivityFormModal", () => {
       });
 
       expect(wrapper.findComponent({ name: "ActivityForm" }).exists()).toBe(
-        true
+        true,
       );
     });
 
@@ -111,7 +111,7 @@ describe("ActivityFormModal", () => {
 
       const activityForm = wrapper.findComponent({ name: "ActivityForm" });
       expect(activityForm.props("certifications")).toHaveLength(
-        certificationsFixture.length
+        certificationsFixture.length,
       );
     });
   });

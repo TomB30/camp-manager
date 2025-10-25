@@ -79,10 +79,7 @@
             placeholder="Select a family group..."
             :disabled="!formData.sessionId"
           />
-          <div
-            v-if="!formData.sessionId"
-            class="text-xs text-secondary mt-1"
-          >
+          <div v-if="!formData.sessionId" class="text-xs text-secondary mt-1">
             Please select a session first
           </div>
           <div
@@ -146,7 +143,7 @@ export default defineComponent({
     camperId: {
       type: String as PropType<string>,
       required: false,
-    }
+    },
   },
   emits: ["close"],
   data() {

@@ -42,9 +42,7 @@
             >
               <div class="flex row justify-between items-center">
                 <div>
-                  <div
-                    class="group-badge"
-                  >
+                  <div class="group-badge">
                     {{ getGroupName(groupId) }}
                   </div>
                 </div>

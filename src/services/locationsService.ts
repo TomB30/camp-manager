@@ -21,7 +21,7 @@ async function listLocations(): Promise<Location[]> {
 }
 
 async function createLocation(
-  location: LocationCreationRequest
+  location: LocationCreationRequest,
 ): Promise<Location> {
   const newLocation = {
     ...location,
@@ -32,11 +32,11 @@ async function createLocation(
 
 async function updateLocation(
   id: string,
-  location: LocationUpdateRequest
+  location: LocationUpdateRequest,
 ): Promise<Location> {
   const existingLocation = await storageService.getById<Location>(
     STORAGE_KEYS.LOCATIONS,
-    id
+    id,
   );
   if (!existingLocation) {
     throw new Error(`Location with id ${id} not found`);

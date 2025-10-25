@@ -116,7 +116,7 @@ export default defineComponent({
         filtered = filtered.filter(
           (session) =>
             session.name.toLowerCase().includes(query) ||
-            session.description?.toLowerCase().includes(query)
+            session.description?.toLowerCase().includes(query),
         );
       }
 

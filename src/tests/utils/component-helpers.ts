@@ -162,20 +162,15 @@ export async function waitForElementToDisappear(
 /**
  * Check if input is disabled
  */
-export function isDisabled(
-  input: ReturnType<VueWrapper["find"]>,
-): boolean {
+export function isDisabled(input: ReturnType<VueWrapper["find"]>): boolean {
   return input.attributes("disabled") !== undefined;
 }
 
 /**
  * Check if element is visible
  */
-export function isVisible(
-  element: ReturnType<VueWrapper["find"]>,
-): boolean {
+export function isVisible(element: ReturnType<VueWrapper["find"]>): boolean {
   if (!element.exists()) return false;
   const style = (element.element as HTMLElement).style;
   return style.display !== "none" && style.visibility !== "hidden";
 }
-

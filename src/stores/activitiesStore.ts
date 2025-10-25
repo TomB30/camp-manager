@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
-import type { Activity, ActivityCreationRequest, ActivityUpdateRequest } from "@/types";
+import type {
+  Activity,
+  ActivityCreationRequest,
+  ActivityUpdateRequest,
+} from "@/types";
 import { activitiesService } from "@/services";
 import { useProgramsStore } from "./programsStore";
 
@@ -33,7 +37,9 @@ export const useActivitiesStore = defineStore("activities", {
       }
     },
 
-    async addActivity(activityRequest: ActivityCreationRequest): Promise<Activity> {
+    async addActivity(
+      activityRequest: ActivityCreationRequest,
+    ): Promise<Activity> {
       const activity = await activitiesService.createActivity(activityRequest);
       this.activities.push(activity);
 
@@ -59,10 +65,16 @@ export const useActivitiesStore = defineStore("activities", {
       return activity;
     },
 
-    async updateActivity(id: string, activityUpdate: ActivityUpdateRequest): Promise<void> {
+    async updateActivity(
+      id: string,
+      activityUpdate: ActivityUpdateRequest,
+    ): Promise<void> {
       const oldActivity = this.activities.find((a) => a.id === id);
 
-      const activity = await activitiesService.updateActivity(id, activityUpdate);
+      const activity = await activitiesService.updateActivity(
+        id,
+        activityUpdate,
+      );
       const index = this.activities.findIndex((a) => a.id === id);
       if (index >= 0) {
         this.activities[index] = activity;

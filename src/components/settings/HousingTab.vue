@@ -224,7 +224,7 @@ export default defineComponent({
       if (!this.selectedRoomId) return [];
       return this.getGroupsForRoom(this.selectedRoomId).map((g: Group) => {
         const session = this.sessionsStore.sessions.find(
-          (s) => s.id === g.sessionId
+          (s) => s.id === g.sessionId,
         );
         return {
           id: g.id,

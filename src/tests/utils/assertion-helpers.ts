@@ -30,7 +30,8 @@ export function expectFormData(
     expect(input.exists()).toBe(true);
 
     const element = input.element as HTMLInputElement;
-    const actualValue = element.type === "checkbox" ? element.checked : element.value;
+    const actualValue =
+      element.type === "checkbox" ? element.checked : element.value;
 
     expect(actualValue).toBe(expectedValue);
   }
@@ -44,16 +45,16 @@ export function expectStoreState(
   expectedState: Record<string, unknown>,
 ): void {
   for (const [key, expectedValue] of Object.entries(expectedState)) {
-    expect((store.$state as Record<string, unknown>)[key]).toEqual(expectedValue);
+    expect((store.$state as Record<string, unknown>)[key]).toEqual(
+      expectedValue,
+    );
   }
 }
 
 /**
  * Expect element to be visible
  */
-export function expectVisible(
-  element: ReturnType<VueWrapper["find"]>,
-): void {
+export function expectVisible(element: ReturnType<VueWrapper["find"]>): void {
   expect(element.exists()).toBe(true);
   const style = (element.element as HTMLElement).style;
   expect(style.display).not.toBe("none");
@@ -63,33 +64,25 @@ export function expectVisible(
 /**
  * Expect element to be hidden
  */
-export function expectHidden(
-  element: ReturnType<VueWrapper["find"]>,
-): void {
+export function expectHidden(element: ReturnType<VueWrapper["find"]>): void {
   if (!element.exists()) {
     return; // Element doesn't exist, which is fine
   }
   const style = (element.element as HTMLElement).style;
-  expect(
-    style.display === "none" || style.visibility === "hidden",
-  ).toBe(true);
+  expect(style.display === "none" || style.visibility === "hidden").toBe(true);
 }
 
 /**
  * Expect element to be disabled
  */
-export function expectDisabled(
-  element: ReturnType<VueWrapper["find"]>,
-): void {
+export function expectDisabled(element: ReturnType<VueWrapper["find"]>): void {
   expect(element.attributes("disabled")).toBeDefined();
 }
 
 /**
  * Expect element to be enabled
  */
-export function expectEnabled(
-  element: ReturnType<VueWrapper["find"]>,
-): void {
+export function expectEnabled(element: ReturnType<VueWrapper["find"]>): void {
   expect(element.attributes("disabled")).toBeUndefined();
 }
 
@@ -124,10 +117,7 @@ export function expectEmitted(
 /**
  * Expect text content to be present
  */
-export function expectTextContent(
-  wrapper: VueWrapper,
-  text: string,
-): void {
+export function expectTextContent(wrapper: VueWrapper, text: string): void {
   expect(wrapper.text()).toContain(text);
 }
 
@@ -161,10 +151,7 @@ export function expectArrayToContainObject<T extends Record<string, unknown>>(
   properties: Partial<T>,
 ): void {
   const found = array.some((item) =>
-    Object.entries(properties).every(
-      ([key, value]) => item[key] === value,
-    ),
+    Object.entries(properties).every(([key, value]) => item[key] === value),
   );
   expect(found).toBe(true);
 }
-

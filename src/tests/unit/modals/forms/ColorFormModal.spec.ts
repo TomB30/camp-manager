@@ -9,7 +9,7 @@ describe("ColorFormModal", () => {
 
   beforeEach(() => {
     pinia = setupTestPinia();
-    
+
     const colorsStore = useColorsStore();
     colorsStore.colors = colorsFixture;
   });
@@ -104,4 +104,3 @@ describe("ColorFormModal", () => {
     });
   });
 });
-

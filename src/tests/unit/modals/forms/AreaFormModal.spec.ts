@@ -23,7 +23,7 @@ describe("AreaFormModal", () => {
       const wrapper = createWrapper(AreaFormModal);
 
       expect(
-        wrapper.find("input[placeholder='Enter area name']").exists()
+        wrapper.find("input[placeholder='Enter area name']").exists(),
       ).toBe(true);
     });
 
@@ -73,7 +73,7 @@ describe("AreaFormModal", () => {
       expect(
         wrapper
           .find("input[type='number'][placeholder='Optional capacity']")
-          .exists()
+          .exists(),
       ).toBe(true);
     });
 
@@ -87,7 +87,7 @@ describe("AreaFormModal", () => {
       const wrapper = createWrapper(AreaFormModal);
 
       expect(
-        wrapper.find("textarea[placeholder='Optional notes']").exists()
+        wrapper.find("textarea[placeholder='Optional notes']").exists(),
       ).toBe(true);
     });
   });

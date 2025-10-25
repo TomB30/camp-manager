@@ -21,7 +21,9 @@ async function listPrograms(): Promise<Program[]> {
   return storageService.getAll<Program>(STORAGE_KEYS.PROGRAMS);
 }
 
-async function createProgram(program: ProgramCreationRequest): Promise<Program> {
+async function createProgram(
+  program: ProgramCreationRequest,
+): Promise<Program> {
   const newProgram = {
     ...program,
     id: crypto.randomUUID(),
@@ -33,11 +35,11 @@ async function createProgram(program: ProgramCreationRequest): Promise<Program> 
 
 async function updateProgram(
   id: string,
-  program: ProgramUpdateRequest
+  program: ProgramUpdateRequest,
 ): Promise<Program> {
   const existingProgram = await storageService.getById<Program>(
     STORAGE_KEYS.PROGRAMS,
-    id
+    id,
   );
   if (!existingProgram) {
     throw new Error(`Program with id ${id} not found`);
@@ -53,12 +55,12 @@ async function updateProgram(
 async function deleteProgram(id: string): Promise<void> {
   // Remove program ID from all activities' programIds arrays
   const activities = await storageService.getAll<Activity>(
-    STORAGE_KEYS.ACTIVITIES
+    STORAGE_KEYS.ACTIVITIES,
   );
-  
+
   const updatedActivities: Activity[] = [];
   const activitiesToDelete: Activity[] = [];
-  
+
   // Categorize activities in a single pass
   for (const activity of activities) {
     if (activity.programIds.includes(id)) {
@@ -79,11 +81,11 @@ async function deleteProgram(id: string): Promise<void> {
   await Promise.all([
     // Save updated activities in parallel
     ...updatedActivities.map((activity) =>
-      storageService.save(STORAGE_KEYS.ACTIVITIES, activity)
+      storageService.save(STORAGE_KEYS.ACTIVITIES, activity),
     ),
     // Delete activities with no remaining programs in parallel
     ...activitiesToDelete.map((activity) =>
-      storageService.delete(STORAGE_KEYS.ACTIVITIES, activity.id)
+      storageService.delete(STORAGE_KEYS.ACTIVITIES, activity.id),
     ),
     // Delete the program
     storageService.delete(STORAGE_KEYS.PROGRAMS, id),

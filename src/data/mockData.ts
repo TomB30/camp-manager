@@ -1072,9 +1072,9 @@ const createDailyEvents = (day: number, sessionIndex: number) => {
   for (let i = 0; i < numEvents && i < allDayActivities.length; i++) {
     const { activity, time } = allDayActivities[i];
     const group = relevantGroups[i % relevantGroups.length];
-    
+
     // Get color from the activity's program
-    const program = programs.find(p => p.id === activity.programIds[0]);
+    const program = programs.find((p) => p.id === activity.programIds[0]);
     const eventColorId = program?.colorId;
 
     events.push({

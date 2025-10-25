@@ -77,13 +77,13 @@
     <div class="form-group">
       <label class="form-label">Minimum Staff Required (Optional)</label>
       <div>
-          <BaseInput
-            :model-value="String(modelValue.minStaff)"
-            @update:model-value="updateField('minStaff', $event)"
-            type="number"
-            :min="0"
-            placeholder="Minimum number of staff required"
-          />
+        <BaseInput
+          :model-value="String(modelValue.minStaff)"
+          @update:model-value="updateField('minStaff', $event)"
+          type="number"
+          :min="0"
+          placeholder="Minimum number of staff required"
+        />
       </div>
     </div>
 

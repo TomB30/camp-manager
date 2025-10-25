@@ -26,7 +26,7 @@ describe("LocationFormModal", () => {
     it("renders location name input", () => {
       const wrapper = createWrapper(LocationFormModal);
       expect(
-        wrapper.find("input[placeholder='Enter location name']").exists()
+        wrapper.find("input[placeholder='Enter location name']").exists(),
       ).toBe(true);
     });
 
@@ -35,7 +35,7 @@ describe("LocationFormModal", () => {
       expect(
         wrapper
           .find("input[type='number'][placeholder='Enter capacity']")
-          .exists()
+          .exists(),
       ).toBe(true);
     });
 
@@ -68,7 +68,7 @@ describe("LocationFormModal", () => {
       });
 
       const nameInput = wrapper.find(
-        "input[placeholder='Enter location name']"
+        "input[placeholder='Enter location name']",
       );
       expect((nameInput.element as HTMLInputElement).value).toBe(location.name);
     });
@@ -84,7 +84,7 @@ describe("LocationFormModal", () => {
     it("requires capacity greater than 0", () => {
       const wrapper = createWrapper(LocationFormModal);
       const input = wrapper.find(
-        "input[type='number'][placeholder='Enter capacity']"
+        "input[type='number'][placeholder='Enter capacity']",
       );
       expect(input.exists()).toBe(true);
     });

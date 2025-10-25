@@ -28,11 +28,11 @@ async function createColor(color: ColorCreationRequest): Promise<Color> {
 
 async function updateColor(
   id: string,
-  color: ColorUpdateRequest
+  color: ColorUpdateRequest,
 ): Promise<Color> {
   const existingColor = await storageService.getById<Color>(
     STORAGE_KEYS.COLORS,
-    id
+    id,
   );
   if (!existingColor) {
     throw new Error(`Color with id ${id} not found`);

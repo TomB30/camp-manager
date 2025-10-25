@@ -21,7 +21,9 @@ async function listSessions(): Promise<Session[]> {
   return storageService.getAll<Session>(STORAGE_KEYS.SESSIONS);
 }
 
-async function createSession(session: SessionCreationRequest): Promise<Session> {
+async function createSession(
+  session: SessionCreationRequest,
+): Promise<Session> {
   const newSession = {
     ...session,
     id: crypto.randomUUID(),
@@ -33,11 +35,11 @@ async function createSession(session: SessionCreationRequest): Promise<Session> 
 
 async function updateSession(
   id: string,
-  session: SessionUpdateRequest
+  session: SessionUpdateRequest,
 ): Promise<Session> {
   const existingSession = await storageService.getById<Session>(
     STORAGE_KEYS.SESSIONS,
-    id
+    id,
   );
   if (!existingSession) {
     throw new Error(`Session with id ${id} not found`);
@@ -76,7 +78,7 @@ async function getPastSessions(): Promise<Session[]> {
 
 async function getSessionsInRange(
   startDate: Date,
-  endDate: Date
+  endDate: Date,
 ): Promise<Session[]> {
   const sessions = await listSessions();
   return sessions.filter((s) => {

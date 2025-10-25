@@ -298,4 +298,3 @@ export const roomBookingRaceConditionScenario = (): {
 
   return { room, groups };
 };
-

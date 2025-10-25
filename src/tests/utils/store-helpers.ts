@@ -82,10 +82,18 @@ export async function waitForStoreAction(
   while (Date.now() - startTime < timeout) {
     await new Promise((resolve) => setTimeout(resolve, 50));
     // This is a simplified check; you might need more sophisticated logic
-    if (!((store.$state as Record<string, unknown>)._pending as Record<string, unknown>)?.[actionName]) {
+    if (
+      !(
+        (store.$state as Record<string, unknown>)._pending as Record<
+          string,
+          unknown
+        >
+      )?.[actionName]
+    ) {
       return;
     }
   }
-  throw new Error(`Store action "${actionName}" did not complete within timeout`);
+  throw new Error(
+    `Store action "${actionName}" did not complete within timeout`,
+  );
 }
-

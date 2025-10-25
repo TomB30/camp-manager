@@ -1,5 +1,10 @@
 import { defineStore } from "pinia";
-import type { Event, StaffMember, EventCreationRequest, EventUpdateRequest } from "@/types";
+import type {
+  Event,
+  StaffMember,
+  EventCreationRequest,
+  EventUpdateRequest,
+} from "@/types";
 import { eventsService } from "@/services";
 import { dateUtils } from "@/utils/dateUtils";
 import { useGroupsStore } from "./groupsStore";
@@ -140,7 +145,10 @@ export const useEventsStore = defineStore("events", {
       this.events.push(...events);
     },
 
-    async updateEvent(id: string, eventUpdate: EventUpdateRequest): Promise<void> {
+    async updateEvent(
+      id: string,
+      eventUpdate: EventUpdateRequest,
+    ): Promise<void> {
       const event = await eventsService.updateEvent(id, eventUpdate);
       const index = this.events.findIndex((e) => e.id === id);
       if (index >= 0) {

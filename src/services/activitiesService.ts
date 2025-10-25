@@ -23,7 +23,7 @@ async function listActivities(): Promise<Activity[]> {
 }
 
 async function createActivity(
-  activity: ActivityCreationRequest
+  activity: ActivityCreationRequest,
 ): Promise<Activity> {
   const newActivity = {
     ...activity,
@@ -36,11 +36,11 @@ async function createActivity(
 
 async function updateActivity(
   id: string,
-  activity: ActivityUpdateRequest
+  activity: ActivityUpdateRequest,
 ): Promise<Activity> {
   const existingActivity = await storageService.getById<Activity>(
     STORAGE_KEYS.ACTIVITIES,
-    id
+    id,
   );
   if (!existingActivity) {
     throw new Error(`Activity with id ${id} not found`);
@@ -50,7 +50,10 @@ async function updateActivity(
     ...activity,
     updatedAt: new Date().toISOString(),
   };
-  return storageService.save<Activity>(STORAGE_KEYS.ACTIVITIES, updatedActivity);
+  return storageService.save<Activity>(
+    STORAGE_KEYS.ACTIVITIES,
+    updatedActivity,
+  );
 }
 
 async function deleteActivity(id: string): Promise<void> {
@@ -58,7 +61,9 @@ async function deleteActivity(id: string): Promise<void> {
 
   if (activity) {
     // Remove from all programs' activityIds
-    const programs = await storageService.getAll<Program>(STORAGE_KEYS.PROGRAMS);
+    const programs = await storageService.getAll<Program>(
+      STORAGE_KEYS.PROGRAMS,
+    );
 
     for (const program of programs) {
       if (program.activityIds && program.activityIds.includes(id)) {
@@ -85,12 +90,12 @@ async function getActivitiesInProgram(programId: string): Promise<Activity[]> {
 
 async function addActivityToProgram(
   activityId: string,
-  programId: string
+  programId: string,
 ): Promise<void> {
   const activity = await getActivityById(activityId);
   const program = await storageService.getById<Program>(
     STORAGE_KEYS.PROGRAMS,
-    programId
+    programId,
   );
 
   if (!activity || !program) {
@@ -120,12 +125,12 @@ async function addActivityToProgram(
 
 async function removeActivityFromProgram(
   activityId: string,
-  programId: string
+  programId: string,
 ): Promise<void> {
   const activity = await getActivityById(activityId);
   const program = await storageService.getById<Program>(
     STORAGE_KEYS.PROGRAMS,
-    programId
+    programId,
   );
 
   if (!activity || !program) {

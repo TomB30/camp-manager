@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
-import type { Camper, CamperCreationRequest, CamperUpdateRequest } from "@/types";
+import type {
+  Camper,
+  CamperCreationRequest,
+  CamperUpdateRequest,
+} from "@/types";
 import { campersService } from "@/services";
 
 export const useCampersStore = defineStore("campers", {
@@ -42,7 +46,10 @@ export const useCampersStore = defineStore("campers", {
       this.campers.push(camper);
       return camper;
     },
-    async updateCamper(camperId: string, camperUpdate: CamperUpdateRequest): Promise<void> {
+    async updateCamper(
+      camperId: string,
+      camperUpdate: CamperUpdateRequest,
+    ): Promise<void> {
       const camper = await campersService.updateCamper(camperId, camperUpdate);
       const index = this.campers.findIndex((c) => c.id === camperId);
       if (index >= 0) {

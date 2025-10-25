@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="card card-clickable"
-    @click="$emit('click', group)"
-  >
+  <div class="card card-clickable" @click="$emit('click', group)">
     <div class="card-header">
       <div class="card-header-main">
         <h4>{{ group.name }}</h4>

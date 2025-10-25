@@ -40,11 +40,11 @@ async function createLabel(label: LabelCreationRequest): Promise<Label> {
 
 async function updateLabel(
   id: string,
-  label: LabelUpdateRequest
+  label: LabelUpdateRequest,
 ): Promise<Label> {
   const existingLabel = await storageService.getById<Label>(
     STORAGE_KEYS.LABELS,
-    id
+    id,
   );
   if (!existingLabel) {
     throw new Error(`Label with id ${id} not found`);

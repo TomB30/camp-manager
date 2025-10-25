@@ -53,7 +53,6 @@ import type { QForm } from "quasar";
 import type { Program, ProgramCreationRequest } from "@/types";
 import { useToast } from "@/composables/useToast";
 
-
 export default defineComponent({
   name: "ProgramFormModal",
   components: {
@@ -63,7 +62,7 @@ export default defineComponent({
   props: {
     programId: {
       type: String as PropType<string>,
-      required: false
+      required: false,
     },
   },
   emits: ["close"],
@@ -130,10 +129,15 @@ export default defineComponent({
     async updateProgram(): Promise<void> {
       if (!this.programId) return;
       try {
-        await this.programsStore.updateProgram(this.programId, this.localFormData);
+        await this.programsStore.updateProgram(
+          this.programId,
+          this.localFormData,
+        );
         this.toast.success("Program updated successfully");
       } catch (error) {
-        this.toast.error((error as Error).message || "Failed to update program");
+        this.toast.error(
+          (error as Error).message || "Failed to update program",
+        );
       } finally {
         this.$emit("close");
       }
@@ -143,7 +147,9 @@ export default defineComponent({
         await this.programsStore.createProgram(this.localFormData);
         this.toast.success("Program created successfully");
       } catch (error) {
-        this.toast.error((error as Error).message || "Failed to create program");
+        this.toast.error(
+          (error as Error).message || "Failed to create program",
+        );
       } finally {
         this.$emit("close");
       }

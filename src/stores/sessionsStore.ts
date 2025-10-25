@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
-import type { Session, SessionCreationRequest, SessionUpdateRequest } from "@/types";
+import type {
+  Session,
+  SessionCreationRequest,
+  SessionUpdateRequest,
+} from "@/types";
 import { sessionsService } from "@/services";
 
 export const useSessionsStore = defineStore("sessions", {
@@ -38,14 +42,22 @@ export const useSessionsStore = defineStore("sessions", {
       }
     },
 
-    async createSession(sessionRequest: SessionCreationRequest): Promise<Session> {
+    async createSession(
+      sessionRequest: SessionCreationRequest,
+    ): Promise<Session> {
       const session = await sessionsService.createSession(sessionRequest);
       this.sessions.push(session);
       return session;
     },
 
-    async updateSession(sessionId: string, sessionUpdate: SessionUpdateRequest): Promise<void> {
-      const session = await sessionsService.updateSession(sessionId, sessionUpdate);
+    async updateSession(
+      sessionId: string,
+      sessionUpdate: SessionUpdateRequest,
+    ): Promise<void> {
+      const session = await sessionsService.updateSession(
+        sessionId,
+        sessionUpdate,
+      );
       const index = this.sessions.findIndex((s) => s.id === sessionId);
       if (index >= 0) {
         this.sessions[index] = session;

@@ -25,13 +25,10 @@ async function createArea(area: AreaCreationRequest): Promise<Area> {
   return storageService.save<Area>(STORAGE_KEYS.AREAS, newArea);
 }
 
-async function updateArea(
-  id: string,
-  area: AreaUpdateRequest
-): Promise<Area> {
+async function updateArea(id: string, area: AreaUpdateRequest): Promise<Area> {
   const existingArea = await storageService.getById<Area>(
     STORAGE_KEYS.AREAS,
-    id
+    id,
   );
   if (!existingArea) {
     throw new Error(`Area with id ${id} not found`);

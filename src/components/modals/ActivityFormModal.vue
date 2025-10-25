@@ -127,7 +127,7 @@ export default defineComponent({
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.name === name
+            (c) => c.name === name,
           );
           return cert ? cert.id : "";
         })
@@ -163,7 +163,7 @@ export default defineComponent({
 
       // Convert selected certification IDs to names
       const certifications = this.getCertificationNamesFromIds(
-        this.selectedCertificationIds
+        this.selectedCertificationIds,
       );
 
       const activityData: Activity = {

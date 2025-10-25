@@ -11,7 +11,8 @@ export const useColorsStore = defineStore("colors", {
 
   getters: {
     getColorById(state): (id: string) => Color | undefined {
-      return (id: string): Color | undefined => state.colors.find((c) => c.id === id);
+      return (id: string): Color | undefined =>
+        state.colors.find((c) => c.id === id);
     },
     getDefaultColor(state): Color | undefined {
       return state.colors.find((c) => c.default === true);
@@ -45,12 +46,12 @@ export const useColorsStore = defineStore("colors", {
               name: c.name,
               hexValue: c.hexValue,
               default: false,
-            })
+            }),
           );
-        
+
         // Update all other default colors to false in the backend
         await Promise.all(updatePromises);
-        
+
         // Update local state
         this.colors.forEach((c) => {
           if (c.default) {
@@ -58,14 +59,17 @@ export const useColorsStore = defineStore("colors", {
           }
         });
       }
-      
+
       const color = await colorsService.createColor(colorRequest);
       this.colors.push(color);
       this.colorsById[color.id] = color;
       return color;
     },
 
-    async updateColor(id: string, colorUpdate: ColorUpdateRequest): Promise<void> {
+    async updateColor(
+      id: string,
+      colorUpdate: ColorUpdateRequest,
+    ): Promise<void> {
       // If this color is being set as default, unset all other defaults
       if (colorUpdate.default) {
         const updatePromises = this.colors
@@ -75,12 +79,12 @@ export const useColorsStore = defineStore("colors", {
               name: c.name,
               hexValue: c.hexValue,
               default: false,
-            })
+            }),
           );
-        
+
         // Update all other default colors to false in the backend
         await Promise.all(updatePromises);
-        
+
         // Update local state
         this.colors.forEach((c) => {
           if (c.id !== id && c.default) {
@@ -88,7 +92,7 @@ export const useColorsStore = defineStore("colors", {
           }
         });
       }
-      
+
       const color = await colorsService.updateColor(id, colorUpdate);
       const index = this.colors.findIndex((c) => c.id === id);
       if (index >= 0) {

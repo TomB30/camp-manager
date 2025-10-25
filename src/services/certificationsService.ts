@@ -20,7 +20,7 @@ async function listCertifications(): Promise<Certification[]> {
 }
 
 async function createCertification(
-  certification: CertificationCreationRequest
+  certification: CertificationCreationRequest,
 ): Promise<Certification> {
   const newCertification = {
     ...certification,
@@ -30,17 +30,17 @@ async function createCertification(
   };
   return storageService.save<Certification>(
     STORAGE_KEYS.CERTIFICATIONS,
-    newCertification
+    newCertification,
   );
 }
 
 async function updateCertification(
   id: string,
-  certification: CertificationUpdateRequest
+  certification: CertificationUpdateRequest,
 ): Promise<Certification> {
   const existingCertification = await storageService.getById<Certification>(
     STORAGE_KEYS.CERTIFICATIONS,
-    id
+    id,
   );
   if (!existingCertification) {
     throw new Error(`Certification with id ${id} not found`);
@@ -52,7 +52,7 @@ async function updateCertification(
   };
   return storageService.save<Certification>(
     STORAGE_KEYS.CERTIFICATIONS,
-    updatedCertification
+    updatedCertification,
   );
 }
 
@@ -67,6 +67,6 @@ async function getCertificationById(id: string): Promise<Certification | null> {
 async function getCertificationsWithExpiration(): Promise<Certification[]> {
   const certifications = await listCertifications();
   return certifications.filter(
-    (c) => c.validityPeriodMonths && c.validityPeriodMonths > 0
+    (c) => c.validityPeriodMonths && c.validityPeriodMonths > 0,
   );
 }

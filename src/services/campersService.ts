@@ -1,4 +1,8 @@
-import type { Camper, CamperCreationRequest, CamperUpdateRequest } from "@/types";
+import type {
+  Camper,
+  CamperCreationRequest,
+  CamperUpdateRequest,
+} from "@/types";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 
@@ -26,11 +30,11 @@ async function createCamper(camper: CamperCreationRequest): Promise<Camper> {
 
 async function updateCamper(
   id: string,
-  camper: CamperUpdateRequest
+  camper: CamperUpdateRequest,
 ): Promise<Camper> {
   const existingCamper = await storageService.getById<Camper>(
     STORAGE_KEYS.CAMPERS,
-    id
+    id,
   );
   if (!existingCamper) {
     throw new Error(`Camper with id ${id} not found`);
@@ -51,9 +55,8 @@ async function deleteCamper(id: string): Promise<void> {
   const updatedEvents = events.map((event) => ({
     ...event,
     enrolledCamperIds:
-      event.enrolledCamperIds?.filter(
-        (camperId: string) => camperId !== id
-      ) || [],
+      event.enrolledCamperIds?.filter((camperId: string) => camperId !== id) ||
+      [],
   }));
 
   // Save all updated events
@@ -66,7 +69,9 @@ async function getCamperById(id: string): Promise<Camper | null> {
   return storageService.getById<Camper>(STORAGE_KEYS.CAMPERS, id);
 }
 
-async function getCampersByFamilyGroup(familyGroupId: string): Promise<Camper[]> {
+async function getCampersByFamilyGroup(
+  familyGroupId: string,
+): Promise<Camper[]> {
   const campers = await listCampers();
   return campers.filter((c) => c.familyGroupId === familyGroupId);
 }

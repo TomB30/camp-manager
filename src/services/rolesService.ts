@@ -25,7 +25,10 @@ async function createRole(role: RoleCreationRequest): Promise<Role> {
 }
 
 async function updateRole(id: string, role: RoleUpdateRequest): Promise<Role> {
-  const existingRole = await storageService.getById<Role>(STORAGE_KEYS.ROLES, id);
+  const existingRole = await storageService.getById<Role>(
+    STORAGE_KEYS.ROLES,
+    id,
+  );
   if (!existingRole) {
     throw new Error(`Role with id ${id} not found`);
   }

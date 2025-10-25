@@ -98,4 +98,3 @@ export const locationsFixture: Location[] = [
     notes: "Outdoor field",
   },
 ];
-

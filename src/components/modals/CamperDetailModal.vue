@@ -69,9 +69,7 @@
             v-if="camper.familyGroupId && getGroupById(camper.familyGroupId)"
           >
             <div class="family-group-info">
-              <span
-                class="badge"
-              >
+              <span class="badge">
                 {{ getGroupById(camper.familyGroupId)!.name }}
               </span>
               <div

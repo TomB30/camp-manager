@@ -138,7 +138,10 @@ export default defineComponent({
       if (!this.roomId) return;
       try {
         this.loading = true;
-        await this.housingRoomsStore.updateHousingRoom(this.roomId, this.formModel);
+        await this.housingRoomsStore.updateHousingRoom(
+          this.roomId,
+          this.formModel,
+        );
         this.toast.success("Room updated successfully");
       } catch (error) {
         this.toast.error((error as Error).message || "Failed to update room");

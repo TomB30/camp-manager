@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createWrapper, setupTestPinia } from "@/tests/utils";
 import HousingRoomCard from "@/components/cards/HousingRoomCard.vue";
-import { housingRoomsFixture, groupsFixture, areasFixture } from "@/tests/fixtures";
+import {
+  housingRoomsFixture,
+  groupsFixture,
+  areasFixture,
+} from "@/tests/fixtures";
 import { useAreasStore } from "@/stores";
 
 describe("HousingRoomCard", () => {
@@ -42,7 +46,7 @@ describe("HousingRoomCard", () => {
         pinia,
       });
 
-      const areaName = areasFixture.find(a => a.id === room.areaId)?.name;
+      const areaName = areasFixture.find((a) => a.id === room.areaId)?.name;
       if (areaName) {
         expect(wrapper.text()).toContain(areaName);
       }
@@ -206,4 +210,3 @@ describe("HousingRoomCard", () => {
     });
   });
 });
-

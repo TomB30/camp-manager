@@ -179,7 +179,9 @@ describe("AreaCard", () => {
       const cardIcon = wrapper.find(".card-icon");
       const style = cardIcon.attributes("style");
       expect(style).toContain("background");
-      expect(style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)")).toBe(true);
+      expect(
+        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)"),
+      ).toBe(true);
     });
 
     it("uses default icon color when not provided", () => {
@@ -264,4 +266,3 @@ describe("AreaCard", () => {
     });
   });
 });
-

@@ -615,7 +615,9 @@ export default defineComponent({
         baseCampers = baseCampers.filter(
           (c) =>
             c.familyGroupId &&
-            this.localFormData.camperFilters.groupIds!.includes(c.familyGroupId)
+            this.localFormData.camperFilters.groupIds!.includes(
+              c.familyGroupId,
+            ),
         );
       }
 
@@ -660,7 +662,7 @@ export default defineComponent({
             return false;
           const hasAllCerts =
             this.localFormData.staffFilters.certificationIds.every(
-              (certId: string) => staff.certificationIds!.includes(certId)
+              (certId: string) => staff.certificationIds!.includes(certId),
             );
           if (!hasAllCerts) return false;
         }
@@ -682,7 +684,7 @@ export default defineComponent({
       // Clear housing room if it's no longer available for the selected session
       if (this.localFormData.housingRoomId) {
         const isRoomAvailable = this.availableHousingRooms.some(
-          (room) => room.id === this.localFormData.housingRoomId
+          (room) => room.id === this.localFormData.housingRoomId,
         );
         if (!isRoomAvailable) {
           this.localFormData.housingRoomId = "";
@@ -814,7 +816,7 @@ export default defineComponent({
     getSessionOption(session: Session): AutocompleteOption {
       const startDate = new Date(session.startDate).toLocaleDateString(
         "en-US",
-        { month: "short", day: "numeric" }
+        { month: "short", day: "numeric" },
       );
       const endDate = new Date(session.endDate).toLocaleDateString("en-US", {
         month: "short",
@@ -841,7 +843,7 @@ export default defineComponent({
     getRoomOption(room: HousingRoom): AutocompleteOption {
       // Check if room is available for the selected session
       const selectedSession = this.sessions.find(
-        (s) => s.id === this.localFormData.sessionId
+        (s) => s.id === this.localFormData.sessionId,
       );
 
       if (!selectedSession) {
@@ -870,7 +872,7 @@ export default defineComponent({
         }
 
         const groupSession = this.sessions.find(
-          (s) => s.id === group.sessionId
+          (s) => s.id === group.sessionId,
         );
         if (!groupSession) {
           return false;

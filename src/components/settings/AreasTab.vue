@@ -221,7 +221,7 @@ export default defineComponent({
         filtered = filtered.filter(
           (area) =>
             area.name.toLowerCase().includes(query) ||
-            area.description?.toLowerCase().includes(query)
+            area.description?.toLowerCase().includes(query),
         );
       }
 

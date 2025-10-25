@@ -9,12 +9,12 @@ describe("ProgramFormModal", () => {
 
   beforeEach(() => {
     pinia = setupTestPinia();
-    
+
     const colorsStore = useColorsStore();
     colorsStore.colors = colorsFixture;
 
     const programsStore = useProgramsStore();
-    programsStore.programs = programsFixture; 
+    programsStore.programs = programsFixture;
   });
 
   describe("Create Mode", () => {
@@ -86,4 +86,3 @@ describe("ProgramFormModal", () => {
     });
   });
 });
-

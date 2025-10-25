@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
-import type { HousingRoom, HousingRoomCreationRequest, HousingRoomUpdateRequest } from "@/types";
+import type {
+  HousingRoom,
+  HousingRoomCreationRequest,
+  HousingRoomUpdateRequest,
+} from "@/types";
 import { housingRoomsService } from "@/services";
 
 export const useHousingRoomsStore = defineStore("housingRooms", {
@@ -32,14 +36,23 @@ export const useHousingRoomsStore = defineStore("housingRooms", {
       }
     },
 
-    async createHousingRoom(housingRoomRequest: HousingRoomCreationRequest): Promise<HousingRoom> {
-      const housingRoom = await housingRoomsService.createHousingRoom(housingRoomRequest);
+    async createHousingRoom(
+      housingRoomRequest: HousingRoomCreationRequest,
+    ): Promise<HousingRoom> {
+      const housingRoom =
+        await housingRoomsService.createHousingRoom(housingRoomRequest);
       this.housingRooms.push(housingRoom);
       return housingRoom;
     },
 
-    async updateHousingRoom(housingRoomId: string, housingRoomUpdate: HousingRoomUpdateRequest): Promise<void> {
-      const housingRoom = await housingRoomsService.updateHousingRoom(housingRoomId, housingRoomUpdate);
+    async updateHousingRoom(
+      housingRoomId: string,
+      housingRoomUpdate: HousingRoomUpdateRequest,
+    ): Promise<void> {
+      const housingRoom = await housingRoomsService.updateHousingRoom(
+        housingRoomId,
+        housingRoomUpdate,
+      );
       const index = this.housingRooms.findIndex((r) => r.id === housingRoomId);
       if (index >= 0) {
         this.housingRooms[index] = housingRoom;
@@ -48,7 +61,9 @@ export const useHousingRoomsStore = defineStore("housingRooms", {
 
     async deleteHousingRoom(housingRoomId: string): Promise<void> {
       await housingRoomsService.deleteHousingRoom(housingRoomId);
-      this.housingRooms = this.housingRooms.filter((r) => r.id !== housingRoomId);
+      this.housingRooms = this.housingRooms.filter(
+        (r) => r.id !== housingRoomId,
+      );
     },
   },
 });

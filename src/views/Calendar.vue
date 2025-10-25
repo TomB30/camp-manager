@@ -230,19 +230,19 @@ export default defineComponent({
     },
     weekEvents() {
       return this.weekDays.flatMap((day) =>
-        this.eventsStore.eventsForDate(day)
+        this.eventsStore.eventsForDate(day),
       );
     },
     monthEvents() {
       const start = new Date(
         this.selectedDate.getFullYear(),
         this.selectedDate.getMonth(),
-        1
+        1,
       );
       const end = new Date(
         this.selectedDate.getFullYear(),
         this.selectedDate.getMonth() + 1,
-        0
+        0,
       );
 
       return this.eventsStore.events.filter((event) => {
@@ -288,8 +288,8 @@ export default defineComponent({
           options: this.staffMembersStore.staffMembers
             .sort((a, b) =>
               `${a.firstName} ${a.lastName}`.localeCompare(
-                `${b.firstName} ${b.lastName}`
-              )
+                `${b.firstName} ${b.lastName}`,
+              ),
             )
             .map((staff) => ({
               label: `${staff.firstName} ${staff.lastName}`,
@@ -304,12 +304,12 @@ export default defineComponent({
     // Memoized lookup maps for efficient filtering (O(1) lookups instead of O(n))
     roomLookupMap() {
       return new Map(
-        this.locationsStore.locations.map((r) => [r.id, r.name.toLowerCase()])
+        this.locationsStore.locations.map((r) => [r.id, r.name.toLowerCase()]),
       );
     },
     programLookupMap() {
       return new Map(
-        this.programsStore.programs.map((p) => [p.id, p.name.toLowerCase()])
+        this.programsStore.programs.map((p) => [p.id, p.name.toLowerCase()]),
       );
     },
     staffLookupMap() {
@@ -317,7 +317,7 @@ export default defineComponent({
         this.staffMembersStore.staffMembers.map((s) => [
           s.id,
           `${s.firstName} ${s.lastName}`.toLowerCase(),
-        ])
+        ]),
       );
     },
     filteredEvents() {

@@ -1,8 +1,19 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createWrapper, setupTestPinia } from "@/tests/utils";
 import EventFormModal from "@/components/modals/EventFormModal.vue";
-import { eventsFixture, activitiesFixture, locationsFixture, staffMembersFixture, groupsFixture } from "@/tests/fixtures";
-import { useActivitiesStore, useLocationsStore, useStaffMembersStore, useGroupsStore } from "@/stores";
+import {
+  eventsFixture,
+  activitiesFixture,
+  locationsFixture,
+  staffMembersFixture,
+  groupsFixture,
+} from "@/tests/fixtures";
+import {
+  useActivitiesStore,
+  useLocationsStore,
+  useStaffMembersStore,
+  useGroupsStore,
+} from "@/stores";
 
 describe("EventFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
@@ -11,13 +22,13 @@ describe("EventFormModal", () => {
 
   beforeEach(() => {
     pinia = setupTestPinia();
-    
+
     const activitiesStore = useActivitiesStore();
     activitiesStore.activities = activitiesFixture;
-    
+
     const locationsStore = useLocationsStore();
     locationsStore.locations = locationsFixture;
-    
+
     const staffMembersStore = useStaffMembersStore();
     staffMembersStore.staffMembers = staffMembersFixture;
 
@@ -45,7 +56,9 @@ describe("EventFormModal", () => {
         pinia,
       });
 
-      expect(wrapper.find("input[placeholder='Enter event title']").exists()).toBe(true);
+      expect(
+        wrapper.find("input[placeholder='Enter event title']").exists(),
+      ).toBe(true);
     });
 
     it("renders date and time inputs", () => {
@@ -57,7 +70,9 @@ describe("EventFormModal", () => {
       });
 
       expect(wrapper.find("input[type='date']").exists()).toBe(true);
-      expect(wrapper.findAll("input[type='time']").length).toBeGreaterThanOrEqual(2);
+      expect(
+        wrapper.findAll("input[type='time']").length,
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it("shows activity template selector in create mode", () => {
@@ -96,7 +111,8 @@ describe("EventFormModal", () => {
 
   describe("Edit Mode", () => {
     it("renders with edit title", () => {
-      const event = eventsFixture.find(e => !e.recurrenceId) || eventsFixture[0];
+      const event =
+        eventsFixture.find((e) => !e.recurrenceId) || eventsFixture[0];
       const wrapper = createWrapper(EventFormModal, {
         props: {
           eventId: event.id,
@@ -109,7 +125,8 @@ describe("EventFormModal", () => {
     });
 
     it("does not show activity template selector in edit mode", () => {
-      const event = eventsFixture.find(e => !e.recurrenceId) || eventsFixture[0];
+      const event =
+        eventsFixture.find((e) => !e.recurrenceId) || eventsFixture[0];
       const wrapper = createWrapper(EventFormModal, {
         props: {
           eventId: event.id,
@@ -122,7 +139,8 @@ describe("EventFormModal", () => {
     });
 
     it("does not show recurrence option in edit mode", () => {
-      const event = eventsFixture.find(e => !e.recurrenceId) || eventsFixture[0];
+      const event =
+        eventsFixture.find((e) => !e.recurrenceId) || eventsFixture[0];
       const wrapper = createWrapper(EventFormModal, {
         props: {
           eventId: event.id,
@@ -187,4 +205,3 @@ describe("EventFormModal", () => {
     });
   });
 });
-

@@ -34,10 +34,10 @@ describe("CamperFormModal", () => {
       const wrapper = createWrapper(CamperFormModal);
 
       expect(
-        wrapper.find("input[placeholder='Enter first name']").exists()
+        wrapper.find("input[placeholder='Enter first name']").exists(),
       ).toBe(true);
       expect(
-        wrapper.find("input[placeholder='Enter last name']").exists()
+        wrapper.find("input[placeholder='Enter last name']").exists(),
       ).toBe(true);
     });
 
@@ -70,10 +70,10 @@ describe("CamperFormModal", () => {
       });
 
       const firstNameInput = wrapper.find(
-        "input[placeholder='Enter first name']"
+        "input[placeholder='Enter first name']",
       );
       expect((firstNameInput.element as HTMLInputElement).value).toBe(
-        camper.firstName
+        camper.firstName,
       );
     });
   });

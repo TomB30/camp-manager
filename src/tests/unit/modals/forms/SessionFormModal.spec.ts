@@ -9,7 +9,7 @@ describe("SessionFormModal", () => {
 
   beforeEach(() => {
     pinia = setupTestPinia();
-    
+
     const sessionsStore = useSessionsStore();
     sessionsStore.sessions = sessionsFixture;
   });
@@ -127,4 +127,3 @@ describe("SessionFormModal", () => {
     });
   });
 });
-

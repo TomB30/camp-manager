@@ -140,7 +140,7 @@ describe("GroupFormModal", () => {
     it("marks occupied rooms as disabled", () => {
       // Find a room that's occupied in session 1
       const occupiedGroup = groupsFixture.find(
-        (g) => g.housingRoomId && g.sessionId === sessionsFixture[1].id
+        (g) => g.housingRoomId && g.sessionId === sessionsFixture[1].id,
       );
       if (occupiedGroup && occupiedGroup.housingRoomId) {
         const wrapper = createGroupFormWrapper({
@@ -152,7 +152,7 @@ describe("GroupFormModal", () => {
         const vm = wrapper.vm as any;
 
         const occupiedRoom = housingRoomsFixture.find(
-          (r) => r.id === occupiedGroup.housingRoomId
+          (r) => r.id === occupiedGroup.housingRoomId,
         );
         if (occupiedRoom) {
           const option = vm.getRoomOption(occupiedRoom);
@@ -172,18 +172,17 @@ describe("GroupFormModal", () => {
       const vm = wrapper.vm as any;
 
       const groupsInSameSession = groupsFixture.filter(
-        (g) => g.sessionId === sessionsFixture[2].id
+        (g) => g.sessionId === sessionsFixture[2].id,
       );
       const groupHousingRooms = groupsInSameSession.map((g) => g.housingRoomId);
       const availableRooms = housingRoomsFixture.filter(
-        (r) => !groupHousingRooms.includes(r.id)
+        (r) => !groupHousingRooms.includes(r.id),
       );
 
       for (const room of availableRooms) {
         const option = vm.getRoomOption(room);
         expect(option.disabled).toBeFalsy();
       }
-
     });
   });
 

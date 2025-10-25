@@ -21,7 +21,7 @@ async function listStaffMembers(): Promise<StaffMember[]> {
 }
 
 async function createStaffMember(
-  member: StaffMemberCreationRequest
+  member: StaffMemberCreationRequest,
 ): Promise<StaffMember> {
   const newStaffMember = {
     ...member,
@@ -29,17 +29,17 @@ async function createStaffMember(
   };
   return storageService.save<StaffMember>(
     STORAGE_KEYS.STAFF_MEMBERS,
-    newStaffMember
+    newStaffMember,
   );
 }
 
 async function updateStaffMember(
   id: string,
-  member: StaffMemberUpdateRequest
+  member: StaffMemberUpdateRequest,
 ): Promise<StaffMember> {
   const existingStaffMember = await storageService.getById<StaffMember>(
     STORAGE_KEYS.STAFF_MEMBERS,
-    id
+    id,
   );
   if (!existingStaffMember) {
     throw new Error(`Staff member with id ${id} not found`);
@@ -50,7 +50,7 @@ async function updateStaffMember(
   };
   return storageService.save<StaffMember>(
     STORAGE_KEYS.STAFF_MEMBERS,
-    updatedStaffMember
+    updatedStaffMember,
   );
 }
 
@@ -63,8 +63,7 @@ async function deleteStaffMember(id: string): Promise<void> {
   const updatedEvents = events.map((event) => ({
     ...event,
     assignedStaffIds:
-      event.assignedStaffIds?.filter((staffId: string) => staffId !== id) ||
-      [],
+      event.assignedStaffIds?.filter((staffId: string) => staffId !== id) || [],
   }));
 
   // Save all updated events
@@ -78,15 +77,17 @@ async function getStaffMemberById(id: string): Promise<StaffMember | null> {
 }
 
 async function getStaffMembersByCertification(
-  certificationId: string
+  certificationId: string,
 ): Promise<StaffMember[]> {
   const staffMembers = await listStaffMembers();
   return staffMembers.filter((s) =>
-    s.certificationIds?.includes(certificationId)
+    s.certificationIds?.includes(certificationId),
   );
 }
 
-async function getStaffMembersByManager(managerId: string): Promise<StaffMember[]> {
+async function getStaffMembersByManager(
+  managerId: string,
+): Promise<StaffMember[]> {
   const staffMembers = await listStaffMembers();
   return staffMembers.filter((s) => s.managerId === managerId);
 }

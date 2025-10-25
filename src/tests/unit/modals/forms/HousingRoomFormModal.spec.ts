@@ -23,14 +23,14 @@ describe("HousingRoomFormModal", () => {
     it("renders room name input", () => {
       const wrapper = createWrapper(HousingRoomFormModal);
       expect(
-        wrapper.find("input[placeholder='Enter room name']").exists()
+        wrapper.find("input[placeholder='Enter room name']").exists(),
       ).toBe(true);
     });
 
     it("renders beds input", () => {
       const wrapper = createWrapper(HousingRoomFormModal);
       expect(
-        wrapper.find("input[placeholder='Enter number of beds']").exists()
+        wrapper.find("input[placeholder='Enter number of beds']").exists(),
       ).toBe(true);
     });
 

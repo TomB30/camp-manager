@@ -200,4 +200,3 @@ export const eventsFixture: Event[] = [
     isRecurrenceParent: false,
   },
 ];
-

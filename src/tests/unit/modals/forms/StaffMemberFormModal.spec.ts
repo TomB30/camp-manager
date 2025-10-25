@@ -1,18 +1,26 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createWrapper, setupTestPinia } from "@/tests/utils";
 import StaffMemberFormModal from "@/components/modals/StaffMemberFormModal.vue";
-import { staffMembersFixture, rolesFixture, certificationsFixture } from "@/tests/fixtures";
-import { useRolesStore, useCertificationsStore, useStaffMembersStore } from "@/stores";
+import {
+  staffMembersFixture,
+  rolesFixture,
+  certificationsFixture,
+} from "@/tests/fixtures";
+import {
+  useRolesStore,
+  useCertificationsStore,
+  useStaffMembersStore,
+} from "@/stores";
 
 describe("StaffMemberFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
 
   beforeEach(() => {
     pinia = setupTestPinia();
-    
+
     const rolesStore = useRolesStore();
     rolesStore.roles = rolesFixture;
-    
+
     const certificationsStore = useCertificationsStore();
     certificationsStore.certifications = certificationsFixture;
 
@@ -30,8 +38,12 @@ describe("StaffMemberFormModal", () => {
     it("renders required form fields", () => {
       const wrapper = createWrapper(StaffMemberFormModal);
 
-      expect(wrapper.find("input[placeholder='Enter first name']").exists()).toBe(true);
-      expect(wrapper.find("input[placeholder='Enter last name']").exists()).toBe(true);
+      expect(
+        wrapper.find("input[placeholder='Enter first name']").exists(),
+      ).toBe(true);
+      expect(
+        wrapper.find("input[placeholder='Enter last name']").exists(),
+      ).toBe(true);
     });
 
     it("contains form element", () => {
@@ -63,8 +75,12 @@ describe("StaffMemberFormModal", () => {
         pinia,
       });
 
-      const firstNameInput = wrapper.find("input[placeholder='Enter first name']");
-      expect((firstNameInput.element as HTMLInputElement).value).toBe(staffMember.firstName);
+      const firstNameInput = wrapper.find(
+        "input[placeholder='Enter first name']",
+      );
+      expect((firstNameInput.element as HTMLInputElement).value).toBe(
+        staffMember.firstName,
+      );
     });
   });
 
@@ -103,4 +119,3 @@ describe("StaffMemberFormModal", () => {
     });
   });
 });
-

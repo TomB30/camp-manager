@@ -105,7 +105,11 @@ import Autocomplete, {
 } from "@/components/Autocomplete.vue";
 import SelectionList from "@/components/SelectionList.vue";
 // Stores
-import { useCertificationsStore, useRolesStore, useStaffMembersStore } from "@/stores";
+import {
+  useCertificationsStore,
+  useRolesStore,
+  useStaffMembersStore,
+} from "@/stores";
 // Types
 import type { StaffMember, StaffMemberCreationRequest } from "@/types";
 import type { QForm } from "quasar";
@@ -149,7 +153,9 @@ export default defineComponent({
   },
   created() {
     if (!this.staffMemberId) return;
-    const staffMember = this.staffMembersStore.getStaffMemberById(this.staffMemberId);
+    const staffMember = this.staffMembersStore.getStaffMemberById(
+      this.staffMemberId,
+    );
     if (!staffMember) return;
     this.localFormData = {
       firstName: staffMember.firstName,
@@ -225,11 +231,16 @@ export default defineComponent({
     },
     async updateStaffMember(): Promise<void> {
       if (!this.staffMemberId) return;
-      try  {
-        await this.staffMembersStore.updateStaffMember(this.staffMemberId, this.localFormData);
+      try {
+        await this.staffMembersStore.updateStaffMember(
+          this.staffMemberId,
+          this.localFormData,
+        );
         this.toast.success("Staff member updated successfully");
       } catch (error) {
-        this.toast.error((error as Error).message || "Failed to update staff member");
+        this.toast.error(
+          (error as Error).message || "Failed to update staff member",
+        );
       } finally {
         this.$emit("close");
       }
@@ -239,7 +250,9 @@ export default defineComponent({
         await this.staffMembersStore.createStaffMember(this.localFormData);
         this.toast.success("Staff member created successfully");
       } catch (error) {
-        this.toast.error((error as Error).message || "Failed to create staff member");
+        this.toast.error(
+          (error as Error).message || "Failed to create staff member",
+        );
       } finally {
         this.$emit("close");
       }

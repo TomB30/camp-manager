@@ -182,9 +182,9 @@ export default defineComponent({
         this.loading = false;
         this.$emit("close");
       }
-    }
-  }
-})
+    },
+  },
+});
 </script>
 
 <style scoped lang="scss">

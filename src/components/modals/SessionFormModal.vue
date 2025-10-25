@@ -167,7 +167,7 @@ export default defineComponent({
         this.toast.success("Session updated successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to update session"
+          (error as Error).message || "Failed to update session",
         );
       } finally {
         this.loading = false;
@@ -181,7 +181,7 @@ export default defineComponent({
         this.toast.success("Session created successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to create session"
+          (error as Error).message || "Failed to create session",
         );
       } finally {
         this.loading = false;

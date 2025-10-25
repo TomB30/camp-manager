@@ -41,7 +41,10 @@ export const useLabelsStore = defineStore("labels", {
       return label;
     },
 
-    async updateLabel(id: string, labelUpdate: LabelUpdateRequest): Promise<void> {
+    async updateLabel(
+      id: string,
+      labelUpdate: LabelUpdateRequest,
+    ): Promise<void> {
       const label = await labelsService.updateLabel(id, labelUpdate);
       const index = this.labels.findIndex((l: Label) => l.id === id);
       if (index >= 0) {

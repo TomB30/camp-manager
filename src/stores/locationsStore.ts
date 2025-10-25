@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
-import type { Location, LocationCreationRequest, LocationUpdateRequest } from "@/types";
+import type {
+  Location,
+  LocationCreationRequest,
+  LocationUpdateRequest,
+} from "@/types";
 import { locationsService } from "@/services";
 
 export const useLocationsStore = defineStore("locations", {
@@ -38,14 +42,22 @@ export const useLocationsStore = defineStore("locations", {
       }
     },
 
-    async createLocation(locationRequest: LocationCreationRequest): Promise<Location> {
+    async createLocation(
+      locationRequest: LocationCreationRequest,
+    ): Promise<Location> {
       const location = await locationsService.createLocation(locationRequest);
       this.locations.push(location);
       return location;
     },
 
-    async updateLocation(id: string, locationUpdate: LocationUpdateRequest): Promise<void> {
-      const location = await locationsService.updateLocation(id, locationUpdate);
+    async updateLocation(
+      id: string,
+      locationUpdate: LocationUpdateRequest,
+    ): Promise<void> {
+      const location = await locationsService.updateLocation(
+        id,
+        locationUpdate,
+      );
       const index = this.locations.findIndex((r) => r.id === id);
       if (index >= 0) {
         this.locations[index] = location;

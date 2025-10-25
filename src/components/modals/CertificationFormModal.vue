@@ -85,7 +85,7 @@ export default defineComponent({
     if (!this.certificationId) return;
 
     const certification = this.certificationsStore.getCertificationById(
-      this.certificationId
+      this.certificationId,
     );
     if (!certification) return;
 
@@ -139,7 +139,7 @@ export default defineComponent({
         this.toast.success("Certification created successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to create certification"
+          (error as Error).message || "Failed to create certification",
         );
       } finally {
         this.loading = false;
@@ -152,12 +152,12 @@ export default defineComponent({
         this.loading = true;
         await this.certificationsStore.updateCertification(
           this.certificationId,
-          this.formModel
+          this.formModel,
         );
         this.toast.success("Certification updated successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to update certification"
+          (error as Error).message || "Failed to update certification",
         );
       } finally {
         this.loading = false;

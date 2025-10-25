@@ -42,4 +42,3 @@ export const getAllFixtures = () => ({
   events: require("./events.fixture").eventsFixture,
   groups: require("./groups.fixture").groupsFixture,
 });
-

@@ -24,7 +24,7 @@ describe("CertificationFormModal", () => {
       const wrapper = createWrapper(CertificationFormModal);
 
       expect(
-        wrapper.find("input[placeholder='Enter certification name']").exists()
+        wrapper.find("input[placeholder='Enter certification name']").exists(),
       ).toBe(true);
     });
 
@@ -69,7 +69,7 @@ describe("CertificationFormModal", () => {
       const wrapper = createWrapper(CertificationFormModal);
 
       const input = wrapper.find(
-        "input[placeholder='Enter certification name']"
+        "input[placeholder='Enter certification name']",
       );
       expect(input.exists()).toBe(true);
     });

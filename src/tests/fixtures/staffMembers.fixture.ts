@@ -72,7 +72,7 @@ export const staffMembersFixture: StaffMember[] = [
     roleId: rolesFixture[4].id, // Camp Director
     certificationIds: [
       certificationsFixture[0].id, // CPR
-    ],    
+    ],
   },
   {
     id: "staff-7",
@@ -120,4 +120,3 @@ export const staffMembersFixture: StaffMember[] = [
     ],
   },
 ];
-

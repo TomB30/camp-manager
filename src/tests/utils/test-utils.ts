@@ -27,13 +27,41 @@ export function mockRouter(): Router {
   return createRouter({
     history: createMemoryHistory(),
     routes: [
-      { path: "/", name: "Dashboard", component: { template: "<div>Dashboard</div>" } },
-      { path: "/campers", name: "Campers", component: { template: "<div>Campers</div>" } },
-      { path: "/staff", name: "Staff", component: { template: "<div>Staff</div>" } },
-      { path: "/calendar", name: "Calendar", component: { template: "<div>Calendar</div>" } },
-      { path: "/groups", name: "Groups", component: { template: "<div>Groups</div>" } },
-      { path: "/programs", name: "Programs", component: { template: "<div>Programs</div>" } },
-      { path: "/settings", name: "Settings", component: { template: "<div>Settings</div>" } },
+      {
+        path: "/",
+        name: "Dashboard",
+        component: { template: "<div>Dashboard</div>" },
+      },
+      {
+        path: "/campers",
+        name: "Campers",
+        component: { template: "<div>Campers</div>" },
+      },
+      {
+        path: "/staff",
+        name: "Staff",
+        component: { template: "<div>Staff</div>" },
+      },
+      {
+        path: "/calendar",
+        name: "Calendar",
+        component: { template: "<div>Calendar</div>" },
+      },
+      {
+        path: "/groups",
+        name: "Groups",
+        component: { template: "<div>Groups</div>" },
+      },
+      {
+        path: "/programs",
+        name: "Programs",
+        component: { template: "<div>Programs</div>" },
+      },
+      {
+        path: "/settings",
+        name: "Settings",
+        component: { template: "<div>Settings</div>" },
+      },
     ],
   });
 }
@@ -127,7 +155,10 @@ export function triggerNativeEvent(
   eventType: string,
   options = {},
 ): void {
-  const event = new Event(eventType, { bubbles: true, cancelable: true, ...options });
+  const event = new Event(eventType, {
+    bubbles: true,
+    cancelable: true,
+    ...options,
+  });
   element.dispatchEvent(event);
 }
-

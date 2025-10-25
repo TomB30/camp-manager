@@ -10,7 +10,7 @@ describe.skip("LabelFormModal", () => {
 
   beforeEach(() => {
     pinia = setupTestPinia();
-    
+
     const colorsStore = useColorsStore();
     colorsStore.colors = colorsFixture;
   });
@@ -189,4 +189,3 @@ describe.skip("LabelFormModal", () => {
     });
   });
 });
-

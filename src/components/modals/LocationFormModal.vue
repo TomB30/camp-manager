@@ -182,7 +182,10 @@ export default defineComponent({
         return this.localFormData.equipment?.join(", ") || "";
       },
       set(value: string) {
-        this.localFormData.equipment = value.split(",").map((e) => e.trim()).filter((e) => e.length > 0);
+        this.localFormData.equipment = value
+          .split(",")
+          .map((e) => e.trim())
+          .filter((e) => e.length > 0);
       },
     },
   },
@@ -190,7 +193,7 @@ export default defineComponent({
     async handleSave() {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
-      
+
       if (this.isEditing) {
         return this.handleUpdate();
       }
@@ -200,10 +203,15 @@ export default defineComponent({
       if (!this.locationId) return;
       try {
         this.loading = true;
-        await this.locationsStore.updateLocation(this.locationId, this.localFormData);
+        await this.locationsStore.updateLocation(
+          this.locationId,
+          this.localFormData,
+        );
         this.toast.success("Location updated successfully");
       } catch (error) {
-        this.toast.error((error as Error).message || "Failed to update location");
+        this.toast.error(
+          (error as Error).message || "Failed to update location",
+        );
       } finally {
         this.loading = false;
         this.$emit("close");
@@ -215,7 +223,9 @@ export default defineComponent({
         await this.locationsStore.createLocation(this.localFormData);
         this.toast.success("Location created successfully");
       } catch (error) {
-        this.toast.error((error as Error).message || "Failed to create location");
+        this.toast.error(
+          (error as Error).message || "Failed to create location",
+        );
       } finally {
         this.loading = false;
         this.$emit("close");

@@ -20,7 +20,7 @@ async function listHousingRooms(): Promise<HousingRoom[]> {
 }
 
 async function createHousingRoom(
-  housingRoom: HousingRoomCreationRequest
+  housingRoom: HousingRoomCreationRequest,
 ): Promise<HousingRoom> {
   const newHousingRoom = {
     ...housingRoom,
@@ -30,17 +30,17 @@ async function createHousingRoom(
   };
   return storageService.save<HousingRoom>(
     STORAGE_KEYS.HOUSING_ROOMS,
-    newHousingRoom
+    newHousingRoom,
   );
 }
 
 async function updateHousingRoom(
   id: string,
-  housingRoom: HousingRoomUpdateRequest
+  housingRoom: HousingRoomUpdateRequest,
 ): Promise<HousingRoom> {
   const existingHousingRoom = await storageService.getById<HousingRoom>(
     STORAGE_KEYS.HOUSING_ROOMS,
-    id
+    id,
   );
   if (!existingHousingRoom) {
     throw new Error(`Housing room with id ${id} not found`);
@@ -52,7 +52,7 @@ async function updateHousingRoom(
   };
   return storageService.save<HousingRoom>(
     STORAGE_KEYS.HOUSING_ROOMS,
-    updatedHousingRoom
+    updatedHousingRoom,
   );
 }
 

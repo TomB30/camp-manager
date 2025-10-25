@@ -141,9 +141,7 @@ export const buildStaffWithCertifications = (
 /**
  * Build a recurring event
  */
-export const buildRecurringEvent = (
-  overrides: Partial<Event> = {},
-): Event =>
+export const buildRecurringEvent = (overrides: Partial<Event> = {}): Event =>
   buildEvent({
     recurrenceId: "recurrence-1",
     isRecurrenceParent: true,
@@ -174,4 +172,3 @@ export const buildGroupWithHousing = (
 export const resetTestIds = () => {
   idCounter = 0;
 };
-

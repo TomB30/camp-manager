@@ -41,7 +41,8 @@
             label="Set as default color"
           />
           <p class="form-help-text">
-            The default color will be used for events not created from activity templates. Only one color can be set as default.
+            The default color will be used for events not created from activity
+            templates. Only one color can be set as default.
           </p>
         </div>
 

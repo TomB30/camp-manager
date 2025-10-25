@@ -148,7 +148,9 @@ export default defineComponent({
     },
     formatRole(roleId: string): string {
       const role = this.rolesStore.getRoleById(roleId);
-      return role ? role.name.charAt(0).toUpperCase() + role.name.slice(1) : "Unknown Role";
+      return role
+        ? role.name.charAt(0).toUpperCase() + role.name.slice(1)
+        : "Unknown Role";
     },
   },
 });
