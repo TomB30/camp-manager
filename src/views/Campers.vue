@@ -135,7 +135,7 @@
         v-if="showConfirmModal"
         title="Delete Camper"
         :message="`Are you sure you want to delete ${camperToDelete?.name}?`"
-        details="This action cannot be undone. The camper will be removed from all events and their housing room assignment."
+        details="This action cannot be undone. The camper will be removed from all events and their housing assignment."
         confirm-text="Delete"
         :danger-mode="true"
         @confirm="handleConfirmDelete"

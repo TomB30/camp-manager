@@ -39,7 +39,6 @@
           </div>
         </div>
 
-        <!-- Session and Housing Room -->
         <div
           v-if="group.sessionId || group.housingRoomId"
           class="detail-section"
@@ -56,7 +55,7 @@
             <div v-if="group.housingRoomId" class="detail-item">
               <Icon name="Bed" :size="16" />
               <div>
-                <div class="detail-item-label">Housing Room</div>
+                <div class="detail-item-label">Housing</div>
                 <div class="detail-item-value">{{ housingRoomName }}</div>
               </div>
             </div>

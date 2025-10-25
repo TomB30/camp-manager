@@ -67,26 +67,28 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Housing Room</label>
+            <label class="form-label">Housing</label>
             <SelectionList
+              class="housing-selection"
               v-model="localFormData.housingRoomId"
               @update:modelValue="handleHousingRoomChange"
               :items="availableHousingRooms"
-              item-type="housing room"
-              placeholder="Select a room..."
-              :empty-text="
-                !localFormData.sessionId
-                  ? 'select a session to view available housing rooms'
-                  : 'No housing room'
-              "
+              item-type="housing"
+              placeholder="Select a housing..."
+              empty-text="No housing"
               add-button-text="Select"
               mode="single"
               :get-label-fn="getRoomLabel"
               :get-initials-fn="getRoomInitials"
               :get-options-fn="getRoomOption"
               :disabled="!localFormData.sessionId"
-              disabled-tooltip="select a session to view available housing rooms"
             />
+            <q-tooltip
+              v-if="!localFormData.sessionId"
+              target=".housing-selection"
+            >
+              Select a session to view available housing
+            </q-tooltip>
           </div>
         </div>
 
@@ -440,7 +442,12 @@ import type {
   HousingRoom,
   Certification,
 } from "@/types";
-import { useColorsStore, useSessionsStore, useGroupsStore, useHousingRoomsStore } from "@/stores";
+import {
+  useColorsStore,
+  useSessionsStore,
+  useGroupsStore,
+  useHousingRoomsStore,
+} from "@/stores";
 import type { QForm } from "quasar";
 
 interface GroupFormData {
@@ -608,9 +615,7 @@ export default defineComponent({
         baseCampers = baseCampers.filter(
           (c) =>
             c.familyGroupId &&
-            this.localFormData.camperFilters.groupIds!.includes(
-              c.familyGroupId,
-            ),
+            this.localFormData.camperFilters.groupIds!.includes(c.familyGroupId)
         );
       }
 
@@ -655,7 +660,7 @@ export default defineComponent({
             return false;
           const hasAllCerts =
             this.localFormData.staffFilters.certificationIds.every(
-              (certId: string) => staff.certificationIds!.includes(certId),
+              (certId: string) => staff.certificationIds!.includes(certId)
             );
           if (!hasAllCerts) return false;
         }
@@ -677,7 +682,7 @@ export default defineComponent({
       // Clear housing room if it's no longer available for the selected session
       if (this.localFormData.housingRoomId) {
         const isRoomAvailable = this.availableHousingRooms.some(
-          (room) => room.id === this.localFormData.housingRoomId,
+          (room) => room.id === this.localFormData.housingRoomId
         );
         if (!isRoomAvailable) {
           this.localFormData.housingRoomId = "";
@@ -809,7 +814,7 @@ export default defineComponent({
     getSessionOption(session: Session): AutocompleteOption {
       const startDate = new Date(session.startDate).toLocaleDateString(
         "en-US",
-        { month: "short", day: "numeric" },
+        { month: "short", day: "numeric" }
       );
       const endDate = new Date(session.endDate).toLocaleDateString("en-US", {
         month: "short",
@@ -836,7 +841,7 @@ export default defineComponent({
     getRoomOption(room: HousingRoom): AutocompleteOption {
       // Check if room is available for the selected session
       const selectedSession = this.sessions.find(
-        (s) => s.id === this.localFormData.sessionId,
+        (s) => s.id === this.localFormData.sessionId
       );
 
       if (!selectedSession) {
@@ -865,7 +870,7 @@ export default defineComponent({
         }
 
         const groupSession = this.sessions.find(
-          (s) => s.id === group.sessionId,
+          (s) => s.id === group.sessionId
         );
         if (!groupSession) {
           return false;

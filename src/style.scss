@@ -548,3 +548,10 @@ p {
 .fade-leave-to {
   opacity: 0;
 }
+
+.q-tooltip {
+  font-size: 12px;
+  background-color: white;
+  color: var(--text-primary);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.54);
+}
