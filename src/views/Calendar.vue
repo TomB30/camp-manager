@@ -69,25 +69,10 @@
         </div>
         <div class="date-controls">
           <button class="btn btn-secondary" @click="changeDate(-1)">
-            ← Previous
-            {{
-              viewMode === "daily"
-                ? "Day"
-                : viewMode === "weekly"
-                  ? "Week"
-                  : "Month"
-            }}
+            ←
           </button>
           <button class="btn btn-secondary" @click="goToToday">Today</button>
           <button class="btn btn-secondary" @click="changeDate(1)">
-            Next
-            {{
-              viewMode === "daily"
-                ? "Day"
-                : viewMode === "weekly"
-                  ? "Week"
-                  : "Month"
-            }}
             →
           </button>
         </div>
