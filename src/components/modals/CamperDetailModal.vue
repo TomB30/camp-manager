@@ -52,23 +52,53 @@
 
         <div class="detail-section">
           <div class="detail-label">Session</div>
-          <slot name="session">
-            <div class="text-secondary">Not registered for a session</div>
-          </slot>
+          <div v-if="camper.sessionId">
+            <span class="badge badge-primary">
+              {{ getSessionName(camper.sessionId) }}
+            </span>
+            <div class="text-xs text-caption mt-1">
+              {{ getSessionDateRange(camper.sessionId) }}
+            </div>
+          </div>
+          <div v-else class="text-caption">Not registered for a session</div>
         </div>
 
         <div class="detail-section">
           <div class="detail-label">Family Group</div>
-          <slot name="family-group">
-            <div class="text-secondary">Not assigned to a family group</div>
-          </slot>
+          <div
+            v-if="camper.familyGroupId && getGroupById(camper.familyGroupId)"
+          >
+            <div class="family-group-info">
+              <span
+                class="badge"
+                :style="{
+                  background: getGroupColor(getGroupById(camper.familyGroupId)!),
+                }"
+              >
+                {{ getGroupById(camper.familyGroupId)!.name }}
+              </span>
+              <div
+                v-if="getGroupById(camper.familyGroupId)?.housingRoomId"
+                class="text-xs text-caption mt-1"
+              >
+                Room:
+                {{
+                  getSleepingRoomName(
+                    getGroupById(camper.familyGroupId)?.housingRoomId || "",
+                  )
+                }}
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-caption">Not assigned to a family group</div>
         </div>
 
         <div class="detail-section">
           <div class="detail-label">Enrolled Events</div>
-          <slot name="events">
-            <div class="text-secondary">No events enrolled</div>
-          </slot>
+          <EventsByDate
+            :events="getCamperEvents(camper.id)"
+            empty-message="No events enrolled"
+          />
         </div>
       </div>
     </template>
@@ -88,13 +118,22 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import type { Camper } from "@/types";
+import EventsByDate from "@/components/EventsByDate.vue";
+import type { Camper, Event, Group } from "@/types";
 import { format } from "date-fns";
+import {
+  useSessionsStore,
+  useEventsStore,
+  useHousingRoomsStore,
+  useColorsStore,
+  useGroupsStore,
+} from "@/stores";
 
 export default defineComponent({
   name: "CamperDetailModal",
   components: {
     BaseModal,
+    EventsByDate,
   },
   props: {
     camper: {
@@ -103,12 +142,70 @@ export default defineComponent({
     },
   },
   emits: ["close", "edit", "delete"],
+  computed: {
+    sessionsStore() {
+      return useSessionsStore();
+    },
+    eventsStore() {
+      return useEventsStore();
+    },
+    housingRoomsStore() {
+      return useHousingRoomsStore();
+    },
+    colorsStore() {
+      return useColorsStore();
+    },
+    groupsStore() {
+      return useGroupsStore();
+    },
+  },
   methods: {
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
     },
     formatDate(dateStr: string): string {
       return format(new Date(dateStr), "MMMM d, yyyy");
+    },
+    getSessionName(sessionId: string | undefined): string {
+      if (!sessionId) return "No session";
+      const session = this.sessionsStore.sessions.find(
+        (s) => s.id === sessionId,
+      );
+      return session?.name || "Unknown Session";
+    },
+    getSessionDateRange(sessionId: string | undefined): string {
+      if (!sessionId) return "";
+      const session = this.sessionsStore.sessions.find(
+        (s) => s.id === sessionId,
+      );
+      if (!session) return "Unknown";
+      const startDate = new Date(session.startDate).toLocaleDateString(
+        "en-US",
+        { month: "short", day: "numeric" },
+      );
+      const endDate = new Date(session.endDate).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      return `${startDate} - ${endDate}`;
+    },
+    getGroupById(groupId: string): Group | null | undefined {
+      return this.groupsStore.getGroupById(groupId);
+    },
+    getGroupColor(group: Group): string {
+      if (group.colorId) {
+        const color = this.colorsStore.getColorById(group.colorId);
+        return color?.hexValue || "#6366F1";
+      }
+      return "#6366F1";
+    },
+    getSleepingRoomName(housingRoomId: string): string {
+      const room = this.housingRoomsStore.getHousingRoomById(housingRoomId);
+      return room?.name || "Unknown Room";
+    },
+    getCamperEvents(camperId: string): Event[] {
+      return this.eventsStore.camperEvents(camperId);
     },
   },
 });
@@ -124,5 +221,11 @@ export default defineComponent({
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
+}
+
+.family-group-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 </style>

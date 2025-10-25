@@ -7,7 +7,9 @@ export const programsFixture: Program[] = [
     name: "Arts & Crafts",
     description: "Creative arts program",
     colorId: colorsFixture[0].id,
-    active: true,
+    activityIds: [],
+    staffMemberIds: [],
+    locationIds: [],
     createdAt: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -15,7 +17,9 @@ export const programsFixture: Program[] = [
     name: "Water Sports",
     description: "Swimming and boating activities",
     colorId: colorsFixture[1].id,
-    active: true,
+    activityIds: [],
+    staffMemberIds: [],
+    locationIds: [],
     createdAt: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -23,7 +27,9 @@ export const programsFixture: Program[] = [
     name: "Outdoor Adventure",
     description: "Hiking, camping, and nature exploration",
     colorId: colorsFixture[2].id,
-    active: true,
+    activityIds: [],
+    staffMemberIds: [],
+    locationIds: [],
     createdAt: "2025-10-01T09:00:00.000Z",
   },
 ];

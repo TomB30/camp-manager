@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Session } from "@/types";
+import type { Session, SessionCreationRequest, SessionUpdateRequest } from "@/types";
 import { sessionsService } from "@/services";
 
 export const useSessionsStore = defineStore("sessions", {
@@ -32,28 +32,29 @@ export const useSessionsStore = defineStore("sessions", {
     async loadSessions(): Promise<void> {
       this.loading = true;
       try {
-        this.sessions = await sessionsService.getSessions();
+        this.sessions = await sessionsService.listSessions();
       } finally {
         this.loading = false;
       }
     },
 
-    async addSession(session: Session): Promise<void> {
-      await sessionsService.saveSession(session);
+    async createSession(sessionRequest: SessionCreationRequest): Promise<Session> {
+      const session = await sessionsService.createSession(sessionRequest);
       this.sessions.push(session);
+      return session;
     },
 
-    async updateSession(session: Session): Promise<void> {
-      await sessionsService.saveSession(session);
-      const index = this.sessions.findIndex((s) => s.id === session.id);
+    async updateSession(sessionId: string, sessionUpdate: SessionUpdateRequest): Promise<void> {
+      const session = await sessionsService.updateSession(sessionId, sessionUpdate);
+      const index = this.sessions.findIndex((s) => s.id === sessionId);
       if (index >= 0) {
         this.sessions[index] = session;
       }
     },
 
-    async deleteSession(id: string): Promise<void> {
-      await sessionsService.deleteSession(id);
-      this.sessions = this.sessions.filter((s) => s.id !== id);
+    async deleteSession(sessionId: string): Promise<void> {
+      await sessionsService.deleteSession(sessionId);
+      this.sessions = this.sessions.filter((s) => s.id !== sessionId);
     },
   },
 });

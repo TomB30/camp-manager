@@ -1,6 +1,6 @@
 <template>
   <BaseModal
-    :title="isEditing ? 'Edit Staff Member' : 'Add New Staff Member'"
+    :title="isEditing ? 'Edit Staff Member' : 'Create New Staff Member'"
     @close="$emit('close')"
   >
     <template #body>
@@ -28,7 +28,7 @@
         <div class="form-group">
           <label class="form-label">Role</label>
           <Autocomplete
-            v-model="localFormData.role"
+            v-model="localFormData.roleId"
             :options="roleOptions"
             placeholder="Select role..."
             :required="true"
@@ -65,7 +65,7 @@
         <div class="form-group">
           <label class="form-label">Certifications</label>
           <SelectionList
-            v-model="localFormData.certificationIds"
+            v-model="certificationIdsModel"
             :items="certificationsStore.certifications"
             item-type="certification"
             placeholder="Select a certification..."
@@ -89,7 +89,7 @@
         <BaseButton
           color="primary"
           @click="handleSave"
-          :label="isEditing ? 'Update Member' : 'Add Member'"
+          :label="isEditing ? 'Update Staff Member' : 'Create Staff Member'"
         />
       </div>
     </template>
@@ -98,67 +98,76 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
+// Components
 import BaseModal from "@/components/BaseModal.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
 import SelectionList from "@/components/SelectionList.vue";
-import { useCertificationsStore, useRolesStore } from "@/stores";
-import type { StaffMember } from "@/types";
+// Stores
+import { useCertificationsStore, useRolesStore, useStaffMembersStore } from "@/stores";
+// Types
+import type { StaffMember, StaffMemberCreationRequest } from "@/types";
 import type { QForm } from "quasar";
-
-interface StaffMemberFormData {
-  firstName: string;
-  lastName: string;
-  roleId: StaffMember["roleId"];
-  email: string;
-  phone: string;
-  certificationIds: string[];
-  managerId: string;
-}
+// Composables
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
   name: "StaffMemberFormModal",
   components: {
     BaseModal,
-    BaseInput,
-    BaseButton,
     Autocomplete,
     SelectionList,
   },
   props: {
-    isEditing: {
-      type: Boolean,
-      default: false,
-    },
-    formData: {
-      type: Object as PropType<StaffMemberFormData>,
-      required: true,
-    },
-    staffMembers: {
-      type: Array as PropType<StaffMember[]>,
-      required: true,
-    },
-    currentMemberId: {
-      type: String,
-      default: "",
+    staffMemberId: {
+      type: String as PropType<string>,
+      required: false,
     },
   },
-  emits: ["close", "save"],
+  emits: ["close"],
   setup() {
     const certificationsStore = useCertificationsStore();
     const rolesStore = useRolesStore();
-    return { certificationsStore, rolesStore };
+    const staffMembersStore = useStaffMembersStore();
+    const toast = useToast();
+    return { certificationsStore, rolesStore, staffMembersStore, toast };
   },
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData)),
+      localFormData: {
+        firstName: "",
+        lastName: "",
+        roleId: "",
+        email: "",
+        phone: "",
+        certificationIds: [],
+        managerId: "",
+      } as StaffMemberCreationRequest,
       formRef: null as any,
     };
   },
+  created() {
+    if (!this.staffMemberId) return;
+    const staffMember = this.staffMembersStore.getStaffMemberById(this.staffMemberId);
+    if (!staffMember) return;
+    this.localFormData = {
+      firstName: staffMember.firstName,
+      lastName: staffMember.lastName,
+      roleId: staffMember.roleId,
+      email: staffMember.email || "",
+      phone: staffMember.phone || "",
+      certificationIds: staffMember.certificationIds || [],
+      managerId: staffMember.managerId || "",
+    };
+  },
   computed: {
+    staffMembers(): StaffMember[] {
+      return this.staffMembersStore.staffMembers;
+    },
+    isEditing() {
+      return !!this.staffMemberId;
+    },
     roleOptions(): AutocompleteOption[] {
       return this.rolesStore.roles.map((role) => ({
         label: role.name,
@@ -181,10 +190,18 @@ export default defineComponent({
         this.localFormData.phone = value || "";
       },
     },
+    certificationIdsModel: {
+      get(): string[] {
+        return this.localFormData.certificationIds || [];
+      },
+      set(value: string[]) {
+        this.localFormData.certificationIds = value || [];
+      },
+    },
     managerOptions(): AutocompleteOption[] {
       // Filter out the current member to prevent self-assignment
       return this.staffMembers
-        .filter((m) => m.id !== this.currentMemberId)
+        .filter((m) => m.id !== this.staffMemberId)
         .map((member) => {
           const role = this.rolesStore.getRoleById(member.roleId);
           const roleName = role ? role.name : "Unknown Role";
@@ -195,20 +212,37 @@ export default defineComponent({
         });
     },
   },
-  watch: {
-    formData: {
-      handler(newVal) {
-        this.localFormData = JSON.parse(JSON.stringify(newVal));
-      },
-      deep: true,
-    },
-  },
   methods: {
-    async handleSave() {
+    async handleSave(): Promise<void> {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
 
-      this.$emit("save", this.localFormData);
+      if (this.isEditing) {
+        return this.updateStaffMember();
+      } else {
+        return this.createStaffMember();
+      }
+    },
+    async updateStaffMember(): Promise<void> {
+      if (!this.staffMemberId) return;
+      try  {
+        await this.staffMembersStore.updateStaffMember(this.staffMemberId, this.localFormData);
+        this.toast.success("Staff member updated successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to update staff member");
+      } finally {
+        this.$emit("close");
+      }
+    },
+    async createStaffMember(): Promise<void> {
+      try {
+        await this.staffMembersStore.createStaffMember(this.localFormData);
+        this.toast.success("Staff member created successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to create staff member");
+      } finally {
+        this.$emit("close");
+      }
     },
   },
 });

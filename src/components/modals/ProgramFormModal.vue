@@ -37,7 +37,7 @@
         <BaseButton
           color="primary"
           @click="handleSave"
-          :label="isEditing ? 'Save Changes' : 'Create Program'"
+          :label="isEditing ? 'Update Program' : 'Create Program'"
         />
       </div>
     </template>
@@ -47,21 +47,17 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import ColorPicker from "@/components/ColorPicker.vue";
 import { useColorsStore, useProgramsStore } from "@/stores";
-import type { Program } from "@/types";
 import type { QForm } from "quasar";
-import type { ProgramCreationRequest } from "@/types";
+import type { Program, ProgramCreationRequest } from "@/types";
+import { useToast } from "@/composables/useToast";
 
 
 export default defineComponent({
   name: "ProgramFormModal",
   components: {
     BaseModal,
-    BaseInput,
-    BaseButton,
     ColorPicker,
   },
   props: {
@@ -70,11 +66,12 @@ export default defineComponent({
       required: false
     },
   },
-  emits: ["close", "save"],
+  emits: ["close"],
   setup() {
     const colorsStore = useColorsStore();
     const programsStore = useProgramsStore();
-    return { colorsStore, programsStore };
+    const toast = useToast();
+    return { colorsStore, programsStore, toast };
   },
   data() {
     return {
@@ -124,21 +121,32 @@ export default defineComponent({
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
 
-      const now = new Date().toISOString();
-
-      const programData: Program = {
-        id: this.programId || crypto.randomUUID(),
-        name: this.localFormData.name,
-        description: this.localFormData.description || undefined,
-        colorId: this.localFormData.colorId,
-        activityIds: this.localFormData.activityIds,
-        staffMemberIds: this.localFormData.staffMemberIds,
-        locationIds: this.localFormData.locationIds,
-        createdAt: this.editingProgram?.createdAt || now,
-        updatedAt: now,
-      };
-
-      this.$emit("save", programData);
+      if (this.isEditing) {
+        return this.updateProgram();
+      } else {
+        return this.createProgram();
+      }
+    },
+    async updateProgram(): Promise<void> {
+      if (!this.programId) return;
+      try {
+        await this.programsStore.updateProgram(this.programId, this.localFormData);
+        this.toast.success("Program updated successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to update program");
+      } finally {
+        this.$emit("close");
+      }
+    },
+    async createProgram(): Promise<void> {
+      try {
+        await this.programsStore.createProgram(this.localFormData);
+        this.toast.success("Program created successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to create program");
+      } finally {
+        this.$emit("close");
+      }
     },
   },
 });

@@ -28,7 +28,7 @@ export const buildCamper = (overrides: Partial<Camper> = {}): Camper => ({
   sessionId: "session-2",
   parentContact: "555-0000",
   allergies: [],
-  createdAt: new Date().toISOString(),
+  registrationDate: new Date().toISOString(),
   ...overrides,
 });
 
@@ -41,9 +41,9 @@ export const buildStaffMember = (
   email: "test.staff@camp.com",
   phone: "555-0000",
   roleId: "role-1",
-  certifications: [],
-  availability: [],
-  createdAt: new Date().toISOString(),
+  certificationIds: [],
+  photoUrl: "https://example.com/photo.jpg",
+  managerId: "manager-1",
   ...overrides,
 });
 
@@ -52,10 +52,9 @@ export const buildActivity = (overrides: Partial<Activity> = {}): Activity => ({
   name: "Test Activity",
   description: "A test activity",
   programIds: ["program-1"],
-  defaultDuration: 60,
-  requiredCertifications: [],
-  minParticipants: 5,
-  maxParticipants: 20,
+  duration: 60,
+  requiredCertificationIds: [],
+  defaultCapacity: 20,
   createdAt: new Date().toISOString(),
   ...overrides,
 });
@@ -65,24 +64,32 @@ export const buildEvent = (overrides: Partial<Event> = {}): Event => ({
   title: "Test Event",
   activityId: "activity-1",
   locationId: "location-1",
-  startDateTime: new Date().toISOString(),
-  endDateTime: new Date(Date.now() + 3600000).toISOString(),
-  assignedStaffIds: [],
-  assignedGroupIds: [],
+  startDate: new Date().toISOString(),
+  endDate: new Date(Date.now() + 3600000).toISOString(),
   capacity: 20,
-  createdAt: new Date().toISOString(),
+  groupIds: [],
+  excludeCamperIds: [],
+  excludeStaffIds: [],
+  programId: "program-1",
+  isRecurrenceParent: false,
   ...overrides,
 });
 
 export const buildGroup = (overrides: Partial<Group> = {}): Group => ({
   id: generateTestId("group"),
   name: "Test Group",
-  type: "activity",
   description: "A test group",
-  memberIds: [],
-  staffIds: [],
+  colorId: "color-1",
   sessionId: "session-2",
+  housingRoomId: "room-1",
+  camperFilters: {
+    ageMin: 12,
+    ageMax: 18,
+    gender: "male",
+    sessionId: "session-2",
+  },
   createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
   ...overrides,
 });
 
@@ -128,11 +135,7 @@ export const buildStaffWithCertifications = (
   overrides: Partial<StaffMember> = {},
 ): StaffMember =>
   buildStaffMember({
-    certifications: certificationIds.map((certificationId) => ({
-      certificationId,
-      obtainedDate: "2024-01-01",
-      expirationDate: "2026-01-01",
-    })),
+    certificationIds,
     ...overrides,
   });
 
@@ -140,15 +143,11 @@ export const buildStaffWithCertifications = (
  * Build a recurring event
  */
 export const buildRecurringEvent = (
-  frequency: "daily" | "weekly" | "monthly",
   overrides: Partial<Event> = {},
 ): Event =>
   buildEvent({
-    recurrence: {
-      frequency,
-      interval: 1,
-      endDate: "2025-12-31",
-    },
+    recurrenceId: "recurrence-1",
+    isRecurrenceParent: true,
     ...overrides,
   });
 
@@ -156,18 +155,16 @@ export const buildRecurringEvent = (
  * Build a group with housing
  */
 export const buildGroupWithHousing = (
-  memberCount: number,
+  camperCount: number,
   overrides: Partial<Group> = {},
 ): Group => {
-  const memberIds = Array.from({ length: memberCount }, (_, i) =>
+  const camperIds = Array.from({ length: camperCount }, (_, i) =>
     generateTestId(`camper-${i}`),
   );
 
   return buildGroup({
-    memberIds,
+    camperIds,
     housingRoomId: "room-1",
-    startDate: "2025-10-20",
-    endDate: "2025-10-25",
     ...overrides,
   });
 };

@@ -432,8 +432,6 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
@@ -478,8 +476,6 @@ export default defineComponent({
   name: "GroupFormModal",
   components: {
     BaseModal,
-    BaseInput,
-    BaseButton,
     Autocomplete,
     ColorPicker,
     SelectionList,

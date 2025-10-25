@@ -101,7 +101,6 @@
       </template>
     </DataTable>
 
-    <!-- Room Detail Modal -->
     <HousingRoomDetailModal
       v-if="!!selectedRoomId"
       :room="selectedRoom"
@@ -112,16 +111,11 @@
       @view-group="viewGroup"
     />
 
-    <!-- Add/Edit Room Modal -->
     <HousingRoomFormModal
       v-if="showModal"
-      :is-editing="!!editingRoomId"
-      :form-data="formData"
+      :room-id="editingRoomId || undefined"
       @close="closeModal"
-      @save="saveRoom"
     />
-
-    <!-- Confirm Delete Modal -->
     <ConfirmModal
       v-if="showConfirmModal"
       :title="confirmModalTitle"
@@ -142,7 +136,7 @@ import {
   useHousingRoomsStore,
   useSessionsStore,
 } from "@/stores";
-import type { HousingRoom, Group } from "@/types";
+import type { Group, HousingRoom } from "@/types";
 import HousingRoomCard from "@/components/cards/HousingRoomCard.vue";
 import FilterBar from "@/components/FilterBar.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
@@ -191,11 +185,6 @@ export default defineComponent({
       viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
-      formData: {
-        name: "",
-        beds: 4,
-        areaId: undefined as string | undefined,
-      },
       searchQuery: "",
       roomColumns: [
         { key: "name", label: "Room Name", width: "250px" },
@@ -216,7 +205,6 @@ export default defineComponent({
     filteredRooms(): HousingRoom[] {
       let rooms: HousingRoom[] = this.housingRoomsStore.housingRooms;
 
-      // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         rooms = rooms.filter((room: HousingRoom) => {
@@ -236,7 +224,7 @@ export default defineComponent({
       if (!this.selectedRoomId) return [];
       return this.getGroupsForRoom(this.selectedRoomId).map((g: Group) => {
         const session = this.sessionsStore.sessions.find(
-          (s) => s.id === g.sessionId,
+          (s) => s.id === g.sessionId
         );
         return {
           id: g.id,
@@ -279,42 +267,15 @@ export default defineComponent({
       if (!this.selectedRoom) return;
 
       this.editingRoomId = this.selectedRoom.id;
-      this.formData = {
-        name: this.selectedRoom.name,
-        beds: this.selectedRoom.beds,
-        areaId: this.selectedRoom.areaId,
-      };
 
       this.selectedRoomId = null;
       this.showModal = true;
-    },
-    async saveRoom(formData: typeof this.formData): Promise<void> {
-      const roomData: HousingRoom = {
-        id: this.editingRoomId || `housing-${Date.now()}`,
-        name: formData.name,
-        beds: formData.beds,
-        areaId: formData.areaId,
-      };
-
-      try {
-        if (this.editingRoomId) {
-          await this.housingRoomsStore.updateHousingRoom(roomData);
-          this.toast.success("Room updated successfully");
-        } else {
-          await this.housingRoomsStore.addHousingRoom(roomData);
-          this.toast.success("Room added successfully");
-        }
-        this.closeModal();
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to save room");
-      }
     },
     deleteRoomConfirm(): void {
       if (!this.selectedRoomId) return;
 
       const groupCount = this.getGroupsForRoom(this.selectedRoomId).length;
 
-      // Setup the confirm modal
       this.confirmModalTitle = "Delete Room";
       this.confirmModalMessage = "Are you sure you want to delete this room?";
       this.confirmModalDetails =
@@ -350,11 +311,6 @@ export default defineComponent({
     closeModal(): void {
       this.showModal = false;
       this.editingRoomId = null;
-      this.formData = {
-        name: "",
-        beds: 4,
-        areaId: undefined,
-      };
     },
   },
 });

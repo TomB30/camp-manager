@@ -37,7 +37,6 @@ import {
   useActivitiesStore,
 } from "@/stores";
 import BaseModal from "@/components/BaseModal.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import ActivityForm, {
   type ActivityFormData,
 } from "@/components/ActivityForm.vue";
@@ -48,7 +47,6 @@ export default defineComponent({
   name: "ActivityFormModal",
   components: {
     BaseModal,
-    BaseButton,
     ActivityForm,
   },
   props: {
@@ -99,8 +97,6 @@ export default defineComponent({
   },
   created() {
     if (this.activityId) {
-      console.log("activityId ====>", this.activityId);
-      console.log("activitiesStore.activities ====>", this.activitiesStore.activities);
       const activity = this.activitiesStore.getActivityById(this.activityId);
       if (!activity) return;
       this.editingActivity = activity;
@@ -125,9 +121,6 @@ export default defineComponent({
         value: room.id,
         label: `${room.name} (${room.type})`,
       }));
-    },
-    presetDurations(): number[] {
-      return [30, 60, 90, 120, 180, 240, 480];
     },
   },
   methods: {

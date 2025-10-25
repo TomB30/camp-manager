@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { createWrapper } from "@/tests/utils";
 import CamperCard from "@/components/cards/CamperCard.vue";
 import { campersFixture } from "@/tests/fixtures";
@@ -149,7 +149,6 @@ describe("CamperCard", () => {
         sessionId: "session-1",
         parentContact: "555-0000",
         allergies: [],
-        createdAt: new Date().toISOString(),
       };
 
       const wrapper = createWrapper(CamperCard, {

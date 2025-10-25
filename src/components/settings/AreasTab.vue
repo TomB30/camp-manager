@@ -107,7 +107,6 @@
       </template>
     </DataTable>
 
-    <!-- Area Detail Modal -->
     <AreaDetailModal
       v-if="!!selectedAreaId"
       :area="selectedArea"
@@ -116,16 +115,12 @@
       @delete="deleteAreaConfirm"
     />
 
-    <!-- Add/Edit Area Modal -->
     <AreaFormModal
       v-if="showModal"
-      :is-editing="!!editingAreaId"
-      :form-data="formData"
+      :area-id="editingAreaId || undefined"
       @close="closeModal"
-      @save="saveArea"
     />
 
-    <!-- Confirm Delete Modal -->
     <ConfirmModal
       v-if="showConfirmModal"
       title="Delete Area"
@@ -140,20 +135,24 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+// Stores
 import { useAreasStore } from "@/stores";
+// Types
 import type { Area } from "@/types";
+import type { IconName } from "@/components/Icon.vue";
+// Components
 import AreaCard from "@/components/cards/AreaCard.vue";
 import FilterBar, { type Filter } from "@/components/FilterBar.vue";
-import ConfirmModal from "@/components/ConfirmModal.vue";
-import DataTable from "@/components/DataTable.vue";
-import ViewToggle from "@/components/ViewToggle.vue";
 import AreaDetailModal from "@/components/modals/AreaDetailModal.vue";
 import AreaFormModal from "@/components/modals/AreaFormModal.vue";
+import TabHeader from "@/components/settings/TabHeader.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import Icon from "@/components/Icon.vue";
-import TabHeader from "@/components/settings/TabHeader.vue";
+import DataTable from "@/components/DataTable.vue";
+import ViewToggle from "@/components/ViewToggle.vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
+// Composables
 import { useToast } from "@/composables/useToast";
-import type { IconName } from "@/components/Icon.vue";
 
 export default defineComponent({
   name: "AreasTab",
@@ -185,9 +184,7 @@ export default defineComponent({
       viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
-      formData: this.getEmptyFormData(),
       confirmAction: null as (() => void) | null,
-
       areaColumns: [
         { key: "name", label: "Area Name", sortable: true },
         { key: "type", label: "Type", sortable: true },
@@ -215,7 +212,6 @@ export default defineComponent({
         },
       ];
     },
-
     filteredAreas(): Area[] {
       let filtered = this.areasStore.areas;
 
@@ -225,7 +221,7 @@ export default defineComponent({
         filtered = filtered.filter(
           (area) =>
             area.name.toLowerCase().includes(query) ||
-            area.description?.toLowerCase().includes(query),
+            area.description?.toLowerCase().includes(query)
         );
       }
 
@@ -240,77 +236,25 @@ export default defineComponent({
 
       return filtered.sort((a, b) => a.name.localeCompare(b.name));
     },
-
     selectedArea(): Area | null {
       if (!this.selectedAreaId) return null;
       return this.areasStore.getAreaById(this.selectedAreaId) || null;
     },
   },
   methods: {
-    getEmptyFormData() {
-      return {
-        name: "",
-        description: "",
-        type: null as Area["type"] | null,
-        capacity: undefined,
-        equipment: [] as string[],
-        notes: "",
-      };
-    },
-
     selectArea(id: string) {
       this.selectedAreaId = id;
     },
-
     editArea(area: Area) {
       this.editingAreaId = area.id;
-      this.formData = {
-        name: area.name,
-        description: area.description || "",
-        type: area.type,
-        capacity: area.capacity,
-        equipment: area.equipment || [],
-        notes: area.notes || "",
-      };
       this.selectedAreaId = null;
       this.showModal = true;
     },
-
-    async saveArea(data: any) {
-      try {
-        if (this.editingAreaId) {
-          // Update existing
-          await this.areasStore.updateArea({
-            id: this.editingAreaId,
-            ...data,
-            createdAt:
-              this.areasStore.getAreaById(this.editingAreaId)?.createdAt ||
-              new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          });
-          this.toast.success("Area updated successfully");
-        } else {
-          // Create new
-          await this.areasStore.addArea({
-            id: crypto.randomUUID(),
-            ...data,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          });
-          this.toast.success("Area added successfully");
-        }
-        this.closeModal();
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to save area");
-      }
-    },
-
     deleteAreaConfirm(id: string) {
       this.confirmAction = () => this.deleteArea(id);
       this.showConfirmModal = true;
       this.selectedAreaId = null;
     },
-
     async deleteArea(id: string) {
       try {
         await this.areasStore.deleteArea(id);
@@ -319,18 +263,14 @@ export default defineComponent({
         this.toast.error(error.message || "Failed to delete area");
       }
     },
-
     closeModal() {
       this.showModal = false;
       this.editingAreaId = null;
-      this.formData = this.getEmptyFormData();
     },
-
     clearFilters() {
       this.searchQuery = "";
       this.filterType = "";
     },
-
     handleConfirmAction() {
       if (this.confirmAction) {
         this.confirmAction();
@@ -338,12 +278,10 @@ export default defineComponent({
       }
       this.showConfirmModal = false;
     },
-
     handleCancelConfirm() {
       this.confirmAction = null;
       this.showConfirmModal = false;
     },
-
     formatAreaType(type: Area["type"]): string {
       const typeMap: Record<NonNullable<Area["type"]>, string> = {
         indoor: "Indoor",
@@ -355,7 +293,6 @@ export default defineComponent({
       };
       return typeMap[type as NonNullable<Area["type"]>] || "";
     },
-
     getAreaTypeColor(type: Area["type"]): string {
       const colorMap: Record<NonNullable<Area["type"]>, string> = {
         indoor: "#3b82f6",
@@ -367,7 +304,6 @@ export default defineComponent({
       };
       return colorMap[type as NonNullable<Area["type"]>] || "#6b7280";
     },
-
     AreaTypeIcon(type: Area["type"]): IconName {
       const iconMap: Record<NonNullable<Area["type"]>, IconName> = {
         indoor: "Home",

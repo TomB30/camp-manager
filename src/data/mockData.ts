@@ -763,6 +763,7 @@ groups.forEach((group, groupIndex) => {
       registrationDate: octoberDate(1, 10, camperIndex),
       sessionId: group.sessionId,
       housingRoomId: group.housingRoomId,
+      familyGroupId: group.id,
     };
 
     campers.push(camper);

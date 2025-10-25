@@ -1,81 +1,41 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createWrapper, setupTestPinia } from "@/tests/utils";
 import HousingRoomFormModal from "@/components/modals/HousingRoomFormModal.vue";
-import { housingRoomsFixture, areasFixture } from "@/tests/fixtures";
-import { useAreasStore } from "@/stores";
+import { housingRoomsFixture } from "@/tests/fixtures";
+import { useHousingRoomsStore } from "@/stores";
 
 describe("HousingRoomFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
 
   beforeEach(() => {
     pinia = setupTestPinia();
-    
-    const areasStore = useAreasStore();
-    areasStore.areas = areasFixture;
+
+    const housingRoomsStore = useHousingRoomsStore();
+    housingRoomsStore.housingRooms = housingRoomsFixture;
   });
 
   describe("Create Mode", () => {
     it("renders with create title", () => {
-      const wrapper = createWrapper(HousingRoomFormModal, {
-        props: {
-          isEditing: false,
-          formData: {
-            name: "",
-            beds: 0,
-            areaId: undefined,
-          },
-        },
-        pinia,
-      });
-
-      expect(wrapper.text()).toContain("Add New Room");
+      const wrapper = createWrapper(HousingRoomFormModal);
+      expect(wrapper.text()).toContain("Create Room");
     });
 
     it("renders room name input", () => {
-      const wrapper = createWrapper(HousingRoomFormModal, {
-        props: {
-          isEditing: false,
-          formData: {
-            name: "",
-            beds: 0,
-            areaId: undefined,
-          },
-        },
-        pinia,
-      });
-
-      expect(wrapper.find("input[placeholder='Enter room name']").exists()).toBe(true);
+      const wrapper = createWrapper(HousingRoomFormModal);
+      expect(
+        wrapper.find("input[placeholder='Enter room name']").exists()
+      ).toBe(true);
     });
 
     it("renders beds input", () => {
-      const wrapper = createWrapper(HousingRoomFormModal, {
-        props: {
-          isEditing: false,
-          formData: {
-            name: "",
-            beds: 0,
-            areaId: undefined,
-          },
-        },
-        pinia,
-      });
-
-      expect(wrapper.find("input[placeholder='Enter number of beds']").exists()).toBe(true);
+      const wrapper = createWrapper(HousingRoomFormModal);
+      expect(
+        wrapper.find("input[placeholder='Enter number of beds']").exists()
+      ).toBe(true);
     });
 
     it("contains form element", () => {
-      const wrapper = createWrapper(HousingRoomFormModal, {
-        props: {
-          isEditing: false,
-          formData: {
-            name: "",
-            beds: 0,
-            areaId: undefined,
-          },
-        },
-        pinia,
-      });
-
+      const wrapper = createWrapper(HousingRoomFormModal);
       expect(wrapper.find("form").exists()).toBe(true);
     });
   });
@@ -84,71 +44,35 @@ describe("HousingRoomFormModal", () => {
     it("renders with edit title", () => {
       const room = housingRoomsFixture[0];
       const wrapper = createWrapper(HousingRoomFormModal, {
-        props: {
-          isEditing: true,
-          formData: {
-            name: room.name,
-            beds: room.beds,
-            areaId: room.areaId,
-          },
-        },
+        props: { roomId: room.id },
         pinia,
       });
 
-      expect(wrapper.text()).toContain("Edit Room");
+      expect(wrapper.text()).toContain("Update Room");
     });
 
     it("populates form with room data", () => {
       const room = housingRoomsFixture[0];
       const wrapper = createWrapper(HousingRoomFormModal, {
-        props: {
-          isEditing: true,
-          formData: {
-            name: room.name,
-            beds: room.beds,
-            areaId: room.areaId,
-          },
-        },
+        props: { roomId: room.id },
         pinia,
       });
 
       const vm = wrapper.vm as any;
-      expect(vm.localFormData.name).toBe(room.name);
-      expect(vm.localFormData.beds).toBe(room.beds);
+      expect(vm.formModel.name).toBe(room.name);
+      expect(vm.formModel.beds).toBe(room.beds);
     });
   });
 
   describe("Form Validation", () => {
     it("requires room name", () => {
-      const wrapper = createWrapper(HousingRoomFormModal, {
-        props: {
-          isEditing: false,
-          formData: {
-            name: "",
-            beds: 0,
-            areaId: undefined,
-          },
-        },
-        pinia,
-      });
-
+      const wrapper = createWrapper(HousingRoomFormModal);
       const input = wrapper.find("input[placeholder='Enter room name']");
       expect(input.exists()).toBe(true);
     });
 
     it("requires beds to be at least 1", () => {
-      const wrapper = createWrapper(HousingRoomFormModal, {
-        props: {
-          isEditing: false,
-          formData: {
-            name: "",
-            beds: 0,
-            areaId: undefined,
-          },
-        },
-        pinia,
-      });
-
+      const wrapper = createWrapper(HousingRoomFormModal);
       const input = wrapper.find("input[placeholder='Enter number of beds']");
       expect(input.exists()).toBe(true);
     });
@@ -156,21 +80,9 @@ describe("HousingRoomFormModal", () => {
 
   describe("Close Behavior", () => {
     it("emits close event", () => {
-      const wrapper = createWrapper(HousingRoomFormModal, {
-        props: {
-          isEditing: false,
-          formData: {
-            name: "",
-            beds: 0,
-            areaId: undefined,
-          },
-        },
-        pinia,
-      });
-
+      const wrapper = createWrapper(HousingRoomFormModal);
       wrapper.vm.$emit("close");
       expect(wrapper.emitted("close")).toBeTruthy();
     });
   });
 });
-

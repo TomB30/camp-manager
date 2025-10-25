@@ -23,7 +23,7 @@ describe("SessionFormModal", () => {
         pinia,
       });
 
-      expect(wrapper.text()).toContain("Add New Session");
+      expect(wrapper.text()).toContain("Create Session");
     });
 
     it("renders session name input", () => {
@@ -71,7 +71,7 @@ describe("SessionFormModal", () => {
         pinia,
       });
 
-      expect(wrapper.text()).toContain("Edit Session");
+      expect(wrapper.text()).toContain("Update Session");
     });
 
     it("populates form with session data", () => {

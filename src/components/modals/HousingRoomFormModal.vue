@@ -1,6 +1,6 @@
 <template>
   <BaseModal
-    :title="isEditing ? 'Edit Room' : 'Add New Room'"
+    :title="isEditing ? 'Edit Room' : 'Create Room'"
     @close="$emit('close')"
   >
     <template #body>
@@ -8,7 +8,7 @@
         <div class="form-group">
           <label class="form-label">Room Name</label>
           <BaseInput
-            v-model="localFormData.name"
+            v-model="formModel.name"
             placeholder="Enter room name"
             :rules="[(val: string) => !!val || 'Enter room name']"
           />
@@ -30,7 +30,7 @@
         <div class="form-group">
           <label class="form-label">Area (optional)</label>
           <Autocomplete
-            v-model="localFormData.areaId"
+            v-model="formModel.areaId"
             :options="areaOptions"
             placeholder="Select an area..."
             :required="false"
@@ -46,7 +46,7 @@
         <BaseButton
           color="primary"
           @click="handleSave"
-          :label="isEditing ? 'Update Room' : 'Add Room'"
+          :label="isEditing ? 'Update Room' : 'Create Room'"
         />
       </div>
     </template>
@@ -56,50 +56,58 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import { useAreasStore } from "@/stores";
+import { useAreasStore, useHousingRoomsStore } from "@/stores";
 import type { QForm } from "quasar";
-
-interface RoomFormData {
-  name: string;
-  beds: number;
-  areaId?: string;
-}
+import { useToast } from "@/composables/useToast";
+import type { HousingRoomCreationRequest } from "@/types";
 
 export default defineComponent({
   name: "HousingRoomFormModal",
   components: {
     BaseModal,
-    BaseInput,
-    BaseButton,
     Autocomplete,
   },
   props: {
-    isEditing: {
-      type: Boolean,
-      default: false,
-    },
-    formData: {
-      type: Object as PropType<RoomFormData>,
-      required: true,
+    roomId: {
+      type: String as PropType<string>,
+      required: false,
     },
   },
-  emits: ["close", "save"],
+  emits: ["close"],
   setup() {
     const areasStore = useAreasStore();
-    return { areasStore };
+    const housingRoomsStore = useHousingRoomsStore();
+    const toast = useToast();
+    return { areasStore, housingRoomsStore, toast };
   },
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData)),
+      formModel: {
+        name: "",
+        beds: 0,
+        areaId: undefined,
+      } as HousingRoomCreationRequest,
       formRef: null as any,
+      loading: false as boolean,
+    };
+  },
+  created() {
+    if (!this.roomId) return;
+    const room = this.housingRoomsStore.getHousingRoomById(this.roomId);
+    if (!room) return;
+    this.formModel = {
+      name: room.name,
+      beds: room.beds,
+      areaId: room.areaId,
     };
   },
   computed: {
+    isEditing(): boolean {
+      return !!this.roomId;
+    },
     areaOptions(): AutocompleteOption[] {
       return this.areasStore.areas.map((area) => ({
         label: area.name,
@@ -108,28 +116,48 @@ export default defineComponent({
     },
     bedsModel: {
       get(): string {
-        return this.localFormData.beds?.toString() || "";
+        return this.formModel.beds?.toString() || "";
       },
       set(value: string) {
         const num = parseInt(value);
-        this.localFormData.beds = isNaN(num) ? 0 : num;
+        this.formModel.beds = isNaN(num) ? 0 : num;
       },
-    },
-  },
-  watch: {
-    formData: {
-      handler(newVal) {
-        this.localFormData = JSON.parse(JSON.stringify(newVal));
-      },
-      deep: true,
     },
   },
   methods: {
-    async handleSave() {
+    async handleSave(): Promise<void> {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
 
-      this.$emit("save", this.localFormData);
+      if (this.isEditing) {
+        return this.updateHousingRoom();
+      }
+      return this.createHousingRoom();
+    },
+    async updateHousingRoom(): Promise<void> {
+      if (!this.roomId) return;
+      try {
+        this.loading = true;
+        await this.housingRoomsStore.updateHousingRoom(this.roomId, this.formModel);
+        this.toast.success("Room updated successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to update room");
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
+    },
+    async createHousingRoom(): Promise<void> {
+      try {
+        this.loading = true;
+        await this.housingRoomsStore.createHousingRoom(this.formModel);
+        this.toast.success("Room created successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to create room");
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
     },
   },
 });

@@ -89,8 +89,6 @@
 import { defineComponent, PropType } from "vue";
 import Autocomplete from "./Autocomplete.vue";
 import Icon from "./Icon.vue";
-import BaseInput from "./common/BaseInput.vue";
-import BaseButton from "./common/BaseButton.vue";
 
 export interface FilterOption {
   label: string;
@@ -109,8 +107,6 @@ export default defineComponent({
   components: {
     Autocomplete,
     Icon,
-    BaseInput,
-    BaseButton,
   },
   props: {
     showSearch: {

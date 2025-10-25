@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Area } from "@/types";
+import type { Area, AreaCreationRequest, AreaUpdateRequest } from "@/types";
 import { areasService } from "@/services";
 
 export const useAreasStore = defineStore("areas", {
@@ -26,20 +26,21 @@ export const useAreasStore = defineStore("areas", {
     async loadAreas(): Promise<void> {
       this.loading = true;
       try {
-        this.areas = await areasService.getAreas();
+        this.areas = await areasService.listAreas();
       } finally {
         this.loading = false;
       }
     },
 
-    async addArea(area: Area): Promise<void> {
-      await areasService.saveArea(area);
+    async createArea(areaRequest: AreaCreationRequest): Promise<Area> {
+      const area = await areasService.createArea(areaRequest);
       this.areas.push(area);
+      return area;
     },
 
-    async updateArea(area: Area): Promise<void> {
-      await areasService.saveArea(area);
-      const index = this.areas.findIndex((a) => a.id === area.id);
+    async updateArea(id: string, areaUpdate: AreaUpdateRequest): Promise<void> {
+      const area = await areasService.updateArea(id, areaUpdate);
+      const index = this.areas.findIndex((a) => a.id === id);
       if (index >= 0) {
         this.areas[index] = area;
       }

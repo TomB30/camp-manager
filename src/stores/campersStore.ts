@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Camper } from "@/types";
+import type { Camper, CamperCreationRequest, CamperUpdateRequest } from "@/types";
 import { campersService } from "@/services";
 
 export const useCampersStore = defineStore("campers", {
@@ -32,28 +32,26 @@ export const useCampersStore = defineStore("campers", {
     async loadCampers(): Promise<void> {
       this.loading = true;
       try {
-        this.campers = await campersService.getCampers();
+        this.campers = await campersService.listCampers();
       } finally {
         this.loading = false;
       }
     },
-
-    async addCamper(camper: Camper): Promise<void> {
-      await campersService.saveCamper(camper);
+    async createCamper(camperRequest: CamperCreationRequest): Promise<Camper> {
+      const camper = await campersService.createCamper(camperRequest);
       this.campers.push(camper);
+      return camper;
     },
-
-    async updateCamper(camper: Camper): Promise<void> {
-      await campersService.saveCamper(camper);
-      const index = this.campers.findIndex((c) => c.id === camper.id);
+    async updateCamper(camperId: string, camperUpdate: CamperUpdateRequest): Promise<void> {
+      const camper = await campersService.updateCamper(camperId, camperUpdate);
+      const index = this.campers.findIndex((c) => c.id === camperId);
       if (index >= 0) {
         this.campers[index] = camper;
       }
     },
-
-    async deleteCamper(id: string): Promise<void> {
-      await campersService.deleteCamper(id);
-      this.campers = this.campers.filter((c) => c.id !== id);
+    async deleteCamper(camperId: string): Promise<void> {
+      await campersService.deleteCamper(camperId);
+      this.campers = this.campers.filter((c) => c.id !== camperId);
     },
   },
 });

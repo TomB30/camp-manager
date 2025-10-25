@@ -8,7 +8,7 @@
         <div class="form-group">
           <label class="form-label">Area Name</label>
           <BaseInput
-            v-model="localFormData.name"
+            v-model="formData.name"
             placeholder="Enter area name"
             :rules="[(val: string) => !!val || 'Enter area name']"
           />
@@ -28,7 +28,7 @@
           <div class="form-group">
             <label class="form-label">Type</label>
             <Autocomplete
-              v-model="localFormData.type"
+              v-model="formData.type"
               :options="areaTypeOptions"
               placeholder="Select area type..."
             />
@@ -47,7 +47,7 @@
         <div class="form-group">
           <label class="form-label">Equipment (comma-separated)</label>
           <BaseInput
-            v-model="equipmentInput"
+            v-model="equipmentModel"
             placeholder="e.g., Tables, Chairs, Sound System"
           />
         </div>
@@ -69,7 +69,7 @@
         <BaseButton
           color="primary"
           @click="handleSave"
-          :label="isEditing ? 'Update Area' : 'Add Area'"
+          :label="isEditing ? 'Update Area' : 'Create Area'"
         />
       </div>
     </template>
@@ -80,45 +80,46 @@
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
 import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import type { Area } from "@/types";
+import type { Area, AreaCreationRequest } from "@/types";
 import type { QForm } from "quasar";
-
-interface AreaFormData {
-  name: string;
-  description: string;
-  type: Area["type"];
-  capacity?: number;
-  equipment: string[];
-  notes: string;
-}
+import { useAreasStore } from "@/stores";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
   name: "AreaFormModal",
+  setup() {
+    const toast = useToast();
+    return {
+      toast,
+    };
+  },
   components: {
     BaseModal,
     BaseInput,
-    BaseButton,
     Autocomplete,
   },
   props: {
-    isEditing: {
-      type: Boolean,
-      default: false,
-    },
-    formData: {
-      type: Object as PropType<AreaFormData>,
-      required: true,
+    areaId: {
+      type: String as PropType<string>,
+      required: false,
     },
   },
-  emits: ["close", "save"],
+  emits: ["close"],
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData)),
-      equipmentInput: this.formData.equipment.join(", "),
+      areasStore: useAreasStore(),
+      loading: false,
+      formData: {
+        name: "",
+        description: "",
+        type: undefined,
+        capacity: 0,
+        equipment: [],
+        notes: "",
+      } as AreaCreationRequest,
       areaTypeOptions: [
         { label: "Indoor", value: "indoor" },
         { label: "Outdoor", value: "outdoor" },
@@ -130,56 +131,93 @@ export default defineComponent({
       formRef: null as any,
     };
   },
+  created() {
+    if (!this.areaId) return;
+
+    const area: Area | undefined = this.areasStore.getAreaById(this.areaId);
+    if (!area) return;
+
+    this.formData = {
+      name: area.name,
+      description: area.description,
+      type: area.type,
+      capacity: area.capacity,
+      equipment: area.equipment,
+      notes: area.notes,
+    };
+  },
   computed: {
+    isEditing(): boolean {
+      return !!this.areaId;
+    },
     descriptionModel: {
       get(): string {
-        return this.localFormData.description || "";
+        return this.formData.description || "";
       },
       set(value: string) {
-        this.localFormData.description = value || "";
+        this.formData.description = value || "";
+      },
+    },
+    equipmentModel: {
+      get(): string {
+        return this.formData.equipment?.join(", ") || "";
+      },
+      set(value: string) {
+        this.formData.equipment = value.split(",").map((e) => e.trim());
       },
     },
     capacityModel: {
       get(): string {
-        return this.localFormData.capacity?.toString() || "";
+        return this.formData.capacity?.toString() || "";
       },
       set(value: string) {
         const num = parseInt(value);
-        this.localFormData.capacity = isNaN(num) ? undefined : num;
+        this.formData.capacity = isNaN(num) ? undefined : num;
       },
     },
     notesModel: {
       get(): string {
-        return this.localFormData.notes || "";
+        return this.formData.notes || "";
       },
       set(value: string) {
-        this.localFormData.notes = value || "";
+        this.formData.notes = value || "";
       },
-    },
-  },
-  watch: {
-    formData: {
-      handler(newVal) {
-        this.localFormData = JSON.parse(JSON.stringify(newVal));
-        this.equipmentInput = newVal.equipment.join(", ");
-      },
-      deep: true,
     },
   },
   methods: {
-    async handleSave() {
+    async handleSave(): Promise<void> {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
 
-      const equipment = this.equipmentInput
-        .split(",")
-        .map((e) => e.trim())
-        .filter((e) => e.length > 0);
-
-      this.$emit("save", {
-        ...this.localFormData,
-        equipment,
-      });
+      if (this.isEditing) {
+        return this.handleUpdate();
+      }
+      return this.handleCreate();
+    },
+    async handleUpdate(): Promise<void> {
+      try {
+        if (!this.areaId) return;
+        this.loading = true;
+        await this.areasStore.updateArea(this.areaId, this.formData);
+        this.toast.success("Area updated successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to update area");
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
+    },
+    async handleCreate(): Promise<void> {
+      try {
+        this.loading = true;
+        await this.areasStore.createArea(this.formData);
+        this.toast.success("Area created successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to create area");
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
     },
   },
 });

@@ -59,6 +59,7 @@
         <BaseButton
           color="primary"
           @click="handleSave"
+          :loading="loading"
           :label="isEditing ? 'Update Label' : 'Add Label'"
         />
       </div>
@@ -69,47 +70,56 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import { useColorsStore } from "@/stores";
 import type { Color } from "@/types";
-import type { QForm } from "quasar";
-
-interface LabelFormData {
-  name: string;
-  description?: string;
-  colorId?: string;
-}
+import { type QForm } from "quasar";
+import { LabelCreationRequest } from "@/services";
+import { useLabelsStore } from "@/stores";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
   name: "LabelFormModal",
   components: {
     BaseModal,
-    BaseInput,
-    BaseButton,
   },
   props: {
-    isEditing: {
-      type: Boolean,
-      default: false,
-    },
-    formData: {
-      type: Object as PropType<LabelFormData>,
-      required: true,
+    labelId: {
+      type: String as PropType<string>,
+      required: false,
     },
   },
   emits: ["close", "save"],
   setup() {
     const colorsStore = useColorsStore();
-    return { colorsStore };
+    const labelsStore = useLabelsStore();
+    const toast = useToast();
+    return { colorsStore, labelsStore, toast };
   },
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData)),
+      localFormData: {
+        name: "",
+        description: "",
+        colorId: "",
+      } as LabelCreationRequest,
       formRef: null as any,
+      loading: false,
+    };
+  },
+  created() {
+    if (!this.labelId) return;
+    const label = this.labelsStore.getLabelById(this.labelId);
+    if (!label) return;
+    this.localFormData = {
+      name: label.name,
+      description: label.description || "",
+      colorId: label.colorId || "",
     };
   },
   computed: {
+    isEditing(): boolean {
+      return !!this.labelId;
+    },
     descriptionModel: {
       get(): string {
         return this.localFormData.description || "";
@@ -137,33 +147,47 @@ export default defineComponent({
       return undefined;
     },
   },
-  watch: {
-    formData: {
-      handler(newVal) {
-        this.localFormData = JSON.parse(JSON.stringify(newVal));
-      },
-      deep: true,
-    },
-  },
   methods: {
     async handleSave() {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
 
-      this.$emit("save", this.localFormData);
+      if (this.labelId) {
+        await this.updateLabel();
+      } else {
+        await this.createLabel();
+      }
     },
-  },
-});
+    async updateLabel(): Promise<void> {
+      if (!this.labelId) return;
+      try {
+        this.loading = true;
+        await this.labelsStore.updateLabel(this.labelId, this.localFormData);
+        this.toast.success("Label updated successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to update label");
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
+    },
+    async createLabel() {
+      try {
+        this.loading = true;
+        await this.labelsStore.addLabel(this.localFormData);
+        this.toast.success("Label created successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to create label");
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
+    }
+  }
+})
 </script>
 
-<style scoped>
-.form-hint {
-  display: block;
-  margin-top: 0.25rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
+<style scoped lang="scss">
 .color-preview-large {
   height: 100px;
   border-radius: var(--radius);

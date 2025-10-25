@@ -25,7 +25,7 @@
         <div class="form-group">
           <label class="form-label">Title</label>
           <BaseInput
-            v-model="localFormData.title"
+            v-model="formData.title"
             placeholder="Enter event title"
             :rules="[(val: string) => !!val || 'Enter event title']"
           />
@@ -34,7 +34,7 @@
         <div class="form-group">
           <label class="form-label">Event Date</label>
           <BaseInput
-            v-model="localFormData.eventDate"
+            v-model="eventDate"
             type="date"
             :rules="[(val: string) => !!val || 'Enter event date']"
           />
@@ -44,7 +44,7 @@
           <div class="form-group">
             <label class="form-label">Start Time</label>
             <BaseInput
-              v-model="localFormData.startDate"
+              v-model="startTime"
               type="time"
               :rules="[(val: string) => !!val || 'Enter start time']"
             />
@@ -53,7 +53,7 @@
           <div class="form-group">
             <label class="form-label">End Time</label>
             <BaseInput
-              v-model="localFormData.endDate"
+              v-model="endTime"
               type="time"
               :rules="[(val: string) => !!val || 'Enter end time']"
             />
@@ -155,7 +155,7 @@
                     type="date"
                     class="date-input"
                     :disabled="recurrenceData.endType !== 'on'"
-                    :min="localFormData.eventDate"
+                    :min="defaultEventDate.toISOString()"
                   />
                 </label>
 
@@ -193,7 +193,7 @@
         <div class="form-group">
           <label class="form-label">Location</label>
           <Autocomplete
-            v-model="localFormData.locationId"
+            v-model="formData.locationId"
             :options="locationOptions"
             placeholder="Select a location"
             :required="true"
@@ -216,7 +216,7 @@
         <div class="form-group">
           <label class="form-label">Program (Optional)</label>
           <Autocomplete
-            v-model="localFormData.programId"
+            v-model="formData.programId"
             :options="programOptions"
             placeholder="Select a program..."
             @update:modelValue="onProgramSelected"
@@ -229,7 +229,7 @@
 
         <div class="form-group">
           <label class="form-label">Color</label>
-          <ColorPicker v-model="localFormData.colorId" />
+          <ColorPicker v-model="formData.colorId" />
         </div>
 
         <div class="form-group">
@@ -258,7 +258,7 @@
             Staff will be automatically included from family groups.
           </div>
           <SelectionList
-            v-model="localFormData.groupIds"
+            v-model="groupIds"
             :items="allGroups"
             item-type="group"
             placeholder="Select groups..."
@@ -272,7 +272,10 @@
         </div>
 
         <!-- Exclude Individual Campers -->
-        <div v-if="localFormData.groupIds.length > 0" class="form-group">
+        <div
+          v-if="formData.groupIds && formData.groupIds.length > 0"
+          class="form-group"
+        >
           <label class="form-label"
             >Exclude Individual Campers (Optional)</label
           >
@@ -280,7 +283,7 @@
             Exclude specific campers from the assigned groups.
           </div>
           <SelectionList
-            v-model="localFormData.excludeCamperIds"
+            v-model="excludeCamperIds"
             :items="campersInAssignedGroups"
             item-type="camper"
             placeholder="Select campers to exclude..."
@@ -294,13 +297,16 @@
         </div>
 
         <!-- Exclude Individual Staff -->
-        <div v-if="localFormData.groupIds.length > 0" class="form-group">
+        <div
+          v-if="formData.groupIds && formData.groupIds.length > 0"
+          class="form-group"
+        >
           <label class="form-label">Exclude Individual Staff (Optional)</label>
           <div class="help-text">
             Exclude specific staff members from the assigned groups.
           </div>
           <SelectionList
-            v-model="localFormData.excludeStaffIds"
+            v-model="excludeStaffIds"
             :items="staffInAssignedGroups"
             item-type="staff member"
             placeholder="Select staff to exclude..."
@@ -344,86 +350,49 @@ import {
 import { conflictDetector } from "@/services/conflicts";
 import { useToast } from "@/composables/useToast";
 import BaseModal from "@/components/BaseModal.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
 import ColorPicker from "@/components/ColorPicker.vue";
 import SelectionList from "@/components/SelectionList.vue";
 import NumberInput from "@/components/NumberInput.vue";
-import type { Location, Camper, StaffMember, Group } from "@/types";
+import type {
+  Location,
+  Camper,
+  StaffMember,
+  Group,
+  EventCreationRequest,
+} from "@/types";
 import type { Certification } from "@/types";
 import {
   type RecurrenceData,
   type DayOfWeek,
   formatRecurrenceRule,
   validateRecurrenceRule,
+  generateRecurrenceDates,
 } from "@/utils/recurrence";
 import type { QForm } from "quasar";
-
-interface EventFormData {
-  title: string;
-  eventDate: string;
-  startDate: string;
-  endDate: string;
-  locationId: string;
-  capacity: number;
-  colorId: string;
-  requiredCertifications: string[];
-  groupIds: string[];
-  excludeCamperIds: string[];
-  excludeStaffIds: string[];
-  programId?: string;
-  activityId?: string;
-}
 
 export default defineComponent({
   name: "EventFormModal",
   components: {
     BaseModal,
-    BaseInput,
-    BaseButton,
     Autocomplete,
     ColorPicker,
     SelectionList,
     NumberInput,
   },
   props: {
-    isEditing: {
-      type: Boolean,
-      default: false,
-    },
-    formData: {
-      type: Object as PropType<EventFormData>,
+    defaultEventDate: {
+      type: Date as PropType<Date>,
       required: true,
     },
-    eventDate: {
-      type: Date,
-      required: true,
-    },
-    editingEventId: {
-      type: String,
-      default: null,
-    },
-    rooms: {
-      type: Array as PropType<Location[]>,
-      required: true,
-    },
-    staffMembers: {
-      type: Array as PropType<StaffMember[]>,
-      required: true,
-    },
-    groups: {
-      type: Array as PropType<Group[]>,
-      required: true,
-    },
-    campers: {
-      type: Array as PropType<Camper[]>,
-      required: true,
+    eventId: {
+      type: String as PropType<string>,
+      required: false,
     },
   },
-  emits: ["close", "save"],
+  emits: ["close"],
   setup() {
     const eventsStore = useEventsStore();
     const campersStore = useCampersStore();
@@ -449,8 +418,28 @@ export default defineComponent({
     };
   },
   data() {
+    const defaultDate = new Date(this.defaultEventDate);
+    const startHours = defaultDate.getHours().toString().padStart(2, "0");
+    const startMinutes = defaultDate.getMinutes().toString().padStart(2, "0");
+    
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData)),
+      formData: {
+        title: "",
+        startDate: this.defaultEventDate.toISOString(),
+        endDate: "",
+        locationId: "",
+        capacity: 0,
+        colorId: "",
+        requiredCertifications: [],
+        groupIds: [],
+        excludeCamperIds: [],
+        excludeStaffIds: [],
+        programId: "",
+        activityId: "",
+      } as EventCreationRequest,
+      internalEventDate: defaultDate.toISOString().split('T')[0],
+      internalStartTime: `${startHours}:${startMinutes}`,
+      internalEndTime: "",
       selectedActivityId: "",
       selectedCertificationIds: [] as string[],
       formRef: null as any,
@@ -466,14 +455,121 @@ export default defineComponent({
       daysOfWeek: ["S", "M", "T", "W", "T", "F", "S"],
     };
   },
+  created() {
+    if (this.eventId) {
+      const event = this.eventsStore.getEventById(this.eventId);
+      if (!event) return;
+      
+      // Parse the start and end dates
+      const startDate = new Date(event.startDate);
+      const endDate = new Date(event.endDate);
+      
+      // Extract date part (YYYY-MM-DD)
+      this.internalEventDate = startDate.toISOString().split('T')[0];
+      
+      // Extract time parts (HH:MM)
+      this.internalStartTime = `${startDate.getHours().toString().padStart(2, "0")}:${startDate.getMinutes().toString().padStart(2, "0")}`;
+      this.internalEndTime = `${endDate.getHours().toString().padStart(2, "0")}:${endDate.getMinutes().toString().padStart(2, "0")}`;
+      
+      this.formData = {
+        title: event.title,
+        startDate: event.startDate,
+        endDate: event.endDate,
+        locationId: event.locationId,
+        capacity: event.capacity,
+        colorId: event.colorId,
+        requiredCertificationIds: event.requiredCertificationIds,
+        groupIds: event.groupIds,
+        excludeCamperIds: event.excludeCamperIds,
+        excludeStaffIds: event.excludeStaffIds,
+        programId: event.programId,
+        activityId: event.activityId,
+      };
+    }
+  },
   computed: {
+    isEditing(): boolean {
+      return !!this.eventId;
+    },
+    eventDate: {
+      get(): string {
+        return this.internalEventDate;
+      },
+      set(value: string) {
+        this.internalEventDate = value;
+        this.updateFormDataDates();
+      },
+    },
+    startTime: {
+      get(): string {
+        return this.internalStartTime;
+      },
+      set(value: string) {
+        this.internalStartTime = value;
+        this.updateFormDataDates();
+      },
+    },
+    endTime: {
+      get(): string {
+        return this.internalEndTime;
+      },
+      set(value: string) {
+        this.internalEndTime = value;
+        this.updateFormDataDates();
+      },
+    },
+    eventStartDateTime(): Date | null {
+      if (!this.internalEventDate || !this.internalStartTime) {
+        return null;
+      }
+      return new Date(`${this.internalEventDate}T${this.internalStartTime}:00`);
+    },
+    eventEndDateTime(): Date | null {
+      if (!this.internalEventDate || !this.internalEndTime) {
+        return null;
+      }
+      return new Date(`${this.internalEventDate}T${this.internalEndTime}:00`);
+    },
+    locations(): Location[] {
+      return this.locationsStore.locations;
+    },
+    staffMembers(): StaffMember[] {
+      return this.staffMembersStore.staffMembers;
+    },
+    groups(): Group[] {
+      return this.groupsStore.groups;
+    },
+    groupIds: {
+      get(): string[] {
+        return this.formData.groupIds || [];
+      },
+      set(value: string[]) {
+        this.formData.groupIds = value;
+      },
+    },
+    excludeCamperIds: {
+      get(): string[] {
+        return this.formData.excludeCamperIds || [];
+      },
+      set(value: string[]) {
+        this.formData.excludeCamperIds = value;
+      },
+    },
+    excludeStaffIds: {
+      get(): string[] {
+        return this.formData.excludeStaffIds || [];
+      },
+      set(value: string[]) {
+        this.formData.excludeStaffIds = value;
+      },
+    },
     capacityModel: {
       get(): string {
-        return this.localFormData.capacity?.toString() || "";
+        return this.formData.capacity?.toString() || "";
       },
       set(value: string) {
         const num = parseInt(value);
-        this.localFormData.capacity = isNaN(num) ? 0 : num;
+        this.formData.capacity = isNaN(num) ? 0 : num;
       },
     },
     programOptions(): AutocompleteOption[] {
@@ -485,17 +581,10 @@ export default defineComponent({
         })),
       ];
     },
-    selectedProgramName(): string {
-      if (!this.localFormData.programId) return "";
-      const program = this.programsStore.getProgramById(
-        this.localFormData.programId,
-      );
-      return program ? program.name : "";
-    },
     locationOptions(): AutocompleteOption[] {
-      return this.rooms.map((room) => ({
-        label: `${room.name} (Capacity: ${room.capacity})`,
-        value: room.id,
+      return this.locations.map((location) => ({
+        label: `${location.name} (Capacity: ${location.capacity})`,
+        value: location.id,
       }));
     },
     activityOptions(): AutocompleteOption[] {
@@ -504,7 +593,7 @@ export default defineComponent({
 
       this.programsStore.programs.forEach((program) => {
         const programActivities = this.activitiesStore.getActivitiesInProgram(
-          program.id,
+          program.id
         );
         if (programActivities.length > 0) {
           programActivities.forEach((activity) => {
@@ -522,17 +611,14 @@ export default defineComponent({
       return this.groups;
     },
     campersInAssignedGroups(): Camper[] {
-      if (
-        !this.localFormData.groupIds ||
-        this.localFormData.groupIds.length === 0
-      ) {
+      if (!this.formData.groupIds || this.formData.groupIds.length === 0) {
         return [];
       }
 
       const camperIds = new Set<string>();
 
       // Get campers from all assigned groups
-      this.localFormData.groupIds.forEach((groupId: string) => {
+      this.formData.groupIds.forEach((groupId: string) => {
         // Check if it's a camper group
         const group = this.groupsStore.getGroupById(groupId);
         if (group) {
@@ -544,25 +630,21 @@ export default defineComponent({
       // Return full camper objects
       return this.campersStore.campers.filter((c) => camperIds.has(c.id));
     },
-
     staffInAssignedGroups(): StaffMember[] {
-      if (
-        !this.localFormData.groupIds ||
-        this.localFormData.groupIds.length === 0
-      ) {
+      if (!this.formData.groupIds || this.formData.groupIds.length === 0) {
         return [];
       }
 
       const staffIds = new Set<string>();
 
       // Get staff from all assigned family groups
-      this.localFormData.groupIds.forEach((groupId: string) => {
+      this.formData.groupIds.forEach((groupId: string) => {
         const group = this.groupsStore.getGroupById(groupId);
         if (group && group.staffIds) {
           group.staffIds.forEach((staffId: string) => staffIds.add(staffId));
         } else if (group && group.staffFilters) {
           const staff = this.staffMembersStore.getStaffMembersByFilters(
-            group.staffFilters,
+            group.staffFilters
           );
           staff.forEach((s: StaffMember) => staffIds.add(s.id));
         }
@@ -570,33 +652,8 @@ export default defineComponent({
 
       // Return full staff member objects
       return this.staffMembersStore.staffMembers.filter((s) =>
-        staffIds.has(s.id),
+        staffIds.has(s.id)
       );
-    },
-
-    availableStaffMembers(): StaffMember[] {
-      // Return staff members with their original data
-      return this.staffMembers;
-    },
-    eventStartDateTime(): Date | null {
-      if (!this.localFormData.startDate || !this.localFormData.eventDate)
-        return null;
-      const [hours, minutes] = this.localFormData.startDate
-        .split(":")
-        .map(Number);
-      const date = new Date(this.localFormData.eventDate);
-      date.setHours(hours, minutes, 0, 0);
-      return date;
-    },
-    eventEndDateTime(): Date | null {
-      if (!this.localFormData.endDate || !this.localFormData.eventDate)
-        return null;
-      const [hours, minutes] = this.localFormData.endDate
-        .split(":")
-        .map(Number);
-      const date = new Date(this.localFormData.eventDate);
-      date.setHours(hours, minutes, 0, 0);
-      return date;
     },
     recurrenceSummary(): string | null {
       if (!this.recurrenceData.enabled) return null;
@@ -618,24 +675,6 @@ export default defineComponent({
     },
   },
   watch: {
-    formData: {
-      handler(newVal) {
-        this.localFormData = JSON.parse(JSON.stringify(newVal));
-        // Initialize certification IDs from names
-        if (
-          newVal.requiredCertifications &&
-          newVal.requiredCertifications.length > 0
-        ) {
-          this.selectedCertificationIds = this.getCertificationIdsFromNames(
-            newVal.requiredCertifications,
-          );
-        } else {
-          this.selectedCertificationIds = [];
-        }
-      },
-      deep: true,
-      immediate: true,
-    },
     "recurrenceData.frequency": {
       handler(newFrequency, oldFrequency) {
         // Auto-select the event's day when switching to weekly mode
@@ -645,7 +684,7 @@ export default defineComponent({
             this.recurrenceData.daysOfWeek.length === 0
           ) {
             // Get the day of week from the event date
-            const eventDate = new Date(this.localFormData.eventDate);
+            const eventDate = new Date(this.defaultEventDate);
             const dayOfWeek = eventDate.getDay() as DayOfWeek;
             this.recurrenceData.daysOfWeek = [dayOfWeek];
           }
@@ -654,6 +693,18 @@ export default defineComponent({
     },
   },
   methods: {
+    updateFormDataDates() {
+      // Combine date and time into ISO datetime strings
+      if (this.internalEventDate && this.internalStartTime) {
+        const startDateTime = new Date(`${this.internalEventDate}T${this.internalStartTime}:00`);
+        this.formData.startDate = startDateTime.toISOString();
+      }
+      
+      if (this.internalEventDate && this.internalEndTime) {
+        const endDateTime = new Date(`${this.internalEventDate}T${this.internalEndTime}:00`);
+        this.formData.endDate = endDateTime.toISOString();
+      }
+    },
     applyActivityTemplate(activityId: string) {
       if (!activityId) return;
 
@@ -661,39 +712,38 @@ export default defineComponent({
       if (!activity) return;
 
       // Auto-populate form fields from activity template
-      this.localFormData.title = activity.name;
+      this.formData.title = activity.name;
 
       // Calculate end time based on start time and duration
-      if (this.localFormData.startDate) {
-        const [hours, minutes] = this.localFormData.startDate
-          .split(":")
-          .map(Number);
+      if (this.internalStartTime) {
+        const [hours, minutes] = this.internalStartTime.split(":").map(Number);
         const startDate = new Date();
         startDate.setHours(hours, minutes, 0, 0);
 
         const endDate = new Date(
-          startDate.getTime() + (activity.duration || 0) * 60000,
+          startDate.getTime() + (activity.duration || 0) * 60000
         );
         const endHours = endDate.getHours().toString().padStart(2, "0");
         const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
-        this.localFormData.endDate = `${endHours}:${endMinutes}`;
+        this.internalEndTime = `${endHours}:${endMinutes}`;
+        this.updateFormDataDates();
       }
 
       // Set default location if specified
       if (activity.defaultLocationId) {
-        this.localFormData.locationId = activity.defaultLocationId;
+        this.formData.locationId = activity.defaultLocationId;
       }
 
       // Set default capacity if specified
       if (activity.defaultCapacity) {
-        this.localFormData.capacity = activity.defaultCapacity;
+        this.formData.capacity = activity.defaultCapacity;
       }
 
       // Set color if specified
       if (activity.colorId) {
         const color = this.colorsStore.getColorById(activity.colorId);
         if (color) {
-          this.localFormData.colorId = color.id;
+          this.formData.colorId = color.id;
         }
       }
 
@@ -702,31 +752,18 @@ export default defineComponent({
         activity.requiredCertificationIds &&
         activity.requiredCertificationIds.length > 0
       ) {
-        this.localFormData.requiredCertificationIds = [
+        this.formData.requiredCertificationIds = [
           ...activity.requiredCertificationIds,
         ];
         this.selectedCertificationIds = this.getCertificationIdsFromNames(
-          activity.requiredCertificationIds,
+          activity.requiredCertificationIds
         );
       }
 
       // Set program and activity IDs for reference
       // Use the first program if activity belongs to multiple programs
-      this.localFormData.programId = activity.programIds[0];
-      this.localFormData.activityId = activity.id;
-    },
-    getGroupColor(group: any): string {
-      if (group.colorId) {
-        const color = this.colorsStore.getColorById(group.colorId);
-        return color?.hexValue || "#6366F1";
-      }
-      return "#6366F1";
-    },
-    getGroupCamperCount(groupId: string): number {
-      return this.groupsStore.getCampersInGroup(groupId).length;
-    },
-    getTotalCampersFromGroups(): number {
-      return this.campersInAssignedGroups.length;
+      this.formData.programId = activity.programIds[0];
+      this.formData.activityId = activity.id;
     },
     getCamperLabel(camper: Camper): string {
       return `${camper.firstName} ${camper.lastName} (Age: ${camper.age})`;
@@ -744,7 +781,7 @@ export default defineComponent({
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.name === name,
+            (c) => c.name === name
           );
           return cert ? cert.id : "";
         })
@@ -786,9 +823,9 @@ export default defineComponent({
       };
     },
     isStaffInSelectedProgram(staff: StaffMember): boolean {
-      if (!this.localFormData.programId) return false;
+      if (!this.formData.programId) return false;
       const program = this.programsStore.getProgramById(
-        this.localFormData.programId,
+        this.formData.programId
       );
       return program
         ? program.staffMemberIds?.includes(staff.id) || false
@@ -799,7 +836,7 @@ export default defineComponent({
       if (!staff.certificationIds || staff.certificationIds.length === 0)
         return false;
       return this.selectedCertificationIds.every((certId) =>
-        staff.certificationIds!.includes(certId),
+        staff.certificationIds!.includes(certId)
       );
     },
     isStaffAvailable(staff: StaffMember): {
@@ -815,9 +852,9 @@ export default defineComponent({
         this.eventEndDateTime,
         staff.id,
         this.eventsStore.events,
-        this.editingEventId
-          ? new Map<string, string[]>([[this.editingEventId, []]])
-          : undefined,
+        this.eventId
+          ? new Map<string, string[]>([[this.eventId, []]])
+          : undefined
       );
 
       return { available: result.canAssign, reason: result.reason };
@@ -890,14 +927,11 @@ export default defineComponent({
       if (!program) return;
 
       // Auto-apply program color if event color is not set or is default
-      if (
-        !this.localFormData.colorId ||
-        this.localFormData.colorId === "#6366F1"
-      ) {
+      if (!this.formData.colorId || this.formData.colorId === "#6366F1") {
         if (program.colorId) {
           const color = this.colorsStore.getColorById(program.colorId);
           if (color) {
-            this.localFormData.colorId = color.id;
+            this.formData.colorId = color.id;
           }
         }
       }
@@ -918,9 +952,8 @@ export default defineComponent({
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
 
-      // Convert certification IDs to names before saving
-      this.localFormData.requiredCertifications =
-        this.getCertificationNamesFromIds(this.selectedCertificationIds);
+      // Ensure formData dates are up to date
+      this.updateFormDataDates();
 
       // Validate recurrence if enabled
       if (this.recurrenceData.enabled) {
@@ -931,10 +964,107 @@ export default defineComponent({
         }
       }
 
-      this.$emit("save", {
-        formData: this.localFormData,
-        recurrence: this.recurrenceData.enabled ? this.recurrenceData : null,
-      });
+      if (this.isEditing) {
+        return this.updateEvent();
+      }
+        return this.createEvent();
+    },
+    async updateEvent(): Promise<void> {
+      if (!this.eventId) return;
+      try {
+        await this.eventsStore.updateEvent(this.eventId, this.formData);
+        this.toast.success("Event updated successfully");
+      } catch (error: any) {
+        this.toast.error("Failed to update event", error.message);
+      } finally {
+        this.$emit("close");
+      }
+    },
+    async createEvent(): Promise<void> {
+      if (this.recurrenceData.enabled) {
+        return this.createRecurringEvents(this.formData, this.recurrenceData, new Date(this.formData.startDate), new Date(this.formData.endDate));
+      } else {
+        return this.createSingleEvent();
+      }
+    },
+    async createRecurringEvents(
+      formData: any,
+      recurrence: RecurrenceData,
+      startDate: Date,
+      endDate: Date
+    ): Promise<void> {
+      try {
+        // Generate all occurrence dates
+        const occurrenceDates = generateRecurrenceDates(startDate, recurrence);
+
+        if (occurrenceDates.length === 0) {
+          this.toast.error("Failed to generate recurring events");
+          return;
+        }
+
+        // Show loading toast for large batches
+        if (occurrenceDates.length > 10) {
+          this.toast.info(
+            `Creating ${occurrenceDates.length} recurring events...`
+          );
+        }
+
+        // Generate a unique recurrence ID for this series
+        const recurrenceId = `recurrence-${Date.now()}`;
+
+        // Calculate the duration in milliseconds
+        const duration = endDate.getTime() - startDate.getTime();
+
+        // Create all events in memory first (fast)
+        const eventCreationRequestsPromises: Promise<EventCreationRequest>[] = [];
+
+        for (let i = 0; i < occurrenceDates.length; i++) {
+          const occurrenceStart = occurrenceDates[i];
+          const occurrenceEnd = new Date(occurrenceStart.getTime() + duration);
+
+          const event: EventCreationRequest = {
+            title: formData.title,
+            startDate: occurrenceStart.toISOString(),
+            endDate: occurrenceEnd.toISOString(),
+            locationId: formData.locationId,
+            capacity: formData.capacity,
+            colorId: formData.colorId,
+            requiredCertificationIds:
+              formData.requiredCertificationIds &&
+              formData.requiredCertificationIds.length > 0
+                ? formData.requiredCertificationIds
+                : undefined,
+            groupIds: formData.groupIds || [],
+            excludeCamperIds: formData.excludeCamperIds || [],
+            excludeStaffIds: formData.excludeStaffIds || [],
+            programId: formData.programId,
+            activityId: formData.activityId,
+            recurrenceId: recurrenceId,
+            isRecurrenceParent: i === 0, // First event is the parent
+          };
+
+          eventCreationRequestsPromises.push(this.eventsStore.createEvent(event));
+        }
+
+        await Promise.all(eventCreationRequestsPromises);
+        this.toast.success(
+          `Successfully created ${occurrenceDates.length} recurring events`
+        );
+      } catch (error: any) {
+        this.toast.error("Failed to create recurring events", error.message);
+      } finally {
+        this.$emit("close");
+      }
+    },
+    async createSingleEvent(): Promise<void> {
+      try {
+        await this.eventsStore.createEvent(this.formData);
+        this.toast.success("Event created successfully");
+      } catch (error: any) {
+        this.toast.error("Failed to create event", error.message);
+      } finally {
+        this.$emit("close");
+      }
     },
   },
 });

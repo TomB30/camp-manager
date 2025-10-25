@@ -324,7 +324,6 @@
       v-if="showProgramModal"
       :program-id="selectedProgramId || undefined"
       @close="closeProgramModal"
-      @save="saveProgram"
     />
 
     <ActivitySelectorModal
@@ -445,8 +444,6 @@ import {
   UsersRound,
   Home,
   Clock,
-  Edit,
-  Trash2,
   ListChecks,
 } from "lucide-vue-next";
 import ViewHeader from "@/components/ViewHeader.vue";
@@ -478,8 +475,6 @@ export default defineComponent({
     UsersRound,
     Home,
     Clock,
-    Edit,
-    Trash2,
     ListChecks,
     BaseModal,
     ConfirmModal,
@@ -734,20 +729,6 @@ export default defineComponent({
       this.editingProgram = program;
       this.showProgramModal = true;
     },
-    async saveProgram(program: Program) {
-      try {
-        if (this.editingProgram) {
-          await this.programsStore.updateProgram(program);
-          this.toast.success("Program updated successfully");
-        } else {
-          await this.programsStore.addProgram(program);
-          this.toast.success("Program created successfully");
-        }
-        this.closeProgramModal();
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to save program");
-      }
-    },
     deleteProgramConfirm(program: Program) {
       this.deleteTarget = { type: "program", id: program.id };
       this.showDeleteConfirm = true;
@@ -784,7 +765,7 @@ export default defineComponent({
     async saveActivity(activity: Activity) {
       try {
         if (this.editingActivity) {
-          await this.activitiesStore.updateActivity(activity);
+          await this.activitiesStore.updateActivity(this.editingActivity.id, activity);
           this.toast.success("Activity updated successfully");
         } else {
           await this.activitiesStore.addActivity(activity);
@@ -819,7 +800,7 @@ export default defineComponent({
       };
 
       try {
-        await this.programsStore.updateProgram(updatedProgram);
+        await this.programsStore.updateProgram(this.selectedProgram.id, updatedProgram);
         this.toast.success("Staff member removed from program");
       } catch (error: any) {
         this.toast.error(error.message || "Failed to remove staff member");
@@ -836,7 +817,7 @@ export default defineComponent({
       };
 
       try {
-        await this.programsStore.updateProgram(updatedProgram);
+        await this.programsStore.updateProgram(this.selectedProgram.id, updatedProgram);
         this.toast.success("Location removed from program");
       } catch (error: any) {
         this.toast.error(error.message || "Failed to remove location");
@@ -908,7 +889,7 @@ export default defineComponent({
       };
 
       try {
-        await this.programsStore.updateProgram(updatedProgram);
+        await this.programsStore.updateProgram(this.selectedProgram.id, updatedProgram);
         this.toast.success("Staff assignments updated");
       } catch (error: any) {
         this.toast.error(error.message || "Failed to update staff assignments");
@@ -923,7 +904,7 @@ export default defineComponent({
       };
 
       try {
-        await this.programsStore.updateProgram(updatedProgram);
+        await this.programsStore.updateProgram(this.selectedProgram.id, updatedProgram);
         this.toast.success("Location assignments updated");
       } catch (error: any) {
         this.toast.error(

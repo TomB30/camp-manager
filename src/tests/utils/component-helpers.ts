@@ -77,18 +77,6 @@ export async function waitForModalClose(
 }
 
 /**
- * Expect a toast message to be shown
- */
-export function expectToastMessage(
-  message: string,
-  type: "success" | "error" | "warning" | "info" = "success",
-): void {
-  // This would need to be implemented based on your toast system
-  // For now, it's a placeholder
-  expect(true).toBe(true);
-}
-
-/**
  * Click a button by text content
  */
 export async function clickButtonByText(

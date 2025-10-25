@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { GroupStaffFilters, StaffMember } from "@/types";
+import type { GroupStaffFilters, StaffMember, StaffMemberCreationRequest, StaffMemberUpdateRequest } from "@/types";
 import { staffMembersService } from "@/services";
 
 export const useStaffMembersStore = defineStore("staffMembers", {
@@ -52,23 +52,24 @@ export const useStaffMembersStore = defineStore("staffMembers", {
     async loadStaffMembers(): Promise<void> {
       this.loading = true;
       try {
-        this.staffMembers = await staffMembersService.getStaffMembers();
+        this.staffMembers = await staffMembersService.listStaffMembers();
       } finally {
         this.loading = false;
       }
     },
 
-    async addStaffMember(member: StaffMember): Promise<void> {
-      await staffMembersService.saveStaffMember(member);
+    async createStaffMember(memberRequest: StaffMemberCreationRequest): Promise<StaffMember> {
+      const member = await staffMembersService.createStaffMember(memberRequest);
       this.staffMembers = this.staffMembers
         ? [...this.staffMembers, member]
         : [member];
+      return member;
     },
 
-    async updateStaffMember(member: StaffMember): Promise<void> {
-      await staffMembersService.saveStaffMember(member);
+    async updateStaffMember(id: string, memberUpdate: StaffMemberUpdateRequest): Promise<void> {
+      const member = await staffMembersService.updateStaffMember(id, memberUpdate);
       const index = this.staffMembers.findIndex(
-        (m: StaffMember) => m.id === member.id,
+        (m: StaffMember) => m.id === id,
       );
       if (index >= 0) {
         this.staffMembers[index] = member;

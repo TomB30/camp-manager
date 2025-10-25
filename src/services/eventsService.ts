@@ -1,74 +1,85 @@
-/**
- * Events Service
- * Handles all event-related operations
- */
-
-import type { Event } from "@/types";
+import type { Event, EventCreationRequest, EventUpdateRequest } from "@/types";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 
-class EventsService {
-  /**
-   * Get all events, optionally filtered by date range
-   */
-  async getEvents(startDate?: Date, endDate?: Date): Promise<Event[]> {
-    let events = await storageService.getAll<Event>(STORAGE_KEYS.EVENTS);
+export const eventsService = {
+  listEvents,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  getEventById,
+  saveEventsBatch,
+  getEventsForLocation,
+  getEventsForProgram,
+  getEventsByDateRange,
+};
 
-    if (startDate || endDate) {
-      events = events.filter((event) => {
-        const eventStart = new Date(event.startDate);
-        if (startDate && eventStart < startDate) return false;
-        if (endDate && eventStart > endDate) return false;
-        return true;
-      });
-    }
-
-    return events;
-  }
-
-  /**
-   * Get an event by ID
-   */
-  async getEvent(id: string): Promise<Event | null> {
-    return storageService.getById<Event>(STORAGE_KEYS.EVENTS, id);
-  }
-
-  /**
-   * Save an event (create or update)
-   */
-  async saveEvent(event: Event): Promise<Event> {
-    return storageService.save<Event>(STORAGE_KEYS.EVENTS, event);
-  }
-
-  /**
-   * Delete an event
-   */
-  async deleteEvent(id: string): Promise<void> {
-    return storageService.delete(STORAGE_KEYS.EVENTS, id);
-  }
-
-  /**
-   * Save multiple events in batch (useful for recurring events)
-   */
-  async saveEventsBatch(events: Event[]): Promise<Event[]> {
-    return storageService.saveBatch<Event>(STORAGE_KEYS.EVENTS, events);
-  }
-
-  /**
-   * Get events for a specific location
-   */
-  async getEventsForLocation(locationId: string): Promise<Event[]> {
-    const events = await this.getEvents();
-    return events.filter((event) => event.locationId === locationId);
-  }
-
-  /**
-   * Get events for a specific program
-   */
-  async getEventsForProgram(programId: string): Promise<Event[]> {
-    const events = await this.getEvents();
-    return events.filter((event) => event.programId === programId);
-  }
+async function listEvents(): Promise<Event[]> {
+  return storageService.getAll<Event>(STORAGE_KEYS.EVENTS);
 }
 
-export const eventsService = new EventsService();
+async function createEvent(event: EventCreationRequest): Promise<Event> {
+  const newEvent = {
+    ...event,
+    id: crypto.randomUUID(),
+  };
+  return storageService.save<Event>(STORAGE_KEYS.EVENTS, newEvent);
+}
+
+async function updateEvent(
+  id: string,
+  event: EventUpdateRequest
+): Promise<Event> {
+  const existingEvent = await storageService.getById<Event>(
+    STORAGE_KEYS.EVENTS,
+    id
+  );
+  if (!existingEvent) {
+    throw new Error(`Event with id ${id} not found`);
+  }
+  const updatedEvent = {
+    ...existingEvent,
+    ...event,
+  };
+  return storageService.save<Event>(STORAGE_KEYS.EVENTS, updatedEvent);
+}
+
+async function deleteEvent(id: string): Promise<void> {
+  return storageService.delete(STORAGE_KEYS.EVENTS, id);
+}
+
+async function getEventById(id: string): Promise<Event | null> {
+  return storageService.getById<Event>(STORAGE_KEYS.EVENTS, id);
+}
+
+async function saveEventsBatch(events: Event[]): Promise<Event[]> {
+  return storageService.saveBatch<Event>(STORAGE_KEYS.EVENTS, events);
+}
+
+async function getEventsForLocation(locationId: string): Promise<Event[]> {
+  const events = await listEvents();
+  return events.filter((event) => event.locationId === locationId);
+}
+
+async function getEventsForProgram(programId: string): Promise<Event[]> {
+  const events = await listEvents();
+  return events.filter((event) => event.programId === programId);
+}
+
+async function getEventsByDateRange(
+  startDate?: Date,
+  endDate?: Date
+): Promise<Event[]> {
+  let events = await listEvents();
+
+  if (startDate || endDate) {
+    events = events.filter((event) => {
+      const eventStart = new Date(event.startDate);
+      if (startDate && eventStart < startDate) return false;
+      if (endDate && eventStart > endDate) return false;
+      return true;
+    });
+  }
+
+  return events;
+}

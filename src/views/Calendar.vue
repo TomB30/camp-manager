@@ -12,7 +12,6 @@
         </template>
       </ViewHeader>
 
-      <!-- Date Navigation and Filters -->
       <FilterBar
         :show-search="true"
         v-model:search-query="searchQuery"
@@ -34,7 +33,6 @@
         @clear="clearEventFilters"
       >
         <template #prepend>
-          <!-- Calendar View Toggle -->
           <div class="calendar-view-toggle">
             <button
               class="btn btn-sm"
@@ -61,7 +59,6 @@
         </template>
       </FilterBar>
 
-      <!-- Date Navigation Bar -->
       <div class="date-navigation">
         <div class="date-display">
           <h3 v-if="viewMode === 'daily'">{{ formatDate(selectedDate) }}</h3>
@@ -96,7 +93,6 @@
         </div>
       </div>
 
-      <!-- Daily View -->
       <DailyCalendarView
         v-if="viewMode === 'daily'"
         :events="filteredTodayEvents"
@@ -105,7 +101,6 @@
         @create-event="createEventAtHour"
       />
 
-      <!-- Weekly View -->
       <WeeklyCalendarView
         v-else-if="viewMode === 'weekly'"
         :week-days="weekDays"
@@ -114,7 +109,6 @@
         @select-event="selectEvent"
       />
 
-      <!-- Monthly View -->
       <MonthlyCalendarView
         v-else
         :selected-date="selectedDate"
@@ -124,7 +118,6 @@
       />
     </div>
 
-    <!-- Event Detail Modal -->
     <EventDetailModal
       v-if="!!selectedEventId"
       :event="selectedEvent"
@@ -133,22 +126,13 @@
       @delete="deleteEventConfirm"
     />
 
-    <!-- Create/Edit Event Modal -->
     <EventFormModal
       v-if="showEventModal"
-      :is-editing="!!editingEventId"
-      :editing-event-id="editingEventId || ''"
-      :event-date="getEventFormDate()"
-      :form-data="eventFormData"
-      :rooms="locationsStore.locations"
-      :staff-members="staffMembersStore.staffMembers"
-      :groups="groupsStore.groups"
-      :campers="campersStore.campers"
+      :event-id="editingEventId || undefined"
+      :default-event-date="selectedDate"
       @close="closeEventModal"
-      @save="saveEvent"
     />
 
-    <!-- Confirmation Modal -->
     <ConfirmModal
       v-if="showConfirmModal"
       title="Delete Event"
@@ -166,18 +150,14 @@
 import { defineComponent } from "vue";
 import {
   useEventsStore,
-  useCampersStore,
   useStaffMembersStore,
   useLocationsStore,
-  useColorsStore,
   useGroupsStore,
   useProgramsStore,
 } from "@/stores";
-import { useToastStore } from "@/stores/toastStore";
 import { format, addDays, startOfWeek, addWeeks, addMonths } from "date-fns";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar, { type Filter } from "@/components/FilterBar.vue";
-import ColorPicker from "@/components/ColorPicker.vue";
 import ViewHeader from "@/components/ViewHeader.vue";
 import EventDetailModal from "@/components/modals/EventDetailModal.vue";
 import EventFormModal from "@/components/modals/EventFormModal.vue";
@@ -185,25 +165,18 @@ import DailyCalendarView from "@/components/DailyCalendarView.vue";
 import WeeklyCalendarView from "@/components/WeeklyCalendarView.vue";
 import MonthlyCalendarView from "@/components/MonthlyCalendarView.vue";
 import type { Event } from "@/types";
-import {
-  generateRecurrenceDates,
-  type RecurrenceData,
-} from "@/utils/recurrence";
-import BaseButton from "@/components/common/BaseButton.vue";
 
 export default defineComponent({
   name: "Calendar",
   components: {
     ConfirmModal,
     FilterBar,
-    ColorPicker,
     ViewHeader,
     EventDetailModal,
     EventFormModal,
     DailyCalendarView,
     WeeklyCalendarView,
     MonthlyCalendarView,
-    BaseButton,
   },
   data() {
     return {
@@ -217,27 +190,12 @@ export default defineComponent({
         type: "deleteEvent";
         data?: any;
       } | null,
-      eventFormData: {
-        title: "",
-        eventDate: format(new Date(), "yyyy-MM-dd"),
-        startDate: "09:00",
-        endDate: "10:00",
-        locationId: "",
-        capacity: 20,
-        colorId: "",
-        requiredCertifications: [] as string[],
-        groupIds: [] as string[],
-        excludeCamperIds: [] as string[],
-        excludeStaffIds: [] as string[],
-        programId: undefined as string | undefined,
-        activityId: undefined as string | undefined,
-      },
       searchQuery: "",
       filterRoom: "",
       filterProgram: "",
       filterStaff: "",
       filterGroup: "",
-      sleepingRoomToAssign: "",
+      defaultEventDate: new Date(),
     };
   },
   mounted() {
@@ -254,17 +212,11 @@ export default defineComponent({
     eventsStore() {
       return useEventsStore();
     },
-    campersStore() {
-      return useCampersStore();
-    },
     staffMembersStore() {
       return useStaffMembersStore();
     },
     locationsStore() {
       return useLocationsStore();
-    },
-    colorsStore() {
-      return useColorsStore();
     },
     groupsStore() {
       return useGroupsStore();
@@ -272,30 +224,25 @@ export default defineComponent({
     programsStore() {
       return useProgramsStore();
     },
-    toast() {
-      return useToastStore();
-    },
     weekDays() {
       const start = startOfWeek(this.selectedDate);
       return Array.from({ length: 7 }, (_, i) => addDays(start, i));
     },
     weekEvents() {
-      // Get all events for the current week
       return this.weekDays.flatMap((day) =>
-        this.eventsStore.eventsForDate(day),
+        this.eventsStore.eventsForDate(day)
       );
     },
     monthEvents() {
-      // Get all events for the current month
       const start = new Date(
         this.selectedDate.getFullYear(),
         this.selectedDate.getMonth(),
-        1,
+        1
       );
       const end = new Date(
         this.selectedDate.getFullYear(),
         this.selectedDate.getMonth() + 1,
-        0,
+        0
       );
 
       return this.eventsStore.events.filter((event) => {
@@ -341,8 +288,8 @@ export default defineComponent({
           options: this.staffMembersStore.staffMembers
             .sort((a, b) =>
               `${a.firstName} ${a.lastName}`.localeCompare(
-                `${b.firstName} ${b.lastName}`,
-              ),
+                `${b.firstName} ${b.lastName}`
+              )
             )
             .map((staff) => ({
               label: `${staff.firstName} ${staff.lastName}`,
@@ -357,12 +304,12 @@ export default defineComponent({
     // Memoized lookup maps for efficient filtering (O(1) lookups instead of O(n))
     roomLookupMap() {
       return new Map(
-        this.locationsStore.locations.map((r) => [r.id, r.name.toLowerCase()]),
+        this.locationsStore.locations.map((r) => [r.id, r.name.toLowerCase()])
       );
     },
     programLookupMap() {
       return new Map(
-        this.programsStore.programs.map((p) => [p.id, p.name.toLowerCase()]),
+        this.programsStore.programs.map((p) => [p.id, p.name.toLowerCase()])
       );
     },
     staffLookupMap() {
@@ -370,15 +317,7 @@ export default defineComponent({
         this.staffMembersStore.staffMembers.map((s) => [
           s.id,
           `${s.firstName} ${s.lastName}`.toLowerCase(),
-        ]),
-      );
-    },
-    camperLookupMap() {
-      return new Map(
-        this.campersStore.campers.map((c) => [
-          c.id,
-          `${c.firstName} ${c.lastName}`.toLowerCase(),
-        ]),
+        ])
       );
     },
     filteredEvents() {
@@ -526,274 +465,24 @@ export default defineComponent({
     selectEvent(event: Event) {
       this.selectedEventId = event.id;
     },
+    editEvent() {
+      this.editingEventId = this.selectedEventId;
+      this.showEventModal = true;
+    },
     openNewEventModal() {
-      // Reset form data with the currently selected date
-      this.eventFormData = {
-        title: "",
-        eventDate: format(this.selectedDate, "yyyy-MM-dd"),
-        startDate: "09:00",
-        endDate: "10:00",
-        locationId: "",
-        capacity: 20,
-        colorId: "",
-        requiredCertifications: [],
-        groupIds: [],
-        excludeCamperIds: [],
-        excludeStaffIds: [],
-        programId: undefined,
-        activityId: undefined,
-      };
       this.showEventModal = true;
     },
     createEventAtHour(hour: number) {
-      // Set the start time to the clicked hour
-      const startDate = `${String(hour).padStart(2, "0")}:00`;
-      // Set the end time to one hour later
-      const endHour = hour + 1;
-      const endDate = `${String(endHour).padStart(2, "0")}:00`;
-
-      // Reset form data and set the time and date
-      this.eventFormData = {
-        title: "",
-        eventDate: format(this.selectedDate, "yyyy-MM-dd"),
-        startDate,
-        endDate,
-        locationId: "",
-        capacity: 20,
-        colorId: "",
-        requiredCertifications: [],
-        groupIds: [],
-        excludeCamperIds: [],
-        excludeStaffIds: [],
-        programId: undefined,
-        activityId: undefined,
-      };
-
-      // Open the modal
-      this.showEventModal = true;
-    },
-    getEventFormDate(): Date {
-      // If editing, use the event's date; otherwise use selected date
-      if (this.editingEventId) {
-        const event = this.eventsStore.getEventById(this.editingEventId);
-        if (event) {
-          return new Date(event.startDate);
-        }
-      }
-      return this.selectedDate;
-    },
-    editEvent() {
-      if (!this.selectedEvent) return;
-
-      // Extract date and time from ISO date strings
-      const startDate = new Date(this.selectedEvent.startDate);
-      const endDate = new Date(this.selectedEvent.endDate);
-
-      this.editingEventId = this.selectedEvent.id;
-      this.eventFormData = {
-        title: this.selectedEvent.title,
-        eventDate: format(startDate, "yyyy-MM-dd"),
-        startDate: `${String(startDate.getHours()).padStart(2, "0")}:${String(startDate.getMinutes()).padStart(2, "0")}`,
-        endDate: `${String(endDate.getHours()).padStart(2, "0")}:${String(endDate.getMinutes()).padStart(2, "0")}`,
-        locationId: this.selectedEvent.locationId || "",
-        capacity: this.selectedEvent.capacity || 0,
-        colorId: this.selectedEvent.colorId || "",
-        requiredCertifications:
-          this.selectedEvent.requiredCertificationIds || [],
-        groupIds: this.selectedEvent.groupIds || [],
-        excludeCamperIds: this.selectedEvent.excludeCamperIds || [],
-        excludeStaffIds: this.selectedEvent.excludeStaffIds || [],
-        programId: this.selectedEvent.programId,
-        activityId: this.selectedEvent.activityId,
-      };
-
-      this.selectedEventId = null;
+      // Set the default event date to the selected date and the selected hour
+      this.defaultEventDate = this.selectedDate;
+      this.defaultEventDate.setHours(hour, 0, 0, 0);
       this.showEventModal = true;
     },
     closeEventModal() {
       this.showEventModal = false;
       this.editingEventId = null;
-      this.eventFormData = {
-        title: "",
-        eventDate: format(new Date(), "yyyy-MM-dd"),
-        startDate: "09:00",
-        endDate: "10:00",
-        locationId: "",
-        capacity: 20,
-        colorId: "",
-        requiredCertifications: [],
-        groupIds: [],
-        excludeCamperIds: [],
-        excludeStaffIds: [],
-        programId: undefined,
-        activityId: undefined,
-      };
+      this.defaultEventDate = new Date();
     },
-    async saveEvent(data: any) {
-      // Handle the new structure with formData and recurrence
-      const formData = data.formData || data;
-      const recurrence = data.recurrence || null;
-
-      const [startHour, startMinute] = formData.startDate
-        .split(":")
-        .map(Number);
-      const [endHour, endMinute] = formData.endDate.split(":").map(Number);
-
-      // Use the date from the form
-      const eventDate = new Date(formData.eventDate);
-
-      const startDate = new Date(eventDate);
-      startDate.setHours(startHour, startMinute, 0, 0);
-
-      const endDate = new Date(eventDate);
-      endDate.setHours(endHour, endMinute, 0, 0);
-
-      if (this.editingEventId) {
-        // Update existing event
-        const existingEvent = this.eventsStore.getEventById(
-          this.editingEventId,
-        );
-        if (existingEvent) {
-          const updatedEvent: Event = {
-            ...existingEvent,
-            title: formData.title,
-            startDate: startDate.toISOString(),
-            endDate: endDate.toISOString(),
-            locationId: formData.locationId,
-            capacity: formData.capacity,
-            colorId: formData.colorId,
-            requiredCertificationIds:
-              formData.requiredCertifications &&
-              formData.requiredCertifications.length > 0
-                ? formData.requiredCertifications
-                : undefined,
-            groupIds: formData.groupIds || [],
-            excludeCamperIds: formData.excludeCamperIds || [],
-            excludeStaffIds: formData.excludeStaffIds || [],
-            programId: formData.programId,
-            activityId: formData.activityId,
-          };
-
-          await this.eventsStore.updateEvent(updatedEvent);
-          this.toast.success("Event updated successfully");
-        }
-      } else {
-        // Create new event(s)
-        if (recurrence && recurrence.enabled) {
-          // Generate recurring events
-          await this.createRecurringEvents(
-            formData,
-            recurrence,
-            startDate,
-            endDate,
-          );
-        } else {
-          // Create single event
-          await this.createSingleEvent(formData, startDate, endDate);
-        }
-      }
-
-      this.closeEventModal();
-    },
-
-    async createSingleEvent(formData: any, startDate: Date, endDate: Date) {
-      const event: Event = {
-        id: `event-${Date.now()}`,
-        title: formData.title,
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        locationId: formData.locationId,
-        capacity: formData.capacity,
-        colorId: formData.colorId,
-        requiredCertificationIds:
-          formData.requiredCertifications &&
-          formData.requiredCertifications.length > 0
-            ? formData.requiredCertifications
-            : undefined,
-        groupIds: formData.groupIds || [],
-        excludeCamperIds: formData.excludeCamperIds || [],
-        excludeStaffIds: formData.excludeStaffIds || [],
-        programId: formData.programId,
-        activityId: formData.activityId,
-      };
-
-      await this.eventsStore.addEvent(event);
-      this.toast.success("Event created successfully");
-    },
-
-    async createRecurringEvents(
-      formData: any,
-      recurrence: RecurrenceData,
-      startDate: Date,
-      endDate: Date,
-    ) {
-      try {
-        // Generate all occurrence dates
-        const occurrenceDates = generateRecurrenceDates(startDate, recurrence);
-
-        if (occurrenceDates.length === 0) {
-          this.toast.error("Failed to generate recurring events");
-          return;
-        }
-
-        // Show loading toast for large batches
-        if (occurrenceDates.length > 10) {
-          this.toast.info(
-            `Creating ${occurrenceDates.length} recurring events...`,
-          );
-        }
-
-        // Generate a unique recurrence ID for this series
-        const recurrenceId = `recurrence-${Date.now()}`;
-        const baseTimestamp = Date.now();
-
-        // Calculate the duration in milliseconds
-        const duration = endDate.getTime() - startDate.getTime();
-
-        // Create all events in memory first (fast)
-        const eventsToCreate: Event[] = [];
-
-        for (let i = 0; i < occurrenceDates.length; i++) {
-          const occurrenceStart = occurrenceDates[i];
-          const occurrenceEnd = new Date(occurrenceStart.getTime() + duration);
-
-          const event: Event = {
-            id: `event-${baseTimestamp}-${i}`,
-            title: formData.title,
-            startDate: occurrenceStart.toISOString(),
-            endDate: occurrenceEnd.toISOString(),
-            locationId: formData.locationId,
-            capacity: formData.capacity,
-            colorId: formData.colorId,
-            requiredCertificationIds:
-              formData.requiredCertificationIds &&
-              formData.requiredCertificationIds.length > 0
-                ? formData.requiredCertificationIds
-                : undefined,
-            groupIds: formData.groupIds || [],
-            excludeCamperIds: formData.excludeCamperIds || [],
-            excludeStaffIds: formData.excludeStaffIds || [],
-            programId: formData.programId,
-            activityId: formData.activityId,
-            recurrenceId: recurrenceId,
-            isRecurrenceParent: i === 0, // First event is the parent
-          };
-
-          eventsToCreate.push(event);
-        }
-
-        // Batch add all events at once (much faster)
-        // Use batch method to add all events and run conflict detection only once
-        await this.eventsStore.addEventsBatch(eventsToCreate);
-
-        this.toast.success(
-          `Successfully created ${occurrenceDates.length} recurring events`,
-        );
-      } catch (error: any) {
-        this.toast.error("Failed to create recurring events", error.message);
-      }
-    },
-
     deleteEventConfirm() {
       if (!this.selectedEventId) return;
       const event = this.eventsStore.getEventById(this.selectedEventId);
@@ -883,48 +572,5 @@ export default defineComponent({
     justify-content: center;
     width: 100%;
   }
-}
-
-.sleeping-room-selector {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: var(--background);
-  border-radius: var(--radius);
-  border: 1px solid var(--border-color);
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.checkbox-item {
-  display: flex;
-  align-items: center;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: var(--radius);
-  transition: background-color 0.15s ease;
-  width: 100%;
-}
-
-.checkbox-label:hover {
-  background: var(--surface);
-}
-
-.checkbox-input {
-  cursor: pointer;
-  width: 16px;
-  height: 16px;
-}
-
-.group-label {
-  padding-left: 0.5rem;
-  display: inline-block;
 }
 </style>

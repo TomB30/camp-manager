@@ -1,137 +1,147 @@
-/**
- * Activities Service
- * Handles all activity-related operations
- */
-
-import type { Activity, Program } from "@/types";
+import type {
+  Activity,
+  ActivityCreationRequest,
+  ActivityUpdateRequest,
+  Program,
+} from "@/types";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 
-class ActivitiesService {
-  /**
-   * Get all activities
-   */
-  async getActivities(): Promise<Activity[]> {
-    return storageService.getAll<Activity>(STORAGE_KEYS.ACTIVITIES);
+export const activitiesService = {
+  listActivities,
+  createActivity,
+  updateActivity,
+  deleteActivity,
+  getActivityById,
+  getActivitiesInProgram,
+  addActivityToProgram,
+  removeActivityFromProgram,
+};
+
+async function listActivities(): Promise<Activity[]> {
+  return storageService.getAll<Activity>(STORAGE_KEYS.ACTIVITIES);
+}
+
+async function createActivity(
+  activity: ActivityCreationRequest
+): Promise<Activity> {
+  const newActivity = {
+    ...activity,
+    id: crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  return storageService.save<Activity>(STORAGE_KEYS.ACTIVITIES, newActivity);
+}
+
+async function updateActivity(
+  id: string,
+  activity: ActivityUpdateRequest
+): Promise<Activity> {
+  const existingActivity = await storageService.getById<Activity>(
+    STORAGE_KEYS.ACTIVITIES,
+    id
+  );
+  if (!existingActivity) {
+    throw new Error(`Activity with id ${id} not found`);
   }
+  const updatedActivity = {
+    ...existingActivity,
+    ...activity,
+    updatedAt: new Date().toISOString(),
+  };
+  return storageService.save<Activity>(STORAGE_KEYS.ACTIVITIES, updatedActivity);
+}
 
-  /**
-   * Get an activity by ID
-   */
-  async getActivity(id: string): Promise<Activity | null> {
-    return storageService.getById<Activity>(STORAGE_KEYS.ACTIVITIES, id);
-  }
+async function deleteActivity(id: string): Promise<void> {
+  const activity = await getActivityById(id);
 
-  /**
-   * Save an activity (create or update)
-   */
-  async saveActivity(activity: Activity): Promise<Activity> {
-    const updatedActivity = {
-      ...activity,
-      updatedAt: new Date().toISOString(),
-    };
-    return storageService.save<Activity>(
-      STORAGE_KEYS.ACTIVITIES,
-      updatedActivity,
-    );
-  }
+  if (activity) {
+    // Remove from all programs' activityIds
+    const programs = await storageService.getAll<Program>(STORAGE_KEYS.PROGRAMS);
 
-  /**
-   * Delete an activity and clean up references
-   */
-  async deleteActivity(id: string): Promise<void> {
-    const activity = await this.getActivity(id);
-
-    if (activity) {
-      // Remove from all programs' activityIds
-      const programs = await storageService.getAll<Program>(
-        STORAGE_KEYS.PROGRAMS,
-      );
-
-      for (const program of programs) {
-        if (program.activityIds && program.activityIds.includes(id)) {
-          const updatedProgram = {
-            ...program,
-            activityIds: program.activityIds?.filter((aid) => aid !== id) || [],
-          };
-          await storageService.save(STORAGE_KEYS.PROGRAMS, updatedProgram);
-        }
+    for (const program of programs) {
+      if (program.activityIds && program.activityIds.includes(id)) {
+        const updatedProgram = {
+          ...program,
+          activityIds: program.activityIds?.filter((aid) => aid !== id) || [],
+        };
+        await storageService.save(STORAGE_KEYS.PROGRAMS, updatedProgram);
       }
     }
-
-    // Delete the activity
-    await storageService.delete(STORAGE_KEYS.ACTIVITIES, id);
   }
 
-  /**
-   * Get activities in a specific program
-   */
-  async getActivitiesInProgram(programId: string): Promise<Activity[]> {
-    const activities = await this.getActivities();
-    return activities.filter((a) => a.programIds.includes(programId));
+  return storageService.delete(STORAGE_KEYS.ACTIVITIES, id);
+}
+
+async function getActivityById(id: string): Promise<Activity | null> {
+  return storageService.getById<Activity>(STORAGE_KEYS.ACTIVITIES, id);
+}
+
+async function getActivitiesInProgram(programId: string): Promise<Activity[]> {
+  const activities = await listActivities();
+  return activities.filter((a) => a.programIds.includes(programId));
+}
+
+async function addActivityToProgram(
+  activityId: string,
+  programId: string
+): Promise<void> {
+  const activity = await getActivityById(activityId);
+  const program = await storageService.getById<Program>(
+    STORAGE_KEYS.PROGRAMS,
+    programId
+  );
+
+  if (!activity || !program) {
+    throw new Error("Activity or Program not found");
   }
 
-  /**
-   * Add an activity to a program
-   */
-  async addActivityToProgram(
-    activityId: string,
-    programId: string,
-  ): Promise<void> {
-    const activity = await this.getActivity(activityId);
-    const program = await storageService.getById<Program>(
-      STORAGE_KEYS.PROGRAMS,
-      programId,
-    );
-
-    if (!activity || !program) {
-      throw new Error("Activity or Program not found");
-    }
-
-    if (activity.programIds.includes(programId)) {
-      throw new Error("Activity is already in this program");
-    }
-
-    // Update activity
-    activity.programIds.push(programId);
-    await this.saveActivity(activity);
-
-    // Update program
-    if (!program.activityIds || !program.activityIds.includes(activityId)) {
-      program.activityIds = program.activityIds
-        ? [...program.activityIds, activityId]
-        : [activityId];
-      await storageService.save(STORAGE_KEYS.PROGRAMS, program);
-    }
+  if (activity.programIds.includes(programId)) {
+    throw new Error("Activity is already in this program");
   }
 
-  /**
-   * Remove an activity from a program
-   */
-  async removeActivityFromProgram(
-    activityId: string,
-    programId: string,
-  ): Promise<void> {
-    const activity = await this.getActivity(activityId);
-    const program = await storageService.getById<Program>(
-      STORAGE_KEYS.PROGRAMS,
-      programId,
-    );
+  // Update activity
+  const updatedActivity = {
+    ...activity,
+    programIds: [...activity.programIds, programId],
+    updatedAt: new Date().toISOString(),
+  };
+  await storageService.save(STORAGE_KEYS.ACTIVITIES, updatedActivity);
 
-    if (!activity || !program) {
-      throw new Error("Activity or Program not found");
-    }
-
-    // Update activity
-    activity.programIds =
-      activity.programIds?.filter((id) => id !== programId) || [];
-    await this.saveActivity(activity);
-
-    // Update program
-    program.activityIds =
-      program.activityIds?.filter((id) => id !== activityId) || [];
+  // Update program
+  if (!program.activityIds || !program.activityIds.includes(activityId)) {
+    program.activityIds = program.activityIds
+      ? [...program.activityIds, activityId]
+      : [activityId];
     await storageService.save(STORAGE_KEYS.PROGRAMS, program);
   }
 }
 
-export const activitiesService = new ActivitiesService();
+async function removeActivityFromProgram(
+  activityId: string,
+  programId: string
+): Promise<void> {
+  const activity = await getActivityById(activityId);
+  const program = await storageService.getById<Program>(
+    STORAGE_KEYS.PROGRAMS,
+    programId
+  );
+
+  if (!activity || !program) {
+    throw new Error("Activity or Program not found");
+  }
+
+  // Update activity
+  const updatedActivity = {
+    ...activity,
+    programIds: activity.programIds?.filter((id) => id !== programId) || [],
+    updatedAt: new Date().toISOString(),
+  };
+  await storageService.save(STORAGE_KEYS.ACTIVITIES, updatedActivity);
+
+  // Update program
+  program.activityIds =
+    program.activityIds?.filter((id) => id !== activityId) || [];
+  await storageService.save(STORAGE_KEYS.PROGRAMS, program);
+}

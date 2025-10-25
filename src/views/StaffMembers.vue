@@ -91,7 +91,7 @@
 
         <template #cell-role="{ item }">
           <span class="badge badge-primary badge-sm">{{
-            formatRole(item.role)
+            formatRole(item.roleId)
           }}</span>
         </template>
 
@@ -114,7 +114,7 @@
             outline
             color="grey-8"
             size="sm"
-            @click.stop="selectMember(item.id)"
+            @click="selectMember(item.id)"
             label="View Details"
           />
         </template>
@@ -165,12 +165,8 @@
       <!-- Add/Edit Member Modal -->
       <StaffMemberFormModal
         v-if="showModal"
-        :is-editing="!!editingMemberId"
-        :form-data="formData"
-        :staff-members="staffMembersStore.staffMembers"
-        :current-member-id="editingMemberId || ''"
+        :staff-member-id="editingMemberId || undefined"
         @close="closeModal"
-        @save="saveMember"
       />
 
       <!-- Confirm Delete Modal -->
@@ -207,9 +203,6 @@ import EventsByDate from "@/components/EventsByDate.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import DataTable from "@/components/DataTable.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
-import Autocomplete, {
-  AutocompleteOption,
-} from "@/components/Autocomplete.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import StaffMemberDetailModal from "@/components/modals/StaffMemberDetailModal.vue";
 import StaffMemberFormModal from "@/components/modals/StaffMemberFormModal.vue";
@@ -225,7 +218,6 @@ export default defineComponent({
     ConfirmModal,
     DataTable,
     ViewToggle,
-    Autocomplete,
     EmptyState,
     StaffMemberDetailModal,
     StaffMemberFormModal,
@@ -236,20 +228,10 @@ export default defineComponent({
       showModal: false,
       editingMemberId: null as string | null,
       viewMode: "grid" as "grid" | "table",
-      expandedMembers: new Set<string>(),
       currentPage: 1,
       pageSize: 10,
       showConfirmModal: false,
       confirmAction: null as (() => void) | null,
-      formData: {
-        firstName: "",
-        lastName: "",
-        roleId: "" as StaffMember["roleId"],
-        email: "",
-        phone: "",
-        certificationIds: [] as string[],
-        managerId: "",
-      },
       searchQuery: "",
       filterRole: "",
       filterCertification: "",
@@ -283,23 +265,6 @@ export default defineComponent({
     },
     rolesStore() {
       return useRolesStore();
-    },
-    roleOptions(): Array<AutocompleteOption> {
-      return this.rolesStore.roles.map((role) => ({
-        label: role.name,
-        value: role.id,
-      }));
-    },
-    managerOptions(): Array<AutocompleteOption> {
-      const options = [{ label: "No Manager (Top Level)", value: "" }];
-      const managers: Array<AutocompleteOption> =
-        this.staffMembersStore.staffMembers
-          .filter((m) => m.id !== this.editingMemberId)
-          .map((member: StaffMember) => ({
-            label: `${member.firstName} ${member.lastName} (${this.formatRole(member.roleId)})`,
-            value: member.id,
-          }));
-      return [...options, ...managers];
     },
     staffFilters(): Filter[] {
       return [
@@ -400,19 +365,6 @@ export default defineComponent({
       this.currentPage = 1;
     },
   },
-  mounted() {
-    // Auto-expand all members with reports
-    this.staffMembersStore.staffMembers.forEach((member) => {
-      if (this.getDirectReports(member.id).length > 0) {
-        this.expandedMembers.add(member.id);
-      }
-    });
-
-    // Initialize formData with first available role
-    if (this.rolesStore.roles.length > 0 && !this.formData.roleId) {
-      this.formData.roleId = this.rolesStore.roles[0].id;
-    }
-  },
   methods: {
     clearFilters(): void {
       this.searchQuery = "";
@@ -450,38 +402,8 @@ export default defineComponent({
       if (!this.selectedMember) return;
 
       this.editingMemberId = this.selectedMember.id;
-      this.formData = {
-        firstName: this.selectedMember.firstName,
-        lastName: this.selectedMember.lastName,
-        roleId: this.selectedMember.roleId,
-        email: this.selectedMember.email || "",
-        phone: this.selectedMember.phone || "",
-        certificationIds: this.selectedMember.certificationIds || [],
-        managerId: this.selectedMember.managerId || "",
-      };
-
       this.selectedMemberId = null;
       this.showModal = true;
-    },
-    async saveMember(formData: typeof this.formData): Promise<void> {
-      const memberData: StaffMember = {
-        id: this.editingMemberId || `staff-${Date.now()}`,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        roleId: formData.roleId,
-        email: formData.email,
-        phone: formData.phone,
-        certificationIds: formData.certificationIds,
-        managerId: formData.managerId || undefined,
-      };
-
-      if (this.editingMemberId) {
-        await this.staffMembersStore.updateStaffMember(memberData);
-      } else {
-        await this.staffMembersStore.addStaffMember(memberData);
-      }
-
-      this.closeModal();
     },
     deleteMemberConfirm(): void {
       if (!this.selectedMemberId) return;
@@ -507,15 +429,6 @@ export default defineComponent({
     closeModal(): void {
       this.showModal = false;
       this.editingMemberId = null;
-      this.formData = {
-        firstName: "",
-        lastName: "",
-        roleId: (this.rolesStore.roles[0]?.id || "") as StaffMember["roleId"],
-        email: "",
-        phone: "",
-        certificationIds: [],
-        managerId: "",
-      };
     },
   },
 });
@@ -537,35 +450,6 @@ export default defineComponent({
   grid-column: 1 / -1;
 }
 
-.detail-section {
-  margin-bottom: 1.5rem;
-}
-
-.detail-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
-}
-
-.events-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.event-item {
-  padding: 0.75rem;
-  background: var(--background);
-  border-radius: var(--radius);
-  border-left: 4px solid var(--primary-color);
-}
-
-.event-item-title {
-  font-weight: 500;
-  margin-bottom: 0.25rem;
-}
-
 /* Table View Styles */
 /* Table cell custom styles */
 .member-name-content {
@@ -577,13 +461,6 @@ export default defineComponent({
 .member-fullname {
   font-weight: 500;
   color: var(--text-primary);
-}
-
-.contact-cell {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .event-count {
@@ -603,162 +480,5 @@ export default defineComponent({
 .badge-sm {
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
-}
-
-/* Org Chart - Tree List Style */
-.org-chart-container {
-  padding: 0;
-}
-
-.hierarchy-tree {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.tree-section {
-  margin-bottom: 2rem;
-}
-
-.tree-item {
-  display: flex;
-  align-items: stretch;
-  margin-bottom: 0.5rem;
-  position: relative;
-}
-
-.tree-item:hover .tree-content {
-  background: var(--background);
-  box-shadow: var(--shadow-lg);
-}
-
-.tree-line {
-  position: relative;
-  min-width: 40px;
-  margin-right: 1rem;
-}
-
-.tree-line::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 20px;
-  width: 2px;
-  background: var(--border-color);
-}
-
-.tree-line::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 20px;
-  width: 20px;
-  height: 2px;
-  background: var(--border-color);
-}
-
-.tree-line.is-last::before {
-  bottom: 50%;
-}
-
-.level-0 .tree-line {
-  display: none;
-}
-
-.level-1 .tree-line {
-  margin-left: 0;
-}
-
-.level-2 .tree-line {
-  margin-left: 40px;
-}
-
-.tree-content {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: var(--card-background);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  position: relative;
-}
-
-.level-0 .tree-content {
-  border: 2px solid var(--primary-color);
-  box-shadow: var(--shadow-lg);
-}
-
-.expand-btn {
-  background: transparent;
-  border: none;
-  padding: 0.25rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  transition: all 0.15s ease;
-  border-radius: var(--radius);
-  flex-shrink: 0;
-}
-
-.expand-btn:hover {
-  background: var(--background);
-  color: var(--primary-color);
-}
-
-.expand-btn svg {
-  transition: transform 0.2s ease;
-}
-
-.tree-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.tree-name {
-  font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
-  color: var(--text-primary);
-}
-
-.tree-name-sm {
-  font-weight: 600;
-  font-size: 0.875rem;
-  margin-bottom: 0.125rem;
-  color: var(--text-primary);
-}
-
-.tree-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.tree-role {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.tree-role-sm {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-.tree-count {
-  font-size: 0.75rem;
-  color: var(--primary-color);
-  font-weight: 500;
-  padding: 0.125rem 0.5rem;
-  background: var(--primary-color);
-  color: white;
-  border-radius: 999px;
-  opacity: 0.8;
 }
 </style>

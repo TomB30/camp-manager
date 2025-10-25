@@ -4,6 +4,7 @@
 
 import { VueWrapper } from "@vue/test-utils";
 import { Store } from "pinia";
+import { expect } from "vitest";
 
 /**
  * Expect a validation error to be displayed
@@ -43,7 +44,7 @@ export function expectStoreState(
   expectedState: Record<string, unknown>,
 ): void {
   for (const [key, expectedValue] of Object.entries(expectedState)) {
-    expect(store.$state[key]).toEqual(expectedValue);
+    expect((store.$state as Record<string, unknown>)[key]).toEqual(expectedValue);
   }
 }
 

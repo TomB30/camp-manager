@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Group, Camper, StaffMember } from "@/types";
+import type { Group, Camper, StaffMember, GroupCreationRequest, GroupUpdateRequest } from "@/types";
 import { groupsService } from "@/services";
 import { useCampersStore } from "./campersStore";
 import { useStaffMembersStore } from "./staffMembersStore";
@@ -226,20 +226,21 @@ export const useGroupsStore = defineStore("groups", {
     async loadGroups(): Promise<void> {
       this.loading = true;
       try {
-        this.groups = await groupsService.getGroups();
+        this.groups = await groupsService.listGroups();
       } finally {
         this.loading = false;
       }
     },
 
-    async addGroup(group: Group): Promise<void> {
-      await groupsService.saveGroup(group);
+    async addGroup(groupRequest: GroupCreationRequest): Promise<Group> {
+      const group = await groupsService.createGroup(groupRequest);
       this.groups.push(group);
+      return group;
     },
 
-    async updateGroup(group: Group): Promise<void> {
-      await groupsService.saveGroup(group);
-      const index = this.groups.findIndex((g) => g.id === group.id);
+    async updateGroup(id: string, groupUpdate: GroupUpdateRequest): Promise<void> {
+      const group = await groupsService.updateGroup(id, groupUpdate);
+      const index = this.groups.findIndex((g) => g.id === id);
       if (index >= 0) {
         this.groups[index] = group;
       }

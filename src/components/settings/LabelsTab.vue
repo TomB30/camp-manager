@@ -11,7 +11,6 @@
       </template>
     </TabHeader>
 
-    <!-- Search and Filters -->
     <FilterBar
       v-if="labelsStore.labels.length > 0"
       v-model:searchQuery="searchQuery"
@@ -21,7 +20,6 @@
       @clear="clearFilters"
     />
 
-    <!-- Empty State -->
     <EmptyState
       v-if="labelsStore.labels.length === 0"
       type="empty"
@@ -32,7 +30,6 @@
       icon-name="Tag"
     />
 
-    <!-- Labels Grid -->
     <div v-else class="labels-grid">
       <LabelCard
         v-for="label in filteredLabels"
@@ -43,16 +40,12 @@
       />
     </div>
 
-    <!-- Add/Edit Label Modal -->
     <LabelFormModal
       v-if="showAddModal || showEditModal"
-      :is-editing="!!editingLabel"
-      :form-data="formData"
+      :label-id="editingLabel?.id"
       @close="closeModal"
-      @save="saveLabel"
     />
 
-    <!-- Confirm Delete Modal -->
     <ConfirmModal
       v-if="showConfirmModal"
       title="Delete Label"
@@ -102,11 +95,6 @@ export default defineComponent({
       editingLabel: null as Label | null,
       labelToDelete: null as Label | null,
       searchQuery: "",
-      formData: {
-        name: "",
-        description: "",
-        colorId: "",
-      },
     };
   },
   computed: {
@@ -130,11 +118,6 @@ export default defineComponent({
   methods: {
     editLabel(label: Label) {
       this.editingLabel = label;
-      this.formData = {
-        name: label.name,
-        description: label.description || "",
-        colorId: label.colorId || "",
-      };
       this.showEditModal = true;
     },
 
@@ -156,49 +139,10 @@ export default defineComponent({
       }
     },
 
-    async saveLabel(data: {
-      name: string;
-      description?: string;
-      colorId?: string;
-    }) {
-      try {
-        if (this.editingLabel) {
-          // Update existing
-          await this.labelsStore.updateLabel({
-            ...this.editingLabel,
-            name: data.name,
-            description: data.description,
-            colorId: data.colorId || undefined,
-            updatedAt: new Date().toISOString(),
-          });
-          this.toast.success("Label updated successfully");
-        } else {
-          // Create new
-          await this.labelsStore.addLabel({
-            id: crypto.randomUUID(),
-            name: data.name,
-            description: data.description,
-            colorId: data.colorId || undefined,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          });
-          this.toast.success("Label added successfully");
-        }
-        this.closeModal();
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to save label");
-      }
-    },
-
     closeModal() {
       this.showAddModal = false;
       this.showEditModal = false;
       this.editingLabel = null;
-      this.formData = {
-        name: "",
-        description: "",
-        colorId: "",
-      };
     },
 
     clearFilters() {

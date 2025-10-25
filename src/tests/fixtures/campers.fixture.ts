@@ -12,7 +12,7 @@ export const campersFixture: Camper[] = [
     parentContact: "555-0101",
     allergies: ["Peanuts"],
     medicalNotes: "Carries EpiPen",
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-2",
@@ -23,7 +23,7 @@ export const campersFixture: Camper[] = [
     sessionId: sessionsFixture[1].id,
     parentContact: "555-0102",
     allergies: [],
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-3",
@@ -34,7 +34,7 @@ export const campersFixture: Camper[] = [
     sessionId: sessionsFixture[1].id,
     parentContact: "555-0103",
     allergies: ["Dairy"],
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-4",
@@ -45,7 +45,7 @@ export const campersFixture: Camper[] = [
     sessionId: sessionsFixture[2].id,
     parentContact: "555-0104",
     allergies: [],
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-5",
@@ -56,7 +56,7 @@ export const campersFixture: Camper[] = [
     sessionId: sessionsFixture[2].id,
     parentContact: "555-0105",
     allergies: [],
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-6",
@@ -68,7 +68,7 @@ export const campersFixture: Camper[] = [
     parentContact: "555-0106",
     allergies: ["Shellfish"],
     medicalNotes: "Asthma - has inhaler",
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-7",
@@ -79,7 +79,7 @@ export const campersFixture: Camper[] = [
     sessionId: sessionsFixture[1].id,
     parentContact: "555-0107",
     allergies: [],
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-8",
@@ -90,7 +90,7 @@ export const campersFixture: Camper[] = [
     sessionId: sessionsFixture[2].id,
     parentContact: "555-0108",
     allergies: [],
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-9",
@@ -101,7 +101,7 @@ export const campersFixture: Camper[] = [
     sessionId: sessionsFixture[1].id,
     parentContact: "555-0109",
     allergies: ["Gluten"],
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-10",
@@ -112,7 +112,7 @@ export const campersFixture: Camper[] = [
     sessionId: sessionsFixture[1].id,
     parentContact: "555-0110",
     allergies: [],
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-11",
@@ -123,18 +123,18 @@ export const campersFixture: Camper[] = [
     sessionId: sessionsFixture[2].id,
     parentContact: "555-0111",
     allergies: [],
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-12",
     firstName: "Alex",
     lastName: "Martinez",
     age: 14,
-    gender: "non-binary",
+    gender: "female",
     sessionId: sessionsFixture[1].id,
     parentContact: "555-0112",
     allergies: [],
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-13",
@@ -146,7 +146,7 @@ export const campersFixture: Camper[] = [
     parentContact: "555-0113",
     allergies: ["Bee stings"],
     medicalNotes: "Severe reaction to bee stings",
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-14",
@@ -157,7 +157,7 @@ export const campersFixture: Camper[] = [
     sessionId: sessionsFixture[2].id,
     parentContact: "555-0114",
     allergies: [],
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "camper-15",
@@ -168,7 +168,7 @@ export const campersFixture: Camper[] = [
     sessionId: sessionsFixture[1].id,
     parentContact: "555-0115",
     allergies: ["Latex"],
-    createdAt: "2025-10-01T09:00:00.000Z",
+    registrationDate: "2025-10-01T09:00:00.000Z",
   },
 ];
 

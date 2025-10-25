@@ -2,12 +2,14 @@
  * Test utilities for mounting Vue components with required plugins
  */
 
-import { mount, VueWrapper } from "@vue/test-utils";
+import { ComponentMountingOptions, mount, VueWrapper } from "@vue/test-utils";
 import { createPinia, setActivePinia, Pinia } from "pinia";
 import { Quasar } from "quasar";
+import type { Plugin } from "vue";
 import { createRouter, createMemoryHistory, Router } from "vue-router";
 import type { Component } from "vue";
 import BaseButton from "@/components/common/BaseButton.vue";
+import BaseInput from "@/components/common/BaseInput.vue";
 
 /**
  * Create a test instance of Pinia
@@ -52,6 +54,7 @@ interface MountOptions {
 /**
  * Create a wrapper for a component with all necessary plugins
  */
+
 export function createWrapper<T extends Component>(
   component: T,
   options: MountOptions = {},
@@ -59,13 +62,20 @@ export function createWrapper<T extends Component>(
   const pinia = options.pinia || createTestingPinia();
   const router = options.router || mockRouter();
 
-  const globalPlugins = [pinia, router, [Quasar, {}]];
+  const globalPlugins: Plugin[] = [pinia, router, Quasar];
 
-  const mountOptions = {
-    ...options,
+  // Fix for lint error due to options.props type mismatch.
+  const { props, slots, shallow, ...restOptions } = options;
+
+  const mountOptions: ComponentMountingOptions<T> = {
+    ...(restOptions as Omit<typeof restOptions, "props" | "slots" | "shallow">),
+    props: props as any, // Type forced to allow for flexible Record props
+    slots: slots as any, // Type forced similarly
+    ...(shallow !== undefined ? { shallow } : {}),
     global: {
       components: {
         BaseButton,
+        BaseInput,
       },
       plugins: globalPlugins,
       stubs: {
@@ -91,7 +101,8 @@ export function createWrapper<T extends Component>(
     },
   };
 
-  return mount(component, mountOptions);
+  // Fix lint error by casting to unknown first
+  return mount(component, mountOptions) as unknown as VueWrapper;
 }
 
 /**

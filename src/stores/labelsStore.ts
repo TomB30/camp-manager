@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import type { Label } from "@/types";
 import { labelsService } from "@/services";
+import type { LabelCreationRequest, LabelUpdateRequest } from "@/services";
 
 export const useLabelsStore = defineStore("labels", {
   state: () => ({
@@ -28,20 +29,21 @@ export const useLabelsStore = defineStore("labels", {
     async loadLabels(): Promise<void> {
       this.loading = true;
       try {
-        this.labels = await labelsService.getLabels();
+        this.labels = await labelsService.listLabels();
       } finally {
         this.loading = false;
       }
     },
 
-    async addLabel(label: Label): Promise<void> {
-      await labelsService.saveLabel(label);
+    async addLabel(labelRequest: LabelCreationRequest): Promise<Label> {
+      const label = await labelsService.createLabel(labelRequest);
       this.labels = this.labels ? [...this.labels, label] : [label];
+      return label;
     },
 
-    async updateLabel(label: Label): Promise<void> {
-      await labelsService.saveLabel(label);
-      const index = this.labels.findIndex((l: Label) => l.id === label.id);
+    async updateLabel(id: string, labelUpdate: LabelUpdateRequest): Promise<void> {
+      const label = await labelsService.updateLabel(id, labelUpdate);
+      const index = this.labels.findIndex((l: Label) => l.id === id);
       if (index >= 0) {
         this.labels[index] = label;
       }

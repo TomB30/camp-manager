@@ -7,22 +7,6 @@ import { useActivitiesStore, useLocationsStore, useStaffMembersStore, useGroupsS
 describe("EventFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
 
-  const emptyFormData = {
-    title: "",
-    eventDate: "",
-    startDate: "",
-    endDate: "",
-    locationId: "",
-    capacity: 0,
-    colorId: "",
-    requiredCertifications: [],
-    groupIds: [],
-    excludeCamperIds: [],
-    excludeStaffIds: [],
-    programId: undefined,
-    activityId: undefined,
-  };
-
   const testEventDate = new Date("2025-07-15");
 
   beforeEach(() => {
@@ -45,13 +29,7 @@ describe("EventFormModal", () => {
     it("renders with create title", () => {
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: false,
-          formData: emptyFormData,
-          eventDate: testEventDate,
-          editingEventId: null,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          defaultEventDate: testEventDate,
         },
         pinia,
       });
@@ -62,13 +40,7 @@ describe("EventFormModal", () => {
     it("renders event title input", () => {
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: false,
-          formData: emptyFormData,
-          eventDate: testEventDate,
-          editingEventId: null,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          defaultEventDate: testEventDate,
         },
         pinia,
       });
@@ -79,13 +51,7 @@ describe("EventFormModal", () => {
     it("renders date and time inputs", () => {
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: false,
-          formData: emptyFormData,
-          eventDate: testEventDate,
-          editingEventId: null,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          defaultEventDate: testEventDate,
         },
         pinia,
       });
@@ -97,13 +63,7 @@ describe("EventFormModal", () => {
     it("shows activity template selector in create mode", () => {
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: false,
-          formData: emptyFormData,
-          eventDate: testEventDate,
-          editingEventId: null,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          defaultEventDate: testEventDate,
         },
         pinia,
       });
@@ -114,13 +74,7 @@ describe("EventFormModal", () => {
     it("shows recurrence option in create mode", () => {
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: false,
-          formData: emptyFormData,
-          eventDate: testEventDate,
-          editingEventId: null,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          defaultEventDate: testEventDate,
         },
         pinia,
       });
@@ -131,13 +85,7 @@ describe("EventFormModal", () => {
     it("contains form element", () => {
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: false,
-          formData: emptyFormData,
-          eventDate: testEventDate,
-          editingEventId: null,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          defaultEventDate: testEventDate,
         },
         pinia,
       });
@@ -149,30 +97,10 @@ describe("EventFormModal", () => {
   describe("Edit Mode", () => {
     it("renders with edit title", () => {
       const event = eventsFixture.find(e => !e.recurrenceId) || eventsFixture[0];
-      const editFormData = {
-        title: event.title,
-        eventDate: event.eventDate,
-        startDate: event.startDate,
-        endDate: event.endDate,
-        locationId: event.locationId,
-        capacity: event.capacity,
-        colorId: event.colorId || "",
-        requiredCertifications: [],
-        groupIds: [],
-        excludeCamperIds: [],
-        excludeStaffIds: [],
-        programId: event.programId,
-        activityId: event.activityId,
-      };
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: true,
-          formData: editFormData,
-          eventDate: new Date(event.eventDate),
-          editingEventId: event.id,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          eventId: event.id,
+          defaultEventDate: new Date(event.startDate),
         },
         pinia,
       });
@@ -182,70 +110,28 @@ describe("EventFormModal", () => {
 
     it("does not show activity template selector in edit mode", () => {
       const event = eventsFixture.find(e => !e.recurrenceId) || eventsFixture[0];
-      const editFormData = {
-        title: event.title,
-        eventDate: event.eventDate,
-        startDate: event.startDate,
-        endDate: event.endDate,
-        locationId: event.locationId,
-        capacity: event.capacity,
-        colorId: event.colorId || "",
-        requiredCertifications: [],
-        groupIds: [],
-        excludeCamperIds: [],
-        excludeStaffIds: [],
-        programId: event.programId,
-        activityId: event.activityId,
-      };
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: true,
-          formData: editFormData,
-          eventDate: new Date(event.eventDate),
-          editingEventId: event.id,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          eventId: event.id,
+          defaultEventDate: new Date(event.startDate),
         },
         pinia,
       });
 
-      const vm = wrapper.vm as any;
-      expect(vm.isEditing).toBe(true);
+      expect(wrapper.text()).toContain("Edit Event");
     });
 
     it("does not show recurrence option in edit mode", () => {
       const event = eventsFixture.find(e => !e.recurrenceId) || eventsFixture[0];
-      const editFormData = {
-        title: event.title,
-        eventDate: event.eventDate,
-        startDate: event.startDate,
-        endDate: event.endDate,
-        locationId: event.locationId,
-        capacity: event.capacity,
-        colorId: event.colorId || "",
-        requiredCertifications: [],
-        groupIds: [],
-        excludeCamperIds: [],
-        excludeStaffIds: [],
-        programId: event.programId,
-        activityId: event.activityId,
-      };
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: true,
-          formData: editFormData,
-          eventDate: new Date(event.eventDate),
-          editingEventId: event.id,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          eventId: event.id,
+          defaultEventDate: new Date(event.startDate),
         },
         pinia,
       });
 
-      const vm = wrapper.vm as any;
-      expect(vm.isEditing).toBe(true);
+      expect(wrapper.text()).not.toContain("Repeat Event");
     });
   });
 
@@ -253,13 +139,7 @@ describe("EventFormModal", () => {
     it("requires event title", () => {
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: false,
-          formData: emptyFormData,
-          eventDate: testEventDate,
-          editingEventId: null,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          defaultEventDate: testEventDate,
         },
         pinia,
       });
@@ -271,13 +151,7 @@ describe("EventFormModal", () => {
     it("requires event date", () => {
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: false,
-          formData: emptyFormData,
-          eventDate: testEventDate,
-          editingEventId: null,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          defaultEventDate: testEventDate,
         },
         pinia,
       });
@@ -289,13 +163,7 @@ describe("EventFormModal", () => {
     it("requires start and end times", () => {
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: false,
-          formData: emptyFormData,
-          eventDate: testEventDate,
-          editingEventId: null,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          defaultEventDate: testEventDate,
         },
         pinia,
       });
@@ -309,13 +177,7 @@ describe("EventFormModal", () => {
     it("emits close event", () => {
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          isEditing: false,
-          formData: emptyFormData,
-          eventDate: testEventDate,
-          editingEventId: null,
-          rooms: locationsFixture,
-          staffMembers: staffMembersFixture,
-          groups: groupsFixture,
+          defaultEventDate: testEventDate,
         },
         pinia,
       });

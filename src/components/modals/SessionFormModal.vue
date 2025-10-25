@@ -1,6 +1,6 @@
 <template>
   <BaseModal
-    :title="isEditing ? 'Edit Session' : 'Add New Session'"
+    :title="isEditing ? 'Update Session' : 'Create Session'"
     @close="$emit('close')"
   >
     <template #body>
@@ -77,18 +77,15 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import { SessionCreationRequest } from "@/types";
 import { useSessionsStore } from "@/stores";
 import type { QForm } from "quasar";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
   name: "SessionFormModal",
   components: {
     BaseModal,
-    BaseInput,
-    BaseButton,
   },
   props: {
     sessionId: {
@@ -96,10 +93,14 @@ export default defineComponent({
       required: false,
     },
   },
-  emits: ["close", "save"],
+  emits: ["close"],
+  setup() {
+    const sessionsStore = useSessionsStore();
+    const toast = useToast();
+    return { sessionsStore, toast };
+  },
   data() {
     return {
-      sessionsStore: useSessionsStore(),
       formModel: {
         name: "",
         startDate: "",
@@ -108,6 +109,7 @@ export default defineComponent({
         maxCampers: undefined,
       } as SessionCreationRequest,
       formRef: null as any,
+      loading: false as boolean,
     };
   },
   created() {
@@ -151,7 +153,40 @@ export default defineComponent({
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
 
-      this.$emit("save", this.formModel);
+      if (this.isEditing) {
+        return this.updateSession();
+      } else {
+        return this.createSession();
+      }
+    },
+    async updateSession(): Promise<void> {
+      if (!this.sessionId) return;
+      try {
+        this.loading = true;
+        await this.sessionsStore.updateSession(this.sessionId, this.formModel);
+        this.toast.success("Session updated successfully");
+      } catch (error) {
+        this.toast.error(
+          (error as Error).message || "Failed to update session"
+        );
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
+    },
+    async createSession(): Promise<void> {
+      try {
+        this.loading = true;
+        await this.sessionsStore.createSession(this.formModel);
+        this.toast.success("Session created successfully");
+      } catch (error) {
+        this.toast.error(
+          (error as Error).message || "Failed to create session"
+        );
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
     },
   },
 });

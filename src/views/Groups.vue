@@ -15,7 +15,6 @@
         </template>
       </ViewHeader>
 
-      <!-- Search and Filters -->
       <FilterBar
         v-model:searchQuery="searchQuery"
         v-model:filter-type="filterType"
@@ -32,7 +31,6 @@
         </template>
       </FilterBar>
 
-      <!-- Grid View -->
       <div v-if="viewMode === 'grid'" class="groups-grid">
         <GroupCard
           v-for="group in filteredGroups"
@@ -66,7 +64,6 @@
         />
       </div>
 
-      <!-- Table View -->
       <DataTable
         v-if="viewMode === 'table'"
         :columns="groupColumns"
@@ -152,7 +149,6 @@
         </template>
       </DataTable>
 
-      <!-- Group Detail Modal -->
       <GroupDetailModal
         v-if="!!selectedGroupId"
         :group="selectedGroup"
@@ -163,7 +159,6 @@
         @delete="deleteGroupConfirm"
       />
 
-      <!-- Add/Edit Group Modal -->
       <GroupFormModal
         v-if="showModal"
         :is-editing="!!editingGroupId"
@@ -180,7 +175,6 @@
         @save="saveGroup"
       />
 
-      <!-- Confirmation Modal -->
       <ConfirmModal
         v-if="showConfirmModal"
         title="Delete Group"
@@ -555,7 +549,7 @@ export default defineComponent({
       }
 
       if (this.editingGroupId) {
-        await this.groupsStore.updateGroup(groupData);
+        await this.groupsStore.updateGroup(this.editingGroupId, groupData);
         toast.success("Group updated successfully");
       } else {
         await this.groupsStore.addGroup(groupData);

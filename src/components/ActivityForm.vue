@@ -125,8 +125,6 @@ import Autocomplete, {
 } from "@/components/Autocomplete.vue";
 import ColorPicker from "@/components/ColorPicker.vue";
 import SelectionList from "@/components/SelectionList.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
 import type { Certification } from "@/types";
 
 export interface ActivityFormData {
@@ -146,8 +144,6 @@ export default defineComponent({
     Autocomplete,
     ColorPicker,
     SelectionList,
-    BaseButton,
-    BaseInput,
   },
   props: {
     modelValue: {

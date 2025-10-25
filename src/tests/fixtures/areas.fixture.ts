@@ -45,7 +45,7 @@ export const areasFixture: Area[] = [
     id: "area-5",
     name: "Sports Complex",
     description: "Athletic fields and courts",
-    type: "sports",
+    type: "field",
     capacity: 100,
     equipment: ["Balls", "Goals", "Nets", "Cones"],
     notes: "Various sports activities",

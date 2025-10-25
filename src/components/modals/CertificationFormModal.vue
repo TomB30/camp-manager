@@ -8,7 +8,7 @@
         <div class="form-group">
           <label class="form-label">Certification Name</label>
           <BaseInput
-            v-model="localFormData.name"
+            v-model="formModel.name"
             placeholder="Enter certification name"
             :rules="[(val: string) => !!val || 'Enter certification name']"
           />
@@ -53,73 +53,116 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import type { QForm } from "quasar";
-
-interface CertificationFormData {
-  name: string;
-  description: string;
-  validityPeriodMonths: number | undefined;
-}
+import type { CertificationCreationRequest } from "@/types";
+import { useCertificationsStore } from "@/stores";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
   name: "CertificationFormModal",
   components: {
     BaseModal,
-    BaseInput,
-    BaseButton,
   },
   props: {
-    isEditing: {
-      type: Boolean,
-      default: false,
-    },
-    formData: {
-      type: Object as PropType<CertificationFormData>,
-      required: true,
+    certificationId: {
+      type: String as PropType<string>,
+      required: false,
     },
   },
-  emits: ["close", "save"],
+  emits: ["close"],
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData)),
+      formModel: {
+        name: "",
+        description: "",
+        validityPeriodMonths: undefined,
+      } as CertificationCreationRequest,
       formRef: null as any,
+      loading: false as boolean,
     };
   },
+  created() {
+    if (!this.certificationId) return;
+
+    const certification = this.certificationsStore.getCertificationById(
+      this.certificationId
+    );
+    if (!certification) return;
+
+    this.formModel = {
+      name: certification.name,
+      description: certification.description || "",
+      validityPeriodMonths: certification.validityPeriodMonths || undefined,
+    };
+  },
+  setup() {
+    const certificationsStore = useCertificationsStore();
+    const toast = useToast();
+    return { certificationsStore, toast };
+  },
   computed: {
+    isEditing(): boolean {
+      return !!this.certificationId;
+    },
     descriptionModel: {
       get(): string {
-        return this.localFormData.description || "";
+        return this.formModel.description || "";
       },
       set(value: string) {
-        this.localFormData.description = value || "";
+        this.formModel.description = value || "";
       },
     },
     validityPeriodModel: {
       get(): string {
-        return this.localFormData.validityPeriodMonths?.toString() || "";
+        return this.formModel.validityPeriodMonths?.toString() || "";
       },
       set(value: string) {
         const num = parseInt(value);
-        this.localFormData.validityPeriodMonths = isNaN(num) ? undefined : num;
+        this.formModel.validityPeriodMonths = isNaN(num) ? undefined : num;
       },
-    },
-  },
-  watch: {
-    formData: {
-      handler(newVal) {
-        this.localFormData = JSON.parse(JSON.stringify(newVal));
-      },
-      deep: true,
     },
   },
   methods: {
-    async handleSave() {
+    async handleSave(): Promise<void> {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
 
-      this.$emit("save", this.localFormData);
+      if (this.isEditing) {
+        return this.updateCertification();
+      }
+      return this.createCertification();
+    },
+    async createCertification(): Promise<void> {
+      try {
+        this.loading = true;
+        await this.certificationsStore.createCertification(this.formModel);
+        this.toast.success("Certification created successfully");
+      } catch (error) {
+        this.toast.error(
+          (error as Error).message || "Failed to create certification"
+        );
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
+    },
+    async updateCertification(): Promise<void> {
+      if (!this.certificationId) return;
+      try {
+        this.loading = true;
+        await this.certificationsStore.updateCertification(
+          this.certificationId,
+          this.formModel
+        );
+        this.toast.success("Certification updated successfully");
+      } catch (error) {
+        this.toast.error(
+          (error as Error).message || "Failed to update certification"
+        );
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
     },
   },
 });

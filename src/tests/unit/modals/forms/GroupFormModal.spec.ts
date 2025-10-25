@@ -222,8 +222,6 @@ describe("GroupFormModal", () => {
 
     it("has session and housing sections", () => {
       const wrapper = createGroupFormWrapper();
-      const text = wrapper.text();
-      // Check for form presence rather than specific text
       expect(wrapper.find("form").exists()).toBe(true);
     });
   });

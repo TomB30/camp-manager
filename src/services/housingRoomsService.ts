@@ -1,51 +1,70 @@
-/**
- * Housing Rooms Service
- * Handles all housing/sleeping room-related operations
- */
-
-import type { HousingRoom } from "@/types";
+import type {
+  HousingRoom,
+  HousingRoomCreationRequest,
+  HousingRoomUpdateRequest,
+} from "@/types";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 
-class HousingRoomsService {
-  /**
-   * Get all housing rooms
-   */
-  async getHousingRooms(): Promise<HousingRoom[]> {
-    return storageService.getAll<HousingRoom>(STORAGE_KEYS.HOUSING_ROOMS);
-  }
+export const housingRoomsService = {
+  listHousingRooms,
+  createHousingRoom,
+  updateHousingRoom,
+  deleteHousingRoom,
+  getHousingRoomById,
+  getHousingRoomsByArea,
+};
 
-  /**
-   * Get a housing room by ID
-   */
-  async getHousingRoom(id: string): Promise<HousingRoom | null> {
-    return storageService.getById<HousingRoom>(STORAGE_KEYS.HOUSING_ROOMS, id);
-  }
-
-  /**
-   * Save a housing room (create or update)
-   */
-  async saveHousingRoom(housingRoom: HousingRoom): Promise<HousingRoom> {
-    return storageService.save<HousingRoom>(
-      STORAGE_KEYS.HOUSING_ROOMS,
-      housingRoom,
-    );
-  }
-
-  /**
-   * Delete a housing room
-   */
-  async deleteHousingRoom(id: string): Promise<void> {
-    return storageService.delete(STORAGE_KEYS.HOUSING_ROOMS, id);
-  }
-
-  /**
-   * Get housing rooms by area
-   */
-  async getHousingRoomsByArea(areaId: string): Promise<HousingRoom[]> {
-    const rooms = await this.getHousingRooms();
-    return rooms.filter((r) => r.areaId === areaId);
-  }
+async function listHousingRooms(): Promise<HousingRoom[]> {
+  return storageService.getAll<HousingRoom>(STORAGE_KEYS.HOUSING_ROOMS);
 }
 
-export const housingRoomsService = new HousingRoomsService();
+async function createHousingRoom(
+  housingRoom: HousingRoomCreationRequest
+): Promise<HousingRoom> {
+  const newHousingRoom = {
+    ...housingRoom,
+    id: crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  return storageService.save<HousingRoom>(
+    STORAGE_KEYS.HOUSING_ROOMS,
+    newHousingRoom
+  );
+}
+
+async function updateHousingRoom(
+  id: string,
+  housingRoom: HousingRoomUpdateRequest
+): Promise<HousingRoom> {
+  const existingHousingRoom = await storageService.getById<HousingRoom>(
+    STORAGE_KEYS.HOUSING_ROOMS,
+    id
+  );
+  if (!existingHousingRoom) {
+    throw new Error(`Housing room with id ${id} not found`);
+  }
+  const updatedHousingRoom = {
+    ...existingHousingRoom,
+    ...housingRoom,
+    updatedAt: new Date().toISOString(),
+  };
+  return storageService.save<HousingRoom>(
+    STORAGE_KEYS.HOUSING_ROOMS,
+    updatedHousingRoom
+  );
+}
+
+async function deleteHousingRoom(id: string): Promise<void> {
+  return storageService.delete(STORAGE_KEYS.HOUSING_ROOMS, id);
+}
+
+async function getHousingRoomById(id: string): Promise<HousingRoom | null> {
+  return storageService.getById<HousingRoom>(STORAGE_KEYS.HOUSING_ROOMS, id);
+}
+
+async function getHousingRoomsByArea(areaId: string): Promise<HousingRoom[]> {
+  const rooms = await listHousingRooms();
+  return rooms.filter((r) => r.areaId === areaId);
+}

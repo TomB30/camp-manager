@@ -128,8 +128,6 @@ import {
 } from "@/stores";
 import type { Activity } from "@/types";
 import BaseModal from "@/components/BaseModal.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import ActivityForm, {
   type ActivityFormData,
 } from "@/components/ActivityForm.vue";
@@ -141,8 +139,6 @@ export default defineComponent({
   name: "ActivitySelectorModal",
   components: {
     BaseModal,
-    BaseInput,
-    BaseButton,
     ActivityForm,
     DurationDisplay,
     Icon,

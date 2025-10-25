@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Event, StaffMember } from "@/types";
+import type { Event, StaffMember, EventCreationRequest, EventUpdateRequest } from "@/types";
 import { eventsService } from "@/services";
 import { dateUtils } from "@/utils/dateUtils";
 import { useGroupsStore } from "./groupsStore";
@@ -123,15 +123,16 @@ export const useEventsStore = defineStore("events", {
     async loadEvents(): Promise<void> {
       this.loading = true;
       try {
-        this.events = await eventsService.getEvents();
+        this.events = await eventsService.listEvents();
       } finally {
         this.loading = false;
       }
     },
 
-    async addEvent(event: Event): Promise<void> {
-      await eventsService.saveEvent(event);
+    async createEvent(eventRequest: EventCreationRequest): Promise<Event> {
+      const event = await eventsService.createEvent(eventRequest);
       this.events.push(event);
+      return event;
     },
 
     async addEventsBatch(events: Event[]): Promise<void> {
@@ -139,9 +140,9 @@ export const useEventsStore = defineStore("events", {
       this.events.push(...events);
     },
 
-    async updateEvent(event: Event): Promise<void> {
-      await eventsService.saveEvent(event);
-      const index = this.events.findIndex((e) => e.id === event.id);
+    async updateEvent(id: string, eventUpdate: EventUpdateRequest): Promise<void> {
+      const event = await eventsService.updateEvent(id, eventUpdate);
+      const index = this.events.findIndex((e) => e.id === id);
       if (index >= 0) {
         this.events[index] = event;
       }
@@ -165,7 +166,11 @@ export const useEventsStore = defineStore("events", {
 
       if (!event.groupIds.includes(groupId)) {
         event.groupIds.push(groupId);
-        await eventsService.saveEvent(event);
+        const updated = await eventsService.updateEvent(event.id, event);
+        const index = this.events.findIndex((e) => e.id === event.id);
+        if (index >= 0) {
+          this.events[index] = updated;
+        }
       }
     },
 
@@ -180,7 +185,11 @@ export const useEventsStore = defineStore("events", {
       if (!event) throw new Error("Event not found");
 
       event.groupIds = event.groupIds?.filter((id) => id !== groupId) || [];
-      await eventsService.saveEvent(event);
+      const updated = await eventsService.updateEvent(event.id, event);
+      const index = this.events.findIndex((e) => e.id === event.id);
+      if (index >= 0) {
+        this.events[index] = updated;
+      }
     },
 
     /**
@@ -196,7 +205,11 @@ export const useEventsStore = defineStore("events", {
 
       if (!event.excludeCamperIds.includes(camperId)) {
         event.excludeCamperIds.push(camperId);
-        await eventsService.saveEvent(event);
+        const updated = await eventsService.updateEvent(event.id, event);
+        const index = this.events.findIndex((e) => e.id === event.id);
+        if (index >= 0) {
+          this.events[index] = updated;
+        }
       }
     },
 
@@ -212,7 +225,11 @@ export const useEventsStore = defineStore("events", {
 
       event.excludeCamperIds =
         event.excludeCamperIds?.filter((id) => id !== camperId) || [];
-      await eventsService.saveEvent(event);
+      const updated = await eventsService.updateEvent(event.id, event);
+      const index = this.events.findIndex((e) => e.id === event.id);
+      if (index >= 0) {
+        this.events[index] = updated;
+      }
     },
 
     /**
@@ -228,7 +245,11 @@ export const useEventsStore = defineStore("events", {
 
       if (!event.excludeStaffIds.includes(staffId)) {
         event.excludeStaffIds.push(staffId);
-        await eventsService.saveEvent(event);
+        const updated = await eventsService.updateEvent(event.id, event);
+        const index = this.events.findIndex((e) => e.id === event.id);
+        if (index >= 0) {
+          this.events[index] = updated;
+        }
       }
     },
 
@@ -241,7 +262,11 @@ export const useEventsStore = defineStore("events", {
 
       event.excludeStaffIds =
         event.excludeStaffIds?.filter((id) => id !== staffId) || [];
-      await eventsService.saveEvent(event);
+      const updated = await eventsService.updateEvent(event.id, event);
+      const index = this.events.findIndex((e) => e.id === event.id);
+      if (index >= 0) {
+        this.events[index] = updated;
+      }
     },
   },
 });

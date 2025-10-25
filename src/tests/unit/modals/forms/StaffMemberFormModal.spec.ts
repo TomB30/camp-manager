@@ -2,20 +2,10 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { createWrapper, setupTestPinia } from "@/tests/utils";
 import StaffMemberFormModal from "@/components/modals/StaffMemberFormModal.vue";
 import { staffMembersFixture, rolesFixture, certificationsFixture } from "@/tests/fixtures";
-import { useRolesStore, useCertificationsStore } from "@/stores";
+import { useRolesStore, useCertificationsStore, useStaffMembersStore } from "@/stores";
 
 describe("StaffMemberFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
-
-  const emptyFormData = {
-    firstName: "",
-    lastName: "",
-    roleId: "",
-    email: "",
-    phone: "",
-    certificationIds: [],
-    managerId: "",
-  };
 
   beforeEach(() => {
     pinia = setupTestPinia();
@@ -25,48 +15,27 @@ describe("StaffMemberFormModal", () => {
     
     const certificationsStore = useCertificationsStore();
     certificationsStore.certifications = certificationsFixture;
+
+    const staffMembersStore = useStaffMembersStore();
+    staffMembersStore.staffMembers = staffMembersFixture;
   });
 
   describe("Create Mode", () => {
     it("renders with create title", () => {
-      const wrapper = createWrapper(StaffMemberFormModal, {
-        props: {
-          isEditing: false,
-          formData: emptyFormData,
-          staffMembers: staffMembersFixture,
-          currentMemberId: "",
-        },
-        pinia,
-      });
+      const wrapper = createWrapper(StaffMemberFormModal);
 
-      expect(wrapper.text()).toContain("Add New Staff Member");
+      expect(wrapper.text()).toContain("Create New Staff Member");
     });
 
     it("renders required form fields", () => {
-      const wrapper = createWrapper(StaffMemberFormModal, {
-        props: {
-          isEditing: false,
-          formData: emptyFormData,
-          staffMembers: staffMembersFixture,
-          currentMemberId: "",
-        },
-        pinia,
-      });
+      const wrapper = createWrapper(StaffMemberFormModal);
 
       expect(wrapper.find("input[placeholder='Enter first name']").exists()).toBe(true);
       expect(wrapper.find("input[placeholder='Enter last name']").exists()).toBe(true);
     });
 
     it("contains form element", () => {
-      const wrapper = createWrapper(StaffMemberFormModal, {
-        props: {
-          isEditing: false,
-          formData: emptyFormData,
-          staffMembers: staffMembersFixture,
-          currentMemberId: "",
-        },
-        pinia,
-      });
+      const wrapper = createWrapper(StaffMemberFormModal);
 
       expect(wrapper.find("form").exists()).toBe(true);
     });
@@ -75,45 +44,21 @@ describe("StaffMemberFormModal", () => {
   describe("Edit Mode", () => {
     it("renders with edit title", () => {
       const staffMember = staffMembersFixture[0];
-      const editFormData = {
-        firstName: staffMember.firstName,
-        lastName: staffMember.lastName,
-        roleId: staffMember.roleId,
-        email: staffMember.email || "",
-        phone: staffMember.phone || "",
-        certificationIds: staffMember.certificationIds || [],
-        managerId: staffMember.managerId || "",
-      };
       const wrapper = createWrapper(StaffMemberFormModal, {
         props: {
-          isEditing: true,
-          formData: editFormData,
-          staffMembers: staffMembersFixture,
-          currentMemberId: staffMember.id,
+          staffMemberId: staffMember.id,
         },
         pinia,
       });
 
-      expect(wrapper.text()).toContain("Edit Staff Member");
+      expect(wrapper.text()).toContain("Update Staff Member");
     });
 
     it("populates form with staff data", () => {
       const staffMember = staffMembersFixture[0];
-      const editFormData = {
-        firstName: staffMember.firstName,
-        lastName: staffMember.lastName,
-        roleId: staffMember.roleId,
-        email: staffMember.email || "",
-        phone: staffMember.phone || "",
-        certificationIds: staffMember.certificationIds || [],
-        managerId: staffMember.managerId || "",
-      };
       const wrapper = createWrapper(StaffMemberFormModal, {
         props: {
-          isEditing: true,
-          formData: editFormData,
-          staffMembers: staffMembersFixture,
-          currentMemberId: staffMember.id,
+          staffMemberId: staffMember.id,
         },
         pinia,
       });
@@ -125,30 +70,14 @@ describe("StaffMemberFormModal", () => {
 
   describe("Form Validation", () => {
     it("requires firstName", () => {
-      const wrapper = createWrapper(StaffMemberFormModal, {
-        props: {
-          isEditing: false,
-          formData: emptyFormData,
-          staffMembers: staffMembersFixture,
-          currentMemberId: "",
-        },
-        pinia,
-      });
+      const wrapper = createWrapper(StaffMemberFormModal);
 
       const input = wrapper.find("input[placeholder='Enter first name']");
       expect(input.exists()).toBe(true);
     });
 
     it("requires lastName", () => {
-      const wrapper = createWrapper(StaffMemberFormModal, {
-        props: {
-          isEditing: false,
-          formData: emptyFormData,
-          staffMembers: staffMembersFixture,
-          currentMemberId: "",
-        },
-        pinia,
-      });
+      const wrapper = createWrapper(StaffMemberFormModal);
 
       const input = wrapper.find("input[placeholder='Enter last name']");
       expect(input.exists()).toBe(true);
@@ -156,12 +85,6 @@ describe("StaffMemberFormModal", () => {
 
     it("has role selection", () => {
       const wrapper = createWrapper(StaffMemberFormModal, {
-        props: {
-          isEditing: false,
-          formData: emptyFormData,
-          staffMembers: staffMembersFixture,
-          currentMemberId: "",
-        },
         pinia,
       });
 
@@ -172,12 +95,6 @@ describe("StaffMemberFormModal", () => {
   describe("Close Behavior", () => {
     it("emits close event", () => {
       const wrapper = createWrapper(StaffMemberFormModal, {
-        props: {
-          isEditing: false,
-          formData: emptyFormData,
-          staffMembers: staffMembersFixture,
-          currentMemberId: "",
-        },
         pinia,
       });
 

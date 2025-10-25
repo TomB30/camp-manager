@@ -162,10 +162,8 @@
     <!-- Add/Edit Location Modal -->
     <LocationFormModal
       v-if="showModal"
-      :is-editing="!!editingLocationId"
-      :form-data="formData"
+      :location-id="editingLocationId || undefined"
       @close="closeModal"
-      @save="saveLocation"
     />
 
     <!-- Confirm Delete Modal -->
@@ -231,14 +229,6 @@ export default defineComponent({
       viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
-      formData: {
-        name: "",
-        type: "classroom" as Location["type"],
-        capacity: 20,
-        areaId: undefined as string | undefined,
-        equipment: [] as string[],
-        notes: "",
-      },
       searchQuery: "",
       filterType: "",
       filterCapacity: "",
@@ -402,44 +392,8 @@ export default defineComponent({
       if (!this.selectedLocation) return;
 
       this.editingLocationId = this.selectedLocation.id;
-      this.formData = {
-        name: this.selectedLocation.name,
-        type: this.selectedLocation.type,
-        capacity: this.selectedLocation.capacity || 0,
-        areaId: this.selectedLocation.areaId,
-        equipment: this.selectedLocation.equipment || [],
-        notes: this.selectedLocation.notes || "",
-      };
-
       this.selectedLocationId = null;
       this.showModal = true;
-    },
-    async saveLocation(
-      formData: typeof this.formData & { equipment: string[] },
-    ) {
-      try {
-        const locationData: Location = {
-          id: this.editingLocationId || `location-${Date.now()}`,
-          name: formData.name,
-          type: formData.type,
-          capacity: formData.capacity,
-          areaId: formData.areaId,
-          equipment: formData.equipment,
-          notes: formData.notes,
-        };
-
-        if (this.editingLocationId) {
-          await this.locationsStore.updateLocation(locationData);
-          this.toast.success("Location updated successfully");
-        } else {
-          await this.locationsStore.addLocation(locationData);
-          this.toast.success("Location added successfully");
-        }
-
-        this.closeModal();
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to save location");
-      }
     },
     deleteLocationConfirm() {
       if (!this.selectedLocationId) return;
@@ -470,14 +424,6 @@ export default defineComponent({
     closeModal() {
       this.showModal = false;
       this.editingLocationId = null;
-      this.formData = {
-        name: "",
-        type: "classroom",
-        capacity: 20,
-        areaId: undefined,
-        equipment: [],
-        notes: "",
-      };
     },
   },
 });

@@ -60,18 +60,19 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import type { ColorCreationRequest } from "@/types";
 import { useColorsStore } from "@/stores";
 import type { QForm } from "quasar";
-
+import { useToast } from "@/composables/useToast";
 export default defineComponent({
   name: "ColorFormModal",
+  setup() {
+    const colorsStore = useColorsStore();
+    const toast = useToast();
+    return { colorsStore, toast };
+  },
   components: {
     BaseModal,
-    BaseInput,
-    BaseButton,
   },
   props: {
     colorId: {
@@ -79,15 +80,15 @@ export default defineComponent({
       required: false,
     },
   },
-  emits: ["close", "save"],
+  emits: ["close"],
   data() {
     return {
-      colorsStore: useColorsStore(),
       formModel: {
         name: "",
         hexValue: "",
       } as ColorCreationRequest,
       formRef: null as any,
+      loading: false as boolean,
     };
   },
   created() {
@@ -107,12 +108,42 @@ export default defineComponent({
     },
   },
   methods: {
-    async handleSave() {
+    async handleSave(): Promise<void> {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
 
-      this.formModel.hexValue = this.formModel.hexValue.toUpperCase();
-      this.$emit("save", this.formModel);
+      if (this.isEditing) {
+        return this.updateColor();
+      }
+      return this.createColor();
+    },
+    async updateColor(): Promise<void> {
+      if (!this.colorId) return;
+
+      try {
+        this.loading = true;
+        this.formModel.hexValue = this.formModel.hexValue.toUpperCase();
+        await this.colorsStore.updateColor(this.colorId, this.formModel);
+        this.toast.success("Color updated successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to update color");
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
+    },
+    async createColor(): Promise<void> {
+      try {
+        this.loading = true;
+        this.formModel.hexValue = this.formModel.hexValue.toUpperCase();
+        await this.colorsStore.createColor(this.formModel);
+        this.toast.success("Color created successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to create color");
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
     },
   },
 });

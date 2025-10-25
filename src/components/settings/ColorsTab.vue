@@ -44,7 +44,6 @@
       v-if="showFormModal"
       :color-id="editingColor?.id"
       @close="closeModal"
-      @save="saveColor"
     />
 
     <ConfirmModal
@@ -137,33 +136,6 @@ export default defineComponent({
         this.colorToDelete = null;
       } catch (error: any) {
         this.toast.error(error.message || "Failed to delete color");
-      }
-    },
-    async saveColor(data: { name: string; hexValue: string }) {
-      try {
-        if (this.editingColor) {
-          // Update existing
-          await this.colorsStore.updateColor({
-            ...this.editingColor,
-            name: data.name,
-            hexValue: data.hexValue,
-            updatedAt: new Date().toISOString(),
-          });
-          this.toast.success("Color updated successfully");
-        } else {
-          // Create new
-          await this.colorsStore.addColor({
-            id: crypto.randomUUID(),
-            name: data.name,
-            hexValue: data.hexValue,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          });
-          this.toast.success("Color created successfully");
-        }
-        this.closeModal();
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to save color");
       }
     },
     closeModal() {

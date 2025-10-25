@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Color } from "@/types";
+import type { Color, ColorCreationRequest, ColorUpdateRequest } from "@/types";
 import { colorsService } from "@/services";
 
 export const useColorsStore = defineStore("colors", {
@@ -11,7 +11,7 @@ export const useColorsStore = defineStore("colors", {
 
   getters: {
     getColorById(state): (id: string) => Color | undefined {
-      return (id: string): Color | undefined => state.colorsById[id];
+      return (id: string): Color | undefined => state.colors.find((c) => c.id === id);
     },
   },
 
@@ -19,7 +19,7 @@ export const useColorsStore = defineStore("colors", {
     async loadColors(): Promise<void> {
       this.loading = true;
       try {
-        this.colors = await colorsService.getColors();
+        this.colors = await colorsService.listColors();
         this.colorsById = this.colors.reduce(
           (acc, color) => {
             acc[color.id] = color;
@@ -32,15 +32,16 @@ export const useColorsStore = defineStore("colors", {
       }
     },
 
-    async addColor(color: Color): Promise<void> {
-      await colorsService.saveColor(color);
+    async createColor(colorRequest: ColorCreationRequest): Promise<Color> {
+      const color = await colorsService.createColor(colorRequest);
       this.colors.push(color);
       this.colorsById[color.id] = color;
+      return color;
     },
 
-    async updateColor(color: Color): Promise<void> {
-      await colorsService.saveColor(color);
-      const index = this.colors.findIndex((c) => c.id === color.id);
+    async updateColor(id: string, colorUpdate: ColorUpdateRequest): Promise<void> {
+      const color = await colorsService.updateColor(id, colorUpdate);
+      const index = this.colors.findIndex((c) => c.id === id);
       if (index >= 0) {
         this.colors[index] = color;
       }

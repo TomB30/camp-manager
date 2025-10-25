@@ -10,6 +10,7 @@ import "@quasar/extras/material-icons/material-icons.css";
 import "./style.scss";
 import "./utils/devTools";
 import BaseButton from "./components/common/BaseButton.vue";
+import BaseInput from "./components/common/BaseInput.vue";
 
 const app = createApp(App);
 
@@ -19,5 +20,5 @@ app.use(Quasar, {
   plugins: {}, // import Quasar plugins and add here
 });
 app.component("BaseButton", BaseButton);
-
+app.component("BaseInput", BaseInput);
 app.mount("#app");

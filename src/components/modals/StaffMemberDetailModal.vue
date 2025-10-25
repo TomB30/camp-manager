@@ -99,6 +99,7 @@ import {
   useProgramsStore,
   useColorsStore,
   useCertificationsStore,
+  useRolesStore,
 } from "@/stores";
 import type { StaffMember } from "@/types";
 
@@ -118,7 +119,8 @@ export default defineComponent({
     const programsStore = useProgramsStore();
     const colorsStore = useColorsStore();
     const certificationsStore = useCertificationsStore();
-    return { programsStore, colorsStore, certificationsStore };
+    const rolesStore = useRolesStore();
+    return { programsStore, colorsStore, certificationsStore, rolesStore };
   },
   computed: {
     certificationNames(): string[] {
@@ -144,8 +146,9 @@ export default defineComponent({
       }
       return "#6366F1";
     },
-    formatRole(role: string): string {
-      return role.charAt(0).toUpperCase() + role.slice(1);
+    formatRole(roleId: string): string {
+      const role = this.rolesStore.getRoleById(roleId);
+      return role ? role.name.charAt(0).toUpperCase() + role.name.slice(1) : "Unknown Role";
     },
   },
 });

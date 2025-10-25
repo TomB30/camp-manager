@@ -95,7 +95,6 @@
       </template>
     </DataTable>
 
-    <!-- Certification Detail Modal -->
     <CertificationDetailModal
       v-if="!!selectedCertificationId"
       :certification="selectedCertification"
@@ -104,16 +103,12 @@
       @delete="deleteCertificationConfirm"
     />
 
-    <!-- Add/Edit Certification Modal -->
     <CertificationFormModal
       v-if="showModal"
-      :is-editing="!!editingCertificationId"
-      :form-data="formData"
+      :certification-id="editingCertificationId || undefined"
       @close="closeModal"
-      @save="saveCertification"
     />
 
-    <!-- Confirm Delete Modal -->
     <ConfirmModal
       v-if="showConfirmModal"
       title="Delete Certification"
@@ -173,12 +168,6 @@ export default defineComponent({
       viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
-      formData: {
-        name: "",
-        description: "",
-        validityPeriodMonths: undefined as number | undefined,
-      },
-
       certificationColumns: [
         { key: "name", label: "Certification Name", sortable: true },
         { key: "expirationRequired", label: "Type", sortable: true },
@@ -205,11 +194,9 @@ export default defineComponent({
         },
       ];
     },
-
     filteredCertifications(): Certification[] {
       let filtered = this.certificationsStore.certifications;
 
-      // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         filtered = filtered.filter(
@@ -219,7 +206,6 @@ export default defineComponent({
         );
       }
 
-      // Expiration filter
       if (this.filterExpiration && this.filterExpiration !== "") {
         if (this.filterExpiration === "time-limited") {
           filtered = filtered.filter(
@@ -234,7 +220,6 @@ export default defineComponent({
 
       return filtered.sort((a, b) => a.name.localeCompare(b.name));
     },
-
     selectedCertification(): Certification | null {
       if (!this.selectedCertificationId) return null;
       return (
@@ -248,28 +233,19 @@ export default defineComponent({
     selectCertification(id: string) {
       this.selectedCertificationId = id;
     },
-
     editCertificationFromDetail(certification: Certification) {
       this.selectedCertificationId = null;
       this.editCertification(certification);
     },
-
     editCertification(certification: Certification) {
       this.editingCertificationId = certification.id;
-      this.formData = {
-        name: certification.name,
-        description: certification.description || "",
-        validityPeriodMonths: certification.validityPeriodMonths || undefined,
-      };
       this.showModal = true;
     },
-
     deleteCertificationConfirm(id: string) {
       this.certificationToDelete = id;
       this.selectedCertificationId = null;
       this.showConfirmModal = true;
     },
-
     async handleDeleteCertification() {
       if (!this.certificationToDelete) return;
 
@@ -284,55 +260,10 @@ export default defineComponent({
         this.toast.error(error.message || "Failed to delete certification");
       }
     },
-
-    async saveCertification(data: {
-      name: string;
-      description: string;
-      validityPeriodMonths?: number;
-    }) {
-      try {
-        if (this.editingCertificationId) {
-          // Update existing
-          const existing = this.certificationsStore.getCertificationById(
-            this.editingCertificationId,
-          );
-          await this.certificationsStore.updateCertification({
-            id: this.editingCertificationId,
-            name: data.name,
-            description: data.description || undefined,
-            validityPeriodMonths: data.validityPeriodMonths,
-            createdAt: existing?.createdAt || new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          });
-          this.toast.success("Certification updated successfully");
-        } else {
-          // Create new
-          await this.certificationsStore.addCertification({
-            id: crypto.randomUUID(),
-            name: data.name,
-            description: data.description || undefined,
-            validityPeriodMonths: data.validityPeriodMonths || undefined,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          });
-          this.toast.success("Certification added successfully");
-        }
-        this.closeModal();
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to save certification");
-      }
-    },
-
     closeModal() {
       this.showModal = false;
       this.editingCertificationId = null;
-      this.formData = {
-        name: "",
-        description: "",
-        validityPeriodMonths: undefined,
-      };
     },
-
     clearFilters() {
       this.searchQuery = "";
       this.filterExpiration = "";

@@ -40,17 +40,17 @@ export function mockStoreAction(
   actionName: string,
   mockImplementation: (...args: unknown[]) => unknown,
 ): void {
-  store[actionName] = mockImplementation;
+  (store as any)[actionName] = mockImplementation;
 }
 
 /**
  * Spy on a store action
  */
 export function spyOnStoreAction(store: Store, actionName: string) {
-  const original = store[actionName];
+  const original = (store as any)[actionName];
   const calls: unknown[][] = [];
 
-  store[actionName] = (...args: unknown[]) => {
+  (store as any)[actionName] = (...args: unknown[]) => {
     calls.push(args);
     return original.apply(store, args);
   };
@@ -58,7 +58,7 @@ export function spyOnStoreAction(store: Store, actionName: string) {
   return {
     calls,
     restore: () => {
-      store[actionName] = original;
+      (store as any)[actionName] = original;
     },
   };
 }
@@ -82,7 +82,7 @@ export async function waitForStoreAction(
   while (Date.now() - startTime < timeout) {
     await new Promise((resolve) => setTimeout(resolve, 50));
     // This is a simplified check; you might need more sophisticated logic
-    if (!store.$state._pending?.[actionName]) {
+    if (!((store.$state as Record<string, unknown>)._pending as Record<string, unknown>)?.[actionName]) {
       return;
     }
   }

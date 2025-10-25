@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { createWrapper, setupTestPinia } from "@/tests/utils";
 import GroupCard from "@/components/cards/GroupCard.vue";
 import { groupsFixture, housingRoomsFixture, sessionsFixture } from "@/tests/fixtures";
-import { useHousingRoomsStore, useSessionsStore, useColorsStore, useLabelsStore } from "@/stores";
+import { useHousingRoomsStore, useSessionsStore } from "@/stores";
 
 describe("GroupCard", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

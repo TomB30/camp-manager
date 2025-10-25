@@ -51,7 +51,6 @@
       v-if="showFormModal"
       :session-id="editingSession?.id"
       @close="closeModal"
-      @save="saveSession"
     />
 
     <ConfirmModal
@@ -69,7 +68,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useSessionsStore } from "@/stores";
-import type { Session, SessionCreationRequest } from "@/types";
+import type { Session } from "@/types";
 import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import SessionCard from "@/components/cards/SessionCard.vue";
@@ -117,7 +116,7 @@ export default defineComponent({
         filtered = filtered.filter(
           (session) =>
             session.name.toLowerCase().includes(query) ||
-            session.description?.toLowerCase().includes(query),
+            session.description?.toLowerCase().includes(query)
         );
       }
 
@@ -163,39 +162,6 @@ export default defineComponent({
         this.sessionToDelete = null;
       } catch (error: any) {
         this.toast.error(error.message || "Failed to delete session");
-      }
-    },
-    async saveSession(data: SessionCreationRequest): Promise<void> {
-      try {
-        if (this.editingSession) {
-          // Update existing
-          await this.sessionsStore.updateSession({
-            ...this.editingSession,
-            name: data.name,
-            startDate: data.startDate,
-            endDate: data.endDate,
-            description: data.description || undefined,
-            maxCampers: data.maxCampers,
-            updatedAt: new Date().toISOString(),
-          });
-          this.toast.success("Session updated successfully");
-        } else {
-          // Create new
-          await this.sessionsStore.addSession({
-            id: crypto.randomUUID(),
-            name: data.name,
-            startDate: data.startDate,
-            endDate: data.endDate,
-            description: data.description || undefined,
-            maxCampers: data.maxCampers,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          });
-          this.toast.success("Session added successfully");
-        }
-        this.closeModal();
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to save session");
       }
     },
     closeModal(): void {

@@ -22,7 +22,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import BaseModal from "./BaseModal.vue";
-import BaseButton from "./common/BaseButton.vue";
 
 export default defineComponent({
   name: "ConfirmModal",
@@ -50,7 +49,6 @@ export default defineComponent({
   },
   components: {
     BaseModal,
-    BaseButton,
   },
   emits: ["confirm", "cancel"],
   methods: {

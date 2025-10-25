@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Program, StaffMember } from "@/types";
+import type { Program, StaffMember, ProgramCreationRequest, ProgramUpdateRequest } from "@/types";
 import { programsService } from "@/services";
 import { useActivitiesStore } from "./activitiesStore";
 import { useStaffMembersStore } from "./staffMembersStore";
@@ -50,21 +50,22 @@ export const useProgramsStore = defineStore("programs", {
     async loadPrograms(): Promise<void> {
       this.loading = true;
       try {
-        this.programs = await programsService.getPrograms();
+        this.programs = await programsService.listPrograms();
       } finally {
         this.loading = false;
       }
     },
 
-    async addProgram(program: Program): Promise<void> {
-      await programsService.saveProgram(program);
+    async createProgram(programRequest: ProgramCreationRequest): Promise<Program> {
+      const program = await programsService.createProgram(programRequest);
       this.programs = this.programs ? [...this.programs, program] : [program];
+      return program;
     },
 
-    async updateProgram(program: Program): Promise<void> {
-      await programsService.saveProgram(program);
+    async updateProgram(id: string, programUpdate: ProgramUpdateRequest): Promise<void> {
+      const program = await programsService.updateProgram(id, programUpdate);
       const index = this.programs.findIndex(
-        (p: Program) => p.id === program.id,
+        (p: Program) => p.id === id,
       );
       if (index >= 0) {
         this.programs[index] = program;

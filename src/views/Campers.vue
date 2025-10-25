@@ -12,7 +12,6 @@
         </template>
       </ViewHeader>
 
-      <!-- Search and Filters -->
       <FilterBar
         v-model:searchQuery="searchQuery"
         v-model:filter-gender="filterGender"
@@ -28,7 +27,6 @@
         </template>
       </FilterBar>
 
-      <!-- Grid View -->
       <div v-if="viewMode === 'grid'" class="campers-grid">
         <CamperCard
           v-for="camper in filteredCampers"
@@ -64,7 +62,6 @@
         />
       </div>
 
-      <!-- Table View -->
       <DataTable
         v-if="viewMode === 'table'"
         :columns="camperColumns"
@@ -114,88 +111,26 @@
             outline
             color="grey-8"
             size="sm"
-            @click.stop="selectCamper(item.id)"
+            @click="selectCamper(item.id)"
             label="View Details"
           />
         </template>
       </DataTable>
 
-      <!-- Camper Detail Modal -->
       <CamperDetailModal
         v-if="!!selectedCamperId"
         :camper="selectedCamper"
         @close="selectedCamperId = null"
         @edit="editCamper"
         @delete="deleteCamperConfirm"
-      >
-        <template #session>
-          <div v-if="selectedCamper?.sessionId">
-            <span class="badge badge-info">
-              {{ getSessionName(selectedCamper.sessionId) }}
-            </span>
-            <div class="text-xs text-caption mt-1">
-              {{ getSessionDateRange(selectedCamper.sessionId) }}
-            </div>
-          </div>
-          <div v-else class="text-caption">Not registered for a session</div>
-        </template>
-        <template #family-group>
-          <div
-            v-if="
-              selectedCamper?.familyGroupId &&
-              getGroupById(selectedCamper.familyGroupId)
-            "
-          >
-            <div class="family-group-info">
-              <span
-                v-if="getGroupById(selectedCamper.familyGroupId)"
-                class="badge"
-                :style="{
-                  background: getGroupColor(
-                    getGroupById(selectedCamper.familyGroupId)!,
-                  ),
-                }"
-              >
-                {{ getGroupById(selectedCamper.familyGroupId)!.name }}
-              </span>
-              <div
-                v-if="getGroupById(selectedCamper.familyGroupId)?.housingRoomId"
-                class="text-xs text-caption mt-1"
-              >
-                Room:
-                {{
-                  getSleepingRoomName(
-                    getGroupById(selectedCamper.familyGroupId)?.housingRoomId ||
-                      "",
-                  )
-                }}
-              </div>
-            </div>
-          </div>
-          <div v-else class="text-caption">Not assigned to a family group</div>
-        </template>
-        <template #events>
-          <EventsByDate
-            :events="selectedCamper ? getCamperEvents(selectedCamper.id) : []"
-            empty-message="No events enrolled"
-          />
-        </template>
-      </CamperDetailModal>
-
-      <!-- Add/Edit Camper Modal -->
-      <CamperFormModal
-        v-if="showModal"
-        :is-editing="!!editingCamperId"
-        :form-data="formData"
-        :groups="
-          groupsStore.getGroupsByType({ hasHousing: true, hasSession: true })
-        "
-        :sessions="sessionsStore.sessions"
-        @close="closeModal"
-        @save="saveCamper"
       />
 
-      <!-- Confirmation Modal -->
+      <CamperFormModal
+        v-if="showModal"
+        :camper-id="editingCamperId || undefined"
+        @close="closeModal"
+      />
+
       <ConfirmModal
         v-if="showConfirmModal"
         title="Delete Camper"
@@ -212,25 +147,15 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import {
-  useCampersStore,
-  useSessionsStore,
-  useEventsStore,
-  useHousingRoomsStore,
-  useColorsStore,
-  useGroupsStore,
-} from "@/stores";
-import { format } from "date-fns";
-import type { Camper, Event, Group } from "@/types";
+import { useCampersStore, useSessionsStore } from "@/stores";
+import type { Camper } from "@/types";
 import ViewHeader from "@/components/ViewHeader.vue";
 import AvatarInitials from "@/components/AvatarInitials.vue";
 import CamperCard from "@/components/cards/CamperCard.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar, { type Filter } from "@/components/FilterBar.vue";
-import EventsByDate from "@/components/EventsByDate.vue";
 import DataTable from "@/components/DataTable.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
-import Autocomplete from "@/components/Autocomplete.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import CamperDetailModal from "@/components/modals/CamperDetailModal.vue";
 import CamperFormModal from "@/components/modals/CamperFormModal.vue";
@@ -243,10 +168,8 @@ export default defineComponent({
     CamperCard,
     ConfirmModal,
     FilterBar,
-    EventsByDate,
     DataTable,
     ViewToggle,
-    Autocomplete,
     EmptyState,
     CamperDetailModal,
     CamperFormModal,
@@ -256,23 +179,11 @@ export default defineComponent({
       selectedCamperId: null as string | null,
       showModal: false,
       editingCamperId: null as string | null,
-      allergiesInput: "",
       viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
       showConfirmModal: false,
       camperToDelete: null as { id: string; name: string } | null,
-      formData: {
-        firstName: "",
-        lastName: "",
-        age: 8,
-        gender: "male" as "male" | "female",
-        parentContact: "",
-        allergies: [] as string[],
-        medicalNotes: "",
-        sessionId: "" as string | undefined,
-        familyGroupId: "" as string | undefined,
-      },
       searchQuery: "",
       filterGender: "",
       filterAge: "",
@@ -294,18 +205,6 @@ export default defineComponent({
     },
     sessionsStore() {
       return useSessionsStore();
-    },
-    eventsStore() {
-      return useEventsStore();
-    },
-    housingRoomsStore() {
-      return useHousingRoomsStore();
-    },
-    colorsStore() {
-      return useColorsStore();
-    },
-    groupsStore() {
-      return useGroupsStore();
     },
     campersFilters(): Filter[] {
       return [
@@ -396,27 +295,6 @@ export default defineComponent({
       this.filterAge = "";
       this.filterSession = "";
     },
-    getGroupColor(group: Group): string {
-      if (group.colorId) {
-        const color = this.colorsStore.getColorById(group.colorId);
-        return color?.hexValue || "#6366F1";
-      }
-      return "#6366F1";
-    },
-    getCamperEvents(camperId: string): Event[] {
-      const events = this.eventsStore.camperEvents(camperId);
-      return events;
-    },
-    formatDate(dateStr: string): string {
-      return format(new Date(dateStr), "MMMM d, yyyy");
-    },
-    getSleepingRoomName(housingRoomId: string): string {
-      const room = this.housingRoomsStore.getHousingRoomById(housingRoomId);
-      return room?.name || "Unknown Room";
-    },
-    getGroupById(groupId: string): Group | null | undefined {
-      return this.groupsStore.getGroupById(groupId);
-    },
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
     },
@@ -427,23 +305,6 @@ export default defineComponent({
       );
       return session?.name || "Unknown Session";
     },
-    getSessionDateRange(sessionId: string | undefined): string {
-      if (!sessionId) return "";
-      const session = this.sessionsStore.sessions.find(
-        (s) => s.id === sessionId,
-      );
-      if (!session) return "Unknown";
-      const startDate = new Date(session.startDate).toLocaleDateString(
-        "en-US",
-        { month: "short", day: "numeric" },
-      );
-      const endDate = new Date(session.endDate).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-      return `${startDate} - ${endDate}`;
-    },
     selectCamper(camperId: string): void {
       this.selectedCamperId = camperId;
     },
@@ -451,49 +312,8 @@ export default defineComponent({
       if (!this.selectedCamper) return;
 
       this.editingCamperId = this.selectedCamper.id;
-      this.formData = {
-        firstName: this.selectedCamper.firstName,
-        lastName: this.selectedCamper.lastName,
-        age: this.selectedCamper.age,
-        gender: this.selectedCamper.gender,
-        parentContact: this.selectedCamper.parentContact,
-        allergies: this.selectedCamper.allergies || [],
-        medicalNotes: this.selectedCamper.medicalNotes || "",
-        sessionId: this.selectedCamper.sessionId,
-        familyGroupId: this.selectedCamper.familyGroupId,
-      };
-      this.allergiesInput = (this.selectedCamper.allergies || []).join(", ");
-
       this.selectedCamperId = null;
       this.showModal = true;
-    },
-    async saveCamper(
-      formData: typeof this.formData & { allergies: string[] },
-    ): Promise<void> {
-      const camperData: Camper = {
-        id: this.editingCamperId || `camper-${Date.now()}`,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        age: formData.age,
-        gender: formData.gender,
-        parentContact: formData.parentContact,
-        allergies: formData.allergies,
-        medicalNotes: formData.medicalNotes,
-        sessionId: formData.sessionId || undefined,
-        familyGroupId: formData.familyGroupId || undefined,
-        registrationDate: this.editingCamperId
-          ? this.campersStore.getCamperById(this.editingCamperId)
-              ?.registrationDate
-          : new Date().toISOString(),
-      };
-
-      if (this.editingCamperId) {
-        await this.campersStore.updateCamper(camperData);
-      } else {
-        await this.campersStore.addCamper(camperData);
-      }
-
-      this.closeModal();
     },
     deleteCamperConfirm(): void {
       if (!this.selectedCamperId) return;
@@ -521,18 +341,6 @@ export default defineComponent({
     closeModal(): void {
       this.showModal = false;
       this.editingCamperId = null;
-      this.formData = {
-        firstName: "",
-        lastName: "",
-        age: 8,
-        gender: "male",
-        parentContact: "",
-        allergies: [],
-        medicalNotes: "",
-        sessionId: undefined,
-        familyGroupId: undefined,
-      };
-      this.allergiesInput = "";
     },
   },
   watch: {
@@ -563,12 +371,6 @@ export default defineComponent({
 
 .campers-grid .empty-state {
   grid-column: 1 / -1;
-}
-
-.family-group-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
 }
 
 /* Table View Styles */

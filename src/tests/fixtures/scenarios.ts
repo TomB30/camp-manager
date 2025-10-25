@@ -11,7 +11,7 @@ import { buildEvent, buildGroup, buildHousingRoom } from "./builders";
  */
 export const conflictingEventsScenario = (): Event[] => {
   const baseDateTime = "2025-10-20T10:00:00.000Z";
-  const endDateTime = "2025-10-20T11:00:00.000Z";
+  const endDate = "2025-10-20T11:00:00.000Z";
   const locationId = "location-1";
 
   return [
@@ -19,15 +19,15 @@ export const conflictingEventsScenario = (): Event[] => {
       id: "conflict-event-1",
       title: "First Event",
       locationId,
-      startDateTime: baseDateTime,
-      endDateTime,
+      startDate: baseDateTime,
+      endDate,
     }),
     buildEvent({
       id: "conflict-event-2",
       title: "Conflicting Event",
       locationId,
-      startDateTime: baseDateTime,
-      endDateTime,
+      startDate: baseDateTime,
+      endDate,
     }),
   ];
 };
@@ -38,22 +38,21 @@ export const conflictingEventsScenario = (): Event[] => {
 export const staffConflictScenario = (): Event[] => {
   const staffId = "staff-1";
   const baseDateTime = "2025-10-20T14:00:00.000Z";
-  const endDateTime = "2025-10-20T15:00:00.000Z";
+  const endDate = "2025-10-20T15:00:00.000Z";
 
   return [
     buildEvent({
       id: "staff-conflict-1",
       title: "Event 1",
-      assignedStaffIds: [staffId],
-      startDateTime: baseDateTime,
-      endDateTime,
+      excludeStaffIds: [staffId],
+      startDate: baseDateTime,
+      endDate,
     }),
     buildEvent({
       id: "staff-conflict-2",
       title: "Event 2",
-      assignedStaffIds: [staffId],
-      startDateTime: baseDateTime,
-      endDateTime,
+      startDate: baseDateTime,
+      endDate,
     }),
   ];
 };
@@ -74,10 +73,13 @@ export const fullCapacityRoomScenario = (): {
   const group = buildGroup({
     id: "full-group",
     name: "Full Capacity Group",
-    memberIds: Array.from({ length: 8 }, (_, i) => `camper-${i}`),
+    camperFilters: {
+      ageMin: 12,
+      ageMax: 18,
+      gender: "male",
+      sessionId: "session-1",
+    },
     housingRoomId: room.id,
-    startDate: "2025-10-20",
-    endDate: "2025-10-25",
   });
 
   return { room, group };
@@ -116,10 +118,13 @@ export const roomOccupiedScenario = (): {
   const existingGroup = buildGroup({
     id: "existing-group",
     name: "Existing Group",
-    memberIds: ["camper-1", "camper-2"],
+    camperFilters: {
+      ageMin: 12,
+      ageMax: 18,
+      gender: "male",
+      sessionId: "session-1",
+    },
     housingRoomId: room.id,
-    startDate: "2025-10-20",
-    endDate: "2025-10-25",
   });
 
   // New group wants room during overlapping dates
@@ -143,19 +148,27 @@ export const partialDateOverlapScenario = (): {
   const group1 = buildGroup({
     id: "group-1",
     name: "Group 1",
-    memberIds: ["camper-1"],
+    camperFilters: {
+      ageMin: 12,
+      ageMax: 18,
+      gender: "male",
+      sessionId: "session-1",
+    },
+    sessionId: "session-1",
     housingRoomId: roomId,
-    startDate: "2025-10-20",
-    endDate: "2025-10-23",
   });
 
   const group2 = buildGroup({
     id: "group-2",
     name: "Group 2",
-    memberIds: ["camper-2"],
+    camperFilters: {
+      ageMin: 12,
+      ageMax: 18,
+      gender: "male",
+      sessionId: "session-1",
+    },
+    sessionId: "session-1",
     housingRoomId: roomId,
-    startDate: "2025-10-22", // Overlaps by one day
-    endDate: "2025-10-25",
   });
 
   return { group1, group2 };
@@ -173,19 +186,27 @@ export const sameDayCheckoutCheckinScenario = (): {
   const group1 = buildGroup({
     id: "checkout-group",
     name: "Checking Out",
-    memberIds: ["camper-1"],
+    camperFilters: {
+      ageMin: 12,
+      ageMax: 18,
+      gender: "male",
+      sessionId: "session-1",
+    },
+    sessionId: "session-1",
     housingRoomId: roomId,
-    startDate: "2025-10-20",
-    endDate: "2025-10-25", // Checks out on 25th
   });
 
   const group2 = buildGroup({
     id: "checkin-group",
     name: "Checking In",
-    memberIds: ["camper-2"],
+    camperFilters: {
+      ageMin: 12,
+      ageMax: 18,
+      gender: "male",
+      sessionId: "session-1",
+    },
+    sessionId: "session-1",
     housingRoomId: roomId,
-    startDate: "2025-10-25", // Checks in on 25th
-    endDate: "2025-10-30",
   });
 
   return { group1, group2 };
@@ -199,7 +220,7 @@ export const eventAtCapacityScenario = (): Event => {
     id: "capacity-event",
     title: "Full Event",
     capacity: 10,
-    assignedGroupIds: Array.from({ length: 10 }, (_, i) => `group-${i}`),
+    groupIds: Array.from({ length: 10 }, (_, i) => `group-${i}`),
   });
 };
 
@@ -243,26 +264,35 @@ export const roomBookingRaceConditionScenario = (): {
     buildGroup({
       id: "race-group-1",
       name: "Group 1",
-      memberIds: ["camper-1", "camper-2"],
+      camperFilters: {
+        ageMin: 12,
+        ageMax: 18,
+        gender: "male",
+        sessionId: "session-1",
+      },
       housingRoomId: room.id,
-      startDate: "2025-10-20",
-      endDate: "2025-10-25",
     }),
     buildGroup({
       id: "race-group-2",
       name: "Group 2",
-      memberIds: ["camper-3", "camper-4"],
+      camperFilters: {
+        ageMin: 12,
+        ageMax: 18,
+        gender: "male",
+        sessionId: "session-1",
+      },
       housingRoomId: room.id,
-      startDate: "2025-10-20",
-      endDate: "2025-10-25",
     }),
     buildGroup({
       id: "race-group-3",
       name: "Group 3",
-      memberIds: ["camper-5", "camper-6"],
+      camperFilters: {
+        ageMin: 12,
+        ageMax: 18,
+        gender: "male",
+        sessionId: "session-1",
+      },
       housingRoomId: room.id,
-      startDate: "2025-10-20",
-      endDate: "2025-10-25",
     }),
   ];
 

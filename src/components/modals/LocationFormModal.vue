@@ -1,6 +1,6 @@
 <template>
   <BaseModal
-    :title="isEditing ? 'Edit Location' : 'Add New Location'"
+    :title="isEditing ? 'Update Location' : 'Create Location'"
     @close="$emit('close')"
   >
     <template #body>
@@ -55,7 +55,7 @@
         <div class="form-group">
           <label class="form-label">Equipment (comma-separated)</label>
           <BaseInput
-            v-model="equipmentInput"
+            v-model="equipmentModel"
             placeholder="e.g., Projector, Tables, Chairs"
           />
         </div>
@@ -77,7 +77,7 @@
         <BaseButton
           color="primary"
           @click="handleSave"
-          :label="isEditing ? 'Update Location' : 'Add Location'"
+          :label="isEditing ? 'Update Location' : 'Create Location'"
         />
       </div>
     </template>
@@ -87,51 +87,43 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import { useAreasStore } from "@/stores";
-import type { Location } from "@/types";
+import { useAreasStore, useLocationsStore } from "@/stores";
+import type { Location, LocationCreationRequest } from "@/types";
 import type { QForm } from "quasar";
-
-interface LocationFormData {
-  name: string;
-  type: Location["type"];
-  capacity: number;
-  areaId?: string;
-  equipment: string[];
-  notes: string;
-}
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
   name: "LocationFormModal",
   components: {
     BaseModal,
-    BaseInput,
-    BaseButton,
     Autocomplete,
   },
   props: {
-    isEditing: {
-      type: Boolean,
-      default: false,
-    },
-    formData: {
-      type: Object as PropType<LocationFormData>,
-      required: true,
+    locationId: {
+      type: String as PropType<string>,
+      required: false,
     },
   },
   emits: ["close", "save"],
   setup() {
     const areasStore = useAreasStore();
-    return { areasStore };
+    const locationsStore = useLocationsStore();
+    const toast = useToast();
+    return { areasStore, locationsStore, toast };
   },
   data() {
     return {
-      localFormData: JSON.parse(JSON.stringify(this.formData)),
-      equipmentInput: this.formData.equipment.join(", "),
+      localFormData: {
+        name: "",
+        type: "classroom" as Location["type"],
+        capacity: 0,
+        areaId: undefined,
+        equipment: [],
+        notes: "",
+      } as LocationCreationRequest,
       locationTypeOptions: [
         { label: "Classroom", value: "classroom" },
         { label: "Activity", value: "activity" },
@@ -141,9 +133,27 @@ export default defineComponent({
         { label: "Arts", value: "arts" },
       ] as AutocompleteOption[],
       formRef: null as any,
+      loading: false as boolean,
     };
   },
+  created() {
+    if (this.locationId) {
+      const location = this.locationsStore.getLocationById(this.locationId);
+      if (!location) return;
+      this.localFormData = {
+        name: location.name,
+        type: location.type,
+        capacity: location.capacity || 0,
+        areaId: location.areaId,
+        equipment: location.equipment || [],
+        notes: location.notes || "",
+      };
+    }
+  },
   computed: {
+    isEditing(): boolean {
+      return !!this.locationId;
+    },
     areaOptions(): AutocompleteOption[] {
       return this.areasStore.areas.map((area) => ({
         label: area.name,
@@ -167,30 +177,49 @@ export default defineComponent({
         this.localFormData.notes = value || "";
       },
     },
-  },
-  watch: {
-    formData: {
-      handler(newVal) {
-        this.localFormData = JSON.parse(JSON.stringify(newVal));
-        this.equipmentInput = newVal.equipment.join(", ");
+    equipmentModel: {
+      get(): string {
+        return this.localFormData.equipment?.join(", ") || "";
       },
-      deep: true,
+      set(value: string) {
+        this.localFormData.equipment = value.split(",").map((e) => e.trim()).filter((e) => e.length > 0);
+      },
     },
   },
   methods: {
     async handleSave() {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
-
-      const equipment = this.equipmentInput
-        .split(",")
-        .map((e) => e.trim())
-        .filter((e) => e.length > 0);
-
-      this.$emit("save", {
-        ...this.localFormData,
-        equipment,
-      });
+      
+      if (this.isEditing) {
+        return this.handleUpdate();
+      }
+      return this.handleCreate();
+    },
+    async handleUpdate(): Promise<void> {
+      if (!this.locationId) return;
+      try {
+        this.loading = true;
+        await this.locationsStore.updateLocation(this.locationId, this.localFormData);
+        this.toast.success("Location updated successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to update location");
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
+    },
+    async handleCreate(): Promise<void> {
+      try {
+        this.loading = true;
+        await this.locationsStore.createLocation(this.localFormData);
+        this.toast.success("Location created successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to create location");
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
     },
   },
 });

@@ -1,6 +1,6 @@
 <template>
   <BaseModal
-    :title="isEditing ? 'Edit Camper' : 'Add New Camper'"
+    :title="isEditing ? 'Edit Camper' : 'Create New Camper'"
     @close="$emit('close')"
   >
     <template #body>
@@ -9,7 +9,7 @@
           <div class="form-group">
             <label class="form-label">First Name</label>
             <BaseInput
-              v-model="localFormData.firstName"
+              v-model="formData.firstName"
               placeholder="Enter first name"
               :rules="[(val: string) => !!val || 'Enter first name']"
             />
@@ -18,7 +18,7 @@
           <div class="form-group">
             <label class="form-label">Last Name</label>
             <BaseInput
-              v-model="localFormData.lastName"
+              v-model="formData.lastName"
               placeholder="Enter last name"
               :rules="[(val: string) => !!val || 'Enter last name']"
             />
@@ -44,7 +44,7 @@
           <div class="form-group">
             <label class="form-label">Gender</label>
             <Autocomplete
-              v-model="localFormData.gender"
+              v-model="formData.gender"
               :options="genderOptions"
               placeholder="Select gender..."
               :required="true"
@@ -55,7 +55,7 @@
         <div class="form-group">
           <label class="form-label">Parent Contact (Email/Phone)</label>
           <BaseInput
-            v-model="localFormData.parentContact"
+            v-model="formData.parentContact"
             placeholder="Enter email or phone"
             :rules="[(val: string) => !!val || 'Enter parent contact']"
           />
@@ -64,7 +64,7 @@
         <div class="form-group">
           <label class="form-label">Camp Session</label>
           <Autocomplete
-            v-model="localFormData.sessionId"
+            v-model="formData.sessionId"
             :options="sessionOptions"
             placeholder="Select a session..."
             :required="true"
@@ -74,13 +74,13 @@
         <div class="form-group">
           <label class="form-label">Family Group</label>
           <Autocomplete
-            v-model="localFormData.groupId"
+            v-model="formData.familyGroupId"
             :options="availableGroupOptions"
             placeholder="Select a family group..."
-            :disabled="!localFormData.sessionId"
+            :disabled="!formData.sessionId"
           />
           <div
-            v-if="!localFormData.sessionId"
+            v-if="!formData.sessionId"
             class="text-xs text-secondary mt-1"
           >
             Please select a session first
@@ -96,7 +96,7 @@
         <div class="form-group">
           <label class="form-label">Allergies (comma-separated)</label>
           <BaseInput
-            v-model="allergiesInput"
+            v-model="allergiesModel"
             placeholder="e.g., Peanuts, Dairy"
           />
         </div>
@@ -104,7 +104,7 @@
         <div class="form-group">
           <label class="form-label">Medical Notes</label>
           <BaseInput
-            v-model="medicalNotesModel"
+            v-model="formData.medicalNotes"
             type="textarea"
             placeholder="Optional medical notes"
           />
@@ -128,80 +128,94 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import BaseInput from "@/components/common/BaseInput.vue";
-import BaseButton from "@/components/common/BaseButton.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import type { Session, Group } from "@/types";
+import type { Session, Group, CamperCreationRequest } from "@/types";
 import type { QForm } from "quasar";
-
-interface CamperFormData {
-  firstName: string;
-  lastName: string;
-  age: number;
-  gender: "male" | "female";
-  parentContact: string;
-  allergies: string[];
-  medicalNotes: string;
-  sessionId?: string;
-  groupId?: string;
-}
+import { useCampersStore, useGroupsStore, useSessionsStore } from "@/stores";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
   name: "CamperFormModal",
   components: {
     BaseModal,
-    BaseInput,
-    BaseButton,
     Autocomplete,
   },
   props: {
-    isEditing: {
-      type: Boolean,
-      default: false,
-    },
-    formData: {
-      type: Object as PropType<CamperFormData>,
-      required: true,
-    },
-    groups: {
-      type: Array as PropType<Group[]>,
-      required: true,
-    },
-    sessions: {
-      type: Array as PropType<Session[]>,
-      required: true,
-    },
+    camperId: {
+      type: String as PropType<string>,
+      required: false,
+    }
   },
-  emits: ["close", "save"],
+  emits: ["close"],
   data() {
     return {
-      localFormData: { ...this.formData },
-      allergiesInput: this.formData.allergies.join(", "),
+      sessionsStore: useSessionsStore(),
+      groupsStore: useGroupsStore(),
+      campersStore: useCampersStore(),
+      toast: useToast(),
+      formData: {
+        firstName: "",
+        lastName: "",
+        age: 0,
+        gender: "male",
+        parentContact: "",
+        sessionId: "",
+        allergies: [],
+        medicalNotes: "",
+        photoUrl: "",
+      } as CamperCreationRequest,
       genderOptions: [
         { label: "Male", value: "male" },
         { label: "Female", value: "female" },
       ] as AutocompleteOption[],
       formRef: null as any,
+      loading: false,
+    };
+  },
+  created() {
+    if (!this.camperId) return;
+    const camper = this.campersStore.getCamperById(this.camperId);
+    if (!camper) return;
+    this.formData = {
+      firstName: camper.firstName,
+      lastName: camper.lastName,
+      age: camper.age,
+      gender: camper.gender,
+      parentContact: camper.parentContact,
+      sessionId: camper.sessionId || "",
+      allergies: camper.allergies || [],
+      medicalNotes: camper.medicalNotes || "",
+      familyGroupId: camper.familyGroupId || "",
+      photoUrl: camper.photoUrl || "",
     };
   },
   computed: {
+    isEditing(): boolean {
+      return !!this.camperId;
+    },
+    allergiesModel: {
+      get(): string {
+        return this.formData.allergies?.join(", ") || "";
+      },
+      set(value: string) {
+        this.formData.allergies = value.split(",").map((a) => a.trim());
+      },
+    },
+    sessions(): Session[] {
+      return this.sessionsStore.sessions;
+    },
+    groups(): Group[] {
+      return this.groupsStore.groups;
+    },
     ageModel: {
       get(): string {
-        return this.localFormData.age?.toString() || "";
+        return this.formData.age?.toString() || "";
       },
       set(value: string) {
         const num = parseInt(value);
-        this.localFormData.age = isNaN(num) ? 0 : num;
-      },
-    },
-    medicalNotesModel: {
-      get(): string {
-        return this.localFormData.medicalNotes || "";
-      },
-      set(value: string) {
-        this.localFormData.medicalNotes = value || "";
+        this.formData.age = isNaN(num) ? 0 : num;
       },
     },
     sessionOptions(): AutocompleteOption[] {
@@ -223,12 +237,12 @@ export default defineComponent({
     },
     availableGroupOptions(): AutocompleteOption[] {
       // Only show family groups that match the selected session
-      if (!this.localFormData.sessionId) {
+      if (!this.formData.sessionId) {
         return [];
       }
 
       const filteredGroups = this.groups.filter(
-        (group) => group.sessionId === this.localFormData.sessionId,
+        (group) => group.sessionId === this.formData.sessionId,
       );
 
       return filteredGroups.map((group) => ({
@@ -237,40 +251,42 @@ export default defineComponent({
       }));
     },
   },
-  watch: {
-    formData: {
-      handler(newVal) {
-        this.localFormData = { ...newVal };
-        this.allergiesInput = newVal.allergies.join(", ");
-      },
-      deep: true,
-    },
-    // When session changes, clear family group if it doesn't match
-    "localFormData.sessionId"(newSessionId: string, oldSessionId: string) {
-      if (newSessionId !== oldSessionId && this.localFormData.groupId) {
-        const currentGroup = this.groups.find(
-          (g) => g.id === this.localFormData.groupId,
-        );
-        if (currentGroup && currentGroup.sessionId !== newSessionId) {
-          this.localFormData.groupId = undefined;
-        }
-      }
-    },
-  },
   methods: {
     async handleSave(): Promise<void> {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
 
-      const allergies = this.allergiesInput
-        .split(",")
-        .map((a) => a.trim())
-        .filter((a) => a.length > 0);
+      if (this.camperId) {
+        this.updateCamper();
+      } else {
+        this.createCamper();
+      }
+    },
+    async updateCamper(): Promise<void> {
+      if (!this.camperId) return;
 
-      this.$emit("save", {
-        ...this.localFormData,
-        allergies,
-      });
+      try {
+        this.loading = true;
+        await this.campersStore.updateCamper(this.camperId, this.formData);
+        this.toast.success("Camper updated successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to update camper");
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
+    },
+    async createCamper(): Promise<void> {
+      try {
+        this.loading = true;
+        await this.campersStore.createCamper(this.formData);
+        this.toast.success("Camper created successfully");
+      } catch (error) {
+        this.toast.error((error as Error).message || "Failed to create camper");
+      } finally {
+        this.loading = false;
+        this.$emit("close");
+      }
     },
   },
 });

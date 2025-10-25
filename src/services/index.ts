@@ -21,7 +21,7 @@ export { certificationsService } from "./certificationsService";
 export { rolesService } from "./rolesService";
 export { colorsService } from "./colorsService";
 export { sessionsService } from "./sessionsService";
-export { labelsService } from "./labelsService";
+export { labelsService, type LabelCreationRequest, type LabelUpdateRequest } from "./labelsService";
 
 // Other services
 export { conflictDetector } from "./conflicts";

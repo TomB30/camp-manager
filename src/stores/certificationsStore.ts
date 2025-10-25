@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Certification } from "@/types";
+import type { Certification, CertificationCreationRequest, CertificationUpdateRequest } from "@/types";
 import { certificationsService } from "@/services";
 
 export const useCertificationsStore = defineStore("certifications", {
@@ -24,23 +24,22 @@ export const useCertificationsStore = defineStore("certifications", {
     async loadCertifications(): Promise<void> {
       this.loading = true;
       try {
-        this.certifications = await certificationsService.getCertifications();
+        this.certifications = await certificationsService.listCertifications();
       } finally {
         this.loading = false;
       }
     },
 
-    async addCertification(certification: Certification): Promise<void> {
-      await certificationsService.saveCertification(certification);
-      this.certifications = this.certifications
-        ? [...this.certifications, certification]
-        : [certification];
+    async createCertification(certificationRequest: CertificationCreationRequest): Promise<Certification> {
+      const certification: Certification = await certificationsService.createCertification(certificationRequest);
+      this.certifications.push(certification);
+      return certification;
     },
 
-    async updateCertification(certification: Certification): Promise<void> {
-      await certificationsService.saveCertification(certification);
+    async updateCertification(id: string, certificationUpdate: CertificationUpdateRequest): Promise<void> {
+      const certification: Certification = await certificationsService.updateCertification(id, certificationUpdate);
       const index = this.certifications.findIndex(
-        (c) => c.id === certification.id,
+        (c) => c.id === id,
       );
       if (index >= 0) {
         this.certifications[index] = certification;
@@ -49,8 +48,7 @@ export const useCertificationsStore = defineStore("certifications", {
 
     async deleteCertification(id: string): Promise<void> {
       await certificationsService.deleteCertification(id);
-      this.certifications =
-        this.certifications?.filter((c) => c.id !== id) || [];
+      this.certifications = this.certifications.filter((c) => c.id !== id);
     },
   },
 });

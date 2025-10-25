@@ -15,7 +15,7 @@ export const useRolesStore = defineStore("roles", {
   },
   actions: {
     async loadRoles(): Promise<void> {
-      this.roles = await rolesService.getRoles();
+      this.roles = await rolesService.listRoles();
     },
   },
 });
