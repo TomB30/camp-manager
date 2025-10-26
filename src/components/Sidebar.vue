@@ -68,14 +68,6 @@
         </div>
       </nav>
 
-      <!-- Camp Settings (Bottom of Sidebar) -->
-      <div class="settings-section">
-        <RouterLink to="/settings" class="nav-link" @click="handleNavClick">
-          <Icon name="Settings" :size="20" class="nav-icon" />
-          <span class="nav-text">Camp Settings</span>
-        </RouterLink>
-      </div>
-
       <div v-if="mainStore.conflicts.length > 0" class="conflicts-section">
         <div class="conflicts-badge">
           <span class="badge badge-error">
@@ -86,6 +78,14 @@
           </span>
         </div>
       </div>
+      <!-- Camp Settings (Bottom of Sidebar) -->
+      <div class="settings-section">
+        <RouterLink to="/settings" class="nav-link" @click="handleNavClick">
+          <Icon name="Settings" :size="20" class="nav-icon" />
+          <span class="nav-text">Camp Settings</span>
+        </RouterLink>
+      </div>
+
     </div>
   </aside>
 </template>
@@ -342,14 +342,13 @@ export default defineComponent({
 }
 
 .settings-section {
-  padding: 0.5rem 1rem;
+  padding: 1rem;
   border-top: 1px solid var(--border-light);
   margin-top: auto;
 }
 
 .conflicts-section {
   padding: 1rem 1.5rem;
-  border-top: 1px solid var(--border-light);
 }
 
 .conflicts-badge {

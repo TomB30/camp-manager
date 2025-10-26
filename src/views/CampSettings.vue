@@ -299,7 +299,8 @@ export default defineComponent({
   opacity: 0.9;
 }
 
-.tabs-navigation, .sub-tabs-navigation {
+.tabs-navigation,
+.sub-tabs-navigation {
   display: flex;
   gap: 0.5rem;
   border-bottom: 1px solid lightgray;
