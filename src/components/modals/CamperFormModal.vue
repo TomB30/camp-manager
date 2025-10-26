@@ -35,8 +35,7 @@
               :rules="[
                 (val: string) => !!val || 'Enter age',
                 (val: string) =>
-                  (parseInt(val) >= 5 && parseInt(val) <= 18) ||
-                  'Age must be between 5 and 18',
+                  parseInt(val) > 0 || 'Age must be greater than 0',
               ]"
             />
           </div>
@@ -72,7 +71,10 @@
             :disabled="!formData.sessionId"
             no-option-text="No family groups available for this session"
           />
-          <q-tooltip v-if="!formData.sessionId" target=".family-group-autocomplete">
+          <q-tooltip
+            v-if="!formData.sessionId"
+            target=".family-group-autocomplete"
+          >
             Select a session first to choose a family group
           </q-tooltip>
         </div>
@@ -175,7 +177,7 @@ export default defineComponent({
       return this.sessions.map((session) => {
         const startDate = new Date(session.startDate).toLocaleDateString(
           "en-US",
-          { month: "short", day: "numeric" },
+          { month: "short", day: "numeric" }
         );
         const endDate = new Date(session.endDate).toLocaleDateString("en-US", {
           month: "short",
@@ -195,7 +197,7 @@ export default defineComponent({
       }
 
       const filteredGroups = this.groups.filter(
-        (group) => group.sessionId === this.formData.sessionId,
+        (group) => group.sessionId === this.formData.sessionId
       );
 
       return filteredGroups.map((group) => ({

@@ -12,8 +12,7 @@ properties:
     type: string
   age:
     type: integer
-    minimum: 5
-    maximum: 18
+    minimum: 1
   gender:
     type: string
     enum: [male, female]
