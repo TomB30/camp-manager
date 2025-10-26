@@ -135,13 +135,6 @@ export const useGroupsStore = defineStore("groups", {
           // Gender filter
           if (filters.gender && camper.gender !== filters.gender) return false;
 
-          // Allergies filter
-          if (filters.hasAllergies !== undefined) {
-            const hasAllergies =
-              camper.allergies && camper.allergies.length > 0;
-            if (filters.hasAllergies !== hasAllergies) return false;
-          }
-
           return true;
         });
       };

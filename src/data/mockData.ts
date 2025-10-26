@@ -732,7 +732,6 @@ groups.forEach((group, groupIndex) => {
   for (let i = 0; i < numCampers; i++) {
     const gender = Math.random() > 0.5 ? "male" : "female";
     const age = 8 + Math.floor(Math.random() * 7); // Ages 8-14
-    const hasAllergies = Math.random() > 0.8;
 
     const camper: Camper = {
       id: generateId(),
@@ -740,10 +739,6 @@ groups.forEach((group, groupIndex) => {
       lastName: camperLastNames[camperIndex],
       age,
       gender,
-      allergies: hasAllergies
-        ? ["Peanuts", "Dairy"].slice(0, Math.ceil(Math.random() * 2))
-        : [],
-      medicalNotes: hasAllergies ? "Please check meal ingredients" : undefined,
       photoUrl: `https://i.pravatar.cc/150?u=camper${camperIndex}`,
       registrationDate: octoberDate(1, 10, camperIndex),
       sessionId: group.sessionId,

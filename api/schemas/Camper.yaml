@@ -20,12 +20,6 @@ properties:
   gender:
     type: string
     enum: [male, female]
-  allergies:
-    type: array
-    items:
-      type: string
-  medicalNotes:
-    type: string
   photoUrl:
     type: string
   registrationDate:

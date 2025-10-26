@@ -1150,8 +1150,6 @@ export interface components {
       age: number;
       /** @enum {string} */
       gender: "male" | "female";
-      allergies?: string[];
-      medicalNotes?: string;
       photoUrl?: string;
       /** Format: date-time */
       registrationDate?: string;
@@ -1182,8 +1180,6 @@ export interface components {
        * @description ID of the camp session this camper is registered in
        */
       sessionId: string;
-      allergies?: string[];
-      medicalNotes?: string;
       photoUrl?: string;
       /** Format: date-time */
       registrationDate?: string;
@@ -1209,8 +1205,6 @@ export interface components {
        * @description ID of the camp session this camper is registered in
        */
       sessionId: string;
-      allergies?: string[];
-      medicalNotes?: string;
       photoUrl?: string;
       /** Format: date-time */
       registrationDate?: string;

@@ -9,8 +9,6 @@ export const campersFixture: Camper[] = [
     age: 12,
     gender: "female",
     sessionId: sessionsFixture[1].id,
-    allergies: ["Peanuts"],
-    medicalNotes: "Carries EpiPen",
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -20,7 +18,6 @@ export const campersFixture: Camper[] = [
     age: 10,
     gender: "male",
     sessionId: sessionsFixture[1].id,
-    allergies: [],
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -30,7 +27,6 @@ export const campersFixture: Camper[] = [
     age: 14,
     gender: "female",
     sessionId: sessionsFixture[1].id,
-    allergies: ["Dairy"],
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -40,7 +36,6 @@ export const campersFixture: Camper[] = [
     age: 8,
     gender: "male",
     sessionId: sessionsFixture[2].id,
-    allergies: [],
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -50,7 +45,6 @@ export const campersFixture: Camper[] = [
     age: 13,
     gender: "female",
     sessionId: sessionsFixture[2].id,
-    allergies: [],
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -60,8 +54,6 @@ export const campersFixture: Camper[] = [
     age: 11,
     gender: "male",
     sessionId: sessionsFixture[1].id,
-    allergies: ["Shellfish"],
-    medicalNotes: "Asthma - has inhaler",
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -71,7 +63,6 @@ export const campersFixture: Camper[] = [
     age: 9,
     gender: "female",
     sessionId: sessionsFixture[1].id,
-    allergies: [],
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -81,7 +72,6 @@ export const campersFixture: Camper[] = [
     age: 15,
     gender: "male",
     sessionId: sessionsFixture[2].id,
-    allergies: [],
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -91,7 +81,6 @@ export const campersFixture: Camper[] = [
     age: 7,
     gender: "female",
     sessionId: sessionsFixture[1].id,
-    allergies: ["Gluten"],
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -101,7 +90,6 @@ export const campersFixture: Camper[] = [
     age: 12,
     gender: "male",
     sessionId: sessionsFixture[1].id,
-    allergies: [],
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -111,7 +99,6 @@ export const campersFixture: Camper[] = [
     age: 16,
     gender: "female",
     sessionId: sessionsFixture[2].id,
-    allergies: [],
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -121,7 +108,6 @@ export const campersFixture: Camper[] = [
     age: 14,
     gender: "female",
     sessionId: sessionsFixture[1].id,
-    allergies: [],
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -131,8 +117,6 @@ export const campersFixture: Camper[] = [
     age: 6,
     gender: "female",
     sessionId: sessionsFixture[2].id,
-    allergies: ["Bee stings"],
-    medicalNotes: "Severe reaction to bee stings",
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -142,7 +126,6 @@ export const campersFixture: Camper[] = [
     age: 17,
     gender: "male",
     sessionId: sessionsFixture[2].id,
-    allergies: [],
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -152,7 +135,6 @@ export const campersFixture: Camper[] = [
     age: 10,
     gender: "female",
     sessionId: sessionsFixture[1].id,
-    allergies: ["Latex"],
     registrationDate: "2025-10-01T09:00:00.000Z",
   },
 ];

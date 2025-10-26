@@ -229,15 +229,6 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Allergies</label>
-            <Autocomplete
-              v-model="localFormData.camperFilters.hasAllergies"
-              :options="allergiesFilterOptions"
-              placeholder="Any (with or without allergies)"
-            />
-          </div>
-
-          <div class="form-group">
             <label class="form-label">Family Groups (Optional)</label>
             <p class="form-help-text">
               Filter campers from specific family groups
@@ -521,11 +512,6 @@ export default defineComponent({
         { label: "Male", value: "male" },
         { label: "Female", value: "female" },
       ] as AutocompleteOption[],
-      allergiesFilterOptions: [
-        { label: "Any (with or without allergies)", value: undefined },
-        { label: "Has Allergies", value: true },
-        { label: "No Allergies", value: false },
-      ] as AutocompleteOption[],
       staffRoles: [
         { label: "Counselor", value: "counselor" },
         { label: "Supervisor", value: "supervisor" },
@@ -638,11 +624,6 @@ export default defineComponent({
           camper.gender !== this.localFormData.camperFilters.gender
         )
           return false;
-        if (this.localFormData.camperFilters.hasAllergies !== undefined) {
-          const hasAllergies = camper.allergies && camper.allergies.length > 0;
-          if (this.localFormData.camperFilters.hasAllergies !== hasAllergies)
-            return false;
-        }
         return true;
       }).length;
     },

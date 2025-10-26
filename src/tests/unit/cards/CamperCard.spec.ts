@@ -49,38 +49,6 @@ describe("CamperCard", () => {
     });
   });
 
-  describe("Allergies Display", () => {
-    it("shows allergy badge when camper has allergies", () => {
-      const camper = campersFixture[0]; // Has peanut allergy
-      const wrapper = createWrapper(CamperCard, {
-        props: { camper },
-      });
-
-      expect(wrapper.text()).toContain("1 Allergy(ies)");
-    });
-
-    it("does not show allergy badge when camper has no allergies", () => {
-      const camper = campersFixture[1]; // No allergies
-      const wrapper = createWrapper(CamperCard, {
-        props: { camper },
-      });
-
-      expect(wrapper.text()).not.toContain("Allergy");
-    });
-
-    it("shows correct allergy count for multiple allergies", () => {
-      const camper = {
-        ...campersFixture[0],
-        allergies: ["Peanuts", "Dairy", "Shellfish"],
-      };
-      const wrapper = createWrapper(CamperCard, {
-        props: { camper },
-      });
-
-      expect(wrapper.text()).toContain("3 Allergy(ies)");
-    });
-  });
-
   describe("Avatar Display", () => {
     it("renders AvatarInitials component with camper name", () => {
       const camper = campersFixture[0];

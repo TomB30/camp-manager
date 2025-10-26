@@ -26,7 +26,6 @@ export const buildCamper = (overrides: Partial<Camper> = {}): Camper => ({
   age: 12,
   gender: "male",
   sessionId: "session-2",
-  allergies: [],
   registrationDate: new Date().toISOString(),
   ...overrides,
 });
@@ -111,19 +110,6 @@ export const buildLocation = (overrides: Partial<Location> = {}): Location => ({
   equipment: [],
   ...overrides,
 });
-
-/**
- * Build a camper with allergies
- */
-export const buildCamperWithAllergies = (
-  allergies: string[],
-  overrides: Partial<Camper> = {},
-): Camper =>
-  buildCamper({
-    allergies,
-    medicalNotes: `Allergic to: ${allergies.join(", ")}`,
-    ...overrides,
-  });
 
 /**
  * Build a staff member with specific certifications

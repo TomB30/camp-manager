@@ -10,27 +10,6 @@
           <div>{{ camper.age }} years old</div>
         </div>
 
-        <div
-          v-if="camper.allergies && camper.allergies.length > 0"
-          class="detail-section"
-        >
-          <div class="detail-label">Allergies</div>
-          <div class="flex gap-1 flex-wrap">
-            <span
-              v-for="allergy in camper.allergies"
-              :key="allergy"
-              class="badge badge-warning"
-            >
-              {{ allergy }}
-            </span>
-          </div>
-        </div>
-
-        <div v-if="camper.medicalNotes" class="detail-section">
-          <div class="detail-label">Medical Notes</div>
-          <div>{{ camper.medicalNotes }}</div>
-        </div>
-
         <div class="detail-section">
           <div class="detail-label">Gender</div>
           <div>

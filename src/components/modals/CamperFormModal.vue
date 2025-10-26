@@ -76,23 +76,6 @@
             Select a session first to choose a family group
           </q-tooltip>
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Allergies (comma-separated)</label>
-          <BaseInput
-            v-model="allergiesModel"
-            placeholder="e.g., Peanuts, Dairy"
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Medical Notes</label>
-          <BaseInput
-            v-model="formData.medicalNotes"
-            type="textarea"
-            placeholder="Optional medical notes"
-          />
-        </div>
       </q-form>
     </template>
 
@@ -145,8 +128,6 @@ export default defineComponent({
         age: 0,
         gender: "male",
         sessionId: "",
-        allergies: [],
-        medicalNotes: "",
         photoUrl: "",
       } as CamperCreationRequest,
       genderOptions: [
@@ -167,8 +148,6 @@ export default defineComponent({
       age: camper.age,
       gender: camper.gender,
       sessionId: camper.sessionId || "",
-      allergies: camper.allergies || [],
-      medicalNotes: camper.medicalNotes || "",
       familyGroupId: camper.familyGroupId || "",
       photoUrl: camper.photoUrl || "",
     };
@@ -176,14 +155,6 @@ export default defineComponent({
   computed: {
     isEditing(): boolean {
       return !!this.camperId;
-    },
-    allergiesModel: {
-      get(): string {
-        return this.formData.allergies?.join(", ") || "";
-      },
-      set(value: string) {
-        this.formData.allergies = value.split(",").map((a) => a.trim());
-      },
     },
     sessions(): Session[] {
       return this.sessionsStore.sessions;
