@@ -30,7 +30,7 @@
         outline
         size="sm"
         label="Remove"
-        @click.stop="$emit('remove')"
+        @click="$emit('remove')"
       />
     </slot>
   </div>
