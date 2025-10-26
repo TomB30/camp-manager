@@ -15,24 +15,78 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Hex Value</label>
-          <BaseInput
-            v-model="formModel.hexValue"
-            placeholder="#3B82F6"
-            :rules="[(val: string) => !!val || 'Enter hex value']"
-          >
-            <template v-slot:append>
-              <q-icon name="colorize" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-color v-model="formModel.hexValue" />
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </BaseInput>
+          <label class="form-label">Select Color</label>
+          
+          <div class="color-search-box">
+            <BaseInput
+              v-model="formModel.hexValue"
+              placeholder='Try "#00c4cc"'
+              :rules="[validateHexColor]"
+              class="hex-input"
+            >
+              <template #prepend>
+                <q-icon name="search" size="20px" class="search-icon" />
+              </template>
+            </BaseInput>
+          </div>
+
+          <!-- Preset Colors -->
+          <div class="preset-colors-section">
+            <div class="color-grid">
+              <div
+                v-for="color in presetColors"
+                :key="color.hex"
+                class="color-swatch"
+                :class="{ selected: formModel.hexValue === color.hex }"
+                :style="{ background: color.hex }"
+                @click="selectColor(color.hex)"
+                :title="color.name"
+              >
+                <q-icon 
+                  v-if="formModel.hexValue === color.hex" 
+                  name="check" 
+                  color="white" 
+                  size="20px" 
+                />
+              </div>
+              
+              <!-- Add Custom Color Button -->
+              <div
+                class="color-swatch add-custom-btn"
+                @click="showColorPicker = true"
+                title="Choose custom color"
+              >
+                <q-icon name="add" size="20px" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Color Picker Dialog -->
+          <q-dialog v-model="showColorPicker">
+            <q-card style="min-width: 300px">
+              <q-card-section>
+                <div class="text-h6">Choose Custom Color</div>
+              </q-card-section>
+              <q-card-section>
+                <q-color 
+                  v-model="formModel.hexValue" 
+                  default-view="palette"
+                  no-header
+                />
+              </q-card-section>
+              <q-card-actions align="right">
+                <q-btn flat label="Done" color="primary" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+        </div>
+
+        <!-- Color Preview -->
+        <div
+          class="color-preview-large"
+          :style="{ background: formModel.hexValue || '#CCCCCC' }"
+        >
+          <span class="preview-label">Preview</span>
         </div>
 
         <div class="form-group">
@@ -44,13 +98,6 @@
             The default color will be used for events not created from activity
             templates. Only one color can be set as default.
           </p>
-        </div>
-
-        <div
-          class="color-preview-large"
-          :style="{ background: formModel.hexValue || '#CCCCCC' }"
-        >
-          <span class="preview-label">Preview</span>
         </div>
       </q-form>
     </template>
@@ -101,6 +148,53 @@ export default defineComponent({
       } as ColorCreationRequest,
       formRef: null as any,
       loading: false as boolean,
+      showColorPicker: false as boolean,
+      presetColors: [
+        // Grayscale
+        { name: "Black", hex: "#000000" },
+        { name: "Dark Gray", hex: "#4A4A4A" },
+        { name: "Medium Gray", hex: "#6B6B6B" },
+        { name: "Gray", hex: "#9B9B9B" },
+        { name: "Light Gray", hex: "#BDBDBD" },
+        { name: "Silver", hex: "#D9D9D9" },
+        { name: "White", hex: "#FFFFFF" },
+        
+        // Reds
+        { name: "Red", hex: "#E53935" },
+        { name: "Coral", hex: "#EF5350" },
+        { name: "Pink", hex: "#EC407A" },
+        { name: "Light Pink", hex: "#CE93D8" },
+        { name: "Purple", hex: "#AB47BC" },
+        { name: "Deep Purple", hex: "#7E57C2" },
+        { name: "Indigo", hex: "#5E35B1" },
+        
+        // Blues
+        { name: "Teal", hex: "#26A69A" },
+        { name: "Cyan", hex: "#26C6DA" },
+        { name: "Light Blue", hex: "#4DD0E1" },
+        { name: "Sky Blue", hex: "#42A5F5" },
+        { name: "Blue", hex: "#5C6BC0" },
+        { name: "Navy Blue", hex: "#1E88E5" },
+        { name: "Dark Blue", hex: "#1A237E" },
+        
+        // Greens & Yellows
+        { name: "Green", hex: "#43A047" },
+        { name: "Light Green", hex: "#7CB342" },
+        { name: "Lime", hex: "#C0CA33" },
+        { name: "Yellow", hex: "#FFD54F" },
+        { name: "Amber", hex: "#FFCA28" },
+        { name: "Orange", hex: "#FFA726" },
+        { name: "Deep Orange", hex: "#FF7043" },
+        
+        // Additional Colors
+        { name: "Maroon", hex: "#8D3E3E" },
+        { name: "Brown", hex: "#795548" },
+        { name: "Mint", hex: "#80CBC4" },
+        { name: "Turquoise", hex: "#00BCD4" },
+        { name: "Lavender", hex: "#B39DDB" },
+        { name: "Peach", hex: "#FFAB91" },
+        { name: "Olive", hex: "#9E9D24" },
+      ],
     };
   },
   created() {
@@ -121,6 +215,20 @@ export default defineComponent({
     },
   },
   methods: {
+    selectColor(hex: string): void {
+      this.formModel.hexValue = hex;
+    },
+    validateHexColor(val: string): boolean | string {
+      if (!val) return "Please select or enter a color";
+      
+      // Allow common color names or hex values
+      const hexPattern = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+      if (hexPattern.test(val)) {
+        return true;
+      }
+      
+      return 'Enter a valid hex color (e.g., #00c4cc)';
+    },
     async handleSave(): Promise<void> {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
@@ -163,35 +271,113 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.color-input-group {
+.color-search-box {
+  position: relative;
   display: flex;
-  gap: 0.5rem;
   align-items: center;
+  margin-bottom: 1.5rem;
 }
 
-.color-input-group .form-input {
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-secondary);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.color-search-box :deep(.q-field__control) {
+  padding-left: 40px;
+}
+
+.hex-input {
   flex: 1;
 }
 
-.color-picker-input {
-  width: 60px;
-  height: 42px;
-  border: 1px solid var(--border);
+.current-color-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--background-light);
   border-radius: var(--radius);
-  cursor: pointer;
-  padding: 4px;
-  background: white;
 }
 
-.color-picker-input:hover {
-  border-color: var(--primary-color);
+.current-color-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
 }
 
-.form-hint {
-  display: block;
-  margin-top: 0.25rem;
+.color-hex-label {
+  font-family: monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.section-label {
   font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.preset-colors-section {
+  margin-bottom: 1.5rem;
+}
+
+.color-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.color-swatch {
+  width: 35px;
+  height: 35px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.color-swatch.selected {
+  border-color: var(--primary-color);
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.color-swatch.add-custom-btn {
+  background: white;
+  border: 2px solid var(--border-light);
   color: var(--text-secondary);
+  box-shadow: none;
+}
+
+.color-swatch.add-custom-btn:hover {
+  border-color: var(--primary-color);
+  border-style: solid;
+  color: var(--primary-color);
+  background: var(--background-light);
 }
 
 .form-help-text {
@@ -206,7 +392,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 1rem;
+  margin-bottom: 1rem;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
   border: 2px solid var(--border-light);
   transition: all 0.2s ease;
@@ -220,7 +406,11 @@ export default defineComponent({
   letter-spacing: 0.05em;
 }
 
-.colors-form-modal-footer {
-  width: 100%;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .color-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+  }
 }
 </style>
