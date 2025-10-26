@@ -65,20 +65,16 @@
         <div class="form-group">
           <label class="form-label">Family Group</label>
           <Autocomplete
+            class="family-group-autocomplete"
             v-model="formData.familyGroupId"
             :options="availableGroupOptions"
             placeholder="Select a family group..."
             :disabled="!formData.sessionId"
+            no-option-text="No family groups available for this session"
           />
-          <div v-if="!formData.sessionId" class="text-xs text-secondary mt-1">
-            Please select a session first
-          </div>
-          <div
-            v-else-if="availableGroupOptions.length === 0"
-            class="text-xs text-warning mt-1"
-          >
-            No family groups available for this session
-          </div>
+          <q-tooltip v-if="!formData.sessionId" target=".family-group-autocomplete">
+            Select a session first to choose a family group
+          </q-tooltip>
         </div>
 
         <div class="form-group">
