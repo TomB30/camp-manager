@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="programs-view">
+    <div class="view">
       <!-- Breadcrumb Navigation (only show when inside a program) -->
       <nav v-if="selectedProgramId" class="breadcrumbs">
         <button class="breadcrumb-item" @click="selectedProgramId = null">
@@ -926,9 +926,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.programs-view {
-  padding: 0;
-}
 
 /* Breadcrumbs */
 .breadcrumbs {
@@ -991,7 +988,7 @@ export default defineComponent({
 .programs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .programs-grid .empty-state {

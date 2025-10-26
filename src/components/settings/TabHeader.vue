@@ -48,7 +48,7 @@ export default defineComponent({
 .tab-header {
   background: var(--surface);
   border-radius: var(--radius-lg);
-  padding: 1.5rem;
+  padding: 1rem;
   margin-bottom: 1rem;
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow);

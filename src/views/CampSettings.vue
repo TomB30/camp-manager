@@ -14,20 +14,38 @@
       </div>
     </div>
 
-    <!-- Tab Navigation -->
+    <!-- Main Tab Navigation -->
     <div class="tabs-navigation">
       <button
         v-for="tab in tabs"
         :key="tab.id"
         class="tab-button"
-        :class="{ active: activeTab === tab.id }"
-        @click="activeTab = tab.id"
+        :class="{
+          active:
+            tab.type === 'regular'
+              ? activeTab === tab.id
+              : activeCategory === tab.id,
+        }"
+        @click="handleTabClick(tab)"
       >
         <Icon :name="tab.icon" :size="20" />
         <span>{{ tab.label }}</span>
-        <span v-if="tab.count !== undefined" class="tab-count">{{
-          tab.count
-        }}</span>
+      </button>
+    </div>
+
+    <!-- Main Tab Navigation -->
+    <div v-if="hasSubTabs && currentCategory" class="sub-tabs-navigation">
+      <button
+        v-for="subTab in currentCategory.subTabs"
+        :key="subTab.id"
+        class="tab-button"
+        :class="{
+          active: activeTab === subTab.id,
+        }"
+        @click="handleSubTabClick(subTab)"
+      >
+        <Icon :name="subTab.icon" :size="20" />
+        <span>{{ subTab.label }}</span>
       </button>
     </div>
 
@@ -44,7 +62,6 @@
         />
         <RolesTab v-else-if="activeTab === 'roles'" key="roles" />
         <ColorsTab v-else-if="activeTab === 'colors'" key="colors" />
-        <!-- <LabelsTab v-else-if="activeTab === 'labels'" key="labels" /> -->
       </Transition>
     </div>
   </div>
@@ -116,76 +133,123 @@ export default defineComponent({
       | "certifications"
       | "roles"
       | "labels";
+    activeCategory: string | null;
   } {
     return {
       activeTab: "sessions",
+      activeCategory: null,
     };
   },
   computed: {
     tabs(): Array<{
-      id:
-        | "colors"
-        | "sessions"
-        | "areas"
-        | "locations"
-        | "cabins"
-        | "certifications"
-        | "roles"
-        | "labels";
+      id: string;
       label: string;
       icon: any;
       count: number;
+      type: "regular" | "category";
+      subTabs?: Array<{
+        id: "areas" | "locations" | "cabins" | "certifications" | "roles";
+        label: string;
+        icon: any;
+        count: number;
+      }>;
     }> {
       return [
         {
-          id: "sessions" as const,
+          id: "sessions",
+          type: "regular" as const,
           label: "Sessions",
           icon: "CalendarDays",
           count: this.sessionsStore.sessions.length,
         },
         {
-          id: "areas" as const,
-          label: "Areas",
+          id: "areas-locations",
+          type: "category" as const,
+          label: "Areas & Locations",
           icon: "Map",
-          count: this.areasStore.areas.length,
+          count:
+            this.areasStore.areas.length +
+            this.locationsStore.locations.length +
+            this.housingRoomsStore.housingRooms.length,
+          subTabs: [
+            {
+              id: "areas" as const,
+              label: "Areas",
+              icon: "Map",
+              count: this.areasStore.areas.length,
+            },
+            {
+              id: "locations" as const,
+              label: "Locations",
+              icon: "MapPin",
+              count: this.locationsStore.locations.length,
+            },
+            {
+              id: "cabins" as const,
+              label: "Housing",
+              icon: "Bed",
+              count: this.housingRoomsStore.housingRooms.length,
+            },
+          ],
         },
         {
-          id: "locations" as const,
-          label: "Locations",
-          icon: "MapPin",
-          count: this.locationsStore.locations.length,
-        },
-        {
-          id: "cabins" as const,
-          label: "Housing",
-          icon: "Bed",
-          count: this.housingRoomsStore.housingRooms.length,
-        },
-        {
-          id: "certifications" as const,
-          label: "Certifications",
-          icon: "Award",
-          count: this.certificationsStore.certifications.length,
-        },
-        {
-          id: "roles" as const,
-          label: "Roles",
+          id: "roles-certifications",
+          type: "category" as const,
+          label: "Roles & Certifications",
           icon: "Shield",
-          count: this.rolesStore.roles.length,
+          count:
+            this.rolesStore.roles.length +
+            this.certificationsStore.certifications.length,
+          subTabs: [
+            {
+              id: "roles" as const,
+              label: "Roles",
+              icon: "Shield",
+              count: this.rolesStore.roles.length,
+            },
+            {
+              id: "certifications" as const,
+              label: "Certifications",
+              icon: "Award",
+              count: this.certificationsStore.certifications.length,
+            },
+          ],
         },
         {
-          id: "colors" as const,
+          id: "colors",
+          type: "regular" as const,
           label: "Colors",
           icon: "Palette",
           count: this.colorsStore.colors.length,
         },
-        // {
-        //   id: "labels" as const,
-        //   label: "Labels",
-        //   icon: "Tag",
-        //   count: this.labelsStore.labels.length,
-        // },
       ];
+    },
+    currentCategory() {
+      if (!this.activeCategory) return null;
+      return this.tabs.find((tab) => tab.id === this.activeCategory) || null;
+    },
+    hasSubTabs(): boolean {
+      return (
+        this.currentCategory !== null &&
+        this.currentCategory.type === "category" &&
+        !!this.currentCategory.subTabs
+      );
+    },
+  },
+  methods: {
+    handleTabClick(tab: any) {
+      if (tab.type === "category" && tab.subTabs && tab.subTabs.length > 0) {
+        // Set category and show first sub-tab
+        this.activeCategory = tab.id;
+        this.activeTab = tab.subTabs[0].id;
+      } else {
+        // Regular tab
+        this.activeCategory = null;
+        this.activeTab = tab.id;
+      }
+    },
+    handleSubTabClick(subTab: any) {
+      this.activeTab = subTab.id;
     },
   },
 });
@@ -203,7 +267,7 @@ export default defineComponent({
   color: white;
   padding: 1rem 2rem;
   border-radius: var(--radius-lg);
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
   box-shadow: var(--shadow-lg);
 }
 
@@ -235,21 +299,21 @@ export default defineComponent({
   opacity: 0.9;
 }
 
-.tabs-navigation {
+.tabs-navigation, .sub-tabs-navigation {
   display: flex;
   gap: 0.5rem;
-  border-bottom: 2px solid var(--border-light);
-  margin-bottom: 1rem;
+  border-bottom: 1px solid lightgray;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0 0.25rem;
+  padding: 0;
+  flex-wrap: wrap;
 }
 
 .tab-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem;
   background: none;
   border: none;
   border-bottom: 3px solid transparent;
@@ -293,8 +357,97 @@ export default defineComponent({
   color: white;
 }
 
+.content-layout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.content-layout.has-sidebar {
+  gap: 1.5rem;
+}
+
+.sidebar-navigation {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0;
+  border-right: 1px solid lightgray;
+}
+
+.sidebar-tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.sidebar-tab-button:hover {
+  color: var(--text-primary);
+  background: var(--surface-secondary);
+}
+
+.sidebar-tab-button.active {
+  color: var(--accent-color);
+  background: #eff6ff;
+}
+
+.sidebar-tab-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+}
+
+.sidebar-tab-label {
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.sidebar-tab-count {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.sidebar-tab-button.active .sidebar-tab-count {
+  color: var(--accent-color);
+}
+
 .tab-content {
+  margin-top: 1rem;
+  flex: 1;
+  min-width: 0;
   animation: fadeIn 0.3s ease;
+}
+
+.tab-content-wrapper {
+  margin: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-content-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.tab-content-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .fade-enter-active,
@@ -315,6 +468,26 @@ export default defineComponent({
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 968px) {
+  .content-layout {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .sidebar-navigation {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+    gap: 0.5rem;
+  }
+
+  .sidebar-tab-button {
+    min-width: max-content;
+    padding: 0.75rem 1rem;
   }
 }
 
@@ -346,8 +519,17 @@ export default defineComponent({
   }
 
   .tab-button {
-    padding: 0.875rem 1rem;
+    padding: 0.5rem 1rem;
     font-size: 0.875rem;
+  }
+
+  .sidebar-tab-button {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .tab-content-header h2 {
+    font-size: 1.25rem;
   }
 }
 </style>

@@ -157,7 +157,7 @@ export default defineComponent({
 .colors-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .colors-grid .empty-state {

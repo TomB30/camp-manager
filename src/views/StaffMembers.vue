@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="staff-view">
+    <div class="view">
       <ViewHeader title="Staff Management">
         <template #actions>
           <BaseButton
@@ -435,15 +435,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.staff-view {
-  max-width: 1400px;
-  margin: 0 auto;
-}
 
 .staff-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .staff-grid .empty-state {

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="groups-view">
+    <div class="view">
       <ViewHeader
         title="Groups"
         tooltip="Create and manage groups with flexible assignment options. Groups can contain campers, staff, or even other groups. Use filters for automatic assignment or manually select members."
@@ -603,15 +603,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.groups-view {
-  max-width: 1400px;
-  margin: 0 auto;
-}
 
 .groups-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .empty-state {

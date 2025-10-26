@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="dashboard">
+    <div class="view">
       <ViewHeader title="Dashboard" />
 
       <!-- Stats Cards -->
@@ -374,10 +374,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.dashboard {
-  max-width: 1400px;
-  margin: 0 auto;
-}
 
 .stats-grid {
   display: grid;

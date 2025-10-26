@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="calendar-view">
+    <div class="view">
       <ViewHeader title="Event Calendar">
         <template #actions>
           <BaseButton
@@ -493,10 +493,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.calendar-view {
-  max-width: 1400px;
-  margin: 0 auto;
-}
 
 /* Calendar View Toggle */
 .calendar-view-toggle {

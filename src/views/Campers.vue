@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="campers-view">
+    <div class="view">
       <ViewHeader title="Campers Management">
         <template #actions>
           <BaseButton
@@ -358,15 +358,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.campers-view {
-  max-width: 1400px;
-  margin: 0 auto;
-}
 
 .campers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .campers-grid .empty-state {

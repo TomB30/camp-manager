@@ -248,7 +248,11 @@ p {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 1rem;
+}
+
+.view {
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .flex {
