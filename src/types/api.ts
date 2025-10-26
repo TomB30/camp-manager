@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/sessions": {
     /** List all sessions */
@@ -1582,8 +1583,6 @@ export interface components {
       /** Format: date */
       endDate: string;
       description?: string;
-      /** @description Optional max capacity for this session */
-      maxCampers?: number;
       /** Format: date-time */
       createdAt?: string;
       /** Format: date-time */
@@ -1596,8 +1595,6 @@ export interface components {
       /** Format: date */
       endDate: string;
       description?: string;
-      /** @description Optional max capacity for this session */
-      maxCampers?: number;
     };
     SessionUpdateRequest: {
       name: string;
@@ -1606,8 +1603,6 @@ export interface components {
       /** Format: date */
       endDate: string;
       description?: string;
-      /** @description Optional max capacity for this session */
-      maxCampers?: number;
     };
     Group: {
       /** Format: uuid */

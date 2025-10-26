@@ -49,15 +49,6 @@
             placeholder="Optional description for this session..."
           />
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Maximum Campers</label>
-          <BaseInput
-            v-model="maxCampersModel"
-            type="number"
-            placeholder="Optional capacity limit"
-          />
-        </div>
       </q-form>
     </template>
 
@@ -106,7 +97,6 @@ export default defineComponent({
         startDate: "",
         endDate: "",
         description: "",
-        maxCampers: undefined,
       } as SessionCreationRequest,
       formRef: null as any,
       loading: false as boolean,
@@ -121,7 +111,6 @@ export default defineComponent({
           startDate: editingSession.startDate,
           endDate: editingSession.endDate,
           description: editingSession.description || "",
-          maxCampers: editingSession.maxCampers,
         };
       }
     }
@@ -136,15 +125,6 @@ export default defineComponent({
       },
       set(value: string) {
         this.formModel.description = value || undefined;
-      },
-    },
-    maxCampersModel: {
-      get(): string {
-        return this.formModel.maxCampers?.toString() || "";
-      },
-      set(value: string) {
-        const num = parseInt(value);
-        this.formModel.maxCampers = isNaN(num) ? undefined : num;
       },
     },
   },

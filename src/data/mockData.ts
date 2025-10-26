@@ -108,7 +108,6 @@ export const sessions: Session[] = [
     startDate: "2025-10-01",
     endDate: "2025-10-05",
     description: "Perfect start to fall activities",
-    maxCampers: 40,
     createdAt: octoberDate(1),
   },
   {
@@ -117,7 +116,6 @@ export const sessions: Session[] = [
     startDate: "2025-10-06",
     endDate: "2025-10-10",
     description: "Mid-fall adventures",
-    maxCampers: 45,
     createdAt: octoberDate(1),
   },
   {
@@ -126,7 +124,6 @@ export const sessions: Session[] = [
     startDate: "2025-10-11",
     endDate: "2025-10-15",
     description: "Continued fall fun",
-    maxCampers: 40,
     createdAt: octoberDate(1),
   },
   {
@@ -135,7 +132,6 @@ export const sessions: Session[] = [
     startDate: "2025-10-16",
     endDate: "2025-10-20",
     description: "Late fall exploration",
-    maxCampers: 38,
     createdAt: octoberDate(1),
   },
   {
@@ -144,7 +140,6 @@ export const sessions: Session[] = [
     startDate: "2025-10-21",
     endDate: "2025-10-25",
     description: "Halloween prep week",
-    maxCampers: 42,
     createdAt: octoberDate(1),
   },
   {
@@ -153,7 +148,6 @@ export const sessions: Session[] = [
     startDate: "2025-10-26",
     endDate: "2025-10-31",
     description: "Spooky fun and festivities",
-    maxCampers: 50,
     createdAt: octoberDate(1),
   },
 ];

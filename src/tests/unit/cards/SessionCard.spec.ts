@@ -36,18 +36,6 @@ describe("SessionCard", () => {
       expect(text).toMatch(/Oct|Sep|Nov/); // Month abbreviation
     });
 
-    it("displays max campers when provided", () => {
-      const session = sessionsFixture[0];
-      const wrapper = createWrapper(SessionCard, {
-        props: { session },
-      });
-
-      if (session.maxCampers) {
-        expect(wrapper.text()).toContain(`Max Campers:`);
-        expect(wrapper.text()).toContain(session.maxCampers.toString());
-      }
-    });
-
     it("displays duration", () => {
       const session = sessionsFixture[0];
       const wrapper = createWrapper(SessionCard, {
@@ -141,16 +129,6 @@ describe("SessionCard", () => {
       });
 
       expect(wrapper.find(".session-description").exists()).toBe(false);
-    });
-
-    it("handles sessions without maxCampers", () => {
-      const session = { ...sessionsFixture[0], maxCampers: undefined };
-      const wrapper = createWrapper(SessionCard, {
-        props: { session },
-      });
-
-      expect(wrapper.exists()).toBe(true);
-      expect(wrapper.text()).not.toContain("Max Campers");
     });
 
     it("formats dates correctly for different months", () => {

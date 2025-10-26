@@ -29,11 +29,6 @@
           dateUtils.calculateDuration(session.startDate, session.endDate)
         }}</span>
       </div>
-      <div v-if="session.maxCampers" class="session-detail">
-        <Icon name="Users" :size="16" class="detail-icon" />
-        <span class="detail-label">Max Campers:</span>
-        <span class="detail-value">{{ session.maxCampers }}</span>
-      </div>
     </div>
   </div>
 </template>

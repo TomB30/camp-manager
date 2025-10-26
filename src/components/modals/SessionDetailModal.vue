@@ -19,11 +19,6 @@
           <div class="detail-label">Duration</div>
           <div>{{ calculateDuration(session.startDate, session.endDate) }}</div>
         </div>
-
-        <div v-if="session.maxCampers" class="detail-section">
-          <div class="detail-label">Maximum Campers</div>
-          <div>{{ session.maxCampers }} campers</div>
-        </div>
       </div>
     </template>
 
