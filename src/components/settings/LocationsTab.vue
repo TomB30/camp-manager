@@ -42,19 +42,8 @@
         v-for="location in filteredLocations"
         :key="location.id"
         :location="location"
-        :formatted-type="formatLocationType(location.type)"
-        :icon-color="getLocationTypeColor(location.type)"
-        :usage-percent="getLocationUsage(location.id)"
         @click="selectLocation(location.id)"
-      >
-        <template #icon>
-          <Icon
-            :name="LocationTypeIcon(location.type)"
-            :size="24"
-            :stroke-width="2"
-          />
-        </template>
-      </LocationCard>
+      />
     </div>
 
     <!-- Table View -->
@@ -338,7 +327,8 @@ export default defineComponent({
       this.filterType = "";
       this.filterCapacity = "";
     },
-    formatLocationType(type: string): string {
+    formatLocationType(type: string | undefined): string | undefined {
+      if (!type) return undefined;
       return type.charAt(0).toUpperCase() + type.slice(1);
     },
     LocationTypeIcon(type: Location["type"]): IconName {

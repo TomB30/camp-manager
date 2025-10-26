@@ -32,15 +32,14 @@
               type="number"
               placeholder="Enter capacity"
               :rules="[
-                (val: string) => !!val || 'Enter capacity',
-                (val: string) => parseInt(val) > 0 || 'Must be greater than 0',
+                isValidCapacity,
               ]"
             />
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Area (optional)</label>
+          <label class="form-label">Area</label>
           <Autocomplete
             v-model="localFormData.areaId"
             :options="areaOptions"
@@ -165,8 +164,12 @@ export default defineComponent({
         return this.localFormData.capacity?.toString() || "";
       },
       set(value: string) {
-        const num = parseInt(value);
-        this.localFormData.capacity = isNaN(num) ? 0 : num;
+        if (!value) {
+          this.localFormData.capacity = undefined;
+        } else {
+          const num = parseInt(value);
+          this.localFormData.capacity = isNaN(num) ? 0 : num;
+        }
       },
     },
     notesModel: {
@@ -190,6 +193,11 @@ export default defineComponent({
     },
   },
   methods: {
+    isValidCapacity(value: string): string | boolean {
+      if (!value) return true;
+      const num = parseInt(value);
+      return !isNaN(num) && num > 0 || "Must be greater than 0";
+    },
     async handleSave() {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;

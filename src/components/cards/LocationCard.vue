@@ -4,15 +4,17 @@
     @click="$emit('click', location)"
   >
     <div class="card-icon" :style="{ background: iconColor }">
-      <slot name="icon" />
+      <Icon :name="locationTypeIcon" :size="24" :stroke-width="2" />
     </div>
     <div class="card-details">
       <h4>{{ location.name }}</h4>
       <div class="card-meta row items-center">
-        <span class="badge badge-primary">{{ formattedType }}</span>
-        <span class="badge badge-success"
-          >Capacity: {{ location.capacity }}</span
-        >
+        <span class="badge badge-primary" v-if="location.type">
+          {{ formattedType }}
+        </span>
+        <span v-if="location.capacity" class="badge badge-success">
+          Capacity: {{ location.capacity }}
+        </span>
         <span
           v-if="areaName"
           class="text-sm text-grey-7 text-subtitle2 row items-center q-gutter-x-xs"
@@ -45,8 +47,8 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import type { Location } from "@/types";
-import { useAreasStore } from "@/stores";
-import Icon from "../Icon.vue";
+import { useAreasStore, useEventsStore, useLocationsStore } from "@/stores";
+import Icon, { type IconName } from "../Icon.vue";
 
 export default defineComponent({
   name: "LocationCard",
@@ -58,23 +60,13 @@ export default defineComponent({
       type: Object as PropType<Location>,
       required: true,
     },
-    formattedType: {
-      type: String,
-      required: true,
-    },
-    iconColor: {
-      type: String,
-      required: true,
-    },
-    usagePercent: {
-      type: Number,
-      default: 0,
-    },
   },
   emits: ["click"],
   setup() {
     const areasStore = useAreasStore();
-    return { areasStore };
+    const eventsStore = useEventsStore();
+    const locationsStore = useLocationsStore();
+    return { areasStore, eventsStore, locationsStore };
   },
   computed: {
     areaName(): string | undefined {
@@ -82,6 +74,52 @@ export default defineComponent({
         return this.areasStore.getAreaById(this.location.areaId)?.name;
       }
       return undefined;
+    },
+    formattedType(): string {
+      if (!this.location.type) return "";
+      return (
+        this.location.type.charAt(0).toUpperCase() + this.location.type.slice(1)
+      );
+    },
+    iconColor(): string {
+      const colors: Record<Location["type"], string> = {
+        classroom: "#2196F3",
+        activity: "#4CAF50",
+        sports: "#FF9800",
+        dining: "#795548",
+        outdoor: "#8BC34A",
+        arts: "#9C27B0",
+      };
+      return colors[this.location.type] || "#757575";
+    },
+    locationTypeIcon(): IconName {
+      const iconMap: Record<Location["type"], IconName> = {
+        classroom: "BookOpen",
+        activity: "Target",
+        sports: "Dumbbell",
+        dining: "Utensils",
+        outdoor: "Trees",
+        arts: "Palette",
+      };
+      return iconMap[this.location.type] || "MapPin";
+    },
+    usagePercent(): number {
+      const locationEvents = this.eventsStore.locationEvents(this.location.id);
+      if (locationEvents.length === 0) return 0;
+
+      if (!this.location.capacity) return 0;
+
+      // Calculate average capacity usage
+      const totalUsage = locationEvents.reduce((sum, event) => {
+        return (
+          sum +
+          (this.eventsStore.getEventCamperIds(event.id).length /
+            (this.location.capacity || 1)) *
+            100
+        );
+      }, 0);
+
+      return totalUsage / locationEvents.length;
     },
   },
 });

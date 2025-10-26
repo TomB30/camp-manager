@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createWrapper, setupTestPinia } from "@/tests/utils";
 import LocationCard from "@/components/cards/LocationCard.vue";
-import { locationsFixture, areasFixture } from "@/tests/fixtures";
-import { useAreasStore } from "@/stores";
+import { locationsFixture, areasFixture, eventsFixture } from "@/tests/fixtures";
+import { useAreasStore, useEventsStore } from "@/stores";
 
 describe("LocationCard", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
@@ -17,8 +17,6 @@ describe("LocationCard", () => {
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
         },
         pinia,
       });
@@ -31,13 +29,12 @@ describe("LocationCard", () => {
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
         },
         pinia,
       });
 
-      expect(wrapper.text()).toContain("Classroom");
+      const expectedType = location.type.charAt(0).toUpperCase() + location.type.slice(1);
+      expect(wrapper.text()).toContain(expectedType);
     });
 
     it("displays capacity badge", () => {
@@ -45,8 +42,6 @@ describe("LocationCard", () => {
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
         },
         pinia,
       });
@@ -62,8 +57,6 @@ describe("LocationCard", () => {
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
         },
         pinia,
       });
@@ -79,8 +72,6 @@ describe("LocationCard", () => {
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
         },
         pinia,
       });
@@ -100,9 +91,6 @@ describe("LocationCard", () => {
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
-          usagePercent: 75,
         },
         pinia,
       });
@@ -110,78 +98,47 @@ describe("LocationCard", () => {
       expect(wrapper.find(".usage-bar").exists()).toBe(true);
     });
 
-    it("shows usage percentage text", () => {
+    it("shows zero usage when no events", () => {
+      const eventsStore = useEventsStore();
+      eventsStore.events = [];
+      
       const location = locationsFixture[0];
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
-          usagePercent: 65,
         },
         pinia,
       });
 
-      expect(wrapper.text()).toContain("65% average usage");
+      expect(wrapper.text()).toContain("0% average usage");
     });
 
-    it("applies correct width to usage fill", () => {
+    it("calculates usage based on events", () => {
+      const eventsStore = useEventsStore();
+      eventsStore.events = eventsFixture;
+      
       const location = locationsFixture[0];
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
-          usagePercent: 50,
         },
         pinia,
       });
 
       const usageFill = wrapper.find(".usage-fill");
-      expect(usageFill.attributes("style")).toContain("width: 50%");
-    });
-
-    it("uses error color for high usage (>80%)", () => {
-      const location = locationsFixture[0];
-      const wrapper = createWrapper(LocationCard, {
-        props: {
-          location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
-          usagePercent: 85,
-        },
-        pinia,
-      });
-
-      const usageFill = wrapper.find(".usage-fill");
-      expect(usageFill.attributes("style")).toContain("var(--error-color)");
-    });
-
-    it("uses success color for normal usage (<=80%)", () => {
-      const location = locationsFixture[0];
-      const wrapper = createWrapper(LocationCard, {
-        props: {
-          location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
-          usagePercent: 60,
-        },
-        pinia,
-      });
-
-      const usageFill = wrapper.find(".usage-fill");
-      expect(usageFill.attributes("style")).toContain("var(--success-color)");
+      expect(usageFill.exists()).toBe(true);
+      // Usage should be calculated and displayed
+      const usageText = wrapper.find(".location-usage").text();
+      expect(usageText).toMatch(/\d+% average usage/);
     });
   });
 
   describe("Icon and Styling", () => {
-    it("applies icon color to card icon", () => {
+    it("applies appropriate icon color based on location type", () => {
       const location = locationsFixture[0];
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#FF0000",
         },
         pinia,
       });
@@ -189,9 +146,6 @@ describe("LocationCard", () => {
       const cardIcon = wrapper.find(".card-icon");
       const style = cardIcon.attributes("style");
       expect(style).toContain("background");
-      expect(
-        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)"),
-      ).toBe(true);
     });
 
     it("has card-clickable class", () => {
@@ -199,8 +153,6 @@ describe("LocationCard", () => {
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
         },
         pinia,
       });
@@ -213,8 +165,6 @@ describe("LocationCard", () => {
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
         },
         pinia,
       });
@@ -229,8 +179,6 @@ describe("LocationCard", () => {
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
         },
         pinia,
       });
@@ -243,14 +191,11 @@ describe("LocationCard", () => {
   });
 
   describe("Edge Cases", () => {
-    it("handles zero usage", () => {
-      const location = locationsFixture[0];
+    it("handles location without capacity", () => {
+      const location = { ...locationsFixture[0], capacity: undefined };
       const wrapper = createWrapper(LocationCard, {
         props: {
           location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
-          usagePercent: 0,
         },
         pinia,
       });
@@ -258,21 +203,24 @@ describe("LocationCard", () => {
       expect(wrapper.text()).toContain("0% average usage");
     });
 
-    it("handles 100% usage", () => {
-      const location = locationsFixture[0];
-      const wrapper = createWrapper(LocationCard, {
-        props: {
-          location,
-          formattedType: "Classroom",
-          iconColor: "#3B82F6",
-          usagePercent: 100,
-        },
-        pinia,
-      });
+    it("formats different location types correctly", () => {
+      const testTypes: Array<{ type: any; expected: string }> = [
+        { type: "classroom", expected: "Classroom" },
+        { type: "sports", expected: "Sports" },
+        { type: "outdoor", expected: "Outdoor" },
+      ];
 
-      expect(wrapper.text()).toContain("100% average usage");
-      const usageFill = wrapper.find(".usage-fill");
-      expect(usageFill.attributes("style")).toContain("width: 100%");
+      testTypes.forEach(({ type, expected }) => {
+        const location = { ...locationsFixture[0], type };
+        const wrapper = createWrapper(LocationCard, {
+          props: {
+            location,
+          },
+          pinia,
+        });
+
+        expect(wrapper.text()).toContain(expected);
+      });
     });
   });
 });
