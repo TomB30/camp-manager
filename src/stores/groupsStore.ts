@@ -288,5 +288,37 @@ export const useGroupsStore = defineStore("groups", {
         errors,
       };
     },
+    async addCamperToGroup(groupId: string, camperId: string): Promise<void> {
+      const group = this.groups.find((g) => g.id === groupId);
+      if (!group) return;
+
+      const groupToUpdate: GroupUpdateRequest = {
+        ...group,
+        camperIds: [...(group.camperIds || []), camperId],
+      };
+      const updatedGroup = await groupsService.updateGroup(
+        groupId,
+        groupToUpdate,
+      );
+      this.groups = this.groups.map((g) =>
+        g.id === groupId ? updatedGroup : g,
+      );
+    },
+    async removeCamperFromGroup(groupId: string, camperId: string): Promise<void> {
+      const group = this.groups.find((g) => g.id === groupId);
+      if (!group) return;
+
+      const groupToUpdate: GroupUpdateRequest = {
+        ...group,
+        camperIds: group.camperIds?.filter((id) => id !== camperId) || [],
+      };
+      const updatedGroup = await groupsService.updateGroup(
+        groupId,
+        groupToUpdate,
+      );
+      this.groups = this.groups.map((g) =>
+        g.id === groupId ? updatedGroup : g,
+      );
+    },
   },
 });

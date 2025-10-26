@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createWrapper, setupTestPinia } from "@/tests/utils";
 import LocationCard from "@/components/cards/LocationCard.vue";
-import { locationsFixture, areasFixture, eventsFixture } from "@/tests/fixtures";
+import {
+  locationsFixture,
+  areasFixture,
+  eventsFixture,
+} from "@/tests/fixtures";
 import { useAreasStore, useEventsStore } from "@/stores";
 
 describe("LocationCard", () => {
@@ -33,7 +37,8 @@ describe("LocationCard", () => {
         pinia,
       });
 
-      const expectedType = location.type.charAt(0).toUpperCase() + location.type.slice(1);
+      const expectedType =
+        location.type.charAt(0).toUpperCase() + location.type.slice(1);
       expect(wrapper.text()).toContain(expectedType);
     });
 
@@ -101,7 +106,7 @@ describe("LocationCard", () => {
     it("shows zero usage when no events", () => {
       const eventsStore = useEventsStore();
       eventsStore.events = [];
-      
+
       const location = locationsFixture[0];
       const wrapper = createWrapper(LocationCard, {
         props: {
@@ -116,7 +121,7 @@ describe("LocationCard", () => {
     it("calculates usage based on events", () => {
       const eventsStore = useEventsStore();
       eventsStore.events = eventsFixture;
-      
+
       const location = locationsFixture[0];
       const wrapper = createWrapper(LocationCard, {
         props: {

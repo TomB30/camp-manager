@@ -926,7 +926,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 /* Breadcrumbs */
 .breadcrumbs {
   display: flex;

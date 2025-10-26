@@ -31,9 +31,7 @@
               v-model="capacityModel"
               type="number"
               placeholder="Enter capacity"
-              :rules="[
-                isValidCapacity,
-              ]"
+              :rules="[isValidCapacity]"
             />
           </div>
         </div>
@@ -196,7 +194,7 @@ export default defineComponent({
     isValidCapacity(value: string): string | boolean {
       if (!value) return true;
       const num = parseInt(value);
-      return !isNaN(num) && num > 0 || "Must be greater than 0";
+      return (!isNaN(num) && num > 0) || "Must be greater than 0";
     },
     async handleSave() {
       const isValid = await (this.$refs.formRef as QForm).validate();

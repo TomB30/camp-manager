@@ -435,7 +435,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 .staff-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

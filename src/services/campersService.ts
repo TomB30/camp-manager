@@ -2,6 +2,7 @@ import type {
   Camper,
   CamperCreationRequest,
   CamperUpdateRequest,
+  Event,
 } from "@/types";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
@@ -30,11 +31,11 @@ async function createCamper(camper: CamperCreationRequest): Promise<Camper> {
 
 async function updateCamper(
   id: string,
-  camper: CamperUpdateRequest,
+  camper: CamperUpdateRequest
 ): Promise<Camper> {
   const existingCamper = await storageService.getById<Camper>(
     STORAGE_KEYS.CAMPERS,
-    id,
+    id
   );
   if (!existingCamper) {
     throw new Error(`Camper with id ${id} not found`);
@@ -51,18 +52,20 @@ async function deleteCamper(id: string): Promise<void> {
   await storageService.delete(STORAGE_KEYS.CAMPERS, id);
 
   // Clean up: Remove from all events
-  const events = await storageService.getAll(STORAGE_KEYS.EVENTS);
-  const updatedEvents = events.map((event) => ({
+  const events = await storageService.getAll<Event>(STORAGE_KEYS.EVENTS);
+  const updatedEvents: Event[] = events.map((event: Event) => ({
     ...event,
-    enrolledCamperIds:
-      event.enrolledCamperIds?.filter((camperId: string) => camperId !== id) ||
+    excludeCamperIds:
+      event.excludeCamperIds?.filter((camperId: string) => camperId !== id) ||
       [],
   }));
 
   // Save all updated events
+  const prms: Promise<Event>[] = [];
   for (const event of updatedEvents) {
-    await storageService.save(STORAGE_KEYS.EVENTS, event);
+    prms.push(storageService.save<Event>(STORAGE_KEYS.EVENTS, event));
   }
+  await Promise.all(prms);
 }
 
 async function getCamperById(id: string): Promise<Camper | null> {
@@ -70,7 +73,7 @@ async function getCamperById(id: string): Promise<Camper | null> {
 }
 
 async function getCampersByFamilyGroup(
-  familyGroupId: string,
+  familyGroupId: string
 ): Promise<Camper[]> {
   const campers = await listCampers();
   return campers.filter((c) => c.familyGroupId === familyGroupId);

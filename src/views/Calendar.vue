@@ -493,7 +493,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 /* Calendar View Toggle */
 .calendar-view-toggle {
   display: flex;

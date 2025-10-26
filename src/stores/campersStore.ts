@@ -5,6 +5,7 @@ import type {
   CamperUpdateRequest,
 } from "@/types";
 import { campersService } from "@/services";
+import { useGroupsStore } from "./groupsStore";
 
 export const useCampersStore = defineStore("campers", {
   state: () => ({
@@ -44,21 +45,39 @@ export const useCampersStore = defineStore("campers", {
     async createCamper(camperRequest: CamperCreationRequest): Promise<Camper> {
       const camper = await campersService.createCamper(camperRequest);
       this.campers.push(camper);
+      if (camper.familyGroupId) {
+        await useGroupsStore().addCamperToGroup(
+          camper.familyGroupId,
+          camper.id,
+        );
+      }
       return camper;
     },
     async updateCamper(
       camperId: string,
       camperUpdate: CamperUpdateRequest,
     ): Promise<void> {
+      const originalFamilyGroupId = this.campers.find((c) => c.id === camperId)?.familyGroupId;
       const camper = await campersService.updateCamper(camperId, camperUpdate);
-      const index = this.campers.findIndex((c) => c.id === camperId);
-      if (index >= 0) {
-        this.campers[index] = camper;
+      this.campers = this.campers.map((c) => c.id === camperId ? camper : c);
+      if (originalFamilyGroupId !== camperUpdate.familyGroupId) {
+        const prms: Promise<void>[] = []; 
+        if (originalFamilyGroupId) {
+          prms.push(useGroupsStore().removeCamperFromGroup(originalFamilyGroupId, camperId));
+        }
+        if (camperUpdate.familyGroupId) {
+          prms.push(useGroupsStore().addCamperToGroup(camperUpdate.familyGroupId, camperId));
+        }
+        await Promise.all(prms);
       }
     },
     async deleteCamper(camperId: string): Promise<void> {
+      const originalFamilyGroupId = this.campers.find((c) => c.id === camperId)?.familyGroupId;
       await campersService.deleteCamper(camperId);
       this.campers = this.campers.filter((c) => c.id !== camperId);
+      if (originalFamilyGroupId) {
+        await useGroupsStore().removeCamperFromGroup(originalFamilyGroupId, camperId);
+      }
     },
   },
 });

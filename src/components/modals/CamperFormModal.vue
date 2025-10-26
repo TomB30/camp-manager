@@ -177,7 +177,7 @@ export default defineComponent({
       return this.sessions.map((session) => {
         const startDate = new Date(session.startDate).toLocaleDateString(
           "en-US",
-          { month: "short", day: "numeric" }
+          { month: "short", day: "numeric" },
         );
         const endDate = new Date(session.endDate).toLocaleDateString("en-US", {
           month: "short",
@@ -197,7 +197,7 @@ export default defineComponent({
       }
 
       const filteredGroups = this.groups.filter(
-        (group) => group.sessionId === this.formData.sessionId
+        (group) => group.sessionId === this.formData.sessionId,
       );
 
       return filteredGroups.map((group) => ({

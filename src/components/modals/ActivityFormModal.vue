@@ -125,7 +125,7 @@ export default defineComponent({
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.name === name
+            (c) => c.name === name,
           );
           return cert ? cert.id : "";
         })

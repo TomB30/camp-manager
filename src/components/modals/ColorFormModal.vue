@@ -16,7 +16,7 @@
 
         <div class="form-group">
           <label class="form-label">Select Color</label>
-          
+
           <div class="color-search-box">
             <BaseInput
               v-model="formModel.hexValue"
@@ -42,14 +42,14 @@
                 @click="selectColor(color.hex)"
                 :title="color.name"
               >
-                <q-icon 
-                  v-if="formModel.hexValue === color.hex" 
-                  name="check" 
-                  color="white" 
-                  size="20px" 
+                <q-icon
+                  v-if="formModel.hexValue === color.hex"
+                  name="check"
+                  color="white"
+                  size="20px"
                 />
               </div>
-              
+
               <!-- Add Custom Color Button -->
               <div
                 class="color-swatch add-custom-btn"
@@ -68,8 +68,8 @@
                 <div class="text-h6">Choose Custom Color</div>
               </q-card-section>
               <q-card-section>
-                <q-color 
-                  v-model="formModel.hexValue" 
+                <q-color
+                  v-model="formModel.hexValue"
                   default-view="palette"
                   no-header
                 />
@@ -158,7 +158,7 @@ export default defineComponent({
         { name: "Light Gray", hex: "#BDBDBD" },
         { name: "Silver", hex: "#D9D9D9" },
         { name: "White", hex: "#FFFFFF" },
-        
+
         // Reds
         { name: "Red", hex: "#E53935" },
         { name: "Coral", hex: "#EF5350" },
@@ -167,7 +167,7 @@ export default defineComponent({
         { name: "Purple", hex: "#AB47BC" },
         { name: "Deep Purple", hex: "#7E57C2" },
         { name: "Indigo", hex: "#5E35B1" },
-        
+
         // Blues
         { name: "Teal", hex: "#26A69A" },
         { name: "Cyan", hex: "#26C6DA" },
@@ -176,7 +176,7 @@ export default defineComponent({
         { name: "Blue", hex: "#5C6BC0" },
         { name: "Navy Blue", hex: "#1E88E5" },
         { name: "Dark Blue", hex: "#1A237E" },
-        
+
         // Greens & Yellows
         { name: "Green", hex: "#43A047" },
         { name: "Light Green", hex: "#7CB342" },
@@ -185,7 +185,7 @@ export default defineComponent({
         { name: "Amber", hex: "#FFCA28" },
         { name: "Orange", hex: "#FFA726" },
         { name: "Deep Orange", hex: "#FF7043" },
-        
+
         // Additional Colors
         { name: "Maroon", hex: "#8D3E3E" },
         { name: "Brown", hex: "#795548" },
@@ -220,14 +220,14 @@ export default defineComponent({
     },
     validateHexColor(val: string): boolean | string {
       if (!val) return "Please select or enter a color";
-      
+
       // Allow common color names or hex values
       const hexPattern = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
       if (hexPattern.test(val)) {
         return true;
       }
-      
-      return 'Enter a valid hex color (e.g., #00c4cc)';
+
+      return "Enter a valid hex color (e.g., #00c4cc)";
     },
     async handleSave(): Promise<void> {
       const isValid = await (this.$refs.formRef as QForm).validate();

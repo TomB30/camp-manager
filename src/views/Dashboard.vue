@@ -374,7 +374,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

@@ -156,11 +156,7 @@ export default defineComponent({
       default: false,
     },
   },
-  emits: [
-    "update:modelValue",
-    "update:isCustomDuration",
-    "submit",
-  ],
+  emits: ["update:modelValue", "update:isCustomDuration", "submit"],
   data() {
     return {
       durationPresets: [

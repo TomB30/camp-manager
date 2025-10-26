@@ -85,7 +85,6 @@
           <span class="nav-text">Camp Settings</span>
         </RouterLink>
       </div>
-
     </div>
   </aside>
 </template>
