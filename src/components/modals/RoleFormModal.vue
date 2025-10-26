@@ -140,4 +140,3 @@ export default defineComponent({
 <style scoped>
 /* No additional styles needed */
 </style>
-

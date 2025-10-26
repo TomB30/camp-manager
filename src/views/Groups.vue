@@ -142,7 +142,7 @@
             outline
             color="grey-8"
             size="sm"
-            @click.stop="selectGroup(item.id)"
+            @click="selectGroup(item.id)"
             label="View Details"
           />
         </template>

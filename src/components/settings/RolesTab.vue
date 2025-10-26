@@ -37,7 +37,11 @@
 
     <!-- Grid View -->
     <div v-else-if="viewMode === 'grid'" class="roles-grid">
-      <div v-for="role in filteredRoles" :key="role.id" class="role-card-wrapper">
+      <div
+        v-for="role in filteredRoles"
+        :key="role.id"
+        class="role-card-wrapper"
+      >
         <RoleCard :role="role" @click="selectRole(role.id)" />
       </div>
     </div>
@@ -70,7 +74,7 @@
           outline
           color="grey-8"
           size="sm"
-          @click.stop="selectRole(item.id)"
+          @click="selectRole(item.id)"
           label="View Details"
         />
       </template>
@@ -269,4 +273,3 @@ export default defineComponent({
   }
 }
 </style>
-

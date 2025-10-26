@@ -101,7 +101,7 @@
           outline
           color="grey-8"
           size="sm"
-          @click.stop="selectArea(item.id)"
+          @click="selectArea(item.id)"
           label="View Details"
         />
       </template>

@@ -68,13 +68,9 @@
           <h3 v-else>{{ formatMonthYear(selectedDate) }}</h3>
         </div>
         <div class="date-controls">
-          <button class="btn btn-secondary" @click="changeDate(-1)">
-            ←
-          </button>
+          <button class="btn btn-secondary" @click="changeDate(-1)">←</button>
           <button class="btn btn-secondary" @click="goToToday">Today</button>
-          <button class="btn btn-secondary" @click="changeDate(1)">
-            →
-          </button>
+          <button class="btn btn-secondary" @click="changeDate(1)">→</button>
         </div>
       </div>
 

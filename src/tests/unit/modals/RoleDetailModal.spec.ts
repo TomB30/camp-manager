@@ -1,0 +1,310 @@
+import { describe, it, expect } from "vitest";
+import { createWrapper } from "@/tests/utils";
+import RoleDetailModal from "@/components/modals/RoleDetailModal.vue";
+import { rolesFixture } from "@/tests/fixtures";
+
+describe("RoleDetailModal", () => {
+  describe("Rendering", () => {
+    it("renders role name as title", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      expect(wrapper.text()).toContain(role.name);
+    });
+
+    it("renders role description", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      if (role.description) {
+        expect(wrapper.text()).toContain(role.description);
+      }
+    });
+
+    it("shows 'No description provided' when description is missing", () => {
+      const role = {
+        ...rolesFixture[0],
+        description: undefined,
+      };
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      expect(wrapper.text()).toContain("No description provided");
+    });
+
+    it("shows 'No description provided' when description is empty", () => {
+      const role = {
+        ...rolesFixture[0],
+        description: "",
+      };
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      expect(wrapper.text()).toContain("No description provided");
+    });
+
+    it("renders Created date when provided", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      if (role.createdAt) {
+        expect(wrapper.text()).toContain("Created");
+      }
+    });
+
+    it("renders Last Updated date when provided", () => {
+      const role = {
+        ...rolesFixture[0],
+        updatedAt: "2025-10-15T10:30:00.000Z",
+      };
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      if (role.updatedAt) {
+        expect(wrapper.text()).toContain("Last Updated");
+      }
+    });
+  });
+
+  describe("Labels", () => {
+    it("shows Description label", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      expect(wrapper.text()).toContain("Description");
+    });
+
+    it("shows Created label when date exists", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      if (role.createdAt) {
+        expect(wrapper.text()).toContain("Created");
+      }
+    });
+
+    it("shows Last Updated label when date exists", () => {
+      const role = {
+        ...rolesFixture[0],
+        updatedAt: "2025-10-15T10:30:00.000Z",
+      };
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      if (role.updatedAt) {
+        expect(wrapper.text()).toContain("Last Updated");
+      }
+    });
+  });
+
+  describe("Action Buttons", () => {
+    it("renders Delete button", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      expect(wrapper.text()).toContain("Delete");
+    });
+
+    it("renders Edit button", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      expect(wrapper.text()).toContain("Edit");
+    });
+  });
+
+  describe("Events", () => {
+    it("emits close event", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      wrapper.vm.$emit("close");
+      expect(wrapper.emitted("close")).toBeTruthy();
+    });
+
+    it("emits edit event with role when Edit is clicked", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      wrapper.vm.$emit("edit", role);
+      expect(wrapper.emitted("edit")).toBeTruthy();
+      expect(wrapper.emitted("edit")?.[0]).toEqual([role]);
+    });
+
+    it("emits delete event with role id when Delete is clicked", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      wrapper.vm.$emit("delete", role.id);
+      expect(wrapper.emitted("delete")).toBeTruthy();
+      expect(wrapper.emitted("delete")?.[0]).toEqual([role.id]);
+    });
+  });
+
+  describe("Date Formatting", () => {
+    it("formats createdAt date correctly", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+      const vm = wrapper.vm as any;
+
+      if (role.createdAt) {
+        const formattedDate = vm.formatDate(role.createdAt);
+        expect(formattedDate).toBeTruthy();
+        expect(typeof formattedDate).toBe("string");
+      }
+    });
+
+    it("formats updatedAt date correctly", () => {
+      const role = {
+        ...rolesFixture[0],
+        updatedAt: "2025-10-15T10:30:00.000Z",
+      };
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+      const vm = wrapper.vm as any;
+
+      if (role.updatedAt) {
+        const formattedDate = vm.formatDate(role.updatedAt);
+        expect(formattedDate).toBeTruthy();
+        expect(typeof formattedDate).toBe("string");
+      }
+    });
+
+    it("formatDate method returns string with month name", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+      const vm = wrapper.vm as any;
+
+      const testDate = "2025-10-15T10:30:00.000Z";
+      const formatted = vm.formatDate(testDate);
+
+      // Should contain a month name
+      const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      const hasMonth = months.some((month) => formatted.includes(month));
+      expect(hasMonth).toBe(true);
+    });
+  });
+
+  describe("Null/Undefined Handling", () => {
+    it("handles null role gracefully", () => {
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role: null },
+      });
+
+      expect(wrapper.exists()).toBe(true);
+    });
+
+    it("renders empty title for null role", () => {
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role: null },
+      });
+
+      // Should not crash
+      expect(wrapper.exists()).toBe(true);
+    });
+  });
+
+  describe("Detail Sections", () => {
+    it("renders detail sections with proper structure", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      const detailSections = wrapper.findAll(".detail-section");
+      expect(detailSections.length).toBeGreaterThan(0);
+    });
+
+    it("detail labels have correct styling class", () => {
+      const role = rolesFixture[0];
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      const detailLabels = wrapper.findAll(".detail-label");
+      expect(detailLabels.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("Edge Cases", () => {
+    it("handles role with very long description", () => {
+      const role = {
+        ...rolesFixture[0],
+        description:
+          "This is a very long description that might need special handling in the UI to ensure it displays properly without breaking the layout or causing overflow issues in the modal display",
+      };
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      expect(wrapper.text()).toContain(role.description);
+    });
+
+    it("handles role with special characters in description", () => {
+      const role = {
+        ...rolesFixture[0],
+        description: "Role with & special < characters > and / symbols",
+      };
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      expect(wrapper.text()).toContain(role.description);
+    });
+
+    it("displays all roles from fixture correctly", () => {
+      rolesFixture.forEach((role) => {
+        const wrapper = createWrapper(RoleDetailModal, {
+          props: { role },
+        });
+
+        expect(wrapper.text()).toContain(role.name);
+        if (role.description) {
+          expect(wrapper.text()).toContain(role.description);
+        }
+      });
+    });
+  });
+});

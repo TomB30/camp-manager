@@ -134,7 +134,7 @@
           outline
           color="grey-8"
           size="sm"
-          @click.stop="selectLocation(item.id)"
+          @click="selectLocation(item.id)"
           label="View Details"
         />
       </template>

@@ -89,7 +89,7 @@
           outline
           color="grey-8"
           size="sm"
-          @click.stop="selectCertification(item.id)"
+          @click="selectCertification(item.id)"
           label="View Details"
         />
       </template>

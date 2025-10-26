@@ -13,7 +13,9 @@
       <p v-if="role.description" class="card-description">
         {{ role.description }}
       </p>
-      <p v-else class="card-description text-caption">No description provided</p>
+      <p v-else class="card-description text-caption">
+        No description provided
+      </p>
     </div>
   </div>
 </template>
@@ -49,4 +51,3 @@ export default defineComponent({
   min-height: 100px;
 }
 </style>
-

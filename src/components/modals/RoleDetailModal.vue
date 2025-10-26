@@ -85,4 +85,3 @@ export default defineComponent({
   margin-bottom: 0.5rem;
 }
 </style>
-

@@ -125,7 +125,7 @@
               outline
               label="View Details"
               size="sm"
-              @click.stop="selectProgram(item.id)"
+              @click="selectProgram(item.id)"
             />
           </template>
         </DataTable>
