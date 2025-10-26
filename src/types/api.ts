@@ -1519,8 +1519,6 @@ export interface components {
       id: string;
       name: string;
       description?: string;
-      /** @description How long the certification is valid for */
-      validityPeriodMonths?: number;
       /** Format: date-time */
       createdAt?: string;
       /** Format: date-time */
@@ -1529,14 +1527,10 @@ export interface components {
     CertificationCreationRequest: {
       name: string;
       description?: string;
-      /** @description How long the certification is valid for */
-      validityPeriodMonths?: number;
     };
     CertificationUpdateRequest: {
       name: string;
       description?: string;
-      /** @description How long the certification is valid for */
-      validityPeriodMonths?: number;
     };
     HousingRoom: {
       /** Format: uuid */

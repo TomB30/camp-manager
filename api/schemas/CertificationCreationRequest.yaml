@@ -6,6 +6,3 @@ properties:
     type: string
   description:
     type: string
-  validityPeriodMonths:
-    type: integer
-    description: How long the certification is valid for

@@ -12,7 +12,6 @@ export const certificationsService = {
   updateCertification,
   deleteCertification,
   getCertificationById,
-  getCertificationsWithExpiration,
 };
 
 async function listCertifications(): Promise<Certification[]> {
@@ -62,11 +61,4 @@ async function deleteCertification(id: string): Promise<void> {
 
 async function getCertificationById(id: string): Promise<Certification | null> {
   return storageService.getById<Certification>(STORAGE_KEYS.CERTIFICATIONS, id);
-}
-
-async function getCertificationsWithExpiration(): Promise<Certification[]> {
-  const certifications = await listCertifications();
-  return certifications.filter(
-    (c) => c.validityPeriodMonths && c.validityPeriodMonths > 0,
-  );
 }

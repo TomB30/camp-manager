@@ -134,8 +134,6 @@ await store.addCertification({
   id: crypto.randomUUID(),
   name: 'Yoga Instructor',
   description: 'Certified yoga teaching credential',
-  expirationRequired: true,
-  validityPeriodMonths: 24,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 });

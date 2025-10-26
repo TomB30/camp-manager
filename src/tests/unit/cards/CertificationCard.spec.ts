@@ -38,83 +38,6 @@ describe("CertificationCard", () => {
     });
   });
 
-  describe("Validity Period Display", () => {
-    it("shows time-limited badge for certifications with validity period", () => {
-      const certification = certificationsFixture[0]; // Has validity period
-      const wrapper = createWrapper(CertificationCard, {
-        props: { certification },
-      });
-
-      expect(wrapper.text()).toContain("Time-limited");
-    });
-
-    it("shows permanent badge for certifications without validity period", () => {
-      const certification = certificationsFixture[3]; // No validity period
-      const wrapper = createWrapper(CertificationCard, {
-        props: { certification },
-      });
-
-      expect(wrapper.text()).toContain("Permanent");
-    });
-
-    it("displays validity period in months when present", () => {
-      const certification = certificationsFixture[0];
-      const wrapper = createWrapper(CertificationCard, {
-        props: { certification },
-      });
-
-      if (certification.validityPeriodMonths) {
-        expect(wrapper.text()).toContain(
-          `${certification.validityPeriodMonths}mo`,
-        );
-      }
-    });
-
-    it("shows valid for months text when validity period exists", () => {
-      const certification = certificationsFixture[0];
-      const wrapper = createWrapper(CertificationCard, {
-        props: { certification },
-      });
-
-      if (certification.validityPeriodMonths) {
-        expect(wrapper.text()).toContain(
-          `Valid for ${certification.validityPeriodMonths} months`,
-        );
-      }
-    });
-
-    it("does not show validity details for permanent certifications", () => {
-      const certification = certificationsFixture[3];
-      const wrapper = createWrapper(CertificationCard, {
-        props: { certification },
-      });
-
-      expect(wrapper.find(".card-stats").exists()).toBe(false);
-    });
-  });
-
-  describe("Badge Styling", () => {
-    it("applies warning badge class for time-limited certifications", () => {
-      const certification = certificationsFixture[0];
-      const wrapper = createWrapper(CertificationCard, {
-        props: { certification },
-      });
-
-      const badge = wrapper.find(".badge-warning");
-      expect(badge.exists()).toBe(true);
-    });
-
-    it("applies success badge class for permanent certifications", () => {
-      const certification = certificationsFixture[3];
-      const wrapper = createWrapper(CertificationCard, {
-        props: { certification },
-      });
-
-      const badge = wrapper.find(".badge-success");
-      expect(badge.exists()).toBe(true);
-    });
-  });
-
   describe("Icon and Styling", () => {
     it("applies icon color", () => {
       const certification = certificationsFixture[0];
@@ -171,16 +94,6 @@ describe("CertificationCard", () => {
       const icon = wrapper.findComponent({ name: "Icon" });
       expect(icon.exists()).toBe(true);
     });
-
-    it("displays clock icon for time-limited certifications", () => {
-      const certification = certificationsFixture[0];
-      const wrapper = createWrapper(CertificationCard, {
-        props: { certification },
-      });
-
-      const icons = wrapper.findAllComponents({ name: "Icon" });
-      expect(icons.length).toBeGreaterThan(1);
-    });
   });
 
   describe("Click Event", () => {
@@ -193,33 +106,6 @@ describe("CertificationCard", () => {
       await wrapper.trigger("click");
 
       expect(wrapper.emitted("click")).toBeTruthy();
-    });
-  });
-
-  describe("Edge Cases", () => {
-    it("handles very long validity periods", () => {
-      const certification = {
-        ...certificationsFixture[0],
-        validityPeriodMonths: 999,
-      };
-      const wrapper = createWrapper(CertificationCard, {
-        props: { certification },
-      });
-
-      expect(wrapper.text()).toContain("999mo");
-      expect(wrapper.text()).toContain("Valid for 999 months");
-    });
-
-    it("handles certification with zero validity period", () => {
-      const certification = {
-        ...certificationsFixture[0],
-        validityPeriodMonths: 0,
-      };
-      const wrapper = createWrapper(CertificationCard, {
-        props: { certification },
-      });
-
-      expect(wrapper.text()).toContain("Permanent");
     });
   });
 });

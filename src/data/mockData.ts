@@ -367,14 +367,12 @@ export const certifications: Certification[] = [
     id: generateId(),
     name: "First Aid",
     description: "Basic first aid and CPR certification",
-    validityPeriodMonths: 24,
     createdAt: octoberDate(1),
   },
   {
     id: generateId(),
     name: "Lifeguard",
     description: "Certified lifeguard for water activities",
-    validityPeriodMonths: 12,
     createdAt: octoberDate(1),
   },
   {
@@ -387,7 +385,6 @@ export const certifications: Certification[] = [
     id: generateId(),
     name: "Archery Instructor",
     description: "Certified to teach archery",
-    validityPeriodMonths: 36,
     createdAt: octoberDate(1),
   },
   {

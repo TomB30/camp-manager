@@ -10,42 +10,9 @@
     </div>
     <div class="card-details">
       <h4>{{ certification.name }}</h4>
-      <div class="card-meta">
-        <span
-          class="badge badge-sm"
-          :class="
-            certification.validityPeriodMonths
-              ? 'badge-warning'
-              : 'badge-success'
-          "
-        >
-          {{
-            certification.validityPeriodMonths ? "Time-limited" : "Permanent"
-          }}
-        </span>
-        <span
-          v-if="
-            certification.validityPeriodMonths &&
-            certification.validityPeriodMonths
-          "
-          class="badge badge-sm badge-secondary"
-        >
-          <Icon name="Clock" :size="12" class="inline" />
-          {{ certification.validityPeriodMonths }}mo
-        </span>
-      </div>
       <p v-if="certification.description" class="card-description">
         {{ certification.description }}
       </p>
-      <div v-if="certification.validityPeriodMonths" class="card-stats">
-        <div class="card-stat-item">
-          <Icon name="CheckCircle" :size="14" />
-          <span v-if="certification.validityPeriodMonths">
-            Valid for {{ certification.validityPeriodMonths }} months
-          </span>
-          <span v-else> Requires expiration tracking </span>
-        </div>
-      </div>
     </div>
   </div>
 </template>

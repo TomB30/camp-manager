@@ -7,40 +7,6 @@
           <div>{{ certification.description }}</div>
         </div>
 
-        <div class="detail-section">
-          <div class="detail-label">Type</div>
-          <div>
-            <span
-              class="badge badge-sm"
-              :class="
-                certification.validityPeriodMonths
-                  ? 'badge-warning'
-                  : 'badge-success'
-              "
-            >
-              {{
-                certification.validityPeriodMonths
-                  ? "Time-limited"
-                  : "Permanent"
-              }}
-            </span>
-          </div>
-        </div>
-
-        <div v-if="certification.validityPeriodMonths" class="detail-section">
-          <div class="detail-label">Validity Period</div>
-          <div>
-            <span v-if="certification.validityPeriodMonths">
-              Valid for
-              <strong>{{ certification.validityPeriodMonths }} months</strong>
-              from issue date
-            </span>
-            <span v-else>
-              Requires expiration tracking (no specific validity period set)
-            </span>
-          </div>
-        </div>
-
         <div v-if="certification.createdAt" class="detail-section">
           <div class="detail-label">Created</div>
           <div>{{ formatDate(certification.createdAt) }}</div>

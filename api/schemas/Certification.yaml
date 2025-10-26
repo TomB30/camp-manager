@@ -10,9 +10,6 @@ properties:
     type: string
   description:
     type: string
-  validityPeriodMonths:
-    type: integer
-    description: How long the certification is valid for
   createdAt:
     type: string
     format: date-time

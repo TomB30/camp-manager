@@ -18,10 +18,6 @@ export const useCertificationsStore = defineStore("certifications", {
         return state.certifications.find((c) => c.id === id);
       };
     },
-
-    certificationsWithExpiration(state): Certification[] {
-      return state.certifications.filter((c) => !!c.validityPeriodMonths);
-    },
   },
 
   actions: {

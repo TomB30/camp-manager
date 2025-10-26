@@ -28,12 +28,6 @@ describe("CertificationFormModal", () => {
       ).toBe(true);
     });
 
-    it("renders validity period input", () => {
-      const wrapper = createWrapper(CertificationFormModal);
-
-      expect(wrapper.find("input[type='number']").exists()).toBe(true);
-    });
-
     it("contains form element", () => {
       const wrapper = createWrapper(CertificationFormModal);
 
@@ -72,13 +66,6 @@ describe("CertificationFormModal", () => {
         "input[placeholder='Enter certification name']",
       );
       expect(input.exists()).toBe(true);
-    });
-
-    it("validates validity period is at least 1", () => {
-      const wrapper = createWrapper(CertificationFormModal);
-
-      const input = wrapper.find("input[type='number']");
-      expect(input.attributes("min")).toBe("1");
     });
   });
 

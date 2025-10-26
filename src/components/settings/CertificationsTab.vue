@@ -14,8 +14,7 @@
     <!-- Search and Filters -->
     <FilterBar
       v-model:searchQuery="searchQuery"
-      v-model:filter-expiration="filterExpiration"
-      :filters="certificationFilters"
+      :filters="[]"
       :filtered-count="filteredCertifications.length"
       :total-count="certificationsStore.certifications.length"
       @clear="clearFilters"
@@ -68,22 +67,6 @@
         </div>
       </template>
 
-      <template #cell-expirationRequired="{ item }">
-        <span
-          class="badge badge-sm"
-          :class="item.expirationRequired ? 'badge-warning' : 'badge-success'"
-        >
-          {{ item.expirationRequired ? "Time-limited" : "Permanent" }}
-        </span>
-      </template>
-
-      <template #cell-validityPeriodMonths="{ item }">
-        <span v-if="item.expirationRequired && item.validityPeriodMonths">
-          {{ item.validityPeriodMonths }} months
-        </span>
-        <span v-else class="text-caption">N/A</span>
-      </template>
-
       <template #cell-actions="{ item }">
         <BaseButton
           outline
@@ -132,7 +115,7 @@ import CertificationDetailModal from "@/components/modals/CertificationDetailMod
 import CertificationFormModal from "@/components/modals/CertificationFormModal.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import DataTable from "@/components/DataTable.vue";
-import FilterBar, { type Filter } from "@/components/FilterBar.vue";
+import FilterBar from "@/components/FilterBar.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import { useToast } from "@/composables/useToast";
@@ -164,36 +147,16 @@ export default defineComponent({
       selectedCertificationId: null as string | null,
       certificationToDelete: null as string | null,
       searchQuery: "",
-      filterExpiration: "",
       viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
       certificationColumns: [
         { key: "name", label: "Certification Name", sortable: true },
-        { key: "expirationRequired", label: "Type", sortable: true },
-        {
-          key: "validityPeriodMonths",
-          label: "Validity Period",
-          sortable: true,
-        },
         { key: "actions", label: "", width: "120px" },
       ],
     };
   },
   computed: {
-    certificationFilters(): Filter[] {
-      return [
-        {
-          model: "filterExpiration",
-          value: this.filterExpiration,
-          placeholder: "Filter by Type",
-          options: [
-            { value: "time-limited", label: "Time-limited" },
-            { value: "permanent", label: "Permanent" },
-          ],
-        },
-      ];
-    },
     filteredCertifications(): Certification[] {
       let filtered = this.certificationsStore.certifications;
 
@@ -204,18 +167,6 @@ export default defineComponent({
             cert.name.toLowerCase().includes(query) ||
             cert.description?.toLowerCase().includes(query),
         );
-      }
-
-      if (this.filterExpiration && this.filterExpiration !== "") {
-        if (this.filterExpiration === "time-limited") {
-          filtered = filtered.filter(
-            (cert) => cert.validityPeriodMonths !== undefined,
-          );
-        } else if (this.filterExpiration === "permanent") {
-          filtered = filtered.filter(
-            (cert) => cert.validityPeriodMonths === undefined,
-          );
-        }
       }
 
       return filtered.sort((a, b) => a.name.localeCompare(b.name));
@@ -266,7 +217,6 @@ export default defineComponent({
     },
     clearFilters() {
       this.searchQuery = "";
-      this.filterExpiration = "";
     },
   },
 });

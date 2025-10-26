@@ -5,21 +5,18 @@ export const certificationsFixture: Certification[] = [
     id: "cert-1",
     name: "CPR Certified",
     description: "Cardiopulmonary resuscitation certification",
-    validityPeriodMonths: 24,
     createdAt: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "cert-2",
     name: "First Aid",
     description: "Basic first aid training",
-    validityPeriodMonths: 12,
     createdAt: "2025-10-01T09:00:00.000Z",
   },
   {
     id: "cert-3",
     name: "Lifeguard",
     description: "Water safety and rescue certification",
-    validityPeriodMonths: 12,
     createdAt: "2025-10-01T09:00:00.000Z",
   },
   {
@@ -32,7 +29,6 @@ export const certificationsFixture: Certification[] = [
     id: "cert-5",
     name: "Climbing Instructor",
     description: "Rock climbing and ropes course certification",
-    validityPeriodMonths: 36,
     createdAt: "2025-10-01T09:00:00.000Z",
   },
 ];

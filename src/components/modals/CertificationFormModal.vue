@@ -23,17 +23,6 @@
             placeholder="Optional description"
           />
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Validity Period (months)</label>
-          <BaseInput
-            v-model="validityPeriodModel"
-            type="number"
-            placeholder="e.g., 12, 24, 36"
-            :min="1"
-            hint="How many months the certification remains valid"
-          />
-        </div>
       </q-form>
     </template>
 
@@ -75,7 +64,6 @@ export default defineComponent({
       formModel: {
         name: "",
         description: "",
-        validityPeriodMonths: undefined,
       } as CertificationCreationRequest,
       formRef: null as any,
       loading: false as boolean,
@@ -92,7 +80,6 @@ export default defineComponent({
     this.formModel = {
       name: certification.name,
       description: certification.description || "",
-      validityPeriodMonths: certification.validityPeriodMonths || undefined,
     };
   },
   setup() {
@@ -110,15 +97,6 @@ export default defineComponent({
       },
       set(value: string) {
         this.formModel.description = value || "";
-      },
-    },
-    validityPeriodModel: {
-      get(): string {
-        return this.formModel.validityPeriodMonths?.toString() || "";
-      },
-      set(value: string) {
-        const num = parseInt(value);
-        this.formModel.validityPeriodMonths = isNaN(num) ? undefined : num;
       },
     },
   },
