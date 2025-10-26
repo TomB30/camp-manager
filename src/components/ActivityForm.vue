@@ -54,7 +54,7 @@
     </div>
 
     <div class="form-group">
-      <label class="form-label">Default Location (Optional)</label>
+      <label class="form-label">Default Location</label>
       <Autocomplete
         :model-value="modelValue.defaultLocationId"
         @update:model-value="updateField('defaultLocationId', $event)"
@@ -64,7 +64,7 @@
     </div>
 
     <div class="form-group">
-      <label class="form-label">Default Capacity (Optional)</label>
+      <label class="form-label">Default Capacity</label>
       <BaseInput
         :model-value="String(modelValue.defaultCapacity)"
         @update:model-value="updateField('defaultCapacity', Number($event))"
@@ -75,7 +75,7 @@
     </div>
 
     <div class="form-group">
-      <label class="form-label">Minimum Staff Required (Optional)</label>
+      <label class="form-label">Minimum Staff for Activity</label>
       <div>
         <BaseInput
           :model-value="String(modelValue.minStaff)"
@@ -88,10 +88,10 @@
     </div>
 
     <div class="form-group">
-      <label class="form-label">Required Certifications (Optional)</label>
+      <label class="form-label">Required Certifications</label>
       <SelectionList
-        :model-value="selectedCertificationIds"
-        @update:model-value="$emit('update:selectedCertificationIds', $event)"
+        :model-value="modelValue.requiredCertificationIds"
+        @update:model-value="updateField('requiredCertificationIds', $event)"
         :items="certifications"
         item-type="certification"
         placeholder="Select a certification..."
@@ -139,10 +139,6 @@ export default defineComponent({
       type: Object as PropType<ActivityFormData>,
       required: true,
     },
-    selectedCertificationIds: {
-      type: Array as PropType<string[]>,
-      required: true,
-    },
     roomOptions: {
       type: Array as PropType<AutocompleteOption[]>,
       required: true,
@@ -162,7 +158,6 @@ export default defineComponent({
   },
   emits: [
     "update:modelValue",
-    "update:selectedCertificationIds",
     "update:isCustomDuration",
     "submit",
   ],

@@ -6,7 +6,6 @@
     <template #body>
       <ActivityForm
         v-model="localFormData"
-        v-model:selected-certification-ids="selectedCertificationIds"
         v-model:is-custom-duration="isCustomDuration"
         :room-options="roomOptions"
         :certifications="certificationsStore.certifications"
@@ -90,7 +89,6 @@ export default defineComponent({
         defaultCapacity: 0,
         color: "#6366F1",
       } as ActivityFormData,
-      selectedCertificationIds: [] as string[],
       isCustomDuration: false,
       editingActivity: null as Activity | null,
     };
@@ -116,9 +114,9 @@ export default defineComponent({
       return !!this.activityId;
     },
     roomOptions(): AutocompleteOption[] {
-      return this.locationsStore.locations.map((room) => ({
-        value: room.id,
-        label: `${room.name} (${room.type})`,
+      return this.locationsStore.locations.map((location) => ({
+        value: location.id,
+        label: `${location.name} (${location.type})`,
       }));
     },
   },
@@ -127,7 +125,7 @@ export default defineComponent({
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.name === name,
+            (c) => c.name === name
           );
           return cert ? cert.id : "";
         })
@@ -161,11 +159,6 @@ export default defineComponent({
 
       const now = new Date().toISOString();
 
-      // Convert selected certification IDs to names
-      const certifications = this.getCertificationNamesFromIds(
-        this.selectedCertificationIds,
-      );
-
       const activityData: Activity = {
         id: this.editingActivity?.id || crypto.randomUUID(),
         name: this.localFormData.name,
@@ -174,7 +167,7 @@ export default defineComponent({
         duration: this.localFormData.duration,
         defaultLocationId: this.localFormData.defaultLocationId || undefined,
         requiredCertificationIds:
-          certifications.length > 0 ? this.selectedCertificationIds : undefined,
+          this.localFormData.requiredCertificationIds || undefined,
         minStaff: this.localFormData.minStaff || undefined,
         defaultCapacity: this.localFormData.defaultCapacity || undefined,
         createdAt: this.editingActivity?.createdAt || now,
