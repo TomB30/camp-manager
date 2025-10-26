@@ -10,11 +10,6 @@
           <div>{{ camper.age }} years old</div>
         </div>
 
-        <div class="detail-section">
-          <div class="detail-label">Parent Contact</div>
-          <div>{{ camper.parentContact }}</div>
-        </div>
-
         <div
           v-if="camper.allergies && camper.allergies.length > 0"
           class="detail-section"

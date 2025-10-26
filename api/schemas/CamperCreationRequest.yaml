@@ -4,7 +4,6 @@ required:
   - lastName
   - age
   - gender
-  - parentContact
   - sessionId
 properties:
   firstName:
@@ -18,8 +17,6 @@ properties:
   gender:
     type: string
     enum: [male, female]
-  parentContact:
-    type: string
   sessionId:
     type: string
     format: uuid

@@ -23,9 +23,6 @@
           {{ camper.allergies.length }} Allergy(ies)
         </span>
       </div>
-      <div class="camper-contact text-caption mt-1">
-        {{ camper.parentContact }}
-      </div>
     </div>
   </div>
 </template>

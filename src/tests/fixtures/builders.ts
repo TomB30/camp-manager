@@ -26,7 +26,6 @@ export const buildCamper = (overrides: Partial<Camper> = {}): Camper => ({
   age: 12,
   gender: "male",
   sessionId: "session-2",
-  parentContact: "555-0000",
   allergies: [],
   registrationDate: new Date().toISOString(),
   ...overrides,

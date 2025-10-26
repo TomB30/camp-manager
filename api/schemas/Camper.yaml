@@ -5,7 +5,6 @@ required:
   - lastName
   - age
   - gender
-  - parentContact
 properties:
   id:
     type: string
@@ -21,8 +20,6 @@ properties:
   gender:
     type: string
     enum: [male, female]
-  parentContact:
-    type: string
   allergies:
     type: array
     items:

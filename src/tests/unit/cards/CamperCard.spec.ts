@@ -47,15 +47,6 @@ describe("CamperCard", () => {
 
       expect(wrapper.text()).toContain("Current Session");
     });
-
-    it("renders parent contact information", () => {
-      const camper = campersFixture[0];
-      const wrapper = createWrapper(CamperCard, {
-        props: { camper },
-      });
-
-      expect(wrapper.text()).toContain(camper.parentContact);
-    });
   });
 
   describe("Allergies Display", () => {

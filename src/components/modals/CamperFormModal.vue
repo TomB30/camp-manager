@@ -53,15 +53,6 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Parent Contact (Email/Phone)</label>
-          <BaseInput
-            v-model="formData.parentContact"
-            placeholder="Enter email or phone"
-            :rules="[(val: string) => !!val || 'Enter parent contact']"
-          />
-        </div>
-
-        <div class="form-group">
           <label class="form-label">Camp Session</label>
           <Autocomplete
             v-model="formData.sessionId"
@@ -157,7 +148,6 @@ export default defineComponent({
         lastName: "",
         age: 0,
         gender: "male",
-        parentContact: "",
         sessionId: "",
         allergies: [],
         medicalNotes: "",
@@ -180,7 +170,6 @@ export default defineComponent({
       lastName: camper.lastName,
       age: camper.age,
       gender: camper.gender,
-      parentContact: camper.parentContact,
       sessionId: camper.sessionId || "",
       allergies: camper.allergies || [],
       medicalNotes: camper.medicalNotes || "",

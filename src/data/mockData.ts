@@ -740,7 +740,6 @@ groups.forEach((group, groupIndex) => {
       lastName: camperLastNames[camperIndex],
       age,
       gender,
-      parentContact: `parent${camperIndex + 1}@email.com`,
       allergies: hasAllergies
         ? ["Peanuts", "Dairy"].slice(0, Math.ceil(Math.random() * 2))
         : [],
