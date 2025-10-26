@@ -42,6 +42,7 @@
           v-else-if="activeTab === 'certifications'"
           key="certifications"
         />
+        <RolesTab v-else-if="activeTab === 'roles'" key="roles" />
         <ColorsTab v-else-if="activeTab === 'colors'" key="colors" />
         <!-- <LabelsTab v-else-if="activeTab === 'labels'" key="labels" /> -->
       </Transition>
@@ -59,6 +60,7 @@ import {
   useCertificationsStore,
   useLocationsStore,
   useLabelsStore,
+  useRolesStore,
 } from "@/stores";
 import Icon from "@/components/Icon.vue";
 
@@ -69,6 +71,7 @@ import HousingTab from "@/components/settings/HousingTab.vue";
 import CertificationsTab from "@/components/settings/CertificationsTab.vue";
 import LocationsTab from "@/components/settings/LocationsTab.vue";
 import LabelsTab from "@/components/settings/LabelsTab.vue";
+import RolesTab from "@/components/settings/RolesTab.vue";
 
 export default defineComponent({
   name: "CampSettings",
@@ -81,6 +84,7 @@ export default defineComponent({
     CertificationsTab,
     LocationsTab,
     LabelsTab,
+    RolesTab,
   },
   setup() {
     const colorsStore = useColorsStore();
@@ -90,6 +94,7 @@ export default defineComponent({
     const certificationsStore = useCertificationsStore();
     const locationsStore = useLocationsStore();
     const labelsStore = useLabelsStore();
+    const rolesStore = useRolesStore();
     return {
       colorsStore,
       sessionsStore,
@@ -98,6 +103,7 @@ export default defineComponent({
       certificationsStore,
       locationsStore,
       labelsStore,
+      rolesStore,
     };
   },
   data(): {
@@ -108,6 +114,7 @@ export default defineComponent({
       | "locations"
       | "cabins"
       | "certifications"
+      | "roles"
       | "labels";
   } {
     return {
@@ -123,6 +130,7 @@ export default defineComponent({
         | "locations"
         | "cabins"
         | "certifications"
+        | "roles"
         | "labels";
       label: string;
       icon: any;
@@ -158,6 +166,12 @@ export default defineComponent({
           label: "Certifications",
           icon: "Award",
           count: this.certificationsStore.certifications.length,
+        },
+        {
+          id: "roles" as const,
+          label: "Roles",
+          icon: "Shield",
+          count: this.rolesStore.roles.length,
         },
         {
           id: "colors" as const,

@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
-import type { Role } from "@/types";
+import type { Role, RoleCreationRequest, RoleUpdateRequest } from "@/types";
 import { rolesService } from "@/services/rolesService";
 
 export const useRolesStore = defineStore("roles", {
   state: () => ({
     roles: [] as Role[],
+    loading: false,
   }),
   getters: {
     getRoleById(state): (id: string) => Role | undefined {
@@ -15,7 +16,31 @@ export const useRolesStore = defineStore("roles", {
   },
   actions: {
     async loadRoles(): Promise<void> {
-      this.roles = await rolesService.listRoles();
+      this.loading = true;
+      try {
+        this.roles = await rolesService.listRoles();
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async createRole(roleRequest: RoleCreationRequest): Promise<Role> {
+      const role: Role = await rolesService.createRole(roleRequest);
+      this.roles.push(role);
+      return role;
+    },
+
+    async updateRole(id: string, roleUpdate: RoleUpdateRequest): Promise<void> {
+      const role: Role = await rolesService.updateRole(id, roleUpdate);
+      const index = this.roles.findIndex((r) => r.id === id);
+      if (index >= 0) {
+        this.roles[index] = role;
+      }
+    },
+
+    async deleteRole(id: string): Promise<void> {
+      await rolesService.deleteRole(id);
+      this.roles = this.roles.filter((r) => r.id !== id);
     },
   },
 });
