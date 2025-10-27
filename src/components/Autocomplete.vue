@@ -133,10 +133,10 @@ export default defineComponent({
 
       update(() => {
         const needle = val?.toString().toLowerCase() || "";
-        console.log(needle);
-        this.filteredOptions = this.filteredOptions.filter(
-          (option: QSelectOption) =>
-            option.label.toLowerCase().indexOf(needle) > -1,
+        this.filteredOptions = this.options.filter(
+          (option: QSelectOption) => {
+            return option.label.toLowerCase().indexOf(needle) > -1;
+          }
         );
       });
     },
