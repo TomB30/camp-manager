@@ -117,6 +117,7 @@ import Autocomplete, {
 } from "@/components/Autocomplete.vue";
 import SelectionList from "@/components/SelectionList.vue";
 import type { Certification } from "@/types";
+import { useDurationPresetsStore } from "@/stores";
 
 export interface ActivityFormData {
   name: string;
@@ -157,19 +158,24 @@ export default defineComponent({
     },
   },
   emits: ["update:modelValue", "update:isCustomDuration", "submit"],
-  data() {
-    return {
-      durationPresets: [
-        { label: "30 min", minutes: 30 },
-        { label: "1 hour", minutes: 60 },
-        { label: "1.5 hours", minutes: 90 },
-        { label: "2 hours", minutes: 120 },
-        { label: "3 hours", minutes: 180 },
-        { label: "Half Day", minutes: 240 },
-        { label: "Full Day", minutes: 480 },
-        { label: "Custom", minutes: null },
-      ],
-    };
+  setup() {
+    const durationPresetsStore = useDurationPresetsStore();
+    return { durationPresetsStore };
+  },
+  computed: {
+    durationPresets(): { label: string; minutes: number | null }[] {
+      // Build presets from store
+      const presets: { label: string; minutes: number | null }[] =
+        this.durationPresetsStore.sortedDurationPresets.map((preset) => ({
+          label: this.formatDuration(preset.durationMinutes),
+          minutes: preset.durationMinutes as number,
+        }));
+
+      // Add "Custom" option at the end
+      presets.push({ label: "Custom", minutes: null });
+
+      return presets;
+    },
   },
   methods: {
     updateField(field: keyof ActivityFormData, value: any) {
@@ -190,6 +196,17 @@ export default defineComponent({
         this.$emit("update:isCustomDuration", false);
         this.updateField("duration", preset.minutes);
       }
+    },
+    formatDuration(minutes: number): string {
+      if (minutes < 60) {
+        return `${minutes} min`;
+      }
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+      if (remainingMinutes === 0) {
+        return `${hours} ${hours === 1 ? "hour" : "hours"}`;
+      }
+      return `${hours}h ${remainingMinutes}m`;
     },
   },
 });

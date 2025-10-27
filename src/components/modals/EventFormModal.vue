@@ -60,6 +60,28 @@
           </div>
         </div>
 
+        <!-- Duration Presets -->
+        <div class="form-group">
+          <label class="form-label">Quick Duration (Optional)</label>
+          <div class="duration-presets">
+            <button
+              v-for="preset in durationPresetsStore.sortedDurationPresets"
+              :key="preset.id"
+              type="button"
+              class="duration-preset-btn"
+              :class="{ active: selectedDurationPreset === preset.durationMinutes }"
+              @click="applyDurationPreset(preset.durationMinutes)"
+              :title="preset.description || ''"
+            >
+              {{ formatDuration(preset.durationMinutes) }}
+            </button>
+          </div>
+          <p class="form-help-text">
+            Click a preset to automatically calculate end time based on start
+            time
+          </p>
+        </div>
+
         <!-- Recurrence Section (only show when creating new event) -->
         <div v-if="!isEditing" class="form-group recurrence-section">
           <div class="recurrence-header">
@@ -341,6 +363,7 @@ import {
   useActivitiesStore,
   useColorsStore,
   useCertificationsStore,
+  useDurationPresetsStore,
 } from "@/stores";
 import { conflictDetector } from "@/services/conflicts";
 import { useToast } from "@/composables/useToast";
@@ -396,6 +419,7 @@ export default defineComponent({
     const activitiesStore = useActivitiesStore();
     const colorsStore = useColorsStore();
     const certificationsStore = useCertificationsStore();
+    const durationPresetsStore = useDurationPresetsStore();
     const toast = useToast();
     return {
       eventsStore,
@@ -407,18 +431,29 @@ export default defineComponent({
       activitiesStore,
       colorsStore,
       certificationsStore,
+      durationPresetsStore,
       toast,
     };
   },
   data() {
-    const defaultDate = new Date(this.defaultEventDate);
+    // Round defaultEventDate to the next round hour
+    const roundedDefaultEventDate = new Date(this.defaultEventDate);
+    if (
+      roundedDefaultEventDate.getMinutes() > 0 ||
+      roundedDefaultEventDate.getSeconds() > 0 ||
+      roundedDefaultEventDate.getMilliseconds() > 0
+    ) {
+      roundedDefaultEventDate.setHours(roundedDefaultEventDate.getHours() + 1);
+      roundedDefaultEventDate.setMinutes(0, 0, 0);
+    }
+    const defaultDate = roundedDefaultEventDate;
     const startHours = defaultDate.getHours().toString().padStart(2, "0");
     const startMinutes = defaultDate.getMinutes().toString().padStart(2, "0");
 
     return {
       formData: {
         title: "",
-        startDate: this.defaultEventDate.toISOString(),
+        startDate: defaultDate.toISOString(),
         endDate: "",
         locationId: "",
         capacity: 0,
@@ -435,6 +470,7 @@ export default defineComponent({
       internalEndTime: "",
       selectedActivityId: "",
       selectedCertificationIds: [] as string[],
+      selectedDurationPreset: null as number | null,
       formRef: null as any,
       recurrenceData: {
         enabled: false,
@@ -1081,6 +1117,37 @@ export default defineComponent({
         this.$emit("close");
       }
     },
+    applyDurationPreset(durationMinutes: number) {
+      if (!this.startTime) {
+        this.toast.warning("Please select a start time first");
+        return;
+      }
+
+      // Parse the start time
+      const [startHours, startMinutes] = this.startTime.split(":").map(Number);
+
+      // Calculate end time
+      const totalMinutes = startHours * 60 + startMinutes + durationMinutes;
+      const endHours = Math.floor(totalMinutes / 60) % 24;
+      const endMinutes = totalMinutes % 60;
+
+      // Format end time as HH:MM
+      this.endTime = `${endHours.toString().padStart(2, "0")}:${endMinutes.toString().padStart(2, "0")}`;
+      
+      // Track the selected preset for visual feedback
+      this.selectedDurationPreset = durationMinutes;
+    },
+    formatDuration(minutes: number): string {
+      if (minutes < 60) {
+        return `${minutes} min`;
+      }
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+      if (remainingMinutes === 0) {
+        return `${hours}h`;
+      }
+      return `${hours}h ${remainingMinutes}m`;
+    },
   },
 });
 </script>
@@ -1106,6 +1173,43 @@ export default defineComponent({
   margin-top: 0.25rem;
   font-size: 0.75rem;
   color: var(--text-secondary);
+}
+
+.duration-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.duration-preset-btn {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  background: white;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.duration-preset-btn:hover {
+  border-color: var(--primary-color);
+  background: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.duration-preset-btn.active {
+  border-color: var(--primary-color);
+  background: var(--primary-color);
+  color: white;
+}
+
+.duration-preset-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .camper-groups-selector {
