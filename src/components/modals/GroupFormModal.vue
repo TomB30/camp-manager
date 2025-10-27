@@ -7,9 +7,9 @@
       <q-form @submit.prevent="handleSave" ref="formRef">
         <!-- Basic Info -->
         <div class="form-group">
-          <label class="form-label">Group Name *</label>
+          <label class="form-label">Group Name</label>
           <BaseInput
-            v-model="localFormData.meta.name"
+            v-model="localFormData.name"
             placeholder="e.g., Junior Campers"
             :rules="[(val: string) => !!val || 'Enter group name']"
           />

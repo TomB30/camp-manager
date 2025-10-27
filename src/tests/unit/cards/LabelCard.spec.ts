@@ -1,8 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createWrapper, setupTestPinia } from "@/tests/utils";
 import LabelCard from "@/components/cards/LabelCard.vue";
-import { colorsFixture } from "@/tests/fixtures";
-import { useColorsStore } from "@/stores";
 import type { Label } from "@/types";
 
 describe("LabelCard", () => {

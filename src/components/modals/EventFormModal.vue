@@ -239,9 +239,7 @@
             type="number"
             placeholder="Enter capacity"
             :min="0"
-            :rules="[
-              isValidCapacity,
-            ]"
+            :rules="[isValidCapacity]"
           />
         </div>
 
