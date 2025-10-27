@@ -33,7 +33,7 @@
     <div v-else class="sessions-list">
       <SessionCard
         v-for="session in filteredSessions"
-        :key="session.id"
+        :key="session.meta.id"
         :session="session"
         @click="selectSession"
       />
@@ -49,7 +49,7 @@
 
     <SessionFormModal
       v-if="showFormModal"
-      :session-id="editingSession?.id"
+      :session-id="editingSession?.meta.id"
       @close="closeModal"
     />
 
@@ -115,15 +115,15 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         filtered = filtered.filter(
           (session) =>
-            session.name.toLowerCase().includes(query) ||
-            session.description?.toLowerCase().includes(query),
+            session.meta.name.toLowerCase().includes(query) ||
+            session.meta.description?.toLowerCase().includes(query),
         );
       }
 
       // Sort by start date
       return [...filtered].sort((a, b) => {
         return (
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+          new Date(a.spec.startDate).getTime() - new Date(b.spec.startDate).getTime()
         );
       });
     },
@@ -156,7 +156,7 @@ export default defineComponent({
       if (!this.sessionToDelete) return;
 
       try {
-        await this.sessionsStore.deleteSession(this.sessionToDelete.id);
+        await this.sessionsStore.deleteSession(this.sessionToDelete.meta.id);
         this.toast.success("Session deleted successfully");
         this.showConfirmModal = false;
         this.sessionToDelete = null;

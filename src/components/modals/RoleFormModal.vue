@@ -8,7 +8,7 @@
         <div class="form-group">
           <label class="form-label">Role Name</label>
           <BaseInput
-            v-model="formModel.name"
+            v-model="formModel.meta.name"
             placeholder="Enter role name"
             :rules="[(val: string) => !!val || 'Enter role name']"
           />
@@ -62,8 +62,11 @@ export default defineComponent({
   data() {
     return {
       formModel: {
-        name: "",
-        description: "",
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {},
       } as RoleCreationRequest,
       formRef: null as any,
       loading: false as boolean,
@@ -76,8 +79,12 @@ export default defineComponent({
     if (!role) return;
 
     this.formModel = {
-      name: role.name,
-      description: role.description || "",
+      meta: {
+        name: role.meta.name,
+        description: role.meta.description || "",
+      },
+      spec: {
+      },
     };
   },
   setup() {
@@ -91,10 +98,10 @@ export default defineComponent({
     },
     descriptionModel: {
       get(): string {
-        return this.formModel.description || "";
+        return this.formModel.meta.description || "";
       },
       set(value: string) {
-        this.formModel.description = value || "";
+        this.formModel.meta.description = value || "";
       },
     },
   },

@@ -28,9 +28,17 @@ async function updateCamp(campUpdate: CampUpdateRequest): Promise<Camp> {
   const existingCamp = await getCamp();
   
   const updatedCamp: Camp = {
-    ...existingCamp,
-    ...campUpdate,
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: existingCamp.meta.id,
+      name: campUpdate.meta.name,
+      description: campUpdate.meta.description,
+      createdAt: existingCamp.meta.createdAt,
+      updatedAt: new Date().toISOString(),
+    },
+    spec: {
+      ...existingCamp.spec,
+      ...campUpdate.spec,
+    },
   };
   
   return storageService.save<Camp>(STORAGE_KEYS.CAMP, updatedCamp);
@@ -41,17 +49,21 @@ async function updateCamp(campUpdate: CampUpdateRequest): Promise<Camp> {
  */
 async function initializeDefaultCamp(): Promise<Camp> {
   const defaultCamp: Camp = {
-    id: crypto.randomUUID(),
-    name: "My Summer Camp",
-    description: "Welcome to our summer camp!",
-    startDate: new Date().toISOString().split("T")[0],
-    endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0], // 90 days from now
-    dailyStartTime: "08:00",
-    dailyEndTime: "20:00",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: "My Summer Camp",
+      description: "Welcome to our summer camp!",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    spec: {
+      startDate: new Date().toISOString().split("T")[0],
+      endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0], // 90 days from now
+      dailyStartTime: "08:00",
+      dailyEndTime: "20:00",
+    },
   };
   
   return storageService.save<Camp>(STORAGE_KEYS.CAMP, defaultCamp);

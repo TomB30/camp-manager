@@ -16,19 +16,19 @@ export const useCampersStore = defineStore("campers", {
   getters: {
     getCamperById(state): (id: string) => Camper | undefined {
       return (id: string): Camper | undefined => {
-        return state.campers.find((c) => c.id === id);
+        return state.campers.find((c) => c.meta.id === id);
       };
     },
 
     getCampersInFamilyGroup(state): (familyGroupId: string) => Camper[] {
       return (familyGroupId: string): Camper[] => {
-        return state.campers.filter((c) => c.familyGroupId === familyGroupId);
+        return state.campers.filter((c) => c.spec.familyGroupId === familyGroupId);
       };
     },
 
     getCampersBySession(state): (sessionId: string) => Camper[] {
       return (sessionId: string): Camper[] => {
-        return state.campers.filter((c) => c.sessionId === sessionId);
+        return state.campers.filter((c) => c.spec.sessionId === sessionId);
       };
     },
   },
@@ -45,10 +45,10 @@ export const useCampersStore = defineStore("campers", {
     async createCamper(camperRequest: CamperCreationRequest): Promise<Camper> {
       const camper = await campersService.createCamper(camperRequest);
       this.campers.push(camper);
-      if (camper.familyGroupId) {
+      if (camper.spec.familyGroupId) {
         await useGroupsStore().addCamperToGroup(
-          camper.familyGroupId,
-          camper.id,
+          camper.spec.familyGroupId,
+          camper.meta.id,
         );
       }
       return camper;
@@ -57,24 +57,24 @@ export const useCampersStore = defineStore("campers", {
       camperId: string,
       camperUpdate: CamperUpdateRequest,
     ): Promise<void> {
-      const originalFamilyGroupId = this.campers.find((c) => c.id === camperId)?.familyGroupId;
+      const originalFamilyGroupId = this.campers.find((c) => c.meta.id === camperId)?.spec.familyGroupId;
       const camper = await campersService.updateCamper(camperId, camperUpdate);
-      this.campers = this.campers.map((c) => c.id === camperId ? camper : c);
-      if (originalFamilyGroupId !== camperUpdate.familyGroupId) {
+      this.campers = this.campers.map((c) => c.meta.id === camperId ? camper : c);
+      if (originalFamilyGroupId !== camperUpdate.spec.familyGroupId) {
         const prms: Promise<void>[] = []; 
         if (originalFamilyGroupId) {
           prms.push(useGroupsStore().removeCamperFromGroup(originalFamilyGroupId, camperId));
         }
-        if (camperUpdate.familyGroupId) {
-          prms.push(useGroupsStore().addCamperToGroup(camperUpdate.familyGroupId, camperId));
+        if (camperUpdate.spec.familyGroupId) {
+          prms.push(useGroupsStore().addCamperToGroup(camperUpdate.spec.familyGroupId, camperId));
         }
         await Promise.all(prms);
       }
     },
     async deleteCamper(camperId: string): Promise<void> {
-      const originalFamilyGroupId = this.campers.find((c) => c.id === camperId)?.familyGroupId;
+        const originalFamilyGroupId = this.campers.find((c) => c.meta.id === camperId)?.spec.familyGroupId;
       await campersService.deleteCamper(camperId);
-      this.campers = this.campers.filter((c) => c.id !== camperId);
+      this.campers = this.campers.filter((c) => c.meta.id !== camperId);
       if (originalFamilyGroupId) {
         await useGroupsStore().removeCamperFromGroup(originalFamilyGroupId, camperId);
       }

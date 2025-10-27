@@ -33,7 +33,7 @@
     <div v-else class="labels-grid">
       <LabelCard
         v-for="label in filteredLabels"
-        :key="label.id"
+        :key="label.meta.id"
         :label="label"
         @edit="editLabel"
         @delete="deleteLabelConfirm"
@@ -42,7 +42,7 @@
 
     <LabelFormModal
       v-if="showAddModal || showEditModal"
-      :label-id="editingLabel?.id"
+      :label-id="editingLabel?.meta.id"
       @close="closeModal"
     />
 
@@ -106,13 +106,13 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         filtered = filtered.filter(
           (label: Label) =>
-            label.name.toLowerCase().includes(query) ||
-            (label.description &&
-              label.description.toLowerCase().includes(query)),
+            label.meta.name.toLowerCase().includes(query) ||
+            (label.meta.description &&
+              label.meta.description.toLowerCase().includes(query)),
         );
       }
 
-      return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+      return [...filtered].sort((a, b) => a.meta.name.localeCompare(b.meta.name));
     },
   },
   methods: {
@@ -130,7 +130,7 @@ export default defineComponent({
       if (!this.labelToDelete) return;
 
       try {
-        await this.labelsStore.deleteLabel(this.labelToDelete.id);
+        await this.labelsStore.deleteLabel(this.labelToDelete.meta.id);
         this.toast.success("Label deleted successfully");
         this.showConfirmModal = false;
         this.labelToDelete = null;

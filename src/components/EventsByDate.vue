@@ -10,23 +10,23 @@
         <div class="event-date-items">
           <div
             v-for="event in dateEvents"
-            :key="event.id"
+            :key="event.meta.id"
             class="event-item"
             :style="{
-              borderLeftColor: event.colorId
-                ? colorsStore.getColorById(event.colorId)?.hexValue
+              borderLeftColor: event.spec.colorId
+                ? colorsStore.getColorById(event.spec.colorId)?.spec.hexValue
                 : '#2196F3',
             }"
             @click="$emit('event-click', event)"
           >
-            <div class="event-item-title">{{ event.title }}</div>
+            <div class="event-item-title">{{ event.meta.name }}</div>
             <div class="event-item-details">
               <div class="event-item-time">
-                {{ formatTime(event.startDate) }} -
-                {{ formatTime(event.endDate) }}
+                {{ formatTime(event.spec.startDate) }} -
+                {{ formatTime(event.spec.endDate) }}
               </div>
               <div
-                v-if="showLocation && event.locationId"
+                v-if="showLocation && event.spec.locationId"
                 class="event-item-location"
               >
                 <svg
@@ -39,7 +39,7 @@
                 >
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 </svg>
-                {{ getLocationName(event.locationId) }}
+                {{ getLocationName(event.spec.locationId) }}
               </div>
               <div v-if="showEnrollment" class="event-item-enrollment">
                 <svg
@@ -55,7 +55,7 @@
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
-                {{ getEnrolledCount(event) }}/{{ event.capacity }}
+                {{ getEnrolledCount(event) }}/{{ event.spec.capacity }}
               </div>
             </div>
           </div>
@@ -107,14 +107,14 @@ export default defineComponent({
       // Sort events by start time
       const sortedEvents = [...this.events].sort(
         (a, b) =>
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+          new Date(a.spec.startDate).getTime() - new Date(b.spec.startDate).getTime(),
       );
 
       // Group by date
       const grouped: Record<string, Event[]> = {};
 
       sortedEvents.forEach((event) => {
-        const eventDate = new Date(event.startDate);
+        const eventDate = new Date(event.spec.startDate);
         const dateKey = format(eventDate, "yyyy-MM-dd");
 
         if (!grouped[dateKey]) {
@@ -145,7 +145,7 @@ export default defineComponent({
       return format(new Date(dateStr), "h:mm a");
     },
     getEnrolledCount(event: Event): number {
-      return this.eventsStore.getEventCamperIds(event.id).length;
+      return this.eventsStore.getEventCamperIds(event.meta.id).length;
     },
   },
 });

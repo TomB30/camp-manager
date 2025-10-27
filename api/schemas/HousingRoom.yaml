@@ -1,25 +1,20 @@
 type: object
 required:
-  - id
-  - name
-  - beds
+  - meta
+  - spec
 properties:
-  id:
-    type: string
-    format: uuid
-  name:
-    type: string
-  beds:
-    type: integer
-    minimum: 1
-    description: Number of beds in this housing room
-  areaId:
-    type: string
-    format: uuid
-    description: ID of the physical area where this housing room is located
-  createdAt:
-    type: string
-    format: date-time
-  updatedAt:
-    type: string
-    format: date-time
+  meta:
+    $ref: "./EntityMeta.yaml"
+  spec:
+    type: object
+    required:
+      - beds
+    properties:
+      beds:
+        type: integer
+        minimum: 1
+        description: Number of beds in this housing room
+      areaId:
+        type: string
+        format: uuid
+        description: ID of the physical area where this housing room is located

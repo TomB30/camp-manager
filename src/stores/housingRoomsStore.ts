@@ -15,13 +15,13 @@ export const useHousingRoomsStore = defineStore("housingRooms", {
   getters: {
     getHousingRoomById(state): (id: string) => HousingRoom | undefined {
       return (id: string): HousingRoom | undefined => {
-        return state.housingRooms.find((h) => h.id === id);
+        return state.housingRooms.find((h) => h.meta.id === id);
       };
     },
 
     getHousingRoomsByArea(state): (areaId: string) => HousingRoom[] {
       return (areaId: string): HousingRoom[] => {
-        return state.housingRooms.filter((r) => r.areaId === areaId);
+        return state.housingRooms.filter((r) => r.spec.areaId === areaId);
       };
     },
   },
@@ -53,7 +53,7 @@ export const useHousingRoomsStore = defineStore("housingRooms", {
         housingRoomId,
         housingRoomUpdate,
       );
-      const index = this.housingRooms.findIndex((r) => r.id === housingRoomId);
+      const index = this.housingRooms.findIndex((r) => r.meta.id === housingRoomId);
       if (index >= 0) {
         this.housingRooms[index] = housingRoom;
       }
@@ -62,7 +62,7 @@ export const useHousingRoomsStore = defineStore("housingRooms", {
     async deleteHousingRoom(housingRoomId: string): Promise<void> {
       await housingRoomsService.deleteHousingRoom(housingRoomId);
       this.housingRooms = this.housingRooms.filter(
-        (r) => r.id !== housingRoomId,
+        (r) => r.meta.id !== housingRoomId,
       );
     },
   },

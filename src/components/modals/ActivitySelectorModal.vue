@@ -65,24 +65,24 @@
           <div v-else class="activities-list">
             <div
               v-for="activity in availableActivities"
-              :key="activity.id"
+              :key="activity.meta.id"
               class="activity-item"
-              :class="{ selected: selectedActivityId === activity.id }"
-              @click="selectActivity(activity.id)"
+              :class="{ selected: selectedActivityId === activity.meta.id }"
+              @click="selectActivity(activity.meta.id)"
             >
               <div class="activity-info">
                 <div class="activity-header">
-                  <h4>{{ activity.name }}</h4>
+                  <h4>{{ activity.meta.name }}</h4>
                   <span class="activity-duration"
-                    ><DurationDisplay :minutes="activity.duration || 0"
+                    ><DurationDisplay :minutes="activity.spec.duration || 0"
                   /></span>
                 </div>
-                <p v-if="activity.description" class="activity-description">
-                  {{ activity.description }}
+                <p v-if="activity.meta.description" class="activity-description">
+                  {{ activity.meta.description }}
                 </p>
                 <div class="activity-programs">
                   <span
-                    v-for="programId in activity.programIds"
+                    v-for="programId in activity.spec.programIds"
                     :key="programId"
                     class="program-badge"
                   >
@@ -187,12 +187,12 @@ export default defineComponent({
       return this.activitiesStore.getActivitiesInProgram(this.programId);
     },
     programActivityIds() {
-      return new Set(this.programActivities.map((a) => a.id));
+      return new Set(this.programActivities.map((a) => a.meta.id));
     },
     filteredActivities(): Activity[] {
       // Get all activities not in this program
       const activities = this.activitiesStore.activities.filter(
-        (a) => !a.programIds.includes(this.programId),
+        (a) => !a.spec.programIds.includes(this.programId),
       );
 
       // Apply search filter
@@ -203,9 +203,9 @@ export default defineComponent({
       const query = this.searchQuery.toLowerCase().trim();
       return activities.filter(
         (activity) =>
-          activity.name.toLowerCase().includes(query) ||
-          (activity.description &&
-            activity.description.toLowerCase().includes(query)),
+          activity.meta.name.toLowerCase().includes(query) ||
+          (activity.meta.description &&
+            activity.meta.description.toLowerCase().includes(query)),
       );
     },
     availableActivities(): Activity[] {
@@ -213,8 +213,8 @@ export default defineComponent({
     },
     roomOptions(): AutocompleteOption[] {
       return this.locationsStore.locations.map((room) => ({
-        value: room.id,
-        label: `${room.name} (${room.type})`,
+        value: room.meta.id,
+        label: `${room.meta.name} (${room.spec.type})`,
       }));
     },
   },
@@ -238,35 +238,26 @@ export default defineComponent({
     selectActivity(activityId: string) {
       this.selectedActivityId = activityId;
     },
-    getCertificationNamesFromIds(ids: string[]): string[] {
-      return ids
-        .map((id) => {
-          const cert = this.certificationsStore.getCertificationById(id);
-          return cert ? cert.name : "";
-        })
-        .filter((name) => name !== "");
-    },
     handleCreateNew() {
       const now = new Date().toISOString();
 
-      // Convert selected certification IDs to names
-      const certifications = this.getCertificationNamesFromIds(
-        this.selectedCertificationIds,
-      );
-
       const activityData: Activity = {
-        id: crypto.randomUUID(),
-        name: this.formData.name,
-        description: this.formData.description || undefined,
-        programIds: [this.programId],
-        duration: this.formData.duration,
-        defaultLocationId: this.formData.defaultLocationId || undefined,
-        requiredCertificationIds:
-          certifications.length > 0 ? this.selectedCertificationIds : undefined,
-        minStaff: this.formData.minStaff || undefined,
-        defaultCapacity: this.formData.defaultCapacity || undefined,
-        createdAt: now,
-        updatedAt: now,
+        meta: {
+          id: crypto.randomUUID(),
+          name: this.formData.name,
+          description: this.formData.description || undefined,
+          createdAt: now,
+          updatedAt: now,
+        },
+        spec: {
+          programIds: [this.programId],
+          duration: this.formData.duration,
+          defaultLocationId: this.formData.defaultLocationId || undefined,
+          requiredCertificationIds:
+            this.selectedCertificationIds.length > 0 ? this.selectedCertificationIds : undefined,
+          minStaff: this.formData.minStaff || undefined,
+          defaultCapacity: this.formData.defaultCapacity || undefined,
+        },
       };
 
       this.$emit("create-new", activityData);
@@ -280,7 +271,7 @@ export default defineComponent({
     },
     getProgramName(programId: string): string {
       const program = this.programsStore.getProgramById(programId);
-      return program?.name || "Unknown Program";
+      return program?.meta.name || "Unknown Program";
     },
   },
 });

@@ -1,6 +1,6 @@
 <template>
   <BaseModal
-    :title="room?.name || ''"
+    :title="room?.meta.name || ''"
     modal-class="modal-lg"
     @close="$emit('close')"
   >
@@ -9,13 +9,13 @@
         <div class="detail-section">
           <div class="detail-label">Beds</div>
           <div>
-            <span class="badge badge-primary">{{ room.beds }} beds</span>
+            <span class="badge badge-primary">{{ room.spec.beds }} beds</span>
           </div>
         </div>
 
-        <div v-if="room.areaId" class="detail-section">
+        <div v-if="room.spec.areaId" class="detail-section">
           <div class="detail-label">Area</div>
-          <div>{{ getAreaName(room.areaId) }}</div>
+          <div>{{ getAreaName(room.spec.areaId) }}</div>
         </div>
 
         <div class="detail-section">
@@ -24,29 +24,29 @@
             <div class="groups-list">
               <div
                 v-for="group in groups"
-                :key="group.id"
+                :key="group.meta.id"
                 class="group-assignment-item"
               >
                 <div class="group-info">
                   <div class="font-medium">
-                    {{ group.name }}
+                    {{ group.meta.name }}
                   </div>
                   <div class="text-xs text-grey-7 text-subtitle2">
-                    {{ getGroupCamperCount(group.id) }} campers
-                    <span v-if="getGroupStaffCount(group.id) > 0">
-                      • {{ getGroupStaffCount(group.id) }} staff
+                    {{ getGroupCamperCount(group.meta.id) }} campers
+                    <span v-if="getGroupStaffCount(group.meta.id) > 0">
+                      • {{ getGroupStaffCount(group.meta.id) }} staff
                     </span>
                   </div>
-                  <div class="text-xs group-dates" v-if="group.sessionId">
-                    📅 {{ getSessionName(group.sessionId) }} ({{
-                      getSessionDateRange(group.sessionId)
+                  <div class="text-xs group-dates" v-if="group.spec.sessionId">
+                    📅 {{ getSessionName(group.spec.sessionId) }} ({{
+                      getSessionDateRange(group.spec.sessionId)
                     }})
                   </div>
                   <div
-                    v-if="group.description"
+                    v-if="group.meta.description"
                     class="text-xs text-grey-7 text-subtitle2 mt-1"
                   >
-                    {{ group.description }}
+                    {{ group.meta.description }}
                   </div>
                 </div>
               </div>
@@ -102,7 +102,7 @@ export default defineComponent({
   methods: {
     getAreaName(areaId: string): string {
       const area = this.areasStore.getAreaById(areaId);
-      return area?.name || "Unknown";
+      return area?.meta.name || "Unknown";
     },
     getGroupCamperCount(groupId: string): number {
       return this.groupsStore.getCampersInGroup(groupId).length;
@@ -112,19 +112,19 @@ export default defineComponent({
     },
     getSessionName(sessionId: string): string {
       return (
-        this.sessionsStore.sessions.find((s) => s.id === sessionId)?.name ||
+        this.sessionsStore.sessions.find((s) => s.meta.id === sessionId)?.meta.name ||
         "Unknown Session"
       );
     },
     getSessionDateRange(sessionId: string): string {
       const session = this.sessionsStore.sessions.find(
-        (s) => s.id === sessionId,
+        (s) => s.meta.id === sessionId,
       );
       if (!session) return "Unknown";
-      return `${new Date(session.startDate).toLocaleDateString("en-US", {
+      return `${new Date(session.spec.startDate).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
-      })} - ${new Date(session.endDate).toLocaleDateString("en-US", {
+      })} - ${new Date(session.spec.endDate).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",

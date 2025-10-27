@@ -20,7 +20,7 @@ export const useEventsStore = defineStore("events", {
   getters: {
     getEventById(state): (id: string) => Event | undefined {
       return (id: string): Event | undefined => {
-        return state.events.find((e) => e.id === id);
+        return state.events.find((e) => e.meta.id === id);
       };
     },
 
@@ -35,26 +35,26 @@ export const useEventsStore = defineStore("events", {
      */
     getEventCamperIds(): (eventId: string) => string[] {
       return (eventId: string): string[] => {
-        const event = this.events.find((e) => e.id === eventId);
-        if (!event || !event.groupIds || event.groupIds.length === 0) return [];
+        const event = this.events.find((e) => e.meta.id === eventId);
+        if (!event || !event.spec.groupIds || event.spec.groupIds.length === 0) return [];
 
         const groupsStore = useGroupsStore();
 
         const camperIds = new Set<string>();
 
         // Collect campers from all assigned groups
-        event.groupIds.forEach((groupId) => {
+        event.spec.groupIds.forEach((groupId) => {
           // Check if it's a camper group
           const camperGroup = groupsStore.getGroupById(groupId);
           if (camperGroup) {
             const groupCampers = groupsStore.getCampersInGroup(groupId);
-            groupCampers.forEach((camper) => camperIds.add(camper.id));
+            groupCampers.forEach((camper) => camperIds.add(camper.meta.id));
           }
         });
 
         // Remove excluded campers
-        if (event.excludeCamperIds && event.excludeCamperIds.length > 0) {
-          event.excludeCamperIds.forEach((id) => camperIds.delete(id));
+        if (event.spec.excludeCamperIds && event.spec.excludeCamperIds.length > 0) {
+          event.spec.excludeCamperIds.forEach((id) => camperIds.delete(id));
         }
 
         return Array.from(camperIds);
@@ -66,27 +66,27 @@ export const useEventsStore = defineStore("events", {
      */
     getEventStaffIds(): (eventId: string) => string[] {
       return (eventId: string): string[] => {
-        const event = this.events.find((e) => e.id === eventId);
-        if (!event || !event.groupIds || event.groupIds.length === 0) return [];
+        const event = this.events.find((e) => e.meta.id === eventId);
+        if (!event || !event.spec.groupIds || event.spec.groupIds.length === 0) return [];
 
         const staffIds = new Set<string>();
 
         // Collect staff from all assigned family groups
-        event.groupIds.forEach((groupId) => {
+        event.spec.groupIds.forEach((groupId) => {
           const group = useGroupsStore().getGroupById(groupId);
-          if (group && group.staffIds) {
-            group.staffIds.forEach((staffId) => staffIds.add(staffId));
-          } else if (group && group.staffFilters) {
+          if (group && group.spec.staffIds) {
+            group.spec.staffIds.forEach((staffId) => staffIds.add(staffId));
+          } else if (group && group.spec.staffFilters) {
             const staff = useStaffMembersStore().getStaffMembersByFilters(
-              group.staffFilters,
+              group.spec.staffFilters,
             );
-            staff.forEach((s: StaffMember) => staffIds.add(s.id));
+            staff.forEach((s: StaffMember) => staffIds.add(s.meta.id));
           }
         });
 
         // Remove excluded staff
-        if (event.excludeStaffIds && event.excludeStaffIds.length > 0) {
-          event.excludeStaffIds.forEach((id) => staffIds.delete(id));
+        if (event.spec.excludeStaffIds && event.spec.excludeStaffIds.length > 0) {
+          event.spec.excludeStaffIds.forEach((id) => staffIds.delete(id));
         }
 
         return Array.from(staffIds);
@@ -96,7 +96,7 @@ export const useEventsStore = defineStore("events", {
     camperEvents(state): (camperId: string) => Event[] {
       return (camperId: string): Event[] => {
         return state.events.filter((event) => {
-          const camperIds = this.getEventCamperIds(event.id);
+          const camperIds = this.getEventCamperIds(event.meta.id);
           return camperIds.includes(camperId);
         });
       };
@@ -105,7 +105,7 @@ export const useEventsStore = defineStore("events", {
     staffEvents(state): (staffId: string) => Event[] {
       return (staffId: string): Event[] => {
         return state.events.filter((event) => {
-          const staffIds = this.getEventStaffIds(event.id);
+          const staffIds = this.getEventStaffIds(event.meta.id);
           return staffIds.includes(staffId);
         });
       };
@@ -113,13 +113,13 @@ export const useEventsStore = defineStore("events", {
 
     locationEvents(state): (locationId: string) => Event[] {
       return (locationId: string): Event[] => {
-        return state.events.filter((event) => event.locationId === locationId);
+        return state.events.filter((event) => event.spec.locationId === locationId);
       };
     },
 
     programEvents(state): (programId: string) => Event[] {
       return (programId: string): Event[] => {
-        return state.events.filter((e) => e.programId === programId);
+        return state.events.filter((e) => e.spec.programId === programId);
       };
     },
   },
@@ -150,7 +150,7 @@ export const useEventsStore = defineStore("events", {
       eventUpdate: EventUpdateRequest,
     ): Promise<void> {
       const event = await eventsService.updateEvent(id, eventUpdate);
-      const index = this.events.findIndex((e) => e.id === id);
+      const index = this.events.findIndex((e) => e.meta.id === id);
       if (index >= 0) {
         this.events[index] = event;
       }
@@ -158,24 +158,24 @@ export const useEventsStore = defineStore("events", {
 
     async deleteEvent(id: string): Promise<void> {
       await eventsService.deleteEvent(id);
-      this.events = this.events.filter((e) => e.id !== id);
+      this.events = this.events.filter((e) => e.meta.id !== id);
     },
 
     /**
      * Add a group to an event
      */
     async addGroupToEvent(eventId: string, groupId: string): Promise<void> {
-      const event = this.events.find((e) => e.id === eventId);
+      const event = this.events.find((e) => e.meta.id === eventId);
       if (!event) throw new Error("Event not found");
 
-      if (!event.groupIds) {
-        event.groupIds = [];
+      if (!event.spec.groupIds) {
+        event.spec.groupIds = [];
       }
 
-      if (!event.groupIds.includes(groupId)) {
-        event.groupIds.push(groupId);
-        const updated = await eventsService.updateEvent(event.id, event);
-        const index = this.events.findIndex((e) => e.id === event.id);
+      if (!event.spec.groupIds.includes(groupId)) {
+        event.spec.groupIds.push(groupId);
+        const updated = await eventsService.updateEvent(event.meta.id, event);
+        const index = this.events.findIndex((e) => e.meta.id === event.meta.id);
         if (index >= 0) {
           this.events[index] = updated;
         }
@@ -189,12 +189,12 @@ export const useEventsStore = defineStore("events", {
       eventId: string,
       groupId: string,
     ): Promise<void> {
-      const event = this.events.find((e) => e.id === eventId);
+      const event = this.events.find((e) => e.meta.id === eventId);
       if (!event) throw new Error("Event not found");
 
-      event.groupIds = event.groupIds?.filter((id) => id !== groupId) || [];
-      const updated = await eventsService.updateEvent(event.id, event);
-      const index = this.events.findIndex((e) => e.id === event.id);
+      event.spec.groupIds = event.spec.groupIds?.filter((id) => id !== groupId) || [];
+      const updated = await eventsService.updateEvent(event.meta.id, event);
+      const index = this.events.findIndex((e) => e.meta.id === event.meta.id);
       if (index >= 0) {
         this.events[index] = updated;
       }
@@ -204,17 +204,17 @@ export const useEventsStore = defineStore("events", {
      * Exclude a camper from an event
      */
     async excludeCamper(eventId: string, camperId: string): Promise<void> {
-      const event = this.events.find((e) => e.id === eventId);
+      const event = this.events.find((e) => e.meta.id === eventId);
       if (!event) throw new Error("Event not found");
 
-      if (!event.excludeCamperIds) {
-        event.excludeCamperIds = [];
+      if (!event.spec.excludeCamperIds) {
+        event.spec.excludeCamperIds = [];
       }
 
-      if (!event.excludeCamperIds.includes(camperId)) {
-        event.excludeCamperIds.push(camperId);
-        const updated = await eventsService.updateEvent(event.id, event);
-        const index = this.events.findIndex((e) => e.id === event.id);
+      if (!event.spec.excludeCamperIds.includes(camperId)) {
+        event.spec.excludeCamperIds.push(camperId);
+        const updated = await eventsService.updateEvent(event.meta.id, event);
+        const index = this.events.findIndex((e) => e.meta.id === event.meta.id);
         if (index >= 0) {
           this.events[index] = updated;
         }
@@ -228,13 +228,13 @@ export const useEventsStore = defineStore("events", {
       eventId: string,
       camperId: string,
     ): Promise<void> {
-      const event = this.events.find((e) => e.id === eventId);
+      const event = this.events.find((e) => e.meta.id === eventId);
       if (!event) throw new Error("Event not found");
 
-      event.excludeCamperIds =
-        event.excludeCamperIds?.filter((id) => id !== camperId) || [];
-      const updated = await eventsService.updateEvent(event.id, event);
-      const index = this.events.findIndex((e) => e.id === event.id);
+      event.spec.excludeCamperIds =
+        event.spec.excludeCamperIds?.filter((id) => id !== camperId) || [];
+      const updated = await eventsService.updateEvent(event.meta.id, event);
+      const index = this.events.findIndex((e) => e.meta.id === event.meta.id);
       if (index >= 0) {
         this.events[index] = updated;
       }
@@ -244,17 +244,17 @@ export const useEventsStore = defineStore("events", {
      * Exclude a staff member from an event
      */
     async excludeStaff(eventId: string, staffId: string): Promise<void> {
-      const event = this.events.find((e) => e.id === eventId);
+      const event = this.events.find((e) => e.meta.id === eventId);
       if (!event) throw new Error("Event not found");
 
-      if (!event.excludeStaffIds) {
-        event.excludeStaffIds = [];
+      if (!event.spec.excludeStaffIds) {
+        event.spec.excludeStaffIds = [];
       }
 
-      if (!event.excludeStaffIds.includes(staffId)) {
-        event.excludeStaffIds.push(staffId);
-        const updated = await eventsService.updateEvent(event.id, event);
-        const index = this.events.findIndex((e) => e.id === event.id);
+      if (!event.spec.excludeStaffIds.includes(staffId)) {
+        event.spec.excludeStaffIds.push(staffId);
+        const updated = await eventsService.updateEvent(event.meta.id, event);
+        const index = this.events.findIndex((e) => e.meta.id === event.meta.id);
         if (index >= 0) {
           this.events[index] = updated;
         }
@@ -265,13 +265,13 @@ export const useEventsStore = defineStore("events", {
      * Remove a staff exclusion from an event
      */
     async removeExcludedStaff(eventId: string, staffId: string): Promise<void> {
-      const event = this.events.find((e) => e.id === eventId);
+      const event = this.events.find((e) => e.meta.id === eventId);
       if (!event) throw new Error("Event not found");
 
-      event.excludeStaffIds =
-        event.excludeStaffIds?.filter((id) => id !== staffId) || [];
-      const updated = await eventsService.updateEvent(event.id, event);
-      const index = this.events.findIndex((e) => e.id === event.id);
+      event.spec.excludeStaffIds =
+        event.spec.excludeStaffIds?.filter((id) => id !== staffId) || [];
+      const updated = await eventsService.updateEvent(event.meta.id, event);
+      const index = this.events.findIndex((e) => e.meta.id === event.meta.id);
       if (index >= 0) {
         this.events[index] = updated;
       }

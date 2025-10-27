@@ -7,9 +7,9 @@
       <Icon name="Bed" :size="32" :stroke-width="2" />
     </div>
     <div class="card-details">
-      <h4>{{ room.name }}</h4>
+      <h4>{{ room.meta.name }}</h4>
       <div class="card-meta row items-center">
-        <span class="badge badge-primary">{{ room.beds }} beds</span>
+        <span class="badge badge-primary">{{ room.spec.beds }} beds</span>
         <span
           v-if="locationName"
           class="text-sm text-grey-7 text-subtitle2 row items-center q-gutter-x-xs"
@@ -25,10 +25,10 @@
         <div class="flex gap-1 flex-wrap">
           <span
             v-for="group in groups"
-            :key="group.id"
+            :key="group.meta.id"
             class="badge badge-success badge-sm"
           >
-            {{ group.name }}
+            {{ group.meta.name }}
           </span>
         </div>
       </div>
@@ -65,8 +65,8 @@ export default defineComponent({
   },
   computed: {
     locationName(): string | undefined {
-      if (this.room.areaId) {
-        return this.areasStore.getAreaById(this.room.areaId)?.name;
+      if (this.room.spec.areaId) {
+        return this.areasStore.getAreaById(this.room.spec.areaId)?.meta.name;
       }
       return undefined;
     },

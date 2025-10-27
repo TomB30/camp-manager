@@ -142,27 +142,27 @@
         <div v-else class="events-timeline">
           <div
             v-for="event in sortedTodayEvents"
-            :key="event.id"
+            :key="event.meta.id"
             class="timeline-event"
             :style="{
-              borderLeftColor: event.colorId
-                ? colorsStore.getColorById(event.colorId)?.hexValue
+              borderLeftColor: event.spec.colorId
+                ? colorsStore.getColorById(event.spec.colorId)?.spec.hexValue
                 : '#2196F3',
             }"
           >
             <div class="timeline-time">
-              {{ formatTime(event.startDate) }} -
-              {{ formatTime(event.endDate) }}
+              {{ formatTime(event.spec.startDate) }} -
+              {{ formatTime(event.spec.endDate) }}
             </div>
             <div class="timeline-content">
-              <div class="timeline-title">{{ event.title }}</div>
+              <div class="timeline-title">{{ event.spec.title }}</div>
               <div class="timeline-meta">
                 <span class="badge badge-primary">
-                  {{ getLocationName(event.locationId || "") }}
+                  {{ getLocationName(event.spec.locationId || "") }}
                 </span>
                 <span class="text-secondary text-sm">
-                  {{ eventsStore.getEventCamperIds(event.id).length }}/{{
-                    event.capacity
+                  {{ eventsStore.getEventCamperIds(event.meta.id).length }}/{{
+                    event.spec.capacity
                   }}
                   campers
                 </span>
@@ -197,13 +197,13 @@
           <div class="recent-list">
             <div
               v-for="camper in recentCampers"
-              :key="camper.id"
+              :key="camper.meta.id"
               class="recent-item"
             >
               <span class="font-medium"
-                >{{ camper.firstName }} {{ camper.lastName }}</span
+                >{{ camper.spec.firstName }} {{ camper.spec.lastName }}</span
               >
-              <span class="text-xs text-secondary">Age {{ camper.age }}</span>
+              <span class="text-xs text-secondary">Age {{ camper.spec.age }}</span>
             </div>
           </div>
         </div>
@@ -213,24 +213,24 @@
           <div class="capacity-list">
             <div
               v-for="room in locationsStore.locations.slice(0, 5)"
-              :key="room.id"
+              :key="room.meta.id"
               class="capacity-item"
             >
-              <div class="capacity-name">{{ room.name }}</div>
+              <div class="capacity-name">{{ room.meta.name }}</div>
               <div class="capacity-bar">
                 <div
                   class="capacity-fill"
                   :style="{
-                    width: `${getRoomUsage(room.id)}%`,
+                    width: `${getRoomUsage(room.meta.id)}%`,
                     background:
-                      getRoomUsage(room.id) > 80
+                      getRoomUsage(room.meta.id) > 80
                         ? 'var(--error-color)'
                         : 'var(--success-color)',
                   }"
                 ></div>
               </div>
               <div class="capacity-text text-xs">
-                {{ getRoomUsage(room.id).toFixed(0) }}% used
+                {{ getRoomUsage(room.meta.id).toFixed(0) }}% used
               </div>
             </div>
           </div>
@@ -291,17 +291,17 @@ export default defineComponent({
     sortedTodayEvents(): Event[] {
       return [...this.todayEvents].sort(
         (a, b) =>
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+          new Date(a.spec.startDate).getTime() - new Date(b.spec.startDate).getTime(),
       );
     },
     recentCampers(): Camper[] {
       return [...this.campersStore.campers]
         .sort((a, b) => {
-          const dateA = a.registrationDate
-            ? new Date(a.registrationDate).getTime()
+          const dateA = a.spec.registrationDate
+            ? new Date(a.spec.registrationDate).getTime()
             : 0;
-          const dateB = b.registrationDate
-            ? new Date(b.registrationDate).getTime()
+          const dateB = b.spec.registrationDate
+            ? new Date(b.spec.registrationDate).getTime()
             : 0;
           return dateB - dateA;
         })
@@ -318,21 +318,21 @@ export default defineComponent({
     },
     getLocationName(locationId: string): string | null | undefined {
       const location = this.areasStore.getAreaById(locationId);
-      return location?.name || "Unknown Location";
+      return location?.meta.name || "Unknown Location";
     },
     getRoomUsage(locationId: string): number {
       const roomEvents = this.eventsStore.locationEvents(locationId);
       if (roomEvents.length === 0) return 0;
 
       const room = this.areasStore.getAreaById(locationId);
-      if (!room || !room.capacity) return 0;
+      if (!room || !room.spec.capacity) return 0;
 
       // Calculate average capacity usage
       const totalUsage = roomEvents.reduce((sum, event) => {
         return (
           sum +
-          (this.eventsStore.getEventCamperIds(event.id).length /
-            room.capacity!) *
+          (this.eventsStore.getEventCamperIds(event.meta.id).length /
+            room.spec.capacity!) *
             100
         );
       }, 0);

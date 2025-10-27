@@ -12,10 +12,10 @@ export const useColorsStore = defineStore("colors", {
   getters: {
     getColorById(state): (id: string) => Color | undefined {
       return (id: string): Color | undefined =>
-        state.colors.find((c) => c.id === id);
+        state.colors.find((c) => c.meta.id === id);
     },
     getDefaultColor(state): Color | undefined {
-      return state.colors.find((c) => c.default === true);
+      return state.colors.find((c) => c.spec.default === true);
     },
   },
 
@@ -26,7 +26,7 @@ export const useColorsStore = defineStore("colors", {
         this.colors = await colorsService.listColors();
         this.colorsById = this.colors.reduce(
           (acc, color) => {
-            acc[color.id] = color;
+            acc[color.meta.id] = color;
             return acc;
           },
           {} as Record<string, Color>,
@@ -38,14 +38,19 @@ export const useColorsStore = defineStore("colors", {
 
     async createColor(colorRequest: ColorCreationRequest): Promise<Color> {
       // If this color is being set as default, unset all other defaults
-      if (colorRequest.default) {
+      if (colorRequest.spec.default) {
         const updatePromises = this.colors
-          .filter((c) => c.default)
+          .filter((c) => c.spec.default)
           .map((c) =>
-            colorsService.updateColor(c.id, {
-              name: c.name,
-              hexValue: c.hexValue,
-              default: false,
+            colorsService.updateColor(c.meta.id, {
+              meta: {
+                name: c.meta.name,
+                description: c.meta.description,
+              },
+              spec: {
+                hexValue: c.spec.hexValue,
+                default: false,
+              },
             }),
           );
 
@@ -54,15 +59,15 @@ export const useColorsStore = defineStore("colors", {
 
         // Update local state
         this.colors.forEach((c) => {
-          if (c.default) {
-            c.default = false;
+          if (c.spec.default) {
+            c.spec.default = false;
           }
         });
       }
 
       const color = await colorsService.createColor(colorRequest);
       this.colors.push(color);
-      this.colorsById[color.id] = color;
+      this.colorsById[color.meta.id] = color;
       return color;
     },
 
@@ -71,14 +76,19 @@ export const useColorsStore = defineStore("colors", {
       colorUpdate: ColorUpdateRequest,
     ): Promise<void> {
       // If this color is being set as default, unset all other defaults
-      if (colorUpdate.default) {
+      if (colorUpdate.spec.default) {
         const updatePromises = this.colors
-          .filter((c) => c.id !== id && c.default)
+          .filter((c) => c.meta.id !== id && c.spec.default)
           .map((c) =>
-            colorsService.updateColor(c.id, {
-              name: c.name,
-              hexValue: c.hexValue,
-              default: false,
+            colorsService.updateColor(c.meta.id, {
+              meta: {
+                name: c.meta.name,
+                description: c.meta.description,
+              },
+              spec: {
+                hexValue: c.spec.hexValue,
+                default: false,
+              },
             }),
           );
 
@@ -87,23 +97,23 @@ export const useColorsStore = defineStore("colors", {
 
         // Update local state
         this.colors.forEach((c) => {
-          if (c.id !== id && c.default) {
-            c.default = false;
+          if (c.meta.id !== id && c.spec.default) {
+            c.spec.default = false;
           }
         });
       }
 
       const color = await colorsService.updateColor(id, colorUpdate);
-      const index = this.colors.findIndex((c) => c.id === id);
+      const index = this.colors.findIndex((c) => c.meta.id === id);
       if (index >= 0) {
         this.colors[index] = color;
       }
-      this.colorsById[color.id] = color;
+      this.colorsById[color.meta.id] = color;
     },
 
     async deleteColor(id: string): Promise<void> {
       await colorsService.deleteColor(id);
-      this.colors = this.colors.filter((c) => c.id !== id);
+      this.colors = this.colors.filter((c) => c.meta.id !== id);
     },
   },
 });

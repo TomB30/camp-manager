@@ -32,10 +32,10 @@
       <div v-if="viewMode === 'grid'" class="staff-grid">
         <StaffCard
           v-for="member in filteredMembers"
-          :key="member.id"
+          :key="member.meta.id"
           :member="member"
-          :formatted-role="formatRole(member.roleId)"
-          @click="selectMember(member.id)"
+          :formatted-role="formatRole(member.spec.roleId)"
+          @click="selectMember(member.meta.id)"
         />
 
         <EmptyState
@@ -79,19 +79,19 @@
         <template #cell-name="{ item }">
           <div class="member-name-content">
             <AvatarInitials
-              :first-name="item.firstName"
-              :last-name="item.lastName"
+              :first-name="item.spec.firstName"
+              :last-name="item.spec.lastName"
               size="sm"
             />
             <div class="member-fullname">
-              {{ item.firstName }} {{ item.lastName }}
+              {{ item.spec.firstName }} {{ item.spec.lastName }}
             </div>
           </div>
         </template>
 
         <template #cell-role="{ item }">
           <span class="badge badge-primary badge-sm">{{
-            formatRole(item.roleId)
+            formatRole(item.spec.roleId)
           }}</span>
         </template>
 
@@ -106,7 +106,7 @@
         </template>
 
         <template #cell-events="{ item }">
-          <span class="event-count">{{ getMemberEvents(item.id).length }}</span>
+          <span class="event-count">{{ getMemberEvents(item.meta.id).length }}</span>
         </template>
 
         <template #cell-actions="{ item }">
@@ -114,7 +114,7 @@
             outline
             color="grey-8"
             size="sm"
-            @click="selectMember(item.id)"
+            @click="selectMember(item.meta.id)"
             label="View Details"
           />
         </template>
@@ -131,30 +131,30 @@
         <template #manager-info>
           <div>
             <span class="badge badge-success">{{
-              selectedMember ? getManagerName(selectedMember.managerId) : ""
+              selectedMember ? getManagerName(selectedMember.spec.managerId) : ""
             }}</span>
           </div>
         </template>
         <template #direct-reports>
           <div
             v-if="
-              selectedMember && getDirectReports(selectedMember.id).length > 0
+              selectedMember && getDirectReports(selectedMember.meta.id).length > 0
             "
             class="flex gap-1 flex-wrap"
           >
             <span
-              v-for="report in getDirectReports(selectedMember.id)"
-              :key="report.id"
+              v-for="report in getDirectReports(selectedMember.meta.id)"
+              :key="report.meta.id"
               class="badge badge-primary"
             >
-              {{ report.firstName }} {{ report.lastName }}
+              {{ report.spec.firstName }} {{ report.spec.lastName }}
             </span>
           </div>
           <div v-else class="text-caption">No direct reports</div>
         </template>
         <template #events-list>
           <EventsByDate
-            :events="selectedMember ? getMemberEvents(selectedMember.id) : []"
+            :events="selectedMember ? getMemberEvents(selectedMember.meta.id) : []"
             :show-location="true"
             :get-location-name="getLocationName"
             empty-message="No events assigned"
@@ -273,8 +273,8 @@ export default defineComponent({
           value: this.filterRole,
           placeholder: "Filter by Role",
           options: this.rolesStore.roles.map((role) => ({
-            label: role.name,
-            value: role.id,
+            label: role.meta.name,
+            value: role.meta.id,
           })),
         },
         {
@@ -282,8 +282,8 @@ export default defineComponent({
           value: this.filterCertification,
           placeholder: "Filter by Certification",
           options: this.certificationsStore.certifications.map((cert) => ({
-            label: cert.name,
-            value: cert.name,
+            label: cert.meta.name,
+            value: cert.meta.name,
           })),
         },
         {
@@ -291,8 +291,8 @@ export default defineComponent({
           value: this.filterProgram,
           placeholder: "Filter by Program",
           options: this.programsStore.programs.map((program) => ({
-            label: program.name,
-            value: program.id,
+            label: program.meta.name,
+            value: program.meta.id,
           })),
         },
       ];
@@ -311,29 +311,29 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         members = members.filter(
           (member: StaffMember) =>
-            member.firstName.toLowerCase().includes(query) ||
-            member.lastName.toLowerCase().includes(query) ||
-            `${member.firstName} ${member.lastName}`
+            member.spec.firstName.toLowerCase().includes(query) ||
+            member.spec.lastName.toLowerCase().includes(query) ||
+            `${member.spec.firstName} ${member.spec.lastName}`
               .toLowerCase()
               .includes(query) ||
-            (member.email && member.email.toLowerCase().includes(query)),
+            (member.spec.email && member.spec.email.toLowerCase().includes(query)),
         );
       }
 
       // Role filter
       if (this.filterRole) {
         members = members.filter(
-          (member: StaffMember) => member.roleId === this.filterRole,
+          (member: StaffMember) => member.spec.roleId === this.filterRole,
         );
       }
 
       // Certification filter
       if (this.filterCertification) {
         members = members.filter((member: StaffMember) => {
-          if (!member.certificationIds) return false;
-          return member.certificationIds.some((id) => {
+          if (!member.spec.certificationIds) return false;
+          return member.spec.certificationIds.some((id) => {
             const cert = this.certificationsStore.getCertificationById(id);
-            return cert && cert.name === this.filterCertification;
+            return cert && cert.meta.name === this.filterCertification;
           });
         });
       }
@@ -343,7 +343,7 @@ export default defineComponent({
         members = members.filter((member: StaffMember) => {
           const program = this.programsStore.getProgramById(this.filterProgram);
           return (
-            (program && program.staffMemberIds?.includes(member.id)) || false
+            (program && program.spec.staffMemberIds?.includes(member.meta.id)) || false
           );
         });
       }
@@ -374,18 +374,18 @@ export default defineComponent({
     },
     getDirectReports(managerId: string): StaffMember[] {
       return this.filteredMembers.filter(
-        (member) => member.managerId === managerId,
+        (member) => member.spec.managerId === managerId,
       );
     },
     getManagerName(managerId: string | undefined): string {
       if (!managerId) return "None";
       const manager = this.staffMembersStore.getStaffMemberById(managerId);
-      return manager ? `${manager.firstName} ${manager.lastName}` : "Unknown";
+      return manager ? `${manager.spec.firstName} ${manager.spec.lastName}` : "Unknown";
     },
     formatRole(roleId: string): string {
       const role = this.rolesStore.getRoleById(roleId);
       return role
-        ? role.name.charAt(0).toUpperCase() + role.name.slice(1)
+        ? role.meta.name.charAt(0).toUpperCase() + role.meta.name.slice(1)
         : "Unknown Role";
     },
     getMemberEvents(memberId: string): Event[] {
@@ -393,7 +393,7 @@ export default defineComponent({
     },
     getLocationName(locationId: string): string {
       const location = this.areasStore.getAreaById(locationId);
-      return location?.name || "Unknown Location";
+      return location?.meta.name || "Unknown Location";
     },
     selectMember(memberId: string): void {
       this.selectedMemberId = memberId;
@@ -401,7 +401,7 @@ export default defineComponent({
     editMember(): void {
       if (!this.selectedMember) return;
 
-      this.editingMemberId = this.selectedMember.id;
+      this.editingMemberId = this.selectedMember.meta.id;
       this.selectedMemberId = null;
       this.showModal = true;
     },

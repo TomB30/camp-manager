@@ -89,7 +89,7 @@ describe.skip("LabelFormModal", () => {
           formData: {
             name: "VIP",
             description: "VIP campers",
-            colorId: colorsFixture[0].id,
+            colorId: colorsFixture[0].meta.id,
           },
         },
         pinia,
@@ -105,7 +105,7 @@ describe.skip("LabelFormModal", () => {
           formData: {
             name: "VIP",
             description: "VIP campers",
-            colorId: colorsFixture[0].id,
+            colorId: colorsFixture[0].meta.id,
           },
         },
         pinia,
@@ -124,7 +124,7 @@ describe.skip("LabelFormModal", () => {
           formData: {
             name: "Test Label",
             description: "",
-            colorId: colorsFixture[0].id,
+            colorId: colorsFixture[0].meta.id,
           },
         },
         pinia,

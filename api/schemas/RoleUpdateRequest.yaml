@@ -1,8 +1,9 @@
 type: object
 required:
-  - name
+  - meta
+  - spec
 properties:
-  name:
-    type: string
-  description:
-    type: string
+  meta:
+    $ref: "./EntityCreationRequestMeta.yaml"
+  spec:
+    type: object

@@ -24,7 +24,17 @@ async function listCampers(): Promise<Camper[]> {
 async function createCamper(camper: CamperCreationRequest): Promise<Camper> {
   const newCamper = {
     ...camper,
-    id: crypto.randomUUID(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: camper.meta.name,
+      description: camper.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    name: camper.meta.name,
+    description: camper.meta.description,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
   return storageService.save<Camper>(STORAGE_KEYS.CAMPERS, newCamper);
 }
@@ -43,6 +53,13 @@ async function updateCamper(
   const updatedCamper = {
     ...existingCamper,
     ...camper,
+    meta: {
+      id: existingCamper.meta.id,
+      name: camper.meta.name,
+      description: camper.meta.description,
+      createdAt: existingCamper.meta.createdAt,
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Camper>(STORAGE_KEYS.CAMPERS, updatedCamper);
 }
@@ -55,9 +72,12 @@ async function deleteCamper(id: string): Promise<void> {
   const events = await storageService.getAll<Event>(STORAGE_KEYS.EVENTS);
   const updatedEvents: Event[] = events.map((event: Event) => ({
     ...event,
-    excludeCamperIds:
-      event.excludeCamperIds?.filter((camperId: string) => camperId !== id) ||
-      [],
+    spec: {
+      ...event.spec,
+      excludeCamperIds:
+        event.spec.excludeCamperIds?.filter((camperId: string) => camperId !== id) ||
+        [],
+    },
   }));
 
   // Save all updated events
@@ -76,10 +96,10 @@ async function getCampersByFamilyGroup(
   familyGroupId: string
 ): Promise<Camper[]> {
   const campers = await listCampers();
-  return campers.filter((c) => c.familyGroupId === familyGroupId);
+  return campers.filter((c) => c.spec.familyGroupId === familyGroupId);
 }
 
 async function getCampersBySession(sessionId: string): Promise<Camper[]> {
   const campers = await listCampers();
-  return campers.filter((c) => c.sessionId === sessionId);
+  return campers.filter((c) => c.spec.sessionId === sessionId);
 }

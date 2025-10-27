@@ -1,23 +1,23 @@
 <template>
-  <BaseModal show :title="session?.name || ''" @close="$emit('close')">
+  <BaseModal show :title="session?.meta.name || ''" @close="$emit('close')">
     <template #body>
       <div>
-        <div v-if="session.description" class="detail-section">
+        <div v-if="session.meta.description" class="detail-section">
           <div class="detail-label">Description</div>
-          <div>{{ session.description }}</div>
+          <div>{{ session.meta.description }}</div>
         </div>
 
         <div class="detail-section">
           <div class="detail-label">Dates</div>
           <div>
-            {{ formatDate(session.startDate) }} -
-            {{ formatDate(session.endDate) }}
+            {{ formatDate(session.spec.startDate) }} -
+            {{ formatDate(session.spec.endDate) }}
           </div>
         </div>
 
         <div class="detail-section">
           <div class="detail-label">Duration</div>
-          <div>{{ calculateDuration(session.startDate, session.endDate) }}</div>
+          <div>{{ calculateDuration(session.spec.startDate, session.spec.endDate) }}</div>
         </div>
       </div>
     </template>
@@ -26,7 +26,7 @@
       <BaseButton
         outline
         color="negative"
-        @click="$emit('delete', session?.id)"
+        @click="$emit('delete', session?.meta.id)"
         label="Delete"
       />
       <BaseButton

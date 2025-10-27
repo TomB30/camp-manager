@@ -50,7 +50,7 @@ describe("LocationFormModal", () => {
       const location = locationsFixture[0];
       const wrapper = createWrapper(LocationFormModal, {
         props: {
-          locationId: location.id,
+          locationId: location.meta.id,
         },
         pinia,
       });
@@ -62,7 +62,7 @@ describe("LocationFormModal", () => {
       const location = locationsFixture[0];
       const wrapper = createWrapper(LocationFormModal, {
         props: {
-          locationId: location.id,
+          locationId: location.meta.id,
         },
         pinia,
       });
@@ -70,7 +70,7 @@ describe("LocationFormModal", () => {
       const nameInput = wrapper.find(
         "input[placeholder='Enter location name']",
       );
-      expect((nameInput.element as HTMLInputElement).value).toBe(location.name);
+      expect((nameInput.element as HTMLInputElement).value).toBe(location.meta.name);
     });
   });
 

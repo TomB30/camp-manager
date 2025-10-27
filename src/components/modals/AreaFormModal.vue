@@ -8,7 +8,7 @@
         <div class="form-group">
           <label class="form-label">Area Name</label>
           <BaseInput
-            v-model="formData.name"
+            v-model="formData.meta.name"
             placeholder="Enter area name"
             :rules="[(val: string) => !!val || 'Enter area name']"
           />
@@ -28,7 +28,7 @@
           <div class="form-group">
             <label class="form-label">Type</label>
             <Autocomplete
-              v-model="formData.type"
+              v-model="formData.spec.type"
               :options="areaTypeOptions"
               placeholder="Select area type..."
             />
@@ -113,12 +113,16 @@ export default defineComponent({
       areasStore: useAreasStore(),
       loading: false,
       formData: {
-        name: "",
-        description: "",
-        type: undefined,
-        capacity: 0,
-        equipment: [],
-        notes: "",
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {
+          type: undefined,
+          capacity: 0,
+          equipment: [],
+          notes: "",
+        },
       } as AreaCreationRequest,
       areaTypeOptions: [
         { label: "Indoor", value: "indoor" },
@@ -138,12 +142,16 @@ export default defineComponent({
     if (!area) return;
 
     this.formData = {
-      name: area.name,
-      description: area.description,
-      type: area.type,
-      capacity: area.capacity,
-      equipment: area.equipment,
-      notes: area.notes,
+      meta: {
+        name: area.meta.name,
+        description: area.meta.description,
+      },
+      spec: {
+        type: area.spec.type,
+        capacity: area.spec.capacity,
+        equipment: area.spec.equipment,
+        notes: area.spec.notes,
+      },
     };
   },
   computed: {
@@ -152,35 +160,35 @@ export default defineComponent({
     },
     descriptionModel: {
       get(): string {
-        return this.formData.description || "";
+        return this.formData.meta.description || "";
       },
       set(value: string) {
-        this.formData.description = value || "";
+        this.formData.meta.description = value || "";
       },
     },
     equipmentModel: {
       get(): string {
-        return this.formData.equipment?.join(", ") || "";
+        return this.formData.spec.equipment?.join(", ") || "";
       },
       set(value: string) {
-        this.formData.equipment = value.split(",").map((e) => e.trim());
+        this.formData.spec.equipment = value.split(",").map((e) => e.trim());
       },
     },
     capacityModel: {
       get(): string {
-        return this.formData.capacity?.toString() || "";
+        return this.formData.spec.capacity?.toString() || "";
       },
       set(value: string) {
         const num = parseInt(value);
-        this.formData.capacity = isNaN(num) ? undefined : num;
+        this.formData.spec.capacity = isNaN(num) ? undefined : num;
       },
     },
     notesModel: {
       get(): string {
-        return this.formData.notes || "";
+        return this.formData.spec.notes || "";
       },
       set(value: string) {
-        this.formData.notes = value || "";
+        this.formData.spec.notes = value || "";
       },
     },
   },

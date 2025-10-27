@@ -15,19 +15,19 @@ export const useLocationsStore = defineStore("locations", {
   getters: {
     getLocationById(state): (id: string) => Location | undefined {
       return (id: string): Location | undefined => {
-        return state.locations.find((l) => l.id === id);
+        return state.locations.find((l) => l.meta.id === id);
       };
     },
 
     getLocationsByArea(state): (areaId: string) => Location[] {
       return (areaId: string): Location[] => {
-        return state.locations.filter((l) => l.areaId === areaId);
+        return state.locations.filter((l) => l.spec.areaId === areaId);
       };
     },
 
-    getLocationsByType(state): (type: Location["type"]) => Location[] {
-      return (type: Location["type"]): Location[] => {
-        return state.locations.filter((l) => l.type === type);
+    getLocationsByType(state): (type: Location["spec"]["type"]) => Location[] {
+      return (type: Location["spec"]["type"]): Location[] => {
+        return state.locations.filter((l) => l.spec.type === type);
       };
     },
   },
@@ -58,7 +58,7 @@ export const useLocationsStore = defineStore("locations", {
         id,
         locationUpdate,
       );
-      const index = this.locations.findIndex((r) => r.id === id);
+      const index = this.locations.findIndex((r) => r.meta.id === id);
       if (index >= 0) {
         this.locations[index] = location;
       }
@@ -66,7 +66,7 @@ export const useLocationsStore = defineStore("locations", {
 
     async deleteLocation(id: string): Promise<void> {
       await locationsService.deleteLocation(id);
-      this.locations = this.locations.filter((l) => l.id !== id);
+      this.locations = this.locations.filter((l) => l.meta.id !== id);
     },
   },
 });

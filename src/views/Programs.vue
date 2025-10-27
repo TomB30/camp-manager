@@ -8,7 +8,7 @@
         </button>
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-item active">
-          {{ selectedProgram?.name }}
+          {{ selectedProgram?.meta.name }}
         </span>
       </nav>
 
@@ -46,12 +46,12 @@
         <div v-if="viewMode === 'grid'" class="programs-grid">
           <ProgramCard
             v-for="program in filteredPrograms"
-            :key="program.id"
+            :key="program.meta.id"
             :program="program"
-            :activities-count="getActivitiesCount(program.id)"
-            :staff-count="getStaffCount(program.id)"
-            :locations-count="getLocationsCount(program.id)"
-            @click="selectProgram(program.id)"
+            :activities-count="getActivitiesCount(program.meta.id)"
+            :staff-count="getStaffCount(program.meta.id)"
+            :locations-count="getLocationsCount(program.meta.id)"
+            @click="selectProgram(program.meta.id)"
           />
 
           <EmptyState
@@ -97,26 +97,26 @@
                 class="color-indicator"
                 :style="{ background: getProgramColor(item) }"
               ></div>
-              <div class="program-name-text">{{ item.name }}</div>
+              <div class="program-name-text">{{ item.meta.name }}</div>
             </div>
           </template>
 
           <template #cell-description="{ item }">
-            <span>{{ item.description || "No description" }}</span>
+            <span>{{ item.meta.description || "No description" }}</span>
           </template>
 
           <template #cell-activities="{ item }">
             <span class="badge badge-sm badge-primary"
-              >{{ getActivitiesCount(item.id) }} activities</span
+              >{{ getActivitiesCount(item.meta.id) }} activities</span
             >
           </template>
 
           <template #cell-staff="{ item }">
-            <span>{{ getStaffCount(item.id) }} staff</span>
+            <span>{{ getStaffCount(item.meta.id) }} staff</span>
           </template>
 
           <template #cell-locations="{ item }">
-            <span>{{ getLocationsCount(item.id) }} locations</span>
+            <span>{{ getLocationsCount(item.meta.id) }} locations</span>
           </template>
 
           <template #cell-actions="{ item }">
@@ -125,7 +125,7 @@
               outline
               label="View Details"
               size="sm"
-              @click="selectProgram(item.id)"
+              @click="selectProgram(item.meta.id)"
             />
           </template>
         </DataTable>
@@ -141,12 +141,12 @@
                 :style="{ background: getProgramColor(selectedProgram) }"
               ></div>
               <div class="detail-header-info">
-                <h2>{{ selectedProgram.name }}</h2>
+                <h2>{{ selectedProgram.meta.name }}</h2>
                 <p
-                  v-if="selectedProgram.description"
+                  v-if="selectedProgram.meta.description"
                   class="detail-description"
                 >
-                  {{ selectedProgram.description }}
+                  {{ selectedProgram.meta.description }}
                 </p>
               </div>
             </div>
@@ -189,28 +189,28 @@
           <div v-if="programActivities.length > 0" class="activities-list">
             <div
               v-for="activity in programActivities"
-              :key="activity.id"
+              :key="activity.meta.id"
               class="activity-item card"
               @click="viewActivity(activity)"
             >
               <div class="activity-info">
-                <h4>{{ activity.name }}</h4>
-                <p v-if="activity.description" class="text-caption">
-                  {{ activity.description }}
+                <h4>{{ activity.meta.name }}</h4>
+                <p v-if="activity.meta.description" class="text-caption">
+                  {{ activity.meta.description }}
                 </p>
               </div>
               <div class="activity-meta">
                 <span class="meta-item">
                   <Clock :size="14" />
-                  <DurationDisplay :minutes="activity.duration || 0" />
+                  <DurationDisplay :minutes="activity.spec.duration || 0" />
                 </span>
-                <span v-if="activity.defaultLocationId" class="meta-item">
+                <span v-if="activity.spec.defaultLocationId" class="meta-item">
                   <Home :size="14" />
-                  {{ getLocationName(activity.defaultLocationId) }}
+                  {{ getLocationName(activity.spec.defaultLocationId) }}
                 </span>
-                <span v-if="activity.defaultCapacity" class="meta-item">
+                <span v-if="activity.spec.defaultCapacity" class="meta-item">
                   <Users :size="14" />
-                  {{ activity.defaultCapacity }} max
+                  {{ activity.spec.defaultCapacity }} max
                 </span>
               </div>
             </div>
@@ -240,13 +240,13 @@
           <div v-if="programStaff.length > 0" class="staff-list">
             <EntityListItem
               v-for="staff in programStaff"
-              :key="staff.id"
-              :first-name="staff.firstName"
-              :last-name="staff.lastName"
-              :title="`${staff.firstName} ${staff.lastName}`"
-              :subtitle="formatRole(staff.roleId)"
+              :key="staff.meta.id"
+              :first-name="staff.spec.firstName"
+              :last-name="staff.spec.lastName"
+              :title="`${staff.spec.firstName} ${staff.spec.lastName}`"
+              :subtitle="formatRole(staff.spec.roleId)"
               :removable="true"
-              @remove="confirmRemoveStaff(staff.id)"
+              @remove="confirmRemoveStaff(staff.meta.id)"
             >
               <template
                 v-if="getStaffCertificationNames(staff).length > 0"
@@ -289,10 +289,10 @@
           <div v-if="programLocations.length > 0" class="locations-list">
             <EntityListItem
               v-for="location in programLocations"
-              :key="location.id"
-              :title="location.name"
+              :key="location.meta.id"
+              :title="location.meta.name"
               :removable="true"
-              @remove="confirmRemoveLocation(location.id)"
+              @remove="confirmRemoveLocation(location.meta.id)"
             >
               <template #avatar>
                 <div class="location-icon">
@@ -301,11 +301,11 @@
               </template>
               <template #metadata>
                 <div class="location-meta">
-                  <span>{{ formatLocationType(location.type) }}</span>
+                  <span>{{ formatLocationType(location.spec.type) }}</span>
                   <span>•</span>
-                  <span>Capacity: {{ location.capacity }}</span>
-                  <span v-if="location.areaId"
-                    >• {{ getAreaName(location.areaId) }}</span
+                  <span>Capacity: {{ location.spec.capacity }}</span>
+                  <span v-if="location.spec.areaId"
+                    >• {{ getAreaName(location.spec.areaId) }}</span
                   >
                 </div>
               </template>
@@ -339,7 +339,7 @@
       :activity="editingActivity"
       :activity-id="selectedActivityId || undefined"
       :program-id="selectedProgramId || ''"
-      :program-ids="selectedProgram?.id ? [selectedProgram.id] : []"
+      :program-ids="selectedProgram?.meta.id ? [selectedProgram.meta.id] : []"
       @close="closeActivityModal"
       @save="saveActivity"
     />
@@ -547,9 +547,9 @@ export default defineComponent({
 
       return this.programsStore.programs.filter(
         (program) =>
-          program.name.toLowerCase().includes(query) ||
-          (program.description &&
-            program.description.toLowerCase().includes(query)),
+          program.meta.name.toLowerCase().includes(query) ||
+          (program.meta.description &&
+            program.meta.description.toLowerCase().includes(query)),
       );
     },
     selectedProgram() {
@@ -570,7 +570,7 @@ export default defineComponent({
     programStaff(): StaffMember[] {
       if (!this.selectedProgram) return [];
       return (
-        this.selectedProgram.staffMemberIds
+        this.selectedProgram.spec.staffMemberIds
           ?.map((id: string) => this.staffMembersStore.getStaffMemberById(id))
           .filter((staff: StaffMember | undefined) => staff !== undefined) || []
       );
@@ -578,7 +578,7 @@ export default defineComponent({
     programLocations(): Location[] {
       if (!this.selectedProgram) return [];
       return (
-        this.selectedProgram.locationIds
+        this.selectedProgram.spec.locationIds
           ?.map((id: string) => this.locationsStore.getLocationById(id))
           .filter((location: Location | undefined) => location !== undefined) ||
         []
@@ -588,19 +588,19 @@ export default defineComponent({
       if (!this.selectedProgram) return [];
       return this.staffMembersStore.staffMembers.filter(
         (staff) =>
-          !this.selectedProgram!.staffMemberIds?.includes(staff.id) || false,
+          !this.selectedProgram!.spec.staffMemberIds?.includes(staff.meta.id) || false,
       );
     },
     availableLocations(): Location[] {
       if (!this.selectedProgram) return [];
       return this.locationsStore.locations.filter(
         (location) =>
-          !this.selectedProgram!.locationIds?.includes(location.id) || false,
+          !this.selectedProgram!.spec.locationIds?.includes(location.meta.id) || false,
       );
     },
     programStaffIds: {
       get(): string[] {
-        return this.selectedProgram?.staffMemberIds || ([] as string[]);
+        return this.selectedProgram?.spec.staffMemberIds || ([] as string[]);
       },
       set(value: string[]) {
         if (this.selectedProgram) {
@@ -610,7 +610,7 @@ export default defineComponent({
     },
     programLocationIds: {
       get(): string[] {
-        return this.selectedProgram?.locationIds || ([] as string[]);
+        return this.selectedProgram?.spec.locationIds || ([] as string[]);
       },
       set(value: string[]) {
         if (this.selectedProgram) {
@@ -637,22 +637,22 @@ export default defineComponent({
       if (!this.deleteTarget) return "";
       if (this.deleteTarget.type === "program") {
         const program = this.programsStore.getProgramById(this.deleteTarget.id);
-        return `Are you sure you want to delete "${program?.name}"? This will also delete all activities in this program. This action cannot be undone.`;
+        return `Are you sure you want to delete "${program?.meta.name}"? This will also delete all activities in this program. This action cannot be undone.`;
       } else if (this.deleteTarget.type === "activity") {
         const activity = this.activitiesStore.getActivityById(
           this.deleteTarget.id,
         );
-        return `Are you sure you want to delete "${activity?.name}"? This action cannot be undone.`;
+        return `Are you sure you want to delete "${activity?.meta.name}"? This action cannot be undone.`;
       } else if (this.deleteTarget.type === "staff") {
         const staff = this.staffMembersStore.getStaffMemberById(
           this.deleteTarget.id,
         );
-        return `Are you sure you want to remove "${staff?.firstName} ${staff?.lastName}" from this program?`;
+        return `Are you sure you want to remove "${staff?.spec.firstName} ${staff?.spec.lastName}" from this program?`;
       } else if (this.deleteTarget.type === "location") {
         const location = this.locationsStore.getLocationById(
           this.deleteTarget.id,
         );
-        return `Are you sure you want to remove "${location?.name}" from this program?`;
+        return `Are you sure you want to remove "${location?.meta.name}" from this program?`;
       }
       return "";
     },
@@ -667,7 +667,7 @@ export default defineComponent({
     getProgramColor(program: any): string {
       if (program.colorId) {
         const color = this.colorsStore.getColorById(program.colorId);
-        return color?.hexValue || "#6366F1";
+        return color?.spec.hexValue || "#6366F1";
       }
       return "#6366F1";
     },
@@ -676,24 +676,24 @@ export default defineComponent({
     },
     getStaffCount(programId: string) {
       const program = this.programsStore.getProgramById(programId);
-      return program?.staffMemberIds?.length || 0;
+      return program?.spec.staffMemberIds?.length || 0;
     },
     getLocationsCount(programId: string) {
       const program = this.programsStore.getProgramById(programId);
-      return program?.locationIds?.length || 0;
+      return program?.spec.locationIds?.length || 0;
     },
     getLocationName(locationId: string) {
       const location = this.locationsStore.getLocationById(locationId);
-      return location?.name || "Unknown";
+      return location?.meta.name || "Unknown";
     },
     getAreaName(areaId: string) {
       const area = this.areasStore.getAreaById(areaId);
-      return area?.name || "Unknown";
+      return area?.meta.name || "Unknown";
     },
     formatRole(roleId: string) {
       const role = this.rolesStore.getRoleById(roleId);
       return role
-        ? role.name.charAt(0).toUpperCase() + role.name.slice(1)
+        ? role.meta.name.charAt(0).toUpperCase() + role.meta.name.slice(1)
         : "Unknown Role";
     },
     getStaffCertificationNames(staff: any): string[] {
@@ -701,7 +701,7 @@ export default defineComponent({
       return (
         staff.certificationIds?.map((id: string) => {
           const cert = this.certificationsStore.getCertificationById(id);
-          return cert ? cert.name : "";
+          return cert ? cert.meta.name : "";
         }) || []
       ).filter((name: string) => name.length > 0);
     },
@@ -724,16 +724,16 @@ export default defineComponent({
       this.showProgramModal = true;
     },
     deleteProgramConfirm(program: Program) {
-      this.deleteTarget = { type: "program", id: program.id };
+      this.deleteTarget = { type: "program", id: program.meta.id };
       this.showDeleteConfirm = true;
     },
     viewActivity(activity: Activity) {
-      this.selectedActivityId = activity.id;
+      this.selectedActivityId = activity.meta.id;
     },
     editActivity(activity: Activity) {
       this.editingActivity = activity;
       this.showActivityModal = true;
-      this.selectedActivityId = activity.id;
+      this.selectedActivityId = activity.meta.id;
     },
     async handleCreateNewActivity(activity: Activity) {
       try {
@@ -760,7 +760,7 @@ export default defineComponent({
       try {
         if (this.editingActivity) {
           await this.activitiesStore.updateActivity(
-            this.editingActivity.id,
+            this.editingActivity.meta.id,
             activity,
           );
           this.toast.success("Activity updated successfully");
@@ -774,7 +774,7 @@ export default defineComponent({
       }
     },
     deleteActivityConfirm(activity: Activity) {
-      this.deleteTarget = { type: "activity", id: activity.id };
+      this.deleteTarget = { type: "activity", id: activity.meta.id };
       this.showDeleteConfirm = true;
       this.selectedActivityId = null;
     },
@@ -791,14 +791,14 @@ export default defineComponent({
 
       const updatedProgram = {
         ...this.selectedProgram,
-        staffMemberIds: this.selectedProgram.staffMemberIds?.filter(
+        staffMemberIds: this.selectedProgram.spec.staffMemberIds?.filter(
           (id: string) => id !== staffId,
         ),
       };
 
       try {
         await this.programsStore.updateProgram(
-          this.selectedProgram.id,
+          this.selectedProgram.meta.id,
           updatedProgram,
         );
         this.toast.success("Staff member removed from program");
@@ -811,14 +811,14 @@ export default defineComponent({
 
       const updatedProgram = {
         ...this.selectedProgram,
-        locationIds: this.selectedProgram.locationIds?.filter(
+        locationIds: this.selectedProgram.spec.locationIds?.filter(
           (id) => id !== locationId,
         ),
       };
 
       try {
         await this.programsStore.updateProgram(
-          this.selectedProgram.id,
+          this.selectedProgram.meta.id,
           updatedProgram,
         );
         this.toast.success("Location removed from program");
@@ -854,32 +854,32 @@ export default defineComponent({
     },
     // Staff helper methods
     getStaffLabel(staff: any): string {
-      return `${staff.firstName} ${staff.lastName}`;
+      return `${staff.spec.firstName} ${staff.spec.lastName}`;
     },
     getStaffInitials(staff: any): string {
-      return `${staff.firstName.charAt(0)}${staff.lastName.charAt(0)}`;
+      return `${staff.spec.firstName.charAt(0)}${staff.spec.lastName.charAt(0)}`;
     },
     getStaffOption(staff: any): AutocompleteOption {
       return {
-        label: `${staff.firstName} ${staff.lastName} (${this.formatRole(staff.roleId)})`,
-        value: staff.id,
+        label: `${staff.spec.firstName} ${staff.spec.lastName} (${this.formatRole(staff.spec.roleId)})`,
+        value: staff.meta.id,
       };
     },
     // Location helper methods
     getLocationLabel(location: any): string {
-      return `${location.name}`;
+      return `${location.meta.name}`;
     },
     getLocationInitials(location: any): string {
-      const words = location.name.split(" ");
+      const words = location.meta.name.split(" ");
       if (words.length >= 2) {
         return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
       }
-      return location.name.substring(0, 2).toUpperCase();
+      return location.meta.name.substring(0, 2).toUpperCase();
     },
     getLocationOption(location: any): AutocompleteOption {
       return {
-        label: `${location.name} (${this.formatLocationType(location.type)} • Capacity: ${location.capacity})`,
-        value: location.id,
+        label: `${location.meta.name} (${this.formatLocationType(location.type)} • Capacity: ${location.capacity})`,
+        value: location.meta.id,
       };
     },
     // Update methods for SelectionList v-model binding
@@ -893,7 +893,7 @@ export default defineComponent({
 
       try {
         await this.programsStore.updateProgram(
-          this.selectedProgram.id,
+          this.selectedProgram.meta.id,
           updatedProgram,
         );
         this.toast.success("Staff assignments updated");
@@ -911,7 +911,7 @@ export default defineComponent({
 
       try {
         await this.programsStore.updateProgram(
-          this.selectedProgram.id,
+          this.selectedProgram.meta.id,
           updatedProgram,
         );
         this.toast.success("Location assignments updated");

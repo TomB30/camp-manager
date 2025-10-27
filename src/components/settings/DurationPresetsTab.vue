@@ -33,7 +33,7 @@
     <div v-else class="presets-list">
       <DurationPresetCard
         v-for="preset in filteredPresets"
-        :key="preset.id"
+        :key="preset.meta.id"
         :duration-preset="preset"
         @click="selectPreset"
       />
@@ -49,7 +49,7 @@
 
     <DurationPresetFormModal
       v-if="showFormModal"
-      :preset-id="editingPreset?.id"
+      :preset-id="editingPreset?.meta.id"
       @close="closeModal"
     />
 
@@ -122,8 +122,8 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         presets = presets.filter(
           (preset) =>
-            preset.name.toLowerCase().includes(query) ||
-            preset.description?.toLowerCase().includes(query),
+            preset.meta.name.toLowerCase().includes(query) ||
+            preset.meta.description?.toLowerCase().includes(query),
         );
       }
 

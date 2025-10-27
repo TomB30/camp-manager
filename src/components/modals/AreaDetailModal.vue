@@ -1,34 +1,34 @@
 <template>
-  <BaseModal :title="area?.name || ''" @close="$emit('close')">
+  <BaseModal :title="area?.meta.name || ''" @close="$emit('close')">
     <template #body>
       <div v-if="area">
-        <div v-if="area.description" class="detail-section">
+        <div v-if="area.meta.description" class="detail-section">
           <div class="detail-label">Description</div>
-          <div>{{ area.description }}</div>
+          <div>{{ area.meta.description }}</div>
         </div>
 
         <div class="detail-section">
           <div class="detail-label">Type</div>
           <div>
             <span class="badge badge-primary">{{
-              formatAreaType(area.type || "other")
+              formatAreaType(area.spec.type || "other")
             }}</span>
           </div>
         </div>
 
-        <div v-if="area.capacity" class="detail-section">
+        <div v-if="area.spec.capacity" class="detail-section">
           <div class="detail-label">Capacity</div>
-          <div>{{ area.capacity }} people</div>
+          <div>{{ area.spec.capacity }} people</div>
         </div>
 
         <div
-          v-if="area.equipment && area.equipment.length > 0"
+          v-if="area.spec.equipment && area.spec.equipment.length > 0"
           class="detail-section"
         >
           <div class="detail-label">Equipment</div>
           <div class="flex gap-1 flex-wrap">
             <span
-              v-for="item in area.equipment"
+              v-for="item in area.spec.equipment"
               :key="item"
               class="badge badge-success"
             >
@@ -37,19 +37,19 @@
           </div>
         </div>
 
-        <div v-if="area.notes" class="detail-section">
+        <div v-if="area.spec.notes" class="detail-section">
           <div class="detail-label">Notes</div>
-          <div>{{ area.notes }}</div>
+          <div>{{ area.spec.notes }}</div>
         </div>
 
-        <div v-if="area.createdAt" class="detail-section">
+        <div v-if="area.meta.createdAt" class="detail-section">
           <div class="detail-label">Created</div>
-          <div>{{ formatDate(area.createdAt) }}</div>
+          <div>{{ formatDate(area.meta.createdAt) }}</div>
         </div>
 
-        <div v-if="area.updatedAt" class="detail-section">
+        <div v-if="area.meta.updatedAt" class="detail-section">
           <div class="detail-label">Last Updated</div>
-          <div>{{ formatDate(area.updatedAt) }}</div>
+          <div>{{ formatDate(area.meta.updatedAt) }}</div>
         </div>
       </div>
     </template>
@@ -58,7 +58,7 @@
       <BaseButton
         outline
         color="negative"
-        @click="$emit('delete', area?.id)"
+        @click="$emit('delete', area?.meta.id)"
         label="Delete"
       />
       <BaseButton

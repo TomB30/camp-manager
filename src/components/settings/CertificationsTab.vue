@@ -39,12 +39,12 @@
     <div v-else-if="viewMode === 'grid'" class="certifications-grid">
       <div
         v-for="certification in filteredCertifications"
-        :key="certification.id"
+        :key="certification.meta.id"
         class="certification-card-wrapper"
       >
         <CertificationCard
           :certification="certification"
-          @click="selectCertification(certification.id)"
+          @click="selectCertification(certification.meta.id)"
         />
       </div>
     </div>
@@ -63,7 +63,7 @@
           <div class="certification-icon-sm">
             <Icon name="Award" :size="18" />
           </div>
-          <div>{{ item.name }}</div>
+          <div>{{ item.meta.name }}</div>
         </div>
       </template>
 
@@ -72,7 +72,7 @@
           outline
           color="grey-8"
           size="sm"
-          @click="selectCertification(item.id)"
+          @click="selectCertification(item.meta.id)"
           label="View Details"
         />
       </template>
@@ -164,12 +164,12 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         filtered = filtered.filter(
           (cert) =>
-            cert.name.toLowerCase().includes(query) ||
-            cert.description?.toLowerCase().includes(query),
+            cert.meta.name.toLowerCase().includes(query) ||
+            cert.meta.description?.toLowerCase().includes(query),
         );
       }
 
-      return filtered.sort((a, b) => a.name.localeCompare(b.name));
+      return filtered.sort((a, b) => a.meta.name.localeCompare(b.meta.name));
     },
     selectedCertification(): Certification | null {
       if (!this.selectedCertificationId) return null;
@@ -189,7 +189,7 @@ export default defineComponent({
       this.editCertification(certification);
     },
     editCertification(certification: Certification) {
-      this.editingCertificationId = certification.id;
+      this.editingCertificationId = certification.meta.id;
       this.showModal = true;
     },
     deleteCertificationConfirm(id: string) {

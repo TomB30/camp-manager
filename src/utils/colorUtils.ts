@@ -13,7 +13,7 @@ export function resolveColor(colorId?: string, fallbackColor?: string): string {
   const campColor = store.getColorById(colorId);
 
   if (campColor) {
-    return campColor.hexValue;
+    return campColor.spec.hexValue;
   }
 
   // Fallback if colorId not found

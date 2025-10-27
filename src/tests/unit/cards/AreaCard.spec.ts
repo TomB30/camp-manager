@@ -2,11 +2,12 @@ import { describe, it, expect } from "vitest";
 import { createWrapper } from "@/tests/utils";
 import AreaCard from "@/components/cards/AreaCard.vue";
 import { areasFixture } from "@/tests/fixtures";
+import { Area } from "@/types";
 
 describe("AreaCard", () => {
   describe("Rendering", () => {
     it("renders area name correctly", () => {
-      const area = areasFixture[0];
+      const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -14,11 +15,11 @@ describe("AreaCard", () => {
         },
       });
 
-      expect(wrapper.text()).toContain(area.name);
+      expect(wrapper.text()).toContain(area.meta.name);
     });
 
     it("renders formatted type badge", () => {
-      const area = areasFixture[0];
+      const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -30,7 +31,7 @@ describe("AreaCard", () => {
     });
 
     it("displays capacity when provided", () => {
-      const area = areasFixture[0];
+      const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -38,13 +39,13 @@ describe("AreaCard", () => {
         },
       });
 
-      if (area.capacity) {
-        expect(wrapper.text()).toContain(area.capacity.toString());
+      if (area.spec.capacity) {
+        expect(wrapper.text()).toContain(area.spec.capacity.toString());
       }
     });
 
     it("renders description when provided", () => {
-      const area = areasFixture[0];
+      const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -52,13 +53,16 @@ describe("AreaCard", () => {
         },
       });
 
-      if (area.description) {
-        expect(wrapper.text()).toContain(area.description);
+      if (area.meta.description) {
+        expect(wrapper.text()).toContain(area.meta.description);
       }
     });
 
     it("does not show description when not provided", () => {
-      const area = { ...areasFixture[0], description: undefined };
+      const area: Area = {
+        ...areasFixture[0],
+        meta: { ...areasFixture[0].meta, description: undefined },
+      };
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -72,7 +76,7 @@ describe("AreaCard", () => {
 
   describe("Equipment and Notes", () => {
     it("shows equipment count when equipment exists", () => {
-      const area = areasFixture[0];
+      const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -80,13 +84,18 @@ describe("AreaCard", () => {
         },
       });
 
-      if (area.equipment && area.equipment.length > 0) {
-        expect(wrapper.text()).toContain(`${area.equipment.length} equipment`);
+      if (area.spec.equipment && area.spec.equipment.length > 0) {
+        expect(wrapper.text()).toContain(
+          `${area.spec.equipment.length} equipment`
+        );
       }
     });
 
     it("does not show equipment when array is empty", () => {
-      const area = { ...areasFixture[0], equipment: [] };
+      const area: Area = {
+        ...areasFixture[0],
+        spec: { ...areasFixture[0].spec, equipment: [] },
+      };
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -98,7 +107,7 @@ describe("AreaCard", () => {
     });
 
     it("shows notes indicator when notes exist", () => {
-      const area = areasFixture[0];
+      const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -106,13 +115,16 @@ describe("AreaCard", () => {
         },
       });
 
-      if (area.notes) {
+      if (area.spec.notes) {
         expect(wrapper.text()).toContain("Has notes");
       }
     });
 
     it("does not show notes indicator when no notes", () => {
-      const area = { ...areasFixture[0], notes: undefined };
+      const area: Area = {
+        ...areasFixture[0],
+        spec: { ...areasFixture[0].spec, notes: undefined },
+      };
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -126,7 +138,10 @@ describe("AreaCard", () => {
 
   describe("Type Badge Styling", () => {
     it("applies correct badge class for indoor type", () => {
-      const area = { ...areasFixture[0], type: "indoor" };
+      const area: Area = {
+        ...areasFixture[0],
+        spec: { ...areasFixture[0].spec, type: "indoor" },
+      };
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -139,7 +154,7 @@ describe("AreaCard", () => {
     });
 
     it("applies correct badge class for outdoor type", () => {
-      const area = { ...areasFixture[0], type: "outdoor" };
+      const area: Area = { ...areasFixture[0], spec: { ...areasFixture[0].spec, type: "outdoor" } };
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -152,7 +167,7 @@ describe("AreaCard", () => {
     });
 
     it("applies correct badge class for water type", () => {
-      const area = { ...areasFixture[0], type: "water" };
+      const area: Area = { ...areasFixture[0], spec: { ...areasFixture[0].spec, type: "water" } };
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -167,7 +182,7 @@ describe("AreaCard", () => {
 
   describe("Icon and Styling", () => {
     it("applies icon color", () => {
-      const area = areasFixture[0];
+      const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -180,12 +195,12 @@ describe("AreaCard", () => {
       const style = cardIcon.attributes("style");
       expect(style).toContain("background");
       expect(
-        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)"),
+        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)")
       ).toBe(true);
     });
 
     it("uses default icon color when not provided", () => {
-      const area = areasFixture[0];
+      const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -197,7 +212,7 @@ describe("AreaCard", () => {
     });
 
     it("has card-clickable class", () => {
-      const area = areasFixture[0];
+      const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -209,7 +224,7 @@ describe("AreaCard", () => {
     });
 
     it("has area-card class", () => {
-      const area = areasFixture[0];
+      const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -223,7 +238,7 @@ describe("AreaCard", () => {
 
   describe("Click Event", () => {
     it("emits click event when card is clicked", async () => {
-      const area = areasFixture[0];
+      const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -239,7 +254,7 @@ describe("AreaCard", () => {
 
   describe("Edge Cases", () => {
     it("handles area without capacity", () => {
-      const area = { ...areasFixture[0], capacity: undefined };
+      const area: Area = { ...areasFixture[0], spec: { ...areasFixture[0].spec, capacity: undefined } };
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -251,9 +266,9 @@ describe("AreaCard", () => {
     });
 
     it("handles very long equipment list", () => {
-      const area = {
+      const area: Area = {
         ...areasFixture[0],
-        equipment: Array.from({ length: 50 }, (_, i) => `Equipment ${i + 1}`),
+        spec: { ...areasFixture[0].spec, equipment: Array.from({ length: 50 }, (_, i) => `Equipment ${i + 1}`) as string[] },
       };
       const wrapper = createWrapper(AreaCard, {
         props: {

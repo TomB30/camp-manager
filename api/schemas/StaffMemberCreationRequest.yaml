@@ -1,31 +1,39 @@
 type: object
 required:
-  - firstName
-  - lastName
-  - roleId
+  - meta
+  - spec
 properties:
-  firstName:
-    type: string
-  lastName:
-    type: string
-  roleId:
-    type: string
-    format: uuid
-    description: ID of the role this staff member has
-  email:
-    type: string
-    format: email
-  phone:
-    type: string
-  certificationIds:
-    type: array
-    items:
-      type: string
-      format: uuid
-    description: IDs of certifications this staff member holds
-  photoUrl:
-    type: string
-  managerId:
-    type: string
-    format: uuid
-    description: ID of the staff member who manages this person
+  meta:
+    $ref: "./EntityCreationRequestMeta.yaml"
+  spec:
+    type: object
+    required:
+      - firstName
+      - lastName
+      - roleId
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      roleId:
+        type: string
+        format: uuid
+        description: ID of the role this staff member has
+      email:
+        type: string
+        format: email
+      phone:
+        type: string
+      certificationIds:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: IDs of certifications this staff member holds
+      photoUrl:
+        type: string
+      managerId:
+        type: string
+        format: uuid
+        description: ID of the staff member who manages this person

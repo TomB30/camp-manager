@@ -58,7 +58,7 @@ describe("StaffMemberFormModal", () => {
       const staffMember = staffMembersFixture[0];
       const wrapper = createWrapper(StaffMemberFormModal, {
         props: {
-          staffMemberId: staffMember.id,
+          staffMemberId: staffMember.meta.id,
         },
         pinia,
       });
@@ -70,7 +70,7 @@ describe("StaffMemberFormModal", () => {
       const staffMember = staffMembersFixture[0];
       const wrapper = createWrapper(StaffMemberFormModal, {
         props: {
-          staffMemberId: staffMember.id,
+          staffMemberId: staffMember.meta.id,
         },
         pinia,
       });
@@ -79,7 +79,7 @@ describe("StaffMemberFormModal", () => {
         "input[placeholder='Enter first name']",
       );
       expect((firstNameInput.element as HTMLInputElement).value).toBe(
-        staffMember.firstName,
+        staffMember.spec.firstName,
       );
     });
   });

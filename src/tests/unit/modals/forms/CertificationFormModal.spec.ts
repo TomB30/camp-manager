@@ -3,6 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import CertificationFormModal from "@/components/modals/CertificationFormModal.vue";
 import { certificationsFixture } from "@/tests/fixtures";
 import { useCertificationsStore } from "@/stores";
+import { Certification } from "@/types";
 
 describe("CertificationFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
@@ -37,9 +38,9 @@ describe("CertificationFormModal", () => {
 
   describe("Edit Mode", () => {
     it("renders with edit title", () => {
-      const certification = certificationsFixture[0];
+      const certification: Certification = certificationsFixture[0];
       const wrapper = createWrapper(CertificationFormModal, {
-        props: { certificationId: certification.id },
+        props: { certificationId: certification.meta.id },
         pinia,
       });
 
@@ -47,14 +48,14 @@ describe("CertificationFormModal", () => {
     });
 
     it("populates form with certification data", () => {
-      const certification = certificationsFixture[0];
+      const certification: Certification = certificationsFixture[0];
       const wrapper = createWrapper(CertificationFormModal, {
-        props: { certificationId: certification.id },
+        props: { certificationId: certification.meta.id },
         pinia,
       });
 
       const vm = wrapper.vm as any;
-      expect(vm.formModel.name).toBe(certification.name);
+      expect(vm.formModel.meta.name).toBe(certification.meta.name);
     });
   });
 

@@ -25,7 +25,13 @@ async function createLocation(
 ): Promise<Location> {
   const newLocation = {
     ...location,
-    id: crypto.randomUUID(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: location.meta.name,
+      description: location.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Location>(STORAGE_KEYS.LOCATIONS, newLocation);
 }
@@ -44,6 +50,12 @@ async function updateLocation(
   const updatedLocation = {
     ...existingLocation,
     ...location,
+    meta: {
+      ...existingLocation.meta,
+      name: location.meta.name,
+      description: location.meta.description,
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Location>(STORAGE_KEYS.LOCATIONS, updatedLocation);
 }
@@ -58,10 +70,10 @@ async function getLocationById(id: string): Promise<Location | null> {
 
 async function getLocationsByArea(areaId: string): Promise<Location[]> {
   const locations = await listLocations();
-  return locations.filter((l) => l.areaId === areaId);
+  return locations.filter((l) => l.spec.areaId === areaId);
 }
 
-async function getLocationsByType(type: Location["type"]): Promise<Location[]> {
+async function getLocationsByType(type: Location["spec"]["type"]): Promise<Location[]> {
   const locations = await listLocations();
-  return locations.filter((l) => l.type === type);
+  return locations.filter((l) => l.spec.type === type);
 }

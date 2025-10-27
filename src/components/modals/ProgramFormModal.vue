@@ -8,7 +8,7 @@
         <div class="form-group">
           <label class="form-label">Program Name</label>
           <BaseInput
-            v-model="localFormData.name"
+            v-model="localFormData.meta.name"
             placeholder="e.g., Watersports, Arts & Crafts"
             :rules="[(val: string) => !!val || 'Enter program name']"
           />
@@ -26,7 +26,7 @@
 
         <div class="form-group">
           <label class="form-label">Color</label>
-          <ColorPicker v-model="localFormData.colorId" />
+          <ColorPicker v-model="localFormData.spec.colorId" />
         </div>
       </q-form>
     </template>
@@ -76,12 +76,16 @@ export default defineComponent({
     return {
       editingProgram: null as Program | null,
       localFormData: {
-        name: "",
-        description: "",
-        colorId: "",
-        activityIds: [],
-        staffMemberIds: [],
-        locationIds: [],
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: { 
+          colorId: undefined,
+          activityIds: [],
+          staffMemberIds: [],
+          locationIds: [],
+        },
       } as ProgramCreationRequest,
       formRef: null as any,
     };
@@ -93,12 +97,16 @@ export default defineComponent({
 
       this.editingProgram = program;
       this.localFormData = {
-        name: program.name,
-        description: program.description || "",
-        colorId: program.colorId || "",
-        activityIds: program.activityIds,
-        staffMemberIds: program.staffMemberIds,
-        locationIds: program.locationIds,
+        meta: {
+          name: program.meta.name,
+          description: program.meta.description || "",
+        },
+        spec: {
+          colorId: program.spec.colorId || undefined,
+          activityIds: program.spec.activityIds || [],
+          staffMemberIds: program.spec.staffMemberIds || [],
+          locationIds: program.spec.locationIds || [],
+        },
       };
     }
   },
@@ -108,10 +116,10 @@ export default defineComponent({
     },
     descriptionModel: {
       get(): string {
-        return this.localFormData.description || "";
+        return this.localFormData.meta.description || "";
       },
       set(value: string) {
-        this.localFormData.description = value || "";
+        this.localFormData.meta.description = value || "";
       },
     },
   },

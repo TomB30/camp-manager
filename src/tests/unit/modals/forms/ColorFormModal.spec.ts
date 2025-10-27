@@ -3,6 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import ColorFormModal from "@/components/modals/ColorFormModal.vue";
 import { colorsFixture } from "@/tests/fixtures";
 import { useColorsStore } from "@/stores";
+import { Color } from "@/types";
 
 describe("ColorFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
@@ -51,10 +52,10 @@ describe("ColorFormModal", () => {
 
   describe("Edit Mode", () => {
     it("renders with edit title", () => {
-      const color = colorsFixture[0];
+      const color: Color = colorsFixture[0];
       const wrapper = createWrapper(ColorFormModal, {
         props: {
-          colorId: color.id,
+          colorId: color.meta.id,
         },
         pinia,
       });
@@ -63,16 +64,16 @@ describe("ColorFormModal", () => {
     });
 
     it("populates form with color data", () => {
-      const color = colorsFixture[0];
+      const color: Color = colorsFixture[0];
       const wrapper = createWrapper(ColorFormModal, {
         props: {
-          colorId: color.id,
+          colorId: color.meta.id,
         },
         pinia,
       });
 
       const vm = wrapper.vm as any;
-      expect(vm.formModel.name).toBe(color.name);
+      expect(vm.formModel.meta.name).toBe(color.meta.name);
     });
   });
 

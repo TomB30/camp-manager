@@ -6,9 +6,9 @@
     <template #body>
       <q-form @submit.prevent="handleSave" ref="formRef">
         <div class="form-group">
-          <label class="form-label">Label Name *</label>
+          <label class="form-label">Label Name</label>
           <BaseInput
-            v-model="localFormData.name"
+            v-model="localFormData.meta.name"
             placeholder="e.g., VIP, Beginner, Advanced"
             :rules="[(val: string) => !!val || 'Enter label name']"
           />
@@ -20,35 +20,8 @@
             v-model="descriptionModel"
             type="textarea"
             :rows="2"
-            placeholder="Optional description for this label"
+            placeholder="Description for this label"
           />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Color</label>
-          <q-select
-            v-model="localFormData.colorId"
-            :options="colorOptions"
-            outlined
-            dense
-            emit-value
-            map-options
-            option-value="value"
-            option-label="label"
-          />
-          <small v-if="!colors.length" class="form-hint text-secondary">
-            No colors available. Create colors in the Colors tab first.
-          </small>
-        </div>
-
-        <div
-          v-if="selectedColor"
-          class="color-preview-large"
-          :style="{ background: selectedColor.hexValue }"
-        >
-          <span class="preview-label">{{
-            localFormData.name || "Label Preview"
-          }}</span>
         </div>
       </q-form>
     </template>
@@ -70,8 +43,6 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import { useColorsStore } from "@/stores";
-import type { Color } from "@/types";
 import { type QForm } from "quasar";
 import { LabelCreationRequest } from "@/services";
 import { useLabelsStore } from "@/stores";
@@ -90,17 +61,17 @@ export default defineComponent({
   },
   emits: ["close", "save"],
   setup() {
-    const colorsStore = useColorsStore();
     const labelsStore = useLabelsStore();
     const toast = useToast();
-    return { colorsStore, labelsStore, toast };
+    return { labelsStore, toast };
   },
   data() {
     return {
       localFormData: {
-        name: "",
-        description: "",
-        colorId: "",
+        meta: {
+          name: "",
+          description: "",
+        },
       } as LabelCreationRequest,
       formRef: null as any,
       loading: false,
@@ -111,9 +82,10 @@ export default defineComponent({
     const label = this.labelsStore.getLabelById(this.labelId);
     if (!label) return;
     this.localFormData = {
-      name: label.name,
-      description: label.description || "",
-      colorId: label.colorId || "",
+      meta: {
+        name: label.meta.name,
+        description: label.meta.description || "",
+      },
     };
   },
   computed: {
@@ -122,29 +94,11 @@ export default defineComponent({
     },
     descriptionModel: {
       get(): string {
-        return this.localFormData.description || "";
+        return this.localFormData.meta.description || "";
       },
       set(value: string) {
-        this.localFormData.description = value || undefined;
+        this.localFormData.meta.description = value || undefined;
       },
-    },
-    colors(): Color[] {
-      return this.colorsStore.colors;
-    },
-    colorOptions() {
-      return [
-        { label: "No Color", value: "" },
-        ...this.colors.map((color) => ({
-          label: color.name,
-          value: color.id,
-        })),
-      ];
-    },
-    selectedColor(): Color | undefined {
-      if (this.localFormData.colorId) {
-        return this.colorsStore.getColorById(this.localFormData.colorId);
-      }
-      return undefined;
     },
   },
   methods: {

@@ -18,9 +18,13 @@ async function listAreas(): Promise<Area[]> {
 async function createArea(area: AreaCreationRequest): Promise<Area> {
   const newArea = {
     ...area,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: area.meta.name,
+      description: area.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Area>(STORAGE_KEYS.AREAS, newArea);
 }
@@ -36,7 +40,13 @@ async function updateArea(id: string, area: AreaUpdateRequest): Promise<Area> {
   const updatedArea = {
     ...existingArea,
     ...area,
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: existingArea.meta.id,
+      name: area.meta.name,
+      description: area.meta.description,
+      createdAt: existingArea.meta.createdAt,
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Area>(STORAGE_KEYS.AREAS, updatedArea);
 }
@@ -49,7 +59,7 @@ async function getAreaById(id: string): Promise<Area | null> {
   return storageService.getById<Area>(STORAGE_KEYS.AREAS, id);
 }
 
-async function getAreasByType(type: Area["type"]): Promise<Area[]> {
+async function getAreasByType(type: Area["spec"]["type"]): Promise<Area[]> {
   const areas = await listAreas();
-  return areas.filter((a) => a.type === type);
+  return areas.filter((a) => a.spec.type === type);
 }

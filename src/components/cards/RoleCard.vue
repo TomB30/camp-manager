@@ -9,9 +9,9 @@
       </slot>
     </div>
     <div class="card-details">
-      <h4>{{ role.name }}</h4>
-      <p v-if="role.description" class="card-description">
-        {{ role.description }}
+      <h4>{{ role.meta.name }}</h4>
+      <p v-if="role.meta.description" class="card-description">
+        {{ role.meta.description }}
       </p>
       <p v-else class="card-description text-caption">
         No description provided

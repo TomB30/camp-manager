@@ -1,25 +1,25 @@
 <template>
-  <BaseModal :title="event?.title || ''" @close="$emit('close')">
+  <BaseModal :title="event?.meta.name || ''" @close="$emit('close')">
     <template #body>
       <div v-if="event">
         <div class="mb-3">
           <div class="text-sm text-grey-7 text-subtitle2 mb-1">Time</div>
           <div>
-            {{ formatTime(event.startDate) }} - {{ formatTime(event.endDate) }}
+            {{ formatTime(event.spec.startDate) }} - {{ formatTime(event.spec.endDate) }}
           </div>
         </div>
 
         <div class="mb-3">
           <div class="text-sm text-grey-7 text-subtitle2 mb-1">Location</div>
-          <div>{{ getLocationName(event.locationId || "") }}</div>
+          <div>{{ getLocationName(event.spec.locationId || "") }}</div>
         </div>
 
         <div class="mb-3">
           <div class="text-sm text-grey-7 text-subtitle2 mb-1">Capacity</div>
           <div>
-            {{ enrolledCamperCount }}/{{ event.capacity || 0 }}
+            {{ enrolledCamperCount }}/{{ event.spec.capacity || 0 }}
             <span
-              v-if="enrolledCamperCount >= (event.capacity || 0)"
+              v-if="enrolledCamperCount >= (event.spec.capacity || 0)"
               class="badge badge-error ml-2"
             >
               Full
@@ -32,11 +32,11 @@
             Assigned Groups
           </div>
           <div
-            v-if="event.groupIds && event.groupIds.length > 0"
+            v-if="event.spec.groupIds && event.spec.groupIds.length > 0"
             class="groups-list"
           >
             <div
-              v-for="groupId in event.groupIds"
+              v-for="groupId in event.spec.groupIds"
               :key="groupId"
               class="group-item"
             >
@@ -66,20 +66,20 @@
               <span class="font-medium">{{ enrolledCamperCount }}</span> campers
               <span
                 v-if="
-                  event.excludeCamperIds && event.excludeCamperIds.length > 0
+                  event.spec.excludeCamperIds && event.spec.excludeCamperIds.length > 0
                 "
                 class="text-xs text-grey-7 text-subtitle2 ml-2"
               >
-                ({{ event.excludeCamperIds.length }} excluded)
+                ({{ event.spec.excludeCamperIds.length }} excluded)
               </span>
             </div>
             <div class="participant-count">
               <span class="font-medium">{{ assignedStaffCount }}</span> staff
               <span
-                v-if="event.excludeStaffIds && event.excludeStaffIds.length > 0"
+                v-if="event.spec.excludeStaffIds && event.spec.excludeStaffIds.length > 0"
                 class="text-xs text-grey-7 text-subtitle2 ml-2"
               >
-                ({{ event.excludeStaffIds.length }} excluded)
+                ({{ event.spec.excludeStaffIds.length }} excluded)
               </span>
             </div>
           </div>
@@ -87,7 +87,7 @@
 
         <!-- Excluded Campers -->
         <div
-          v-if="event.excludeCamperIds && event.excludeCamperIds.length > 0"
+          v-if="event.spec.excludeCamperIds && event.spec.excludeCamperIds.length > 0"
           class="mb-3"
         >
           <div class="text-sm text-grey-7 text-subtitle2 mb-1">
@@ -95,7 +95,7 @@
           </div>
           <div class="exclusions-list">
             <div
-              v-for="camperId in event.excludeCamperIds"
+              v-for="camperId in event.spec.excludeCamperIds"
               :key="camperId"
               class="exclusion-item"
             >
@@ -106,7 +106,7 @@
 
         <!-- Excluded Staff -->
         <div
-          v-if="event.excludeStaffIds && event.excludeStaffIds.length > 0"
+          v-if="event.spec.excludeStaffIds && event.spec.excludeStaffIds.length > 0"
           class="mb-3"
         >
           <div class="text-sm text-grey-7 text-subtitle2 mb-1">
@@ -114,7 +114,7 @@
           </div>
           <div class="exclusions-list">
             <div
-              v-for="staffId in event.excludeStaffIds"
+              v-for="staffId in event.spec.excludeStaffIds"
               :key="staffId"
               class="exclusion-item"
             >
@@ -125,8 +125,8 @@
 
         <div
           v-if="
-            event.requiredCertificationIds &&
-            event.requiredCertificationIds.length > 0
+            event.spec.requiredCertificationIds &&
+            event.spec.requiredCertificationIds.length > 0
           "
           class="mb-3"
         >
@@ -135,7 +135,7 @@
           </div>
           <div class="flex flex-wrap gap-1">
             <span
-              v-for="certId in event.requiredCertificationIds"
+              v-for="certId in event.spec.requiredCertificationIds"
               :key="certId"
               class="certification-badge"
             >
@@ -213,38 +213,38 @@ export default defineComponent({
     },
     enrolledCamperCount(): number {
       if (!this.event) return 0;
-      return this.eventsStore.getEventCamperIds(this.event.id).length;
+      return this.eventsStore.getEventCamperIds(this.event.meta.id).length;
     },
     assignedStaffCount(): number {
       if (!this.event) return 0;
-      return this.eventsStore.getEventStaffIds(this.event.id).length;
+      return this.eventsStore.getEventStaffIds(this.event.meta.id).length;
     },
   },
   methods: {
     getCertificationName(certId: string): string {
       const certification =
         this.certificationsStore.getCertificationById(certId);
-      return certification?.name || "Unknown Certification";
+      return certification?.meta.name || "Unknown Certification";
     },
     formatTime(dateStr: string): string {
       return format(new Date(dateStr), "h:mm a");
     },
     getLocationName(locationId: string): string {
       const location = this.locationsStore.getLocationById(locationId);
-      return location?.name || "Unknown Location";
+      return location?.meta.name || "Unknown Location";
     },
     getCamperName(camperId: string): string {
       const camper = this.campersStore.getCamperById(camperId);
-      return camper ? `${camper.firstName} ${camper.lastName}` : "Unknown";
+      return camper ? `${camper.spec.firstName} ${camper.spec.lastName}` : "Unknown";
     },
     getStaffName(staffId: string): string {
       const staff = this.staffMembersStore.getStaffMemberById(staffId);
-      return staff ? `${staff.firstName} ${staff.lastName}` : "Unknown";
+      return staff ? `${staff.spec.firstName} ${staff.spec.lastName}` : "Unknown";
     },
     getGroupName(groupId: string): string {
       // Check groups
       const group = this.groupsStore.getGroupById(groupId);
-      if (group) return group.name;
+      if (group) return group.meta.name;
 
       return "Unknown Group";
     },
@@ -262,7 +262,7 @@ export default defineComponent({
       if (!this.event) return;
 
       try {
-        await this.eventsStore.removeGroupFromEvent(this.event.id, groupId);
+        await this.eventsStore.removeGroupFromEvent(this.event.meta.id, groupId);
         this.toast.success("Group removed from event");
       } catch (error: any) {
         this.toast.error("Failed to remove group", error.message);
@@ -273,10 +273,10 @@ export default defineComponent({
 
       try {
         if (type === "camper") {
-          await this.eventsStore.removeExcludedCamper(this.event.id, id);
+          await this.eventsStore.removeExcludedCamper(this.event.meta.id, id);
           this.toast.success("Camper is now included in the event");
         } else {
-          await this.eventsStore.removeExcludedStaff(this.event.id, id);
+          await this.eventsStore.removeExcludedStaff(this.event.meta.id, id);
           this.toast.success("Staff member is now included in the event");
         }
       } catch (error: any) {

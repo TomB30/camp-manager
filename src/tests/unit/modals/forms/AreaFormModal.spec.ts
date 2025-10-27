@@ -44,7 +44,7 @@ describe("AreaFormModal", () => {
     it("renders with edit title", () => {
       const wrapper = createWrapper(AreaFormModal, {
         props: {
-          areaId: areasFixture[0].id,
+          areaId: areasFixture[0].meta.id,
         },
         pinia,
       });
@@ -56,13 +56,13 @@ describe("AreaFormModal", () => {
       const area = areasFixture[0];
       const wrapper = createWrapper(AreaFormModal, {
         props: {
-          areaId: area.id,
+          areaId: area.meta.id,
         },
         pinia,
       });
 
       const nameInput = wrapper.find("input[placeholder='Enter area name']");
-      expect((nameInput.element as HTMLInputElement).value).toBe(area.name);
+      expect((nameInput.element as HTMLInputElement).value).toBe(area.meta.name);
     });
   });
 

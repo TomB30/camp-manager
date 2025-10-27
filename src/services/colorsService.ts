@@ -19,9 +19,13 @@ async function listColors(): Promise<Color[]> {
 async function createColor(color: ColorCreationRequest): Promise<Color> {
   const newColor = {
     ...color,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: color.meta.name,
+      description: color.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Color>(STORAGE_KEYS.COLORS, newColor);
 }
@@ -40,7 +44,13 @@ async function updateColor(
   const updatedColor = {
     ...existingColor,
     ...color,
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: existingColor.meta.id,
+      name: color.meta.name,
+      description: color.meta.description,
+      createdAt: existingColor.meta.createdAt,
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Color>(STORAGE_KEYS.COLORS, updatedColor);
 }
@@ -56,14 +66,14 @@ async function getColorById(id: string): Promise<Color | null> {
 async function getColorByName(name: string): Promise<Color | null> {
   const colors = await listColors();
   return (
-    colors.find((c) => c.name.toLowerCase() === name.toLowerCase()) || null
+    colors.find((c) => c.meta.name.toLowerCase() === name.toLowerCase()) || null
   );
 }
 
 async function getColorByHex(hexValue: string): Promise<Color | null> {
   const colors = await listColors();
   return (
-    colors.find((c) => c.hexValue.toLowerCase() === hexValue.toLowerCase()) ||
+    colors.find((c) => c.spec.hexValue.toLowerCase() === hexValue.toLowerCase()) ||
     null
   );
 }

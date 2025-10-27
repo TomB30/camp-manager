@@ -4,17 +4,17 @@
     @click="$emit('click', member)"
   >
     <AvatarInitials
-      :first-name="member.firstName"
-      :last-name="member.lastName"
+      :first-name="member.spec.firstName"
+      :last-name="member.spec.lastName"
       size="lg"
     />
     <div class="card-details">
-      <h4>{{ member.firstName }} {{ member.lastName }}</h4>
+      <h4>{{ member.spec.firstName }} {{ member.spec.lastName }}</h4>
       <div class="member-role">
         <span class="badge badge-primary">{{ formattedRole }}</span>
       </div>
-      <div v-if="member.email" class="member-contact text-caption mt-1">
-        {{ member.email }}
+      <div v-if="member.spec.email" class="member-contact text-caption mt-1">
+        {{ member.spec.email }}
       </div>
       <div v-if="certificationCount > 0" class="member-certs text-xs mt-2">
         {{ certificationCount }} Certification(s)
@@ -46,7 +46,7 @@ export default defineComponent({
   emits: ["click"],
   computed: {
     certificationCount(): number {
-      return this.member.certificationIds?.length || 0;
+      return this.member.spec.certificationIds?.length || 0;
     },
   },
 });

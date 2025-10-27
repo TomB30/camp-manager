@@ -1,20 +1,20 @@
 <template>
-  <BaseModal :title="certification?.name || ''" @close="$emit('close')">
+  <BaseModal :title="certification?.meta.name || ''" @close="$emit('close')">
     <template #body>
       <div v-if="certification">
-        <div v-if="certification.description" class="detail-section">
+        <div v-if="certification.meta.description" class="detail-section">
           <div class="detail-label">Description</div>
-          <div>{{ certification.description }}</div>
+          <div>{{ certification.meta.description }}</div>
         </div>
 
-        <div v-if="certification.createdAt" class="detail-section">
+        <div v-if="certification.meta.createdAt" class="detail-section">
           <div class="detail-label">Created</div>
-          <div>{{ formatDate(certification.createdAt) }}</div>
+          <div>{{ formatDate(certification.meta.createdAt) }}</div>
         </div>
 
-        <div v-if="certification.updatedAt" class="detail-section">
+        <div v-if="certification.meta.updatedAt" class="detail-section">
           <div class="detail-label">Last Updated</div>
-          <div>{{ formatDate(certification.updatedAt) }}</div>
+          <div>{{ formatDate(certification.meta.updatedAt) }}</div>
         </div>
       </div>
     </template>
@@ -23,7 +23,7 @@
       <BaseButton
         outline
         color="negative"
-        @click="$emit('delete', certification?.id)"
+        @click="$emit('delete', certification?.meta.id)"
         label="Delete"
       />
       <BaseButton

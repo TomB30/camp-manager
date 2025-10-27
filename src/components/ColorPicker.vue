@@ -50,9 +50,9 @@ export default defineComponent({
       // If custom colors are configured, use them
       if (this.colorsStore.colors.length > 0) {
         return this.colorsStore.colors.map((color: Color) => ({
-          name: color.name,
-          value: color.hexValue,
-          id: color.id,
+          name: color.meta.name,
+          value: color.spec.hexValue,
+          id: color.meta.id,
         }));
       }
 

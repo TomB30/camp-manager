@@ -1,37 +1,37 @@
 <template>
   <BaseModal
-    :title="camper ? `${camper.firstName} ${camper.lastName}` : ''"
+    :title="camper ? `${camper.spec.firstName} ${camper.spec.lastName}` : ''"
     @close="$emit('close')"
   >
     <template #body>
       <div v-if="camper">
         <div class="detail-section">
           <div class="detail-label">Age</div>
-          <div>{{ camper.age }} years old</div>
+          <div>{{ camper.spec.age }} years old</div>
         </div>
 
         <div class="detail-section">
           <div class="detail-label">Gender</div>
           <div>
             <span class="badge badge-primary">{{
-              formatGender(camper.gender)
+              formatGender(camper.spec.gender)
             }}</span>
           </div>
         </div>
 
-        <div v-if="camper.registrationDate" class="detail-section">
+        <div v-if="camper.spec.registrationDate" class="detail-section">
           <div class="detail-label">Registration Date</div>
-          <div>{{ formatDate(camper.registrationDate) }}</div>
+          <div>{{ formatDate(camper.spec.registrationDate) }}</div>
         </div>
 
         <div class="detail-section">
           <div class="detail-label">Session</div>
-          <div v-if="camper.sessionId">
+          <div v-if="camper.spec.sessionId">
             <span class="badge badge-primary">
-              {{ getSessionName(camper.sessionId) }}
+              {{ getSessionName(camper.spec.sessionId) }}
             </span>
             <div class="text-xs text-caption mt-1">
-              {{ getSessionDateRange(camper.sessionId) }}
+              {{ getSessionDateRange(camper.spec.sessionId) }}
             </div>
           </div>
           <div v-else class="text-caption">Not registered for a session</div>
@@ -40,20 +40,20 @@
         <div class="detail-section">
           <div class="detail-label">Family Group</div>
           <div
-            v-if="camper.familyGroupId && getGroupById(camper.familyGroupId)"
+            v-if="camper.spec.familyGroupId && getGroupById(camper.spec.familyGroupId)"
           >
             <div class="family-group-info">
               <span class="badge">
-                {{ getGroupById(camper.familyGroupId)!.name }}
+                {{ getGroupById(camper.spec.familyGroupId)!.meta.name }}
               </span>
               <div
-                v-if="getGroupById(camper.familyGroupId)?.housingRoomId"
+                v-if="getGroupById(camper.spec.familyGroupId)?.spec.housingRoomId"
                 class="text-xs text-caption mt-1"
               >
                 Room:
                 {{
                   getSleepingRoomName(
-                    getGroupById(camper.familyGroupId)?.housingRoomId || "",
+                    getGroupById(camper.spec.familyGroupId)?.spec.housingRoomId || "",
                   )
                 }}
               </div>
@@ -65,7 +65,7 @@
         <div class="detail-section">
           <div class="detail-label">Enrolled Events</div>
           <EventsByDate
-            :events="getCamperEvents(camper.id)"
+            :events="getCamperEvents(camper.meta.id)"
             empty-message="No events enrolled"
           />
         </div>
@@ -138,21 +138,21 @@ export default defineComponent({
     getSessionName(sessionId: string | undefined): string {
       if (!sessionId) return "No session";
       const session = this.sessionsStore.sessions.find(
-        (s) => s.id === sessionId,
+        (s) => s.meta.id === sessionId,
       );
-      return session?.name || "Unknown Session";
+      return session?.meta.name || "Unknown Session";
     },
     getSessionDateRange(sessionId: string | undefined): string {
       if (!sessionId) return "";
       const session = this.sessionsStore.sessions.find(
-        (s) => s.id === sessionId,
+        (s) => s.meta.id === sessionId,
       );
       if (!session) return "Unknown";
-      const startDate = new Date(session.startDate).toLocaleDateString(
+      const startDate = new Date(session.spec.startDate).toLocaleDateString(
         "en-US",
         { month: "short", day: "numeric" },
       );
-      const endDate = new Date(session.endDate).toLocaleDateString("en-US", {
+      const endDate = new Date(session.spec.endDate).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -164,7 +164,7 @@ export default defineComponent({
     },
     getSleepingRoomName(housingRoomId: string): string {
       const room = this.housingRoomsStore.getHousingRoomById(housingRoomId);
-      return room?.name || "Unknown Room";
+      return room?.meta.name || "Unknown Room";
     },
     getCamperEvents(camperId: string): Event[] {
       return this.eventsStore.camperEvents(camperId);

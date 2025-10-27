@@ -1,13 +1,13 @@
 <template>
-  <div class="session-card" @click="$emit('click', session.id)">
+  <div class="session-card" @click="$emit('click', session.meta.id)">
     <div class="session-header">
       <div class="session-icon">
         <Icon name="CalendarDays" :size="24" />
       </div>
       <div class="session-title-section">
-        <h3 class="session-name">{{ session.name }}</h3>
-        <p v-if="session.description" class="session-description">
-          {{ session.description }}
+        <h3 class="session-name">{{ session.meta.name }}</h3>
+        <p v-if="session.meta.description" class="session-description">
+          {{ session.meta.description }}
         </p>
       </div>
     </div>
@@ -17,8 +17,8 @@
         <Icon name="Calendar" :size="16" class="detail-icon" />
         <span class="detail-label">Dates:</span>
         <span class="detail-value"
-          >{{ formatDate(session.startDate) }} -
-          {{ formatDate(session.endDate) }}</span
+          >{{ formatDate(session.spec.startDate) }} -
+          {{ formatDate(session.spec.endDate) }}</span
         >
       </div>
 
@@ -26,7 +26,10 @@
         <Icon name="Clock" :size="16" class="detail-icon" />
         <span class="detail-label">Duration:</span>
         <span class="detail-value">{{
-          dateUtils.calculateDuration(session.startDate, session.endDate)
+          dateUtils.calculateDuration(
+            session.spec.startDate,
+            session.spec.endDate
+          )
         }}</span>
       </div>
     </div>

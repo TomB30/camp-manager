@@ -111,7 +111,7 @@ describe("GroupFormModal", () => {
       const wrapper = createGroupFormWrapper({
         formData: {
           ...createDefaultFormData(),
-          sessionId: sessionsFixture[1].id,
+          sessionId: sessionsFixture[1].meta.id,
         },
       });
       const vm = wrapper.vm as any;
@@ -123,7 +123,7 @@ describe("GroupFormModal", () => {
       const wrapper = createGroupFormWrapper({
         formData: {
           ...createDefaultFormData(),
-          sessionId: sessionsFixture[1].id,
+          sessionId: sessionsFixture[1].meta.id,
         },
       });
       const vm = wrapper.vm as any;
@@ -140,19 +140,19 @@ describe("GroupFormModal", () => {
     it("marks occupied rooms as disabled", () => {
       // Find a room that's occupied in session 1
       const occupiedGroup = groupsFixture.find(
-        (g) => g.housingRoomId && g.sessionId === sessionsFixture[1].id,
+        (g) => g.spec.housingRoomId && g.spec.sessionId === sessionsFixture[1].meta.id,
       );
-      if (occupiedGroup && occupiedGroup.housingRoomId) {
+      if (occupiedGroup && occupiedGroup.spec.housingRoomId) {
         const wrapper = createGroupFormWrapper({
           formData: {
             ...createDefaultFormData(),
-            sessionId: sessionsFixture[1].id,
+            sessionId: sessionsFixture[1].meta.id,
           },
         });
         const vm = wrapper.vm as any;
 
         const occupiedRoom = housingRoomsFixture.find(
-          (r) => r.id === occupiedGroup.housingRoomId,
+          (r) => r.meta.id === occupiedGroup.spec.housingRoomId,
         );
         if (occupiedRoom) {
           const option = vm.getRoomOption(occupiedRoom);
@@ -166,17 +166,17 @@ describe("GroupFormModal", () => {
       const wrapper = createGroupFormWrapper({
         formData: {
           ...createDefaultFormData(),
-          sessionId: sessionsFixture[2].id, // Future session with no groups
+          sessionId: sessionsFixture[2].meta.id, // Future session with no groups
         },
       });
       const vm = wrapper.vm as any;
 
       const groupsInSameSession = groupsFixture.filter(
-        (g) => g.sessionId === sessionsFixture[2].id,
+        (g) => g.spec.sessionId === sessionsFixture[2].meta.id,
       );
-      const groupHousingRooms = groupsInSameSession.map((g) => g.housingRoomId);
+      const groupHousingRooms = groupsInSameSession.map((g) => g.spec.housingRoomId);
       const availableRooms = housingRoomsFixture.filter(
-        (r) => !groupHousingRooms.includes(r.id),
+        (r) => !groupHousingRooms.includes(r.meta.id),
       );
 
       for (const room of availableRooms) {
@@ -191,8 +191,8 @@ describe("GroupFormModal", () => {
       const wrapper = createGroupFormWrapper({
         formData: {
           ...createDefaultFormData(),
-          sessionId: sessionsFixture[1].id,
-          camperIds: campersFixture.slice(0, 5).map((c) => c.id),
+          sessionId: sessionsFixture[1].meta.id,
+          camperIds: campersFixture.slice(0, 5).map((c) => c.meta.id),
         },
       });
 
@@ -204,7 +204,7 @@ describe("GroupFormModal", () => {
       const wrapper = createGroupFormWrapper({
         formData: {
           ...createDefaultFormData(),
-          sessionId: sessionsFixture[1].id,
+          sessionId: sessionsFixture[1].meta.id,
         },
       });
 

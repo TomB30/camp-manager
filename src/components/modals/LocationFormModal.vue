@@ -8,7 +8,7 @@
         <div class="form-group">
           <label class="form-label">Location Name</label>
           <BaseInput
-            v-model="localFormData.name"
+            v-model="localFormData.meta.name"
             placeholder="Enter location name"
             :rules="[(val: string) => !!val || 'Enter location name']"
           />
@@ -18,7 +18,7 @@
           <div class="form-group">
             <label class="form-label">Type</label>
             <Autocomplete
-              v-model="localFormData.type"
+              v-model="localFormData.spec.type"
               :options="locationTypeOptions"
               placeholder="Select location type..."
               :required="true"
@@ -39,7 +39,7 @@
         <div class="form-group">
           <label class="form-label">Area</label>
           <Autocomplete
-            v-model="localFormData.areaId"
+            v-model="localFormData.spec.areaId"
             :options="areaOptions"
             placeholder="Select an area..."
             :required="false"
@@ -114,12 +114,17 @@ export default defineComponent({
   data() {
     return {
       localFormData: {
-        name: "",
-        type: "classroom" as Location["type"],
-        capacity: 0,
-        areaId: undefined,
-        equipment: [],
-        notes: "",
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {
+          type: "classroom" as Location["spec"]["type"],
+          capacity: 0,
+          areaId: undefined,
+          equipment: [],
+          notes: "",
+        },
       } as LocationCreationRequest,
       locationTypeOptions: [
         { label: "Classroom", value: "classroom" },
@@ -138,12 +143,17 @@ export default defineComponent({
       const location = this.locationsStore.getLocationById(this.locationId);
       if (!location) return;
       this.localFormData = {
-        name: location.name,
-        type: location.type,
-        capacity: location.capacity || 0,
-        areaId: location.areaId,
-        equipment: location.equipment || [],
-        notes: location.notes || "",
+        meta: {
+          name: location.meta.name,
+          description: location.meta.description,
+        },
+        spec: {
+          type: location.spec.type,
+          capacity: location.spec.capacity || 0,
+          areaId: location.spec.areaId,
+          equipment: location.spec.equipment || [],
+          notes: location.spec.notes || "",
+        },
       };
     }
   },
@@ -153,37 +163,37 @@ export default defineComponent({
     },
     areaOptions(): AutocompleteOption[] {
       return this.areasStore.areas.map((area) => ({
-        label: area.name,
-        value: area.id,
+        label: area.meta.name,
+        value: area.meta.id,
       }));
     },
     capacityModel: {
       get(): string {
-        return this.localFormData.capacity?.toString() || "";
+        return this.localFormData.spec.capacity?.toString() || "";
       },
       set(value: string) {
         if (!value) {
-          this.localFormData.capacity = undefined;
+          this.localFormData.spec.capacity = undefined;
         } else {
           const num = parseInt(value);
-          this.localFormData.capacity = isNaN(num) ? 0 : num;
+          this.localFormData.spec.capacity = isNaN(num) ? 0 : num;
         }
       },
     },
     notesModel: {
       get(): string {
-        return this.localFormData.notes || "";
+        return this.localFormData.spec.notes || "";
       },
       set(value: string) {
-        this.localFormData.notes = value || "";
+        this.localFormData.spec.notes = value || "";
       },
     },
     equipmentModel: {
       get(): string {
-        return this.localFormData.equipment?.join(", ") || "";
+        return this.localFormData.spec.equipment?.join(", ") || "";
       },
       set(value: string) {
-        this.localFormData.equipment = value
+        this.localFormData.spec.equipment = value
           .split(",")
           .map((e) => e.trim())
           .filter((e) => e.length > 0);
@@ -211,12 +221,12 @@ export default defineComponent({
         this.loading = true;
         await this.locationsStore.updateLocation(
           this.locationId,
-          this.localFormData,
+          this.localFormData
         );
         this.toast.success("Location updated successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to update location",
+          (error as Error).message || "Failed to update location"
         );
       } finally {
         this.loading = false;
@@ -230,7 +240,7 @@ export default defineComponent({
         this.toast.success("Location created successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to create location",
+          (error as Error).message || "Failed to create location"
         );
       } finally {
         this.loading = false;

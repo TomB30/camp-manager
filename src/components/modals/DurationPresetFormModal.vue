@@ -8,7 +8,7 @@
         <div class="form-group">
           <label class="form-label">Preset Name</label>
           <BaseInput
-            v-model="formModel.name"
+            v-model="formModel.meta.name"
             placeholder="e.g., Standard Session, Quick Activity"
             :rules="[(val: string) => !!val || 'Enter preset name']"
           />
@@ -17,7 +17,7 @@
         <div class="form-group">
           <label class="form-label">Duration (minutes)</label>
           <BaseInput
-            v-model.number="formModel.durationMinutes"
+            v-model.number="formModel.spec.durationMinutes"
             type="number"
             min="1"
             placeholder="e.g., 60"
@@ -26,8 +26,8 @@
               (val: number) => val > 0 || 'Duration must be positive',
             ]"
           />
-          <div v-if="formModel.durationMinutes" class="form-hint">
-            {{ formatDuration(formModel.durationMinutes) }}
+          <div v-if="formModel.spec.durationMinutes" class="form-hint">
+            {{ formatDuration(formModel.spec.durationMinutes) }}
           </div>
         </div>
 
@@ -43,7 +43,7 @@
 
         <div class="form-group">
           <BaseCheckbox
-            v-model="formModel.default"
+            v-model="formModel.spec.default"
             label="Set as default duration preset"
           />
         </div>
@@ -93,11 +93,15 @@ export default defineComponent({
   data() {
     return {
       formModel: {
-        name: "",
-        durationMinutes: null as number | null,
-        description: "",
-        default: false,
-      } as DurationPresetCreationRequest & { durationMinutes: number | null },
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {
+          durationMinutes: null as number | null,
+          default: false,
+        },
+      } as DurationPresetCreationRequest,
       formRef: null as any,
       loading: false as boolean,
     };
@@ -108,10 +112,14 @@ export default defineComponent({
         this.durationPresetsStore.getDurationPresetById(this.presetId);
       if (editingPreset) {
         this.formModel = {
-          name: editingPreset.name,
-          durationMinutes: editingPreset.durationMinutes,
-          description: editingPreset.description || "",
-          default: editingPreset.default || false,
+          meta: {
+            name: editingPreset.meta.name,
+            description: editingPreset.meta.description,
+          },
+          spec: {
+            durationMinutes: editingPreset.spec.durationMinutes,
+            default: editingPreset.spec.default || false,
+          },
         };
       }
     }
@@ -122,10 +130,10 @@ export default defineComponent({
     },
     descriptionModel: {
       get(): string {
-        return this.formModel.description || "";
+        return this.formModel.meta.description || "";
       },
       set(value: string) {
-        this.formModel.description = value || undefined;
+        this.formModel.meta.description = value || undefined;
       },
     },
   },

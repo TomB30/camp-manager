@@ -99,13 +99,13 @@ export default defineComponent({
       if (!activity) return;
       this.editingActivity = activity;
       this.localFormData = {
-        name: activity.name,
-        description: activity.description || "",
-        duration: activity.duration || 60,
-        defaultLocationId: activity.defaultLocationId || "",
-        requiredCertificationIds: activity.requiredCertificationIds || [],
-        minStaff: activity.minStaff || 0,
-        defaultCapacity: activity.defaultCapacity || 0,
+        name: activity.meta.name,
+        description: activity.meta.description || "",
+        duration: activity.spec.duration || 60,
+        defaultLocationId: activity.spec.defaultLocationId || "",
+        requiredCertificationIds: activity.spec.requiredCertificationIds || [],
+        minStaff: activity.spec.minStaff || 0,
+        defaultCapacity: activity.spec.defaultCapacity || 0,
       };
     }
   },
@@ -115,8 +115,8 @@ export default defineComponent({
     },
     roomOptions(): AutocompleteOption[] {
       return this.locationsStore.locations.map((location) => ({
-        value: location.id,
-        label: `${location.name} (${location.type})`,
+        value: location.meta.id,
+        label: `${location.meta.name} (${location.spec.type})`,
       }));
     },
   },
@@ -125,9 +125,9 @@ export default defineComponent({
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.name === name,
+            (c) => c.meta.name === name,
           );
-          return cert ? cert.id : "";
+          return cert ? cert.meta.id : "";
         })
         .filter((id) => id !== "");
     },
@@ -135,7 +135,7 @@ export default defineComponent({
       return ids
         .map((id) => {
           const cert = this.certificationsStore.getCertificationById(id);
-          return cert ? cert.name : "";
+          return cert ? cert.meta.name : "";
         })
         .filter((name) => name !== "");
     },
@@ -145,7 +145,7 @@ export default defineComponent({
 
       if (this.editingActivity) {
         // Editing existing activity - keep its current programIds
-        activityProgramIds = this.editingActivity.programIds;
+        activityProgramIds = this.editingActivity.spec.programIds;
       } else if (this.programIds && this.programIds.length > 0) {
         // Creating new activity with specified programIds
         activityProgramIds = this.programIds;
@@ -160,18 +160,22 @@ export default defineComponent({
       const now = new Date().toISOString();
 
       const activityData: Activity = {
-        id: this.editingActivity?.id || crypto.randomUUID(),
-        name: this.localFormData.name,
-        description: this.localFormData.description || undefined,
-        programIds: activityProgramIds,
-        duration: this.localFormData.duration,
-        defaultLocationId: this.localFormData.defaultLocationId || undefined,
-        requiredCertificationIds:
-          this.localFormData.requiredCertificationIds || undefined,
-        minStaff: this.localFormData.minStaff || undefined,
-        defaultCapacity: this.localFormData.defaultCapacity || undefined,
-        createdAt: this.editingActivity?.createdAt || now,
-        updatedAt: now,
+        meta: {
+          id: crypto.randomUUID(),
+          name: this.localFormData.name,
+          description: this.localFormData.description || undefined,
+          createdAt: now,
+          updatedAt: now,
+        },
+        spec: {
+          programIds: activityProgramIds,
+          duration: this.localFormData.duration,
+          defaultLocationId: this.localFormData.defaultLocationId || undefined,
+          requiredCertificationIds:
+            this.localFormData.requiredCertificationIds || undefined,
+          minStaff: this.localFormData.minStaff || undefined,
+          defaultCapacity: this.localFormData.defaultCapacity || undefined,
+        },
       };
 
       this.$emit("save", activityData);

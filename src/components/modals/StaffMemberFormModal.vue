@@ -9,7 +9,7 @@
           <div class="form-group">
             <label class="form-label">First Name</label>
             <BaseInput
-              v-model="localFormData.firstName"
+              v-model="localFormData.spec.firstName"
               placeholder="Enter first name"
               :rules="[(val: string) => !!val || 'Enter first name']"
             />
@@ -18,7 +18,7 @@
           <div class="form-group">
             <label class="form-label">Last Name</label>
             <BaseInput
-              v-model="localFormData.lastName"
+              v-model="localFormData.spec.lastName"
               placeholder="Enter last name"
               :rules="[(val: string) => !!val || 'Enter last name']"
             />
@@ -28,7 +28,7 @@
         <div class="form-group">
           <label class="form-label">Role</label>
           <Autocomplete
-            v-model="localFormData.roleId"
+            v-model="localFormData.spec.roleId"
             :options="roleOptions"
             placeholder="Select role..."
             :required="true"
@@ -38,7 +38,7 @@
         <div class="form-group">
           <label class="form-label">Manager</label>
           <Autocomplete
-            v-model="localFormData.managerId"
+            v-model="localFormData.spec.managerId"
             :options="managerOptions"
             placeholder="No Manager (Top Level)"
           />
@@ -72,9 +72,13 @@
             empty-text="No certifications selected"
             add-button-text="Add"
             mode="multiple"
-            :get-label-fn="(cert) => cert.name"
-            :get-initials-fn="(cert) => cert.name.substring(0, 2).toUpperCase()"
-            :get-options-fn="(cert) => ({ label: cert.name, value: cert.id })"
+            :get-label-fn="(cert) => cert.meta.name"
+            :get-initials-fn="
+              (cert) => cert.meta.name.substring(0, 2).toUpperCase()
+            "
+            :get-options-fn="
+              (cert) => ({ label: cert.meta.name, value: cert.meta.id })
+            "
           />
           <p class="form-help-text">
             Select certifications from the prepared list
@@ -140,13 +144,18 @@ export default defineComponent({
   data() {
     return {
       localFormData: {
-        firstName: "",
-        lastName: "",
-        roleId: "",
-        email: "",
-        phone: "",
-        certificationIds: [],
-        managerId: "",
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {
+          firstName: "",
+          lastName: "",
+          roleId: "",
+          email: "",
+          certificationIds: [],
+          managerId: "",
+        },
       } as StaffMemberCreationRequest,
       formRef: null as any,
     };
@@ -154,17 +163,22 @@ export default defineComponent({
   created() {
     if (!this.staffMemberId) return;
     const staffMember = this.staffMembersStore.getStaffMemberById(
-      this.staffMemberId,
+      this.staffMemberId
     );
     if (!staffMember) return;
     this.localFormData = {
-      firstName: staffMember.firstName,
-      lastName: staffMember.lastName,
-      roleId: staffMember.roleId,
-      email: staffMember.email || "",
-      phone: staffMember.phone || "",
-      certificationIds: staffMember.certificationIds || [],
-      managerId: staffMember.managerId || "",
+      meta: {
+        name: staffMember.meta.name,
+        description: staffMember.meta.description || "",
+      },
+      spec: {
+        firstName: staffMember.spec.firstName,
+        lastName: staffMember.spec.lastName,
+        roleId: staffMember.spec.roleId,
+        email: staffMember.spec.email || "",
+        certificationIds: staffMember.spec.certificationIds || [],
+        managerId: staffMember.spec.managerId || "",
+      },
     };
   },
   computed: {
@@ -176,44 +190,44 @@ export default defineComponent({
     },
     roleOptions(): AutocompleteOption[] {
       return this.rolesStore.roles.map((role) => ({
-        label: role.name,
-        value: role.id,
+        label: role.meta.name,
+        value: role.meta.id,
       }));
     },
     emailModel: {
       get(): string {
-        return this.localFormData.email || "";
+        return this.localFormData.spec.email || "";
       },
       set(value: string) {
-        this.localFormData.email = value || "";
+        this.localFormData.spec.email = value || "";
       },
     },
     phoneModel: {
       get(): string {
-        return this.localFormData.phone || "";
+        return this.localFormData.spec.email || "";
       },
       set(value: string) {
-        this.localFormData.phone = value || "";
+        this.localFormData.spec.email = value || "";
       },
     },
     certificationIdsModel: {
       get(): string[] {
-        return this.localFormData.certificationIds || [];
+        return this.localFormData.spec.certificationIds || [];
       },
       set(value: string[]) {
-        this.localFormData.certificationIds = value || [];
+        this.localFormData.spec.certificationIds = value || [];
       },
     },
     managerOptions(): AutocompleteOption[] {
       // Filter out the current member to prevent self-assignment
       return this.staffMembers
-        .filter((m) => m.id !== this.staffMemberId)
+        .filter((m) => m.meta.id !== this.staffMemberId)
         .map((member) => {
-          const role = this.rolesStore.getRoleById(member.roleId);
-          const roleName = role ? role.name : "Unknown Role";
+          const role = this.rolesStore.getRoleById(member.spec.roleId);
+          const roleName = role ? role.meta.name : "Unknown Role";
           return {
-            label: `${member.firstName} ${member.lastName} (${roleName})`,
-            value: member.id,
+            label: `${member.spec.firstName} ${member.spec.lastName} (${roleName})`,
+            value: member.meta.id,
           };
         });
     },
@@ -234,12 +248,12 @@ export default defineComponent({
       try {
         await this.staffMembersStore.updateStaffMember(
           this.staffMemberId,
-          this.localFormData,
+          this.localFormData
         );
         this.toast.success("Staff member updated successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to update staff member",
+          (error as Error).message || "Failed to update staff member"
         );
       } finally {
         this.$emit("close");
@@ -251,7 +265,7 @@ export default defineComponent({
         this.toast.success("Staff member created successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to create staff member",
+          (error as Error).message || "Failed to create staff member"
         );
       } finally {
         this.$emit("close");

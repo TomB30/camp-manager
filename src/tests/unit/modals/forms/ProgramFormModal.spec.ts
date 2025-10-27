@@ -3,6 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import ProgramFormModal from "@/components/modals/ProgramFormModal.vue";
 import { programsFixture, colorsFixture } from "@/tests/fixtures";
 import { useColorsStore, useProgramsStore } from "@/stores";
+import { Program } from "@/types";
 
 describe("ProgramFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
@@ -45,10 +46,10 @@ describe("ProgramFormModal", () => {
 
   describe("Edit Mode", () => {
     it("renders with edit title", () => {
-      const program = programsFixture[0];
+      const program: Program = programsFixture[0];
       const wrapper = createWrapper(ProgramFormModal, {
         props: {
-          programId: program.id,
+          programId: program.meta.id,
         },
         pinia,
       });
@@ -57,21 +58,21 @@ describe("ProgramFormModal", () => {
     });
 
     it("populates form with program data", () => {
-      const program = programsFixture[0];
+      const program: Program = programsFixture[0];
       const wrapper = createWrapper(ProgramFormModal, {
         props: {
-          programId: program.id,
+          programId: program.meta.id,
         },
         pinia,
       });
 
       const vm = wrapper.vm as any;
-      expect(vm.localFormData.name).toBe(program.name);
-      expect(vm.localFormData.description).toBe(program.description);
-      expect(vm.localFormData.colorId).toBe(program.colorId);
-      expect(vm.localFormData.activityIds).toEqual(program.activityIds);
-      expect(vm.localFormData.staffMemberIds).toEqual(program.staffMemberIds);
-      expect(vm.localFormData.locationIds).toEqual(program.locationIds);
+      expect(vm.localFormData.meta.name).toBe(program.meta.name);
+      expect(vm.localFormData.meta.description).toBe(program.meta.description || "");
+      expect(vm.localFormData.spec.colorId).toBe(program.spec.colorId);
+      expect(vm.localFormData.spec.activityIds).toEqual(program.spec.activityIds);
+      expect(vm.localFormData.spec.staffMemberIds).toEqual(program.spec.staffMemberIds);
+      expect(vm.localFormData.spec.locationIds).toEqual(program.spec.locationIds);
     });
   });
 

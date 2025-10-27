@@ -15,7 +15,7 @@ export const useCertificationsStore = defineStore("certifications", {
   getters: {
     getCertificationById(state): (id: string) => Certification | undefined {
       return (id: string): Certification | undefined => {
-        return state.certifications.find((c) => c.id === id);
+        return state.certifications.find((c) => c.meta.id === id);
       };
     },
   },
@@ -48,7 +48,7 @@ export const useCertificationsStore = defineStore("certifications", {
           id,
           certificationUpdate,
         );
-      const index = this.certifications.findIndex((c) => c.id === id);
+      const index = this.certifications.findIndex((c) => c.meta.id === id);
       if (index >= 0) {
         this.certifications[index] = certification;
       }
@@ -56,7 +56,7 @@ export const useCertificationsStore = defineStore("certifications", {
 
     async deleteCertification(id: string): Promise<void> {
       await certificationsService.deleteCertification(id);
-      this.certifications = this.certifications.filter((c) => c.id !== id);
+      this.certifications = this.certifications.filter((c) => c.meta.id !== id);
     },
   },
 });

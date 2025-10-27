@@ -1,33 +1,36 @@
 type: object
 required:
-  - name
-  - programIds
+  - meta
+  - spec
 properties:
-  name:
-    type: string
-  programIds:
-    type: array
-    items:
-      type: string
-      format: uuid
-    description: IDs of programs this activity belongs to
-  description:
-    type: string
-  duration:
-    type: integer
-    description: Default duration in minutes
-  defaultLocationId:
-    type: string
-    format: uuid
-    description: ID of the default location
-  requiredCertificationIds:
-    type: array
-    items:
-      type: string
-    description: IDs of required staff certifications
-  minStaff:
-    type: integer
-    description: Minimum number of staff required
-  defaultCapacity:
-    type: integer
-    description: Default activity capacity
+  meta:
+    $ref: "./EntityCreationRequestMeta.yaml"
+  spec:
+    type: object
+    required:
+      - programIds
+    properties:
+      programIds:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: IDs of programs this activity belongs to
+      duration:
+        type: integer
+        description: Default duration in minutes
+      defaultLocationId:
+        type: string
+        format: uuid
+        description: ID of the default location
+      requiredCertificationIds:
+        type: array
+        items:
+          type: string
+        description: IDs of required staff certifications
+      minStaff:
+        type: integer
+        description: Minimum number of staff required
+      defaultCapacity:
+        type: integer
+        description: Default activity capacity

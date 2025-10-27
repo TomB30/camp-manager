@@ -16,8 +16,8 @@ import {
 
 const defaultProps = {
   activity: null,
-  programId: programsFixture[0].id,
-  programIds: programsFixture.map((program) => program.id),
+  programId: programsFixture[0].meta.id,
+  programIds: programsFixture.map((program) => program.meta.id),
 };
 
 describe("ActivityFormModal", () => {
@@ -68,7 +68,7 @@ describe("ActivityFormModal", () => {
       const wrapper = createWrapper(ActivityFormModal, {
         props: {
           ...defaultProps,
-          activityId: activity.id,
+          activityId: activity.meta.id,
         },
         pinia,
       });
@@ -81,13 +81,13 @@ describe("ActivityFormModal", () => {
       const wrapper = createWrapper(ActivityFormModal, {
         props: {
           ...defaultProps,
-          activityId: activity.id,
+          activityId: activity.meta.id,
         },
         pinia,
       });
 
       const vm = wrapper.vm as any;
-      expect(vm.localFormData.name).toBe(activity.name);
+      expect(vm.localFormData.name).toBe(activity.meta.name);
     });
   });
 

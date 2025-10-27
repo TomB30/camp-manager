@@ -78,9 +78,9 @@ export type RoleCreationRequest = components["schemas"]["RoleCreationRequest"];
 export type RoleUpdateRequest = components["schemas"]["RoleUpdateRequest"];
 // Unified Group types (new)
 export type Group = components["schemas"]["Group"];
-export type GroupStaffFilters = components["schemas"]["Group"]["staffFilters"];
+export type GroupStaffFilters = components["schemas"]["Group"]["spec"]["staffFilters"];
 export type GroupCamperFilters =
-  components["schemas"]["Group"]["camperFilters"];
+  components["schemas"]["Group"]["spec"]["camperFilters"];
 export type GroupCreationRequest =
   components["schemas"]["GroupCreationRequest"];
 export type GroupUpdateRequest = components["schemas"]["GroupUpdateRequest"];
@@ -100,12 +100,14 @@ export type { components };
 // Label types
 // export type Label = components["schemas"]["Label"];
 export type Label = {
-  id: string;
-  name: string;
-  colorId?: string;
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
+  meta: {
+    id: string;
+    name: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  spec: {};
 };
 // Conflict types
 // export type Conflict = components["schemas"]["Conflict"];

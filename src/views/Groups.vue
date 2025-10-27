@@ -34,11 +34,11 @@
       <div v-if="viewMode === 'grid'" class="groups-grid">
         <GroupCard
           v-for="group in filteredGroups"
-          :key="group.id"
+          :key="group.meta.id"
           :group="group"
-          :campers-count="getCampersCount(group.id)"
-          :staff-count="getStaffCount(group.id)"
-          @click="selectGroup(group.id)"
+          :campers-count="getCampersCount(group.meta.id)"
+          :staff-count="getStaffCount(group.meta.id)"
+          @click="selectGroup(group.meta.id)"
         />
 
         <EmptyState
@@ -74,7 +74,7 @@
       >
         <template #cell-name="{ item }">
           <div class="group-name-content">
-            <div class="group-name-text">{{ item.name }}</div>
+            <div class="group-name-text">{{ item.meta.name }}</div>
           </div>
         </template>
 
@@ -108,20 +108,20 @@
             class="members-counts text-caption row items-center q-gutter-x-md"
           >
             <span
-              v-if="getCampersCount(item.id) > 0"
+              v-if="getCampersCount(item.meta.id) > 0"
               class="badge badge-success badge-sm"
             >
-              {{ getCampersCount(item.id) }} campers
+              {{ getCampersCount(item.meta.id) }} campers
             </span>
             <span
-              v-if="getStaffCount(item.id) > 0"
+              v-if="getStaffCount(item.meta.id) > 0"
               class="badge badge-success badge-sm"
             >
-              {{ getStaffCount(item.id) }} staff
+              {{ getStaffCount(item.meta.id) }} staff
             </span>
             <span
               v-if="
-                getCampersCount(item.id) === 0 && getStaffCount(item.id) === 0
+                getCampersCount(item.meta.id) === 0 && getStaffCount(item.meta.id) === 0
               "
               class="text-caption text-sm"
             >
@@ -142,7 +142,7 @@
             outline
             color="grey-8"
             size="sm"
-            @click="selectGroup(item.id)"
+            @click="selectGroup(item.meta.id)"
             label="View Details"
           />
         </template>
@@ -314,8 +314,8 @@ export default defineComponent({
           value: this.filterSession,
           placeholder: "Filter by Session",
           options: this.sessionsStore.sessions.map((session: Session) => ({
-            label: session.name,
-            value: session.id,
+            label: session.meta.name,
+            value: session.meta.id,
           })),
         },
         {
@@ -323,8 +323,8 @@ export default defineComponent({
           value: this.filterLabel,
           placeholder: "Filter by Label",
           options: this.labelsStore.labels.map((label: Label) => ({
-            label: label.name,
-            value: label.id,
+            label: label.meta.name,
+            value: label.meta.id,
           })),
         },
       ];
@@ -349,9 +349,9 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         groups = groups.filter(
           (group: Group) =>
-            group.name.toLowerCase().includes(query) ||
-            (group.description &&
-              group.description.toLowerCase().includes(query)),
+            group.meta.name.toLowerCase().includes(query) ||
+            (group.meta.description &&
+              group.meta.description.toLowerCase().includes(query)),
         );
       }
 
@@ -360,15 +360,15 @@ export default defineComponent({
         groups = groups.filter((group: Group) => {
           switch (this.filterType) {
             case "nested":
-              return !!(group.groupIds && group.groupIds.length > 0);
+              return !!(group.spec.groupIds && group.spec.groupIds.length > 0);
             case "auto-campers":
-              return !!(group.camperFilters && !group.camperIds);
+              return !!(group.spec.camperFilters && !group.spec.camperIds);
             case "manual-campers":
-              return !!(group.camperIds && group.camperIds.length > 0);
+              return !!(group.spec.camperIds && group.spec.camperIds.length > 0);
             case "has-housing":
-              return !!group.housingRoomId;
+              return !!group.spec.housingRoomId;
             case "has-session":
-              return !!group.sessionId;
+              return !!group.spec.sessionId;
             default:
               return true;
           }
@@ -378,7 +378,7 @@ export default defineComponent({
       // Session filter
       if (this.filterSession) {
         groups = groups.filter(
-          (group: Group) => group.sessionId === this.filterSession,
+          (group: Group) => group.spec.sessionId === this.filterSession,
         );
       }
 
@@ -386,7 +386,7 @@ export default defineComponent({
       if (this.filterLabel) {
         groups = groups.filter(
           (group: Group) =>
-            group.labelIds && group.labelIds.includes(this.filterLabel),
+            group.spec.labelIds && group.spec.labelIds.includes(this.filterLabel),
         );
       }
 
@@ -408,19 +408,19 @@ export default defineComponent({
       return this.groupsStore.getStaffInGroup(groupId).length;
     },
     isNestedGroup(group: Group): boolean {
-      return !!(group.groupIds && group.groupIds.length > 0);
+      return !!(group.spec.groupIds && group.spec.groupIds.length > 0);
     },
     hasAutoAssignedCampers(group: Group): boolean {
-      return !!(group.camperFilters && !group.camperIds);
+      return !!(group.spec.camperFilters && !group.spec.camperIds);
     },
     hasManualCampers(group: Group): boolean {
-      return !!(group.camperIds && group.camperIds.length > 0);
+      return !!(group.spec.camperIds && group.spec.camperIds.length > 0);
     },
     getSessionName(sessionId: string): string {
       const session = this.sessionsStore.sessions.find(
-        (s) => s.id === sessionId,
+        (s) => s.meta.id === sessionId,
       );
-      return session?.name || "Unknown Session";
+      return session?.meta.name || "Unknown Session";
     },
     selectGroup(groupId: string): void {
       this.selectedGroupId = groupId;
@@ -428,31 +428,31 @@ export default defineComponent({
     editGroup(): void {
       if (!this.selectedGroup) return;
 
-      this.editingGroupId = this.selectedGroup.id;
+      this.editingGroupId = this.selectedGroup.meta.id;
 
       // Map the group to form data
       this.formData = {
-        name: this.selectedGroup.name,
-        description: this.selectedGroup.description || "",
-        sessionId: this.selectedGroup.sessionId || "",
-        housingRoomId: this.selectedGroup.housingRoomId || "",
-        groupIds: this.selectedGroup.groupIds || [],
+        name: this.selectedGroup.meta.name,
+        description: this.selectedGroup.meta.description || "",
+        sessionId: this.selectedGroup.spec.sessionId || "",
+        housingRoomId: this.selectedGroup.spec.housingRoomId || "",
+        groupIds: this.selectedGroup.spec.groupIds || [],
         camperFilters: {
-          ageMin: this.selectedGroup.camperFilters?.ageMin,
-          ageMax: this.selectedGroup.camperFilters?.ageMax,
-          gender: this.selectedGroup.camperFilters?.gender || "",
-          hasAllergies: this.selectedGroup.camperFilters?.hasAllergies,
+          ageMin: this.selectedGroup.spec.camperFilters?.ageMin,
+          ageMax: this.selectedGroup.spec.camperFilters?.ageMax,
+          gender: this.selectedGroup.spec.camperFilters?.gender || "",
+          hasAllergies: this.selectedGroup.spec.camperFilters?.hasAllergies,
           familyGroupIds:
-            this.selectedGroup.camperFilters?.familyGroupIds || [],
+            this.selectedGroup.spec.camperFilters?.familyGroupIds || [],
         },
-        camperIds: this.selectedGroup.camperIds || [],
+        camperIds: this.selectedGroup.spec.camperIds || [],
         staffFilters: {
-          roles: this.selectedGroup.staffFilters?.roles || [],
+          roles: this.selectedGroup.spec.staffFilters?.roles || [],
           certificationIds:
-            this.selectedGroup.staffFilters?.certificationIds || [],
+            this.selectedGroup.spec.staffFilters?.certificationIds || [],
         },
-        staffIds: this.selectedGroup.staffIds || [],
-        labelIds: this.selectedGroup.labelIds || [],
+        staffIds: this.selectedGroup.spec.staffIds || [],
+        labelIds: this.selectedGroup.spec.labelIds || [],
       };
 
       this.selectedGroupId = null;
@@ -463,32 +463,33 @@ export default defineComponent({
 
       // Build the group object
       const groupData: Group = {
-        id: this.editingGroupId || `group-${Date.now()}`,
-        name: formData.name,
-        description: formData.description || undefined,
-        sessionId: formData.sessionId || undefined,
-        housingRoomId: formData.housingRoomId || undefined,
-        groupIds: formData.groupIds.length > 0 ? formData.groupIds : undefined,
-        camperFilters: undefined,
-        camperIds: undefined,
-        staffFilters: undefined,
-        staffIds: undefined,
-        labelIds:
-          formData.labelIds && formData.labelIds.length > 0
-            ? formData.labelIds
-            : undefined,
-        createdAt: this.editingGroupId
-          ? this.groupsStore.getGroupById(this.editingGroupId)?.createdAt ||
-            new Date().toISOString()
-          : new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        meta: {
+          id: this.editingGroupId || `group-${Date.now()}`,
+          name: formData.name,
+          description: formData.description || undefined,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        spec: {
+          sessionId: formData.sessionId || undefined,
+          housingRoomId: formData.housingRoomId || undefined,
+          groupIds: formData.groupIds.length > 0 ? formData.groupIds : undefined,
+          camperFilters: undefined,
+          camperIds: undefined,
+          staffFilters: undefined,
+          staffIds: undefined,
+          labelIds:
+            formData.labelIds && formData.labelIds.length > 0
+              ? formData.labelIds
+              : undefined,
+          },
       };
 
       // Add camper assignment based on type
       if (formData.camperIds.length > 0) {
-        groupData.camperIds = formData.camperIds;
+        groupData.spec.camperIds = formData.camperIds;
       } else if (this.hasAnyCamperFilters(formData.camperFilters)) {
-        groupData.camperFilters = {
+        groupData.spec.camperFilters = {
           ageMin: formData.camperFilters.ageMin,
           ageMax: formData.camperFilters.ageMax,
           gender: formData.camperFilters.gender || undefined,
@@ -502,9 +503,9 @@ export default defineComponent({
 
       // Add staff assignment based on type
       if (formData.staffIds.length > 0) {
-        groupData.staffIds = formData.staffIds;
+        groupData.spec.staffIds = formData.staffIds;
       } else if (this.hasAnyStaffFilters(formData.staffFilters)) {
-        groupData.staffFilters = {
+        groupData.spec.staffFilters = {
           roles:
             formData.staffFilters.roles.length > 0
               ? formData.staffFilters.roles
@@ -554,7 +555,7 @@ export default defineComponent({
 
       this.groupToDelete = {
         id: this.selectedGroupId,
-        name: group.name,
+        name: group.meta.name,
       };
       this.showConfirmModal = true;
     },

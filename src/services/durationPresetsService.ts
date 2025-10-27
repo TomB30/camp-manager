@@ -20,57 +20,64 @@ async function listDurationPresets(): Promise<DurationPreset[]> {
 }
 
 async function createDurationPreset(
-  preset: DurationPresetCreationRequest,
+  preset: DurationPresetCreationRequest
 ): Promise<DurationPreset> {
   // If this preset is being set as default, unset other defaults
-  if (preset.default) {
+  if (preset.spec.default) {
     const allPresets = await listDurationPresets();
     for (const existingPreset of allPresets) {
-      if (existingPreset.default) {
-        await updateDurationPreset(existingPreset.id, { default: false });
+      if (existingPreset.spec.default) {
+        await updateDurationPreset(existingPreset.meta.id, {
+          ...existingPreset,
+          spec: { ...existingPreset.spec, default: false },
+        });
       }
     }
   }
 
   const newPreset: DurationPreset = {
-    ...preset,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: preset.meta.name,
+      description: preset.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    spec: preset.spec,
   };
-  
+
   return storageService.save<DurationPreset>(
     STORAGE_KEYS.DURATION_PRESETS,
-    newPreset,
+    newPreset
   );
 }
 
 async function updateDurationPreset(
   id: string,
-  preset: DurationPresetUpdateRequest,
+  preset: DurationPresetUpdateRequest
 ): Promise<DurationPreset> {
   const existingPreset = await storageService.getById<DurationPreset>(
     STORAGE_KEYS.DURATION_PRESETS,
-    id,
+    id
   );
-  
+
   if (!existingPreset) {
     throw new Error(`Duration preset with id ${id} not found`);
   }
 
   // If this preset is being set as default, unset other defaults
-  if (preset.default && !existingPreset.default) {
+  if (preset.spec.default && !existingPreset.spec.default) {
     const allPresets = await listDurationPresets();
     for (const existingPreset of allPresets) {
-      if (existingPreset.id !== id && existingPreset.default) {
+      if (existingPreset.meta.id !== id && existingPreset.spec.default) {
         const updated = {
           ...existingPreset,
-          default: false,
-          updatedAt: new Date().toISOString(),
+          spec: { ...existingPreset.spec, default: false },
         };
+
         await storageService.save<DurationPreset>(
           STORAGE_KEYS.DURATION_PRESETS,
-          updated,
+          updated
         );
       }
     }
@@ -79,12 +86,12 @@ async function updateDurationPreset(
   const updatedPreset: DurationPreset = {
     ...existingPreset,
     ...preset,
-    updatedAt: new Date().toISOString(),
+    meta: { ...existingPreset.meta, name: preset.meta.name, description: preset.meta.description, updatedAt: new Date().toISOString() },
   };
-  
+
   return storageService.save<DurationPreset>(
     STORAGE_KEYS.DURATION_PRESETS,
-    updatedPreset,
+    updatedPreset
   );
 }
 
@@ -93,16 +100,15 @@ async function deleteDurationPreset(id: string): Promise<void> {
 }
 
 async function getDurationPresetById(
-  id: string,
+  id: string
 ): Promise<DurationPreset | null> {
   return storageService.getById<DurationPreset>(
     STORAGE_KEYS.DURATION_PRESETS,
-    id,
+    id
   );
 }
 
 async function getDefaultDurationPreset(): Promise<DurationPreset | null> {
   const presets = await listDurationPresets();
-  return presets.find((p) => p.default) || null;
+  return presets.find((p) => p.spec.default) || null;
 }
-

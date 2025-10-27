@@ -16,18 +16,32 @@ export const conflictingEventsScenario = (): Event[] => {
 
   return [
     buildEvent({
-      id: "conflict-event-1",
-      title: "First Event",
-      locationId,
-      startDate: baseDateTime,
-      endDate,
+      meta: {
+        id: "conflict-event-1",
+        name: "First Event",
+        createdAt: "2025-10-01T09:00:00.000Z",
+        updatedAt: "2025-10-01T09:00:00.000Z",
+      },
+      spec: {
+        title: "First Event",
+        locationId,
+        startDate: baseDateTime,
+        endDate,
+      },
     }),
     buildEvent({
-      id: "conflict-event-2",
-      title: "Conflicting Event",
-      locationId,
-      startDate: baseDateTime,
-      endDate,
+      meta: {
+        id: "conflict-event-2",
+        name: "Conflicting Event",
+        createdAt: "2025-10-01T09:00:00.000Z",
+        updatedAt: "2025-10-01T09:00:00.000Z",
+      },
+      spec: {
+        title: "Conflicting Event",
+        locationId,
+        startDate: baseDateTime,
+        endDate,
+      },
     }),
   ];
 };
@@ -42,17 +56,32 @@ export const staffConflictScenario = (): Event[] => {
 
   return [
     buildEvent({
-      id: "staff-conflict-1",
-      title: "Event 1",
-      excludeStaffIds: [staffId],
-      startDate: baseDateTime,
-      endDate,
+      meta: {
+        id: "staff-conflict-1",
+        name: "Event 1",
+        createdAt: "2025-10-01T09:00:00.000Z",
+        updatedAt: "2025-10-01T09:00:00.000Z",
+      },
+      spec: {
+        title: "Event 1",
+        excludeStaffIds: [staffId],
+        startDate: baseDateTime,
+        endDate,
+      },
     }),
     buildEvent({
-      id: "staff-conflict-2",
-      title: "Event 2",
-      startDate: baseDateTime,
-      endDate,
+      meta: {
+        id: "staff-conflict-2",
+        name: "Event 2",
+        createdAt: "2025-10-01T09:00:00.000Z",
+        updatedAt: "2025-10-01T09:00:00.000Z",
+      },
+      spec: {
+        title: "Event 2",
+        excludeStaffIds: [staffId],
+        startDate: baseDateTime,
+        endDate,
+      },
     }),
   ];
 };
@@ -65,21 +94,33 @@ export const fullCapacityRoomScenario = (): {
   group: Group;
 } => {
   const room = buildHousingRoom({
-    id: "full-room",
-    name: "Full Capacity Room",
-    beds: 8,
+    meta: {
+      id: "full-room",
+      name: "Full Capacity Room",
+      createdAt: "2025-10-01T09:00:00.000Z",
+      updatedAt: "2025-10-01T09:00:00.000Z",
+    },
+    spec: {
+      beds: 8,
+    },
   });
 
   const group = buildGroup({
-    id: "full-group",
-    name: "Full Capacity Group",
-    camperFilters: {
-      ageMin: 12,
-      ageMax: 18,
-      gender: "male",
-      sessionId: "session-1",
+    meta: {
+      id: "full-group",
+      name: "Full Capacity Group",
+      createdAt: "2025-10-01T09:00:00.000Z",
+      updatedAt: "2025-10-01T09:00:00.000Z",
     },
-    housingRoomId: room.id,
+    spec: {
+      camperFilters: {
+        ageMin: 12,
+        ageMax: 18,
+        gender: "male",
+        sessionId: "session-1",
+      },
+      housingRoomId: room.meta.id,
+    },
   });
 
   return { room, group };
@@ -93,9 +134,15 @@ export const insufficientCapacityScenario = (): {
   groupSize: number;
 } => {
   const room = buildHousingRoom({
-    id: "small-room",
-    name: "Small Room",
-    beds: 6,
+    meta: {
+      id: "small-room",
+      name: "Small Room",
+      createdAt: "2025-10-01T09:00:00.000Z",
+      updatedAt: "2025-10-01T09:00:00.000Z",
+    },
+    spec: {
+      beds: 6,
+    },
   });
 
   return { room, groupSize: 8 }; // Group needs 8 beds but room only has 6
@@ -110,21 +157,33 @@ export const roomOccupiedScenario = (): {
   newGroupDates: { startDate: string; endDate: string };
 } => {
   const room = buildHousingRoom({
-    id: "occupied-room",
-    name: "Occupied Room",
-    beds: 8,
+    meta: {
+      id: "occupied-room",
+      name: "Occupied Room",
+      createdAt: "2025-10-01T09:00:00.000Z",
+      updatedAt: "2025-10-01T09:00:00.000Z",
+    },
+    spec: {
+      beds: 8,
+    },
   });
 
   const existingGroup = buildGroup({
-    id: "existing-group",
-    name: "Existing Group",
-    camperFilters: {
-      ageMin: 12,
-      ageMax: 18,
-      gender: "male",
-      sessionId: "session-1",
+    meta: {
+      id: "existing-group",
+      name: "Existing Group",
+      createdAt: "2025-10-01T09:00:00.000Z",
+      updatedAt: "2025-10-01T09:00:00.000Z",
     },
-    housingRoomId: room.id,
+    spec: {
+      camperFilters: {
+        ageMin: 12,
+        ageMax: 18,
+        gender: "male",
+        sessionId: "session-1",
+      },
+      housingRoomId: room.meta.id,
+    },
   });
 
   // New group wants room during overlapping dates
@@ -146,29 +205,41 @@ export const partialDateOverlapScenario = (): {
   const roomId = "shared-room";
 
   const group1 = buildGroup({
-    id: "group-1",
-    name: "Group 1",
-    camperFilters: {
-      ageMin: 12,
-      ageMax: 18,
-      gender: "male",
-      sessionId: "session-1",
+    meta: {
+      id: "group-1",
+      name: "Group 1",
+      createdAt: "2025-10-01T09:00:00.000Z",
+      updatedAt: "2025-10-01T09:00:00.000Z",
     },
-    sessionId: "session-1",
-    housingRoomId: roomId,
+    spec: {
+      camperFilters: {
+        ageMin: 12,
+        ageMax: 18,
+        gender: "male",
+        sessionId: "session-1",
+      },
+      sessionId: "session-1",
+      housingRoomId: roomId,
+    },
   });
 
   const group2 = buildGroup({
-    id: "group-2",
-    name: "Group 2",
-    camperFilters: {
-      ageMin: 12,
-      ageMax: 18,
-      gender: "male",
-      sessionId: "session-1",
+    meta: {
+      id: "group-2",
+      name: "Group 2",
+      createdAt: "2025-10-01T09:00:00.000Z",
+      updatedAt: "2025-10-01T09:00:00.000Z",
     },
-    sessionId: "session-1",
-    housingRoomId: roomId,
+    spec: {
+      camperFilters: {
+        ageMin: 12,
+        ageMax: 18,
+        gender: "male",
+        sessionId: "session-1",
+      },
+      sessionId: "session-1",
+      housingRoomId: roomId,
+    },
   });
 
   return { group1, group2 };
@@ -184,29 +255,41 @@ export const sameDayCheckoutCheckinScenario = (): {
   const roomId = "turnover-room";
 
   const group1 = buildGroup({
-    id: "checkout-group",
-    name: "Checking Out",
-    camperFilters: {
-      ageMin: 12,
-      ageMax: 18,
-      gender: "male",
-      sessionId: "session-1",
+    meta: {
+      id: "checkout-group",
+      name: "Checking Out",
+      createdAt: "2025-10-01T09:00:00.000Z",
+      updatedAt: "2025-10-01T09:00:00.000Z",
     },
-    sessionId: "session-1",
-    housingRoomId: roomId,
+    spec: {
+      camperFilters: {
+        ageMin: 12,
+        ageMax: 18,
+        gender: "male",
+        sessionId: "session-1",
+      },
+      sessionId: "session-1",
+      housingRoomId: roomId,
+    },
   });
 
   const group2 = buildGroup({
-    id: "checkin-group",
-    name: "Checking In",
-    camperFilters: {
-      ageMin: 12,
-      ageMax: 18,
-      gender: "male",
-      sessionId: "session-1",
+    meta: {
+      id: "checkin-group",
+      name: "Checking In",
+      createdAt: "2025-10-01T09:00:00.000Z",
+      updatedAt: "2025-10-01T09:00:00.000Z",
     },
-    sessionId: "session-1",
-    housingRoomId: roomId,
+    spec: {
+      camperFilters: {
+        ageMin: 12,
+        ageMax: 18,
+        gender: "male",
+        sessionId: "session-1",
+      },
+      sessionId: "session-1",
+      housingRoomId: roomId,
+    },
   });
 
   return { group1, group2 };
@@ -217,10 +300,19 @@ export const sameDayCheckoutCheckinScenario = (): {
  */
 export const eventAtCapacityScenario = (): Event => {
   return buildEvent({
-    id: "capacity-event",
-    title: "Full Event",
-    capacity: 10,
-    groupIds: Array.from({ length: 10 }, (_, i) => `group-${i}`),
+    meta: {
+      id: "capacity-event",
+      name: "Full Event",
+      createdAt: "2025-10-01T09:00:00.000Z",
+      updatedAt: "2025-10-01T09:00:00.000Z",
+    },
+    spec: {
+      title: "Full Event",
+      startDate: "2025-10-20T10:00:00.000Z",
+      endDate: "2025-10-20T11:00:00.000Z",
+      capacity: 10,
+      groupIds: Array.from({ length: 10 }, (_, i) => `group-${i}`),
+    },
   });
 };
 
@@ -232,17 +324,40 @@ export const missingCertificationScenario = () => {
 
   return {
     event: buildEvent({
-      id: "requires-cert",
-      title: "Swimming Event",
-      activityId: "activity-swimming",
+      meta: {
+        id: "requires-cert",
+        name: "Swimming Event",
+        createdAt: "2025-10-01T09:00:00.000Z",
+        updatedAt: "2025-10-01T09:00:00.000Z",
+      },
+      spec: {
+        title: "Swimming Event",
+        activityId: "activity-swimming",
+        startDate: "2025-10-20T10:00:00.000Z",
+        endDate: "2025-10-20T11:00:00.000Z",
+      },
     }),
     activity: {
-      id: "activity-swimming",
-      requiredCertifications: [requiredCertId],
+      meta: {
+        id: "activity-swimming",
+        name: "Swimming Activity",
+        createdAt: "2025-10-01T09:00:00.000Z",
+        updatedAt: "2025-10-01T09:00:00.000Z",
+      },
+      spec: {
+        requiredCertifications: [requiredCertId],
+      },
     },
     staffMember: {
-      id: "staff-no-cert",
-      certifications: [], // Missing required certification
+      meta: {
+        id: "staff-no-cert",
+        name: "Staff Member without Certification",
+        createdAt: "2025-10-01T09:00:00.000Z",
+        updatedAt: "2025-10-01T09:00:00.000Z",
+      },
+      spec: {
+        certifications: [], // Missing required certification
+      },
     },
   };
 };
@@ -255,44 +370,68 @@ export const roomBookingRaceConditionScenario = (): {
   groups: Group[];
 } => {
   const room = buildHousingRoom({
-    id: "popular-room",
-    name: "Popular Room",
-    beds: 8,
+    meta: {
+      id: "popular-room",
+      name: "Popular Room",
+      createdAt: "2025-10-01T09:00:00.000Z",
+      updatedAt: "2025-10-01T09:00:00.000Z",
+    },
+    spec: {
+      beds: 8,
+    },
   });
 
   const groups = [
     buildGroup({
-      id: "race-group-1",
-      name: "Group 1",
-      camperFilters: {
-        ageMin: 12,
-        ageMax: 18,
-        gender: "male",
-        sessionId: "session-1",
+      meta: {
+        id: "race-group-1",
+        name: "Group 1",
+        createdAt: "2025-10-01T09:00:00.000Z",
+        updatedAt: "2025-10-01T09:00:00.000Z",
       },
-      housingRoomId: room.id,
+      spec: {
+        camperFilters: {
+          ageMin: 12,
+          ageMax: 18,
+          gender: "male",
+          sessionId: "session-1",
+        },
+        housingRoomId: room.meta.id,
+      },
     }),
     buildGroup({
-      id: "race-group-2",
-      name: "Group 2",
-      camperFilters: {
-        ageMin: 12,
-        ageMax: 18,
-        gender: "male",
-        sessionId: "session-1",
+      meta: {
+        id: "race-group-2",
+        name: "Group 2",
+        createdAt: "2025-10-01T09:00:00.000Z",
+        updatedAt: "2025-10-01T09:00:00.000Z",
       },
-      housingRoomId: room.id,
+      spec: {
+        camperFilters: {
+          ageMin: 12,
+          ageMax: 18,
+          gender: "male",
+          sessionId: "session-1",
+        },
+        housingRoomId: room.meta.id,
+      },
     }),
     buildGroup({
-      id: "race-group-3",
-      name: "Group 3",
-      camperFilters: {
-        ageMin: 12,
-        ageMax: 18,
-        gender: "male",
-        sessionId: "session-1",
+      meta: {
+        id: "race-group-3",
+        name: "Group 3",
+        createdAt: "2025-10-01T09:00:00.000Z",
+        updatedAt: "2025-10-01T09:00:00.000Z",
       },
-      housingRoomId: room.id,
+      spec: {
+        camperFilters: {
+          ageMin: 12,
+          ageMax: 18,
+          gender: "male",
+          sessionId: "session-1",
+        },
+        housingRoomId: room.meta.id,
+      },
     }),
   ];
 

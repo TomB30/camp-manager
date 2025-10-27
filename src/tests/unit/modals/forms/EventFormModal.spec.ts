@@ -112,11 +112,11 @@ describe("EventFormModal", () => {
   describe("Edit Mode", () => {
     it("renders with edit title", () => {
       const event =
-        eventsFixture.find((e) => !e.recurrenceId) || eventsFixture[0];
+        eventsFixture.find((e) => !e.spec.recurrenceId) || eventsFixture[0];
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          eventId: event.id,
-          defaultEventDate: new Date(event.startDate),
+          eventId: event.meta.id,
+          defaultEventDate: new Date(event.spec.startDate),
         },
         pinia,
       });
@@ -126,11 +126,11 @@ describe("EventFormModal", () => {
 
     it("does not show activity template selector in edit mode", () => {
       const event =
-        eventsFixture.find((e) => !e.recurrenceId) || eventsFixture[0];
+        eventsFixture.find((e) => !e.spec.recurrenceId) || eventsFixture[0];
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          eventId: event.id,
-          defaultEventDate: new Date(event.startDate),
+          eventId: event.meta.id,
+          defaultEventDate: new Date(event.spec.startDate),
         },
         pinia,
       });
@@ -140,11 +140,11 @@ describe("EventFormModal", () => {
 
     it("does not show recurrence option in edit mode", () => {
       const event =
-        eventsFixture.find((e) => !e.recurrenceId) || eventsFixture[0];
+        eventsFixture.find((e) => !e.spec.recurrenceId) || eventsFixture[0];
       const wrapper = createWrapper(EventFormModal, {
         props: {
-          eventId: event.id,
-          defaultEventDate: new Date(event.startDate),
+          eventId: event.meta.id,
+          defaultEventDate: new Date(event.spec.startDate),
         },
         pinia,
       });

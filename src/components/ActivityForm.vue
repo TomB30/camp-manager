@@ -98,9 +98,9 @@
         empty-text="No certifications required"
         add-button-text="Add"
         mode="multiple"
-        :get-label-fn="(cert) => cert.name"
-        :get-initials-fn="(cert) => cert.name.substring(0, 2).toUpperCase()"
-        :get-options-fn="(cert) => ({ label: cert.name, value: cert.id })"
+        :get-label-fn="(cert) => cert.meta.name"
+        :get-initials-fn="(cert) => cert.meta.name.substring(0, 2).toUpperCase()"
+        :get-options-fn="(cert) => ({ label: cert.meta.name, value: cert.meta.id })"
       />
       <p class="form-help-text">
         Staff assigned to events using this activity will need these
@@ -167,8 +167,8 @@ export default defineComponent({
       // Build presets from store
       const presets: { label: string; minutes: number | null }[] =
         this.durationPresetsStore.sortedDurationPresets.map((preset) => ({
-          label: this.formatDuration(preset.durationMinutes),
-          minutes: preset.durationMinutes as number,
+          label: this.formatDuration(preset.spec.durationMinutes),
+          minutes: preset.spec.durationMinutes as number,
         }));
 
       // Add "Custom" option at the end

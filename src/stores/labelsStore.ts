@@ -12,14 +12,14 @@ export const useLabelsStore = defineStore("labels", {
   getters: {
     getLabelById(state): (id: string) => Label | undefined {
       return (id: string): Label | undefined => {
-        return state.labels.find((l: Label) => l.id === id);
+        return state.labels.find((l: Label) => l.meta.id === id);
       };
     },
 
     getLabelByName(state): (name: string) => Label | undefined {
       return (name: string): Label | undefined => {
         return state.labels.find(
-          (l: Label) => l.name.toLowerCase() === name.toLowerCase(),
+          (l: Label) => l.meta.name.toLowerCase() === name.toLowerCase(),
         );
       };
     },
@@ -46,7 +46,7 @@ export const useLabelsStore = defineStore("labels", {
       labelUpdate: LabelUpdateRequest,
     ): Promise<void> {
       const label = await labelsService.updateLabel(id, labelUpdate);
-      const index = this.labels.findIndex((l: Label) => l.id === id);
+      const index = this.labels.findIndex((l: Label) => l.meta.id === id);
       if (index >= 0) {
         this.labels[index] = label;
       }
@@ -54,7 +54,7 @@ export const useLabelsStore = defineStore("labels", {
 
     async deleteLabel(id: string): Promise<void> {
       await labelsService.deleteLabel(id);
-      this.labels = this.labels?.filter((l: Label) => l.id !== id) || [];
+      this.labels = this.labels?.filter((l: Label) => l.meta.id !== id) || [];
     },
   },
 });

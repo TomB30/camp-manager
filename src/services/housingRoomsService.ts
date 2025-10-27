@@ -24,9 +24,13 @@ async function createHousingRoom(
 ): Promise<HousingRoom> {
   const newHousingRoom = {
     ...housingRoom,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: housingRoom.meta.name,
+      description: housingRoom.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<HousingRoom>(
     STORAGE_KEYS.HOUSING_ROOMS,
@@ -48,7 +52,12 @@ async function updateHousingRoom(
   const updatedHousingRoom = {
     ...existingHousingRoom,
     ...housingRoom,
-    updatedAt: new Date().toISOString(),
+    meta: {
+      ...existingHousingRoom.meta,
+      name: housingRoom.meta.name,
+      description: housingRoom.meta.description,
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<HousingRoom>(
     STORAGE_KEYS.HOUSING_ROOMS,
@@ -66,5 +75,5 @@ async function getHousingRoomById(id: string): Promise<HousingRoom | null> {
 
 async function getHousingRoomsByArea(areaId: string): Promise<HousingRoom[]> {
   const rooms = await listHousingRooms();
-  return rooms.filter((r) => r.areaId === areaId);
+  return rooms.filter((r) => r.spec.areaId === areaId);
 }

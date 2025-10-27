@@ -2,13 +2,13 @@
   <div class="card card-clickable" @click="$emit('click', group)">
     <div class="card-header">
       <div class="card-header-main">
-        <h4>{{ group.name }}</h4>
+        <h4>{{ group.meta.name }}</h4>
         <div class="group-badges">
           <span v-if="isNestedGroup" class="badge badge-info">
             <Icon name="FolderOpen" :size="12" />
             Nested Group
           </span>
-          <span v-if="group.housingRoomId" class="badge badge-secondary">
+          <span v-if="group.spec.housingRoomId" class="badge badge-secondary">
             <Icon name="Bed" :size="12" />
             Housing
           </span>
@@ -24,17 +24,16 @@
       </div>
     </div>
 
-    <p v-if="group.description" class="card-description">
-      {{ group.description }}
+    <p v-if="group.meta.description" class="card-description">
+      {{ group.meta.description }}
     </p>
 
     <!-- Labels -->
-    <div v-if="group.labelIds && group.labelIds.length > 0" class="card-labels">
+    <div v-if="group.spec.labelIds && group.spec.labelIds.length > 0" class="card-labels">
       <span
-        v-for="labelId in group.labelIds"
+        v-for="labelId in group.spec.labelIds"
         :key="labelId"
         class="label-badge"
-        :style="{ background: getLabelColor(labelId) }"
       >
         {{ getLabelName(labelId) }}
       </span>
@@ -52,40 +51,40 @@
       </div>
 
       <!-- Filter-based campers -->
-      <div v-if="group.camperFilters" class="info-item">
+      <div v-if="group.spec.camperFilters" class="info-item">
         <Icon name="Filter" :size="16" />
         <span>Auto-assigned campers</span>
       </div>
 
       <!-- Manual campers -->
       <div
-        v-if="group.camperIds && group.camperIds.length > 0"
+        v-if="group.spec.camperIds && group.spec.camperIds.length > 0"
         class="info-item"
       >
         <Icon name="Users" :size="16" />
-        <span>{{ group.camperIds.length }} selected campers</span>
+        <span>{{ group.spec.camperIds.length }} selected campers</span>
       </div>
 
       <!-- Filter-based staff -->
-      <div v-if="group.staffFilters" class="info-item">
+      <div v-if="group.spec.staffFilters" class="info-item">
         <Icon name="Filter" :size="16" />
         <span>Auto-assigned staff</span>
       </div>
 
       <!-- Manual staff -->
-      <div v-if="group.staffIds && group.staffIds.length > 0" class="info-item">
+      <div v-if="group.spec.staffIds && group.spec.staffIds.length > 0" class="info-item">
         <Icon name="Users" :size="16" />
-        <span>{{ group.staffIds.length }} selected staff</span>
+        <span>{{ group.spec.staffIds.length }} selected staff</span>
       </div>
 
       <!-- Housing room -->
-      <div v-if="group.housingRoomId" class="info-item">
+      <div v-if="group.spec.housingRoomId" class="info-item">
         <Icon name="Bed" :size="16" />
         <span>{{ housingRoomName }}</span>
       </div>
 
       <!-- Session -->
-      <div v-if="group.sessionId" class="info-item">
+      <div v-if="group.spec.sessionId" class="info-item">
         <Icon name="Calendar" :size="16" />
         <span>{{ sessionName }}</span>
       </div>
@@ -93,53 +92,53 @@
 
     <!-- Filter criteria display -->
     <div
-      v-if="group.camperFilters && hasAnyCamperFilters"
+      v-if="group.spec.camperFilters && hasAnyCamperFilters"
       class="group-filters"
     >
       <div class="filter-section-label">Camper Filters:</div>
-      <span v-if="group.camperFilters.gender" class="filter-tag">
-        <strong>Gender:</strong> {{ formatGender(group.camperFilters.gender) }}
+      <span v-if="group.spec.camperFilters.gender" class="filter-tag">
+        <strong>Gender:</strong> {{ formatGender(group.spec.camperFilters.gender) }}
       </span>
       <span
         v-if="
-          group.camperFilters.ageMin !== undefined ||
-          group.camperFilters.ageMax !== undefined
+          group.spec.camperFilters.ageMin !== undefined ||
+          group.spec.camperFilters.ageMax !== undefined
         "
         class="filter-tag"
       >
         <strong>Age:</strong>
         {{
-          formatAgeRange(group.camperFilters.ageMin, group.camperFilters.ageMax)
+          formatAgeRange(group.spec.camperFilters.ageMin, group.spec.camperFilters.ageMax)
         }}
       </span>
       <span
-        v-if="group.camperFilters.hasAllergies !== undefined"
+        v-if="group.spec.camperFilters.hasAllergies !== undefined"
         class="filter-tag"
       >
         <strong>Allergies:</strong>
         {{
-          group.camperFilters.hasAllergies ? "Has allergies" : "No allergies"
+          group.spec.camperFilters.hasAllergies ? "Has allergies" : "No allergies"
         }}
       </span>
     </div>
 
-    <div v-if="group.staffFilters && hasAnyStaffFilters" class="group-filters">
+    <div v-if="group.spec.staffFilters && hasAnyStaffFilters" class="group-filters">
       <div class="filter-section-label">Staff Filters:</div>
       <span
-        v-if="group.staffFilters.roles && group.staffFilters.roles.length > 0"
+        v-if="group.spec.staffFilters.roles && group.spec.staffFilters.roles.length > 0"
         class="filter-tag"
       >
-        <strong>Roles:</strong> {{ group.staffFilters.roles.join(", ") }}
+        <strong>Roles:</strong> {{ group.spec.staffFilters.roles.join(", ") }}
       </span>
       <span
         v-if="
-          group.staffFilters.certificationIds &&
-          group.staffFilters.certificationIds.length > 0
+          group.spec.staffFilters.certificationIds &&
+          group.spec.staffFilters.certificationIds.length > 0
         "
         class="filter-tag"
       >
         <strong>Certifications:</strong>
-        {{ group.staffFilters.certificationIds.length }} required
+        {{ group.spec.staffFilters.certificationIds.length }} required
       </span>
     </div>
   </div>
@@ -150,7 +149,6 @@ import { defineComponent, type PropType } from "vue";
 import type { Group, Session } from "@/types";
 import {
   useLabelsStore,
-  useColorsStore,
   useHousingRoomsStore,
   useSessionsStore,
 } from "@/stores";
@@ -180,9 +178,6 @@ export default defineComponent({
     labelsStore() {
       return useLabelsStore();
     },
-    colorsStore() {
-      return useColorsStore();
-    },
     housingRoomsStore() {
       return useHousingRoomsStore();
     },
@@ -190,13 +185,13 @@ export default defineComponent({
       return useSessionsStore();
     },
     isNestedGroup(): boolean {
-      return !!(this.group.groupIds && this.group.groupIds.length > 0);
+      return !!(this.group.spec.groupIds && this.group.spec.groupIds.length > 0);
     },
     childGroupCount(): number {
-      return this.group.groupIds?.length || 0;
+      return this.group.spec.groupIds?.length || 0;
     },
     hasAnyCamperFilters(): boolean {
-      const f = this.group.camperFilters;
+      const f = this.group.spec.camperFilters;
       return !!(
         f &&
         (f.ageMin !== undefined ||
@@ -207,7 +202,7 @@ export default defineComponent({
       );
     },
     hasAnyStaffFilters(): boolean {
-      const f = this.group.staffFilters;
+      const f = this.group.spec.staffFilters;
       return !!(
         f &&
         ((f.roles && f.roles.length > 0) ||
@@ -215,32 +210,24 @@ export default defineComponent({
       );
     },
     housingRoomName(): string {
-      if (!this.group.housingRoomId) return "";
+      if (!this.group.spec.housingRoomId) return "";
       const room = this.housingRoomsStore.getHousingRoomById(
-        this.group.housingRoomId,
+        this.group.spec.housingRoomId,
       );
-      return room?.name || "Unknown Room";
+      return room?.meta.name || "Unknown Room";
     },
     sessionName(): string {
-      if (!this.group.sessionId) return "";
+      if (!this.group.spec.sessionId) return "";
       const session = this.sessionsStore.sessions.find(
-        (s: Session) => s.id === this.group.sessionId,
+        (s: Session) => s.meta.id === this.group.spec.sessionId,
       );
-      return session?.name || "Unknown Session";
+      return session?.meta.name || "Unknown Session";
     },
   },
   methods: {
     getLabelName(labelId: string): string {
       const label = this.labelsStore.getLabelById(labelId);
-      return label ? label.name : "Unknown Label";
-    },
-    getLabelColor(labelId: string): string {
-      const label = this.labelsStore.getLabelById(labelId);
-      if (label?.colorId) {
-        const color = this.colorsStore.getColorById(label.colorId);
-        return color?.hexValue || "#6366F1";
-      }
-      return "#6366F1";
+      return label ? label.meta.name : "Unknown Label";
     },
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);

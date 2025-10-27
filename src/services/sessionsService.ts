@@ -26,9 +26,13 @@ async function createSession(
 ): Promise<Session> {
   const newSession = {
     ...session,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: session.meta.name,
+      description: session.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Session>(STORAGE_KEYS.SESSIONS, newSession);
 }
@@ -47,7 +51,12 @@ async function updateSession(
   const updatedSession = {
     ...existingSession,
     ...session,
-    updatedAt: new Date().toISOString(),
+    meta: {
+      ...existingSession.meta,
+      name: session.meta.name,
+      description: session.meta.description,
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Session>(STORAGE_KEYS.SESSIONS, updatedSession);
 }
@@ -65,7 +74,7 @@ async function getActiveSessions(): Promise<Session[]> {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  return sessions.filter((s) => new Date(s.endDate) >= today);
+  return sessions.filter((s) => new Date(s.spec.endDate) >= today);
 }
 
 async function getPastSessions(): Promise<Session[]> {
@@ -73,7 +82,7 @@ async function getPastSessions(): Promise<Session[]> {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  return sessions.filter((s) => new Date(s.endDate) < today);
+  return sessions.filter((s) => new Date(s.spec.endDate) < today);
 }
 
 async function getSessionsInRange(
@@ -82,8 +91,8 @@ async function getSessionsInRange(
 ): Promise<Session[]> {
   const sessions = await listSessions();
   return sessions.filter((s) => {
-    const sessionStart = new Date(s.startDate);
-    const sessionEnd = new Date(s.endDate);
+    const sessionStart = new Date(s.spec.startDate);
+    const sessionEnd = new Date(s.spec.endDate);
     return sessionStart <= endDate && sessionEnd >= startDate;
   });
 }

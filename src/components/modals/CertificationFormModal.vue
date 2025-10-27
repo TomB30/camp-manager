@@ -8,7 +8,7 @@
         <div class="form-group">
           <label class="form-label">Certification Name</label>
           <BaseInput
-            v-model="formModel.name"
+            v-model="formModel.meta.name"
             placeholder="Enter certification name"
             :rules="[(val: string) => !!val || 'Enter certification name']"
           />
@@ -62,8 +62,11 @@ export default defineComponent({
   data() {
     return {
       formModel: {
-        name: "",
-        description: "",
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {},
       } as CertificationCreationRequest,
       formRef: null as any,
       loading: false as boolean,
@@ -78,8 +81,11 @@ export default defineComponent({
     if (!certification) return;
 
     this.formModel = {
-      name: certification.name,
-      description: certification.description || "",
+      meta: {
+        name: certification.meta.name,
+        description: certification.meta.description || "",
+      },
+      spec: {},
     };
   },
   setup() {
@@ -93,10 +99,10 @@ export default defineComponent({
     },
     descriptionModel: {
       get(): string {
-        return this.formModel.description || "";
+        return this.formModel.meta.description || "";
       },
       set(value: string) {
-        this.formModel.description = value || "";
+        this.formModel.meta.description = value || "";
       },
     },
   },
@@ -117,7 +123,7 @@ export default defineComponent({
         this.toast.success("Certification created successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to create certification",
+          (error as Error).message || "Failed to create certification"
         );
       } finally {
         this.loading = false;
@@ -130,12 +136,12 @@ export default defineComponent({
         this.loading = true;
         await this.certificationsStore.updateCertification(
           this.certificationId,
-          this.formModel,
+          this.formModel
         );
         this.toast.success("Certification updated successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to update certification",
+          (error as Error).message || "Failed to update certification"
         );
       } finally {
         this.loading = false;

@@ -27,20 +27,20 @@
           <div v-if="day.events.length > 0" class="event-list">
             <div
               v-for="event in getVisibleEvents(day.events)"
-              :key="event.id"
+              :key="event.meta.id"
               class="event-item"
               :style="{
-                backgroundColor: event.colorId
-                  ? colorsStore.getColorById(event.colorId)?.hexValue
+                backgroundColor: event.spec.colorId
+                  ? colorsStore.getColorById(event.spec.colorId)?.spec.hexValue
                   : '#3B82F6',
               }"
-              :title="event.title"
+              :title="event.spec.title"
               @click.stop="$emit('select-event', event)"
             >
               <span class="event-time">{{
-                formatEventTime(event.startDate)
+                formatEventTime(event.spec.startDate)
               }}</span>
-              <span class="event-title">{{ event.title }}</span>
+              <span class="event-title">{{ event.spec.title }}</span>
             </div>
             <div
               v-if="day.events.length > maxEventsPerDay"
@@ -114,7 +114,7 @@ export default defineComponent({
 
       return days.map((date) => {
         const dayEvents = this.events.filter((event) => {
-          const eventDate = new Date(event.startDate);
+          const eventDate = new Date(event.spec.startDate);
           return isSameDay(eventDate, date);
         });
 
@@ -140,7 +140,7 @@ export default defineComponent({
       // Sort events by start time
       const sortedEvents = [...events].sort((a, b) => {
         return (
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+          new Date(a.spec.startDate).getTime() - new Date(b.spec.startDate).getTime()
         );
       });
       return sortedEvents.slice(0, this.maxEventsPerDay);

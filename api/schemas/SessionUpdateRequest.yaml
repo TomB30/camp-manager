@@ -1,16 +1,19 @@
 type: object
 required:
-  - name
-  - startDate
-  - endDate
+  - meta
+  - spec
 properties:
-  name:
-    type: string
-  startDate:
-    type: string
-    format: date
-  endDate:
-    type: string
-    format: date
-  description:
-    type: string
+  meta:
+    $ref: "./EntityCreationRequestMeta.yaml"
+  spec:
+    type: object
+    required:
+      - startDate
+      - endDate
+    properties:
+      startDate:
+        type: string
+        format: date
+      endDate:
+        type: string
+        format: date

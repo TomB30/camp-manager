@@ -26,10 +26,14 @@ async function createActivity(
   activity: ActivityCreationRequest,
 ): Promise<Activity> {
   const newActivity = {
-    ...activity,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: activity.meta.name,
+      description: activity.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    spec: activity.spec,
   };
   return storageService.save<Activity>(STORAGE_KEYS.ACTIVITIES, newActivity);
 }
@@ -46,9 +50,14 @@ async function updateActivity(
     throw new Error(`Activity with id ${id} not found`);
   }
   const updatedActivity = {
-    ...existingActivity,
-    ...activity,
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: existingActivity.meta.id,
+      name: activity.meta.name,
+      description: activity.meta.description || "",
+      createdAt: existingActivity.meta.createdAt,
+      updatedAt: new Date().toISOString(),
+    },
+    spec: activity.spec,
   };
   return storageService.save<Activity>(
     STORAGE_KEYS.ACTIVITIES,
@@ -66,10 +75,10 @@ async function deleteActivity(id: string): Promise<void> {
     );
 
     for (const program of programs) {
-      if (program.activityIds && program.activityIds.includes(id)) {
+      if (program.spec.activityIds && program.spec.activityIds.includes(id)) {
         const updatedProgram = {
           ...program,
-          activityIds: program.activityIds?.filter((aid) => aid !== id) || [],
+          activityIds: program.spec.activityIds?.filter((aid) => aid !== id) || [],
         };
         await storageService.save(STORAGE_KEYS.PROGRAMS, updatedProgram);
       }
@@ -85,7 +94,7 @@ async function getActivityById(id: string): Promise<Activity | null> {
 
 async function getActivitiesInProgram(programId: string): Promise<Activity[]> {
   const activities = await listActivities();
-  return activities.filter((a) => a.programIds.includes(programId));
+  return activities.filter((a) => a.spec.programIds.includes(programId));
 }
 
 async function addActivityToProgram(
@@ -102,22 +111,25 @@ async function addActivityToProgram(
     throw new Error("Activity or Program not found");
   }
 
-  if (activity.programIds.includes(programId)) {
+  if (activity.spec.programIds.includes(programId)) {
     throw new Error("Activity is already in this program");
   }
 
   // Update activity
   const updatedActivity = {
     ...activity,
-    programIds: [...activity.programIds, programId],
+    spec: {
+      ...activity.spec,
+      programIds: [...activity.spec.programIds, programId],
+    },
     updatedAt: new Date().toISOString(),
   };
   await storageService.save(STORAGE_KEYS.ACTIVITIES, updatedActivity);
 
   // Update program
-  if (!program.activityIds || !program.activityIds.includes(activityId)) {
-    program.activityIds = program.activityIds
-      ? [...program.activityIds, activityId]
+  if (!program.spec.activityIds || !program.spec.activityIds.includes(activityId)) {
+    program.spec.activityIds = program.spec.activityIds
+      ? [...program.spec.activityIds, activityId]
       : [activityId];
     await storageService.save(STORAGE_KEYS.PROGRAMS, program);
   }
@@ -140,13 +152,16 @@ async function removeActivityFromProgram(
   // Update activity
   const updatedActivity = {
     ...activity,
-    programIds: activity.programIds?.filter((id) => id !== programId) || [],
-    updatedAt: new Date().toISOString(),
+    spec: {
+      ...activity.spec,
+      programIds: activity.spec.programIds?.filter((id) => id !== programId) || [],
+      updatedAt: new Date().toISOString(),
+    },
   };
   await storageService.save(STORAGE_KEYS.ACTIVITIES, updatedActivity);
 
   // Update program
-  program.activityIds =
-    program.activityIds?.filter((id) => id !== activityId) || [];
+  program.spec.activityIds =
+    program.spec.activityIds?.filter((id) => id !== activityId) || [];
   await storageService.save(STORAGE_KEYS.PROGRAMS, program);
 }

@@ -3,6 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import RoleFormModal from "@/components/modals/RoleFormModal.vue";
 import { rolesFixture } from "@/tests/fixtures";
 import { useRolesStore } from "@/stores";
+import { Role } from "@/types";
 
 describe("RoleFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
@@ -55,9 +56,9 @@ describe("RoleFormModal", () => {
 
   describe("Edit Mode", () => {
     it("renders with edit title", () => {
-      const role = rolesFixture[0];
+      const role: Role = rolesFixture[0];
       const wrapper = createWrapper(RoleFormModal, {
-        props: { roleId: role.id },
+        props: { roleId: role.meta.id },
         pinia,
       });
 
@@ -65,21 +66,21 @@ describe("RoleFormModal", () => {
     });
 
     it("populates form with role data", () => {
-      const role = rolesFixture[0];
+      const role: Role = rolesFixture[0];
       const wrapper = createWrapper(RoleFormModal, {
-        props: { roleId: role.id },
+        props: { roleId: role.meta.id },
         pinia,
       });
 
       const vm = wrapper.vm as any;
-      expect(vm.formModel.name).toBe(role.name);
-      expect(vm.formModel.description).toBe(role.description);
+      expect(vm.formModel.meta.name).toBe(role.meta.name);
+      expect(vm.formModel.meta.description).toBe(role.meta.description || "");
     });
 
     it("shows Update Role button", () => {
-      const role = rolesFixture[0];
+      const role: Role = rolesFixture[0];
       const wrapper = createWrapper(RoleFormModal, {
-        props: { roleId: role.id },
+        props: { roleId: role.meta.id },
         pinia,
       });
 
@@ -87,20 +88,20 @@ describe("RoleFormModal", () => {
     });
 
     it("handles role without description", () => {
-      const role = {
+      const role: Role = {
         ...rolesFixture[0],
-        description: undefined,
+        meta: { ...rolesFixture[0].meta, description: undefined },
       };
       const rolesStore = useRolesStore();
       rolesStore.roles = [role];
 
       const wrapper = createWrapper(RoleFormModal, {
-        props: { roleId: role.id },
+        props: { roleId: role.meta.id },
         pinia,
       });
 
       const vm = wrapper.vm as any;
-      expect(vm.formModel.description).toBe("");
+      expect(vm.formModel.meta.description).toBe("");
     });
   });
 
@@ -165,9 +166,9 @@ describe("RoleFormModal", () => {
     });
 
     it("isEditing returns true in edit mode", () => {
-      const role = rolesFixture[0];
+      const role: Role = rolesFixture[0];
       const wrapper = createWrapper(RoleFormModal, {
-        props: { roleId: role.id },
+        props: { roleId: role.meta.id },
         pinia,
       });
       const vm = wrapper.vm as any;
@@ -178,21 +179,21 @@ describe("RoleFormModal", () => {
     it("descriptionModel getter returns empty string for undefined description", () => {
       const wrapper = createWrapper(RoleFormModal);
       const vm = wrapper.vm as any;
-      vm.formModel.description = undefined;
+      vm.formModel.meta.description = undefined;
 
       expect(vm.descriptionModel).toBe("");
     });
 
     it("descriptionModel getter returns description value", () => {
-      const role = rolesFixture[0];
+      const role: Role = rolesFixture[0];
       const wrapper = createWrapper(RoleFormModal, {
-        props: { roleId: role.id },
+        props: { roleId: role.meta.id },
         pinia,
       });
       const vm = wrapper.vm as any;
 
       // After loading from fixture, descriptionModel should return the value
-      expect(vm.descriptionModel).toBe(role.description);
+      expect(vm.descriptionModel).toBe(role.meta.description || "");
     });
 
     it("descriptionModel setter updates formModel", () => {
@@ -200,7 +201,7 @@ describe("RoleFormModal", () => {
       const vm = wrapper.vm as any;
 
       vm.descriptionModel = "New description";
-      expect(vm.formModel.description).toBe("New description");
+      expect(vm.formModel.meta.description).toBe("New description");
     });
 
     it("descriptionModel setter handles empty string", () => {
@@ -208,7 +209,7 @@ describe("RoleFormModal", () => {
       const vm = wrapper.vm as any;
 
       vm.descriptionModel = "";
-      expect(vm.formModel.description).toBe("");
+      expect(vm.formModel.meta.description).toBe("");
     });
   });
 
@@ -227,8 +228,8 @@ describe("RoleFormModal", () => {
       const wrapper = createWrapper(RoleFormModal);
       const vm = wrapper.vm as any;
 
-      expect(vm.formModel.name).toBe("");
-      expect(vm.formModel.description).toBe("");
+      expect(vm.formModel.meta.name).toBe("");
+      expect(vm.formModel.meta.description).toBe("");
     });
   });
 });

@@ -1,34 +1,34 @@
 <template>
-  <BaseModal :title="location?.name || ''" @close="$emit('close')">
+  <BaseModal :title="location?.meta.name || ''" @close="$emit('close')">
     <template #body>
       <div v-if="location">
         <div class="detail-section">
           <div class="detail-label">Type</div>
           <div>
             <span class="badge badge-primary">{{
-              formatLocationType(location.type)
+              formatLocationType(location.spec.type)
             }}</span>
           </div>
         </div>
 
         <div class="detail-section">
           <div class="detail-label">Capacity</div>
-          <div>{{ location.capacity }} people</div>
+          <div>{{ location.spec.capacity }} people</div>
         </div>
 
-        <div v-if="location.areaId" class="detail-section">
+        <div v-if="location.spec.areaId" class="detail-section">
           <div class="detail-label">Area</div>
-          <div>{{ getAreaName(location.areaId) }}</div>
+          <div>{{ getAreaName(location.spec.areaId) }}</div>
         </div>
 
         <div
-          v-if="location.equipment && location.equipment.length > 0"
+          v-if="location.spec.equipment && location.spec.equipment.length > 0"
           class="detail-section"
         >
           <div class="detail-label">Equipment</div>
           <div class="flex gap-1 flex-wrap">
             <span
-              v-for="item in location.equipment"
+              v-for="item in location.spec.equipment"
               :key="item"
               class="badge badge-success"
             >
@@ -37,9 +37,9 @@
           </div>
         </div>
 
-        <div v-if="location.notes" class="detail-section">
+        <div v-if="location.spec.notes" class="detail-section">
           <div class="detail-label">Notes</div>
-          <div>{{ location.notes }}</div>
+          <div>{{ location.spec.notes }}</div>
         </div>
 
         <div class="detail-section">
@@ -91,7 +91,7 @@ export default defineComponent({
     },
     getAreaName(areaId: string): string {
       const area = this.areasStore.getAreaById(areaId);
-      return area?.name || "Unknown";
+      return area?.meta.name || "Unknown";
     },
   },
 });

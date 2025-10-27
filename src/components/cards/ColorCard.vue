@@ -1,6 +1,6 @@
 <template>
   <div class="color-card">
-    <div class="color-preview" :style="{ background: color.hexValue }">
+    <div class="color-preview" :style="{ background: color.spec.hexValue }">
       <div class="color-overlay">
         <button
           class="icon-btn"
@@ -19,9 +19,9 @@
       </div>
     </div>
     <div class="color-info">
-      <div class="color-name">{{ color.name }}</div>
-      <div class="color-hex">{{ color.hexValue }}</div>
-      <span v-if="color.default" class="badge badge-default">Default</span>
+      <div class="color-name">{{ color.meta.name }}</div>
+      <div class="color-hex">{{ color.spec.hexValue }}</div>
+      <span v-if="color.spec.default" class="badge badge-default">Default</span>
     </div>
   </div>
 </template>

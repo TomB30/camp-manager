@@ -273,16 +273,16 @@ export default defineComponent({
     handleTabClick(tab: any) {
       if (tab.type === "category" && tab.subTabs && tab.subTabs.length > 0) {
         // Set category and show first sub-tab
-        this.activeCategory = tab.id;
-        this.activeTab = tab.subTabs[0].id;
+        this.activeCategory = tab.meta.id;
+        this.activeTab = tab.subTabs[0].meta.id;
       } else {
         // Regular tab
         this.activeCategory = null;
-        this.activeTab = tab.id;
+        this.activeTab = tab.meta.id;
       }
     },
     handleSubTabClick(subTab: any) {
-      this.activeTab = subTab.id;
+      this.activeTab = subTab.meta.id;
     },
   },
 });

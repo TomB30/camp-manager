@@ -121,7 +121,7 @@ export default defineComponent({
       if (typeof this.rowKey === "string") {
         return item[this.rowKey];
       }
-      return item.id || `row-${index}`;
+      return item.meta.id || `row-${index}`;
     },
     getNestedValue(item: any, key: string): any {
       const keys = key.split(".");

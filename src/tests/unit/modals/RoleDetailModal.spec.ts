@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createWrapper } from "@/tests/utils";
 import RoleDetailModal from "@/components/modals/RoleDetailModal.vue";
 import { rolesFixture } from "@/tests/fixtures";
+import { Role } from "@/types";
 
 describe("RoleDetailModal", () => {
   describe("Rendering", () => {
@@ -11,7 +12,7 @@ describe("RoleDetailModal", () => {
         props: { role },
       });
 
-      expect(wrapper.text()).toContain(role.name);
+      expect(wrapper.text()).toContain(role.meta.name);
     });
 
     it("renders role description", () => {
@@ -20,15 +21,18 @@ describe("RoleDetailModal", () => {
         props: { role },
       });
 
-      if (role.description) {
-        expect(wrapper.text()).toContain(role.description);
+      if (role.meta.description) {
+        expect(wrapper.text()).toContain(role.meta.description);
       }
     });
 
     it("shows 'No description provided' when description is missing", () => {
-      const role = {
+      const role: Role = {
         ...rolesFixture[0],
-        description: undefined,
+        meta: {
+          ...rolesFixture[0].meta,
+          description: undefined,
+        },
       };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
@@ -38,9 +42,12 @@ describe("RoleDetailModal", () => {
     });
 
     it("shows 'No description provided' when description is empty", () => {
-      const role = {
+      const role: Role = {
         ...rolesFixture[0],
-        description: "",
+        meta: {
+          ...rolesFixture[0].meta,
+          description: "",
+        },
       };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
@@ -50,26 +57,35 @@ describe("RoleDetailModal", () => {
     });
 
     it("renders Created date when provided", () => {
-      const role = rolesFixture[0];
-      const wrapper = createWrapper(RoleDetailModal, {
-        props: { role },
-      });
-
-      if (role.createdAt) {
-        expect(wrapper.text()).toContain("Created");
-      }
-    });
-
-    it("renders Last Updated date when provided", () => {
-      const role = {
+      const role: Role = {
         ...rolesFixture[0],
-        updatedAt: "2025-10-15T10:30:00.000Z",
+        meta: {
+          ...rolesFixture[0].meta,
+          createdAt: "2025-10-15T10:30:00.000Z",
+        },
       };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
 
-      if (role.updatedAt) {
+      if (role.meta.createdAt) {
+        expect(wrapper.text()).toContain("Created");
+      }
+    });
+
+    it("renders Last Updated date when provided", () => {
+      const role: Role = {
+        ...rolesFixture[0],
+        meta: {
+          ...rolesFixture[0].meta,
+          updatedAt: "2025-10-15T10:30:00.000Z",
+        },
+      };
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      if (role.meta.updatedAt) {
         expect(wrapper.text()).toContain("Last Updated");
       }
     });
@@ -77,7 +93,13 @@ describe("RoleDetailModal", () => {
 
   describe("Labels", () => {
     it("shows Description label", () => {
-      const role = rolesFixture[0];
+      const role: Role = {
+        ...rolesFixture[0],
+        meta: {
+          ...rolesFixture[0].meta,
+          description: "Description",
+        },
+      };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
@@ -86,26 +108,35 @@ describe("RoleDetailModal", () => {
     });
 
     it("shows Created label when date exists", () => {
-      const role = rolesFixture[0];
-      const wrapper = createWrapper(RoleDetailModal, {
-        props: { role },
-      });
-
-      if (role.createdAt) {
-        expect(wrapper.text()).toContain("Created");
-      }
-    });
-
-    it("shows Last Updated label when date exists", () => {
-      const role = {
+      const role: Role = {
         ...rolesFixture[0],
-        updatedAt: "2025-10-15T10:30:00.000Z",
+        meta: {
+          ...rolesFixture[0].meta,
+          createdAt: "2025-10-15T10:30:00.000Z",
+        },
       };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
 
-      if (role.updatedAt) {
+      if (role.meta.createdAt) {
+        expect(wrapper.text()).toContain("Created");
+      }
+    });
+
+    it("shows Last Updated label when date exists", () => {
+      const role: Role = {
+        ...rolesFixture[0],
+        meta: {
+          ...rolesFixture[0].meta,
+          updatedAt: "2025-10-15T10:30:00.000Z",
+        },
+      };
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+
+      if (role.meta.updatedAt) {
         expect(wrapper.text()).toContain("Last Updated");
       }
     });
@@ -113,7 +144,13 @@ describe("RoleDetailModal", () => {
 
   describe("Action Buttons", () => {
     it("renders Delete button", () => {
-      const role = rolesFixture[0];
+      const role: Role = {
+        ...rolesFixture[0],
+        meta: {
+          ...rolesFixture[0].meta,
+          id: "role-1",
+        },
+      };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
@@ -122,7 +159,13 @@ describe("RoleDetailModal", () => {
     });
 
     it("renders Edit button", () => {
-      const role = rolesFixture[0];
+      const role: Role = {
+        ...rolesFixture[0],
+        meta: {
+          ...rolesFixture[0].meta,
+          id: "role-1",
+        },
+      };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
@@ -133,7 +176,13 @@ describe("RoleDetailModal", () => {
 
   describe("Events", () => {
     it("emits close event", () => {
-      const role = rolesFixture[0];
+      const role: Role = {
+        ...rolesFixture[0],
+        meta: {
+          ...rolesFixture[0].meta,
+          id: "role-1",
+        },
+      };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
@@ -143,7 +192,13 @@ describe("RoleDetailModal", () => {
     });
 
     it("emits edit event with role when Edit is clicked", () => {
-      const role = rolesFixture[0];
+      const role: Role = {
+        ...rolesFixture[0],
+        meta: {
+          ...rolesFixture[0].meta,
+          id: "role-1",
+        },
+      };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
@@ -154,51 +209,73 @@ describe("RoleDetailModal", () => {
     });
 
     it("emits delete event with role id when Delete is clicked", () => {
-      const role = rolesFixture[0];
+      const role: Role = {
+        ...rolesFixture[0],
+        meta: {
+          ...rolesFixture[0].meta,
+          id: "role-1",
+        },
+      };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
 
-      wrapper.vm.$emit("delete", role.id);
+      wrapper.vm.$emit("delete", role.meta.id);
       expect(wrapper.emitted("delete")).toBeTruthy();
-      expect(wrapper.emitted("delete")?.[0]).toEqual([role.id]);
+      expect(wrapper.emitted("delete")?.[0]).toEqual([role.meta.id]);
     });
   });
 
   describe("Date Formatting", () => {
     it("formats createdAt date correctly", () => {
-      const role = rolesFixture[0];
-      const wrapper = createWrapper(RoleDetailModal, {
-        props: { role },
-      });
-      const vm = wrapper.vm as any;
-
-      if (role.createdAt) {
-        const formattedDate = vm.formatDate(role.createdAt);
-        expect(formattedDate).toBeTruthy();
-        expect(typeof formattedDate).toBe("string");
-      }
-    });
-
-    it("formats updatedAt date correctly", () => {
-      const role = {
+      const role: Role = {
         ...rolesFixture[0],
-        updatedAt: "2025-10-15T10:30:00.000Z",
+        meta: {
+          ...rolesFixture[0].meta,
+          createdAt: "2025-10-15T10:30:00.000Z",
+        },
       };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
       const vm = wrapper.vm as any;
 
-      if (role.updatedAt) {
-        const formattedDate = vm.formatDate(role.updatedAt);
+      if (role.meta.createdAt) {
+        const formattedDate = vm.formatDate(role.meta.createdAt);
+        expect(formattedDate).toBeTruthy();
+        expect(typeof formattedDate).toBe("string");
+      }
+    });
+
+    it("formats updatedAt date correctly", () => {
+      const role: Role = {
+        ...rolesFixture[0],
+        meta: {
+          ...rolesFixture[0].meta,
+          updatedAt: "2025-10-15T10:30:00.000Z",
+        },
+      };
+      const wrapper = createWrapper(RoleDetailModal, {
+        props: { role },
+      });
+      const vm = wrapper.vm as any;
+
+      if (role.meta.updatedAt) {
+        const formattedDate = vm.formatDate(role.meta.updatedAt);
         expect(formattedDate).toBeTruthy();
         expect(typeof formattedDate).toBe("string");
       }
     });
 
     it("formatDate method returns string with month name", () => {
-      const role = rolesFixture[0];
+      const role: Role = {
+        ...rolesFixture[0],
+        meta: {
+          ...rolesFixture[0].meta,
+          createdAt: "2025-10-15T10:30:00.000Z",
+          updatedAt: "2025-10-15T10:30:00.000Z",
+        },
+      };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
@@ -248,7 +325,13 @@ describe("RoleDetailModal", () => {
 
   describe("Detail Sections", () => {
     it("renders detail sections with proper structure", () => {
-      const role = rolesFixture[0];
+      const role: Role = {
+        ...rolesFixture[0],
+        meta: {
+          ...rolesFixture[0].meta,
+          id: "role-1",
+        },
+      };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
@@ -258,7 +341,13 @@ describe("RoleDetailModal", () => {
     });
 
     it("detail labels have correct styling class", () => {
-      const role = rolesFixture[0];
+      const role: Role = {
+        ...rolesFixture[0],
+        meta: {
+          ...rolesFixture[0].meta,
+          id: "role-1",
+        },
+      };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
@@ -270,39 +359,45 @@ describe("RoleDetailModal", () => {
 
   describe("Edge Cases", () => {
     it("handles role with very long description", () => {
-      const role = {
+      const role: Role = {
         ...rolesFixture[0],
-        description:
-          "This is a very long description that might need special handling in the UI to ensure it displays properly without breaking the layout or causing overflow issues in the modal display",
+        meta: {
+          ...rolesFixture[0].meta,
+          description:
+            "This is a very long description that might need special handling in the UI to ensure it displays properly without breaking the layout or causing overflow issues in the modal display",
+        },
       };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
 
-      expect(wrapper.text()).toContain(role.description);
+      expect(wrapper.text()).toContain(role.meta.description);
     });
 
     it("handles role with special characters in description", () => {
-      const role = {
+      const role: Role = {
         ...rolesFixture[0],
-        description: "Role with & special < characters > and / symbols",
+        meta: {
+          ...rolesFixture[0].meta,
+          description: "Role with & special < characters > and / symbols",
+        },
       };
       const wrapper = createWrapper(RoleDetailModal, {
         props: { role },
       });
 
-      expect(wrapper.text()).toContain(role.description);
+      expect(wrapper.text()).toContain(role.meta.description);
     });
 
     it("displays all roles from fixture correctly", () => {
-      rolesFixture.forEach((role) => {
+      rolesFixture.forEach((role: Role) => {
         const wrapper = createWrapper(RoleDetailModal, {
           props: { role },
         });
 
-        expect(wrapper.text()).toContain(role.name);
-        if (role.description) {
-          expect(wrapper.text()).toContain(role.description);
+        expect(wrapper.text()).toContain(role.meta.name);
+        if (role.meta.description) {
+          expect(wrapper.text()).toContain(role.meta.description);
         }
       });
     });

@@ -3,6 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import SessionFormModal from "@/components/modals/SessionFormModal.vue";
 import { sessionsFixture } from "@/tests/fixtures";
 import { useSessionsStore } from "@/stores";
+import { Session } from "@/types";
 
 describe("SessionFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
@@ -63,10 +64,10 @@ describe("SessionFormModal", () => {
 
   describe("Edit Mode", () => {
     it("renders with edit title", () => {
-      const session = sessionsFixture[0];
+      const session: Session = sessionsFixture[0];
       const wrapper = createWrapper(SessionFormModal, {
         props: {
-          sessionId: session.id,
+          sessionId: session.meta.id,
         },
         pinia,
       });
@@ -75,16 +76,16 @@ describe("SessionFormModal", () => {
     });
 
     it("populates form with session data", () => {
-      const session = sessionsFixture[0];
+      const session: Session = sessionsFixture[0];
       const wrapper = createWrapper(SessionFormModal, {
         props: {
-          sessionId: session.id,
+          sessionId: session.meta.id,
         },
         pinia,
       });
 
       const vm = wrapper.vm as any;
-      expect(vm.formModel.name).toBe(session.name);
+      expect(vm.formModel.meta.name).toBe(session.meta.name);
     });
   });
 

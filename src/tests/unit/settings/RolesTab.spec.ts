@@ -3,6 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import RolesTab from "@/components/settings/RolesTab.vue";
 import { rolesFixture } from "@/tests/fixtures";
 import { useRolesStore } from "@/stores";
+import { Role } from "@/types";
 
 describe("RolesTab", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
@@ -124,7 +125,7 @@ describe("RolesTab", () => {
 
       const filtered = vm.filteredRoles;
       expect(filtered.length).toBeGreaterThan(0);
-      expect(filtered.every((r: any) => r.name.includes("Counselor"))).toBe(
+      expect(filtered.every((role: Role) => role.meta.name.includes("Counselor"))).toBe(
         true,
       );
     });
@@ -138,6 +139,9 @@ describe("RolesTab", () => {
 
       const filtered = vm.filteredRoles;
       expect(filtered.length).toBeGreaterThan(0);
+      expect(filtered.every((role: Role) => role.meta.description?.includes("camp"))).toBe(
+        true,
+      );
     });
 
     it("returns empty array when no roles match search", async () => {
@@ -213,21 +217,21 @@ describe("RolesTab", () => {
       const wrapper = createWrapper(RolesTab, { pinia });
       const vm = wrapper.vm as any;
 
-      vm.selectRole(rolesFixture[0].id);
+      vm.selectRole(rolesFixture[0].meta.id);
       await wrapper.vm.$nextTick();
 
-      expect(vm.selectedRoleId).toBe(rolesFixture[0].id);
+      expect(vm.selectedRoleId).toBe(rolesFixture[0].meta.id);
     });
 
     it("shows confirm modal for deletion", async () => {
       const wrapper = createWrapper(RolesTab, { pinia });
       const vm = wrapper.vm as any;
 
-      vm.deleteRoleConfirm(rolesFixture[0].id);
+      vm.deleteRoleConfirm(rolesFixture[0].meta.id);
       await wrapper.vm.$nextTick();
 
       expect(vm.showConfirmModal).toBe(true);
-      expect(vm.roleToDelete).toBe(rolesFixture[0].id);
+      expect(vm.roleToDelete).toBe(rolesFixture[0].meta.id);
     });
   });
 
@@ -236,9 +240,9 @@ describe("RolesTab", () => {
       const wrapper = createWrapper(RolesTab, { pinia });
       const vm = wrapper.vm as any;
 
-      vm.selectRole(rolesFixture[0].id);
+      vm.selectRole(rolesFixture[0].meta.id);
 
-      expect(vm.selectedRoleId).toBe(rolesFixture[0].id);
+      expect(vm.selectedRoleId).toBe(rolesFixture[0].meta.id);
     });
 
     it("editRole opens modal with role id", () => {
@@ -247,7 +251,7 @@ describe("RolesTab", () => {
 
       vm.editRole(rolesFixture[0]);
 
-      expect(vm.editingRoleId).toBe(rolesFixture[0].id);
+      expect(vm.editingRoleId).toBe(rolesFixture[0].meta.id);
       expect(vm.showModal).toBe(true);
     });
 
@@ -255,11 +259,11 @@ describe("RolesTab", () => {
       const wrapper = createWrapper(RolesTab, { pinia });
       const vm = wrapper.vm as any;
 
-      vm.selectedRoleId = rolesFixture[0].id;
+      vm.selectedRoleId = rolesFixture[0].meta.id;
       vm.editRoleFromDetail(rolesFixture[0]);
 
       expect(vm.selectedRoleId).toBeNull();
-      expect(vm.editingRoleId).toBe(rolesFixture[0].id);
+      expect(vm.editingRoleId).toBe(rolesFixture[0].meta.id);
       expect(vm.showModal).toBe(true);
     });
 
@@ -267,10 +271,10 @@ describe("RolesTab", () => {
       const wrapper = createWrapper(RolesTab, { pinia });
       const vm = wrapper.vm as any;
 
-      vm.selectedRoleId = rolesFixture[0].id;
-      vm.deleteRoleConfirm(rolesFixture[0].id);
+      vm.selectedRoleId = rolesFixture[0].meta.id;
+      vm.deleteRoleConfirm(rolesFixture[0].meta.id);
 
-      expect(vm.roleToDelete).toBe(rolesFixture[0].id);
+      expect(vm.roleToDelete).toBe(rolesFixture[0].meta.id);
       expect(vm.showConfirmModal).toBe(true);
       expect(vm.selectedRoleId).toBeNull();
     });
@@ -288,7 +292,7 @@ describe("RolesTab", () => {
       const wrapper = createWrapper(RolesTab, { pinia });
       const vm = wrapper.vm as any;
 
-      vm.selectedRoleId = rolesFixture[0].id;
+      vm.selectedRoleId = rolesFixture[0].meta.id;
 
       expect(vm.selectedRole).toEqual(rolesFixture[0]);
     });
@@ -384,7 +388,10 @@ describe("RolesTab", () => {
       rolesStore.roles = [
         {
           ...rolesFixture[0],
-          description: undefined,
+          meta: {
+            ...rolesFixture[0].meta,
+            description: undefined,
+          },
         },
       ];
 

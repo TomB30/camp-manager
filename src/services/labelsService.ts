@@ -4,15 +4,17 @@ import { STORAGE_KEYS } from "./storageKeys";
 
 // Label request types (not auto-generated)
 export type LabelCreationRequest = {
-  name: string;
-  colorId?: string;
-  description?: string;
+  meta: {
+    name: string;
+    description?: string;
+  };
 };
 
 export type LabelUpdateRequest = {
-  name: string;
-  colorId?: string;
-  description?: string;
+  meta: {
+    name: string;
+    description?: string;
+  };
 };
 
 export const labelsService = {
@@ -31,9 +33,14 @@ async function listLabels(): Promise<Label[]> {
 async function createLabel(label: LabelCreationRequest): Promise<Label> {
   const newLabel = {
     ...label,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: label.meta.name,
+      description: label.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    spec: {},
   };
   return storageService.save<Label>(STORAGE_KEYS.LABELS, newLabel);
 }
@@ -52,7 +59,13 @@ async function updateLabel(
   const updatedLabel = {
     ...existingLabel,
     ...label,
-    updatedAt: new Date().toISOString(),
+    meta: {
+      ...existingLabel.meta,
+      name: label.meta.name,
+      description: label.meta.description,
+      updatedAt: new Date().toISOString(),
+    },
+    spec: {},
   };
   return storageService.save<Label>(STORAGE_KEYS.LABELS, updatedLabel);
 }
@@ -68,6 +81,6 @@ async function getLabelById(id: string): Promise<Label | null> {
 async function getLabelByName(name: string): Promise<Label | null> {
   const labels = await listLabels();
   return (
-    labels.find((l) => l.name.toLowerCase() === name.toLowerCase()) || null
+    labels.find((l) => l.meta.name.toLowerCase() === name.toLowerCase()) || null
   );
 }

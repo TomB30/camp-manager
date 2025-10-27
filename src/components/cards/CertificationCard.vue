@@ -9,9 +9,9 @@
       </slot>
     </div>
     <div class="card-details">
-      <h4>{{ certification.name }}</h4>
-      <p v-if="certification.description" class="card-description">
-        {{ certification.description }}
+      <h4>{{ certification.meta.name }}</h4>
+      <p v-if="certification.meta.description" class="card-description">
+        {{ certification.meta.description }}
       </p>
     </div>
   </div>

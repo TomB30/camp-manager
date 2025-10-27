@@ -15,20 +15,20 @@ export const useSessionsStore = defineStore("sessions", {
   getters: {
     getSessionById(state): (id: string) => Session | undefined {
       return (id: string): Session | undefined => {
-        return state.sessions.find((s) => s.id === id);
+        return state.sessions.find((s) => s.meta.id === id);
       };
     },
 
     activeSessions(state): Session[] {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      return state.sessions.filter((s) => new Date(s.endDate) >= today);
+      return state.sessions.filter((s) => new Date(s.spec.endDate) >= today);
     },
 
     pastSessions(state): Session[] {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      return state.sessions.filter((s) => new Date(s.endDate) < today);
+      return state.sessions.filter((s) => new Date(s.spec.endDate) < today);
     },
   },
 
@@ -58,7 +58,7 @@ export const useSessionsStore = defineStore("sessions", {
         sessionId,
         sessionUpdate,
       );
-      const index = this.sessions.findIndex((s) => s.id === sessionId);
+      const index = this.sessions.findIndex((s) => s.meta.id === sessionId);
       if (index >= 0) {
         this.sessions[index] = session;
       }
@@ -66,7 +66,7 @@ export const useSessionsStore = defineStore("sessions", {
 
     async deleteSession(sessionId: string): Promise<void> {
       await sessionsService.deleteSession(sessionId);
-      this.sessions = this.sessions.filter((s) => s.id !== sessionId);
+      this.sessions = this.sessions.filter((s) => s.meta.id !== sessionId);
     },
   },
 });

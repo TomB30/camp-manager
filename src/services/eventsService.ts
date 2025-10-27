@@ -20,8 +20,14 @@ async function listEvents(): Promise<Event[]> {
 
 async function createEvent(event: EventCreationRequest): Promise<Event> {
   const newEvent = {
-    ...event,
-    id: crypto.randomUUID(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: event.meta.name,
+      description: event.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    spec: event.spec,
   };
   return storageService.save<Event>(STORAGE_KEYS.EVENTS, newEvent);
 }
@@ -40,6 +46,12 @@ async function updateEvent(
   const updatedEvent = {
     ...existingEvent,
     ...event,
+    meta: {
+      ...existingEvent.meta,
+      name: event.meta.name,
+      description: event.meta.description,
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Event>(STORAGE_KEYS.EVENTS, updatedEvent);
 }
@@ -58,12 +70,12 @@ async function saveEventsBatch(events: Event[]): Promise<Event[]> {
 
 async function getEventsForLocation(locationId: string): Promise<Event[]> {
   const events = await listEvents();
-  return events.filter((event) => event.locationId === locationId);
+  return events.filter((event) => event.spec.locationId === locationId);
 }
 
 async function getEventsForProgram(programId: string): Promise<Event[]> {
   const events = await listEvents();
-  return events.filter((event) => event.programId === programId);
+  return events.filter((event) => event.spec.programId === programId);
 }
 
 async function getEventsByDateRange(
@@ -74,7 +86,7 @@ async function getEventsByDateRange(
 
   if (startDate || endDate) {
     events = events.filter((event) => {
-      const eventStart = new Date(event.startDate);
+      const eventStart = new Date(event.spec.startDate);
       if (startDate && eventStart < startDate) return false;
       if (endDate && eventStart > endDate) return false;
       return true;

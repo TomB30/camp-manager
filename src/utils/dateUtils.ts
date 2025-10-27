@@ -15,7 +15,7 @@ export const dateUtils = {
  * @param targetDate Date to filter by
  * @returns Events that occur on the target date
  */
-function filterEventsByDate<T extends { startDate: string }>(
+function filterEventsByDate<T extends { spec: {startDate: string} }>(
   events: T[],
   targetDate: Date,
 ): T[] {
@@ -24,7 +24,7 @@ function filterEventsByDate<T extends { startDate: string }>(
   const targetDay = targetDate.getDate();
 
   return events.filter((event) => {
-    const eventDate = new Date(event.startDate);
+    const eventDate = new Date(event.spec.startDate);
     return (
       eventDate.getFullYear() === targetYear &&
       eventDate.getMonth() === targetMonth &&
@@ -50,7 +50,7 @@ function filterEventsByDateAndHour<T extends Event>(
   const targetDay = targetDate.getDate();
 
   return events.filter((event) => {
-    const eventDate = new Date(event.startDate);
+    const eventDate = new Date(event.spec.startDate);
     return (
       eventDate.getFullYear() === targetYear &&
       eventDate.getMonth() === targetMonth &&

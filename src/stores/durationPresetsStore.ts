@@ -18,7 +18,7 @@ export const useDurationPresetsStore = defineStore("durationPresets", {
      */
     getDurationPresetById(state): (id: string) => DurationPreset | undefined {
       return (id: string): DurationPreset | undefined => {
-        return state.durationPresets.find((p) => p.id === id);
+        return state.durationPresets.find((p) => p.meta.id === id);
       };
     },
 
@@ -26,7 +26,7 @@ export const useDurationPresetsStore = defineStore("durationPresets", {
      * Get the default duration preset
      */
     defaultDurationPreset(state): DurationPreset | undefined {
-      return state.durationPresets.find((p) => p.default);
+      return state.durationPresets.find((p) => p.spec.default);
     },
 
     /**
@@ -34,7 +34,7 @@ export const useDurationPresetsStore = defineStore("durationPresets", {
      */
     sortedDurationPresets(state): DurationPreset[] {
       return [...state.durationPresets].sort(
-        (a, b) => a.durationMinutes - b.durationMinutes,
+        (a, b) => a.spec.durationMinutes - b.spec.durationMinutes,
       );
     },
   },
@@ -76,7 +76,7 @@ export const useDurationPresetsStore = defineStore("durationPresets", {
         presetId,
         presetUpdate,
       );
-      const index = this.durationPresets.findIndex((p) => p.id === presetId);
+      const index = this.durationPresets.findIndex((p) => p.meta.id === presetId);
       if (index >= 0) {
         this.durationPresets[index] = updatedPreset;
       }
@@ -88,7 +88,7 @@ export const useDurationPresetsStore = defineStore("durationPresets", {
     async deleteDurationPreset(presetId: string): Promise<void> {
       await durationPresetsService.deleteDurationPreset(presetId);
       this.durationPresets = this.durationPresets.filter(
-        (p) => p.id !== presetId,
+        (p) => p.meta.id !== presetId,
       );
     },
   },

@@ -33,7 +33,7 @@
     <div v-else class="colors-grid">
       <ColorCard
         v-for="color in filteredColors"
-        :key="color.id"
+        :key="color.meta.id"
         :color="color"
         @edit="editColor"
         @delete="deleteColorConfirm"
@@ -42,7 +42,7 @@
 
     <ColorFormModal
       v-if="showFormModal"
-      :color-id="editingColor?.id"
+      :color-id="editingColor?.meta.id"
       @close="closeModal"
     />
 
@@ -109,12 +109,12 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         filtered = filtered.filter(
           (color) =>
-            color.name.toLowerCase().includes(query) ||
-            color.hexValue.toLowerCase().includes(query),
+            color.meta.name.toLowerCase().includes(query) ||
+            color.spec.hexValue.toLowerCase().includes(query),
         );
       }
 
-      return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+      return [...filtered].sort((a, b) => a.meta.name.localeCompare(b.meta.name));
     },
   },
   methods: {
@@ -130,7 +130,7 @@ export default defineComponent({
       if (!this.colorToDelete) return;
 
       try {
-        await this.colorsStore.deleteColor(this.colorToDelete.id);
+        await this.colorsStore.deleteColor(this.colorToDelete.meta.id);
         this.toast.success("Color deleted successfully");
         this.showConfirmModal = false;
         this.colorToDelete = null;

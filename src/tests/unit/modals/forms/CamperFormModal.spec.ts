@@ -7,6 +7,7 @@ import {
   groupsFixture,
 } from "@/tests/fixtures";
 import { useSessionsStore, useGroupsStore, useCampersStore } from "@/stores";
+import { Camper } from "@/types";
 
 describe("CamperFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
@@ -49,10 +50,10 @@ describe("CamperFormModal", () => {
 
   describe("Edit Mode", () => {
     it("renders with edit title", () => {
-      const camper = campersFixture[0];
+      const camper: Camper = campersFixture[0];
       const wrapper = createWrapper(CamperFormModal, {
         props: {
-          camperId: camper.id,
+          camperId: camper.meta.id,
         },
         pinia,
       });
@@ -61,10 +62,10 @@ describe("CamperFormModal", () => {
     });
 
     it("populates form with camper data", () => {
-      const camper = campersFixture[0];
+      const camper: Camper = campersFixture[0];
       const wrapper = createWrapper(CamperFormModal, {
         props: {
-          camperId: camper.id,
+          camperId: camper.meta.id,
         },
         pinia,
       });
@@ -73,7 +74,7 @@ describe("CamperFormModal", () => {
         "input[placeholder='Enter first name']",
       );
       expect((firstNameInput.element as HTMLInputElement).value).toBe(
-        camper.firstName,
+        camper.spec.firstName,
       );
     });
   });

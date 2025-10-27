@@ -2,15 +2,15 @@
   <BaseModal @close="$emit('close')">
     <template #header>
       <div class="activity-title-header">
-        <h3>{{ activity?.name || "Activity Details" }}</h3>
+        <h3>{{ activity?.meta.name || "Activity Details" }}</h3>
       </div>
     </template>
 
     <template #body>
       <div v-if="activity" class="activity-detail">
-        <div v-if="activity.description" class="detail-section">
+        <div v-if="activity.meta.description" class="detail-section">
           <h4>Description</h4>
-          <p>{{ activity.description }}</p>
+          <p>{{ activity.meta.description }}</p>
         </div>
 
         <div class="detail-section">
@@ -20,30 +20,30 @@
               <span class="detail-label">Duration</span>
               <span class="detail-value"
                 ><DurationDisplay
-                  :minutes="activity.duration || 0"
+                  :minutes="activity.spec.duration || 0"
                   format="long"
               /></span>
             </div>
 
-            <div v-if="activity.defaultLocationId" class="detail-item">
+            <div v-if="activity.spec.defaultLocationId" class="detail-item">
               <span class="detail-label">Default Location</span>
               <span class="detail-value">{{
-                getLocationName(activity.defaultLocationId)
+                getLocationName(activity.spec.defaultLocationId)
               }}</span>
             </div>
 
-            <div v-if="activity.defaultCapacity" class="detail-item">
+            <div v-if="activity.spec.defaultCapacity" class="detail-item">
               <span class="detail-label">Default Capacity</span>
               <span class="detail-value"
-                >{{ activity.defaultCapacity }} campers</span
+                >{{ activity.spec.defaultCapacity }} campers</span
               >
             </div>
 
-            <div v-if="activity.minStaff" class="detail-item">
+            <div v-if="activity.spec.minStaff" class="detail-item">
               <span class="detail-label">Staff Requirements</span>
               <span class="detail-value">
-                <template v-if="activity.minStaff">
-                  Min {{ activity.minStaff }} staff
+                <template v-if="activity.spec.minStaff">
+                  Min {{ activity.spec.minStaff }} staff
                 </template>
               </span>
             </div>
@@ -52,15 +52,15 @@
 
         <div
           v-if="
-            activity.requiredCertificationIds &&
-            activity.requiredCertificationIds.length > 0
+            activity.spec.requiredCertificationIds &&
+            activity.spec.requiredCertificationIds.length > 0
           "
           class="detail-section"
         >
           <h4>Required Certifications</h4>
           <div class="certifications-list">
             <span
-              v-for="certId in activity.requiredCertificationIds"
+              v-for="certId in activity.spec.requiredCertificationIds"
               :key="certId"
               class="certification-badge"
             >
@@ -73,7 +73,7 @@
           <h4>Programs</h4>
           <div class="programs-list">
             <span
-              v-for="programId in activity.programIds"
+              v-for="programId in activity.spec.programIds"
               :key="programId"
               class="program-badge"
             >
@@ -136,16 +136,16 @@ export default defineComponent({
   methods: {
     getLocationName(locationId: string) {
       const location = this.locationsStore.getLocationById(locationId);
-      return location?.name || "Unknown Location";
+      return location?.meta.name || "Unknown Location";
     },
     getProgramName(programId: string) {
       const program = this.programsStore.getProgramById(programId);
-      return program?.name || "Unknown Program";
+      return program?.meta.name || "Unknown Program";
     },
     getCertificationName(certificationId: string) {
       const certification =
         this.certificationsStore.getCertificationById(certificationId);
-      return certification?.name || "Unknown Certification";
+      return certification?.meta.name || "Unknown Certification";
     },
   },
 });

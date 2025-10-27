@@ -13,7 +13,7 @@ export const useCampStore = defineStore("camp", {
      * Get the camp name
      */
     campName(state): string {
-      return state.camp?.name || "My Camp";
+      return state.camp?.meta.name || "My Camp";
     },
 
     /**
@@ -22,8 +22,8 @@ export const useCampStore = defineStore("camp", {
     dailyHours(state): { start: string; end: string } | null {
       if (!state.camp) return null;
       return {
-        start: state.camp.dailyStartTime,
-        end: state.camp.dailyEndTime,
+        start: state.camp.spec.dailyStartTime,
+        end: state.camp.spec.dailyEndTime,
       };
     },
 
@@ -33,8 +33,8 @@ export const useCampStore = defineStore("camp", {
     dateRange(state): { start: string; end: string } | null {
       if (!state.camp) return null;
       return {
-        start: state.camp.startDate,
-        end: state.camp.endDate,
+        start: state.camp.spec.startDate,
+        end: state.camp.spec.endDate,
       };
     },
   },

@@ -3,6 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import HousingRoomFormModal from "@/components/modals/HousingRoomFormModal.vue";
 import { housingRoomsFixture } from "@/tests/fixtures";
 import { useHousingRoomsStore } from "@/stores";
+import { HousingRoom } from "@/types";
 
 describe("HousingRoomFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
@@ -42,9 +43,9 @@ describe("HousingRoomFormModal", () => {
 
   describe("Edit Mode", () => {
     it("renders with edit title", () => {
-      const room = housingRoomsFixture[0];
+      const room: HousingRoom = housingRoomsFixture[0];
       const wrapper = createWrapper(HousingRoomFormModal, {
-        props: { roomId: room.id },
+        props: { roomId: room.meta.id },
         pinia,
       });
 
@@ -52,15 +53,15 @@ describe("HousingRoomFormModal", () => {
     });
 
     it("populates form with room data", () => {
-      const room = housingRoomsFixture[0];
+      const room: HousingRoom = housingRoomsFixture[0];
       const wrapper = createWrapper(HousingRoomFormModal, {
-        props: { roomId: room.id },
+        props: { roomId: room.meta.id },
         pinia,
       });
 
       const vm = wrapper.vm as any;
-      expect(vm.formModel.name).toBe(room.name);
-      expect(vm.formModel.beds).toBe(room.beds);
+      expect(vm.formModel.meta.name).toBe(room.meta.name);
+      expect(vm.formModel.spec.beds).toBe(room.spec.beds);
     });
   });
 

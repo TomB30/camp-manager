@@ -25,7 +25,7 @@
         <div class="form-group">
           <label class="form-label">Title</label>
           <BaseInput
-            v-model="formData.title"
+            v-model="formData.spec.title"
             placeholder="Enter event title"
             :rules="[(val: string) => !!val || 'Enter event title']"
           />
@@ -66,14 +66,16 @@
           <div class="duration-presets">
             <button
               v-for="preset in durationPresetsStore.sortedDurationPresets"
-              :key="preset.id"
+              :key="preset.meta.id"
               type="button"
               class="duration-preset-btn"
-              :class="{ active: selectedDurationPreset === preset.durationMinutes }"
-              @click="applyDurationPreset(preset.durationMinutes)"
-              :title="preset.description || ''"
+              :class="{
+                active: selectedDurationPreset === preset.spec.durationMinutes,
+              }"
+              @click="applyDurationPreset(preset.spec.durationMinutes)"
+              :title="preset.meta.description || ''"
             >
-              {{ formatDuration(preset.durationMinutes) }}
+              {{ formatDuration(preset.spec.durationMinutes) }}
             </button>
           </div>
           <p class="form-help-text">
@@ -215,7 +217,7 @@
         <div class="form-group">
           <label class="form-label">Location</label>
           <Autocomplete
-            v-model="formData.locationId"
+            v-model="formData.spec.locationId"
             :options="locationOptions"
             placeholder="Select a location"
             :required="true"
@@ -238,7 +240,7 @@
         <div class="form-group">
           <label class="form-label">Program (Optional)</label>
           <Autocomplete
-            v-model="formData.programId"
+            v-model="formData.spec.programId"
             :options="programOptions"
             placeholder="Select a program..."
             @update:modelValue="onProgramSelected"
@@ -290,7 +292,7 @@
 
         <!-- Exclude Individual Campers -->
         <div
-          v-if="formData.groupIds && formData.groupIds.length > 0"
+          v-if="formData.spec.groupIds && formData.spec.groupIds.length > 0"
           class="form-group"
         >
           <label class="form-label"
@@ -315,7 +317,7 @@
 
         <!-- Exclude Individual Staff -->
         <div
-          v-if="formData.groupIds && formData.groupIds.length > 0"
+          v-if="formData.spec.groupIds && formData.spec.groupIds.length > 0"
           class="form-group"
         >
           <label class="form-label">Exclude Individual Staff (Optional)</label>
@@ -452,18 +454,24 @@ export default defineComponent({
 
     return {
       formData: {
-        title: "",
-        startDate: defaultDate.toISOString(),
-        endDate: "",
-        locationId: "",
-        capacity: 0,
-        colorId: "",
-        requiredCertifications: [],
-        groupIds: [],
-        excludeCamperIds: [],
-        excludeStaffIds: [],
-        programId: "",
-        activityId: "",
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {
+          title: "",
+          startDate: defaultDate.toISOString(),
+          endDate: "",
+          locationId: "",
+          capacity: 0,
+          colorId: "",
+          requiredCertificationIds: [],
+          groupIds: [],
+          excludeCamperIds: [],
+          excludeStaffIds: [],
+          programId: "",
+          activityId: "",
+        },
       } as EventCreationRequest,
       internalEventDate: defaultDate.toISOString().split("T")[0],
       internalStartTime: `${startHours}:${startMinutes}`,
@@ -490,8 +498,8 @@ export default defineComponent({
       if (!event) return;
 
       // Parse the start and end dates
-      const startDate = new Date(event.startDate);
-      const endDate = new Date(event.endDate);
+      const startDate = new Date(event.spec.startDate);
+      const endDate = new Date(event.spec.endDate);
 
       // Extract date part (YYYY-MM-DD)
       this.internalEventDate = startDate.toISOString().split("T")[0];
@@ -501,25 +509,31 @@ export default defineComponent({
       this.internalEndTime = `${endDate.getHours().toString().padStart(2, "0")}:${endDate.getMinutes().toString().padStart(2, "0")}`;
 
       this.formData = {
-        title: event.title,
-        startDate: event.startDate,
-        endDate: event.endDate,
-        locationId: event.locationId,
-        capacity: event.capacity,
-        colorId: event.colorId,
-        requiredCertificationIds: event.requiredCertificationIds,
-        groupIds: event.groupIds,
-        excludeCamperIds: event.excludeCamperIds,
-        excludeStaffIds: event.excludeStaffIds,
-        programId: event.programId,
-        activityId: event.activityId,
-      };
+        meta: {
+          name: event.meta.name,
+          description: event.meta.description,
+        },
+        spec: {
+          title: event.spec.title,
+          startDate: event.spec.startDate,
+          endDate: event.spec.endDate,
+          locationId: event.spec.locationId,
+          capacity: event.spec.capacity,
+          colorId: event.spec.colorId,
+          requiredCertificationIds: event.spec.requiredCertificationIds,
+          groupIds: event.spec.groupIds,
+          excludeCamperIds: event.spec.excludeCamperIds,
+          excludeStaffIds: event.spec.excludeStaffIds,
+          programId: event.spec.programId,
+          activityId: event.spec.activityId,
+        },
+      } as EventCreationRequest;
     } else {
       // For new events (not created from activity template), set default color
-      if (!this.formData.colorId) {
+      if (!this.formData.spec.colorId) {
         const defaultColor = this.colorsStore.getDefaultColor;
         if (defaultColor) {
-          this.formData.colorId = defaultColor.id;
+          this.formData.spec.colorId = defaultColor.meta.id;
         }
       }
     }
@@ -578,50 +592,50 @@ export default defineComponent({
     },
     groupIds: {
       get(): string[] {
-        return this.formData.groupIds || [];
+        return this.formData.spec.groupIds || [];
       },
       set(value: string[]) {
-        this.formData.groupIds = value;
+        this.formData.spec.groupIds = value;
       },
     },
     excludeCamperIds: {
       get(): string[] {
-        return this.formData.excludeCamperIds || [];
+        return this.formData.spec.excludeCamperIds || [];
       },
       set(value: string[]) {
-        this.formData.excludeCamperIds = value;
+        this.formData.spec.excludeCamperIds = value;
       },
     },
     excludeStaffIds: {
       get(): string[] {
-        return this.formData.excludeStaffIds || [];
+        return this.formData.spec.excludeStaffIds || [];
       },
       set(value: string[]) {
-        this.formData.excludeStaffIds = value;
+        this.formData.spec.excludeStaffIds = value;
       },
     },
     capacityModel: {
       get(): string {
-        return this.formData.capacity?.toString() || "";
+        return this.formData.spec.capacity?.toString() || "";
       },
       set(value: string) {
         const num = parseInt(value);
-        this.formData.capacity = isNaN(num) ? 0 : num;
+        this.formData.spec.capacity = isNaN(num) ? 0 : num;
       },
     },
     programOptions(): AutocompleteOption[] {
       return [
         { label: "None", value: "" },
         ...this.programsStore.programs.map((program) => ({
-          label: program.name,
-          value: program.id,
+          label: program.meta.name,
+          value: program.meta.id,
         })),
       ];
     },
     locationOptions(): AutocompleteOption[] {
       return this.locations.map((location) => ({
-        label: `${location.name} (Capacity: ${location.capacity})`,
-        value: location.id,
+        label: `${location.meta.name} (Capacity: ${location.spec.capacity})`,
+        value: location.meta.id,
       }));
     },
     activityOptions(): AutocompleteOption[] {
@@ -630,13 +644,13 @@ export default defineComponent({
 
       this.programsStore.programs.forEach((program) => {
         const programActivities = this.activitiesStore.getActivitiesInProgram(
-          program.id,
+          program.meta.id
         );
         if (programActivities.length > 0) {
           programActivities.forEach((activity) => {
             optionsWithGroups.push({
-              label: `(${program.name}) ${activity.name}`,
-              value: activity.id,
+              label: `(${program.meta.name}) ${activity.meta.name}`,
+              value: activity.meta.id,
             });
           });
         }
@@ -648,48 +662,48 @@ export default defineComponent({
       return this.groups;
     },
     campersInAssignedGroups(): Camper[] {
-      if (!this.formData.groupIds || this.formData.groupIds.length === 0) {
+      if (!this.formData.spec.groupIds || this.formData.spec.groupIds.length === 0) {
         return [];
       }
 
       const camperIds = new Set<string>();
 
       // Get campers from all assigned groups
-      this.formData.groupIds.forEach((groupId: string) => {
+      this.formData.spec.groupIds.forEach((groupId: string) => {
         // Check if it's a camper group
         const group = this.groupsStore.getGroupById(groupId);
         if (group) {
           const campers = this.groupsStore.getCampersInGroup(groupId);
-          campers.forEach((camper) => camperIds.add(camper.id));
+          campers.forEach((camper) => camperIds.add(camper.meta.id));
         }
       });
 
       // Return full camper objects
-      return this.campersStore.campers.filter((c) => camperIds.has(c.id));
+      return this.campersStore.campers.filter((c) => camperIds.has(c.meta.id));
     },
     staffInAssignedGroups(): StaffMember[] {
-      if (!this.formData.groupIds || this.formData.groupIds.length === 0) {
+      if (!this.formData.spec.groupIds || this.formData.spec.groupIds.length === 0) {
         return [];
       }
 
       const staffIds = new Set<string>();
 
       // Get staff from all assigned family groups
-      this.formData.groupIds.forEach((groupId: string) => {
+      this.formData.spec.groupIds.forEach((groupId: string) => {
         const group = this.groupsStore.getGroupById(groupId);
-        if (group && group.staffIds) {
-          group.staffIds.forEach((staffId: string) => staffIds.add(staffId));
-        } else if (group && group.staffFilters) {
+        if (group && group.spec.staffIds) {
+          group.spec.staffIds.forEach((staffId: string) => staffIds.add(staffId));
+        } else if (group && group.spec.staffFilters) {
           const staff = this.staffMembersStore.getStaffMembersByFilters(
-            group.staffFilters,
+            group.spec.staffFilters
           );
-          staff.forEach((s: StaffMember) => staffIds.add(s.id));
+          staff.forEach((s: StaffMember) => staffIds.add(s.meta.id));
         }
       });
 
       // Return full staff member objects
       return this.staffMembersStore.staffMembers.filter((s) =>
-        staffIds.has(s.id),
+        staffIds.has(s.meta.id)
       );
     },
     recurrenceSummary(): string | null {
@@ -734,16 +748,16 @@ export default defineComponent({
       // Combine date and time into ISO datetime strings
       if (this.internalEventDate && this.internalStartTime) {
         const startDateTime = new Date(
-          `${this.internalEventDate}T${this.internalStartTime}:00`,
+          `${this.internalEventDate}T${this.internalStartTime}:00`
         );
-        this.formData.startDate = startDateTime.toISOString();
+        this.formData.spec.startDate = startDateTime.toISOString();
       }
 
       if (this.internalEventDate && this.internalEndTime) {
         const endDateTime = new Date(
-          `${this.internalEventDate}T${this.internalEndTime}:00`,
+          `${this.internalEventDate}T${this.internalEndTime}:00`
         );
-        this.formData.endDate = endDateTime.toISOString();
+        this.formData.spec.endDate = endDateTime.toISOString();
       }
     },
     applyActivityTemplate(activityId: string) {
@@ -753,7 +767,7 @@ export default defineComponent({
       if (!activity) return;
 
       // Auto-populate form fields from activity template
-      this.formData.title = activity.name;
+      this.formData.spec.title = activity.meta.name;
 
       // Calculate end time based on start time and duration
       if (this.internalStartTime) {
@@ -762,7 +776,7 @@ export default defineComponent({
         startDate.setHours(hours, minutes, 0, 0);
 
         const endDate = new Date(
-          startDate.getTime() + (activity.duration || 0) * 60000,
+          startDate.getTime() + (activity.spec.duration || 0) * 60000
         );
         const endHours = endDate.getHours().toString().padStart(2, "0");
         const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
@@ -771,62 +785,62 @@ export default defineComponent({
       }
 
       // Set default location if specified
-      if (activity.defaultLocationId) {
-        this.formData.locationId = activity.defaultLocationId;
+      if (activity.spec.defaultLocationId) {
+        this.formData.spec.locationId = activity.spec.defaultLocationId;
       }
 
       // Set default capacity if specified
-      if (activity.defaultCapacity) {
-        this.formData.capacity = activity.defaultCapacity;
+      if (activity.spec.defaultCapacity) {
+        this.formData.spec.capacity = activity.spec.defaultCapacity;
       }
 
       // Inherit color from the program (use first program)
-      if (activity.programIds && activity.programIds.length > 0) {
+      if (activity.spec.programIds && activity.spec.programIds.length > 0) {
         const program = this.programsStore.getProgramById(
-          activity.programIds[0],
+          activity.spec.programIds[0]
         );
-        if (program && program.colorId) {
-          this.formData.colorId = program.colorId;
+        if (program && program.spec.colorId) {
+          this.formData.spec.colorId = program.spec.colorId;
         }
       }
 
       // Set required certifications if specified
       if (
-        activity.requiredCertificationIds &&
-        activity.requiredCertificationIds.length > 0
+        activity.spec.requiredCertificationIds &&
+        activity.spec.requiredCertificationIds.length > 0
       ) {
-        this.formData.requiredCertificationIds = [
-          ...activity.requiredCertificationIds,
+        this.formData.spec.requiredCertificationIds = [
+          ...activity.spec.requiredCertificationIds,
         ];
         this.selectedCertificationIds = this.getCertificationIdsFromNames(
-          activity.requiredCertificationIds,
+          activity.spec.requiredCertificationIds
         );
       }
 
       // Set program and activity IDs for reference
       // Use the first program if activity belongs to multiple programs
-      this.formData.programId = activity.programIds[0];
-      this.formData.activityId = activity.id;
+      this.formData.spec.programId = activity.spec.programIds[0];
+      this.formData.spec.activityId = activity.meta.id;
     },
     getCamperLabel(camper: Camper): string {
-      return `${camper.firstName} ${camper.lastName} (Age: ${camper.age})`;
+      return `${camper.spec.firstName} ${camper.spec.lastName} (Age: ${camper.spec.age})`;
     },
     getCamperInitials(camper: Camper): string {
-      return `${camper.firstName[0]}${camper.lastName[0]}`.toUpperCase();
+      return `${camper.spec.firstName[0]}${camper.spec.lastName[0]}`.toUpperCase();
     },
     getCamperOption(camper: Camper): AutocompleteOption {
       return {
-        label: `${camper.firstName} ${camper.lastName} (Age: ${camper.age})`,
-        value: camper.id,
+        label: `${camper.spec.firstName} ${camper.spec.lastName} (Age: ${camper.spec.age})`,
+        value: camper.meta.id,
       };
     },
     getCertificationIdsFromNames(names: string[]): string[] {
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.name === name,
+            (c) => c.meta.name === name
           );
-          return cert ? cert.id : "";
+          return cert ? cert.meta.id : "";
         })
         .filter((id) => id !== "");
     },
@@ -834,52 +848,52 @@ export default defineComponent({
       return ids
         .map((id) => {
           const cert = this.certificationsStore.getCertificationById(id);
-          return cert ? cert.name : "";
+          return cert ? cert.meta.name : "";
         })
         .filter((name) => name !== "");
     },
     getCertificationLabel(cert: Certification): string {
-      return cert.name;
+      return cert.meta.name;
     },
     getCertificationInitials(cert: Certification): string {
-      return cert.name.substring(0, 2).toUpperCase();
+      return cert.meta.name.substring(0, 2).toUpperCase();
     },
     getCertificationOption(cert: Certification): AutocompleteOption {
       return {
-        label: cert.name,
-        value: cert.id,
+        label: cert.meta.name,
+        value: cert.meta.id,
       };
     },
     getGroupLabel(group: Group): string {
       // Check if it's a camper group or family group
-      const camperCount = this.groupsStore.getCampersInGroup(group.id).length;
-      return `${group.name} (${camperCount} campers)`;
+      const camperCount = this.groupsStore.getCampersInGroup(group.meta.id).length;
+      return `${group.meta.name} (${camperCount} campers)`;
     },
     getGroupInitials(group: Group): string {
       // Use first two letters of the group name
-      return group.name.substring(0, 2).toUpperCase();
+      return group.meta.name.substring(0, 2).toUpperCase();
     },
     getGroupOption(group: Group): AutocompleteOption {
       return {
-        label: group.name,
-        value: group.id,
+        label: group.meta.name,
+        value: group.meta.id,
       };
     },
     isStaffInSelectedProgram(staff: StaffMember): boolean {
-      if (!this.formData.programId) return false;
+      if (!this.formData.spec.programId) return false;
       const program = this.programsStore.getProgramById(
-        this.formData.programId,
+        this.formData.spec.programId
       );
       return program
-        ? program.staffMemberIds?.includes(staff.id) || false
+        ? program.spec.staffMemberIds?.includes(staff.meta.id) || false
         : false;
     },
     staffHasRequiredCertifications(staff: StaffMember): boolean {
       if (this.selectedCertificationIds.length === 0) return true;
-      if (!staff.certificationIds || staff.certificationIds.length === 0)
+      if (!staff.spec.certificationIds || staff.spec.certificationIds.length === 0)
         return false;
       return this.selectedCertificationIds.every((certId) =>
-        staff.certificationIds!.includes(certId),
+        staff.spec.certificationIds!.includes(certId)
       );
     },
     isStaffAvailable(staff: StaffMember): {
@@ -893,17 +907,17 @@ export default defineComponent({
       const result = conflictDetector.canAssignStaff(
         this.eventStartDateTime,
         this.eventEndDateTime,
-        staff.id,
+        staff.meta.id,
         this.eventsStore.events,
         this.eventId
           ? new Map<string, string[]>([[this.eventId, []]])
-          : undefined,
+          : undefined
       );
 
       return { available: result.canAssign, reason: result.reason };
     },
     getStaffLabel(staff: StaffMember): string {
-      const baseLabel = `${staff.firstName} ${staff.lastName} - ${staff.roleId}`;
+      const baseLabel = `${staff.spec.firstName} ${staff.spec.lastName} - ${staff.spec.roleId}`;
       const availability = this.isStaffAvailable(staff);
 
       let prefix = "";
@@ -929,10 +943,10 @@ export default defineComponent({
       return prefix + baseLabel;
     },
     getStaffInitials(staff: StaffMember): string {
-      return `${staff.firstName[0]}${staff.lastName[0]}`.toUpperCase();
+      return `${staff.spec.firstName[0]}${staff.spec.lastName[0]}`.toUpperCase();
     },
     getStaffOption(staff: StaffMember): AutocompleteOption {
-      const baseLabel = `${staff.firstName} ${staff.lastName} - ${staff.roleId}`;
+      const baseLabel = `${staff.spec.firstName} ${staff.spec.lastName} - ${staff.spec.roleId}`;
       const availability = this.isStaffAvailable(staff);
 
       let prefix = "";
@@ -954,13 +968,13 @@ export default defineComponent({
       if (!availability.available) {
         return {
           label: `⚠️ ${prefix}${baseLabel} (${availability.reason})`,
-          value: staff.id,
+          value: staff.meta.id,
         };
       }
 
       return {
         label: prefix + baseLabel,
-        value: staff.id,
+        value: staff.meta.id,
       };
     },
     onProgramSelected(programId: string) {
@@ -970,11 +984,11 @@ export default defineComponent({
       if (!program) return;
 
       // Auto-apply program color if event color is not set or is default
-      if (!this.formData.colorId || this.formData.colorId === "#6366F1") {
-        if (program.colorId) {
-          const color = this.colorsStore.getColorById(program.colorId);
+      if (!this.formData.spec.colorId || this.formData.spec.colorId === "#6366F1") {
+        if (program.spec.colorId) {
+          const color = this.colorsStore.getColorById(program.spec.colorId);
           if (color) {
-            this.formData.colorId = color.id;
+            this.formData.spec.colorId = color.meta.id;
           }
         }
       }
@@ -1028,18 +1042,18 @@ export default defineComponent({
         return this.createRecurringEvents(
           this.formData,
           this.recurrenceData,
-          new Date(this.formData.startDate),
-          new Date(this.formData.endDate),
+          new Date(this.formData.spec.startDate),
+          new Date(this.formData.spec.endDate)
         );
       } else {
         return this.createSingleEvent();
       }
     },
     async createRecurringEvents(
-      formData: any,
+      formData: EventCreationRequest,
       recurrence: RecurrenceData,
       startDate: Date,
-      endDate: Date,
+      endDate: Date
     ): Promise<void> {
       try {
         // Generate all occurrence dates
@@ -1053,7 +1067,7 @@ export default defineComponent({
         // Show loading toast for large batches
         if (occurrenceDates.length > 10) {
           this.toast.info(
-            `Creating ${occurrenceDates.length} recurring events...`,
+            `Creating ${occurrenceDates.length} recurring events...`
           );
         }
 
@@ -1072,34 +1086,36 @@ export default defineComponent({
           const occurrenceEnd = new Date(occurrenceStart.getTime() + duration);
 
           const event: EventCreationRequest = {
-            title: formData.title,
-            startDate: occurrenceStart.toISOString(),
-            endDate: occurrenceEnd.toISOString(),
-            locationId: formData.locationId,
-            capacity: formData.capacity,
-            colorId: formData.colorId,
-            requiredCertificationIds:
-              formData.requiredCertificationIds &&
-              formData.requiredCertificationIds.length > 0
-                ? formData.requiredCertificationIds
-                : undefined,
-            groupIds: formData.groupIds || [],
-            excludeCamperIds: formData.excludeCamperIds || [],
-            excludeStaffIds: formData.excludeStaffIds || [],
-            programId: formData.programId,
-            activityId: formData.activityId,
-            recurrenceId: recurrenceId,
-            isRecurrenceParent: i === 0, // First event is the parent
+            meta: {
+              name: formData.meta.name,
+              description: formData.meta.description,
+            },
+            spec: {
+              title: formData.spec.title,
+              startDate: occurrenceStart.toISOString(),
+              endDate: occurrenceEnd.toISOString(),
+              locationId: formData.spec.locationId,
+              capacity: formData.spec.capacity,
+              colorId: formData.spec.colorId,
+              requiredCertificationIds: formData.spec.requiredCertificationIds,
+              groupIds: formData.spec.groupIds || [],
+              excludeCamperIds: formData.spec.excludeCamperIds || [],
+              excludeStaffIds: formData.spec.excludeStaffIds || [],
+              programId: formData.spec.programId,
+              activityId: formData.spec.activityId,
+              recurrenceId: recurrenceId,
+              isRecurrenceParent: i === 0, // First event is the parent
+            },
           };
 
           eventCreationRequestsPromises.push(
-            this.eventsStore.createEvent(event),
+            this.eventsStore.createEvent(event)
           );
         }
 
         await Promise.all(eventCreationRequestsPromises);
         this.toast.success(
-          `Successfully created ${occurrenceDates.length} recurring events`,
+          `Successfully created ${occurrenceDates.length} recurring events`
         );
       } catch (error: any) {
         this.toast.error("Failed to create recurring events", error.message);
@@ -1133,7 +1149,7 @@ export default defineComponent({
 
       // Format end time as HH:MM
       this.endTime = `${endHours.toString().padStart(2, "0")}:${endMinutes.toString().padStart(2, "0")}`;
-      
+
       // Track the selected preset for visual feedback
       this.selectedDurationPreset = durationMinutes;
     },

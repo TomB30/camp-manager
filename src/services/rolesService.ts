@@ -17,9 +17,13 @@ async function listRoles(): Promise<Role[]> {
 async function createRole(role: RoleCreationRequest): Promise<Role> {
   const newRole = {
     ...role,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: role.meta.name,
+      description: role.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Role>(STORAGE_KEYS.ROLES, newRole);
 }
@@ -35,6 +39,12 @@ async function updateRole(id: string, role: RoleUpdateRequest): Promise<Role> {
   const updatedRole = {
     ...existingRole,
     ...role,
+    meta: {
+      ...existingRole.meta,
+      name: role.meta.name,
+      description: role.meta.description,
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Role>(STORAGE_KEYS.ROLES, updatedRole);
 }

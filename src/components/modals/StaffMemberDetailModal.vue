@@ -1,6 +1,6 @@
 <template>
   <BaseModal
-    :title="member ? `${member.firstName} ${member.lastName}` : ''"
+    :title="member ? `${member.spec.firstName} ${member.spec.lastName}` : ''"
     @close="$emit('close')"
   >
     <template #body>
@@ -9,7 +9,7 @@
           <div class="detail-label">Role</div>
           <div>
             <span class="badge badge-primary">{{
-              formatRole(member.roleId)
+              formatRole(member.spec.roleId)
             }}</span>
           </div>
         </div>
@@ -30,14 +30,14 @@
           </slot>
         </div>
 
-        <div v-if="member.email" class="detail-section">
+        <div v-if="member.spec.email" class="detail-section">
           <div class="detail-label">Email</div>
-          <div>{{ member.email }}</div>
+          <div>{{ member.spec.email }}</div>
         </div>
 
-        <div v-if="member.phone" class="detail-section">
+        <div v-if="member.spec.phone" class="detail-section">
           <div class="detail-label">Phone</div>
-          <div>{{ member.phone }}</div>
+          <div>{{ member.spec.phone }}</div>
         </div>
 
         <div v-if="certificationNames.length > 0" class="detail-section">
@@ -58,14 +58,14 @@
           <div v-if="memberPrograms.length > 0" class="flex gap-1 flex-wrap">
             <span
               v-for="program in memberPrograms"
-              :key="program.id"
+              :key="program.meta.id"
               class="badge badge-program"
               :style="{
                 backgroundColor: getProgramColor(program),
                 color: 'white',
               }"
             >
-              {{ program.name }}
+              {{ program.meta.name }}
             </span>
           </div>
           <div v-else class="text-grey-7">Not assigned to any programs</div>
@@ -124,32 +124,32 @@ export default defineComponent({
   },
   computed: {
     certificationNames(): string[] {
-      if (!this.member || !this.member.certificationIds) return [];
+      if (!this.member || !this.member.spec.certificationIds) return [];
 
-      return this.member.certificationIds
+      return this.member.spec.certificationIds
         .map((id) => {
           const cert = this.certificationsStore.getCertificationById(id);
-          return cert ? cert.name : "";
+          return cert ? cert.meta.name : "";
         })
         .filter((name) => name.length > 0);
     },
     memberPrograms() {
       if (!this.member) return [];
-      return this.programsStore.getProgramsForStaffMember(this.member.id);
+      return this.programsStore.getProgramsForStaffMember(this.member.meta.id);
     },
   },
   methods: {
     getProgramColor(program: any): string {
       if (program.colorId) {
         const color = this.colorsStore.getColorById(program.colorId);
-        return color?.hexValue || "#6366F1";
+        return color?.spec.hexValue || "#6366F1";
       }
       return "#6366F1";
     },
     formatRole(roleId: string): string {
       const role = this.rolesStore.getRoleById(roleId);
       return role
-        ? role.name.charAt(0).toUpperCase() + role.name.slice(1)
+        ? role.meta.name.charAt(0).toUpperCase() + role.meta.name.slice(1)
         : "Unknown Role";
     },
   },

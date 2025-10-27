@@ -18,26 +18,26 @@ export const useProgramsStore = defineStore("programs", {
   getters: {
     getProgramById(state): (id: string) => Program | undefined {
       return (id: string): Program | undefined => {
-        return state.programs.find((p) => p.id === id);
+        return state.programs.find((p) => p.meta.id === id);
       };
     },
 
     getProgramsForStaffMember(state): (staffId: string) => Program[] {
       return (staffId: string): Program[] => {
         return state.programs.filter(
-          (p) => p.staffMemberIds?.includes(staffId) || false,
+          (p) => p.spec.staffMemberIds?.includes(staffId) || false,
         );
       };
     },
 
     getStaffMembersInProgram(): (programId: string) => StaffMember[] {
       return (programId: string): StaffMember[] => {
-        const program = this.programs.find((p) => p.id === programId);
+        const program = this.programs.find((p) => p.meta.id === programId);
         if (!program) return [];
 
         const staffStore = useStaffMembersStore();
         return staffStore.staffMembers.filter(
-          (s) => program.staffMemberIds?.includes(s.id) || false,
+          (s) => program.spec.staffMemberIds?.includes(s.meta.id) || false,
         );
       };
     },
@@ -45,7 +45,7 @@ export const useProgramsStore = defineStore("programs", {
     getProgramsForLocation(state): (locationId: string) => Program[] {
       return (locationId: string): Program[] => {
         return state.programs.filter(
-          (p) => p.locationIds?.includes(locationId) || false,
+          (p) => p.spec.locationIds?.includes(locationId) || false,
         );
       };
     },
@@ -74,7 +74,7 @@ export const useProgramsStore = defineStore("programs", {
       programUpdate: ProgramUpdateRequest,
     ): Promise<void> {
       const program = await programsService.updateProgram(id, programUpdate);
-      const index = this.programs.findIndex((p: Program) => p.id === id);
+      const index = this.programs.findIndex((p: Program) => p.meta.id === id);
       if (index >= 0) {
         this.programs[index] = program;
       }
@@ -88,7 +88,7 @@ export const useProgramsStore = defineStore("programs", {
       const activitiesStore = useActivitiesStore();
       await activitiesStore.loadActivities();
 
-      this.programs = this.programs?.filter((p: Program) => p.id !== id) || [];
+      this.programs = this.programs?.filter((p: Program) => p.meta.id !== id) || [];
     },
   },
 });

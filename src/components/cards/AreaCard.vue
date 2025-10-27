@@ -9,30 +9,30 @@
       </slot>
     </div>
     <div class="card-details">
-      <h4>{{ area.name }}</h4>
+      <h4>{{ area.meta.name }}</h4>
       <div class="card-meta">
         <span
           class="badge badge-sm"
-          :class="getTypeBadgeClass(area.type || 'other')"
+          :class="getTypeBadgeClass(area.spec.type || 'other')"
         >
           {{ formatType }}
         </span>
-        <span v-if="area.capacity" class="badge badge-sm badge-secondary">
-          <Icon name="Users" :size="12" class="inline" /> {{ area.capacity }}
+        <span v-if="area.spec.capacity" class="badge badge-sm badge-secondary">
+          <Icon name="Users" :size="12" class="inline" /> {{ area.spec.capacity }}
         </span>
       </div>
-      <p v-if="area.description" class="card-description">
-        {{ area.description }}
+      <p v-if="area.meta.description" class="card-description">
+        {{ area.meta.description }}
       </p>
       <div class="card-stats">
         <div
-          v-if="area.equipment && area.equipment.length > 0"
+          v-if="area.spec.equipment && area.spec.equipment.length > 0"
           class="card-stat-item"
         >
           <Icon name="Package" :size="14" />
-          <span>{{ area.equipment.length }} equipment</span>
+          <span>{{ area.spec.equipment.length }} equipment</span>
         </div>
-        <div v-if="area.notes" class="card-stat-item">
+        <div v-if="area.spec.notes" class="card-stat-item">
           <Icon name="FileText" :size="14" />
           <span>Has notes</span>
         </div>

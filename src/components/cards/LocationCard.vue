@@ -7,13 +7,13 @@
       <Icon :name="locationTypeIcon" :size="24" :stroke-width="2" />
     </div>
     <div class="card-details">
-      <h4>{{ location.name }}</h4>
+      <h4>{{ location.meta.name }}</h4>
       <div class="card-meta row items-center">
-        <span class="badge badge-primary" v-if="location.type">
+        <span class="badge badge-primary" v-if="location.spec.type">
           {{ formattedType }}
         </span>
-        <span v-if="location.capacity" class="badge badge-success">
-          Capacity: {{ location.capacity }}
+        <span v-if="location.spec.capacity" class="badge badge-success">
+          Capacity: {{ location.spec.capacity }}
         </span>
         <span
           v-if="areaName"
@@ -70,19 +70,19 @@ export default defineComponent({
   },
   computed: {
     areaName(): string | undefined {
-      if (this.location.areaId) {
-        return this.areasStore.getAreaById(this.location.areaId)?.name;
+      if (this.location.spec.areaId) {
+        return this.areasStore.getAreaById(this.location.spec.areaId)?.meta.name;
       }
       return undefined;
     },
     formattedType(): string {
-      if (!this.location.type) return "";
+      if (!this.location.spec.type) return "";
       return (
-        this.location.type.charAt(0).toUpperCase() + this.location.type.slice(1)
+        this.location.spec.type.charAt(0).toUpperCase() + this.location.spec.type.slice(1)
       );
     },
     iconColor(): string {
-      const colors: Record<Location["type"], string> = {
+      const colors: Record<Location["spec"]["type"], string> = {
         classroom: "#2196F3",
         activity: "#4CAF50",
         sports: "#FF9800",
@@ -90,10 +90,10 @@ export default defineComponent({
         outdoor: "#8BC34A",
         arts: "#9C27B0",
       };
-      return colors[this.location.type] || "#757575";
+      return colors[this.location.spec.type] || "#757575";
     },
     locationTypeIcon(): IconName {
-      const iconMap: Record<Location["type"], IconName> = {
+      const iconMap: Record<Location["spec"]["type"], IconName> = {
         classroom: "BookOpen",
         activity: "Target",
         sports: "Dumbbell",
@@ -101,20 +101,20 @@ export default defineComponent({
         outdoor: "Trees",
         arts: "Palette",
       };
-      return iconMap[this.location.type] || "MapPin";
+      return iconMap[this.location.spec.type] || "MapPin";
     },
     usagePercent(): number {
-      const locationEvents = this.eventsStore.locationEvents(this.location.id);
+      const locationEvents = this.eventsStore.locationEvents(this.location.meta.id);
       if (locationEvents.length === 0) return 0;
 
-      if (!this.location.capacity) return 0;
+      if (!this.location.spec.capacity) return 0;
 
       // Calculate average capacity usage
       const totalUsage = locationEvents.reduce((sum, event) => {
         return (
           sum +
-          (this.eventsStore.getEventCamperIds(event.id).length /
-            (this.location.capacity || 1)) *
+          (this.eventsStore.getEventCamperIds(event.meta.id).length /
+            (this.location.spec.capacity || 1)) *
             100
         );
       }, 0);

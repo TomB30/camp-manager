@@ -30,11 +30,11 @@
       <div v-if="viewMode === 'grid'" class="campers-grid">
         <CamperCard
           v-for="camper in filteredCampers"
-          :key="camper.id"
+          :key="camper.meta.id"
           :camper="camper"
-          :formatted-gender="formatGender(camper.gender)"
-          :session-name="getSessionName(camper.sessionId)"
-          @click="selectCamper(camper.id)"
+          :formatted-gender="formatGender(camper.spec.gender)"
+          :session-name="getSessionName(camper.spec.sessionId)"
+          @click="selectCamper(camper.meta.id)"
         />
 
         <EmptyState
@@ -73,12 +73,12 @@
         <template #cell-name="{ item }">
           <div class="camper-name-content">
             <AvatarInitials
-              :first-name="item.firstName"
-              :last-name="item.lastName"
+              :first-name="item.spec.firstName"
+              :last-name="item.spec.lastName"
               size="sm"
             />
             <div class="camper-fullname">
-              {{ item.firstName }} {{ item.lastName }}
+              {{ item.spec.firstName }} {{ item.spec.lastName }}
             </div>
           </div>
         </template>
@@ -111,7 +111,7 @@
             outline
             color="grey-8"
             size="sm"
-            @click="selectCamper(item.id)"
+            @click="selectCamper(item.meta.id)"
             label="View Details"
           />
         </template>
@@ -213,8 +213,8 @@ export default defineComponent({
           value: this.filterSession,
           placeholder: "Filter by Session",
           options: this.sessionsStore.sessions.map((session) => ({
-            label: session.name,
-            value: session.id,
+            label: session.meta.name,
+            value: session.meta.id,
           })),
         },
         {
@@ -251,9 +251,9 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         campers = campers.filter(
           (camper: Camper) =>
-            camper.firstName.toLowerCase().includes(query) ||
-            camper.lastName.toLowerCase().includes(query) ||
-            `${camper.firstName} ${camper.lastName}`
+            camper.spec.firstName.toLowerCase().includes(query) ||
+            camper.spec.lastName.toLowerCase().includes(query) ||
+            `${camper.spec.firstName} ${camper.spec.lastName}`
               .toLowerCase()
               .includes(query),
         );
@@ -262,14 +262,14 @@ export default defineComponent({
       // Session filter
       if (this.filterSession) {
         campers = campers.filter(
-          (camper: Camper) => camper.sessionId === this.filterSession,
+          (camper: Camper) => camper.spec.sessionId === this.filterSession,
         );
       }
 
       // Gender filter
       if (this.filterGender) {
         campers = campers.filter(
-          (camper: Camper) => camper.gender === this.filterGender,
+          (camper: Camper) => camper.spec.gender === this.filterGender,
         );
       }
 
@@ -281,7 +281,7 @@ export default defineComponent({
             : this.filterAge.split("-").map(Number);
         campers = campers.filter(
           (camper: Camper) =>
-            camper.age >= min && (max ? camper.age <= max : true),
+            camper.spec.age >= min && (max ? camper.spec.age <= max : true),
         );
       }
 
@@ -301,9 +301,9 @@ export default defineComponent({
     getSessionName(sessionId: string | undefined): string {
       if (!sessionId) return "No session";
       const session = this.sessionsStore.sessions.find(
-        (s) => s.id === sessionId,
+        (s) => s.meta.id === sessionId,
       );
-      return session?.name || "Unknown Session";
+      return session?.meta.name || "Unknown Session";
     },
     selectCamper(camperId: string): void {
       this.selectedCamperId = camperId;
@@ -311,7 +311,7 @@ export default defineComponent({
     editCamper(): void {
       if (!this.selectedCamper) return;
 
-      this.editingCamperId = this.selectedCamper.id;
+      this.editingCamperId = this.selectedCamper.meta.id;
       this.selectedCamperId = null;
       this.showModal = true;
     },
@@ -322,7 +322,7 @@ export default defineComponent({
 
       this.camperToDelete = {
         id: this.selectedCamperId,
-        name: `${camper.firstName} ${camper.lastName}`,
+        name: `${camper.spec.firstName} ${camper.spec.lastName}`,
       };
       this.showConfirmModal = true;
     },

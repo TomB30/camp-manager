@@ -8,7 +8,7 @@
         <div class="form-group">
           <label class="form-label">Color Name</label>
           <BaseInput
-            v-model="formModel.name"
+            v-model="formModel.meta.name"
             placeholder="e.g., Ocean Blue"
             :rules="[(val: string) => !!val || 'Enter color name']"
           />
@@ -19,7 +19,7 @@
 
           <div class="color-search-box">
             <BaseInput
-              v-model="formModel.hexValue"
+              v-model="formModel.spec.hexValue"
               placeholder='Try "#00c4cc"'
               :rules="[validateHexColor]"
               class="hex-input"
@@ -37,13 +37,13 @@
                 v-for="color in presetColors"
                 :key="color.hex"
                 class="color-swatch"
-                :class="{ selected: formModel.hexValue === color.hex }"
+                :class="{ selected: formModel.spec.hexValue === color.hex }"
                 :style="{ background: color.hex }"
                 @click="selectColor(color.hex)"
                 :title="color.name"
               >
                 <q-icon
-                  v-if="formModel.hexValue === color.hex"
+                  v-if="formModel.spec.hexValue === color.hex"
                   name="check"
                   color="white"
                   size="20px"
@@ -69,7 +69,7 @@
               </q-card-section>
               <q-card-section>
                 <q-color
-                  v-model="formModel.hexValue"
+                  v-model="formModel.spec.hexValue"
                   default-view="palette"
                   no-header
                 />
@@ -84,14 +84,14 @@
         <!-- Color Preview -->
         <div
           class="color-preview-large"
-          :style="{ background: formModel.hexValue || '#CCCCCC' }"
+          :style="{ background: formModel.spec.hexValue || '#CCCCCC' }"
         >
           <span class="preview-label">Preview</span>
         </div>
 
         <div class="form-group">
           <q-checkbox
-            v-model="formModel.default"
+            v-model="formModel.spec.default"
             label="Set as default color"
           />
           <p class="form-help-text">
@@ -142,9 +142,14 @@ export default defineComponent({
   data() {
     return {
       formModel: {
-        name: "",
-        hexValue: "",
-        default: false,
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {
+          hexValue: "",
+          default: false,
+        },
       } as ColorCreationRequest,
       formRef: null as any,
       loading: false as boolean,
@@ -202,9 +207,14 @@ export default defineComponent({
       const editingColor = this.colorsStore.getColorById(this.colorId);
       if (editingColor) {
         this.formModel = {
-          name: editingColor.name,
-          hexValue: editingColor.hexValue,
-          default: editingColor.default || false,
+          meta: {
+            name: editingColor.meta.name,
+            description: editingColor.meta.description,
+          },
+          spec: {
+            hexValue: editingColor.spec.hexValue,
+            default: editingColor.spec.default || false,
+          },
         };
       }
     }
@@ -216,7 +226,7 @@ export default defineComponent({
   },
   methods: {
     selectColor(hex: string): void {
-      this.formModel.hexValue = hex;
+      this.formModel.spec.hexValue = hex;
     },
     validateHexColor(val: string): boolean | string {
       if (!val) return "Please select or enter a color";
@@ -243,7 +253,7 @@ export default defineComponent({
 
       try {
         this.loading = true;
-        this.formModel.hexValue = this.formModel.hexValue.toUpperCase();
+        this.formModel.spec.hexValue = this.formModel.spec.hexValue.toUpperCase();
         await this.colorsStore.updateColor(this.colorId, this.formModel);
         this.toast.success("Color updated successfully");
       } catch (error) {
@@ -256,7 +266,7 @@ export default defineComponent({
     async createColor(): Promise<void> {
       try {
         this.loading = true;
-        this.formModel.hexValue = this.formModel.hexValue.toUpperCase();
+        this.formModel.spec.hexValue = this.formModel.spec.hexValue.toUpperCase();
         await this.colorsStore.createColor(this.formModel);
         this.toast.success("Color created successfully");
       } catch (error) {

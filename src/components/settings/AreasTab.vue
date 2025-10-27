@@ -38,14 +38,14 @@
     <div v-else-if="viewMode === 'grid'" class="areas-grid">
       <AreaCard
         v-for="area in filteredAreas"
-        :key="area.id"
+        :key="area.meta.id"
         :area="area"
-        :format-type="formatAreaType(area.type)"
-        :icon-color="getAreaTypeColor(area.type)"
-        @click="selectArea(area.id)"
+        :format-type="formatAreaType(area.spec.type)"
+        :icon-color="getAreaTypeColor(area.spec.type)"
+        @click="selectArea(area.meta.id)"
       >
         <template #icon>
-          <Icon :name="AreaTypeIcon(area.type)" :size="24" :stroke-width="2" />
+          <Icon :name="AreaTypeIcon(area.spec.type)" :size="24" :stroke-width="2" />
         </template>
       </AreaCard>
     </div>
@@ -63,35 +63,35 @@
         <div class="area-name-content">
           <div
             class="area-icon-sm"
-            :style="{ background: getAreaTypeColor(item.type) }"
+            :style="{ background: getAreaTypeColor(item.spec.type) }"
           >
             <Icon
-              :name="AreaTypeIcon(item.type)"
+              :name="AreaTypeIcon(item.spec.type)"
               :size="18"
               :stroke-width="2"
             />
           </div>
-          <div class="area-name">{{ item.name }}</div>
+          <div class="area-name">{{ item.meta.name }}</div>
         </div>
       </template>
 
       <template #cell-type="{ item }">
         <span class="badge badge-primary badge-sm">{{
-          formatAreaType(item.type)
+          formatAreaType(item.spec.type)
         }}</span>
       </template>
 
       <template #cell-capacity="{ item }">
-        <span v-if="item.capacity">{{ item.capacity }}</span>
+        <span v-if="item.spec.capacity">{{ item.spec.capacity }}</span>
         <span v-else class="text-secondary">N/A</span>
       </template>
 
       <template #cell-equipment="{ item }">
         <span
-          v-if="item.equipment && item.equipment.length > 0"
+          v-if="item.spec.equipment && item.spec.equipment.length > 0"
           class="badge badge-success badge-sm"
         >
-          {{ item.equipment.length }} item(s)
+          {{ item.spec.equipment.length }} item(s)
         </span>
         <span v-else class="text-caption">None</span>
       </template>
@@ -101,7 +101,7 @@
           outline
           color="grey-8"
           size="sm"
-          @click="selectArea(item.id)"
+          @click="selectArea(item.meta.id)"
           label="View Details"
         />
       </template>
@@ -220,8 +220,8 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         filtered = filtered.filter(
           (area) =>
-            area.name.toLowerCase().includes(query) ||
-            area.description?.toLowerCase().includes(query),
+            area.meta.name.toLowerCase().includes(query) ||
+            area.meta.description?.toLowerCase().includes(query),
         );
       }
 
@@ -231,10 +231,10 @@ export default defineComponent({
         this.filterType !== "" &&
         this.filterType !== "all"
       ) {
-        filtered = filtered.filter((area) => area.type === this.filterType);
+        filtered = filtered.filter((area) => area.spec.type === this.filterType);
       }
 
-      return filtered.sort((a, b) => a.name.localeCompare(b.name));
+      return filtered.sort((a, b) => a.meta.name.localeCompare(b.meta.name));
     },
     selectedArea(): Area | null {
       if (!this.selectedAreaId) return null;
@@ -246,7 +246,7 @@ export default defineComponent({
       this.selectedAreaId = id;
     },
     editArea(area: Area) {
-      this.editingAreaId = area.id;
+      this.editingAreaId = area.meta.id;
       this.selectedAreaId = null;
       this.showModal = true;
     },
@@ -282,8 +282,8 @@ export default defineComponent({
       this.confirmAction = null;
       this.showConfirmModal = false;
     },
-    formatAreaType(type: Area["type"]): string {
-      const typeMap: Record<NonNullable<Area["type"]>, string> = {
+    formatAreaType(type: Area["spec"]["type"]): string {
+      const typeMap: Record<NonNullable<Area["spec"]["type"]>, string> = {
         indoor: "Indoor",
         outdoor: "Outdoor",
         facility: "Facility",
@@ -291,10 +291,10 @@ export default defineComponent({
         water: "Water",
         other: "Other",
       };
-      return typeMap[type as NonNullable<Area["type"]>] || "";
+      return typeMap[type as NonNullable<Area["spec"]["type"]>] || "";
     },
-    getAreaTypeColor(type: Area["type"]): string {
-      const colorMap: Record<NonNullable<Area["type"]>, string> = {
+    getAreaTypeColor(type: Area["spec"]["type"]): string {
+      const colorMap: Record<NonNullable<Area["spec"]["type"]>, string> = {
         indoor: "#3b82f6",
         outdoor: "#10b981",
         facility: "#6366f1",
@@ -302,10 +302,10 @@ export default defineComponent({
         water: "#06b6d4",
         other: "#6b7280",
       };
-      return colorMap[type as NonNullable<Area["type"]>] || "#6b7280";
+      return colorMap[type as NonNullable<Area["spec"]["type"]>] || "#6b7280";
     },
-    AreaTypeIcon(type: Area["type"]): IconName {
-      const iconMap: Record<NonNullable<Area["type"]>, IconName> = {
+    AreaTypeIcon(type: Area["spec"]["type"]): IconName {
+      const iconMap: Record<NonNullable<Area["spec"]["type"]>, IconName> = {
         indoor: "Home",
         outdoor: "Trees",
         facility: "Activity",
@@ -313,7 +313,7 @@ export default defineComponent({
         water: "Waves",
         other: "MoreHorizontal",
       };
-      return iconMap[type as NonNullable<Area["type"]>] || "MapPin";
+      return iconMap[type as NonNullable<Area["spec"]["type"]>] || "MapPin";
     },
   },
 });

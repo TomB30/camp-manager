@@ -23,18 +23,18 @@
       <!-- Events -->
       <div
         v-for="event in events"
-        :key="event.id"
+        :key="event.meta.id"
         class="event-block"
         :style="getEventStyle(event)"
         @click="$emit('select-event', event)"
       >
-        <div class="event-title">{{ event.title }}</div>
+        <div class="event-title">{{ event.meta.name }}</div>
         <div class="event-details">
           <div class="event-room text-xs">
-            {{ getLocationName(event.locationId || "unknown") }}
+            {{ getLocationName(event.spec.locationId || "unknown") }}
           </div>
           <div class="event-capacity text-xs">
-            {{ getEnrolledCount(event.id) }}/{{ event.capacity }}
+            {{ getEnrolledCount(event.meta.id) }}/{{ event.spec.capacity }}
           </div>
         </div>
       </div>
@@ -77,8 +77,8 @@ export default defineComponent({
       return `${displayHour}:00 ${ampm}`;
     },
     getLocationName(locationId: string): string {
-      const location = this.rooms.find((r) => r.id === locationId);
-      return location?.name || "Unknown Location";
+      const location = this.rooms.find((r) => r.meta.id === locationId);
+      return location?.meta.name || "Unknown Location";
     },
     getEnrolledCount(eventId: string): number {
       return this.eventsStore.getEventCamperIds(eventId).length;
@@ -87,8 +87,8 @@ export default defineComponent({
       this.$emit("create-event", hour);
     },
     getEventStyle(event: Event) {
-      const start = new Date(event.startDate);
-      const end = new Date(event.endDate);
+      const start = new Date(event.spec.startDate);
+      const end = new Date(event.spec.endDate);
 
       const startMinutes = start.getHours() * 60 + start.getMinutes();
       const endMinutes = end.getHours() * 60 + end.getMinutes();
@@ -100,10 +100,10 @@ export default defineComponent({
 
       // Find overlapping events
       const overlappingEvents = this.events.filter((otherEvent) => {
-        if (otherEvent.id === event.id) return false;
+        if (otherEvent.meta.id === event.meta.id) return false;
 
-        const otherStart = new Date(otherEvent.startDate);
-        const otherEnd = new Date(otherEvent.endDate);
+        const otherStart = new Date(otherEvent.spec.startDate);
+        const otherEnd = new Date(otherEvent.spec.endDate);
         const otherStartMinutes =
           otherStart.getHours() * 60 + otherStart.getMinutes();
         const otherEndMinutes =
@@ -115,13 +115,13 @@ export default defineComponent({
 
       // Sort all overlapping events (including current) by start time, then by id for consistency
       const allOverlapping = [event, ...overlappingEvents].sort((a, b) => {
-        const aStart = new Date(a.startDate).getTime();
-        const bStart = new Date(b.startDate).getTime();
+        const aStart = new Date(a.spec.startDate).getTime();
+        const bStart = new Date(b.spec.startDate).getTime();
         if (aStart !== bStart) return aStart - bStart;
-        return a.id.localeCompare(b.id);
+        return a.meta.id.localeCompare(b.meta.id);
       });
 
-      const eventIndex = allOverlapping.findIndex((e) => e.id === event.id);
+      const eventIndex = allOverlapping.findIndex((e) => e.meta.id === event.meta.id);
       const totalOverlapping = allOverlapping.length;
 
       // Calculate width and position - split the total single-event width among overlapping events
@@ -139,8 +139,8 @@ export default defineComponent({
         height: `${height}px`,
         width,
         left,
-        background: event.colorId
-          ? this.colorsStore.getColorById(event.colorId)?.hexValue
+        background: event.spec.colorId
+          ? this.colorsStore.getColorById(event.spec.colorId)?.spec.hexValue
           : "#3B82F6",
       };
     },

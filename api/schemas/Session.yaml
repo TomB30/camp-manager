@@ -1,26 +1,19 @@
 type: object
 required:
-  - id
-  - name
-  - startDate
-  - endDate
+  - meta
+  - spec
 properties:
-  id:
-    type: string
-    format: uuid
-  name:
-    type: string
-  startDate:
-    type: string
-    format: date
-  endDate:
-    type: string
-    format: date
-  description:
-    type: string
-  createdAt:
-    type: string
-    format: date-time
-  updatedAt:
-    type: string
-    format: date-time
+  meta:
+    $ref: "./EntityMeta.yaml"
+  spec:
+    type: object
+    required:
+      - startDate
+      - endDate
+    properties:
+      startDate:
+        type: string
+        format: date
+      endDate:
+        type: string
+        format: date

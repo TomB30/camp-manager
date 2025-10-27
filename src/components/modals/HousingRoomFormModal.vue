@@ -8,7 +8,7 @@
         <div class="form-group">
           <label class="form-label">Room Name</label>
           <BaseInput
-            v-model="formModel.name"
+            v-model="formModel.meta.name"
             placeholder="Enter room name"
             :rules="[(val: string) => !!val || 'Enter room name']"
           />
@@ -30,7 +30,7 @@
         <div class="form-group">
           <label class="form-label">Area (optional)</label>
           <Autocomplete
-            v-model="formModel.areaId"
+            v-model="formModel.spec.areaId"
             :options="areaOptions"
             placeholder="Select an area..."
             :required="false"
@@ -86,9 +86,14 @@ export default defineComponent({
   data() {
     return {
       formModel: {
-        name: "",
-        beds: 0,
-        areaId: undefined,
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {
+          beds: 0,
+          areaId: undefined,
+        },
       } as HousingRoomCreationRequest,
       formRef: null as any,
       loading: false as boolean,
@@ -99,9 +104,14 @@ export default defineComponent({
     const room = this.housingRoomsStore.getHousingRoomById(this.roomId);
     if (!room) return;
     this.formModel = {
-      name: room.name,
-      beds: room.beds,
-      areaId: room.areaId,
+      meta: {
+        name: room.meta.name,
+        description: room.meta.description,
+      },
+      spec: {
+        beds: room.spec.beds,
+        areaId: room.spec.areaId,
+      },
     };
   },
   computed: {
@@ -110,17 +120,17 @@ export default defineComponent({
     },
     areaOptions(): AutocompleteOption[] {
       return this.areasStore.areas.map((area) => ({
-        label: area.name,
-        value: area.id,
+        label: area.meta.name,
+        value: area.meta.id,
       }));
     },
     bedsModel: {
       get(): string {
-        return this.formModel.beds?.toString() || "";
+        return this.formModel.spec.beds?.toString() || "";
       },
       set(value: string) {
         const num = parseInt(value);
-        this.formModel.beds = isNaN(num) ? 0 : num;
+        this.formModel.spec.beds = isNaN(num) ? 0 : num;
       },
     },
   },

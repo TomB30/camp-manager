@@ -1,29 +1,31 @@
 type: object
 required:
-  - name
+  - meta
+  - spec
 properties:
-  name:
-    type: string
-  description:
-    type: string
-  colorId:
-    type: string
-    format: uuid
-  activityIds:
-    type: array
-    items:
-      type: string
-      format: uuid
-    description: Activities belonging to this program
-  staffMemberIds:
-    type: array
-    items:
-      type: string
-      format: uuid
-    description: Staff members associated with this program
-  locationIds:
-    type: array
-    items:
-      type: string
-      format: uuid
-    description: Locations associated with this program
+  meta:
+    $ref: "./EntityCreationRequestMeta.yaml"
+  spec:
+    type: object
+    properties:
+      colorId:
+        type: string
+        format: uuid
+      activityIds:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: Activities belonging to this program
+      staffMemberIds:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: Staff members associated with this program
+      locationIds:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: Locations associated with this program

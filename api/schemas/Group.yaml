@@ -1,95 +1,87 @@
 type: object
 required:
-  - id
-  - name
+  - meta
+  - spec
 properties:
-  id:
-    type: string
-    format: uuid
-  name:
-    type: string
-  description:
-    type: string
-  sessionId:
-    type: string
-    format: uuid
-    description: Optional session this group belongs to
-  housingRoomId:
-    type: string
-    format: uuid
-    description: Optional housing room assignment for this group
-  # Camper assignment - either filters OR specific IDs
-  camperFilters:
+  meta:
+    $ref: "./EntityMeta.yaml"
+  spec:
     type: object
-    description: Filter criteria to automatically match campers
     properties:
-      ageMin:
-        type: integer
-        minimum: 5
-        maximum: 18
-      ageMax:
-        type: integer
-        minimum: 5
-        maximum: 18
-      gender:
-        type: string
-        enum: [male, female]
-      hasAllergies:
-        type: boolean
       sessionId:
         type: string
         format: uuid
-        description: Filter by specific session
-      familyGroupIds:
+        description: Optional session this group belongs to
+      housingRoomId:
+        type: string
+        format: uuid
+        description: Optional housing room assignment for this group
+      # Camper assignment - either filters OR specific IDs
+      camperFilters:
+        type: object
+        description: Filter criteria to automatically match campers
+        properties:
+          ageMin:
+            type: integer
+            minimum: 5
+            maximum: 18
+          ageMax:
+            type: integer
+            minimum: 5
+            maximum: 18
+          gender:
+            type: string
+            enum: [male, female]
+          hasAllergies:
+            type: boolean
+          sessionId:
+            type: string
+            format: uuid
+            description: Filter by specific session
+          familyGroupIds:
+            type: array
+            items:
+              type: string
+              format: uuid
+            description: Filter by specific family groups
+      camperIds:
         type: array
         items:
           type: string
           format: uuid
-        description: Filter by specific family groups
-  camperIds:
-    type: array
-    items:
-      type: string
-      format: uuid
-    description: Manually selected camper IDs (mutually exclusive with camperFilters)
-  # Staff assignment - either filters OR specific IDs
-  staffFilters:
-    type: object
-    description: Filter criteria to automatically match staff members
-    properties:
-      roles:
-        type: array
-        items:
-          type: string
-        description: Filter by staff roles
-      certificationIds:
+        description: Manually selected camper IDs (mutually exclusive with camperFilters)
+      # Staff assignment - either filters OR specific IDs
+      staffFilters:
+        type: object
+        description: Filter criteria to automatically match staff members
+        properties:
+          roles:
+            type: array
+            items:
+              type: string
+            description: Filter by staff roles
+          certificationIds:
+            type: array
+            items:
+              type: string
+              format: uuid
+            description: Filter by certifications
+      staffIds:
         type: array
         items:
           type: string
           format: uuid
-        description: Filter by certifications
-  staffIds:
-    type: array
-    items:
-      type: string
-      format: uuid
-    description: Manually selected staff IDs (mutually exclusive with staffFilters)
-  # Nested groups
-  groupIds:
-    type: array
-    items:
-      type: string
-      format: uuid
-    description: Child group IDs for creating groups of groups
-  labelIds:
-    type: array
-    items:
-      type: string
-      format: uuid
-    description: IDs of labels assigned to this group
-  createdAt:
-    type: string
-    format: date-time
-  updatedAt:
-    type: string
-    format: date-time
+        description: Manually selected staff IDs (mutually exclusive with staffFilters)
+      # Nested groups
+      groupIds:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: Child group IDs for creating groups of groups
+      labelIds:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: IDs of labels assigned to this group

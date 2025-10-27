@@ -1142,850 +1142,860 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    Camper: {
-      /** Format: uuid */
+    EntityMeta: {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the entity
+       */
       id: string;
-      firstName: string;
-      lastName: string;
-      age: number;
-      /** @enum {string} */
-      gender: "male" | "female";
-      photoUrl?: string;
-      /** Format: date-time */
-      registrationDate?: string;
+      /** @description Name of the entity */
+      name: string;
+      /** @description Description of the entity */
+      description?: string;
       /**
-       * Format: uuid
-       * @description ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
+       * Format: date-time
+       * @description Timestamp when the entity was created
        */
-      housingRoomId?: string;
+      createdAt: string;
       /**
-       * Format: uuid
-       * @description ID of the family group this camper belongs to
+       * Format: date-time
+       * @description Timestamp when the entity was last updated
        */
-      familyGroupId?: string;
-      /**
-       * Format: uuid
-       * @description ID of the camp session this camper is registered for
-       */
-      sessionId?: string;
+      updatedAt: string;
+    };
+    EntityCreationRequestMeta: {
+      /** @description Name of the entity */
+      name: string;
+      /** @description Description of the entity */
+      description?: string;
+    };
+    Camper: {
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
+        firstName: string;
+        lastName: string;
+        age: number;
+        /** @enum {string} */
+        gender: "male" | "female";
+        photoUrl?: string;
+        /** Format: date-time */
+        registrationDate?: string;
+        /**
+         * Format: uuid
+         * @description ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
+         */
+        housingRoomId?: string;
+        /**
+         * Format: uuid
+         * @description ID of the family group this camper belongs to
+         */
+        familyGroupId?: string;
+        /**
+         * Format: uuid
+         * @description ID of the camp session this camper is registered for
+         */
+        sessionId?: string;
+      };
     };
     CamperCreationRequest: {
-      firstName: string;
-      lastName: string;
-      age: number;
-      /** @enum {string} */
-      gender: "male" | "female";
-      /**
-       * Format: uuid
-       * @description ID of the camp session this camper is registered in
-       */
-      sessionId: string;
-      photoUrl?: string;
-      /** Format: date-time */
-      registrationDate?: string;
-      /**
-       * Format: uuid
-       * @description ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
-       */
-      housingRoomId?: string;
-      /**
-       * Format: uuid
-       * @description ID of the family group this camper belongs to
-       */
-      familyGroupId?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        firstName: string;
+        lastName: string;
+        age: number;
+        /** @enum {string} */
+        gender: "male" | "female";
+        /**
+         * Format: uuid
+         * @description ID of the camp session this camper is registered in
+         */
+        sessionId: string;
+        photoUrl?: string;
+        /** Format: date-time */
+        registrationDate?: string;
+        /**
+         * Format: uuid
+         * @description ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
+         */
+        housingRoomId?: string;
+        /**
+         * Format: uuid
+         * @description ID of the family group this camper belongs to
+         */
+        familyGroupId?: string;
+      };
     };
     CamperUpdateRequest: {
-      firstName: string;
-      lastName: string;
-      age: number;
-      /** @enum {string} */
-      gender: "male" | "female";
-      /**
-       * Format: uuid
-       * @description ID of the camp session this camper is registered in
-       */
-      sessionId: string;
-      photoUrl?: string;
-      /** Format: date-time */
-      registrationDate?: string;
-      /**
-       * Format: uuid
-       * @description ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
-       */
-      housingRoomId?: string;
-      /**
-       * Format: uuid
-       * @description ID of the family group this camper belongs to
-       */
-      familyGroupId?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        firstName: string;
+        lastName: string;
+        age: number;
+        /** @enum {string} */
+        gender: "male" | "female";
+        /**
+         * Format: uuid
+         * @description ID of the camp session this camper is registered in
+         */
+        sessionId: string;
+        photoUrl?: string;
+        /** Format: date-time */
+        registrationDate?: string;
+        /**
+         * Format: uuid
+         * @description ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
+         */
+        housingRoomId?: string;
+        /**
+         * Format: uuid
+         * @description ID of the family group this camper belongs to
+         */
+        familyGroupId?: string;
+      };
     };
     StaffMember: {
-      /** Format: uuid */
-      id: string;
-      firstName: string;
-      lastName: string;
-      /**
-       * Format: uuid
-       * @description ID of the role this staff member has
-       */
-      roleId: string;
-      /** Format: email */
-      email?: string;
-      phone?: string;
-      /** @description IDs of certifications this staff member holds */
-      certificationIds?: string[];
-      photoUrl?: string;
-      /**
-       * Format: uuid
-       * @description ID of the staff member who manages this person
-       */
-      managerId?: string;
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
+        firstName: string;
+        lastName: string;
+        /**
+         * Format: uuid
+         * @description ID of the role this staff member has
+         */
+        roleId: string;
+        /** Format: email */
+        email?: string;
+        phone?: string;
+        /** @description IDs of certifications this staff member holds */
+        certificationIds?: string[];
+        photoUrl?: string;
+        /**
+         * Format: uuid
+         * @description ID of the staff member who manages this person
+         */
+        managerId?: string;
+      };
     };
     StaffMemberCreationRequest: {
-      firstName: string;
-      lastName: string;
-      /**
-       * Format: uuid
-       * @description ID of the role this staff member has
-       */
-      roleId: string;
-      /** Format: email */
-      email?: string;
-      phone?: string;
-      /** @description IDs of certifications this staff member holds */
-      certificationIds?: string[];
-      photoUrl?: string;
-      /**
-       * Format: uuid
-       * @description ID of the staff member who manages this person
-       */
-      managerId?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        firstName: string;
+        lastName: string;
+        /**
+         * Format: uuid
+         * @description ID of the role this staff member has
+         */
+        roleId: string;
+        /** Format: email */
+        email?: string;
+        phone?: string;
+        /** @description IDs of certifications this staff member holds */
+        certificationIds?: string[];
+        photoUrl?: string;
+        /**
+         * Format: uuid
+         * @description ID of the staff member who manages this person
+         */
+        managerId?: string;
+      };
     };
     StaffMemberUpdateRequest: {
-      firstName: string;
-      lastName: string;
-      /**
-       * Format: uuid
-       * @description ID of the role this staff member has
-       */
-      roleId: string;
-      /** Format: email */
-      email?: string;
-      phone?: string;
-      /** @description IDs of certifications this staff member holds */
-      certificationIds?: string[];
-      photoUrl?: string;
-      /**
-       * Format: uuid
-       * @description ID of the staff member who manages this person
-       */
-      managerId?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        firstName: string;
+        lastName: string;
+        /**
+         * Format: uuid
+         * @description ID of the role this staff member has
+         */
+        roleId: string;
+        /** Format: email */
+        email?: string;
+        phone?: string;
+        /** @description IDs of certifications this staff member holds */
+        certificationIds?: string[];
+        photoUrl?: string;
+        /**
+         * Format: uuid
+         * @description ID of the staff member who manages this person
+         */
+        managerId?: string;
+      };
     };
     Role: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      description?: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
+      meta: components["schemas"]["EntityMeta"];
+      spec: Record<string, never>;
     };
     RoleCreationRequest: {
-      name: string;
-      description?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: Record<string, never>;
     };
     RoleUpdateRequest: {
-      name: string;
-      description?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: Record<string, never>;
     };
     Area: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      description?: string;
-      /** @enum {string} */
-      type?: "indoor" | "outdoor" | "facility" | "field" | "water" | "other";
-      capacity?: number;
-      equipment?: string[];
-      notes?: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
+        /** @enum {string} */
+        type?: "indoor" | "outdoor" | "facility" | "field" | "water" | "other";
+        capacity?: number;
+        equipment?: string[];
+        notes?: string;
+      };
     };
     AreaCreationRequest: {
-      name: string;
-      description?: string;
-      /** @enum {string} */
-      type?: "indoor" | "outdoor" | "facility" | "field" | "water" | "other";
-      capacity?: number;
-      equipment?: string[];
-      notes?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** @enum {string} */
+        type?: "indoor" | "outdoor" | "facility" | "field" | "water" | "other";
+        capacity?: number;
+        equipment?: string[];
+        notes?: string;
+      };
     };
     AreaUpdateRequest: {
-      name: string;
-      description?: string;
-      /** @enum {string} */
-      type?: "indoor" | "outdoor" | "facility" | "field" | "water" | "other";
-      capacity?: number;
-      equipment?: string[];
-      notes?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** @enum {string} */
+        type?: "indoor" | "outdoor" | "facility" | "field" | "water" | "other";
+        capacity?: number;
+        equipment?: string[];
+        notes?: string;
+      };
     };
     Location: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      /** @enum {string} */
-      type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
-      capacity?: number;
-      /**
-       * Format: uuid
-       * @description ID of the physical area where this location is situated
-       */
-      areaId?: string;
-      equipment?: string[];
-      notes?: string;
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
+        /** @enum {string} */
+        type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
+        capacity?: number;
+        /**
+         * Format: uuid
+         * @description ID of the physical area where this location is situated
+         */
+        areaId?: string;
+        equipment?: string[];
+        notes?: string;
+      };
     };
     LocationCreationRequest: {
-      name: string;
-      /** @enum {string} */
-      type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
-      capacity?: number;
-      /**
-       * Format: uuid
-       * @description ID of the physical area where this location is situated
-       */
-      areaId?: string;
-      equipment?: string[];
-      notes?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** @enum {string} */
+        type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
+        capacity?: number;
+        /**
+         * Format: uuid
+         * @description ID of the physical area where this location is situated
+         */
+        areaId?: string;
+        equipment?: string[];
+        notes?: string;
+      };
     };
     LocationUpdateRequest: {
-      name: string;
-      /** @enum {string} */
-      type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
-      capacity?: number;
-      /**
-       * Format: uuid
-       * @description ID of the physical area where this location is situated
-       */
-      areaId?: string;
-      equipment?: string[];
-      notes?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** @enum {string} */
+        type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
+        capacity?: number;
+        /**
+         * Format: uuid
+         * @description ID of the physical area where this location is situated
+         */
+        areaId?: string;
+        equipment?: string[];
+        notes?: string;
+      };
     };
     Program: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      description?: string;
-      /** Format: uuid */
-      colorId?: string;
-      /** @description Activities belonging to this program */
-      activityIds?: string[];
-      /** @description Staff members associated with this program */
-      staffMemberIds?: string[];
-      /** @description Locations associated with this program */
-      locationIds?: string[];
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
+        /** Format: uuid */
+        colorId?: string;
+        /** @description Activities belonging to this program */
+        activityIds?: string[];
+        /** @description Staff members associated with this program */
+        staffMemberIds?: string[];
+        /** @description Locations associated with this program */
+        locationIds?: string[];
+      };
     };
     ProgramCreationRequest: {
-      name: string;
-      description?: string;
-      /** Format: uuid */
-      colorId?: string;
-      /** @description Activities belonging to this program */
-      activityIds?: string[];
-      /** @description Staff members associated with this program */
-      staffMemberIds?: string[];
-      /** @description Locations associated with this program */
-      locationIds?: string[];
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** Format: uuid */
+        colorId?: string;
+        /** @description Activities belonging to this program */
+        activityIds?: string[];
+        /** @description Staff members associated with this program */
+        staffMemberIds?: string[];
+        /** @description Locations associated with this program */
+        locationIds?: string[];
+      };
     };
     ProgramUpdateRequest: {
-      name: string;
-      description?: string;
-      /** Format: uuid */
-      colorId?: string;
-      /** @description Activities belonging to this program */
-      activityIds?: string[];
-      /** @description Staff members associated with this program */
-      staffMemberIds?: string[];
-      /** @description Locations associated with this program */
-      locationIds?: string[];
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** Format: uuid */
+        colorId?: string;
+        /** @description Activities belonging to this program */
+        activityIds?: string[];
+        /** @description Staff members associated with this program */
+        staffMemberIds?: string[];
+        /** @description Locations associated with this program */
+        locationIds?: string[];
+      };
     };
     Activity: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      /** @description IDs of programs this activity belongs to */
-      programIds: string[];
-      description?: string;
-      /** @description Default duration in minutes */
-      duration?: number;
-      /**
-       * Format: uuid
-       * @description ID of the default location
-       */
-      defaultLocationId?: string;
-      /** @description IDs of required staff certifications */
-      requiredCertificationIds?: string[];
-      /** @description Minimum number of staff required */
-      minStaff?: number;
-      /** @description Default activity capacity */
-      defaultCapacity?: number;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
+        /** @description IDs of programs this activity belongs to */
+        programIds: string[];
+        /** @description Default duration in minutes */
+        duration?: number;
+        /**
+         * Format: uuid
+         * @description ID of the default location
+         */
+        defaultLocationId?: string;
+        /** @description IDs of required staff certifications */
+        requiredCertificationIds?: string[];
+        /** @description Minimum number of staff required */
+        minStaff?: number;
+        /** @description Default activity capacity */
+        defaultCapacity?: number;
+      };
     };
     ActivityCreationRequest: {
-      name: string;
-      /** @description IDs of programs this activity belongs to */
-      programIds: string[];
-      description?: string;
-      /** @description Default duration in minutes */
-      duration?: number;
-      /**
-       * Format: uuid
-       * @description ID of the default location
-       */
-      defaultLocationId?: string;
-      /** @description IDs of required staff certifications */
-      requiredCertificationIds?: string[];
-      /** @description Minimum number of staff required */
-      minStaff?: number;
-      /** @description Default activity capacity */
-      defaultCapacity?: number;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** @description IDs of programs this activity belongs to */
+        programIds: string[];
+        /** @description Default duration in minutes */
+        duration?: number;
+        /**
+         * Format: uuid
+         * @description ID of the default location
+         */
+        defaultLocationId?: string;
+        /** @description IDs of required staff certifications */
+        requiredCertificationIds?: string[];
+        /** @description Minimum number of staff required */
+        minStaff?: number;
+        /** @description Default activity capacity */
+        defaultCapacity?: number;
+      };
     };
     ActivityUpdateRequest: {
-      name: string;
-      /** @description IDs of programs this activity belongs to */
-      programIds: string[];
-      description?: string;
-      /** @description Default duration in minutes */
-      duration?: number;
-      /**
-       * Format: uuid
-       * @description ID of the default location
-       */
-      defaultLocationId?: string;
-      /** @description IDs of required staff certifications */
-      requiredCertificationIds?: string[];
-      /** @description Minimum number of staff required */
-      minStaff?: number;
-      /** @description Default activity capacity */
-      defaultCapacity?: number;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** @description IDs of programs this activity belongs to */
+        programIds: string[];
+        /** @description Default duration in minutes */
+        duration?: number;
+        /**
+         * Format: uuid
+         * @description ID of the default location
+         */
+        defaultLocationId?: string;
+        /** @description IDs of required staff certifications */
+        requiredCertificationIds?: string[];
+        /** @description Minimum number of staff required */
+        minStaff?: number;
+        /** @description Default activity capacity */
+        defaultCapacity?: number;
+      };
     };
     Color: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      /** @description Hex color value (e.g., "#FF5733") */
-      hexValue: string;
-      /** @description Whether this is the default color for events */
-      default?: boolean;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
+        /** @description Hex color value (e.g., "#FF5733") */
+        hexValue: string;
+        /** @description Whether this is the default color for events */
+        default?: boolean;
+      };
     };
     ColorCreationRequest: {
-      name: string;
-      /** @description Hex color value (e.g., "#FF5733") */
-      hexValue: string;
-      /** @description Whether this is the default color for events */
-      default?: boolean;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** @description Hex color value (e.g., "#FF5733") */
+        hexValue: string;
+        /** @description Whether this is the default color for events */
+        default?: boolean;
+      };
     };
     ColorUpdateRequest: {
-      name: string;
-      /** @description Hex color value (e.g., "#FF5733") */
-      hexValue: string;
-      /** @description Whether this is the default color for events */
-      default?: boolean;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** @description Hex color value (e.g., "#FF5733") */
+        hexValue: string;
+        /** @description Whether this is the default color for events */
+        default?: boolean;
+      };
     };
     Certification: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      description?: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
+      meta: components["schemas"]["EntityMeta"];
+      spec: Record<string, never>;
     };
     CertificationCreationRequest: {
-      name: string;
-      description?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: Record<string, never>;
     };
     CertificationUpdateRequest: {
-      name: string;
-      description?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: Record<string, never>;
     };
     HousingRoom: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      /** @description Number of beds in this housing room */
-      beds: number;
-      /**
-       * Format: uuid
-       * @description ID of the physical area where this housing room is located
-       */
-      areaId?: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
+        /** @description Number of beds in this housing room */
+        beds: number;
+        /**
+         * Format: uuid
+         * @description ID of the physical area where this housing room is located
+         */
+        areaId?: string;
+      };
     };
     HousingRoomCreationRequest: {
-      name: string;
-      /** @description Number of beds in this housing room */
-      beds: number;
-      /**
-       * Format: uuid
-       * @description ID of the physical area where this housing room is located
-       */
-      areaId?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** @description Number of beds in this housing room */
+        beds: number;
+        /**
+         * Format: uuid
+         * @description ID of the physical area where this housing room is located
+         */
+        areaId?: string;
+      };
     };
     HousingRoomUpdateRequest: {
-      name: string;
-      /** @description Number of beds in this housing room */
-      beds: number;
-      /**
-       * Format: uuid
-       * @description ID of the physical area where this housing room is located
-       */
-      areaId?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** @description Number of beds in this housing room */
+        beds: number;
+        /**
+         * Format: uuid
+         * @description ID of the physical area where this housing room is located
+         */
+        areaId?: string;
+      };
     };
     Session: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      /** Format: date */
-      startDate: string;
-      /** Format: date */
-      endDate: string;
-      description?: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
+        /** Format: date */
+        startDate: string;
+        /** Format: date */
+        endDate: string;
+      };
     };
     SessionCreationRequest: {
-      name: string;
-      /** Format: date */
-      startDate: string;
-      /** Format: date */
-      endDate: string;
-      description?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** Format: date */
+        startDate: string;
+        /** Format: date */
+        endDate: string;
+      };
     };
     SessionUpdateRequest: {
-      name: string;
-      /** Format: date */
-      startDate: string;
-      /** Format: date */
-      endDate: string;
-      description?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** Format: date */
+        startDate: string;
+        /** Format: date */
+        endDate: string;
+      };
     };
     Group: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      description?: string;
-      /**
-       * Format: uuid
-       * @description Optional session this group belongs to
-       */
-      sessionId?: string;
-      /**
-       * Format: uuid
-       * @description Optional housing room assignment for this group
-       */
-      housingRoomId?: string;
-      /** @description Filter criteria to automatically match campers */
-      camperFilters?: {
-        ageMin?: number;
-        ageMax?: number;
-        /** @enum {string} */
-        gender?: "male" | "female";
-        hasAllergies?: boolean;
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
         /**
          * Format: uuid
-         * @description Filter by specific session
+         * @description Optional session this group belongs to
          */
         sessionId?: string;
-        /** @description Filter by specific family groups */
-        familyGroupIds?: string[];
+        /**
+         * Format: uuid
+         * @description Optional housing room assignment for this group
+         */
+        housingRoomId?: string;
+        /** @description Filter criteria to automatically match campers */
+        camperFilters?: {
+          ageMin?: number;
+          ageMax?: number;
+          /** @enum {string} */
+          gender?: "male" | "female";
+          hasAllergies?: boolean;
+          /**
+           * Format: uuid
+           * @description Filter by specific session
+           */
+          sessionId?: string;
+          /** @description Filter by specific family groups */
+          familyGroupIds?: string[];
+        };
+        /** @description Manually selected camper IDs (mutually exclusive with camperFilters) */
+        camperIds?: string[];
+        /** @description Filter criteria to automatically match staff members */
+        staffFilters?: {
+          /** @description Filter by staff roles */
+          roles?: string[];
+          /** @description Filter by certifications */
+          certificationIds?: string[];
+        };
+        /** @description Manually selected staff IDs (mutually exclusive with staffFilters) */
+        staffIds?: string[];
+        /** @description Child group IDs for creating groups of groups */
+        groupIds?: string[];
+        /** @description IDs of labels assigned to this group */
+        labelIds?: string[];
       };
-      /** @description Manually selected camper IDs (mutually exclusive with camperFilters) */
-      camperIds?: string[];
-      /** @description Filter criteria to automatically match staff members */
-      staffFilters?: {
-        /** @description Filter by staff roles */
-        roles?: string[];
-        /** @description Filter by certifications */
-        certificationIds?: string[];
-      };
-      /** @description Manually selected staff IDs (mutually exclusive with staffFilters) */
-      staffIds?: string[];
-      /** @description Child group IDs for creating groups of groups */
-      groupIds?: string[];
-      /** @description IDs of labels assigned to this group */
-      labelIds?: string[];
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
     };
     GroupCreationRequest: {
-      name: string;
-      description?: string;
-      /**
-       * Format: uuid
-       * @description Optional session this group belongs to
-       */
-      sessionId?: string;
-      /**
-       * Format: uuid
-       * @description Optional housing room assignment for this group
-       */
-      housingRoomId?: string;
-      /** @description Filter criteria to automatically match campers */
-      camperFilters?: {
-        ageMin?: number;
-        ageMax?: number;
-        /** @enum {string} */
-        gender?: "male" | "female";
-        hasAllergies?: boolean;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
         /**
          * Format: uuid
-         * @description Filter by specific session
+         * @description Optional session this group belongs to
          */
         sessionId?: string;
-        /** @description Filter by specific family groups */
-        familyGroupIds?: string[];
+        /**
+         * Format: uuid
+         * @description Optional housing room assignment for this group
+         */
+        housingRoomId?: string;
+        /** @description Filter criteria to automatically match campers */
+        camperFilters?: {
+          ageMin?: number;
+          ageMax?: number;
+          /** @enum {string} */
+          gender?: "male" | "female";
+          hasAllergies?: boolean;
+          /**
+           * Format: uuid
+           * @description Filter by specific session
+           */
+          sessionId?: string;
+          /** @description Filter by specific family groups */
+          familyGroupIds?: string[];
+        };
+        /** @description Manually selected camper IDs (mutually exclusive with camperFilters) */
+        camperIds?: string[];
+        /** @description Filter criteria to automatically match staff members */
+        staffFilters?: {
+          /** @description Filter by staff roles */
+          roles?: string[];
+          /** @description Filter by certifications */
+          certificationIds?: string[];
+        };
+        /** @description Manually selected staff IDs (mutually exclusive with staffFilters) */
+        staffIds?: string[];
+        /** @description Child group IDs for creating groups of groups */
+        groupIds?: string[];
+        /** @description IDs of labels assigned to this group */
+        labelIds?: string[];
       };
-      /** @description Manually selected camper IDs (mutually exclusive with camperFilters) */
-      camperIds?: string[];
-      /** @description Filter criteria to automatically match staff members */
-      staffFilters?: {
-        /** @description Filter by staff roles */
-        roles?: string[];
-        /** @description Filter by certifications */
-        certificationIds?: string[];
-      };
-      /** @description Manually selected staff IDs (mutually exclusive with staffFilters) */
-      staffIds?: string[];
-      /** @description Child group IDs for creating groups of groups */
-      groupIds?: string[];
-      /** @description IDs of labels assigned to this group */
-      labelIds?: string[];
     };
     GroupUpdateRequest: {
-      name: string;
-      description?: string;
-      /**
-       * Format: uuid
-       * @description Optional session this group belongs to
-       */
-      sessionId?: string;
-      /**
-       * Format: uuid
-       * @description Optional housing room assignment for this group
-       */
-      housingRoomId?: string;
-      /** @description Filter criteria to automatically match campers */
-      camperFilters?: {
-        ageMin?: number;
-        ageMax?: number;
-        /** @enum {string} */
-        gender?: "male" | "female";
-        hasAllergies?: boolean;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
         /**
          * Format: uuid
-         * @description Filter by specific session
+         * @description Optional session this group belongs to
          */
         sessionId?: string;
-        /** @description Filter by specific family groups */
-        familyGroupIds?: string[];
+        /**
+         * Format: uuid
+         * @description Optional housing room assignment for this group
+         */
+        housingRoomId?: string;
+        /** @description Filter criteria to automatically match campers */
+        camperFilters?: {
+          ageMin?: number;
+          ageMax?: number;
+          /** @enum {string} */
+          gender?: "male" | "female";
+          hasAllergies?: boolean;
+          /**
+           * Format: uuid
+           * @description Filter by specific session
+           */
+          sessionId?: string;
+          /** @description Filter by specific family groups */
+          familyGroupIds?: string[];
+        };
+        /** @description Manually selected camper IDs (mutually exclusive with camperFilters) */
+        camperIds?: string[];
+        /** @description Filter criteria to automatically match staff members */
+        staffFilters?: {
+          /** @description Filter by staff roles */
+          roles?: string[];
+          /** @description Filter by certifications */
+          certificationIds?: string[];
+        };
+        /** @description Manually selected staff IDs (mutually exclusive with staffFilters) */
+        staffIds?: string[];
+        /** @description Child group IDs for creating groups of groups */
+        groupIds?: string[];
+        /** @description IDs of labels assigned to this group */
+        labelIds?: string[];
       };
-      /** @description Manually selected camper IDs (mutually exclusive with camperFilters) */
-      camperIds?: string[];
-      /** @description Filter criteria to automatically match staff members */
-      staffFilters?: {
-        /** @description Filter by staff roles */
-        roles?: string[];
-        /** @description Filter by certifications */
-        certificationIds?: string[];
-      };
-      /** @description Manually selected staff IDs (mutually exclusive with staffFilters) */
-      staffIds?: string[];
-      /** @description Child group IDs for creating groups of groups */
-      groupIds?: string[];
-      /** @description IDs of labels assigned to this group */
-      labelIds?: string[];
     };
     Event: {
-      /** Format: uuid */
-      id: string;
-      title: string;
-      description?: string;
-      /** Format: date-time */
-      startDate: string;
-      /** Format: date-time */
-      endDate: string;
-      /** Format: uuid */
-      locationId?: string;
-      capacity?: number;
-      /** @description IDs of groups assigned to this event */
-      groupIds?: string[];
-      /** @description IDs of staff members to exclude from assigned groups */
-      excludeStaffIds?: string[];
-      /** @description IDs of campers to exclude from assigned groups */
-      excludeCamperIds?: string[];
-      /** @description IDs of certifications required for this event */
-      requiredCertificationIds?: string[];
-      /** Format: uuid */
-      colorId?: string;
-      /** Format: uuid */
-      programId?: string;
-      /** Format: uuid */
-      activityId?: string;
-      /**
-       * Format: uuid
-       * @description Recurrence rule ID - links this event to a recurrence series
-       */
-      recurrenceId?: string;
-      /** @description Indicates if this is the parent event of a recurrence series */
-      isRecurrenceParent?: boolean;
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
+        title: string;
+        /** Format: date-time */
+        startDate: string;
+        /** Format: date-time */
+        endDate: string;
+        /** Format: uuid */
+        locationId?: string;
+        capacity?: number;
+        /** @description IDs of groups assigned to this event */
+        groupIds?: string[];
+        /** @description IDs of staff members to exclude from assigned groups */
+        excludeStaffIds?: string[];
+        /** @description IDs of campers to exclude from assigned groups */
+        excludeCamperIds?: string[];
+        /** @description IDs of certifications required for this event */
+        requiredCertificationIds?: string[];
+        /** Format: uuid */
+        colorId?: string;
+        /** Format: uuid */
+        programId?: string;
+        /** Format: uuid */
+        activityId?: string;
+        /**
+         * Format: uuid
+         * @description Recurrence rule ID - links this event to a recurrence series
+         */
+        recurrenceId?: string;
+        /** @description Indicates if this is the parent event of a recurrence series */
+        isRecurrenceParent?: boolean;
+      };
     };
     EventCreationRequest: {
-      title: string;
-      description?: string;
-      /** Format: date-time */
-      startDate: string;
-      /** Format: date-time */
-      endDate: string;
-      /** Format: uuid */
-      locationId?: string;
-      capacity?: number;
-      /** @description IDs of groups assigned to this event */
-      groupIds?: string[];
-      /** @description IDs of staff members to exclude from assigned groups */
-      excludeStaffIds?: string[];
-      /** @description IDs of campers to exclude from assigned groups */
-      excludeCamperIds?: string[];
-      /** @description IDs of certifications required for this event */
-      requiredCertificationIds?: string[];
-      /** Format: uuid */
-      colorId?: string;
-      /** Format: uuid */
-      programId?: string;
-      /** Format: uuid */
-      activityId?: string;
-      /**
-       * Format: uuid
-       * @description Recurrence rule ID - links this event to a recurrence series
-       */
-      recurrenceId?: string;
-      /** @description Indicates if this is the parent event of a recurrence series */
-      isRecurrenceParent?: boolean;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        title: string;
+        /** Format: date-time */
+        startDate: string;
+        /** Format: date-time */
+        endDate: string;
+        /** Format: uuid */
+        locationId?: string;
+        capacity?: number;
+        /** @description IDs of groups assigned to this event */
+        groupIds?: string[];
+        /** @description IDs of staff members to exclude from assigned groups */
+        excludeStaffIds?: string[];
+        /** @description IDs of campers to exclude from assigned groups */
+        excludeCamperIds?: string[];
+        /** @description IDs of certifications required for this event */
+        requiredCertificationIds?: string[];
+        /** Format: uuid */
+        colorId?: string;
+        /** Format: uuid */
+        programId?: string;
+        /** Format: uuid */
+        activityId?: string;
+        /**
+         * Format: uuid
+         * @description Recurrence rule ID - links this event to a recurrence series
+         */
+        recurrenceId?: string;
+        /** @description Indicates if this is the parent event of a recurrence series */
+        isRecurrenceParent?: boolean;
+      };
     };
     EventUpdateRequest: {
-      title: string;
-      description?: string;
-      /** Format: date-time */
-      startDate: string;
-      /** Format: date-time */
-      endDate: string;
-      /** Format: uuid */
-      locationId?: string;
-      capacity?: number;
-      /** @description IDs of groups assigned to this event */
-      groupIds?: string[];
-      /** @description IDs of staff members to exclude from assigned groups */
-      excludeStaffIds?: string[];
-      /** @description IDs of campers to exclude from assigned groups */
-      excludeCamperIds?: string[];
-      /** @description IDs of certifications required for this event */
-      requiredCertificationIds?: string[];
-      /** Format: uuid */
-      colorId?: string;
-      /** Format: uuid */
-      programId?: string;
-      /** Format: uuid */
-      activityId?: string;
-      /**
-       * Format: uuid
-       * @description Recurrence rule ID - links this event to a recurrence series
-       */
-      recurrenceId?: string;
-      /** @description Indicates if this is the parent event of a recurrence series */
-      isRecurrenceParent?: boolean;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        title: string;
+        /** Format: date-time */
+        startDate: string;
+        /** Format: date-time */
+        endDate: string;
+        /** Format: uuid */
+        locationId?: string;
+        capacity?: number;
+        /** @description IDs of groups assigned to this event */
+        groupIds?: string[];
+        /** @description IDs of staff members to exclude from assigned groups */
+        excludeStaffIds?: string[];
+        /** @description IDs of campers to exclude from assigned groups */
+        excludeCamperIds?: string[];
+        /** @description IDs of certifications required for this event */
+        requiredCertificationIds?: string[];
+        /** Format: uuid */
+        colorId?: string;
+        /** Format: uuid */
+        programId?: string;
+        /** Format: uuid */
+        activityId?: string;
+        /**
+         * Format: uuid
+         * @description Recurrence rule ID - links this event to a recurrence series
+         */
+        recurrenceId?: string;
+        /** @description Indicates if this is the parent event of a recurrence series */
+        isRecurrenceParent?: boolean;
+      };
     };
     Camp: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      description?: string;
-      /**
-       * Format: date
-       * @description Overall camp season start date
-       */
-      startDate: string;
-      /**
-       * Format: date
-       * @description Overall camp season end date
-       */
-      endDate: string;
-      /**
-       * @description Daily start time for calendar display (24-hour format HH:MM)
-       * @example 08:00
-       */
-      dailyStartTime: string;
-      /**
-       * @description Daily end time for calendar display (24-hour format HH:MM)
-       * @example 20:00
-       */
-      dailyEndTime: string;
-      address?: {
-        street?: string;
-        city?: string;
-        state?: string;
-        zipCode?: string;
-        country?: string;
-      };
-      contactInfo?: {
-        phone?: string;
-        /** Format: email */
-        email?: string;
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
+        /**
+         * Format: date
+         * @description Overall camp season start date
+         */
+        startDate: string;
+        /**
+         * Format: date
+         * @description Overall camp season end date
+         */
+        endDate: string;
+        /**
+         * @description Daily start time for calendar display (24-hour format HH:MM)
+         * @example 08:00
+         */
+        dailyStartTime: string;
+        /**
+         * @description Daily end time for calendar display (24-hour format HH:MM)
+         * @example 20:00
+         */
+        dailyEndTime: string;
+        address?: {
+          street?: string;
+          city?: string;
+          state?: string;
+          zipCode?: string;
+          country?: string;
+        };
+        contactInfo?: {
+          phone?: string;
+          /** Format: email */
+          email?: string;
+          /** Format: uri */
+          website?: string;
+        };
         /** Format: uri */
-        website?: string;
+        logoUrl?: string;
       };
-      /** Format: uri */
-      logoUrl?: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
     };
     CampCreationRequest: {
-      name: string;
-      description?: string;
-      /**
-       * Format: date
-       * @description Overall camp season start date
-       */
-      startDate: string;
-      /**
-       * Format: date
-       * @description Overall camp season end date
-       */
-      endDate: string;
-      /**
-       * @description Daily start time for calendar display (24-hour format HH:MM)
-       * @example 08:00
-       */
-      dailyStartTime: string;
-      /**
-       * @description Daily end time for calendar display (24-hour format HH:MM)
-       * @example 20:00
-       */
-      dailyEndTime: string;
-      address?: {
-        street?: string;
-        city?: string;
-        state?: string;
-        zipCode?: string;
-        country?: string;
-      };
-      contactInfo?: {
-        phone?: string;
-        /** Format: email */
-        email?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /**
+         * Format: date
+         * @description Overall camp season start date
+         */
+        startDate: string;
+        /**
+         * Format: date
+         * @description Overall camp season end date
+         */
+        endDate: string;
+        /**
+         * @description Daily start time for calendar display (24-hour format HH:MM)
+         * @example 08:00
+         */
+        dailyStartTime: string;
+        /**
+         * @description Daily end time for calendar display (24-hour format HH:MM)
+         * @example 20:00
+         */
+        dailyEndTime: string;
+        address?: {
+          street?: string;
+          city?: string;
+          state?: string;
+          zipCode?: string;
+          country?: string;
+        };
+        contactInfo?: {
+          phone?: string;
+          /** Format: email */
+          email?: string;
+          /** Format: uri */
+          website?: string;
+        };
         /** Format: uri */
-        website?: string;
+        logoUrl?: string;
       };
-      /** Format: uri */
-      logoUrl?: string;
     };
     CampUpdateRequest: {
-      name?: string;
-      description?: string;
-      /**
-       * Format: date
-       * @description Overall camp season start date
-       */
-      startDate?: string;
-      /**
-       * Format: date
-       * @description Overall camp season end date
-       */
-      endDate?: string;
-      /**
-       * @description Daily start time for calendar display (24-hour format HH:MM)
-       * @example 08:00
-       */
-      dailyStartTime?: string;
-      /**
-       * @description Daily end time for calendar display (24-hour format HH:MM)
-       * @example 20:00
-       */
-      dailyEndTime?: string;
-      address?: {
-        street?: string;
-        city?: string;
-        state?: string;
-        zipCode?: string;
-        country?: string;
-      };
-      contactInfo?: {
-        phone?: string;
-        /** Format: email */
-        email?: string;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /**
+         * Format: date
+         * @description Overall camp season start date
+         */
+        startDate: string;
+        /**
+         * Format: date
+         * @description Overall camp season end date
+         */
+        endDate: string;
+        /**
+         * @description Daily start time for calendar display (24-hour format HH:MM)
+         * @example 08:00
+         */
+        dailyStartTime: string;
+        /**
+         * @description Daily end time for calendar display (24-hour format HH:MM)
+         * @example 20:00
+         */
+        dailyEndTime: string;
+        address?: {
+          street?: string;
+          city?: string;
+          state?: string;
+          zipCode?: string;
+          country?: string;
+        };
+        contactInfo?: {
+          phone?: string;
+          /** Format: email */
+          email?: string;
+          /** Format: uri */
+          website?: string;
+        };
         /** Format: uri */
-        website?: string;
+        logoUrl?: string;
       };
-      /** Format: uri */
-      logoUrl?: string;
     };
     DurationPreset: {
-      /** Format: uuid */
-      id: string;
-      /** @description Name of the duration preset (e.g., "Short Session", "Standard Activity") */
-      name: string;
-      /** @description Duration in minutes */
-      durationMinutes: number;
-      /** @description Optional description of when to use this preset */
-      description?: string;
-      /** @description Whether this is the default duration preset */
-      default?: boolean;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
+      meta: components["schemas"]["EntityMeta"];
+      spec: {
+        /** @description Duration in minutes */
+        durationMinutes: number;
+        /** @description Whether this is the default duration preset */
+        default?: boolean;
+      };
     };
     DurationPresetCreationRequest: {
-      /** @description Name of the duration preset (e.g., "Short Session", "Standard Activity") */
-      name: string;
-      /** @description Duration in minutes */
-      durationMinutes: number;
-      /** @description Optional description of when to use this preset */
-      description?: string;
-      /** @description Whether this is the default duration preset */
-      default?: boolean;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** @description Duration in minutes */
+        durationMinutes: number;
+        /** @description Whether this is the default duration preset */
+        default?: boolean;
+      };
     };
     DurationPresetUpdateRequest: {
-      /** @description Name of the duration preset (e.g., "Short Session", "Standard Activity") */
-      name?: string;
-      /** @description Duration in minutes */
-      durationMinutes?: number;
-      /** @description Optional description of when to use this preset */
-      description?: string;
-      /** @description Whether this is the default duration preset */
-      default?: boolean;
+      meta: components["schemas"]["EntityCreationRequestMeta"];
+      spec: {
+        /** @description Duration in minutes */
+        durationMinutes: number;
+        /** @description Whether this is the default duration preset */
+        default?: boolean;
+      };
     };
   };
   responses: never;

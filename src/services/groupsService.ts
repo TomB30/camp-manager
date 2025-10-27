@@ -17,20 +17,24 @@ async function listGroups(): Promise<Group[]> {
 async function createGroup(group: GroupCreationRequest): Promise<Group> {
   const newGroup = {
     ...group,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: group.meta.name,
+      description: group.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Group>(STORAGE_KEYS.GROUPS, newGroup);
 }
 
 async function updateGroup(
   id: string,
-  group: GroupUpdateRequest,
+  group: GroupUpdateRequest
 ): Promise<Group> {
   const existingGroup = await storageService.getById<Group>(
     STORAGE_KEYS.GROUPS,
-    id,
+    id
   );
   if (!existingGroup) {
     throw new Error(`Group with id ${id} not found`);
@@ -38,7 +42,12 @@ async function updateGroup(
   const updatedGroup = {
     ...existingGroup,
     ...group,
-    updatedAt: new Date().toISOString(),
+    meta: {
+      ...existingGroup.meta,
+      name: group.meta.name,
+      description: group.meta.description,
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Group>(STORAGE_KEYS.GROUPS, updatedGroup);
 }

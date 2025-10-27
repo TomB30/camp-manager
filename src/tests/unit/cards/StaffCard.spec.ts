@@ -2,11 +2,19 @@ import { describe, it, expect } from "vitest";
 import { createWrapper } from "@/tests/utils";
 import StaffCard from "@/components/cards/StaffCard.vue";
 import { staffMembersFixture } from "@/tests/fixtures";
+import { StaffMember } from "@/types";
 
 describe("StaffCard", () => {
   describe("Rendering", () => {
     it("renders staff member name correctly", () => {
-      const member = staffMembersFixture[0];
+      const member: StaffMember = {
+        ...staffMembersFixture[0],
+        spec: {
+          ...staffMembersFixture[0].spec,
+          firstName: "John",
+          lastName: "Doe",
+        },
+      };
       const wrapper = createWrapper(StaffCard, {
         props: {
           member,
@@ -14,12 +22,19 @@ describe("StaffCard", () => {
         },
       });
 
-      expect(wrapper.text()).toContain(member.firstName);
-      expect(wrapper.text()).toContain(member.lastName);
+      expect(wrapper.text()).toContain(member.spec.firstName);
+      expect(wrapper.text()).toContain(member.spec.lastName);
     });
 
     it("renders formatted role badge", () => {
-      const member = staffMembersFixture[0];
+      const member: StaffMember = {
+        ...staffMembersFixture[0],
+        spec: {
+          ...staffMembersFixture[0].spec,
+          firstName: "John",
+          lastName: "Doe",
+        },
+      };
       const wrapper = createWrapper(StaffCard, {
         props: {
           member,
@@ -31,7 +46,15 @@ describe("StaffCard", () => {
     });
 
     it("renders email when provided", () => {
-      const member = staffMembersFixture[0];
+      const member: StaffMember = {
+        ...staffMembersFixture[0],
+        spec: {
+          ...staffMembersFixture[0].spec,
+          firstName: "John",
+          lastName: "Doe",
+          email: "john.doe@camp.com",
+        },
+      };
       const wrapper = createWrapper(StaffCard, {
         props: {
           member,
@@ -39,14 +62,17 @@ describe("StaffCard", () => {
         },
       });
 
-      expect(wrapper.text()).toContain(member.email);
+      expect(wrapper.text()).toContain(member.spec.email);
     });
 
     it("renders certification count when certifications exist", () => {
       // Create member with certificationIds property (StaffCard uses certificationIds not certifications)
-      const member = {
+      const member: StaffMember = {
         ...staffMembersFixture[0],
-        certificationIds: ["cert-1", "cert-2"],
+        spec: {
+          ...staffMembersFixture[0].spec,
+          certificationIds: ["cert-1", "cert-2"],
+        },
       };
       const wrapper = createWrapper(StaffCard, {
         props: {
@@ -59,7 +85,10 @@ describe("StaffCard", () => {
     });
 
     it("does not show certification count when no certifications", () => {
-      const member = staffMembersFixture[7]; // Has no certifications
+      const member: StaffMember = {
+        ...staffMembersFixture[7],
+        spec: { ...staffMembersFixture[7].spec, certificationIds: [] },
+      }; // Has no certifications
       const wrapper = createWrapper(StaffCard, {
         props: {
           member,
@@ -73,7 +102,14 @@ describe("StaffCard", () => {
 
   describe("Avatar Display", () => {
     it("renders AvatarInitials component with staff name", () => {
-      const member = staffMembersFixture[0];
+      const member: StaffMember = {
+        ...staffMembersFixture[0],
+        spec: {
+          ...staffMembersFixture[0].spec,
+          firstName: "John",
+          lastName: "Doe",
+        },
+      };
       const wrapper = createWrapper(StaffCard, {
         props: {
           member,
@@ -83,15 +119,22 @@ describe("StaffCard", () => {
 
       const avatar = wrapper.findComponent({ name: "AvatarInitials" });
       expect(avatar.exists()).toBe(true);
-      expect(avatar.props("firstName")).toBe(member.firstName);
-      expect(avatar.props("lastName")).toBe(member.lastName);
+      expect(avatar.props("firstName")).toBe(member.spec.firstName);
+      expect(avatar.props("lastName")).toBe(member.spec.lastName);
       expect(avatar.props("size")).toBe("lg");
     });
   });
 
   describe("Click Event", () => {
     it("emits click event with member when card is clicked", async () => {
-      const member = staffMembersFixture[0];
+      const member: StaffMember = {
+        ...staffMembersFixture[0],
+        spec: {
+          ...staffMembersFixture[0].spec,
+          firstName: "John",
+          lastName: "Doe",
+        },
+      };
       const wrapper = createWrapper(StaffCard, {
         props: {
           member,
@@ -108,7 +151,14 @@ describe("StaffCard", () => {
 
   describe("Styling", () => {
     it("has card-clickable class", () => {
-      const member = staffMembersFixture[0];
+      const member: StaffMember = {
+        ...staffMembersFixture[0],
+        spec: {
+          ...staffMembersFixture[0].spec,
+          firstName: "John",
+          lastName: "Doe",
+        },
+      };
       const wrapper = createWrapper(StaffCard, {
         props: {
           member,
@@ -120,7 +170,14 @@ describe("StaffCard", () => {
     });
 
     it("has card-horizontal class", () => {
-      const member = staffMembersFixture[0];
+      const member: StaffMember = {
+        ...staffMembersFixture[0],
+        spec: {
+          ...staffMembersFixture[0].spec,
+          firstName: "John",
+          lastName: "Doe",
+        },
+      };
       const wrapper = createWrapper(StaffCard, {
         props: {
           member,

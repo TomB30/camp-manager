@@ -22,15 +22,16 @@ async function createCertification(
   certification: CertificationCreationRequest,
 ): Promise<Certification> {
   const newCertification = {
-    ...certification,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: certification.meta.name,
+      description: certification.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    spec: certification.spec,
   };
-  return storageService.save<Certification>(
-    STORAGE_KEYS.CERTIFICATIONS,
-    newCertification,
-  );
+  return storageService.save<Certification>(STORAGE_KEYS.CERTIFICATIONS, newCertification);
 }
 
 async function updateCertification(
@@ -45,9 +46,14 @@ async function updateCertification(
     throw new Error(`Certification with id ${id} not found`);
   }
   const updatedCertification = {
-    ...existingCertification,
-    ...certification,
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: existingCertification.meta.id,
+      name: certification.meta.name,
+      description: certification.meta.description,
+      createdAt: existingCertification.meta.createdAt,
+      updatedAt: new Date().toISOString(),
+    },
+    spec: certification.spec,
   };
   return storageService.save<Certification>(
     STORAGE_KEYS.CERTIFICATIONS,

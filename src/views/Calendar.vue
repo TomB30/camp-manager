@@ -227,7 +227,7 @@ export default defineComponent({
       );
 
       return this.eventsStore.events.filter((event) => {
-        const eventDate = new Date(event.startDate);
+        const eventDate = new Date(event.spec.startDate);
         return eventDate >= start && eventDate <= end;
       });
     },
@@ -238,8 +238,8 @@ export default defineComponent({
           value: this.filterProgram,
           placeholder: "Filter by Program",
           options: this.programsStore.programs.map((program) => ({
-            label: program.name,
-            value: program.id,
+            label: program.meta.name,
+            value: program.meta.id,
           })),
         },
         {
@@ -247,8 +247,8 @@ export default defineComponent({
           value: this.filterRoom,
           placeholder: "Filter by Room",
           options: this.locationsStore.locations.map((room) => ({
-            label: room.name,
-            value: room.id,
+            label: room.meta.name,
+            value: room.meta.id,
           })),
         },
         {
@@ -257,8 +257,8 @@ export default defineComponent({
           placeholder: "Filter by Group",
           options: [
             ...this.groupsStore.groups.map((group) => ({
-              label: `${group.name} (Camper Group)`,
-              value: group.id,
+              label: `${group.meta.name} (Camper Group)`,
+              value: group.meta.id,
             })),
           ],
         },
@@ -268,13 +268,13 @@ export default defineComponent({
           placeholder: "Filter by Staff",
           options: this.staffMembersStore.staffMembers
             .sort((a, b) =>
-              `${a.firstName} ${a.lastName}`.localeCompare(
-                `${b.firstName} ${b.lastName}`,
+              `${a.spec.firstName} ${a.spec.lastName}`.localeCompare(
+                `${b.spec.firstName} ${b.spec.lastName}`,
               ),
             )
             .map((staff) => ({
-              label: `${staff.firstName} ${staff.lastName}`,
-              value: staff.id,
+              label: `${staff.spec.firstName} ${staff.spec.lastName}`,
+              value: staff.meta.id,
             })),
         },
       ];
@@ -285,19 +285,19 @@ export default defineComponent({
     // Memoized lookup maps for efficient filtering (O(1) lookups instead of O(n))
     roomLookupMap() {
       return new Map(
-        this.locationsStore.locations.map((r) => [r.id, r.name.toLowerCase()]),
+        this.locationsStore.locations.map((r) => [r.meta.id, r.meta.name.toLowerCase()]),
       );
     },
     programLookupMap() {
       return new Map(
-        this.programsStore.programs.map((p) => [p.id, p.name.toLowerCase()]),
+        this.programsStore.programs.map((p) => [p.meta.id, p.meta.name.toLowerCase()]),
       );
     },
     staffLookupMap() {
       return new Map(
         this.staffMembersStore.staffMembers.map((s) => [
-          s.id,
-          `${s.firstName} ${s.lastName}`.toLowerCase(),
+          s.meta.id,
+          `${s.spec.firstName} ${s.spec.lastName}`.toLowerCase(),
         ]),
       );
     },
@@ -334,19 +334,19 @@ export default defineComponent({
       // Single pass filter combining all conditions
       return events.filter((event) => {
         // Simple filters first (fastest to check)
-        if (this.filterProgram && event.programId !== this.filterProgram)
+        if (this.filterProgram && event.spec.programId !== this.filterProgram)
           return false;
-        if (this.filterRoom && event.locationId !== this.filterRoom)
+        if (this.filterRoom && event.spec.locationId !== this.filterRoom)
           return false;
 
         if (this.filterGroup) {
-          if (!event.groupIds || !event.groupIds.includes(this.filterGroup)) {
+          if (!event.spec.groupIds || !event.spec.groupIds.includes(this.filterGroup)) {
             return false;
           }
         }
 
         if (this.filterStaff) {
-          const eventStaffIds = this.eventsStore.getEventStaffIds(event.id);
+          const eventStaffIds = this.eventsStore.getEventStaffIds(event.meta.id);
           if (!eventStaffIds.includes(this.filterStaff)) {
             return false;
           }
@@ -355,20 +355,20 @@ export default defineComponent({
         // Search filter (most expensive, check last)
         if (searchQuery) {
           // Search in event title
-          if (event.title.toLowerCase().includes(searchQuery)) return true;
+          if (event.spec.title.toLowerCase().includes(searchQuery)) return true;
 
           // Search in room name (using memoized map for O(1) lookup)
-          const roomName = roomMap.get(event.locationId || "");
+          const roomName = roomMap.get(event.spec.locationId || "");
           if (roomName && roomName.includes(searchQuery)) return true;
 
           // Search in program name (using memoized map for O(1) lookup)
-          if (event.programId) {
-            const programName = programMap.get(event.programId);
+          if (event.spec.programId) {
+            const programName = programMap.get(event.spec.programId);
             if (programName && programName.includes(searchQuery)) return true;
           }
 
           // Search in assigned staff names (using memoized map for O(1) lookup)
-          const eventStaffIds = this.eventsStore.getEventStaffIds(event.id);
+          const eventStaffIds = this.eventsStore.getEventStaffIds(event.meta.id);
           if (eventStaffIds.length > 0) {
             const hasMatchingStaff = eventStaffIds.some((staffId) => {
               const staffName = staffMap.get(staffId);
@@ -401,7 +401,7 @@ export default defineComponent({
         const event = this.eventsStore.getEventById(eventId);
         if (event) {
           // Set the selected date to the event's date
-          this.selectedDate = new Date(event.startDate);
+          this.selectedDate = new Date(event.spec.startDate);
           // Select the event to open the detail modal
           this.selectedEventId = eventId;
           // Clear the query parameter to avoid reopening on page refresh
@@ -444,7 +444,7 @@ export default defineComponent({
       this.selectedDate = new Date();
     },
     selectEvent(event: Event) {
-      this.selectedEventId = event.id;
+      this.selectedEventId = event.meta.id;
     },
     editEvent() {
       this.editingEventId = this.selectedEventId;
@@ -469,7 +469,7 @@ export default defineComponent({
       const event = this.eventsStore.getEventById(this.selectedEventId);
       this.confirmAction = {
         type: "deleteEvent",
-        data: { eventId: this.selectedEventId, eventName: event?.title },
+        data: { eventId: this.selectedEventId, eventName: event?.spec.title },
       };
       this.showConfirmModal = true;
     },

@@ -11,13 +11,13 @@ export const useAreasStore = defineStore("areas", {
   getters: {
     getAreaById(state): (id: string) => Area | undefined {
       return (id: string): Area | undefined => {
-        return state.areas.find((a) => a.id === id);
+        return state.areas.find((a) => a.meta.id === id);
       };
     },
 
-    getAreasByType(state): (type: Area["type"]) => Area[] {
-      return (type: Area["type"]): Area[] => {
-        return state.areas.filter((a) => a.type === type);
+    getAreasByType(state): (type: Area["spec"]["type"]) => Area[] {
+      return (type: Area["spec"]["type"]): Area[] => {
+        return state.areas.filter((a) => a.spec.type === type);
       };
     },
   },
@@ -40,7 +40,7 @@ export const useAreasStore = defineStore("areas", {
 
     async updateArea(id: string, areaUpdate: AreaUpdateRequest): Promise<void> {
       const area = await areasService.updateArea(id, areaUpdate);
-      const index = this.areas.findIndex((a) => a.id === id);
+      const index = this.areas.findIndex((a) => a.meta.id === id);
       if (index >= 0) {
         this.areas[index] = area;
       }
@@ -48,7 +48,7 @@ export const useAreasStore = defineStore("areas", {
 
     async deleteArea(id: string): Promise<void> {
       await areasService.deleteArea(id);
-      this.areas = this.areas.filter((a) => a.id !== id);
+      this.areas = this.areas.filter((a) => a.meta.id !== id);
     },
   },
 });

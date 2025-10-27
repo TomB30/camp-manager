@@ -1,21 +1,21 @@
 <template>
   <BaseModal
     show
-    :title="durationPreset?.name || ''"
+    :title="durationPreset?.meta.name || ''"
     @close="$emit('close')"
   >
     <template #body>
       <div>
-        <div v-if="durationPreset.default" class="detail-section">
+        <div v-if="durationPreset.spec.default" class="detail-section">
           <div class="default-badge-large">
             <Icon name="Star" :size="16" />
             <span>Default Duration Preset</span>
           </div>
         </div>
 
-        <div v-if="durationPreset.description" class="detail-section">
+        <div v-if="durationPreset.meta.description" class="detail-section">
           <div class="detail-label">Description</div>
-          <div>{{ durationPreset.description }}</div>
+          <div>{{ durationPreset.meta.description }}</div>
         </div>
 
         <div class="detail-section">
@@ -25,12 +25,12 @@
 
         <div class="detail-section">
           <div class="detail-label">Created</div>
-          <div>{{ formatDateTime(durationPreset.createdAt || '') }}</div>
+          <div>{{ formatDateTime(durationPreset.meta.createdAt || '') }}</div>
         </div>
 
-        <div v-if="durationPreset.updatedAt" class="detail-section">
+        <div v-if="durationPreset.meta.updatedAt" class="detail-section">
           <div class="detail-label">Last Updated</div>
-          <div>{{ formatDateTime(durationPreset.updatedAt) }}</div>
+          <div>{{ formatDateTime(durationPreset.meta.updatedAt) }}</div>
         </div>
       </div>
     </template>
@@ -39,7 +39,7 @@
       <BaseButton
         outline
         color="negative"
-        @click="$emit('delete', durationPreset?.id)"
+        @click="$emit('delete', durationPreset?.meta.id)"
         label="Delete"
       />
       <BaseButton
@@ -73,7 +73,7 @@ export default defineComponent({
   emits: ["close", "edit", "delete"],
   computed: {
     formatDuration(): string {
-      const minutes = this.durationPreset.durationMinutes;
+      const minutes = this.durationPreset.spec.durationMinutes;
       if (minutes < 60) {
         return `${minutes} minutes`;
       }

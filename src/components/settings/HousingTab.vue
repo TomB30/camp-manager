@@ -38,10 +38,10 @@
     <div v-else-if="viewMode === 'grid'" class="rooms-grid">
       <HousingRoomCard
         v-for="room in filteredRooms"
-        :key="room.id"
+        :key="room.meta.id"
         :room="room"
-        :groups="getGroupsForRoom(room.id)"
-        @click="selectRoom(room.id)"
+        :groups="getGroupsForRoom(room.meta.id)"
+        @click="selectRoom(room.meta.id)"
       />
     </div>
 
@@ -59,7 +59,7 @@
           <div class="cabin-icon-sm">
             <Icon name="Bed" :size="18" :stroke-width="2" />
           </div>
-          <div class="cabin-name">{{ item.name }}</div>
+          <div class="cabin-name">{{ item.meta.name }}</div>
         </div>
       </template>
 
@@ -69,22 +69,22 @@
 
       <template #cell-location="{ item }">
         <span v-if="item.areaId">
-          {{ areasStore.getAreaById(item.areaId)?.name || "Unknown" }}
+          {{ areasStore.getAreaById(item.areaId)?.meta.name || "Unknown" }}
         </span>
         <span v-else>—</span>
       </template>
 
       <template #cell-groups="{ item }">
         <div
-          v-if="getGroupsForRoom(item.id).length > 0"
+          v-if="getGroupsForRoom(item.meta.id).length > 0"
           class="flex gap-1 flex-wrap"
         >
           <span
-            v-for="group in getGroupsForRoom(item.id)"
-            :key="group.id"
+            v-for="group in getGroupsForRoom(item.meta.id)"
+            :key="group.meta.id"
             class="badge badge-success badge-sm"
           >
-            {{ group.name }}
+            {{ group.meta.name }}
           </span>
         </div>
         <span v-else class="text-caption">None</span>
@@ -95,7 +95,7 @@
           outline
           color="grey-8"
           size="sm"
-          @click="selectRoom(item.id)"
+          @click="selectRoom(item.meta.id)"
           label="View Details"
         />
       </template>
@@ -208,11 +208,11 @@ export default defineComponent({
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         rooms = rooms.filter((room: HousingRoom) => {
-          const areaName = room.areaId
-            ? this.areasStore.getAreaById(room.areaId)?.name
+          const areaName = room.spec.areaId
+            ? this.areasStore.getAreaById(room.spec.areaId)?.meta.name
             : undefined;
           return (
-            room.name.toLowerCase().includes(query) ||
+            room.meta.name.toLowerCase().includes(query) ||
             (areaName && areaName.toLowerCase().includes(query))
           );
         });
@@ -224,21 +224,21 @@ export default defineComponent({
       if (!this.selectedRoomId) return [];
       return this.getGroupsForRoom(this.selectedRoomId).map((g: Group) => {
         const session = this.sessionsStore.sessions.find(
-          (s) => s.id === g.sessionId,
+          (s) => s.meta.id === g.spec.sessionId,
         );
         return {
-          id: g.id,
-          name: g.name,
-          description: g.description,
-          camperCount: this.groupsStore.getCampersInGroup(g.id).length,
-          staffCount: g.staffIds?.length || 0,
-          sessionId: g.sessionId,
-          sessionName: session?.name || "Unknown Session",
+          id: g.meta.id,
+          name: g.meta.name,
+          description: g.meta.description,
+          camperCount: this.groupsStore.getCampersInGroup(g.meta.id).length,
+          staffCount: g.spec.staffIds?.length || 0,
+          sessionId: g.spec.sessionId,
+          sessionName: session?.meta.name || "Unknown Session",
           sessionDateRange: session
-            ? `${new Date(session.startDate).toLocaleDateString("en-US", {
+            ? `${new Date(session.spec.startDate).toLocaleDateString("en-US", {
                 month: "short",
                 day: "numeric",
-              })} - ${new Date(session.endDate).toLocaleDateString("en-US", {
+              })} - ${new Date(session.spec.endDate).toLocaleDateString("en-US", {
                 month: "short",
                 day: "numeric",
                 year: "numeric",
@@ -258,7 +258,7 @@ export default defineComponent({
     getGroupsForRoom(housingRoomId: string): Group[] {
       return this.groupsStore
         .getGroupsByType({ hasHousing: true, hasSession: true })
-        .filter((g) => g.housingRoomId === housingRoomId);
+        .filter((g) => g.spec.housingRoomId === housingRoomId);
     },
     selectRoom(housingRoomId: string): void {
       this.selectedRoomId = housingRoomId;
@@ -266,7 +266,7 @@ export default defineComponent({
     editRoom(): void {
       if (!this.selectedRoom) return;
 
-      this.editingRoomId = this.selectedRoom.id;
+      this.editingRoomId = this.selectedRoom.meta.id;
 
       this.selectedRoomId = null;
       this.showModal = true;

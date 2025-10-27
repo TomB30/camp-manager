@@ -10,7 +10,7 @@ export const useRolesStore = defineStore("roles", {
   getters: {
     getRoleById(state): (id: string) => Role | undefined {
       return (id: string): Role | undefined => {
-        return state.roles.find((r) => r.id === id);
+        return state.roles.find((r) => r.meta.id === id);
       };
     },
   },
@@ -32,7 +32,7 @@ export const useRolesStore = defineStore("roles", {
 
     async updateRole(id: string, roleUpdate: RoleUpdateRequest): Promise<void> {
       const role: Role = await rolesService.updateRole(id, roleUpdate);
-      const index = this.roles.findIndex((r) => r.id === id);
+      const index = this.roles.findIndex((r) => r.meta.id === id);
       if (index >= 0) {
         this.roles[index] = role;
       }
@@ -40,7 +40,7 @@ export const useRolesStore = defineStore("roles", {
 
     async deleteRole(id: string): Promise<void> {
       await rolesService.deleteRole(id);
-      this.roles = this.roles.filter((r) => r.id !== id);
+      this.roles = this.roles.filter((r) => r.meta.id !== id);
     },
   },
 });

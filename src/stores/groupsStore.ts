@@ -19,7 +19,7 @@ export const useGroupsStore = defineStore("groups", {
   getters: {
     getGroupById(state): (id: string) => Group | undefined {
       return (id: string): Group | undefined => {
-        return state.groups.find((g) => g.id === id);
+        return state.groups.find((g) => g.meta.id === id);
       };
     },
 
@@ -28,15 +28,15 @@ export const useGroupsStore = defineStore("groups", {
      */
     getCampersInGroup(): (groupId: string) => Camper[] {
       return (groupId: string): Camper[] => {
-        const group = this.groups.find((g) => g.id === groupId);
+        const group = this.groups.find((g) => g.meta.id === groupId);
         if (!group) return [];
 
         const campersStore = useCampersStore();
 
         // If group has nested groups, recursively collect campers from child groups
-        if (group.groupIds && group.groupIds.length > 0) {
+        if (group.spec.groupIds && group.spec.groupIds.length > 0) {
           const childCampers = new Set<Camper>();
-          for (const childGroupId of group.groupIds) {
+          for (const childGroupId of group.spec.groupIds) {
             const childGroupCampers = this.getCampersInGroup(childGroupId);
             childGroupCampers.forEach((c) => childCampers.add(c));
           }
@@ -44,15 +44,15 @@ export const useGroupsStore = defineStore("groups", {
         }
 
         // If explicit camper IDs are specified, use those
-        if (group.camperIds && group.camperIds.length > 0) {
-          return group.camperIds
+        if (group.spec.camperIds && group.spec.camperIds.length > 0) {
+          return group.spec.camperIds
             .map((id) => campersStore.getCamperById(id))
             .filter((c): c is Camper => c !== undefined);
         }
 
         // Otherwise, use filters to determine campers
-        if (group.camperFilters) {
-          return this.filterCampers(group.camperFilters);
+        if (group.spec.camperFilters) {
+          return this.filterCampers(group.spec.camperFilters);
         }
 
         return [];
@@ -64,15 +64,15 @@ export const useGroupsStore = defineStore("groups", {
      */
     getStaffInGroup(): (groupId: string) => StaffMember[] {
       return (groupId: string): StaffMember[] => {
-        const group = this.groups.find((g) => g.id === groupId);
+        const group = this.groups.find((g) => g.meta.id === groupId);
         if (!group) return [];
 
         const staffStore = useStaffMembersStore();
 
         // If group has nested groups, recursively collect staff from child groups
-        if (group.groupIds && group.groupIds.length > 0) {
+        if (group.spec.groupIds && group.spec.groupIds.length > 0) {
           const childStaff = new Set<StaffMember>();
-          for (const childGroupId of group.groupIds) {
+          for (const childGroupId of group.spec.groupIds) {
             const childGroupStaff = this.getStaffInGroup(childGroupId);
             childGroupStaff.forEach((s) => childStaff.add(s));
           }
@@ -80,15 +80,15 @@ export const useGroupsStore = defineStore("groups", {
         }
 
         // If explicit staff IDs are specified, use those
-        if (group.staffIds && group.staffIds.length > 0) {
-          return group.staffIds
+        if (group.spec.staffIds && group.spec.staffIds.length > 0) {
+          return group.spec.staffIds
             .map((id) => staffStore.getStaffMemberById(id))
             .filter((s): s is StaffMember => s !== undefined);
         }
 
         // Otherwise, use filters to determine staff
-        if (group.staffFilters) {
-          return this.filterStaff(group.staffFilters);
+        if (group.spec.staffFilters) {
+          return this.filterStaff(group.spec.staffFilters);
         }
 
         return [];
@@ -99,7 +99,7 @@ export const useGroupsStore = defineStore("groups", {
      * Filter campers based on camper filter criteria
      */
     filterCampers(): (
-      filters: NonNullable<Group["camperFilters"]>,
+      filters: NonNullable<Group["spec"]["camperFilters"]>,
     ) => Camper[] {
       return (filters): Camper[] => {
         const campersStore = useCampersStore();
@@ -111,13 +111,13 @@ export const useGroupsStore = defineStore("groups", {
           // If family groups are selected, only consider campers from those family groups
           baseCampers = campersStore.campers.filter(
             (c) =>
-              c.familyGroupId &&
-              filters.familyGroupIds!.includes(c.familyGroupId),
+              c.spec.familyGroupId &&
+              filters.familyGroupIds!.includes(c.spec.familyGroupId),
           );
         } else if (filters.sessionId) {
           // If session is specified, only consider campers from that session
           baseCampers = campersStore.campers.filter(
-            (c) => c.sessionId === filters.sessionId,
+            (c) => c.spec.sessionId === filters.sessionId,
           );
         } else {
           // Otherwise, consider all campers
@@ -127,13 +127,13 @@ export const useGroupsStore = defineStore("groups", {
         // Apply filters to the base set of campers
         return baseCampers.filter((camper) => {
           // Age filter
-          if (filters.ageMin !== undefined && camper.age < filters.ageMin)
+          if (filters.ageMin !== undefined && camper.spec.age < filters.ageMin)
             return false;
-          if (filters.ageMax !== undefined && camper.age > filters.ageMax)
+          if (filters.ageMax !== undefined && camper.spec.age > filters.ageMax)
             return false;
 
           // Gender filter
-          if (filters.gender && camper.gender !== filters.gender) return false;
+          if (filters.gender && camper.spec.gender !== filters.gender) return false;
 
           return true;
         });
@@ -144,7 +144,7 @@ export const useGroupsStore = defineStore("groups", {
      * Filter staff based on staff filter criteria
      */
     filterStaff(): (
-      filters: NonNullable<Group["staffFilters"]>,
+      filters: NonNullable<Group["spec"]["staffFilters"]>,
     ) => StaffMember[] {
       return (filters): StaffMember[] => {
         const staffStore = useStaffMembersStore();
@@ -153,16 +153,16 @@ export const useGroupsStore = defineStore("groups", {
         return baseStaff.filter((staff) => {
           // Role filter
           if (filters.roles && filters.roles.length > 0) {
-            if (!filters.roles.includes(staff.roleId)) return false;
+            if (!filters.roles.includes(staff.spec.roleId)) return false;
           }
 
           // Certification filter
           if (filters.certificationIds && filters.certificationIds.length > 0) {
-            if (!staff.certificationIds || staff.certificationIds.length === 0)
+            if (!staff.spec.certificationIds || staff.spec.certificationIds.length === 0)
               return false;
             // Staff must have all required certifications
             const hasAllCerts = filters.certificationIds.every((certId) =>
-              staff.certificationIds!.includes(certId),
+              staff.spec.certificationIds?.includes(certId) || false,
             );
             if (!hasAllCerts) return false;
           }
@@ -180,12 +180,12 @@ export const useGroupsStore = defineStore("groups", {
       staff: boolean;
     } {
       return (groupId: string) => {
-        const group = this.groups.find((g) => g.id === groupId);
+        const group = this.groups.find((g) => g.meta.id === groupId);
         if (!group) return { campers: false, staff: false };
 
         return {
-          campers: !!(group.camperFilters && !group.camperIds),
-          staff: !!(group.staffFilters && !group.staffIds),
+          campers: !!(group.spec.camperFilters && !group.spec.camperIds),
+          staff: !!(group.spec.staffFilters && !group.spec.staffIds),
         };
       };
     },
@@ -201,17 +201,17 @@ export const useGroupsStore = defineStore("groups", {
       return (options) => {
         return this.groups.filter((group) => {
           if (options.hasHousing !== undefined) {
-            const hasHousing = !!group.housingRoomId;
+            const hasHousing = !!group.spec.housingRoomId;
             if (hasHousing !== options.hasHousing) return false;
           }
 
           if (options.hasSession !== undefined) {
-            const hasSession = !!group.sessionId;
+            const hasSession = !!group.spec.sessionId;
             if (hasSession !== options.hasSession) return false;
           }
 
           if (options.isNested !== undefined) {
-            const isNested = !!(group.groupIds && group.groupIds.length > 0);
+            const isNested = !!(group.spec.groupIds && group.spec.groupIds.length > 0);
             if (isNested !== options.isNested) return false;
           }
 
@@ -242,7 +242,7 @@ export const useGroupsStore = defineStore("groups", {
       groupUpdate: GroupUpdateRequest,
     ): Promise<void> {
       const group = await groupsService.updateGroup(id, groupUpdate);
-      const index = this.groups.findIndex((g) => g.id === id);
+      const index = this.groups.findIndex((g) => g.meta.id === id);
       if (index >= 0) {
         this.groups[index] = group;
       }
@@ -250,7 +250,7 @@ export const useGroupsStore = defineStore("groups", {
 
     async deleteGroup(id: string): Promise<void> {
       await groupsService.deleteGroup(id);
-      this.groups = this.groups.filter((g) => g.id !== id);
+      this.groups = this.groups.filter((g) => g.meta.id !== id);
     },
 
     /**
@@ -261,25 +261,25 @@ export const useGroupsStore = defineStore("groups", {
 
       // Cannot use both camperFilters and camperIds
       if (
-        group.camperFilters &&
-        group.camperIds &&
-        group.camperIds.length > 0
+        group.spec.camperFilters &&
+        group.spec.camperIds &&
+        group.spec.camperIds.length > 0
       ) {
         errors.push("Cannot use both camper filters and explicit camper IDs");
       }
 
       // Cannot use both staffFilters and staffIds
-      if (group.staffFilters && group.staffIds && group.staffIds.length > 0) {
+      if (group.spec.staffFilters && group.spec.staffIds && group.spec.staffIds.length > 0) {
         errors.push("Cannot use both staff filters and explicit staff IDs");
       }
 
       // If has housing room, should have a session
-      if (group.housingRoomId && !group.sessionId) {
+      if (group.spec.housingRoomId && !group.spec.sessionId) {
         errors.push("Groups with housing rooms should have a session assigned");
       }
 
       // Check for circular group references
-      if (group.groupIds && group.groupIds.includes(group.id)) {
+      if (group.spec.groupIds && group.spec.groupIds.includes(group.meta.id)) {
         errors.push("Group cannot contain itself");
       }
 
@@ -289,35 +289,41 @@ export const useGroupsStore = defineStore("groups", {
       };
     },
     async addCamperToGroup(groupId: string, camperId: string): Promise<void> {
-      const group = this.groups.find((g) => g.id === groupId);
+      const group = this.groups.find((g) => g.meta.id === groupId);
       if (!group) return;
 
       const groupToUpdate: GroupUpdateRequest = {
         ...group,
-        camperIds: [...(group.camperIds || []), camperId],
+        spec: {
+          ...group.spec,
+          camperIds: [...(group.spec.camperIds || []), camperId],
+        },
       };
       const updatedGroup = await groupsService.updateGroup(
         groupId,
         groupToUpdate,
       );
       this.groups = this.groups.map((g) =>
-        g.id === groupId ? updatedGroup : g,
+        g.meta.id === groupId ? updatedGroup : g,
       );
     },
     async removeCamperFromGroup(groupId: string, camperId: string): Promise<void> {
-      const group = this.groups.find((g) => g.id === groupId);
+      const group = this.groups.find((g) => g.meta.id === groupId);
       if (!group) return;
 
       const groupToUpdate: GroupUpdateRequest = {
         ...group,
-        camperIds: group.camperIds?.filter((id) => id !== camperId) || [],
+        spec: {
+          ...group.spec,
+          camperIds: group.spec.camperIds?.filter((id) => id !== camperId) || [],
+        },
       };
       const updatedGroup = await groupsService.updateGroup(
         groupId,
         groupToUpdate,
       );
       this.groups = this.groups.map((g) =>
-        g.id === groupId ? updatedGroup : g,
+        g.meta.id === groupId ? updatedGroup : g,
       );
     },
   },

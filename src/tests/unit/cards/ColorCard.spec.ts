@@ -2,41 +2,52 @@ import { describe, it, expect } from "vitest";
 import { createWrapper } from "@/tests/utils";
 import ColorCard from "@/components/cards/ColorCard.vue";
 import { colorsFixture } from "@/tests/fixtures";
+import { Color } from "@/types";
 
 describe("ColorCard", () => {
   describe("Rendering", () => {
     it("renders color name correctly", () => {
-      const color = colorsFixture[0];
+      const color: Color = {
+        ...colorsFixture[0],
+        meta: { ...colorsFixture[0].meta, name: "Color 1" },
+      };
       const wrapper = createWrapper(ColorCard, {
         props: { color },
       });
 
-      expect(wrapper.text()).toContain(color.name);
+      expect(wrapper.text()).toContain(color.meta.name);
     });
 
     it("renders hex value correctly", () => {
-      const color = colorsFixture[0];
-      const wrapper = createWrapper(ColorCard, {
-        props: { color },
-      });
+      const color: Color = {
+        ...colorsFixture[0],
+        spec: { ...colorsFixture[0].spec, hexValue: "#000000" },
+      };
+      const wrapper = createWrapper(ColorCard, { props: { color } });
 
-      expect(wrapper.text()).toContain(color.hexValue);
+      expect(wrapper.text()).toContain(color.spec.hexValue);
     });
 
     it("applies color as background to preview", () => {
-      const color = colorsFixture[0];
+      const color: Color = {
+        ...colorsFixture[0],
+        spec: { ...colorsFixture[0].spec, hexValue: "#000000" },
+      };
       const wrapper = createWrapper(ColorCard, {
         props: { color },
       });
 
       const preview = wrapper.find(".color-preview");
-      expect(preview.attributes("style")).toContain(color.hexValue);
+      expect(preview.attributes("style")).toContain(color.spec.hexValue);
     });
   });
 
   describe("Actions", () => {
     it("emits edit event when edit button is clicked", async () => {
-      const color = colorsFixture[0];
+      const color: Color = {
+        ...colorsFixture[0],
+        meta: { ...colorsFixture[0].meta, id: "color-1" },
+      };
       const wrapper = createWrapper(ColorCard, {
         props: { color },
       });
@@ -49,7 +60,10 @@ describe("ColorCard", () => {
     });
 
     it("emits delete event when delete button is clicked", async () => {
-      const color = colorsFixture[0];
+      const color: Color = {
+        ...colorsFixture[0],
+        meta: { ...colorsFixture[0].meta, id: "color-1" },
+      };
       const wrapper = createWrapper(ColorCard, {
         props: { color },
       });
@@ -62,7 +76,10 @@ describe("ColorCard", () => {
     });
 
     it("stops event propagation for action buttons", async () => {
-      const color = colorsFixture[0];
+      const color: Color = {
+        ...colorsFixture[0],
+        meta: { ...colorsFixture[0].meta, id: "color-1" },
+      };
       const wrapper = createWrapper(ColorCard, {
         props: { color },
       });
@@ -77,7 +94,10 @@ describe("ColorCard", () => {
 
   describe("Styling", () => {
     it("has color-card class", () => {
-      const color = colorsFixture[0];
+      const color: Color = {
+        ...colorsFixture[0],
+        meta: { ...colorsFixture[0].meta, id: "color-1" },
+      };
       const wrapper = createWrapper(ColorCard, {
         props: { color },
       });
@@ -86,7 +106,10 @@ describe("ColorCard", () => {
     });
 
     it("displays color preview section", () => {
-      const color = colorsFixture[0];
+      const color: Color = {
+        ...colorsFixture[0],
+        meta: { ...colorsFixture[0].meta, id: "color-1" },
+      };
       const wrapper = createWrapper(ColorCard, {
         props: { color },
       });
@@ -95,7 +118,10 @@ describe("ColorCard", () => {
     });
 
     it("displays color info section", () => {
-      const color = colorsFixture[0];
+      const color: Color = {
+        ...colorsFixture[0],
+        meta: { ...colorsFixture[0].meta, id: "color-1" },
+      };
       const wrapper = createWrapper(ColorCard, {
         props: { color },
       });
@@ -104,7 +130,10 @@ describe("ColorCard", () => {
     });
 
     it("shows overlay with action buttons", () => {
-      const color = colorsFixture[0];
+      const color: Color = {
+        ...colorsFixture[0],
+        meta: { ...colorsFixture[0].meta, id: "color-1" },
+      };
       const wrapper = createWrapper(ColorCard, {
         props: { color },
       });
@@ -116,7 +145,10 @@ describe("ColorCard", () => {
 
   describe("Edge Cases", () => {
     it("handles different hex formats", () => {
-      const color = { ...colorsFixture[0], hexValue: "#FFF" };
+      const color: Color = {
+        ...colorsFixture[0],
+        spec: { ...colorsFixture[0].spec, hexValue: "#FFF" },
+      };
       const wrapper = createWrapper(ColorCard, {
         props: { color },
       });
@@ -125,7 +157,10 @@ describe("ColorCard", () => {
     });
 
     it("renders with uppercase hex values", () => {
-      const color = { ...colorsFixture[0], hexValue: "#FF00FF" };
+      const color: Color = {
+        ...colorsFixture[0],
+        spec: { ...colorsFixture[0].spec, hexValue: "#FF00FF" },
+      };
       const wrapper = createWrapper(ColorCard, {
         props: { color },
       });

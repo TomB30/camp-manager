@@ -175,16 +175,16 @@
           <div class="checkbox-group">
             <label
               v-for="group in availableGroups"
-              :key="group.id"
+              :key="group.meta.id"
               class="checkbox-label"
             >
               <input
                 type="checkbox"
-                :value="group.id"
+                :value="group.meta.id"
                 v-model="localFormData.groupIds"
                 class="checkbox-input"
               />
-              <span>{{ group.name }}</span>
+              <span>{{ group.meta.name }}</span>
             </label>
             <div
               v-if="availableGroups.length === 0"
@@ -236,16 +236,16 @@
             <div class="checkbox-group">
               <label
                 v-for="group in groups"
-                :key="group.id"
+                :key="group.meta.id"
                 class="checkbox-label"
               >
                 <input
                   type="checkbox"
-                  :value="group.id"
+                  :value="group.meta.id"
                   v-model="localFormData.camperFilters.groupIds"
                   class="checkbox-input"
                 />
-                <span>{{ group.name }}</span>
+                <span>{{ group.meta.name }}</span>
               </label>
               <div v-if="groups.length === 0" class="text-sm text-secondary">
                 No family groups available
@@ -577,7 +577,7 @@ export default defineComponent({
     },
     availableGroups(): Group[] {
       // Exclude the current group being edited and any that would cause circular references
-      return this.groups.filter((g) => g.id !== this.editingGroupId);
+      return this.groups.filter((g) => g.meta.id !== this.editingGroupId);
     },
     availableHousingRooms(): HousingRoom[] {
       // If no session is selected, return empty array
@@ -600,9 +600,9 @@ export default defineComponent({
       ) {
         baseCampers = baseCampers.filter(
           (c) =>
-            c.familyGroupId &&
+            c.spec.familyGroupId &&
             this.localFormData.camperFilters.groupIds!.includes(
-              c.familyGroupId,
+              c.spec.familyGroupId,
             ),
         );
       }
@@ -611,17 +611,17 @@ export default defineComponent({
       return baseCampers.filter((camper) => {
         if (
           this.localFormData.camperFilters.ageMin !== undefined &&
-          camper.age < this.localFormData.camperFilters.ageMin
+          camper.spec.age < this.localFormData.camperFilters.ageMin
         )
           return false;
         if (
           this.localFormData.camperFilters.ageMax !== undefined &&
-          camper.age > this.localFormData.camperFilters.ageMax
+          camper.spec.age > this.localFormData.camperFilters.ageMax
         )
           return false;
         if (
           this.localFormData.camperFilters.gender &&
-          camper.gender !== this.localFormData.camperFilters.gender
+          camper.spec.gender !== this.localFormData.camperFilters.gender
         )
           return false;
         return true;
@@ -633,17 +633,17 @@ export default defineComponent({
       return this.staffMembers.filter((staff) => {
         // Role filter
         if (this.localFormData.staffFilters.roles.length > 0) {
-          if (!this.localFormData.staffFilters.roles.includes(staff.roleId))
+          if (!this.localFormData.staffFilters.roles.includes(staff.spec.roleId))
             return false;
         }
 
         // Certification filter
         if (this.localFormData.staffFilters.certificationIds.length > 0) {
-          if (!staff.certificationIds || staff.certificationIds.length === 0)
+          if (!staff.spec.certificationIds || staff.spec.certificationIds.length === 0)
             return false;
           const hasAllCerts =
             this.localFormData.staffFilters.certificationIds.every(
-              (certId: string) => staff.certificationIds!.includes(certId),
+              (certId: string) => staff.spec.certificationIds!.includes(certId),
             );
           if (!hasAllCerts) return false;
         }
@@ -665,7 +665,7 @@ export default defineComponent({
       // Clear housing room if it's no longer available for the selected session
       if (this.localFormData.housingRoomId) {
         const isRoomAvailable = this.availableHousingRooms.some(
-          (room) => room.id === this.localFormData.housingRoomId,
+          (room) => room.meta.id === this.localFormData.housingRoomId,
         );
         if (!isRoomAvailable) {
           this.localFormData.housingRoomId = "";
@@ -770,67 +770,67 @@ export default defineComponent({
 
     // Label methods
     getLabelLabel(label: Label): string {
-      return label.name;
+      return label.meta.name;
     },
     getLabelInitials(label: Label): string {
-      return label.name.substring(0, 2).toUpperCase();
+      return label.meta.name.substring(0, 2).toUpperCase();
     },
     getLabelOption(label: Label): AutocompleteOption {
       return {
-        label: label.name,
-        value: label.id,
-        description: label.description,
+        label: label.meta.name,
+        value: label.meta.id,
+        description: label.meta.description,
       };
     },
 
     // Session methods
     getSessionLabel(session: Session): string {
-      return session.name;
+      return session.meta.name;
     },
     getSessionInitials(session: Session): string {
-      const words = session.name.split(" ");
+      const words = session.meta.name.split(" ");
       if (words.length >= 2) {
         return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
       }
-      return session.name.substring(0, 2).toUpperCase();
+      return session.meta.name.substring(0, 2).toUpperCase();
     },
     getSessionOption(session: Session): AutocompleteOption {
-      const startDate = new Date(session.startDate).toLocaleDateString(
+      const startDate = new Date(session.spec.startDate).toLocaleDateString(
         "en-US",
         { month: "short", day: "numeric" },
       );
-      const endDate = new Date(session.endDate).toLocaleDateString("en-US", {
+      const endDate = new Date(session.spec.endDate).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
       });
       return {
-        label: `${session.name} (${startDate} - ${endDate})`,
-        value: session.id,
+        label: `${session.meta.name} (${startDate} - ${endDate})`,
+        value: session.meta.id,
       };
     },
 
     // Room methods
     getRoomLabel(room: HousingRoom): string {
-      return `${room.name} (${room.beds} beds)`;
+      return `${room.meta.name} (${room.spec.beds} beds)`;
     },
     getRoomInitials(room: HousingRoom): string {
-      const words = room.name.split(" ");
+      const words = room.meta.name.split(" ");
       if (words.length >= 2) {
         return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
       }
-      return room.name.substring(0, 2).toUpperCase();
+      return room.meta.name.substring(0, 2).toUpperCase();
     },
     getRoomOption(room: HousingRoom): AutocompleteOption {
       // Check if room is available for the selected session
       const selectedSession = this.sessions.find(
-        (s) => s.id === this.localFormData.sessionId,
+        (s) => s.meta.id === this.localFormData.sessionId,
       );
 
       if (!selectedSession) {
         return {
-          label: `${room.name} (${room.beds} beds)`,
-          value: room.id,
+          label: `${room.meta.name} (${room.spec.beds} beds)`,
+          value: room.meta.id,
           disabled: false,
         };
       }
@@ -838,32 +838,32 @@ export default defineComponent({
       // Find if any other group is using this room during overlapping dates
       const occupyingGroup = this.groups.find((group) => {
         // Skip the current group being edited
-        if (group.id === this.editingGroupId) {
+        if (group.meta.id === this.editingGroupId) {
           return false;
         }
 
         // Check if this group is using the room
-        if (group.housingRoomId !== room.id) {
+        if (group.spec.housingRoomId !== room.meta.id) {
           return false;
         }
 
         // Check if this group's session overlaps with the selected session
-        if (!group.sessionId) {
+        if (!group.spec.sessionId) {
           return false;
         }
 
         const groupSession = this.sessions.find(
-          (s) => s.id === group.sessionId,
+          (s) => s.meta.id === group.spec.sessionId,
         );
         if (!groupSession) {
           return false;
         }
 
         // Check for date overlap
-        const selectedStart = new Date(selectedSession.startDate);
-        const selectedEnd = new Date(selectedSession.endDate);
-        const groupStart = new Date(groupSession.startDate);
-        const groupEnd = new Date(groupSession.endDate);
+        const selectedStart = new Date(selectedSession.spec.startDate);
+        const selectedEnd = new Date(selectedSession.spec.endDate);
+        const groupStart = new Date(groupSession.spec.startDate);
+        const groupEnd = new Date(groupSession.spec.endDate);
 
         // Rooms overlap if: start1 <= end2 && start2 <= end1
         return selectedStart <= groupEnd && groupStart <= selectedEnd;
@@ -871,42 +871,42 @@ export default defineComponent({
 
       if (occupyingGroup) {
         return {
-          label: `${room.name} (${room.beds} beds) - (Occupied by ${occupyingGroup.name})`,
-          value: room.id,
+          label: `${room.meta.name} (${room.spec.beds} beds) - (Occupied by ${occupyingGroup.meta.name})`,
+          value: room.meta.id,
           disabled: true,
         };
       }
 
       return {
-        label: `${room.name} (${room.beds} beds)`,
-        value: room.id,
+        label: `${room.meta.name} (${room.spec.beds} beds)`,
+        value: room.meta.id,
         disabled: false,
       };
     },
 
     // Camper methods
     getCamperLabel(camper: Camper): string {
-      return `${camper.firstName} ${camper.lastName}`;
+      return `${camper.spec.firstName} ${camper.spec.lastName}`;
     },
     getCamperInitials(camper: Camper): string {
-      return `${camper.firstName.charAt(0)}${camper.lastName.charAt(0)}`;
+      return `${camper.spec.firstName.charAt(0)}${camper.spec.lastName.charAt(0)}`;
     },
     getCamperOption(camper: Camper): AutocompleteOption {
       // If this group has a housing room, check if the camper is already in another group with a housing room
       if (this.hasHousingRoom) {
         const occupyingGroup = this.groups.find((group) => {
           // Skip the current group being edited
-          if (group.id === this.editingGroupId) {
+          if (group.meta.id === this.editingGroupId) {
             return false;
           }
 
           // Check if this group has a housing room
-          if (!group.housingRoomId) {
+          if (!group.spec.housingRoomId) {
             return false;
           }
 
           // Check if this camper is in this group
-          if (group.camperIds && group.camperIds.includes(camper.id)) {
+          if (group.spec.camperIds && group.spec.camperIds.includes(camper.meta.id)) {
             return true;
           }
 
@@ -915,45 +915,45 @@ export default defineComponent({
 
         if (occupyingGroup) {
           return {
-            label: `${camper.firstName} ${camper.lastName} (Age ${camper.age}) - Assigned to ${occupyingGroup.name}`,
-            value: camper.id,
+            label: `${camper.spec.firstName} ${camper.spec.lastName} (Age ${camper.spec.age}) - Assigned to ${occupyingGroup.meta.name}`,
+            value: camper.meta.id,
             disabled: true,
           };
         }
       }
 
       return {
-        label: `${camper.firstName} ${camper.lastName} (Age ${camper.age})`,
-        value: camper.id,
+        label: `${camper.spec.firstName} ${camper.spec.lastName} (Age ${camper.spec.age})`,
+        value: camper.meta.id,
       };
     },
 
     // Staff methods
     getStaffLabel(staff: StaffMember): string {
-      return `${staff.firstName} ${staff.lastName} (${staff.roleId})`;
+      return `${staff.spec.firstName} ${staff.spec.lastName} (${staff.spec.roleId})`;
     },
     getStaffInitials(staff: StaffMember): string {
-      return `${staff.firstName.charAt(0)}${staff.lastName.charAt(0)}`;
+      return `${staff.spec.firstName.charAt(0)}${staff.spec.lastName.charAt(0)}`;
     },
     getStaffOption(staff: StaffMember): AutocompleteOption {
       return {
-        label: `${staff.firstName} ${staff.lastName} (${staff.roleId})`,
-        value: staff.id,
+        label: `${staff.spec.firstName} ${staff.spec.lastName} (${staff.spec.roleId})`,
+        value: staff.meta.id,
       };
     },
 
     // Certification methods
     getCertificationLabel(cert: Certification): string {
-      return cert.name;
+      return cert.meta.name;
     },
     getCertificationInitials(cert: Certification): string {
-      return cert.name.substring(0, 2).toUpperCase();
+      return cert.meta.name.substring(0, 2).toUpperCase();
     },
     getCertificationOption(cert: Certification): AutocompleteOption {
       return {
-        label: cert.name,
-        value: cert.id,
-        description: cert.description,
+        label: cert.meta.name,
+        value: cert.meta.id,
+        description: cert.meta.description,
       };
     },
 

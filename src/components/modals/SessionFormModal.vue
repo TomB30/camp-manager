@@ -8,7 +8,7 @@
         <div class="form-group">
           <label class="form-label">Session Name</label>
           <BaseInput
-            v-model="formModel.name"
+            v-model="formModel.meta.name"
             placeholder="e.g., Week 1, Summer Session A"
             :rules="[(val: string) => !!val || 'Enter session name']"
           />
@@ -18,7 +18,7 @@
           <div class="form-group">
             <label class="form-label">Start Date</label>
             <BaseInput
-              v-model="formModel.startDate"
+              v-model="formModel.spec.startDate"
               type="date"
               :rules="[(val: string) => !!val || 'Enter start date']"
             />
@@ -27,13 +27,13 @@
           <div class="form-group">
             <label class="form-label">End Date</label>
             <BaseInput
-              v-model="formModel.endDate"
+              v-model="formModel.spec.endDate"
               type="date"
               :rules="[
                 (val: string) => !!val || 'Enter end date',
                 (val: string) =>
-                  !formModel.startDate ||
-                  val >= formModel.startDate ||
+                  !formModel.spec.startDate ||
+                  val >= formModel.spec.startDate ||
                   'End date must be after start date',
               ]"
             />
@@ -93,10 +93,14 @@ export default defineComponent({
   data() {
     return {
       formModel: {
-        name: "",
-        startDate: "",
-        endDate: "",
-        description: "",
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {
+          startDate: "",
+          endDate: "",
+        },
       } as SessionCreationRequest,
       formRef: null as any,
       loading: false as boolean,
@@ -107,10 +111,14 @@ export default defineComponent({
       const editingSession = this.sessionsStore.getSessionById(this.sessionId);
       if (editingSession) {
         this.formModel = {
-          name: editingSession.name,
-          startDate: editingSession.startDate,
-          endDate: editingSession.endDate,
-          description: editingSession.description || "",
+          meta: {
+            name: editingSession.meta.name,
+            description: editingSession.meta.description || "",
+          },
+          spec: {
+            startDate: editingSession.spec.startDate,
+            endDate: editingSession.spec.endDate,
+          },
         };
       }
     }
@@ -121,10 +129,10 @@ export default defineComponent({
     },
     descriptionModel: {
       get(): string {
-        return this.formModel.description || "";
+        return this.formModel.meta.description || "";
       },
       set(value: string) {
-        this.formModel.description = value || undefined;
+        this.formModel.meta.description = value || undefined;
       },
     },
   },

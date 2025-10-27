@@ -119,7 +119,7 @@ export default defineComponent({
       return true;
     },
     availableItems(): any[] {
-      return this.items.filter((item) => !this.selectedIds.includes(item.id));
+      return this.items.filter((item) => !this.selectedIds.includes(item.meta.id));
     },
     availableOptions(): AutocompleteOption[] {
       return this.availableItems.map((item) => this.getOptionsFn(item));
@@ -127,11 +127,11 @@ export default defineComponent({
   },
   methods: {
     getLabel(itemId: string): string {
-      const item = this.items.find((i) => i.id === itemId);
+      const item = this.items.find((i) => i.meta.id === itemId);
       return item ? this.getLabelFn(item) : "Unknown";
     },
     getInitials(itemId: string): string {
-      const item = this.items.find((i) => i.id === itemId);
+      const item = this.items.find((i) => i.meta.id === itemId);
       return item ? this.getInitialsFn(item) : "??";
     },
     addItem(): void {

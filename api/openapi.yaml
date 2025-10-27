@@ -6,6 +6,11 @@ info:
 
 components:
   schemas:
+    EntityMeta:
+      $ref: "./schemas/EntityMeta.yaml"
+    EntityCreationRequestMeta:
+      $ref: "./schemas/EntityCreationRequestMeta.yaml"
+    
     Camper:
       $ref: "./schemas/Camper.yaml"
     CamperCreationRequest:

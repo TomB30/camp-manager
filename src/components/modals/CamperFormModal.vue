@@ -9,7 +9,7 @@
           <div class="form-group">
             <label class="form-label">First Name</label>
             <BaseInput
-              v-model="formData.firstName"
+              v-model="formData.spec.firstName"
               placeholder="Enter first name"
               :rules="[(val: string) => !!val || 'Enter first name']"
             />
@@ -18,7 +18,7 @@
           <div class="form-group">
             <label class="form-label">Last Name</label>
             <BaseInput
-              v-model="formData.lastName"
+              v-model="formData.spec.lastName"
               placeholder="Enter last name"
               :rules="[(val: string) => !!val || 'Enter last name']"
             />
@@ -43,7 +43,7 @@
           <div class="form-group">
             <label class="form-label">Gender</label>
             <Autocomplete
-              v-model="formData.gender"
+              v-model="formData.spec.gender"
               :options="genderOptions"
               placeholder="Select gender..."
               :required="true"
@@ -54,7 +54,7 @@
         <div class="form-group">
           <label class="form-label">Camp Session</label>
           <Autocomplete
-            v-model="formData.sessionId"
+            v-model="formData.spec.sessionId"
             :options="sessionOptions"
             placeholder="Select a session..."
             :required="true"
@@ -65,14 +65,14 @@
           <label class="form-label">Family Group</label>
           <Autocomplete
             class="family-group-autocomplete"
-            v-model="formData.familyGroupId"
+            v-model="formData.spec.familyGroupId"
             :options="availableGroupOptions"
             placeholder="Select a family group..."
-            :disabled="!formData.sessionId"
+            :disabled="!formData.spec.sessionId"
             no-option-text="No family groups available for this session"
           />
           <q-tooltip
-            v-if="!formData.sessionId"
+            v-if="!formData.spec.sessionId"
             target=".family-group-autocomplete"
           >
             Select a session first to choose a family group
@@ -125,12 +125,18 @@ export default defineComponent({
       campersStore: useCampersStore(),
       toast: useToast(),
       formData: {
-        firstName: "",
-        lastName: "",
-        age: 0,
-        gender: "male",
-        sessionId: "",
-        photoUrl: "",
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {
+          firstName: "",
+          lastName: "",
+          age: 0,
+          gender: "male",
+          sessionId: "",
+          photoUrl: "",
+        },
       } as CamperCreationRequest,
       genderOptions: [
         { label: "Male", value: "male" },
@@ -145,13 +151,19 @@ export default defineComponent({
     const camper = this.campersStore.getCamperById(this.camperId);
     if (!camper) return;
     this.formData = {
-      firstName: camper.firstName,
-      lastName: camper.lastName,
-      age: camper.age,
-      gender: camper.gender,
-      sessionId: camper.sessionId || "",
-      familyGroupId: camper.familyGroupId || "",
-      photoUrl: camper.photoUrl || "",
+      meta: {
+        name: camper.meta.name,
+        description: camper.meta.description,
+      },
+      spec: {
+        firstName: camper.spec.firstName,
+        lastName: camper.spec.lastName,
+        age: camper.spec.age,
+        gender: camper.spec.gender,
+        sessionId: camper.spec.sessionId || "",
+        familyGroupId: camper.spec.familyGroupId || "",
+        photoUrl: camper.spec.photoUrl || "",
+      },
     };
   },
   computed: {
@@ -166,43 +178,43 @@ export default defineComponent({
     },
     ageModel: {
       get(): string {
-        return this.formData.age?.toString() || "";
+        return this.formData.spec.age?.toString() || "";
       },
       set(value: string) {
         const num = parseInt(value);
-        this.formData.age = isNaN(num) ? 0 : num;
+        this.formData.spec.age = isNaN(num) ? 0 : num;
       },
     },
     sessionOptions(): AutocompleteOption[] {
       return this.sessions.map((session) => {
-        const startDate = new Date(session.startDate).toLocaleDateString(
+        const startDate = new Date(session.spec.startDate).toLocaleDateString(
           "en-US",
-          { month: "short", day: "numeric" },
+          { month: "short", day: "numeric" }
         );
-        const endDate = new Date(session.endDate).toLocaleDateString("en-US", {
+        const endDate = new Date(session.spec.endDate).toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
           year: "numeric",
         });
         return {
-          label: `${session.name} (${startDate} - ${endDate})`,
-          value: session.id,
+          label: `${session.meta.name} (${startDate} - ${endDate})`,
+          value: session.meta.id,
         };
       });
     },
     availableGroupOptions(): AutocompleteOption[] {
       // Only show family groups that match the selected session
-      if (!this.formData.sessionId) {
+      if (!this.formData.spec.sessionId) {
         return [];
       }
 
       const filteredGroups = this.groups.filter(
-        (group) => group.sessionId === this.formData.sessionId,
+        (group) => group.spec.sessionId === this.formData.spec.sessionId
       );
 
       return filteredGroups.map((group) => ({
-        label: group.name,
-        value: group.id,
+        label: group.meta.name,
+        value: group.meta.id,
       }));
     },
   },

@@ -1,6 +1,6 @@
 <template>
   <div class="label-card">
-    <div class="label-preview" :style="{ background: labelColor || '#6B7280' }">
+    <div class="label-preview">
       <div class="label-overlay">
         <button
           class="icon-btn"
@@ -19,9 +19,9 @@
       </div>
     </div>
     <div class="label-info">
-      <div class="label-name">{{ label.name }}</div>
-      <div v-if="label.description" class="label-description">
-        {{ label.description }}
+      <div class="label-name">{{ label.meta.name }}</div>
+      <div v-if="label.meta.description" class="label-description">
+        {{ label.meta.description }}
       </div>
     </div>
   </div>
@@ -30,7 +30,6 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import type { Label } from "@/types";
-import { useColorsStore } from "@/stores";
 import Icon from "../Icon.vue";
 
 export default defineComponent({
@@ -46,17 +45,7 @@ export default defineComponent({
   },
   emits: ["edit", "delete"],
   setup() {
-    const colorsStore = useColorsStore();
-    return { colorsStore };
-  },
-  computed: {
-    labelColor(): string {
-      if (this.label.colorId) {
-        const color = this.colorsStore.getColorById(this.label.colorId);
-        return color?.hexValue || "#6B7280";
-      }
-      return "#6B7280";
-    },
+    return { };
   },
 });
 </script>

@@ -5,7 +5,7 @@
     @click="$emit('click', program)"
   >
     <div class="card-header">
-      <h4>{{ program.name }}</h4>
+      <h4>{{ program.meta.name }}</h4>
       <div>
         <span class="badge badge-primary"
           >{{ activitiesCount }} activities</span
@@ -13,8 +13,8 @@
       </div>
     </div>
 
-    <p v-if="program.description" class="card-description">
-      {{ program.description }}
+    <p v-if="program.meta.description" class="card-description">
+      {{ program.meta.description }}
     </p>
 
     <div class="card-stats">
@@ -66,9 +66,9 @@ export default defineComponent({
   },
   computed: {
     programColor(): string {
-      if (this.program.colorId) {
-        const color = this.colorsStore.getColorById(this.program.colorId);
-        return color?.hexValue || "#6366F1";
+      if (this.program.spec.colorId) {
+        const color = this.colorsStore.getColorById(this.program.spec.colorId);
+        return color?.spec.hexValue || "#6366F1";
       }
       return "#6366F1";
     },

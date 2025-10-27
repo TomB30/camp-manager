@@ -39,10 +39,10 @@
     <div v-else-if="viewMode === 'grid'" class="roles-grid">
       <div
         v-for="role in filteredRoles"
-        :key="role.id"
+        :key="role.meta.id"
         class="role-card-wrapper"
       >
-        <RoleCard :role="role" @click="selectRole(role.id)" />
+        <RoleCard :role="role" @click="selectRole(role.meta.id)" />
       </div>
     </div>
 
@@ -60,12 +60,12 @@
           <div class="role-icon-sm">
             <Icon name="Shield" :size="18" />
           </div>
-          <div>{{ item.name }}</div>
+          <div>{{ item.meta.name }}</div>
         </div>
       </template>
 
       <template #cell-description="{ item }">
-        <span v-if="item.description">{{ item.description }}</span>
+        <span v-if="item.meta.description">{{ item.meta.description }}</span>
         <span v-else class="text-caption">No description</span>
       </template>
 
@@ -74,7 +74,7 @@
           outline
           color="grey-8"
           size="sm"
-          @click="selectRole(item.id)"
+          @click="selectRole(item.meta.id)"
           label="View Details"
         />
       </template>
@@ -167,12 +167,12 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         filtered = filtered.filter(
           (role) =>
-            role.name.toLowerCase().includes(query) ||
-            role.description?.toLowerCase().includes(query),
+            role.meta.name.toLowerCase().includes(query) ||
+            role.meta.description?.toLowerCase().includes(query),
         );
       }
 
-      return filtered.sort((a, b) => a.name.localeCompare(b.name));
+      return filtered.sort((a, b) => a.meta.name.localeCompare(b.meta.name));
     },
     selectedRole(): Role | null {
       if (!this.selectedRoleId) return null;
@@ -188,7 +188,7 @@ export default defineComponent({
       this.editRole(role);
     },
     editRole(role: Role) {
-      this.editingRoleId = role.id;
+      this.editingRoleId = role.meta.id;
       this.showModal = true;
     },
     deleteRoleConfirm(id: string) {

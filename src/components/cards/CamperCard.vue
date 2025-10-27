@@ -4,14 +4,14 @@
     @click="$emit('click', camper)"
   >
     <AvatarInitials
-      :first-name="camper.firstName"
-      :last-name="camper.lastName"
+      :first-name="camper.spec.firstName"
+      :last-name="camper.spec.lastName"
       size="lg"
     />
     <div class="card-details">
-      <h4>{{ camper.firstName }} {{ camper.lastName }}</h4>
+      <h4>{{ camper.spec.firstName }} {{ camper.spec.lastName }}</h4>
       <div class="card-meta">
-        <span class="badge badge-primary">Age {{ camper.age }}</span>
+        <span class="badge badge-primary">Age {{ camper.spec.age }}</span>
         <span class="badge badge-primary">{{ formattedGender }}</span>
         <span v-if="sessionName" class="badge badge-primary">{{
           sessionName

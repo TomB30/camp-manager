@@ -25,7 +25,13 @@ async function createStaffMember(
 ): Promise<StaffMember> {
   const newStaffMember = {
     ...member,
-    id: crypto.randomUUID(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: member.meta.name,
+      description: member.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<StaffMember>(
     STORAGE_KEYS.STAFF_MEMBERS,
@@ -47,6 +53,12 @@ async function updateStaffMember(
   const updatedStaffMember = {
     ...existingStaffMember,
     ...member,
+    meta: {
+      ...existingStaffMember.meta,
+      name: member.meta.name,
+      description: member.meta.description,
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<StaffMember>(
     STORAGE_KEYS.STAFF_MEMBERS,
@@ -63,7 +75,7 @@ async function deleteStaffMember(id: string): Promise<void> {
   const updatedEvents = events.map((event) => ({
     ...event,
     assignedStaffIds:
-      event.assignedStaffIds?.filter((staffId: string) => staffId !== id) || [],
+      event.spec.assignedStaffIds?.filter((staffId: string) => staffId !== id) || [],
   }));
 
   // Save all updated events
@@ -81,7 +93,7 @@ async function getStaffMembersByCertification(
 ): Promise<StaffMember[]> {
   const staffMembers = await listStaffMembers();
   return staffMembers.filter((s) =>
-    s.certificationIds?.includes(certificationId),
+    s.spec.certificationIds?.includes(certificationId),
   );
 }
 
@@ -89,5 +101,5 @@ async function getStaffMembersByManager(
   managerId: string,
 ): Promise<StaffMember[]> {
   const staffMembers = await listStaffMembers();
-  return staffMembers.filter((s) => s.managerId === managerId);
+  return staffMembers.filter((s) => s.spec.managerId === managerId);
 }

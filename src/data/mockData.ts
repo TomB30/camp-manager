@@ -32,241 +32,417 @@ const generateId = (): string => {
 const octoberDate = (
   day: number,
   hour: number = 9,
-  minute: number = 0,
+  minute: number = 0
 ): string => {
   return new Date(2025, 9, day, hour, minute).toISOString();
 };
 
 // Camp (singleton)
 export const camp: Camp = {
-  id: generateId(),
-  name: "Sunset Lake Summer Camp",
-  description:
-    "A premier summer camp experience nestled in the beautiful mountains, offering adventure, learning, and lifelong friendships.",
-  startDate: "2025-10-01",
-  endDate: "2025-10-31",
-  dailyStartTime: "08:00",
-  dailyEndTime: "20:00",
-  address: {
-    street: "123 Camp Road",
-    city: "Mountain View",
-    state: "CA",
-    zipCode: "94043",
-    country: "USA",
+  meta: {
+    id: generateId(),
+    name: "Sunset Lake Summer Camp",
+    description:
+      "A premier summer camp experience nestled in the beautiful mountains, offering adventure, learning, and lifelong friendships.",
+    createdAt: octoberDate(1),
+    updatedAt: octoberDate(1),
   },
-  contactInfo: {
-    phone: "555-CAMP-FUN",
-    email: "info@sunsetlakecamp.com",
-    website: "https://www.sunsetlakecamp.com",
+  spec: {
+    startDate: "2025-10-01",
+    endDate: "2025-10-31",
+    dailyStartTime: "08:00",
+    dailyEndTime: "20:00",
+    address: {
+      street: "123 Camp Road",
+      city: "Mountain View",
+      state: "CA",
+      zipCode: "94043",
+      country: "USA",
+    },
+    contactInfo: {
+      phone: "555-CAMP-FUN",
+      email: "info@sunsetlakecamp.com",
+      website: "https://www.sunsetlakecamp.com",
+    },
+    logoUrl: "https://via.placeholder.com/200x200?text=Camp+Logo",
   },
-  logoUrl: "https://via.placeholder.com/200x200?text=Camp+Logo",
-  createdAt: octoberDate(1),
-  updatedAt: octoberDate(1),
 };
 
 // Duration Presets
 export const durationPresets: DurationPreset[] = [
   {
-    id: generateId(),
-    name: "Quick Activity",
-    durationMinutes: 30,
-    description: "Short 30-minute activities or transitions",
-    createdAt: octoberDate(1),
-    updatedAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Quick Activity",
+      description: "Short 30-minute activities or transitions",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      durationMinutes: 30,
+    },
   },
   {
-    id: generateId(),
-    name: "Standard Session",
-    durationMinutes: 60,
-    description: "Standard 1-hour activity session",
-    default: true,
-    createdAt: octoberDate(1),
-    updatedAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Standard Session",
+      description: "Standard 1-hour activity session",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      durationMinutes: 60,
+      default: true,
+    },
   },
   {
-    id: generateId(),
-    name: "Extended Activity",
-    durationMinutes: 90,
-    description: "90-minute extended activity session",
-    createdAt: octoberDate(1),
-    updatedAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Extended Activity",
+      description: "90-minute extended activity session",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      durationMinutes: 90,
+    },
   },
   {
-    id: generateId(),
-    name: "Half Day",
-    durationMinutes: 120,
-    description: "2-hour half-day program",
-    createdAt: octoberDate(1),
-    updatedAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Half Day",
+      description: "2-hour half-day program",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      durationMinutes: 120,
+    },
   },
   {
-    id: generateId(),
-    name: "Full Program",
-    durationMinutes: 180,
-    description: "3-hour full program session",
-    createdAt: octoberDate(1),
-    updatedAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Full Program",
+      description: "3-hour full program session",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      durationMinutes: 180,
+    },
   },
 ];
 
 // Colors
 export const colors: Color[] = [
   {
-    id: generateId(),
-    name: "Ocean Blue",
-    hexValue: "#0891B2",
-    default: true,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Ocean Blue",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      hexValue: "#0891B2",
+      default: true,
+    },
   },
   {
-    id: generateId(),
-    name: "Sunset Orange",
-    hexValue: "#F97316",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Sunset Orange",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      hexValue: "#F97316",
+    },
   },
   {
-    id: generateId(),
-    name: "Forest Green",
-    hexValue: "#16A34A",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Forest Green",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      hexValue: "#16A34A",
+    },
   },
   {
-    id: generateId(),
-    name: "Berry Purple",
-    hexValue: "#9333EA",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Berry Purple",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      hexValue: "#9333EA",
+    },
   },
   {
-    id: generateId(),
-    name: "Coral Pink",
-    hexValue: "#EC4899",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Coral Pink",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      hexValue: "#EC4899",
+    },
   },
   {
-    id: generateId(),
-    name: "Sky Blue",
-    hexValue: "#3B82F6",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Sky Blue",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      hexValue: "#3B82F6",
+    },
   },
   {
-    id: generateId(),
-    name: "Lemon Yellow",
-    hexValue: "#EAB308",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Lemon Yellow",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      hexValue: "#EAB308",
+    },
   },
   {
-    id: generateId(),
-    name: "Cherry Red",
-    hexValue: "#DC2626",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Cherry Red",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      hexValue: "#DC2626",
+    },
   },
   {
-    id: generateId(),
-    name: "Mint Green",
-    hexValue: "#10B981",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Mint Green",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      hexValue: "#10B981",
+    },
   },
   {
-    id: generateId(),
-    name: "Lavender",
-    hexValue: "#A855F7",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Lavender",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      hexValue: "#A855F7",
+    },
   },
 ];
 
 // Camp Sessions (6 sessions)
 export const sessions: Session[] = [
   {
-    id: generateId(),
-    name: "Early Fall Session",
-    startDate: "2025-10-01",
-    endDate: "2025-10-05",
-    description: "Perfect start to fall activities",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Early Fall Session",
+      description: "Perfect start to fall activities",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      startDate: "2025-10-01",
+      endDate: "2025-10-05",
+    },
   },
   {
-    id: generateId(),
-    name: "Mid Fall Session A",
-    startDate: "2025-10-06",
-    endDate: "2025-10-10",
-    description: "Mid-fall adventures",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Mid Fall Session A",
+      description: "Mid-fall adventures",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      startDate: "2025-10-06",
+      endDate: "2025-10-10",
+    },
   },
   {
-    id: generateId(),
-    name: "Mid Fall Session B",
-    startDate: "2025-10-11",
-    endDate: "2025-10-15",
-    description: "Continued fall fun",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Mid Fall Session B",
+      description: "Continued fall fun",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      startDate: "2025-10-11",
+      endDate: "2025-10-15",
+    },
   },
   {
-    id: generateId(),
-    name: "Late Fall Session A",
-    startDate: "2025-10-16",
-    endDate: "2025-10-20",
-    description: "Late fall exploration",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Late Fall Session A",
+      description: "Late fall exploration",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      startDate: "2025-10-16",
+      endDate: "2025-10-20",
+    },
   },
   {
-    id: generateId(),
-    name: "Late Fall Session B",
-    startDate: "2025-10-21",
-    endDate: "2025-10-25",
-    description: "Halloween prep week",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Late Fall Session B",
+      description: "Halloween prep week",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      startDate: "2025-10-21",
+      endDate: "2025-10-25",
+    },
   },
   {
-    id: generateId(),
-    name: "Halloween Week",
-    startDate: "2025-10-26",
-    endDate: "2025-10-31",
-    description: "Spooky fun and festivities",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Mid Fall Session A",
+      description: "Mid-fall adventures",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      startDate: "2025-10-06",
+      endDate: "2025-10-10",
+    },
+  },
+  {
+    meta: {
+      id: generateId(),
+      name: "Mid Fall Session B",
+      description: "Continued fall fun",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      startDate: "2025-10-11",
+      endDate: "2025-10-15",
+    },
+  },
+  {
+    meta: {
+      id: generateId(),
+      name: "Halloween Week",
+      description: "Spooky fun and festivities",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      startDate: "2025-10-26",
+      endDate: "2025-10-31",
+    },
+  },
+  {
+    meta: {
+      id: generateId(),
+      name: "Late Fall Session B",
+      description: "Halloween prep week",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      startDate: "2025-10-21",
+      endDate: "2025-10-25",
+    },
+  },
+  {
+    meta: {
+      id: generateId(),
+      name: "Halloween Week",
+      description: "Spooky fun and festivities",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      startDate: "2025-10-26",
+      endDate: "2025-10-31",
+    },
   },
 ];
 
 // Areas (4 areas)
 export const areas: Area[] = [
   {
-    id: generateId(),
-    name: "North Campus",
-    description: "Main activity area with classrooms and sports facilities",
-    type: "facility",
-    capacity: 150,
-    equipment: ["Tables", "Chairs", "Whiteboards", "Projectors"],
-    notes: "Primary area for structured activities",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "North Campus",
+      description: "Main activity area with classrooms and sports facilities",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "facility",
+      capacity: 150,
+      equipment: ["Tables", "Chairs", "Whiteboards", "Projectors"],
+      notes: "Primary area for structured activities",
+    },
   },
   {
-    id: generateId(),
-    name: "Lakefront",
-    description: "Waterfront area for aquatic activities",
-    type: "water",
-    capacity: 60,
-    equipment: ["Kayaks", "Life jackets", "Canoes", "Swimming platforms"],
-    notes: "Requires lifeguard certification",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Lakefront",
+      description: "Waterfront area for aquatic activities",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "water",
+      capacity: 60,
+      equipment: ["Kayaks", "Life jackets", "Canoes", "Swimming platforms"],
+      notes: "Requires lifeguard certification",
+    },
   },
   {
-    id: generateId(),
-    name: "Forest Trail",
-    description: "Outdoor adventure area with hiking trails",
-    type: "outdoor",
-    capacity: 80,
-    equipment: ["Trail markers", "First aid stations", "Binoculars"],
-    notes: "Great for nature exploration",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Forest Trail",
+      description: "Outdoor adventure area with hiking trails",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "outdoor",
+      capacity: 80,
+      equipment: ["Trail markers", "First aid stations", "Binoculars"],
+      notes: "Great for nature exploration",
+    },
   },
   {
-    id: generateId(),
-    name: "Central Commons",
-    description: "Indoor gathering space and dining area",
-    type: "indoor",
-    capacity: 200,
-    equipment: ["Tables", "Chairs", "Kitchen facilities", "Stage"],
-    notes: "Main dining and assembly area",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Central Commons",
+      description: "Indoor gathering space and dining area",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "indoor",
+      capacity: 200,
+      equipment: ["Tables", "Chairs", "Kitchen facilities", "Stage"],
+      notes: "Main dining and assembly area",
+    },
   },
 ];
 
@@ -274,417 +450,751 @@ export const areas: Area[] = [
 export const locations: Location[] = [
   // North Campus locations
   {
-    id: generateId(),
-    name: "Classroom A",
-    capacity: 25,
-    type: "classroom",
-    areaId: areas[0].id,
-    equipment: ["Projector", "Whiteboard"],
-    notes: "Main classroom",
+    meta: {
+      id: generateId(),
+      name: "Classroom A",
+      description: "Main classroom",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "classroom",
+      capacity: 25,
+      areaId: areas[0].meta.id,
+      equipment: ["Projector", "Whiteboard"],
+      notes: "Main classroom",
+    },
   },
   {
-    id: generateId(),
-    name: "Classroom B",
-    capacity: 25,
-    type: "classroom",
-    areaId: areas[0].id,
-    equipment: ["Projector", "Whiteboard"],
-    notes: "Science lab",
+    meta: {
+      id: generateId(),
+      name: "Classroom B",
+      description: "Science lab",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "classroom",
+      capacity: 25,
+      areaId: areas[0].meta.id,
+      equipment: ["Projector", "Whiteboard"],
+      notes: "Science lab",
+    },
   },
   {
-    id: generateId(),
-    name: "Art Studio",
-    capacity: 20,
-    type: "arts",
-    areaId: areas[0].id,
-    equipment: ["Easels", "Paint supplies", "Clay"],
-    notes: "Creative space",
+    meta: {
+      id: generateId(),
+      name: "Art Studio",
+      description: "Creative space",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "arts",
+      capacity: 20,
+      areaId: areas[0].meta.id,
+      equipment: ["Easels", "Paint supplies", "Clay"],
+      notes: "Creative space",
+    },
   },
   {
-    id: generateId(),
-    name: "Basketball Court",
-    capacity: 30,
-    type: "sports",
-    areaId: areas[0].id,
-    equipment: ["Basketballs", "Hoops"],
-    notes: "Indoor court",
+    meta: {
+      id: generateId(),
+      name: "Basketball Court",
+      description: "Indoor court",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "sports",
+      capacity: 30,
+      areaId: areas[0].meta.id,
+      equipment: ["Soccer balls", "Goals", "Cones"],
+      notes: "Outdoor field",
+    },
   },
   {
-    id: generateId(),
-    name: "Soccer Field",
-    capacity: 40,
-    type: "sports",
-    areaId: areas[0].id,
-    equipment: ["Soccer balls", "Goals", "Cones"],
-    notes: "Outdoor field",
+    meta: {
+      id: generateId(),
+      name: "Sports Field",
+      description: "Outdoor field",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "sports",
+      capacity: 40,
+      areaId: areas[0].meta.id,
+      equipment: ["Soccer balls", "Goals", "Cones"],
+      notes: "Outdoor field",
+    },
   },
-
   // Lakefront locations
   {
-    id: generateId(),
-    name: "Swimming Area",
-    capacity: 30,
-    type: "outdoor",
-    areaId: areas[1].id,
-    equipment: ["Life jackets", "Floats"],
-    notes: "Supervised swimming",
+    meta: {
+      id: generateId(),
+      name: "Swimming Area",
+      description: "Supervised swimming",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "outdoor",
+      capacity: 30,
+      areaId: areas[1].meta.id,
+      equipment: ["Life jackets", "Floats"],
+      notes: "Supervised swimming",
+    },
   },
   {
-    id: generateId(),
-    name: "Boating Dock",
-    capacity: 20,
-    type: "outdoor",
-    areaId: areas[1].id,
-    equipment: ["Kayaks", "Canoes", "Paddles"],
-    notes: "Water activities",
+    meta: {
+      id: generateId(),
+      name: "Boating Dock",
+      description: "Water activities",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "outdoor",
+      capacity: 20,
+      areaId: areas[1].meta.id,
+      equipment: ["Kayaks", "Canoes", "Paddles"],
+      notes: "Water activities",
+    },
   },
   {
-    id: generateId(),
-    name: "Beach Area",
-    capacity: 40,
-    type: "outdoor",
-    areaId: areas[1].id,
-    equipment: ["Beach toys", "Umbrellas"],
-    notes: "Sandy beach",
+    meta: {
+      id: generateId(),
+      name: "Beach Area",
+      description: "Sandy beach",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "outdoor",
+      capacity: 40,
+      areaId: areas[1].meta.id,
+      equipment: ["Beach toys", "Umbrellas"],
+      notes: "Sandy beach",
+    },
   },
 
   // Forest Trail locations
   {
-    id: generateId(),
-    name: "North Trail Head",
-    capacity: 25,
-    type: "outdoor",
-    areaId: areas[2].id,
-    equipment: ["Trail maps", "First aid kit"],
-    notes: "Hiking start point",
+    meta: {
+      id: generateId(),
+      name: "North Trail Head",
+      description: "Hiking start point",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "outdoor",
+      capacity: 25,
+      areaId: areas[2].meta.id,
+      equipment: ["Trail maps", "First aid kit"],
+      notes: "Hiking start point",
+    },
   },
   {
-    id: generateId(),
-    name: "Nature Center",
-    capacity: 30,
-    type: "activity",
-    areaId: areas[2].id,
-    equipment: ["Microscopes", "Field guides", "Specimens"],
-    notes: "Educational center",
+    meta: {
+      id: generateId(),
+      name: "Nature Center",
+      description: "Educational center",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "activity",
+      capacity: 30,
+      areaId: areas[2].meta.id,
+      equipment: ["Microscopes", "Field guides", "Specimens"],
+      notes: "Educational center",
+    },
   },
   {
-    id: generateId(),
-    name: "Campfire Circle",
-    capacity: 50,
-    type: "outdoor",
-    areaId: areas[2].id,
-    equipment: ["Fire pit", "Benches", "S'more supplies"],
-    notes: "Evening activities",
+    meta: {
+      id: generateId(),
+      name: "Campfire Circle",
+      description: "Evening activities",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "outdoor",
+      capacity: 50,
+      areaId: areas[2].meta.id,
+      equipment: ["Fire pit", "Benches", "S'more supplies"],
+      notes: "Evening activities",
+    },
   },
 
   // Central Commons locations
   {
-    id: generateId(),
-    name: "Main Dining Hall",
-    capacity: 150,
-    type: "dining",
-    areaId: areas[3].id,
-    equipment: ["Tables", "Chairs", "Serving stations"],
-    notes: "All meals served here",
+    meta: {
+      id: generateId(),
+      name: "Main Dining Hall",
+      description: "All meals served here",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "dining",
+      capacity: 150,
+      areaId: areas[3].meta.id,
+      equipment: ["Tables", "Chairs", "Serving stations"],
+      notes: "All meals served here",
+    },
   },
   {
-    id: generateId(),
-    name: "Assembly Hall",
-    capacity: 200,
-    type: "activity",
-    areaId: areas[3].id,
-    equipment: ["Stage", "Sound system", "Projector"],
-    notes: "Large gatherings",
+    meta: {
+      id: generateId(),
+      name: "Assembly Hall",
+      description: "Large gatherings",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "activity",
+      capacity: 200,
+      areaId: areas[3].meta.id,
+      equipment: ["Stage", "Sound system", "Projector"],
+      notes: "Large gatherings",
+    },
   },
   {
-    id: generateId(),
-    name: "Game Room",
-    capacity: 30,
-    type: "activity",
-    areaId: areas[3].id,
-    equipment: ["Board games", "Video games", "Pool table"],
-    notes: "Recreation",
+    meta: {
+      id: generateId(),
+      name: "Game Room",
+      description: "Recreation",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "activity",
+      capacity: 30,
+      areaId: areas[3].meta.id,
+      equipment: ["Board games", "Video games", "Pool table"],
+      notes: "Recreation",
+    },
   },
   {
-    id: generateId(),
-    name: "Craft Workshop",
-    capacity: 25,
-    type: "arts",
-    areaId: areas[3].id,
-    equipment: ["Craft supplies", "Tools", "Workbenches"],
-    notes: "Hands-on projects",
+    meta: {
+      id: generateId(),
+      name: "Craft Workshop",
+      description: "Hands-on projects",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "arts",
+      capacity: 25,
+      areaId: areas[3].meta.id,
+      equipment: ["Craft supplies", "Tools", "Workbenches"],
+      notes: "Hands-on projects",
+    },
   },
   {
-    id: generateId(),
-    name: "Music Room",
-    capacity: 20,
-    type: "activity",
-    areaId: areas[3].id,
-    equipment: ["Instruments", "Music stands", "Speakers"],
-    notes: "Music activities",
+    meta: {
+      id: generateId(),
+      name: "Music Room",
+      description: "Music activities",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      type: "activity",
+      capacity: 20,
+      areaId: areas[3].meta.id,
+      equipment: ["Instruments", "Music stands", "Speakers"],
+      notes: "Music activities",
+    },
   },
 ];
 
 // Housing Rooms (6 rooms distributed across areas)
 export const housingRooms: HousingRoom[] = [
-  { id: generateId(), name: "Eagles Nest", beds: 10, areaId: areas[0].id },
-  { id: generateId(), name: "Bears Den", beds: 10, areaId: areas[0].id },
-  { id: generateId(), name: "Wolves Lodge", beds: 8, areaId: areas[1].id },
-  { id: generateId(), name: "Hawks Haven", beds: 8, areaId: areas[1].id },
-  { id: generateId(), name: "Deer Cabin", beds: 10, areaId: areas[2].id },
-  { id: generateId(), name: "Fox Den", beds: 4, areaId: areas[3].id },
+  {
+    meta: {
+      id: generateId(),
+      name: "Eagles Nest",
+      description: "Eagles Nest",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: { beds: 10, areaId: areas[0].meta.id },
+  },
+  {
+    meta: {
+      id: generateId(),
+      name: "Bears Den",
+      description: "Bears Den",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: { beds: 10, areaId: areas[0].meta.id },
+  },
+  {
+    meta: {
+      id: generateId(),
+      name: "Wolves Lodge",
+      description: "Wolves Lodge",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: { beds: 8, areaId: areas[1].meta.id },
+  },
+  {
+    meta: {
+      id: generateId(),
+      name: "Hawks Haven",
+      description: "Hawks Haven",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: { beds: 8, areaId: areas[1].meta.id },
+  },
+  {
+    meta: {
+      id: generateId(),
+      name: "Deer Cabin",
+      description: "Deer Cabin",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: { beds: 10, areaId: areas[2].meta.id },
+  },
+  {
+    meta: {
+      id: generateId(),
+      name: "Fox Den",
+      description: "Fox Den",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: { beds: 4, areaId: areas[3].meta.id },
+  },
 ];
 
 // Certifications
 export const certifications: Certification[] = [
   {
-    id: generateId(),
-    name: "First Aid",
-    description: "Basic first aid and CPR certification",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "First Aid",
+      description: "First Aid",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
   },
   {
-    id: generateId(),
-    name: "Lifeguard",
-    description: "Certified lifeguard for water activities",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Lifeguard",
+      description: "Lifeguard",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
   },
   {
-    id: generateId(),
-    name: "Wilderness Survival",
-    description: "Outdoor survival and navigation skills",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Arts & Crafts Instructor",
+      description: "Art education and safety certification",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
   },
   {
-    id: generateId(),
-    name: "Archery Instructor",
-    description: "Certified to teach archery",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Camp Director",
+      description: "Overall camp management and leadership",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
   },
   {
-    id: generateId(),
-    name: "Arts & Crafts Instructor",
-    description: "Art education and safety certification",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Program Supervisor",
+      description: "Oversees program activities and staff coordination",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
+  },
+  {
+    meta: {
+      id: generateId(),
+      name: "Camp Counselor",
+      description: "Direct camper supervision and activity facilitation",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
+  },
+  {
+    meta: {
+      id: generateId(),
+      name: "Camp Nurse",
+      description: "Medical care and health management",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
+  },
+  {
+    meta: {
+      id: generateId(),
+      name: "Activity Instructor",
+      description: "Specialized activity instruction and skill development",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
   },
 ];
 
-// Roles
 export const roles: Role[] = [
   {
-    id: generateId(),
-    name: "Camp Director",
-    description: "Overall camp management and leadership",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Camp Director",
+      description: "Overall camp management and leadership",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
   },
   {
-    id: generateId(),
-    name: "Program Supervisor",
-    description: "Oversees program activities and staff coordination",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Program Supervisor",
+      description: "Oversees program activities and staff coordination",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
   },
   {
-    id: generateId(),
-    name: "Camp Counselor",
-    description: "Direct camper supervision and activity facilitation",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Camp Counselor",
+      description: "Direct camper supervision and activity facilitation",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
   },
   {
-    id: generateId(),
-    name: "Camp Nurse",
-    description: "Medical care and health management",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Camp Nurse",
+      description: "Medical care and health management",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
   },
   {
-    id: generateId(),
-    name: "Activity Instructor",
-    description: "Specialized activity instruction and skill development",
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Activity Instructor",
+      description: "Specialized activity instruction and skill development",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {},
   },
 ];
 
-// Staff Members (10 staff)
+// Staff Members (10 staff) (now using meta/spec)
 export const staffMembers: StaffMember[] = [
   {
-    id: generateId(),
-    firstName: "Sarah",
-    lastName: "Johnson",
-    roleId: roles[0].id, // Camp Director
-    email: "sarah.johnson@camp.com",
-    phone: "555-0101",
-    certificationIds: [certifications[0].id, certifications[2].id],
-    photoUrl: "https://i.pravatar.cc/150?u=sarah",
+    meta: {
+      id: generateId(),
+      name: "Sarah Johnson",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      firstName: "Sarah",
+      lastName: "Johnson",
+      roleId: roles[0].meta.id, // Camp Director
+      email: "sarah.johnson@camp.com",
+      phone: "555-0101",
+      certificationIds: [certifications[0].meta.id, certifications[2].meta.id],
+      photoUrl: "https://i.pravatar.cc/150?u=sarah",
+    },
   },
   {
-    id: generateId(),
-    firstName: "Michael",
-    lastName: "Chen",
-    roleId: roles[1].id, // Program Supervisor
-    email: "michael.chen@camp.com",
-    phone: "555-0102",
-    certificationIds: [certifications[0].id, certifications[1].id],
-    photoUrl: "https://i.pravatar.cc/150?u=michael",
+    meta: {
+      id: generateId(),
+      name: "Michael Chen",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      firstName: "Michael",
+      lastName: "Chen",
+      roleId: roles[1].meta.id, // Program Supervisor
+      email: "michael.chen@camp.com",
+      phone: "555-0102",
+      certificationIds: [certifications[0].meta.id, certifications[1].meta.id],
+      photoUrl: "https://i.pravatar.cc/150?u=michael",
+    },
   },
   {
-    id: generateId(),
-    firstName: "Emily",
-    lastName: "Rodriguez",
-    roleId: roles[2].id, // Camp Counselor
-    email: "emily.rodriguez@camp.com",
-    phone: "555-0103",
-    certificationIds: [certifications[0].id, certifications[4].id],
-    photoUrl: "https://i.pravatar.cc/150?u=emily",
+    meta: {
+      id: generateId(),
+      name: "Emily Rodriguez",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      firstName: "Emily",
+      lastName: "Rodriguez",
+      roleId: roles[2].meta.id, // Camp Counselor
+      email: "emily.rodriguez@camp.com",
+      phone: "555-0103",
+      certificationIds: [certifications[0].meta.id, certifications[4].meta.id],
+      photoUrl: "https://i.pravatar.cc/150?u=emily",
+    },
   },
   {
-    id: generateId(),
-    firstName: "David",
-    lastName: "Thompson",
-    roleId: roles[2].id, // Camp Counselor
-    email: "david.thompson@camp.com",
-    phone: "555-0104",
-    certificationIds: [certifications[0].id, certifications[1].id],
-    photoUrl: "https://i.pravatar.cc/150?u=david",
+    meta: {
+      id: generateId(),
+      name: "David Thompson",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      firstName: "David",
+      lastName: "Thompson",
+      roleId: roles[2].meta.id, // Camp Counselor
+      email: "david.thompson@camp.com",
+      phone: "555-0104",
+      certificationIds: [certifications[0].meta.id, certifications[1].meta.id],
+      photoUrl: "https://i.pravatar.cc/150?u=david",
+    },
   },
   {
-    id: generateId(),
-    firstName: "Jessica",
-    lastName: "Martinez",
-    roleId: roles[3].id, // Camp Nurse
-    email: "jessica.martinez@camp.com",
-    phone: "555-0105",
-    certificationIds: [certifications[0].id],
-    photoUrl: "https://i.pravatar.cc/150?u=jessica",
+    meta: {
+      id: generateId(),
+      name: "Jessica Martinez",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      firstName: "Jessica",
+      lastName: "Martinez",
+      roleId: roles[3].meta.id, // Camp Nurse
+      email: "jessica.martinez@camp.com",
+      phone: "555-0105",
+      certificationIds: [certifications[0].meta.id],
+      photoUrl: "https://i.pravatar.cc/150?u=jessica",
+    },
   },
   {
-    id: generateId(),
-    firstName: "Ryan",
-    lastName: "Anderson",
-    roleId: roles[4].id, // Activity Instructor
-    email: "ryan.anderson@camp.com",
-    phone: "555-0106",
-    certificationIds: [certifications[0].id, certifications[3].id],
-    photoUrl: "https://i.pravatar.cc/150?u=ryan",
+    meta: {
+      id: generateId(),
+      name: "Daniel Lee",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      firstName: "Daniel",
+      lastName: "Lee",
+      roleId: roles[4].meta.id, // Activity Instructor
+      email: "daniel.lee@camp.com",
+      phone: "555-0106",
+      certificationIds: [certifications[0].meta.id, certifications[7].meta.id],
+      photoUrl: "https://i.pravatar.cc/150?u=daniel",
+    },
   },
   {
-    id: generateId(),
-    firstName: "Amanda",
-    lastName: "White",
-    roleId: roles[2].id, // Camp Counselor
-    email: "amanda.white@camp.com",
-    phone: "555-0107",
-    certificationIds: [certifications[0].id, certifications[2].id],
-    photoUrl: "https://i.pravatar.cc/150?u=amanda",
+    meta: {
+      id: generateId(),
+      name: "Ashley Wilson",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      firstName: "Ashley",
+      lastName: "Wilson",
+      roleId: roles[2].meta.id, // Camp Counselor
+      email: "ashley.wilson@camp.com",
+      phone: "555-0107",
+      certificationIds: [certifications[0].meta.id],
+      photoUrl: "https://i.pravatar.cc/150?u=ashley",
+    },
   },
   {
-    id: generateId(),
-    firstName: "Christopher",
-    lastName: "Lee",
-    roleId: roles[4].id, // Activity Instructor
-    email: "chris.lee@camp.com",
-    phone: "555-0108",
-    certificationIds: [certifications[0].id, certifications[4].id],
-    photoUrl: "https://i.pravatar.cc/150?u=chris",
+    meta: {
+      id: generateId(),
+      name: "Andrew Nguyen",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      firstName: "Andrew",
+      lastName: "Nguyen",
+      roleId: roles[2].meta.id, // Camp Counselor
+      email: "andrew.nguyen@camp.com",
+      phone: "555-0108",
+      certificationIds: [certifications[0].meta.id],
+      photoUrl: "https://i.pravatar.cc/150?u=andrew",
+    },
   },
   {
-    id: generateId(),
-    firstName: "Rachel",
-    lastName: "Brown",
-    roleId: roles[2].id, // Camp Counselor
-    email: "rachel.brown@camp.com",
-    phone: "555-0109",
-    certificationIds: [certifications[0].id, certifications[1].id],
-    photoUrl: "https://i.pravatar.cc/150?u=rachel",
+    meta: {
+      id: generateId(),
+      name: "Olivia Patel",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      firstName: "Olivia",
+      lastName: "Patel",
+      roleId: roles[1].meta.id, // Program Supervisor
+      email: "olivia.patel@camp.com",
+      phone: "555-0109",
+      certificationIds: [certifications[0].meta.id, certifications[5].meta.id],
+      photoUrl: "https://i.pravatar.cc/150?u=olivia",
+    },
   },
   {
-    id: generateId(),
-    firstName: "Daniel",
-    lastName: "Wilson",
-    roleId: roles[2].id, // Camp Counselor
-    email: "daniel.wilson@camp.com",
-    phone: "555-0110",
-    certificationIds: [certifications[0].id, certifications[2].id],
-    photoUrl: "https://i.pravatar.cc/150?u=daniel",
+    meta: {
+      id: generateId(),
+      name: "Ethan Kim",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      firstName: "Ethan",
+      lastName: "Kim",
+      roleId: roles[4].meta.id, // Activity Instructor
+      email: "ethan.kim@camp.com",
+      phone: "555-0110",
+      certificationIds: [certifications[0].meta.id, certifications[7].meta.id],
+      photoUrl: "https://i.pravatar.cc/150?u=ethan",
+    },
   },
 ];
 
 // Set manager IDs after array creation
-staffMembers[1].managerId = staffMembers[0].id; // Michael reports to Sarah
-staffMembers[2].managerId = staffMembers[1].id; // Emily reports to Michael
-staffMembers[3].managerId = staffMembers[1].id; // David reports to Michael
-staffMembers[4].managerId = staffMembers[0].id; // Jessica reports to Sarah
-staffMembers[5].managerId = staffMembers[1].id; // Ryan reports to Michael
-staffMembers[6].managerId = staffMembers[1].id; // Amanda reports to Michael
-staffMembers[7].managerId = staffMembers[1].id; // Christopher reports to Michael
-staffMembers[8].managerId = staffMembers[1].id; // Rachel reports to Michael
-staffMembers[9].managerId = staffMembers[1].id; // Daniel reports to Michael
+staffMembers[1].spec.managerId = staffMembers[0].meta.id; // Michael reports to Sarah
+staffMembers[2].spec.managerId = staffMembers[1].meta.id; // Emily reports to Michael
+staffMembers[3].spec.managerId = staffMembers[1].meta.id; // David reports to Michael
+staffMembers[4].spec.managerId = staffMembers[0].meta.id; // Jessica reports to Sarah
+staffMembers[5].spec.managerId = staffMembers[1].meta.id; // Ryan reports to Michael
+staffMembers[6].spec.managerId = staffMembers[1].meta.id; // Amanda reports to Michael
+staffMembers[7].spec.managerId = staffMembers[1].meta.id; // Christopher reports to Michael
+staffMembers[8].spec.managerId = staffMembers[1].meta.id; // Rachel reports to Michael
+staffMembers[9].spec.managerId = staffMembers[1].meta.id; // Daniel reports to Michael
 
 // Groups (6 groups with housing rooms)
 export const groups: Group[] = [
   {
-    id: generateId(),
-    name: "Eagles Group",
-    description: "Adventurous group in Eagles Nest",
-    housingRoomId: housingRooms[0].id,
-    staffIds: [staffMembers[2].id, staffMembers[3].id],
-    sessionId: sessions[0].id,
-    camperIds: [], // Will be populated after campers are created
-    labelIds: [],
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Eagles Group",
+      description: "Adventurous group in Eagles Nest",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      housingRoomId: housingRooms[0].meta.id,
+      staffIds: [staffMembers[2].meta.id, staffMembers[3].meta.id],
+      sessionId: sessions[0].meta.id,
+      camperIds: [], // Will be populated after campers are created
+      labelIds: [],
+    },
   },
   {
-    id: generateId(),
-    name: "Bears Group",
-    description: "Strong and brave Bears group",
-    housingRoomId: housingRooms[1].id,
-    staffIds: [staffMembers[6].id, staffMembers[7].id],
-    sessionId: sessions[1].id,
-    camperIds: [],
-    labelIds: [],
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Bears Group",
+      description: "Strong and brave Bears group",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      housingRoomId: housingRooms[1].meta.id,
+      staffIds: [staffMembers[6].meta.id, staffMembers[7].meta.id],
+      sessionId: sessions[1].meta.id,
+      camperIds: [],
+      labelIds: [],
+    },
   },
   {
-    id: generateId(),
-    name: "Wolves Group",
-    description: "Pack-minded Wolves team",
-    housingRoomId: housingRooms[2].id,
-    staffIds: [staffMembers[8].id],
-    sessionId: sessions[2].id,
-    camperIds: [],
-    labelIds: [],
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Wolves Group",
+      description: "Pack-minded Wolves team",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      housingRoomId: housingRooms[2].meta.id,
+      staffIds: [staffMembers[8].meta.id],
+      sessionId: sessions[2].meta.id,
+      camperIds: [],
+      labelIds: [],
+    },
   },
   {
-    id: generateId(),
-    name: "Hawks Group",
-    description: "Sharp-eyed Hawks group",
-    housingRoomId: housingRooms[3].id,
-    staffIds: [staffMembers[9].id],
-    sessionId: sessions[3].id,
-    camperIds: [],
-    labelIds: [],
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Hawks Group",
+      description: "Sharp-eyed Hawks group",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      housingRoomId: housingRooms[3].meta.id,
+      staffIds: [staffMembers[9].meta.id],
+      sessionId: sessions[3].meta.id,
+      camperIds: [],
+      labelIds: [],
+    },
   },
   {
-    id: generateId(),
-    name: "Deer Group",
-    description: "Graceful and gentle Deer cabin",
-    housingRoomId: housingRooms[4].id,
-    staffIds: [staffMembers[2].id],
-    sessionId: sessions[4].id,
-    camperIds: [],
-    labelIds: [],
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Deer Group",
+      description: "Graceful and gentle Deer cabin",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      housingRoomId: housingRooms[4].meta.id,
+      staffIds: [staffMembers[2].meta.id],
+      sessionId: sessions[4].meta.id,
+      camperIds: [],
+      labelIds: [],
+    },
   },
   {
-    id: generateId(),
-    name: "Fox Group",
-    description: "Clever Fox Den residents",
-    housingRoomId: housingRooms[5].id,
-    staffIds: [staffMembers[6].id],
-    sessionId: sessions[5].id,
-    camperIds: [],
-    labelIds: [],
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Fox Group",
+      description: "Clever Fox Den residents",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      housingRoomId: housingRooms[5].meta.id,
+      staffIds: [staffMembers[6].meta.id],
+      sessionId: sessions[5].meta.id,
+      camperIds: [],
+      labelIds: [],
+    },
   },
 ];
 
@@ -808,21 +1318,25 @@ groups.forEach((group, groupIndex) => {
     const age = 8 + Math.floor(Math.random() * 7); // Ages 8-14
 
     const camper: Camper = {
-      id: generateId(),
-      firstName: camperFirstNames[camperIndex],
-      lastName: camperLastNames[camperIndex],
-      age,
-      gender,
-      photoUrl: `https://i.pravatar.cc/150?u=camper${camperIndex}`,
-      registrationDate: octoberDate(1, 10, camperIndex),
-      sessionId: group.sessionId,
-      housingRoomId: group.housingRoomId,
-      familyGroupId: group.id,
+      meta: {
+        id: generateId(),
+        name: `${camperFirstNames[camperIndex]} ${camperLastNames[camperIndex]}`,
+        createdAt: octoberDate(1),
+        updatedAt: octoberDate(1),
+      },
+      spec: {
+        firstName: camperFirstNames[camperIndex],
+        lastName: camperLastNames[camperIndex],
+        age,
+        gender,
+        photoUrl: `https://i.pravatar.cc/150?u=camper${camperIndex}`,
+        registrationDate: octoberDate(1, 10, camperIndex),
+        sessionId: group.spec.sessionId,
+        housingRoomId: group.spec.housingRoomId,
+        familyGroupId: group.meta.id,
+      },
     };
-
     campers.push(camper);
-    group.camperIds!.push(camper.id); // Add camper ID to group
-
     camperIndex++;
   }
 });
@@ -830,52 +1344,88 @@ groups.forEach((group, groupIndex) => {
 // Programs (4 programs)
 export const programs: Program[] = [
   {
-    id: generateId(),
-    name: "Outdoor Adventures",
-    description: "Hiking, camping, and wilderness exploration",
-    colorId: colors[2].id,
-    activityIds: [], // Will be filled after activities are created
-    staffMemberIds: [
-      staffMembers[5].id,
-      staffMembers[6].id,
-      staffMembers[9].id,
-    ],
-    locationIds: [locations[8].id, locations[9].id, locations[10].id],
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Outdoor Adventures",
+      description: "Hiking, camping, and wilderness exploration",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      colorId: colors[2].meta.id,
+      activityIds: [], // Will be filled after activities are created
+      staffMemberIds: [
+        staffMembers[5].meta.id,
+        staffMembers[6].meta.id,
+        staffMembers[9].meta.id,
+      ],
+      locationIds: [
+        locations[8].meta.id,
+        locations[9].meta.id,
+        locations[10].meta.id,
+      ],
+    },
   },
   {
-    id: generateId(),
-    name: "Water Sports",
-    description: "Swimming, kayaking, and water safety",
-    colorId: colors[0].id,
-    activityIds: [],
-    staffMemberIds: [staffMembers[3].id, staffMembers[8].id],
-    locationIds: [locations[5].id, locations[6].id, locations[7].id],
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Water Sports",
+      description: "Swimming, kayaking, and water safety",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      colorId: colors[0].meta.id,
+      activityIds: [],
+      staffMemberIds: [staffMembers[3].meta.id, staffMembers[8].meta.id],
+      locationIds: [
+        locations[5].meta.id,
+        locations[6].meta.id,
+        locations[7].meta.id,
+      ],
+    },
   },
   {
-    id: generateId(),
-    name: "Arts & Creativity",
-    description: "Painting, crafts, music, and creative expression",
-    colorId: colors[4].id,
-    activityIds: [],
-    staffMemberIds: [staffMembers[2].id, staffMembers[7].id],
-    locationIds: [locations[2].id, locations[14].id, locations[15].id],
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Arts & Creativity",
+      description: "Painting, crafts, music, and creative expression",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      colorId: colors[4].meta.id,
+      activityIds: [],
+      staffMemberIds: [staffMembers[2].meta.id, staffMembers[7].meta.id],
+      locationIds: [
+        locations[2].meta.id,
+        locations[14].meta.id,
+        locations[15].meta.id,
+      ],
+    },
   },
   {
-    id: generateId(),
-    name: "Sports & Games",
-    description: "Team sports, games, and physical activities",
-    colorId: colors[1].id,
-    activityIds: [],
-    staffMemberIds: [
-      staffMembers[3].id,
-      staffMembers[5].id,
-      staffMembers[9].id,
-    ],
-    locationIds: [locations[3].id, locations[4].id, locations[13].id],
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Sports & Games",
+      description: "Team sports, games, and physical activities",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      colorId: colors[1].meta.id,
+      activityIds: [],
+      staffMemberIds: [
+        staffMembers[3].meta.id,
+        staffMembers[5].meta.id,
+        staffMembers[9].meta.id,
+      ],
+      locationIds: [
+        locations[3].meta.id,
+        locations[4].meta.id,
+        locations[13].meta.id,
+      ],
+    },
   },
 ];
 
@@ -883,210 +1433,288 @@ export const programs: Program[] = [
 export const activities: Activity[] = [
   // Outdoor Adventures activities
   {
-    id: generateId(),
-    name: "Nature Hike",
-    description: "Guided nature walk through forest trails",
-    programIds: [programs[0].id],
-    duration: 90,
-    defaultLocationId: locations[8].id,
-    requiredCertificationIds: [certifications[2].id],
-    minStaff: 2,
-    defaultCapacity: 25,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Nature Hike",
+      description: "Guided nature walk through forest trails",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[0].meta.id],
+      duration: 90,
+      defaultLocationId: locations[8].meta.id,
+      requiredCertificationIds: [certifications[2].meta.id],
+      minStaff: 2,
+      defaultCapacity: 25,
+    },
   },
   {
-    id: generateId(),
-    name: "Wildlife Discovery",
-    description: "Learn about local wildlife and ecosystems",
-    programIds: [programs[0].id],
-    duration: 60,
-    defaultLocationId: locations[9].id,
-    requiredCertificationIds: [certifications[2].id],
-    minStaff: 1,
-    defaultCapacity: 30,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Wildlife Discovery",
+      description: "Learn about local wildlife and ecosystems",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[0].meta.id],
+      duration: 60,
+      defaultLocationId: locations[9].meta.id,
+      requiredCertificationIds: [certifications[2].meta.id],
+      minStaff: 1,
+      defaultCapacity: 30,
+    },
   },
   {
-    id: generateId(),
-    name: "Campfire Stories",
-    description: "Evening storytelling around the campfire",
-    programIds: [programs[0].id],
-    duration: 60,
-    defaultLocationId: locations[10].id,
-    requiredCertificationIds: [certifications[2].id],
-    minStaff: 1,
-    defaultCapacity: 50,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Campfire Stories",
+      description: "Evening storytelling around the campfire",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[0].meta.id],
+      duration: 60,
+      defaultLocationId: locations[10].meta.id,
+      requiredCertificationIds: [certifications[2].meta.id],
+      minStaff: 1,
+      defaultCapacity: 50,
+    },
   },
   {
-    id: generateId(),
-    name: "Outdoor Survival Skills",
-    description: "Learn basic wilderness survival techniques",
-    programIds: [programs[0].id],
-    duration: 120,
-    defaultLocationId: locations[8].id,
-    requiredCertificationIds: [certifications[2].id],
-    minStaff: 2,
-    defaultCapacity: 20,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Outdoor Survival Skills",
+      description: "Learn basic wilderness survival techniques",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[0].meta.id],
+      duration: 120,
+      defaultLocationId: locations[8].meta.id,
+      requiredCertificationIds: [certifications[2].meta.id],
+      minStaff: 2,
+      defaultCapacity: 20,
+    },
   },
 
   // Water Sports activities
   {
-    id: generateId(),
-    name: "Swimming Lessons",
-    description: "Learn to swim or improve swimming skills",
-    programIds: [programs[1].id],
-    duration: 60,
-    defaultLocationId: locations[5].id,
-    requiredCertificationIds: [certifications[1].id],
-    minStaff: 2,
-    defaultCapacity: 30,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Swimming Lessons",
+      description: "Learn to swim or improve swimming skills",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[1].meta.id],
+      duration: 60,
+      defaultLocationId: locations[5].meta.id,
+      requiredCertificationIds: [certifications[1].meta.id],
+      minStaff: 2,
+      defaultCapacity: 30,
+    },
   },
   {
-    id: generateId(),
-    name: "Kayaking Adventure",
-    description: "Kayaking basics and water exploration",
-    programIds: [programs[1].id],
-    duration: 90,
-    defaultLocationId: locations[6].id,
-    requiredCertificationIds: [certifications[1].id],
-    minStaff: 2,
-    defaultCapacity: 20,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Kayaking Adventure",
+      description: "Kayaking basics and water exploration",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[1].meta.id],
+      duration: 90,
+      defaultLocationId: locations[6].meta.id,
+      requiredCertificationIds: [certifications[1].meta.id],
+      minStaff: 2,
+      defaultCapacity: 20,
+    },
   },
   {
-    id: generateId(),
-    name: "Beach Games",
-    description: "Fun games and activities on the beach",
-    programIds: [programs[1].id],
-    duration: 60,
-    defaultLocationId: locations[7].id,
-    requiredCertificationIds: [certifications[1].id],
-    minStaff: 2,
-    defaultCapacity: 40,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Beach Games",
+      description: "Fun games and activities on the beach",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[1].meta.id],
+      duration: 60,
+      defaultLocationId: locations[7].meta.id,
+      requiredCertificationIds: [certifications[1].meta.id],
+      minStaff: 2,
+      defaultCapacity: 40,
+    },
   },
-
   // Arts & Creativity activities
   {
-    id: generateId(),
-    name: "Painting Workshop",
-    description: "Express yourself through watercolor and acrylics",
-    programIds: [programs[2].id],
-    duration: 90,
-    defaultLocationId: locations[2].id,
-    requiredCertificationIds: [certifications[4].id],
-    minStaff: 1,
-    defaultCapacity: 20,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Painting Workshop",
+      description: "Express yourself through watercolor and acrylics",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[2].meta.id],
+      duration: 90,
+      defaultLocationId: locations[2].meta.id,
+      requiredCertificationIds: [certifications[4].meta.id],
+      minStaff: 1,
+      defaultCapacity: 20,
+    },
   },
   {
-    id: generateId(),
-    name: "Crafts & DIY",
-    description: "Create handmade crafts and projects",
-    programIds: [programs[2].id],
-    duration: 60,
-    defaultLocationId: locations[14].id,
-    requiredCertificationIds: [certifications[4].id],
-    minStaff: 1,
-    defaultCapacity: 25,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Crafts & DIY",
+      description: "Create handmade crafts and projects",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[2].meta.id],
+      duration: 60,
+      defaultLocationId: locations[14].meta.id,
+      requiredCertificationIds: [certifications[4].meta.id],
+      minStaff: 1,
+      defaultCapacity: 25,
+    },
   },
   {
-    id: generateId(),
-    name: "Music Jam Session",
-    description: "Learn instruments and make music together",
-    programIds: [programs[2].id],
-    duration: 60,
-    defaultLocationId: locations[15].id,
-    minStaff: 1,
-    defaultCapacity: 20,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Music Jam Session",
+      description: "Learn instruments and make music together",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[2].meta.id],
+      duration: 60,
+      defaultLocationId: locations[15].meta.id,
+      requiredCertificationIds: [certifications[4].meta.id],
+      minStaff: 1,
+      defaultCapacity: 20,
+    },
   },
   {
-    id: generateId(),
-    name: "Theater & Drama",
-    description: "Acting, improvisation, and performance",
-    programIds: [programs[2].id],
-    duration: 90,
-    defaultLocationId: locations[12].id,
-    minStaff: 1,
-    defaultCapacity: 30,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Theater & Drama",
+      description: "Acting, improvisation, and performance",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[2].meta.id],
+      duration: 90,
+      defaultLocationId: locations[12].meta.id,
+      requiredCertificationIds: [certifications[4].meta.id],
+      minStaff: 1,
+      defaultCapacity: 30,
+    },
   },
-
   // Sports & Games activities
   {
-    id: generateId(),
-    name: "Basketball",
-    description: "Team basketball games and drills",
-    programIds: [programs[3].id],
-    duration: 60,
-    defaultLocationId: locations[3].id,
-    minStaff: 1,
-    defaultCapacity: 30,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Basketball",
+      description: "Team basketball games and drills",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[3].meta.id],
+      duration: 60,
+      defaultLocationId: locations[3].meta.id,
+      requiredCertificationIds: [certifications[4].meta.id],
+      minStaff: 1,
+      defaultCapacity: 30,
+    },
   },
   {
-    id: generateId(),
-    name: "Soccer Practice",
-    description: "Soccer skills and friendly matches",
-    programIds: [programs[3].id],
-    duration: 60,
-    defaultLocationId: locations[4].id,
-    minStaff: 1,
-    defaultCapacity: 40,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Soccer Practice",
+      description: "Soccer skills and friendly matches",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[3].meta.id],
+      duration: 60,
+      defaultLocationId: locations[4].meta.id,
+      minStaff: 1,
+      defaultCapacity: 40,
+    },
   },
   {
-    id: generateId(),
-    name: "Board Game Tournament",
-    description: "Strategy games and friendly competition",
-    programIds: [programs[3].id],
-    duration: 90,
-    defaultLocationId: locations[13].id,
-    minStaff: 1,
-    defaultCapacity: 30,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Board Game Tournament",
+      description: "Strategy games and friendly competition",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[3].meta.id],
+      duration: 90,
+      defaultLocationId: locations[13].meta.id,
+      requiredCertificationIds: [certifications[4].meta.id],
+      minStaff: 1,
+      defaultCapacity: 30,
+    },
   },
   {
-    id: generateId(),
-    name: "Team Building Games",
-    description: "Cooperative games and challenges",
-    programIds: [programs[3].id],
-    duration: 60,
-    defaultLocationId: locations[4].id,
-    minStaff: 2,
-    defaultCapacity: 40,
-    createdAt: octoberDate(1),
+    meta: {
+      id: generateId(),
+      name: "Team Building Games",
+      description: "Cooperative games and challenges",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      programIds: [programs[3].meta.id],
+      duration: 60,
+      defaultLocationId: locations[4].meta.id,
+      requiredCertificationIds: [certifications[4].meta.id],
+      minStaff: 2,
+      defaultCapacity: 40,
+    },
   },
 ];
 
 // Update program activity IDs
-programs[0].activityIds = [
-  activities[0].id,
-  activities[1].id,
-  activities[2].id,
-  activities[3].id,
+programs[0].spec.activityIds = [
+  activities[0].meta.id,
+  activities[1].meta.id,
+  activities[2].meta.id,
+  activities[3].meta.id,
 ];
-programs[1].activityIds = [
-  activities[4].id,
-  activities[5].id,
-  activities[6].id,
+programs[1].spec.activityIds = [
+  activities[4].meta.id,
+  activities[5].meta.id,
+  activities[6].meta.id,
 ];
-programs[2].activityIds = [
-  activities[7].id,
-  activities[8].id,
-  activities[9].id,
-  activities[10].id,
+programs[2].spec.activityIds = [
+  activities[7].meta.id,
+  activities[8].meta.id,
+  activities[9].meta.id,
+  activities[10].meta.id,
 ];
-programs[3].activityIds = [
-  activities[11].id,
-  activities[12].id,
-  activities[13].id,
-  activities[14].id,
+programs[3].spec.activityIds = [
+  activities[11].meta.id,
+  activities[12].meta.id,
+  activities[13].meta.id,
+  activities[14].meta.id,
 ];
 
 // Events (60 events across October 2025, distributed across all days)
@@ -1095,7 +1723,9 @@ export const events: Event[] = [];
 // Helper to create events for a specific day
 const createDailyEvents = (day: number, sessionIndex: number) => {
   const session = sessions[sessionIndex];
-  const relevantGroups = groups.filter((g) => g.sessionId === session.id);
+  const relevantGroups = groups.filter(
+    (g) => g.spec.sessionId === session.meta.id
+  );
 
   if (relevantGroups.length === 0) return;
 
@@ -1133,24 +1763,33 @@ const createDailyEvents = (day: number, sessionIndex: number) => {
     const group = relevantGroups[i % relevantGroups.length];
 
     // Get color from the activity's program
-    const program = programs.find((p) => p.id === activity.programIds[0]);
-    const eventColorId = program?.colorId;
+    const program = programs.find((p) =>
+      p.spec.activityIds?.includes(activity.meta.id)
+    );
+    const eventColorId = program?.spec.colorId;
 
     events.push({
-      id: generateId(),
-      title: activity.name,
-      description: activity.description,
-      startDate: octoberDate(day, time.hour, 0),
-      endDate: octoberDate(day, time.hour, time.duration),
-      locationId: activity.defaultLocationId || locations[0].id,
-      capacity: activity.defaultCapacity || 30,
-      groupIds: [group.id],
-      excludeStaffIds: [],
-      excludeCamperIds: [],
-      requiredCertificationIds: activity.requiredCertificationIds || [],
-      colorId: eventColorId,
-      programId: activity.programIds[0],
-      activityId: activity.id,
+      meta: {
+        id: generateId(),
+        name: activity.meta.name,
+        description: activity.meta.description,
+        createdAt: octoberDate(day, time.hour, 0),
+        updatedAt: octoberDate(day, time.hour, time.duration),
+      },
+      spec: {
+        title: activity.meta.name,
+        startDate: octoberDate(day, time.hour, 0),
+        endDate: octoberDate(day, time.hour, time.duration),
+        locationId: activity.spec.defaultLocationId || locations[0].meta.id,
+        capacity: activity.spec.defaultCapacity || 30,
+        groupIds: [group.meta.id],
+        excludeStaffIds: [],
+        excludeCamperIds: [],
+        requiredCertificationIds: activity.spec.requiredCertificationIds || [],
+        colorId: eventColorId,
+        programId: activity.spec.programIds[0],
+        activityId: activity.meta.id,
+      },
     });
   }
 };

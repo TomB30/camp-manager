@@ -26,18 +26,18 @@
             <!-- Events for this hour and day -->
             <div
               v-for="event in getEventsForDayAndHour(day, hour)"
-              :key="event.id"
+              :key="event.meta.id"
               class="week-event"
               :style="getWeekEventStyle(event, day)"
               @click="$emit('select-event', event)"
             >
-              <div class="week-event-title">{{ event.title }}</div>
+              <div class="week-event-title">{{ event.spec.title }}</div>
               <div class="week-event-details">
                 <div class="week-event-room text-xs">
-                  {{ getLocationName(event.locationId || "") }}
+                  {{ getLocationName(event.spec.locationId || "") }}
                 </div>
                 <div class="week-event-capacity text-xs">
-                  {{ getEnrolledCount(event.id) }}/{{ event.capacity }}
+                  {{ getEnrolledCount(event.meta.id) }}/{{ event.spec.capacity }}
                 </div>
               </div>
             </div>
@@ -99,8 +99,8 @@ export default defineComponent({
         : format(date, "MMM d");
     },
     getLocationName(locationId: string): string {
-      const location = this.rooms.find((r) => r.id === locationId);
-      return location?.name || "Unknown Location";
+      const location = this.rooms.find((r) => r.meta.id === locationId);
+      return location?.meta.name || "Unknown Location";
     },
     getEnrolledCount(eventId: string): number {
       return this.eventsStore.getEventCamperIds(eventId).length;
@@ -109,8 +109,8 @@ export default defineComponent({
       return dateUtils.filterEventsByDateAndHour(this.events, day, hour);
     },
     getWeekEventStyle(event: Event, _day: Date) {
-      const start = new Date(event.startDate);
-      const end = new Date(event.endDate);
+      const start = new Date(event.spec.startDate);
+      const end = new Date(event.spec.endDate);
 
       const startMinutes = start.getHours() * 60 + start.getMinutes();
       const endMinutes = end.getHours() * 60 + end.getMinutes();
@@ -122,15 +122,15 @@ export default defineComponent({
       // Find overlapping events for the same day
       const eventDate = start.toISOString().split("T")[0];
       const dayEvents = this.events.filter((e) => {
-        const eDate = new Date(e.startDate).toISOString().split("T")[0];
+        const eDate = new Date(e.spec.startDate).toISOString().split("T")[0];
         return eDate === eventDate;
       });
 
       const overlappingEvents = dayEvents.filter((otherEvent) => {
-        if (otherEvent.id === event.id) return false;
+        if (otherEvent.meta.id === event.meta.id) return false;
 
-        const otherStart = new Date(otherEvent.startDate);
-        const otherEnd = new Date(otherEvent.endDate);
+        const otherStart = new Date(otherEvent.spec.startDate);
+        const otherEnd = new Date(otherEvent.spec.endDate);
         const otherStartMinutes =
           otherStart.getHours() * 60 + otherStart.getMinutes();
         const otherEndMinutes =
@@ -149,13 +149,13 @@ export default defineComponent({
 
       // Sort all overlapping events
       const allOverlapping = [event, ...overlappingEvents].sort((a, b) => {
-        const aStart = new Date(a.startDate).getTime();
-        const bStart = new Date(b.startDate).getTime();
+        const aStart = new Date(a.spec.startDate).getTime();
+        const bStart = new Date(b.spec.startDate).getTime();
         if (aStart !== bStart) return aStart - bStart;
-        return a.id.localeCompare(b.id);
+        return a.meta.id.localeCompare(b.meta.id);
       });
 
-      const eventIndex = allOverlapping.findIndex((e) => e.id === event.id);
+      const eventIndex = allOverlapping.findIndex((e) => e.meta.id === event.meta.id);
       const totalOverlapping = allOverlapping.length;
 
       // Calculate width and position for overlapping events
@@ -167,8 +167,8 @@ export default defineComponent({
           : "2px";
 
       return {
-        background: event.colorId
-          ? this.colorsStore.getColorById(event.colorId)?.hexValue
+        background: event.spec.colorId
+          ? this.colorsStore.getColorById(event.spec.colorId)?.spec.hexValue
           : "#3B82F6",
         width,
         left,

@@ -40,9 +40,9 @@
     <div v-else-if="viewMode === 'grid'" class="locations-grid">
       <LocationCard
         v-for="location in filteredLocations"
-        :key="location.id"
+        :key="location.meta.id"
         :location="location"
-        @click="selectLocation(location.id)"
+        @click="selectLocation(location.meta.id)"
       />
     </div>
 
@@ -59,37 +59,37 @@
         <div class="location-name-content">
           <div
             class="location-icon-sm"
-            :style="{ background: getLocationTypeColor(item.type) }"
+            :style="{ background: getLocationTypeColor(item.spec.type) }"
           >
             <Icon
-              :name="LocationTypeIcon(item.type)"
+              :name="LocationTypeIcon(item.spec.type)"
               :size="18"
               :stroke-width="2"
             />
           </div>
-          <div class="location-name">{{ item.name }}</div>
+          <div class="location-name">{{ item.meta.name }}</div>
         </div>
       </template>
 
       <template #cell-type="{ item }">
         <span class="badge badge-primary badge-sm">{{
-          formatLocationType(item.type)
+          formatLocationType(item.spec.type)
         }}</span>
       </template>
 
       <template #cell-location="{ item }">
-        <span v-if="item.areaId">
-          {{ areasStore.getAreaById(item.areaId)?.name || "Unknown" }}
+        <span v-if="item.spec.areaId">
+          {{ areasStore.getAreaById(item.spec.areaId)?.meta.name || "Unknown" }}
         </span>
         <span v-else class="text-caption">No area</span>
       </template>
 
       <template #cell-equipment="{ item }">
         <span
-          v-if="item.equipment && item.equipment.length > 0"
+          v-if="item.spec.equipment && item.spec.equipment.length > 0"
           class="badge badge-success badge-sm"
         >
-          {{ item.equipment.length }} item(s)
+          {{ item.spec.equipment.length }} item(s)
         </span>
         <span v-else class="text-caption">None</span>
       </template>
@@ -100,22 +100,22 @@
             <div
               class="usage-fill-sm"
               :style="{
-                width: `${getLocationUsage(item.id)}%`,
+                width: `${getLocationUsage(item.meta.id)}%`,
                 background:
-                  getLocationUsage(item.id) > 80
+                  getLocationUsage(item.meta.id) > 80
                     ? 'var(--error-color)'
                     : 'var(--success-color)',
               }"
             ></div>
           </div>
           <span class="usage-text"
-            >{{ getLocationUsage(item.id).toFixed(0) }}%</span
+            >{{ getLocationUsage(item.meta.id).toFixed(0) }}%</span
           >
         </div>
       </template>
 
       <template #cell-events="{ item }">
-        <span class="event-count">{{ getLocationEvents(item.id).length }}</span>
+        <span class="event-count">{{ getLocationEvents(item.meta.id).length }}</span>
       </template>
 
       <template #cell-actions="{ item }">
@@ -123,7 +123,7 @@
           outline
           color="grey-8"
           size="sm"
-          @click="selectLocation(item.id)"
+          @click="selectLocation(item.meta.id)"
           label="View Details"
         />
       </template>
@@ -140,7 +140,7 @@
       <template #events-list>
         <EventsByDate
           :events="
-            selectedLocation ? getLocationEvents(selectedLocation.id) : []
+            selectedLocation ? getLocationEvents(selectedLocation.meta.id) : []
           "
           :show-enrollment="true"
           empty-message="No events scheduled"
@@ -273,11 +273,11 @@ export default defineComponent({
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         locations = locations.filter((location: Location) => {
-          const areaName = location.areaId
-            ? this.areasStore.getAreaById(location.areaId)?.name
+          const areaName = location.spec.areaId
+            ? this.areasStore.getAreaById(location.spec.areaId)?.meta.name
             : undefined;
           return (
-            location.name.toLowerCase().includes(query) ||
+            location.meta.name.toLowerCase().includes(query) ||
             (areaName && areaName.toLowerCase().includes(query))
           );
         });
@@ -286,7 +286,7 @@ export default defineComponent({
       // Type filter
       if (this.filterType) {
         locations = locations.filter(
-          (location: Location) => location.type === this.filterType,
+          (location: Location) => location.spec.type === this.filterType,
         );
       }
 
@@ -294,15 +294,15 @@ export default defineComponent({
       if (this.filterCapacity) {
         locations = locations.filter((location: Location) => {
           if (this.filterCapacity === "small")
-            return location.capacity && location.capacity < 15;
+            return location.spec.capacity && location.spec.capacity < 15;
           if (this.filterCapacity === "medium")
             return (
-              location.capacity &&
-              location.capacity >= 15 &&
-              location.capacity <= 30
+              location.spec.capacity &&
+              location.spec.capacity >= 15 &&
+              location.spec.capacity <= 30
             );
           if (this.filterCapacity === "large")
-            return location.capacity && location.capacity > 30;
+            return location.spec.capacity && location.spec.capacity > 30;
           return true;
         });
       }
@@ -331,8 +331,8 @@ export default defineComponent({
       if (!type) return undefined;
       return type.charAt(0).toUpperCase() + type.slice(1);
     },
-    LocationTypeIcon(type: Location["type"]): IconName {
-      const iconMap: Record<Location["type"], IconName> = {
+    LocationTypeIcon(type: Location["spec"]["type"]): IconName {
+      const iconMap: Record<Location["spec"]["type"], IconName> = {
         classroom: "BookOpen",
         activity: "Target",
         sports: "Dumbbell",
@@ -342,8 +342,8 @@ export default defineComponent({
       };
       return iconMap[type] || "MapPin";
     },
-    getLocationTypeColor(type: Location["type"]): string {
-      const colors: Record<Location["type"], string> = {
+    getLocationTypeColor(type: Location["spec"]["type"]): string {
+      const colors: Record<Location["spec"]["type"], string> = {
         classroom: "#2196F3",
         activity: "#4CAF50",
         sports: "#FF9800",
@@ -367,8 +367,8 @@ export default defineComponent({
       const totalUsage = locationEvents.reduce((sum, event) => {
         return (
           sum +
-          (this.eventsStore.getEventCamperIds(event.id).length /
-            (location.capacity || 0)) *
+          (this.eventsStore.getEventCamperIds(event.meta.id).length /
+            (location.spec.capacity || 0)) *
             100
         );
       }, 0);
@@ -381,7 +381,7 @@ export default defineComponent({
     editLocation() {
       if (!this.selectedLocation) return;
 
-      this.editingLocationId = this.selectedLocation.id;
+      this.editingLocationId = this.selectedLocation.meta.id;
       this.selectedLocationId = null;
       this.showModal = true;
     },

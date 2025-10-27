@@ -10,8 +10,14 @@ const delay = (ms: number = 50) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 export interface BaseEntity {
-  id: string;
-  [key: string]: any;
+  meta: {
+    id: string;
+    name?: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  spec: Record<string, any>;
 }
 
 class StorageService {
@@ -33,7 +39,7 @@ class StorageService {
   ): Promise<T | null> {
     await delay();
     const items = await this.getAll<T>(storageKey);
-    return items.find((item) => item.id === id) || null;
+    return items.find((item) => item.meta.id === id) || null;
   }
 
   /**
@@ -42,7 +48,7 @@ class StorageService {
   async save<T extends BaseEntity>(storageKey: string, item: T): Promise<T> {
     await delay();
     const items = await this.getAll<T>(storageKey);
-    const index = items.findIndex((i) => i.id === item.id);
+    const index = items.findIndex((i) => i.meta.id === item.meta.id);
 
     if (index >= 0) {
       items[index] = item;
@@ -60,7 +66,7 @@ class StorageService {
   async delete(storageKey: string, id: string): Promise<void> {
     await delay();
     const items = await this.getAll(storageKey);
-    const filtered = items.filter((item) => item.id !== id);
+    const filtered = items.filter((item) => item.meta.id !== id);
     localStorage.setItem(storageKey, JSON.stringify(filtered));
   }
 
@@ -73,11 +79,11 @@ class StorageService {
   ): Promise<T[]> {
     await delay();
     const existingItems = await this.getAll<T>(storageKey);
-    const itemMap = new Map(existingItems.map((item) => [item.id, item]));
+    const itemMap = new Map(existingItems.map((item) => [item.meta.id, item]));
 
     // Update or add items
     items.forEach((item) => {
-      itemMap.set(item.id, item);
+      itemMap.set(item.meta.id, item);
     });
 
     const updatedItems = Array.from(itemMap.values());

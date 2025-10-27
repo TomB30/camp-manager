@@ -1,7 +1,7 @@
 <template>
   <div
     class="duration-preset-card"
-    @click="$emit('click', durationPreset.id)"
+    @click="$emit('click', durationPreset.meta.id)"
   >
     <div class="preset-header">
       <div class="preset-icon">
@@ -9,13 +9,13 @@
       </div>
       <div class="preset-title-section">
         <div class="preset-name-row">
-          <h3 class="preset-name">{{ durationPreset.name }}</h3>
-          <span v-if="durationPreset.default" class="default-badge">
+          <h3 class="preset-name">{{ durationPreset.meta.name }}</h3>
+          <span v-if="durationPreset.spec.default" class="default-badge">
             Default
           </span>
         </div>
-        <p v-if="durationPreset.description" class="preset-description">
-          {{ durationPreset.description }}
+        <p v-if="durationPreset.meta.description" class="preset-description">
+          {{ durationPreset.meta.description }}
         </p>
       </div>
     </div>
@@ -49,7 +49,7 @@ export default defineComponent({
   emits: ["click"],
   computed: {
     formatDuration(): string {
-      const minutes = this.durationPreset.durationMinutes;
+      const minutes = this.durationPreset.spec.durationMinutes;
       if (minutes < 60) {
         return `${minutes} min`;
       }

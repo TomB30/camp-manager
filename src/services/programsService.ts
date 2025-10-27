@@ -26,9 +26,13 @@ async function createProgram(
 ): Promise<Program> {
   const newProgram = {
     ...program,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    meta: {
+      id: crypto.randomUUID(),
+      name: program.meta.name,
+      description: program.meta.description,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Program>(STORAGE_KEYS.PROGRAMS, newProgram);
 }
@@ -47,7 +51,12 @@ async function updateProgram(
   const updatedProgram = {
     ...existingProgram,
     ...program,
-    updatedAt: new Date().toISOString(),
+    meta: {
+      ...existingProgram.meta,
+      name: program.meta.name,
+      description: program.meta.description,
+      updatedAt: new Date().toISOString(),
+    },
   };
   return storageService.save<Program>(STORAGE_KEYS.PROGRAMS, updatedProgram);
 }
@@ -63,15 +72,18 @@ async function deleteProgram(id: string): Promise<void> {
 
   // Categorize activities in a single pass
   for (const activity of activities) {
-    if (activity.programIds.includes(id)) {
-      if (activity.programIds.length === 1) {
+    if (activity.spec.programIds.includes(id)) {
+      if (activity.spec.programIds.length === 1) {
         // Activity only belongs to this program - delete it
         activitiesToDelete.push(activity);
       } else {
         // Activity belongs to other programs - update it
         updatedActivities.push({
           ...activity,
-          programIds: activity.programIds.filter((pid) => pid !== id),
+          spec: {
+            ...activity.spec,
+            programIds: activity.spec.programIds.filter((pid) => pid !== id),
+          },
         });
       }
     }
@@ -85,7 +97,7 @@ async function deleteProgram(id: string): Promise<void> {
     ),
     // Delete activities with no remaining programs in parallel
     ...activitiesToDelete.map((activity) =>
-      storageService.delete(STORAGE_KEYS.ACTIVITIES, activity.id),
+      storageService.delete(STORAGE_KEYS.ACTIVITIES, activity.meta.id),
     ),
     // Delete the program
     storageService.delete(STORAGE_KEYS.PROGRAMS, id),
@@ -98,10 +110,10 @@ async function getProgramById(id: string): Promise<Program | null> {
 
 async function getProgramsForStaffMember(staffId: string): Promise<Program[]> {
   const programs = await listPrograms();
-  return programs.filter((p) => p.staffMemberIds?.includes(staffId) || false);
+  return programs.filter((p) => p.spec.staffMemberIds?.includes(staffId) || false);
 }
 
 async function getProgramsForLocation(locationId: string): Promise<Program[]> {
   const programs = await listPrograms();
-  return programs.filter((p) => p.locationIds?.includes(locationId) || false);
+  return programs.filter((p) => p.spec.locationIds?.includes(locationId) || false);
 }

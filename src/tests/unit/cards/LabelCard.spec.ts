@@ -8,12 +8,14 @@ import type { Label } from "@/types";
 describe("LabelCard", () => {
   let pinia: ReturnType<typeof setupTestPinia>;
 
-  const createTestLabel = (overrides: Partial<Label> = {}): Label => ({
-    id: "label-1",
-    name: "Test Label",
-    createdAt: "2025-10-01T09:00:00.000Z",
-    updatedAt: "2025-10-01T09:00:00.000Z",
-    ...overrides,
+  const createTestLabel = (): Label => ({
+    meta: {
+      id: "label-1",
+      name: "Test Label",
+      createdAt: "2025-10-01T09:00:00.000Z",
+      updatedAt: "2025-10-01T09:00:00.000Z",
+    },
+    spec: {},
   });
 
   beforeEach(() => {
@@ -22,17 +24,20 @@ describe("LabelCard", () => {
 
   describe("Rendering", () => {
     it("renders label name correctly", () => {
-      const label = createTestLabel();
+      const label: Label = createTestLabel();
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
       });
 
-      expect(wrapper.text()).toContain(label.name);
+      expect(wrapper.text()).toContain(label.meta.name);
     });
 
     it("renders description when provided", () => {
-      const label = createTestLabel({ description: "Test description" });
+      const label: Label = {
+        ...createTestLabel(),
+        meta: { ...createTestLabel().meta, description: "Test description" },
+      };
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
@@ -42,7 +47,7 @@ describe("LabelCard", () => {
     });
 
     it("does not show description when not provided", () => {
-      const label = createTestLabel();
+      const label: Label = createTestLabel();
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
@@ -52,50 +57,12 @@ describe("LabelCard", () => {
     });
   });
 
-  describe("Color Display", () => {
-    it("applies color to preview when color is set", () => {
-      const colorsStore = useColorsStore();
-      colorsStore.colors = colorsFixture;
-
-      const label = createTestLabel({ colorId: colorsFixture[0].id });
-      const wrapper = createWrapper(LabelCard, {
-        props: { label },
-        pinia,
-      });
-
-      const preview = wrapper.find(".label-preview");
-      const style = preview.attributes("style");
-      expect(style).toContain("background");
-      // Color should be applied (either hex or rgb format)
-      expect(style?.length).toBeGreaterThan(10);
-    });
-
-    it("uses default color when no color is set", () => {
-      const label = createTestLabel();
-      const wrapper = createWrapper(LabelCard, {
-        props: { label },
-        pinia,
-      });
-
-      const preview = wrapper.find(".label-preview");
-      expect(preview.attributes("style")).toContain("#6B7280"); // Default gray
-    });
-
-    it("uses default color when colorId is invalid", () => {
-      const label = createTestLabel({ colorId: "invalid-color-id" });
-      const wrapper = createWrapper(LabelCard, {
-        props: { label },
-        pinia,
-      });
-
-      const preview = wrapper.find(".label-preview");
-      expect(preview.attributes("style")).toContain("#6B7280");
-    });
-  });
-
   describe("Actions", () => {
     it("emits edit event when edit button is clicked", async () => {
-      const label = createTestLabel();
+      const label: Label = {
+        ...createTestLabel(),
+        meta: { ...createTestLabel().meta, id: "label-1" },
+      };
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
@@ -109,7 +76,10 @@ describe("LabelCard", () => {
     });
 
     it("emits delete event when delete button is clicked", async () => {
-      const label = createTestLabel();
+      const label: Label = {
+        ...createTestLabel(),
+        meta: { ...createTestLabel().meta, id: "label-1" },
+      };
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
@@ -123,7 +93,10 @@ describe("LabelCard", () => {
     });
 
     it("stops event propagation for action buttons", async () => {
-      const label = createTestLabel();
+      const label: Label = {
+        ...createTestLabel(),
+        meta: { ...createTestLabel().meta, id: "label-1" },
+      };
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
@@ -139,7 +112,10 @@ describe("LabelCard", () => {
 
   describe("Styling", () => {
     it("has label-card class", () => {
-      const label = createTestLabel();
+      const label: Label = {
+        ...createTestLabel(),
+        meta: { ...createTestLabel().meta, id: "label-1" },
+      };
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
@@ -149,7 +125,10 @@ describe("LabelCard", () => {
     });
 
     it("displays label preview section", () => {
-      const label = createTestLabel();
+      const label: Label = {
+        ...createTestLabel(),
+        meta: { ...createTestLabel().meta, id: "label-1" },
+      };
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
@@ -159,7 +138,10 @@ describe("LabelCard", () => {
     });
 
     it("displays label info section", () => {
-      const label = createTestLabel();
+      const label: Label = {
+        ...createTestLabel(),
+        meta: { ...createTestLabel().meta, id: "label-1" },
+      };
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
@@ -169,7 +151,10 @@ describe("LabelCard", () => {
     });
 
     it("shows overlay with action buttons", () => {
-      const label = createTestLabel();
+      const label: Label = {
+        ...createTestLabel(),
+        meta: { ...createTestLabel().meta, id: "label-1" },
+      };
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
@@ -182,7 +167,10 @@ describe("LabelCard", () => {
 
   describe("Icons", () => {
     it("displays edit and delete icons", () => {
-      const label = createTestLabel();
+      const label: Label = {
+        ...createTestLabel(),
+        meta: { ...createTestLabel().meta, id: "label-1" },
+      };
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
@@ -195,22 +183,30 @@ describe("LabelCard", () => {
 
   describe("Edge Cases", () => {
     it("handles very long label names", () => {
-      const label = createTestLabel({
-        name: "This is a very long label name that might overflow the container",
-      });
+      const label: Label = {
+        ...createTestLabel(),
+        meta: {
+          ...createTestLabel().meta,
+          name: "This is a very long label name that might overflow the container",
+        },
+      };
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
       });
 
-      expect(wrapper.text()).toContain(label.name);
+      expect(wrapper.text()).toContain(label.meta.name);
     });
 
     it("handles very long descriptions with ellipsis", () => {
-      const label = createTestLabel({
-        description:
-          "This is a very long description that should be truncated with ellipsis when it exceeds the available space",
-      });
+      const label: Label = {
+        ...createTestLabel(),
+        meta: {
+          ...createTestLabel().meta,
+          description:
+            "This is a very long description that should be truncated with ellipsis when it exceeds the available space",
+        },
+      };
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
@@ -221,13 +217,16 @@ describe("LabelCard", () => {
     });
 
     it("handles label with special characters in name", () => {
-      const label = createTestLabel({ name: "Label & Test <> Special" });
+      const label: Label = {
+        ...createTestLabel(),
+        meta: { ...createTestLabel().meta, name: "Label & Test <> Special" },
+      };
       const wrapper = createWrapper(LabelCard, {
         props: { label },
         pinia,
       });
 
-      expect(wrapper.text()).toContain("Label & Test <> Special");
+      expect(wrapper.text()).toContain(label.meta.name);
     });
   });
 });

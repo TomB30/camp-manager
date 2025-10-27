@@ -1,23 +1,18 @@
 type: object
 required:
-  - id
-  - name
-  - hexValue
+  - meta
+  - spec
 properties:
-  id:
-    type: string
-    format: uuid
-  name:
-    type: string
-  hexValue:
-    type: string
-    description: Hex color value (e.g., "#FF5733")
-  default:
-    type: boolean
-    description: Whether this is the default color for events
-  createdAt:
-    type: string
-    format: date-time
-  updatedAt:
-    type: string
-    format: date-time
+  meta:
+    $ref: "./EntityMeta.yaml"
+  spec:
+    type: object
+    required:
+      - hexValue
+    properties:
+      hexValue:
+        type: string
+        description: Hex color value (e.g., "#FF5733")
+      default:
+        type: boolean
+        description: Whether this is the default color for events

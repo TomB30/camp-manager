@@ -1,25 +1,25 @@
 <template>
-  <BaseModal :title="role?.name || ''" @close="$emit('close')">
+  <BaseModal :title="role?.meta.name || ''" @close="$emit('close')">
     <template #body>
       <div v-if="role">
-        <div v-if="role.description" class="detail-section">
+        <div v-if="role.meta.description" class="detail-section">
           <div class="detail-label">Description</div>
-          <div>{{ role.description }}</div>
+          <div>{{ role.meta.description }}</div>
         </div>
 
-        <div v-if="!role.description" class="detail-section">
+        <div v-if="!role.meta.description" class="detail-section">
           <div class="detail-label">Description</div>
           <div class="text-caption">No description provided</div>
         </div>
 
-        <div v-if="role.createdAt" class="detail-section">
+        <div v-if="role.meta.createdAt" class="detail-section">
           <div class="detail-label">Created</div>
-          <div>{{ formatDate(role.createdAt) }}</div>
+          <div>{{ formatDate(role.meta.createdAt) }}</div>
         </div>
 
-        <div v-if="role.updatedAt" class="detail-section">
+        <div v-if="role.meta.updatedAt" class="detail-section">
           <div class="detail-label">Last Updated</div>
-          <div>{{ formatDate(role.updatedAt) }}</div>
+          <div>{{ formatDate(role.meta.updatedAt) }}</div>
         </div>
       </div>
     </template>
@@ -28,7 +28,7 @@
       <BaseButton
         outline
         color="negative"
-        @click="$emit('delete', role?.id)"
+        @click="$emit('delete', role?.meta.id)"
         label="Delete"
       />
       <BaseButton
