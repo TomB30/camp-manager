@@ -7,19 +7,23 @@
       <q-form @submit.prevent="handleSave" ref="formRef">
         <!-- Activity Template Selector (only show when creating new event) -->
         <div v-if="!isEditing" class="form-group">
-          <label class="form-label"
-            >Create from Activity Template (Optional)</label
-          >
+          <label class="form-label flex items-center q-gutter-x-sm">
+            <span>Create from Activity Template</span>
+            <InfoTooltip
+              tooltip-text="Event details will be filled from the selected activity template. You can
+            still modify them."
+            />
+          </label>
           <Autocomplete
             v-model="selectedActivityId"
             :options="activityOptions"
             placeholder="Select an activity template..."
             @update:modelValue="applyActivityTemplate"
           />
-          <div v-if="selectedActivityId" class="text-xs text-secondary mt-1">
-            Event details will be pre-filled from the activity template. You can
-            still modify them.
-          </div>
+          <div
+            v-if="selectedActivityId"
+            class="text-xs text-secondary mt-1"
+          ></div>
         </div>
 
         <div class="form-group">
@@ -45,6 +49,7 @@
             <label class="form-label">Start Time</label>
             <BaseInput
               v-model="startTime"
+              @update:model-value="handleStartTimeChange"
               type="time"
               :rules="[(val: string) => !!val || 'Enter start time']"
             />
@@ -55,7 +60,10 @@
             <BaseInput
               v-model="endTime"
               type="time"
-              :rules="[(val: string) => !!val || 'Enter end time']"
+              :rules="[
+                (val: string) => !!val || 'Enter end time',
+                endTimeBeforeStartTime,
+              ]"
             />
           </div>
         </div>
@@ -391,6 +399,8 @@ import {
   generateRecurrenceDates,
 } from "@/utils/recurrence";
 import type { QForm } from "quasar";
+import { compareAsc } from "date-fns";
+import InfoTooltip from "../InfoTooltip.vue";
 
 export default defineComponent({
   name: "EventFormModal",
@@ -399,6 +409,7 @@ export default defineComponent({
     Autocomplete,
     SelectionList,
     NumberInput,
+    InfoTooltip,
   },
   props: {
     defaultEventDate: {
@@ -752,6 +763,23 @@ export default defineComponent({
     },
   },
   methods: {
+    endTimeBeforeStartTime(): boolean | string {
+      return (
+        compareAsc(
+          new Date(`${this.internalEventDate}T${this.internalStartTime}:00`),
+          new Date(`${this.internalEventDate}T${this.internalEndTime}:00`),
+        ) === -1 || "End time must be later than start time"
+      );
+    },
+    handleStartTimeChange(): void {
+      const result = compareAsc(
+        new Date(`${this.internalEventDate}T${this.internalStartTime}:00`),
+        new Date(`${this.internalEventDate}T${this.internalEndTime}:00`),
+      );
+      if (result === 1) {
+        this.endTime = this.startTime;
+      }
+    },
     updateFormDataDates() {
       // Combine date and time into ISO datetime strings
       if (this.internalEventDate && this.internalStartTime) {
