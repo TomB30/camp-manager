@@ -238,9 +238,9 @@
             v-model="capacityModel"
             type="number"
             placeholder="Enter capacity"
+            :min="0"
             :rules="[
-              (val: string) => !!val || 'Enter capacity',
-              (val: string) => parseInt(val) > 0 || 'Must be greater than 0',
+              isValidCapacity,
             ]"
           />
         </div>
@@ -630,6 +630,10 @@ export default defineComponent({
         return this.formData.spec.capacity?.toString() || "";
       },
       set(value: string) {
+        if (!value) {
+          this.formData.spec.capacity = undefined;
+          return;
+        }
         const num = parseInt(value);
         this.formData.spec.capacity = isNaN(num) ? 0 : num;
       },
@@ -763,6 +767,10 @@ export default defineComponent({
     },
   },
   methods: {
+    isValidCapacity(value: string): boolean | string {
+      if (!value) return true;
+      return parseInt(value) > 0 || "Must be greater than 0";
+    },
     endTimeBeforeStartTime(): boolean | string {
       return (
         compareAsc(

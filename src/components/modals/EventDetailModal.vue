@@ -15,7 +15,7 @@
           <div>{{ getLocationName(event.spec.locationId || "") }}</div>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3" v-if="event.spec.capacity !== undefined">
           <div class="text-sm text-grey-7 text-subtitle2 mb-1">Capacity</div>
           <div>
             {{ enrolledCamperCount }}/{{ event.spec.capacity || 0 }}
