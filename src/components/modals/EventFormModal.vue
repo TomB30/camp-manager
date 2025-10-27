@@ -486,7 +486,6 @@ export default defineComponent({
       internalStartTime: `${startHours}:${startMinutes}`,
       internalEndTime: "",
       selectedActivityId: "",
-      selectedCertificationIds: [] as string[],
       selectedDurationPreset: null as number | null,
       formRef: null as any,
       recurrenceData: {
@@ -548,6 +547,14 @@ export default defineComponent({
     }
   },
   computed: {
+    selectedCertificationIds: {
+      get(): string[] {
+        return this.formData.spec.requiredCertificationIds || [];
+      },
+      set(value: string[]) {
+        this.formData.spec.requiredCertificationIds = value;
+      },
+    },
     isEditing(): boolean {
       return !!this.eventId;
     },
@@ -854,9 +861,6 @@ export default defineComponent({
         this.formData.spec.requiredCertificationIds = [
           ...activity.spec.requiredCertificationIds,
         ];
-        this.selectedCertificationIds = this.getCertificationIdsFromNames(
-          activity.spec.requiredCertificationIds,
-        );
       }
 
       // Set program and activity IDs for reference
