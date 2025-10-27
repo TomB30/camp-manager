@@ -1,7 +1,6 @@
 <template>
   <div
     class="duration-preset-card"
-    :class="{ 'is-default': durationPreset.default }"
     @click="$emit('click', durationPreset.id)"
   >
     <div class="preset-header">
@@ -77,19 +76,8 @@ export default defineComponent({
 }
 
 .duration-preset-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--primary-color);
-  background: var(--surface-secondary);
-}
-
-.duration-preset-card.is-default {
-  border-color: var(--accent-color);
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
-  );
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
 }
 
 .preset-header {
