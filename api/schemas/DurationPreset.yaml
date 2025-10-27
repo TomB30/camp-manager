@@ -1,0 +1,29 @@
+type: object
+required:
+  - id
+  - name
+  - durationMinutes
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+    description: Name of the duration preset (e.g., "Short Session", "Standard Activity")
+  durationMinutes:
+    type: integer
+    minimum: 1
+    description: Duration in minutes
+  description:
+    type: string
+    description: Optional description of when to use this preset
+  default:
+    type: boolean
+    description: Whether this is the default duration preset
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time
+

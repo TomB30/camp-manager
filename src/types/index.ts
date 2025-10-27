@@ -84,6 +84,16 @@ export type GroupCamperFilters =
 export type GroupCreationRequest =
   components["schemas"]["GroupCreationRequest"];
 export type GroupUpdateRequest = components["schemas"]["GroupUpdateRequest"];
+// Camp types
+export type Camp = components["schemas"]["Camp"];
+export type CampCreationRequest = components["schemas"]["CampCreationRequest"];
+export type CampUpdateRequest = components["schemas"]["CampUpdateRequest"];
+// Duration Preset types
+export type DurationPreset = components["schemas"]["DurationPreset"];
+export type DurationPresetCreationRequest =
+  components["schemas"]["DurationPresetCreationRequest"];
+export type DurationPresetUpdateRequest =
+  components["schemas"]["DurationPresetUpdateRequest"];
 // Re-export the components type for advanced usage
 export type { components };
 

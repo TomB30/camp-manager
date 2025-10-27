@@ -26,6 +26,8 @@ export {
   type LabelCreationRequest,
   type LabelUpdateRequest,
 } from "./labelsService";
+export { campService } from "./campService";
+export { durationPresetsService } from "./durationPresetsService";
 
 // Other services
 export { conflictDetector } from "./conflicts";

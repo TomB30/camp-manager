@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/sessions": {
     /** List all sessions */
@@ -1823,6 +1824,168 @@ export interface components {
       recurrenceId?: string;
       /** @description Indicates if this is the parent event of a recurrence series */
       isRecurrenceParent?: boolean;
+    };
+    Camp: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      description?: string;
+      /**
+       * Format: date
+       * @description Overall camp season start date
+       */
+      startDate: string;
+      /**
+       * Format: date
+       * @description Overall camp season end date
+       */
+      endDate: string;
+      /**
+       * @description Daily start time for calendar display (24-hour format HH:MM)
+       * @example 08:00
+       */
+      dailyStartTime: string;
+      /**
+       * @description Daily end time for calendar display (24-hour format HH:MM)
+       * @example 20:00
+       */
+      dailyEndTime: string;
+      address?: {
+        street?: string;
+        city?: string;
+        state?: string;
+        zipCode?: string;
+        country?: string;
+      };
+      contactInfo?: {
+        phone?: string;
+        /** Format: email */
+        email?: string;
+        /** Format: uri */
+        website?: string;
+      };
+      /** Format: uri */
+      logoUrl?: string;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
+    };
+    CampCreationRequest: {
+      name: string;
+      description?: string;
+      /**
+       * Format: date
+       * @description Overall camp season start date
+       */
+      startDate: string;
+      /**
+       * Format: date
+       * @description Overall camp season end date
+       */
+      endDate: string;
+      /**
+       * @description Daily start time for calendar display (24-hour format HH:MM)
+       * @example 08:00
+       */
+      dailyStartTime: string;
+      /**
+       * @description Daily end time for calendar display (24-hour format HH:MM)
+       * @example 20:00
+       */
+      dailyEndTime: string;
+      address?: {
+        street?: string;
+        city?: string;
+        state?: string;
+        zipCode?: string;
+        country?: string;
+      };
+      contactInfo?: {
+        phone?: string;
+        /** Format: email */
+        email?: string;
+        /** Format: uri */
+        website?: string;
+      };
+      /** Format: uri */
+      logoUrl?: string;
+    };
+    CampUpdateRequest: {
+      name?: string;
+      description?: string;
+      /**
+       * Format: date
+       * @description Overall camp season start date
+       */
+      startDate?: string;
+      /**
+       * Format: date
+       * @description Overall camp season end date
+       */
+      endDate?: string;
+      /**
+       * @description Daily start time for calendar display (24-hour format HH:MM)
+       * @example 08:00
+       */
+      dailyStartTime?: string;
+      /**
+       * @description Daily end time for calendar display (24-hour format HH:MM)
+       * @example 20:00
+       */
+      dailyEndTime?: string;
+      address?: {
+        street?: string;
+        city?: string;
+        state?: string;
+        zipCode?: string;
+        country?: string;
+      };
+      contactInfo?: {
+        phone?: string;
+        /** Format: email */
+        email?: string;
+        /** Format: uri */
+        website?: string;
+      };
+      /** Format: uri */
+      logoUrl?: string;
+    };
+    DurationPreset: {
+      /** Format: uuid */
+      id: string;
+      /** @description Name of the duration preset (e.g., "Short Session", "Standard Activity") */
+      name: string;
+      /** @description Duration in minutes */
+      durationMinutes: number;
+      /** @description Optional description of when to use this preset */
+      description?: string;
+      /** @description Whether this is the default duration preset */
+      default?: boolean;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
+    };
+    DurationPresetCreationRequest: {
+      /** @description Name of the duration preset (e.g., "Short Session", "Standard Activity") */
+      name: string;
+      /** @description Duration in minutes */
+      durationMinutes: number;
+      /** @description Optional description of when to use this preset */
+      description?: string;
+      /** @description Whether this is the default duration preset */
+      default?: boolean;
+    };
+    DurationPresetUpdateRequest: {
+      /** @description Name of the duration preset (e.g., "Short Session", "Standard Activity") */
+      name?: string;
+      /** @description Duration in minutes */
+      durationMinutes?: number;
+      /** @description Optional description of when to use this preset */
+      description?: string;
+      /** @description Whether this is the default duration preset */
+      default?: boolean;
     };
   };
   responses: never;

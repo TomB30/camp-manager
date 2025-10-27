@@ -97,6 +97,20 @@ components:
     EventUpdateRequest:
       $ref: "./schemas/EventUpdateRequest.yaml"
 
+    Camp:
+      $ref: "./schemas/Camp.yaml"
+    CampCreationRequest:
+      $ref: "./schemas/CampCreationRequest.yaml"
+    CampUpdateRequest:
+      $ref: "./schemas/CampUpdateRequest.yaml"
+
+    DurationPreset:
+      $ref: "./schemas/DurationPreset.yaml"
+    DurationPresetCreationRequest:
+      $ref: "./schemas/DurationPresetCreationRequest.yaml"
+    DurationPresetUpdateRequest:
+      $ref: "./schemas/DurationPresetUpdateRequest.yaml"
+
 paths:
   /sessions:
     $ref: "./paths/Sessions.yaml"

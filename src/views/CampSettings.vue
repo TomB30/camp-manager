@@ -53,6 +53,10 @@
     <div class="tab-content">
       <Transition name="fade" mode="out-in">
         <SessionsTab v-if="activeTab === 'sessions'" key="sessions" />
+        <DurationPresetsTab
+          v-else-if="activeTab === 'duration-presets'"
+          key="duration-presets"
+        />
         <AreasTab v-else-if="activeTab === 'areas'" key="areas" />
         <LocationsTab v-else-if="activeTab === 'locations'" key="locations" />
         <HousingTab v-else-if="activeTab === 'cabins'" key="cabins" />
@@ -78,11 +82,13 @@ import {
   useLocationsStore,
   useLabelsStore,
   useRolesStore,
+  useDurationPresetsStore,
 } from "@/stores";
 import Icon from "@/components/Icon.vue";
 
 import ColorsTab from "@/components/settings/ColorsTab.vue";
 import SessionsTab from "@/components/settings/SessionsTab.vue";
+import DurationPresetsTab from "@/components/settings/DurationPresetsTab.vue";
 import AreasTab from "@/components/settings/AreasTab.vue";
 import HousingTab from "@/components/settings/HousingTab.vue";
 import CertificationsTab from "@/components/settings/CertificationsTab.vue";
@@ -96,6 +102,7 @@ export default defineComponent({
     Icon,
     ColorsTab,
     SessionsTab,
+    DurationPresetsTab,
     AreasTab,
     HousingTab,
     CertificationsTab,
@@ -112,6 +119,7 @@ export default defineComponent({
     const locationsStore = useLocationsStore();
     const labelsStore = useLabelsStore();
     const rolesStore = useRolesStore();
+    const durationPresetsStore = useDurationPresetsStore();
     return {
       colorsStore,
       sessionsStore,
@@ -121,12 +129,14 @@ export default defineComponent({
       locationsStore,
       labelsStore,
       rolesStore,
+      durationPresetsStore,
     };
   },
   data(): {
     activeTab:
       | "colors"
       | "sessions"
+      | "duration-presets"
       | "areas"
       | "locations"
       | "cabins"
@@ -137,7 +147,7 @@ export default defineComponent({
   } {
     return {
       activeTab: "sessions",
-      activeCategory: null,
+      activeCategory: "date-times",
     };
   },
   computed: {
@@ -148,7 +158,14 @@ export default defineComponent({
       count: number;
       type: "regular" | "category";
       subTabs?: Array<{
-        id: "areas" | "locations" | "cabins" | "certifications" | "roles";
+        id:
+          | "sessions"
+          | "duration-presets"
+          | "areas"
+          | "locations"
+          | "cabins"
+          | "certifications"
+          | "roles";
         label: string;
         icon: any;
         count: number;
@@ -156,11 +173,27 @@ export default defineComponent({
     }> {
       return [
         {
-          id: "sessions",
-          type: "regular" as const,
-          label: "Sessions",
-          icon: "CalendarDays",
-          count: this.sessionsStore.sessions.length,
+          id: "date-times",
+          type: "category" as const,
+          label: "Date & Times",
+          icon: "Clock",
+          count:
+            this.sessionsStore.sessions.length +
+            this.durationPresetsStore.durationPresets.length,
+          subTabs: [
+            {
+              id: "sessions" as const,
+              label: "Sessions",
+              icon: "CalendarDays",
+              count: this.sessionsStore.sessions.length,
+            },
+            {
+              id: "duration-presets" as const,
+              label: "Duration Presets",
+              icon: "Timer",
+              count: this.durationPresetsStore.durationPresets.length,
+            },
+          ],
         },
         {
           id: "areas-locations",

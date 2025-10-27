@@ -15,6 +15,8 @@ import { useRolesStore } from "./rolesStore";
 import { useColorsStore } from "./colorsStore";
 import { useSessionsStore } from "./sessionsStore";
 import { useLabelsStore } from "./labelsStore";
+import { useCampStore } from "./campStore";
+import { useDurationPresetsStore } from "./durationPresetsStore";
 
 /**
  * Main Store
@@ -47,8 +49,12 @@ export const useMainStore = defineStore("main", {
         const colorsStore = useColorsStore();
         const sessionsStore = useSessionsStore();
         const labelsStore = useLabelsStore();
+        const campStore = useCampStore();
+        const durationPresetsStore = useDurationPresetsStore();
 
         await Promise.all([
+          campStore.loadCamp(),
+          durationPresetsStore.loadDurationPresets(),
           campersStore.loadCampers(),
           staffMembersStore.loadStaffMembers(),
           eventsStore.loadEvents(),

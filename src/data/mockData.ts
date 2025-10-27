@@ -17,6 +17,8 @@ import type {
   Color,
   Session,
   Role,
+  Camp,
+  DurationPreset,
 } from "@/types";
 
 // Helper function to generate UUIDs (simple version for mock data)
@@ -34,6 +36,78 @@ const octoberDate = (
 ): string => {
   return new Date(2025, 9, day, hour, minute).toISOString();
 };
+
+// Camp (singleton)
+export const camp: Camp = {
+  id: generateId(),
+  name: "Sunset Lake Summer Camp",
+  description:
+    "A premier summer camp experience nestled in the beautiful mountains, offering adventure, learning, and lifelong friendships.",
+  startDate: "2025-10-01",
+  endDate: "2025-10-31",
+  dailyStartTime: "08:00",
+  dailyEndTime: "20:00",
+  address: {
+    street: "123 Camp Road",
+    city: "Mountain View",
+    state: "CA",
+    zipCode: "94043",
+    country: "USA",
+  },
+  contactInfo: {
+    phone: "555-CAMP-FUN",
+    email: "info@sunsetlakecamp.com",
+    website: "https://www.sunsetlakecamp.com",
+  },
+  logoUrl: "https://via.placeholder.com/200x200?text=Camp+Logo",
+  createdAt: octoberDate(1),
+  updatedAt: octoberDate(1),
+};
+
+// Duration Presets
+export const durationPresets: DurationPreset[] = [
+  {
+    id: generateId(),
+    name: "Quick Activity",
+    durationMinutes: 30,
+    description: "Short 30-minute activities or transitions",
+    createdAt: octoberDate(1),
+    updatedAt: octoberDate(1),
+  },
+  {
+    id: generateId(),
+    name: "Standard Session",
+    durationMinutes: 60,
+    description: "Standard 1-hour activity session",
+    default: true,
+    createdAt: octoberDate(1),
+    updatedAt: octoberDate(1),
+  },
+  {
+    id: generateId(),
+    name: "Extended Activity",
+    durationMinutes: 90,
+    description: "90-minute extended activity session",
+    createdAt: octoberDate(1),
+    updatedAt: octoberDate(1),
+  },
+  {
+    id: generateId(),
+    name: "Half Day",
+    durationMinutes: 120,
+    description: "2-hour half-day program",
+    createdAt: octoberDate(1),
+    updatedAt: octoberDate(1),
+  },
+  {
+    id: generateId(),
+    name: "Full Program",
+    durationMinutes: 180,
+    description: "3-hour full program session",
+    createdAt: octoberDate(1),
+    updatedAt: octoberDate(1),
+  },
+];
 
 // Colors
 export const colors: Color[] = [
@@ -1105,6 +1179,8 @@ while (events.length > 60) {
 
 // Export all mock data
 export const mockData = {
+  camp,
+  durationPresets,
   colors,
   sessions,
   areas,

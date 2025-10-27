@@ -118,6 +118,8 @@ class StorageService {
    * Seed multiple data sets to storage (for mock data initialization)
    */
   async seedData(data: {
+    camp?: any;
+    durationPresets?: any[];
     campers?: any[];
     staffMembers?: any[];
     locations?: any[];
@@ -136,6 +138,15 @@ class StorageService {
   }): Promise<void> {
     await delay();
 
+    if (data.camp) {
+      localStorage.setItem(STORAGE_KEYS.CAMP, JSON.stringify([data.camp]));
+    }
+    if (data.durationPresets) {
+      localStorage.setItem(
+        STORAGE_KEYS.DURATION_PRESETS,
+        JSON.stringify(data.durationPresets),
+      );
+    }
     if (data.campers) {
       localStorage.setItem(STORAGE_KEYS.CAMPERS, JSON.stringify(data.campers));
     }

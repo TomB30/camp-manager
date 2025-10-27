@@ -18,6 +18,8 @@ export { useColorsStore } from "./colorsStore";
 export { useSessionsStore } from "./sessionsStore";
 export { useLabelsStore } from "./labelsStore";
 export { useRolesStore } from "./rolesStore";
+export { useCampStore } from "./campStore";
+export { useDurationPresetsStore } from "./durationPresetsStore";
 // Main coordinating store
 export { useMainStore } from "./mainStore";
 

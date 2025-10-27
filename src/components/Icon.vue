@@ -53,6 +53,7 @@ import {
   BookOpen,
   Search,
   Shield,
+  Timer,
 } from "lucide-vue-next";
 
 export type IconName = keyof typeof icons;
@@ -100,6 +101,7 @@ const icons: Record<string, Component> = {
   BookOpen,
   Search,
   Shield,
+  Timer,
 } as const;
 
 export default defineComponent({
