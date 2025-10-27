@@ -4,7 +4,7 @@ import { certificationsFixture } from "./certifications.fixture";
 
 export const activitiesFixture: Activity[] = [
   {
-    meta:{
+    meta: {
       id: "activity-1",
       name: "Painting Workshop",
       description: "Learn watercolor techniques",
@@ -20,7 +20,7 @@ export const activitiesFixture: Activity[] = [
     },
   },
   {
-    meta:{
+    meta: {
       id: "activity-2",
       name: "Pottery Class",
       description: "Create ceramic pieces",
@@ -36,7 +36,7 @@ export const activitiesFixture: Activity[] = [
     },
   },
   {
-    meta:{
+    meta: {
       id: "activity-3",
       name: "Swimming Lessons",
       description: "Basic swimming instruction",
@@ -52,7 +52,7 @@ export const activitiesFixture: Activity[] = [
     },
   },
   {
-    meta:{
+    meta: {
       id: "activity-4",
       name: "Kayaking",
       description: "Kayaking on the lake",
@@ -68,7 +68,7 @@ export const activitiesFixture: Activity[] = [
     },
   },
   {
-    meta:{
+    meta: {
       id: "activity-5",
       name: "Nature Hike",
       description: "Guided trail hike",
@@ -84,7 +84,7 @@ export const activitiesFixture: Activity[] = [
     },
   },
   {
-    meta:{
+    meta: {
       id: "activity-6",
       name: "Rock Climbing",
       description: "Indoor climbing wall",
@@ -100,7 +100,7 @@ export const activitiesFixture: Activity[] = [
     },
   },
   {
-    meta:{
+    meta: {
       id: "activity-7",
       name: "Archery",
       description: "Target practice with bows",
@@ -116,7 +116,7 @@ export const activitiesFixture: Activity[] = [
     },
   },
   {
-    meta:{
+    meta: {
       id: "activity-8",
       name: "Crafts & Jewelry",
       description: "Make friendship bracelets and jewelry",
@@ -132,7 +132,7 @@ export const activitiesFixture: Activity[] = [
     },
   },
   {
-    meta:{
+    meta: {
       id: "activity-9",
       name: "Canoeing",
       description: "Canoe expedition",
@@ -148,7 +148,7 @@ export const activitiesFixture: Activity[] = [
     },
   },
   {
-    meta:{
+    meta: {
       id: "activity-10",
       name: "Wilderness Survival",
       description: "Learn basic survival skills",

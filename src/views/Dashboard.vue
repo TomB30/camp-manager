@@ -203,7 +203,9 @@
               <span class="font-medium"
                 >{{ camper.spec.firstName }} {{ camper.spec.lastName }}</span
               >
-              <span class="text-xs text-secondary">Age {{ camper.spec.age }}</span>
+              <span class="text-xs text-secondary"
+                >Age {{ camper.spec.age }}</span
+              >
             </div>
           </div>
         </div>
@@ -291,7 +293,8 @@ export default defineComponent({
     sortedTodayEvents(): Event[] {
       return [...this.todayEvents].sort(
         (a, b) =>
-          new Date(a.spec.startDate).getTime() - new Date(b.spec.startDate).getTime(),
+          new Date(a.spec.startDate).getTime() -
+          new Date(b.spec.startDate).getTime(),
       );
     },
     recentCampers(): Camper[] {

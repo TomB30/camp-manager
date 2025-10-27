@@ -83,8 +83,7 @@ export default defineComponent({
         name: role.meta.name,
         description: role.meta.description || "",
       },
-      spec: {
-      },
+      spec: {},
     };
   },
   setup() {

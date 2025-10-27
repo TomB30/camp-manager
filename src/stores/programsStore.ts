@@ -88,7 +88,8 @@ export const useProgramsStore = defineStore("programs", {
       const activitiesStore = useActivitiesStore();
       await activitiesStore.loadActivities();
 
-      this.programs = this.programs?.filter((p: Program) => p.meta.id !== id) || [];
+      this.programs =
+        this.programs?.filter((p: Program) => p.meta.id !== id) || [];
     },
   },
 });

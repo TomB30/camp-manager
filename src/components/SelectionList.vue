@@ -119,7 +119,9 @@ export default defineComponent({
       return true;
     },
     availableItems(): any[] {
-      return this.items.filter((item) => !this.selectedIds.includes(item.meta.id));
+      return this.items.filter(
+        (item) => !this.selectedIds.includes(item.meta.id),
+      );
     },
     availableOptions(): AutocompleteOption[] {
       return this.availableItems.map((item) => this.getOptionsFn(item));

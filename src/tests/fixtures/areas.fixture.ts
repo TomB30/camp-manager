@@ -2,7 +2,7 @@ import type { Area } from "@/types";
 
 export const areasFixture: Area[] = [
   {
-    meta: { 
+    meta: {
       id: "area-1",
       name: "North Campus",
       description: "Main activity area with classrooms and sports facilities",

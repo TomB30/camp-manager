@@ -1,5 +1,8 @@
 <template>
-  <BaseModal :title="group?.meta.name || 'Group Details'" @close="$emit('close')">
+  <BaseModal
+    :title="group?.meta.name || 'Group Details'"
+    @close="$emit('close')"
+  >
     <template #body>
       <div v-if="group" class="group-details">
         <!-- Description -->
@@ -155,11 +158,13 @@
           <div class="filter-tags">
             <span
               v-if="
-                group.spec.staffFilters.roles && group.spec.staffFilters.roles.length > 0
+                group.spec.staffFilters.roles &&
+                group.spec.staffFilters.roles.length > 0
               "
               class="filter-tag"
             >
-              <strong>Roles:</strong> {{ group.spec.staffFilters.roles.join(", ") }}
+              <strong>Roles:</strong>
+              {{ group.spec.staffFilters.roles.join(", ") }}
             </span>
             <span
               v-if="
@@ -198,7 +203,8 @@
                     {{ camper.spec.firstName }} {{ camper.spec.lastName }}
                   </div>
                   <div class="member-meta">
-                    Age {{ camper.spec.age }} • {{ formatGender(camper.spec.gender) }}
+                    Age {{ camper.spec.age }} •
+                    {{ formatGender(camper.spec.gender) }}
                   </div>
                 </div>
               </div>
@@ -217,7 +223,11 @@
           </div>
           <slot name="staff-list">
             <div class="members-list">
-              <div v-for="member in staff" :key="member.meta.id" class="member-item">
+              <div
+                v-for="member in staff"
+                :key="member.meta.id"
+                class="member-item"
+              >
                 <div class="member-avatar staff-avatar">
                   {{ member.spec.firstName.charAt(0)
                   }}{{ member.spec.lastName.charAt(0) }}
@@ -226,7 +236,9 @@
                   <div class="member-name">
                     {{ member.spec.firstName }} {{ member.spec.lastName }}
                   </div>
-                  <div class="member-meta">{{ getRoleName(member.spec.roleId) }}</div>
+                  <div class="member-meta">
+                    {{ getRoleName(member.spec.roleId) }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -319,19 +331,25 @@ export default defineComponent({
       return useGroupsStore();
     },
     isNestedGroup(): boolean {
-      return !!(this.group?.spec.groupIds && this.group.spec.groupIds.length > 0);
+      return !!(
+        this.group?.spec.groupIds && this.group.spec.groupIds.length > 0
+      );
     },
     isFilterBasedCampers(): boolean {
       return !!(this.group?.spec.camperFilters && !this.group?.spec.camperIds);
     },
     isManualCampers(): boolean {
-      return !!(this.group?.spec.camperIds && this.group.spec.camperIds.length > 0);
+      return !!(
+        this.group?.spec.camperIds && this.group.spec.camperIds.length > 0
+      );
     },
     isFilterBasedStaff(): boolean {
       return !!(this.group?.spec.staffFilters && !this.group?.spec.staffIds);
     },
     isManualStaff(): boolean {
-      return !!(this.group?.spec.staffIds && this.group.spec.staffIds.length > 0);
+      return !!(
+        this.group?.spec.staffIds && this.group.spec.staffIds.length > 0
+      );
     },
     hasAnyCamperFilters(): boolean {
       const f = this.group?.spec.camperFilters;

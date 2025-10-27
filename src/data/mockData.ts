@@ -32,7 +32,7 @@ const generateId = (): string => {
 const octoberDate = (
   day: number,
   hour: number = 9,
-  minute: number = 0
+  minute: number = 0,
 ): string => {
   return new Date(2025, 9, day, hour, minute).toISOString();
 };
@@ -1724,7 +1724,7 @@ export const events: Event[] = [];
 const createDailyEvents = (day: number, sessionIndex: number) => {
   const session = sessions[sessionIndex];
   const relevantGroups = groups.filter(
-    (g) => g.spec.sessionId === session.meta.id
+    (g) => g.spec.sessionId === session.meta.id,
   );
 
   if (relevantGroups.length === 0) return;
@@ -1764,7 +1764,7 @@ const createDailyEvents = (day: number, sessionIndex: number) => {
 
     // Get color from the activity's program
     const program = programs.find((p) =>
-      p.spec.activityIds?.includes(activity.meta.id)
+      p.spec.activityIds?.includes(activity.meta.id),
     );
     const eventColorId = program?.spec.colorId;
 

@@ -71,14 +71,16 @@ export default defineComponent({
   computed: {
     areaName(): string | undefined {
       if (this.location.spec.areaId) {
-        return this.areasStore.getAreaById(this.location.spec.areaId)?.meta.name;
+        return this.areasStore.getAreaById(this.location.spec.areaId)?.meta
+          .name;
       }
       return undefined;
     },
     formattedType(): string {
       if (!this.location.spec.type) return "";
       return (
-        this.location.spec.type.charAt(0).toUpperCase() + this.location.spec.type.slice(1)
+        this.location.spec.type.charAt(0).toUpperCase() +
+        this.location.spec.type.slice(1)
       );
     },
     iconColor(): string {
@@ -104,7 +106,9 @@ export default defineComponent({
       return iconMap[this.location.spec.type] || "MapPin";
     },
     usagePercent(): number {
-      const locationEvents = this.eventsStore.locationEvents(this.location.meta.id);
+      const locationEvents = this.eventsStore.locationEvents(
+        this.location.meta.id,
+      );
       if (locationEvents.length === 0) return 0;
 
       if (!this.location.spec.capacity) return 0;

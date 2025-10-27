@@ -114,7 +114,9 @@ export default defineComponent({
         );
       }
 
-      return [...filtered].sort((a, b) => a.meta.name.localeCompare(b.meta.name));
+      return [...filtered].sort((a, b) =>
+        a.meta.name.localeCompare(b.meta.name),
+      );
     },
   },
   methods: {

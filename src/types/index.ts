@@ -78,7 +78,8 @@ export type RoleCreationRequest = components["schemas"]["RoleCreationRequest"];
 export type RoleUpdateRequest = components["schemas"]["RoleUpdateRequest"];
 // Unified Group types (new)
 export type Group = components["schemas"]["Group"];
-export type GroupStaffFilters = components["schemas"]["Group"]["spec"]["staffFilters"];
+export type GroupStaffFilters =
+  components["schemas"]["Group"]["spec"]["staffFilters"];
 export type GroupCamperFilters =
   components["schemas"]["Group"]["spec"]["camperFilters"];
 export type GroupCreationRequest =

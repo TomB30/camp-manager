@@ -24,4 +24,3 @@ properties:
     type: string
     format: date-time
     description: Timestamp when the entity was last updated
-

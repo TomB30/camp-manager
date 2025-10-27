@@ -70,7 +70,9 @@ describe("LocationFormModal", () => {
       const nameInput = wrapper.find(
         "input[placeholder='Enter location name']",
       );
-      expect((nameInput.element as HTMLInputElement).value).toBe(location.meta.name);
+      expect((nameInput.element as HTMLInputElement).value).toBe(
+        location.meta.name,
+      );
     });
   });
 

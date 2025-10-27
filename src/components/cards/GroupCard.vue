@@ -29,7 +29,10 @@
     </p>
 
     <!-- Labels -->
-    <div v-if="group.spec.labelIds && group.spec.labelIds.length > 0" class="card-labels">
+    <div
+      v-if="group.spec.labelIds && group.spec.labelIds.length > 0"
+      class="card-labels"
+    >
       <span
         v-for="labelId in group.spec.labelIds"
         :key="labelId"
@@ -72,7 +75,10 @@
       </div>
 
       <!-- Manual staff -->
-      <div v-if="group.spec.staffIds && group.spec.staffIds.length > 0" class="info-item">
+      <div
+        v-if="group.spec.staffIds && group.spec.staffIds.length > 0"
+        class="info-item"
+      >
         <Icon name="Users" :size="16" />
         <span>{{ group.spec.staffIds.length }} selected staff</span>
       </div>
@@ -97,7 +103,8 @@
     >
       <div class="filter-section-label">Camper Filters:</div>
       <span v-if="group.spec.camperFilters.gender" class="filter-tag">
-        <strong>Gender:</strong> {{ formatGender(group.spec.camperFilters.gender) }}
+        <strong>Gender:</strong>
+        {{ formatGender(group.spec.camperFilters.gender) }}
       </span>
       <span
         v-if="
@@ -108,7 +115,10 @@
       >
         <strong>Age:</strong>
         {{
-          formatAgeRange(group.spec.camperFilters.ageMin, group.spec.camperFilters.ageMax)
+          formatAgeRange(
+            group.spec.camperFilters.ageMin,
+            group.spec.camperFilters.ageMax,
+          )
         }}
       </span>
       <span
@@ -117,15 +127,23 @@
       >
         <strong>Allergies:</strong>
         {{
-          group.spec.camperFilters.hasAllergies ? "Has allergies" : "No allergies"
+          group.spec.camperFilters.hasAllergies
+            ? "Has allergies"
+            : "No allergies"
         }}
       </span>
     </div>
 
-    <div v-if="group.spec.staffFilters && hasAnyStaffFilters" class="group-filters">
+    <div
+      v-if="group.spec.staffFilters && hasAnyStaffFilters"
+      class="group-filters"
+    >
       <div class="filter-section-label">Staff Filters:</div>
       <span
-        v-if="group.spec.staffFilters.roles && group.spec.staffFilters.roles.length > 0"
+        v-if="
+          group.spec.staffFilters.roles &&
+          group.spec.staffFilters.roles.length > 0
+        "
         class="filter-tag"
       >
         <strong>Roles:</strong> {{ group.spec.staffFilters.roles.join(", ") }}
@@ -185,7 +203,9 @@ export default defineComponent({
       return useSessionsStore();
     },
     isNestedGroup(): boolean {
-      return !!(this.group.spec.groupIds && this.group.spec.groupIds.length > 0);
+      return !!(
+        this.group.spec.groupIds && this.group.spec.groupIds.length > 0
+      );
     },
     childGroupCount(): number {
       return this.group.spec.groupIds?.length || 0;

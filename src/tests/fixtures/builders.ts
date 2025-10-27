@@ -39,7 +39,7 @@ export const buildCamper = (overrides: Partial<Camper> = {}): Camper => ({
 });
 
 export const buildStaffMember = (
-  overrides: Partial<StaffMember> = {}
+  overrides: Partial<StaffMember> = {},
 ): StaffMember => ({
   meta: {
     id: generateTestId("staff"),
@@ -124,7 +124,7 @@ export const buildGroup = (overrides: Partial<Group> = {}): Group => ({
 });
 
 export const buildHousingRoom = (
-  overrides: Partial<HousingRoom> = {}
+  overrides: Partial<HousingRoom> = {},
 ): HousingRoom => ({
   meta: {
     id: generateTestId("room"),
@@ -162,7 +162,7 @@ export const buildLocation = (overrides: Partial<Location> = {}): Location => ({
  */
 export const buildStaffWithCertifications = (
   certificationIds: string[],
-  overrides: Partial<StaffMember> = {}
+  overrides: Partial<StaffMember> = {},
 ): StaffMember =>
   buildStaffMember({
     meta: {
@@ -215,10 +215,10 @@ export const buildRecurringEvent = (overrides: Partial<Event> = {}): Event =>
  */
 export const buildGroupWithHousing = (
   camperCount: number,
-  overrides: Partial<Group> = {}
+  overrides: Partial<Group> = {},
 ): Group => {
   const camperIds = Array.from({ length: camperCount }, (_, i) =>
-    generateTestId(`camper-${i}`)
+    generateTestId(`camper-${i}`),
   );
 
   return buildGroup({

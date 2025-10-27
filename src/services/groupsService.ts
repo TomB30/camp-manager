@@ -30,11 +30,11 @@ async function createGroup(group: GroupCreationRequest): Promise<Group> {
 
 async function updateGroup(
   id: string,
-  group: GroupUpdateRequest
+  group: GroupUpdateRequest,
 ): Promise<Group> {
   const existingGroup = await storageService.getById<Group>(
     STORAGE_KEYS.GROUPS,
-    id
+    id,
   );
   if (!existingGroup) {
     throw new Error(`Group with id ${id} not found`);

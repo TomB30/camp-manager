@@ -15,7 +15,7 @@ export const dateUtils = {
  * @param targetDate Date to filter by
  * @returns Events that occur on the target date
  */
-function filterEventsByDate<T extends { spec: {startDate: string} }>(
+function filterEventsByDate<T extends { spec: { startDate: string } }>(
   events: T[],
   targetDate: Date,
 ): T[] {

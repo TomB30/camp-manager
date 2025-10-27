@@ -45,7 +45,10 @@ export const useStaffMembersStore = defineStore("staffMembers", {
             if (!filters.roles.includes(s.spec.roleId)) return false;
           }
           if (filters.certificationIds && filters.certificationIds.length > 0) {
-            if (!s.spec.certificationIds || s.spec.certificationIds?.length === 0)
+            if (
+              !s.spec.certificationIds ||
+              s.spec.certificationIds?.length === 0
+            )
               return false;
           }
           return true;

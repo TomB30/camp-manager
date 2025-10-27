@@ -34,15 +34,16 @@
 
         <!-- Create New Activity Form -->
         <div v-if="mode === 'create'" class="activity-form">
-          <ActivityForm
-            v-model="formData"
-            v-model:selected-certification-ids="selectedCertificationIds"
-            v-model:is-custom-duration="isCustomDuration"
-            :room-options="roomOptions"
-            :certifications="certificationsStore.certifications"
-            :compact-mode="true"
-            @submit="handleCreateNew"
-          />
+          <q-form @submit.prevent="handleCreateNew" ref="formRef">
+            <ActivityForm
+              v-model="formData"
+              v-model:selected-certification-ids="selectedCertificationIds"
+              v-model:is-custom-duration="isCustomDuration"
+              :room-options="roomOptions"
+              :certifications="certificationsStore.certifications"
+              :compact-mode="true"
+            />
+          </q-form>
         </div>
 
         <!-- Existing Activities List -->
@@ -77,7 +78,10 @@
                     ><DurationDisplay :minutes="activity.spec.duration || 0"
                   /></span>
                 </div>
-                <p v-if="activity.meta.description" class="activity-description">
+                <p
+                  v-if="activity.meta.description"
+                  class="activity-description"
+                >
                   {{ activity.meta.description }}
                 </p>
                 <div class="activity-programs">
@@ -134,6 +138,7 @@ import ActivityForm, {
 import { type AutocompleteOption } from "@/components/Autocomplete.vue";
 import DurationDisplay from "@/components/DurationDisplay.vue";
 import Icon from "@/components/Icon.vue";
+import { QForm } from "quasar";
 
 export default defineComponent({
   name: "ActivitySelectorModal",
@@ -238,7 +243,9 @@ export default defineComponent({
     selectActivity(activityId: string) {
       this.selectedActivityId = activityId;
     },
-    handleCreateNew() {
+    async handleCreateNew() {
+      const isValid = await (this.$refs.formRef as QForm).validate();
+      if (!isValid) return;
       const now = new Date().toISOString();
 
       const activityData: Activity = {
@@ -254,7 +261,9 @@ export default defineComponent({
           duration: this.formData.duration,
           defaultLocationId: this.formData.defaultLocationId || undefined,
           requiredCertificationIds:
-            this.selectedCertificationIds.length > 0 ? this.selectedCertificationIds : undefined,
+            this.selectedCertificationIds.length > 0
+              ? this.selectedCertificationIds
+              : undefined,
           minStaff: this.formData.minStaff || undefined,
           defaultCapacity: this.formData.defaultCapacity || undefined,
         },

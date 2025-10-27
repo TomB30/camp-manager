@@ -17,7 +17,11 @@
 
         <div class="detail-section">
           <div class="detail-label">Duration</div>
-          <div>{{ calculateDuration(session.spec.startDate, session.spec.endDate) }}</div>
+          <div>
+            {{
+              calculateDuration(session.spec.startDate, session.spec.endDate)
+            }}
+          </div>
         </div>
       </div>
     </template>

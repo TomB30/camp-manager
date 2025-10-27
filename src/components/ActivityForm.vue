@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="$emit('submit')">
+  <section>
     <div class="form-group">
       <label class="form-label">Activity Name</label>
       <BaseInput
@@ -7,7 +7,7 @@
         @update:model-value="updateField('name', $event)"
         type="text"
         placeholder="e.g., Wakeboarding, Pottery"
-        required
+        :rules="[(val: string) => !!val || 'Enter activity name']"
       />
     </div>
 
@@ -99,15 +99,19 @@
         add-button-text="Add"
         mode="multiple"
         :get-label-fn="(cert) => cert.meta.name"
-        :get-initials-fn="(cert) => cert.meta.name.substring(0, 2).toUpperCase()"
-        :get-options-fn="(cert) => ({ label: cert.meta.name, value: cert.meta.id })"
+        :get-initials-fn="
+          (cert) => cert.meta.name.substring(0, 2).toUpperCase()
+        "
+        :get-options-fn="
+          (cert) => ({ label: cert.meta.name, value: cert.meta.id })
+        "
       />
       <p class="form-help-text">
         Staff assigned to events using this activity will need these
         certifications
       </p>
     </div>
-  </form>
+  </section>
 </template>
 
 <script lang="ts">
@@ -157,7 +161,7 @@ export default defineComponent({
       default: false,
     },
   },
-  emits: ["update:modelValue", "update:isCustomDuration", "submit"],
+  emits: ["update:modelValue", "update:isCustomDuration"],
   setup() {
     const durationPresetsStore = useDurationPresetsStore();
     return { durationPresetsStore };

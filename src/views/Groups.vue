@@ -121,7 +121,8 @@
             </span>
             <span
               v-if="
-                getCampersCount(item.meta.id) === 0 && getStaffCount(item.meta.id) === 0
+                getCampersCount(item.meta.id) === 0 &&
+                getStaffCount(item.meta.id) === 0
               "
               class="text-caption text-sm"
             >
@@ -364,7 +365,9 @@ export default defineComponent({
             case "auto-campers":
               return !!(group.spec.camperFilters && !group.spec.camperIds);
             case "manual-campers":
-              return !!(group.spec.camperIds && group.spec.camperIds.length > 0);
+              return !!(
+                group.spec.camperIds && group.spec.camperIds.length > 0
+              );
             case "has-housing":
               return !!group.spec.housingRoomId;
             case "has-session":
@@ -386,7 +389,8 @@ export default defineComponent({
       if (this.filterLabel) {
         groups = groups.filter(
           (group: Group) =>
-            group.spec.labelIds && group.spec.labelIds.includes(this.filterLabel),
+            group.spec.labelIds &&
+            group.spec.labelIds.includes(this.filterLabel),
         );
       }
 
@@ -473,7 +477,8 @@ export default defineComponent({
         spec: {
           sessionId: formData.sessionId || undefined,
           housingRoomId: formData.housingRoomId || undefined,
-          groupIds: formData.groupIds.length > 0 ? formData.groupIds : undefined,
+          groupIds:
+            formData.groupIds.length > 0 ? formData.groupIds : undefined,
           camperFilters: undefined,
           camperIds: undefined,
           staffFilters: undefined,
@@ -482,7 +487,7 @@ export default defineComponent({
             formData.labelIds && formData.labelIds.length > 0
               ? formData.labelIds
               : undefined,
-          },
+        },
       };
 
       // Add camper assignment based on type

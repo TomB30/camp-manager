@@ -253,7 +253,8 @@ export default defineComponent({
 
       try {
         this.loading = true;
-        this.formModel.spec.hexValue = this.formModel.spec.hexValue.toUpperCase();
+        this.formModel.spec.hexValue =
+          this.formModel.spec.hexValue.toUpperCase();
         await this.colorsStore.updateColor(this.colorId, this.formModel);
         this.toast.success("Color updated successfully");
       } catch (error) {
@@ -266,7 +267,8 @@ export default defineComponent({
     async createColor(): Promise<void> {
       try {
         this.loading = true;
-        this.formModel.spec.hexValue = this.formModel.spec.hexValue.toUpperCase();
+        this.formModel.spec.hexValue =
+          this.formModel.spec.hexValue.toUpperCase();
         await this.colorsStore.createColor(this.formModel);
         this.toast.success("Color created successfully");
       } catch (error) {

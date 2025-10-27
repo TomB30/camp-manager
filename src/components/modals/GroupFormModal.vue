@@ -9,7 +9,7 @@
         <div class="form-group">
           <label class="form-label">Group Name *</label>
           <BaseInput
-            v-model="localFormData.name"
+            v-model="localFormData.meta.name"
             placeholder="e.g., Junior Campers"
             :rules="[(val: string) => !!val || 'Enter group name']"
           />
@@ -633,13 +633,18 @@ export default defineComponent({
       return this.staffMembers.filter((staff) => {
         // Role filter
         if (this.localFormData.staffFilters.roles.length > 0) {
-          if (!this.localFormData.staffFilters.roles.includes(staff.spec.roleId))
+          if (
+            !this.localFormData.staffFilters.roles.includes(staff.spec.roleId)
+          )
             return false;
         }
 
         // Certification filter
         if (this.localFormData.staffFilters.certificationIds.length > 0) {
-          if (!staff.spec.certificationIds || staff.spec.certificationIds.length === 0)
+          if (
+            !staff.spec.certificationIds ||
+            staff.spec.certificationIds.length === 0
+          )
             return false;
           const hasAllCerts =
             this.localFormData.staffFilters.certificationIds.every(
@@ -799,11 +804,14 @@ export default defineComponent({
         "en-US",
         { month: "short", day: "numeric" },
       );
-      const endDate = new Date(session.spec.endDate).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
+      const endDate = new Date(session.spec.endDate).toLocaleDateString(
+        "en-US",
+        {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        },
+      );
       return {
         label: `${session.meta.name} (${startDate} - ${endDate})`,
         value: session.meta.id,
@@ -906,7 +914,10 @@ export default defineComponent({
           }
 
           // Check if this camper is in this group
-          if (group.spec.camperIds && group.spec.camperIds.includes(camper.meta.id)) {
+          if (
+            group.spec.camperIds &&
+            group.spec.camperIds.includes(camper.meta.id)
+          ) {
             return true;
           }
 

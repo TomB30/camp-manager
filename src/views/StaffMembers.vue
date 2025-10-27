@@ -106,7 +106,9 @@
         </template>
 
         <template #cell-events="{ item }">
-          <span class="event-count">{{ getMemberEvents(item.meta.id).length }}</span>
+          <span class="event-count">{{
+            getMemberEvents(item.meta.id).length
+          }}</span>
         </template>
 
         <template #cell-actions="{ item }">
@@ -131,14 +133,17 @@
         <template #manager-info>
           <div>
             <span class="badge badge-success">{{
-              selectedMember ? getManagerName(selectedMember.spec.managerId) : ""
+              selectedMember
+                ? getManagerName(selectedMember.spec.managerId)
+                : ""
             }}</span>
           </div>
         </template>
         <template #direct-reports>
           <div
             v-if="
-              selectedMember && getDirectReports(selectedMember.meta.id).length > 0
+              selectedMember &&
+              getDirectReports(selectedMember.meta.id).length > 0
             "
             class="flex gap-1 flex-wrap"
           >
@@ -154,7 +159,9 @@
         </template>
         <template #events-list>
           <EventsByDate
-            :events="selectedMember ? getMemberEvents(selectedMember.meta.id) : []"
+            :events="
+              selectedMember ? getMemberEvents(selectedMember.meta.id) : []
+            "
             :show-location="true"
             :get-location-name="getLocationName"
             empty-message="No events assigned"
@@ -316,7 +323,8 @@ export default defineComponent({
             `${member.spec.firstName} ${member.spec.lastName}`
               .toLowerCase()
               .includes(query) ||
-            (member.spec.email && member.spec.email.toLowerCase().includes(query)),
+            (member.spec.email &&
+              member.spec.email.toLowerCase().includes(query)),
         );
       }
 
@@ -343,7 +351,9 @@ export default defineComponent({
         members = members.filter((member: StaffMember) => {
           const program = this.programsStore.getProgramById(this.filterProgram);
           return (
-            (program && program.spec.staffMemberIds?.includes(member.meta.id)) || false
+            (program &&
+              program.spec.staffMemberIds?.includes(member.meta.id)) ||
+            false
           );
         });
       }
@@ -380,7 +390,9 @@ export default defineComponent({
     getManagerName(managerId: string | undefined): string {
       if (!managerId) return "None";
       const manager = this.staffMembersStore.getStaffMemberById(managerId);
-      return manager ? `${manager.spec.firstName} ${manager.spec.lastName}` : "Unknown";
+      return manager
+        ? `${manager.spec.firstName} ${manager.spec.lastName}`
+        : "Unknown";
     },
     formatRole(roleId: string): string {
       const role = this.rolesStore.getRoleById(roleId);

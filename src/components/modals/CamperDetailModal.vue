@@ -40,20 +40,26 @@
         <div class="detail-section">
           <div class="detail-label">Family Group</div>
           <div
-            v-if="camper.spec.familyGroupId && getGroupById(camper.spec.familyGroupId)"
+            v-if="
+              camper.spec.familyGroupId &&
+              getGroupById(camper.spec.familyGroupId)
+            "
           >
             <div class="family-group-info">
               <span class="badge">
                 {{ getGroupById(camper.spec.familyGroupId)!.meta.name }}
               </span>
               <div
-                v-if="getGroupById(camper.spec.familyGroupId)?.spec.housingRoomId"
+                v-if="
+                  getGroupById(camper.spec.familyGroupId)?.spec.housingRoomId
+                "
                 class="text-xs text-caption mt-1"
               >
                 Room:
                 {{
                   getSleepingRoomName(
-                    getGroupById(camper.spec.familyGroupId)?.spec.housingRoomId || "",
+                    getGroupById(camper.spec.familyGroupId)?.spec
+                      .housingRoomId || "",
                   )
                 }}
               </div>
@@ -152,11 +158,14 @@ export default defineComponent({
         "en-US",
         { month: "short", day: "numeric" },
       );
-      const endDate = new Date(session.spec.endDate).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
+      const endDate = new Date(session.spec.endDate).toLocaleDateString(
+        "en-US",
+        {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        },
+      );
       return `${startDate} - ${endDate}`;
     },
     getGroupById(groupId: string): Group | null | undefined {

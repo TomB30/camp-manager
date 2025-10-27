@@ -62,7 +62,9 @@ describe("AreaFormModal", () => {
       });
 
       const nameInput = wrapper.find("input[placeholder='Enter area name']");
-      expect((nameInput.element as HTMLInputElement).value).toBe(area.meta.name);
+      expect((nameInput.element as HTMLInputElement).value).toBe(
+        area.meta.name,
+      );
     });
   });
 

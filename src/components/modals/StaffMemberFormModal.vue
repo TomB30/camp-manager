@@ -163,7 +163,7 @@ export default defineComponent({
   created() {
     if (!this.staffMemberId) return;
     const staffMember = this.staffMembersStore.getStaffMemberById(
-      this.staffMemberId
+      this.staffMemberId,
     );
     if (!staffMember) return;
     this.localFormData = {
@@ -248,12 +248,12 @@ export default defineComponent({
       try {
         await this.staffMembersStore.updateStaffMember(
           this.staffMemberId,
-          this.localFormData
+          this.localFormData,
         );
         this.toast.success("Staff member updated successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to update staff member"
+          (error as Error).message || "Failed to update staff member",
         );
       } finally {
         this.$emit("close");
@@ -265,7 +265,7 @@ export default defineComponent({
         this.toast.success("Staff member created successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to create staff member"
+          (error as Error).message || "Failed to create staff member",
         );
       } finally {
         this.$emit("close");

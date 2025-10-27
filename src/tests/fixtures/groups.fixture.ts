@@ -46,7 +46,11 @@ export const groupsFixture: Group[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      camperIds: [campersFixture[0].meta.id, campersFixture[5].meta.id, campersFixture[9].meta.id],
+      camperIds: [
+        campersFixture[0].meta.id,
+        campersFixture[5].meta.id,
+        campersFixture[9].meta.id,
+      ],
       staffIds: [staffMembersFixture[2].meta.id],
       sessionId: sessionsFixture[1].meta.id,
     },
@@ -60,7 +64,11 @@ export const groupsFixture: Group[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      camperIds: [campersFixture[2].meta.id, campersFixture[6].meta.id, campersFixture[14].meta.id],
+      camperIds: [
+        campersFixture[2].meta.id,
+        campersFixture[6].meta.id,
+        campersFixture[14].meta.id,
+      ],
       staffIds: [staffMembersFixture[1].meta.id],
       sessionId: sessionsFixture[1].meta.id,
     },
@@ -75,7 +83,16 @@ export const groupsFixture: Group[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      camperIds: [campersFixture[0].meta.id, campersFixture[1].meta.id, campersFixture[2].meta.id, campersFixture[5].meta.id, campersFixture[6].meta.id, campersFixture[9].meta.id, campersFixture[11].meta.id, campersFixture[14].meta.id],
+      camperIds: [
+        campersFixture[0].meta.id,
+        campersFixture[1].meta.id,
+        campersFixture[2].meta.id,
+        campersFixture[5].meta.id,
+        campersFixture[6].meta.id,
+        campersFixture[9].meta.id,
+        campersFixture[11].meta.id,
+        campersFixture[14].meta.id,
+      ],
       staffIds: [],
       sessionId: sessionsFixture[1].meta.id,
     },
@@ -90,7 +107,14 @@ export const groupsFixture: Group[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      camperIds: [campersFixture[3].meta.id, campersFixture[4].meta.id, campersFixture[7].meta.id, campersFixture[10].meta.id, campersFixture[12].meta.id, campersFixture[13].meta.id],
+      camperIds: [
+        campersFixture[3].meta.id,
+        campersFixture[4].meta.id,
+        campersFixture[7].meta.id,
+        campersFixture[10].meta.id,
+        campersFixture[12].meta.id,
+        campersFixture[13].meta.id,
+      ],
       staffIds: [staffMembersFixture[0].meta.id],
       sessionId: sessionsFixture[2].meta.id,
       housingRoomId: housingRoomsFixture[2].meta.id, // Cabin C (10 beds)
@@ -106,7 +130,12 @@ export const groupsFixture: Group[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      camperIds: [campersFixture[0].meta.id, campersFixture[1].meta.id, campersFixture[6].meta.id, campersFixture[8].meta.id],
+      camperIds: [
+        campersFixture[0].meta.id,
+        campersFixture[1].meta.id,
+        campersFixture[6].meta.id,
+        campersFixture[8].meta.id,
+      ],
       staffIds: [],
       sessionId: sessionsFixture[1].meta.id,
       housingRoomId: housingRoomsFixture[6].meta.id, // Suite A (4 beds)

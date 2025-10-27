@@ -133,11 +133,9 @@ export default defineComponent({
 
       update(() => {
         const needle = val?.toString().toLowerCase() || "";
-        this.filteredOptions = this.options.filter(
-          (option: QSelectOption) => {
-            return option.label.toLowerCase().indexOf(needle) > -1;
-          }
-        );
+        this.filteredOptions = this.options.filter((option: QSelectOption) => {
+          return option.label.toLowerCase().indexOf(needle) > -1;
+        });
       });
     },
     updateModelValue(value: string | number | boolean | null) {

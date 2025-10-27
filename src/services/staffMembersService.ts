@@ -75,7 +75,9 @@ async function deleteStaffMember(id: string): Promise<void> {
   const updatedEvents = events.map((event) => ({
     ...event,
     assignedStaffIds:
-      event.spec.assignedStaffIds?.filter((staffId: string) => staffId !== id) || [],
+      event.spec.assignedStaffIds?.filter(
+        (staffId: string) => staffId !== id,
+      ) || [],
   }));
 
   // Save all updated events

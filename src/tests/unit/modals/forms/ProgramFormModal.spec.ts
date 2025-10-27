@@ -68,11 +68,19 @@ describe("ProgramFormModal", () => {
 
       const vm = wrapper.vm as any;
       expect(vm.localFormData.meta.name).toBe(program.meta.name);
-      expect(vm.localFormData.meta.description).toBe(program.meta.description || "");
+      expect(vm.localFormData.meta.description).toBe(
+        program.meta.description || "",
+      );
       expect(vm.localFormData.spec.colorId).toBe(program.spec.colorId);
-      expect(vm.localFormData.spec.activityIds).toEqual(program.spec.activityIds);
-      expect(vm.localFormData.spec.staffMemberIds).toEqual(program.spec.staffMemberIds);
-      expect(vm.localFormData.spec.locationIds).toEqual(program.spec.locationIds);
+      expect(vm.localFormData.spec.activityIds).toEqual(
+        program.spec.activityIds,
+      );
+      expect(vm.localFormData.spec.staffMemberIds).toEqual(
+        program.spec.staffMemberIds,
+      );
+      expect(vm.localFormData.spec.locationIds).toEqual(
+        program.spec.locationIds,
+      );
     });
   });
 

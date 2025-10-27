@@ -41,11 +41,11 @@ async function createCamper(camper: CamperCreationRequest): Promise<Camper> {
 
 async function updateCamper(
   id: string,
-  camper: CamperUpdateRequest
+  camper: CamperUpdateRequest,
 ): Promise<Camper> {
   const existingCamper = await storageService.getById<Camper>(
     STORAGE_KEYS.CAMPERS,
-    id
+    id,
   );
   if (!existingCamper) {
     throw new Error(`Camper with id ${id} not found`);
@@ -75,8 +75,9 @@ async function deleteCamper(id: string): Promise<void> {
     spec: {
       ...event.spec,
       excludeCamperIds:
-        event.spec.excludeCamperIds?.filter((camperId: string) => camperId !== id) ||
-        [],
+        event.spec.excludeCamperIds?.filter(
+          (camperId: string) => camperId !== id,
+        ) || [],
     },
   }));
 
@@ -93,7 +94,7 @@ async function getCamperById(id: string): Promise<Camper | null> {
 }
 
 async function getCampersByFamilyGroup(
-  familyGroupId: string
+  familyGroupId: string,
 ): Promise<Camper[]> {
   const campers = await listCampers();
   return campers.filter((c) => c.spec.familyGroupId === familyGroupId);

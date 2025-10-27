@@ -121,7 +121,9 @@ export default defineComponent({
         return a.meta.id.localeCompare(b.meta.id);
       });
 
-      const eventIndex = allOverlapping.findIndex((e) => e.meta.id === event.meta.id);
+      const eventIndex = allOverlapping.findIndex(
+        (e) => e.meta.id === event.meta.id,
+      );
       const totalOverlapping = allOverlapping.length;
 
       // Calculate width and position - split the total single-event width among overlapping events

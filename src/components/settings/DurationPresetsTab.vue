@@ -190,4 +190,3 @@ export default defineComponent({
   }
 }
 </style>
-

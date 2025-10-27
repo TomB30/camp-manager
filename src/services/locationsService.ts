@@ -73,7 +73,9 @@ async function getLocationsByArea(areaId: string): Promise<Location[]> {
   return locations.filter((l) => l.spec.areaId === areaId);
 }
 
-async function getLocationsByType(type: Location["spec"]["type"]): Promise<Location[]> {
+async function getLocationsByType(
+  type: Location["spec"]["type"],
+): Promise<Location[]> {
   const locations = await listLocations();
   return locations.filter((l) => l.spec.type === type);
 }

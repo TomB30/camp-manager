@@ -6,7 +6,10 @@ import { certificationsFixture } from "@/tests/fixtures";
 describe("CertificationCard", () => {
   describe("Rendering", () => {
     it("renders certification name correctly", () => {
-      const certification = { ...certificationsFixture[0], meta: { ...certificationsFixture[0].meta, name: "Certification 1" } };
+      const certification = {
+        ...certificationsFixture[0],
+        meta: { ...certificationsFixture[0].meta, name: "Certification 1" },
+      };
       const wrapper = createWrapper(CertificationCard, {
         props: { certification },
       });
@@ -15,7 +18,13 @@ describe("CertificationCard", () => {
     });
 
     it("renders description when provided", () => {
-      const certification = { ...certificationsFixture[0], meta: { ...certificationsFixture[0].meta, description: "Certification 1 description" } };
+      const certification = {
+        ...certificationsFixture[0],
+        meta: {
+          ...certificationsFixture[0].meta,
+          description: "Certification 1 description",
+        },
+      };
       const wrapper = createWrapper(CertificationCard, {
         props: { certification },
       });
@@ -40,7 +49,10 @@ describe("CertificationCard", () => {
 
   describe("Icon and Styling", () => {
     it("applies icon color", () => {
-      const certification = { ...certificationsFixture[0], meta: { ...certificationsFixture[0].meta, id: "cert-1" } };
+      const certification = {
+        ...certificationsFixture[0],
+        meta: { ...certificationsFixture[0].meta, id: "cert-1" },
+      };
       const wrapper = createWrapper(CertificationCard, {
         props: {
           certification,
@@ -52,12 +64,15 @@ describe("CertificationCard", () => {
       const style = cardIcon.attributes("style");
       expect(style).toContain("background");
       expect(
-        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)")
+        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)"),
       ).toBe(true);
     });
 
     it("uses default icon color when not provided", () => {
-      const certification = { ...certificationsFixture[0], meta: { ...certificationsFixture[0].meta, id: "cert-1" } };
+      const certification = {
+        ...certificationsFixture[0],
+        meta: { ...certificationsFixture[0].meta, id: "cert-1" },
+      };
       const wrapper = createWrapper(CertificationCard, {
         props: { certification },
       });
@@ -66,7 +81,10 @@ describe("CertificationCard", () => {
     });
 
     it("has card-clickable class", () => {
-      const certification = { ...certificationsFixture[0], meta: { ...certificationsFixture[0].meta, id: "cert-1" } };
+      const certification = {
+        ...certificationsFixture[0],
+        meta: { ...certificationsFixture[0].meta, id: "cert-1" },
+      };
       const wrapper = createWrapper(CertificationCard, {
         props: { certification },
       });
@@ -75,7 +93,10 @@ describe("CertificationCard", () => {
     });
 
     it("has certification-card class", () => {
-      const certification = { ...certificationsFixture[0], meta: { ...certificationsFixture[0].meta, id: "cert-1" } };
+      const certification = {
+        ...certificationsFixture[0],
+        meta: { ...certificationsFixture[0].meta, id: "cert-1" },
+      };
       const wrapper = createWrapper(CertificationCard, {
         props: { certification },
       });
@@ -86,7 +107,10 @@ describe("CertificationCard", () => {
 
   describe("Icons", () => {
     it("displays award icon", () => {
-      const certification = { ...certificationsFixture[0], meta: { ...certificationsFixture[0].meta, id: "cert-1" } };
+      const certification = {
+        ...certificationsFixture[0],
+        meta: { ...certificationsFixture[0].meta, id: "cert-1" },
+      };
       const wrapper = createWrapper(CertificationCard, {
         props: { certification },
       });
@@ -98,7 +122,10 @@ describe("CertificationCard", () => {
 
   describe("Click Event", () => {
     it("emits click event when card is clicked", async () => {
-      const certification = { ...certificationsFixture[0], meta: { ...certificationsFixture[0].meta, id: "cert-1" } };
+      const certification = {
+        ...certificationsFixture[0],
+        meta: { ...certificationsFixture[0].meta, id: "cert-1" },
+      };
       const wrapper = createWrapper(CertificationCard, {
         props: { certification },
       });

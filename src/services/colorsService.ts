@@ -73,7 +73,8 @@ async function getColorByName(name: string): Promise<Color | null> {
 async function getColorByHex(hexValue: string): Promise<Color | null> {
   const colors = await listColors();
   return (
-    colors.find((c) => c.spec.hexValue.toLowerCase() === hexValue.toLowerCase()) ||
-    null
+    colors.find(
+      (c) => c.spec.hexValue.toLowerCase() === hexValue.toLowerCase(),
+    ) || null
   );
 }

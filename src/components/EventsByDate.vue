@@ -107,7 +107,8 @@ export default defineComponent({
       // Sort events by start time
       const sortedEvents = [...this.events].sort(
         (a, b) =>
-          new Date(a.spec.startDate).getTime() - new Date(b.spec.startDate).getTime(),
+          new Date(a.spec.startDate).getTime() -
+          new Date(b.spec.startDate).getTime(),
       );
 
       // Group by date

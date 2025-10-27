@@ -45,7 +45,7 @@ export default defineComponent({
   },
   emits: ["edit", "delete"],
   setup() {
-    return { };
+    return {};
   },
 });
 </script>

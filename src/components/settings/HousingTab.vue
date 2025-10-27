@@ -238,11 +238,14 @@ export default defineComponent({
             ? `${new Date(session.spec.startDate).toLocaleDateString("en-US", {
                 month: "short",
                 day: "numeric",
-              })} - ${new Date(session.spec.endDate).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}`
+              })} - ${new Date(session.spec.endDate).toLocaleDateString(
+                "en-US",
+                {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                },
+              )}`
             : "Unknown",
         };
       });

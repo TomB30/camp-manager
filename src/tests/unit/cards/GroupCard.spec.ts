@@ -18,7 +18,10 @@ describe("GroupCard", () => {
 
   describe("Basic Rendering", () => {
     it("renders group name correctly", () => {
-      const group: Group = { ...groupsFixture[0], meta: { ...groupsFixture[0].meta, name: "Group 1" } };
+      const group: Group = {
+        ...groupsFixture[0],
+        meta: { ...groupsFixture[0].meta, name: "Group 1" },
+      };
       const wrapper = createWrapper(GroupCard, {
         props: { group },
       });
@@ -27,7 +30,10 @@ describe("GroupCard", () => {
     });
 
     it("renders group description when provided", () => {
-      const group: Group = { ...groupsFixture[0], meta: { ...groupsFixture[0].meta, description: "Group 1 description" } };
+      const group: Group = {
+        ...groupsFixture[0],
+        meta: { ...groupsFixture[0].meta, description: "Group 1 description" },
+      };
       const wrapper = createWrapper(GroupCard, {
         props: { group },
       });
@@ -36,22 +42,37 @@ describe("GroupCard", () => {
     });
 
     it("renders campers count badge", () => {
-      const group: Group = { ...groupsFixture[0], spec: { ...groupsFixture[0].spec } };
-      const wrapper = createWrapper(GroupCard, { props: { group, campersCount: 5 } });
+      const group: Group = {
+        ...groupsFixture[0],
+        spec: { ...groupsFixture[0].spec },
+      };
+      const wrapper = createWrapper(GroupCard, {
+        props: { group, campersCount: 5 },
+      });
 
       expect(wrapper.text()).toContain("5 campers");
     });
 
     it("renders singular camper when count is 1", () => {
-      const group: Group = { ...groupsFixture[0], spec: { ...groupsFixture[0].spec } };
-      const wrapper = createWrapper(GroupCard, { props: { group, campersCount: 1 } });
+      const group: Group = {
+        ...groupsFixture[0],
+        spec: { ...groupsFixture[0].spec },
+      };
+      const wrapper = createWrapper(GroupCard, {
+        props: { group, campersCount: 1 },
+      });
 
       expect(wrapper.text()).toContain("1 camper");
     });
 
     it("renders staff count badge", () => {
-      const group: Group = { ...groupsFixture[0], spec: { ...groupsFixture[0].spec } };
-      const wrapper = createWrapper(GroupCard, { props: { group, staffCount: 3 } });
+      const group: Group = {
+        ...groupsFixture[0],
+        spec: { ...groupsFixture[0].spec },
+      };
+      const wrapper = createWrapper(GroupCard, {
+        props: { group, staffCount: 3 },
+      });
 
       expect(wrapper.text()).toContain("3 staff");
     });
@@ -62,7 +83,13 @@ describe("GroupCard", () => {
       const housingStore = useHousingRoomsStore();
       housingStore.housingRooms = housingRoomsFixture;
 
-      const group: Group = { ...groupsFixture[0], spec: { ...groupsFixture[0].spec, housingRoomId: housingRoomsFixture[0].meta.id } }; // Has housing room
+      const group: Group = {
+        ...groupsFixture[0],
+        spec: {
+          ...groupsFixture[0].spec,
+          housingRoomId: housingRoomsFixture[0].meta.id,
+        },
+      }; // Has housing room
       const wrapper = createWrapper(GroupCard, {
         props: { group },
         pinia,
@@ -75,7 +102,13 @@ describe("GroupCard", () => {
       const housingStore = useHousingRoomsStore();
       housingStore.housingRooms = housingRoomsFixture;
 
-      const group: Group = { ...groupsFixture[0], spec: { ...groupsFixture[0].spec, housingRoomId: housingRoomsFixture[0].meta.id } };
+      const group: Group = {
+        ...groupsFixture[0],
+        spec: {
+          ...groupsFixture[0].spec,
+          housingRoomId: housingRoomsFixture[0].meta.id,
+        },
+      };
       const wrapper = createWrapper(GroupCard, {
         props: { group },
         pinia,
@@ -91,7 +124,10 @@ describe("GroupCard", () => {
       const housingStore = useHousingRoomsStore();
       housingStore.housingRooms = housingRoomsFixture;
 
-      const group: Group = { ...groupsFixture[0], spec: { ...groupsFixture[0].spec, housingRoomId: undefined } }; // No housing room
+      const group: Group = {
+        ...groupsFixture[0],
+        spec: { ...groupsFixture[0].spec, housingRoomId: undefined },
+      }; // No housing room
       const wrapper = createWrapper(GroupCard, {
         props: { group },
         pinia,
@@ -106,7 +142,10 @@ describe("GroupCard", () => {
       const sessionsStore = useSessionsStore();
       sessionsStore.sessions = sessionsFixture;
 
-      const group: Group = { ...groupsFixture[0], spec: { ...groupsFixture[0].spec, sessionId: "session-1" } };
+      const group: Group = {
+        ...groupsFixture[0],
+        spec: { ...groupsFixture[0].spec, sessionId: "session-1" },
+      };
       const wrapper = createWrapper(GroupCard, {
         props: { group },
         pinia,
@@ -135,7 +174,10 @@ describe("GroupCard", () => {
     it("displays child group count", () => {
       const group: Group = {
         ...groupsFixture[0],
-        spec: { ...groupsFixture[0].spec, groupIds: ["child-1", "child-2", "child-3"] },
+        spec: {
+          ...groupsFixture[0].spec,
+          groupIds: ["child-1", "child-2", "child-3"],
+        },
       };
       const wrapper = createWrapper(GroupCard, {
         props: { group },
@@ -149,11 +191,14 @@ describe("GroupCard", () => {
     it("shows camper filters when present", () => {
       const group: Group = {
         ...groupsFixture[0],
-        spec: { ...groupsFixture[0].spec, camperFilters: {
-          gender: "female",
-          ageMin: 10,
-          ageMax: 15,
-        } },
+        spec: {
+          ...groupsFixture[0].spec,
+          camperFilters: {
+            gender: "female",
+            ageMin: 10,
+            ageMax: 15,
+          },
+        },
       };
       const wrapper = createWrapper(GroupCard, {
         props: { group },
@@ -167,9 +212,12 @@ describe("GroupCard", () => {
     it("shows staff filters when present", () => {
       const group: Group = {
         ...groupsFixture[0],
-        spec: { ...groupsFixture[0].spec, staffFilters: {
-          roles: ["Counselor", "Lifeguard"],
-        } },
+        spec: {
+          ...groupsFixture[0].spec,
+          staffFilters: {
+            roles: ["Counselor", "Lifeguard"],
+          },
+        },
       };
       const wrapper = createWrapper(GroupCard, {
         props: { group },
@@ -182,9 +230,12 @@ describe("GroupCard", () => {
     it("shows auto-assigned indicator for filtered campers", () => {
       const group: Group = {
         ...groupsFixture[0],
-        spec: { ...groupsFixture[0].spec, camperFilters: {
-          ageMin: 10,
-        } },
+        spec: {
+          ...groupsFixture[0].spec,
+          camperFilters: {
+            ageMin: 10,
+          },
+        },
       };
       const wrapper = createWrapper(GroupCard, {
         props: { group },
@@ -196,7 +247,13 @@ describe("GroupCard", () => {
 
   describe("Click Event", () => {
     it("emits click event with group when card is clicked", async () => {
-      const group: Group = { ...groupsFixture[0], spec: { ...groupsFixture[0].spec, groupIds: ["child-1", "child-2", "child-3"] } };
+      const group: Group = {
+        ...groupsFixture[0],
+        spec: {
+          ...groupsFixture[0].spec,
+          groupIds: ["child-1", "child-2", "child-3"],
+        },
+      };
       const wrapper = createWrapper(GroupCard, {
         props: { group },
       });
@@ -210,7 +267,13 @@ describe("GroupCard", () => {
 
   describe("Styling", () => {
     it("has card-clickable class", () => {
-      const group: Group = { ...groupsFixture[0], spec: { ...groupsFixture[0].spec, groupIds: ["child-1", "child-2", "child-3"] } };
+      const group: Group = {
+        ...groupsFixture[0],
+        spec: {
+          ...groupsFixture[0].spec,
+          groupIds: ["child-1", "child-2", "child-3"],
+        },
+      };
       const wrapper = createWrapper(GroupCard, {
         props: { group },
         pinia,

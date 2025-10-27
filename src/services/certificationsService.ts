@@ -31,7 +31,10 @@ async function createCertification(
     },
     spec: certification.spec,
   };
-  return storageService.save<Certification>(STORAGE_KEYS.CERTIFICATIONS, newCertification);
+  return storageService.save<Certification>(
+    STORAGE_KEYS.CERTIFICATIONS,
+    newCertification,
+  );
 }
 
 async function updateCertification(

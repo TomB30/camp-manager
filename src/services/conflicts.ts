@@ -88,9 +88,11 @@ export class ConflictDetector {
 
           if (this.eventsOverlap(event1, event2)) {
             const event1CamperIds =
-              eventCamperMap?.get(event1.meta.id) || this.getEventCamperIds(event1);
+              eventCamperMap?.get(event1.meta.id) ||
+              this.getEventCamperIds(event1);
             const event2CamperIds =
-              eventCamperMap?.get(event2.meta.id) || this.getEventCamperIds(event2);
+              eventCamperMap?.get(event2.meta.id) ||
+              this.getEventCamperIds(event2);
             const totalCapacity =
               event1CamperIds.length + event2CamperIds.length;
 
@@ -157,7 +159,10 @@ export class ConflictDetector {
               type: "camper_double_booked",
               message: `${camper.spec.firstName} ${camper.spec.lastName} is enrolled in overlapping events on ${formattedDate} ("${camperEvents[i].spec.title}" at ${event1Time} and "${camperEvents[j].spec.title}" at ${event2Time})`,
               entityId: camperId,
-              conflictingIds: [camperEvents[i].meta.id, camperEvents[j].meta.id],
+              conflictingIds: [
+                camperEvents[i].meta.id,
+                camperEvents[j].meta.id,
+              ],
             });
           }
         }
@@ -232,7 +237,10 @@ export class ConflictDetector {
       // Collect all certifications from assigned staff
       const allCertifications = new Set<string>();
       assignedStaff.forEach((staff) => {
-        if (staff.spec.certificationIds && staff.spec.certificationIds.length > 0) {
+        if (
+          staff.spec.certificationIds &&
+          staff.spec.certificationIds.length > 0
+        ) {
           staff.spec.certificationIds.forEach((certId) => {
             const cert = certifications.find((c) => c.meta.id === certId);
             if (cert) {
@@ -258,7 +266,8 @@ export class ConflictDetector {
           eventStaffMap?.get(event.meta.id) || this.getEventStaffIds(event);
         const missingCertNames = missingCerts.map(
           (certId) =>
-            certifications.find((c) => c.meta.id === certId)?.meta.name || certId,
+            certifications.find((c) => c.meta.id === certId)?.meta.name ||
+            certId,
         );
         conflicts.push({
           type: "missing_certification",
@@ -291,7 +300,8 @@ export class ConflictDetector {
     // Get all events this staff member is assigned to
     const staffEvents = allEvents.filter((e) => {
       if (e.meta.id === excludeEventId) return false;
-      const staffIds = eventStaffMap?.get(e.meta.id) || this.getEventStaffIds(e);
+      const staffIds =
+        eventStaffMap?.get(e.meta.id) || this.getEventStaffIds(e);
       return staffIds.includes(staffId);
     });
 
@@ -299,26 +309,25 @@ export class ConflictDetector {
     const tempEvent = {
       spec: {
         startDate:
-        typeof eventStartTime === "string"
-          ? eventStartTime
-          : eventStartTime.toISOString(),
+          typeof eventStartTime === "string"
+            ? eventStartTime
+            : eventStartTime.toISOString(),
         endDate:
-        typeof eventEndTime === "string"
-          ? eventEndTime
-          : eventEndTime.toISOString(),
+          typeof eventEndTime === "string"
+            ? eventEndTime
+            : eventEndTime.toISOString(),
       },
     } as Event;
 
     // Check for time conflicts
     for (const existingEvent of staffEvents) {
       if (this.eventsOverlap(tempEvent, existingEvent)) {
-        const startDate = new Date(existingEvent.spec.startDate).toLocaleTimeString(
-          "en-US",
-          {
-            hour: "numeric",
-            minute: "2-digit",
-          },
-        );
+        const startDate = new Date(
+          existingEvent.spec.startDate,
+        ).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+        });
         return {
           canAssign: false,
           reason: `Already assigned to "${existingEvent.spec.title}" at ${startDate}`,

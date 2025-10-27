@@ -78,7 +78,8 @@ async function deleteActivity(id: string): Promise<void> {
       if (program.spec.activityIds && program.spec.activityIds.includes(id)) {
         const updatedProgram = {
           ...program,
-          activityIds: program.spec.activityIds?.filter((aid) => aid !== id) || [],
+          activityIds:
+            program.spec.activityIds?.filter((aid) => aid !== id) || [],
         };
         await storageService.save(STORAGE_KEYS.PROGRAMS, updatedProgram);
       }
@@ -127,7 +128,10 @@ async function addActivityToProgram(
   await storageService.save(STORAGE_KEYS.ACTIVITIES, updatedActivity);
 
   // Update program
-  if (!program.spec.activityIds || !program.spec.activityIds.includes(activityId)) {
+  if (
+    !program.spec.activityIds ||
+    !program.spec.activityIds.includes(activityId)
+  ) {
     program.spec.activityIds = program.spec.activityIds
       ? [...program.spec.activityIds, activityId]
       : [activityId];
@@ -154,7 +158,8 @@ async function removeActivityFromProgram(
     ...activity,
     spec: {
       ...activity.spec,
-      programIds: activity.spec.programIds?.filter((id) => id !== programId) || [],
+      programIds:
+        activity.spec.programIds?.filter((id) => id !== programId) || [],
       updatedAt: new Date().toISOString(),
     },
   };

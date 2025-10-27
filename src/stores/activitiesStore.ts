@@ -22,7 +22,9 @@ export const useActivitiesStore = defineStore("activities", {
 
     getActivitiesInProgram(state): (programId: string) => Activity[] {
       return (programId: string): Activity[] => {
-        return state.activities.filter((a) => a.spec.programIds.includes(programId));
+        return state.activities.filter((a) =>
+          a.spec.programIds.includes(programId),
+        );
       };
     },
   },
@@ -46,7 +48,9 @@ export const useActivitiesStore = defineStore("activities", {
       // Add activity ID to all parent programs
       const programsStore = useProgramsStore();
       for (const programId of activity.spec.programIds) {
-        const program = programsStore.programs.find((p) => p.meta.id === programId);
+        const program = programsStore.programs.find(
+          (p) => p.meta.id === programId,
+        );
         if (program && !program.spec.activityIds?.includes(activity.meta.id)) {
           const updatedActivityIds = program.spec.activityIds
             ? [...program.spec.activityIds, activity.meta.id]
@@ -113,7 +117,10 @@ export const useActivitiesStore = defineStore("activities", {
             const program = programsStore.programs.find(
               (p) => p.meta.id === programId,
             );
-            if (program && !program.spec.activityIds?.includes(activity.meta.id)) {
+            if (
+              program &&
+              !program.spec.activityIds?.includes(activity.meta.id)
+            ) {
               const updatedActivityIds = program.spec.activityIds
                 ? [...program.spec.activityIds, activity.meta.id]
                 : [activity.meta.id];
@@ -167,7 +174,9 @@ export const useActivitiesStore = defineStore("activities", {
       // Update state
       const activity = this.activities.find((a) => a.meta.id === activityId);
       const programsStore = useProgramsStore();
-      const program = programsStore.programs.find((p) => p.meta.id === programId);
+      const program = programsStore.programs.find(
+        (p) => p.meta.id === programId,
+      );
 
       if (activity && !activity.spec.programIds.includes(programId)) {
         activity.spec.programIds = activity.spec.programIds
@@ -191,7 +200,9 @@ export const useActivitiesStore = defineStore("activities", {
       // Update state
       const activity = this.activities.find((a) => a.meta.id === activityId);
       const programsStore = useProgramsStore();
-      const program = programsStore.programs.find((p) => p.meta.id === programId);
+      const program = programsStore.programs.find(
+        (p) => p.meta.id === programId,
+      );
 
       if (activity) {
         activity.spec.programIds = activity.spec.programIds?.filter(

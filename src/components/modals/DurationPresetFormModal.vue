@@ -108,8 +108,9 @@ export default defineComponent({
   },
   created() {
     if (this.presetId) {
-      const editingPreset =
-        this.durationPresetsStore.getDurationPresetById(this.presetId);
+      const editingPreset = this.durationPresetsStore.getDurationPresetById(
+        this.presetId,
+      );
       if (editingPreset) {
         this.formModel = {
           meta: {
@@ -204,4 +205,3 @@ export default defineComponent({
   color: var(--text-secondary);
 }
 </style>
-

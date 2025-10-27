@@ -37,7 +37,9 @@
                   {{ getLocationName(event.spec.locationId || "") }}
                 </div>
                 <div class="week-event-capacity text-xs">
-                  {{ getEnrolledCount(event.meta.id) }}/{{ event.spec.capacity }}
+                  {{ getEnrolledCount(event.meta.id) }}/{{
+                    event.spec.capacity
+                  }}
                 </div>
               </div>
             </div>
@@ -155,7 +157,9 @@ export default defineComponent({
         return a.meta.id.localeCompare(b.meta.id);
       });
 
-      const eventIndex = allOverlapping.findIndex((e) => e.meta.id === event.meta.id);
+      const eventIndex = allOverlapping.findIndex(
+        (e) => e.meta.id === event.meta.id,
+      );
       const totalOverlapping = allOverlapping.length;
 
       // Calculate width and position for overlapping events

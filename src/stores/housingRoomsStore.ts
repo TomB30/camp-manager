@@ -53,7 +53,9 @@ export const useHousingRoomsStore = defineStore("housingRooms", {
         housingRoomId,
         housingRoomUpdate,
       );
-      const index = this.housingRooms.findIndex((r) => r.meta.id === housingRoomId);
+      const index = this.housingRooms.findIndex(
+        (r) => r.meta.id === housingRoomId,
+      );
       if (index >= 0) {
         this.housingRooms[index] = housingRoom;
       }

@@ -285,12 +285,18 @@ export default defineComponent({
     // Memoized lookup maps for efficient filtering (O(1) lookups instead of O(n))
     roomLookupMap() {
       return new Map(
-        this.locationsStore.locations.map((r) => [r.meta.id, r.meta.name.toLowerCase()]),
+        this.locationsStore.locations.map((r) => [
+          r.meta.id,
+          r.meta.name.toLowerCase(),
+        ]),
       );
     },
     programLookupMap() {
       return new Map(
-        this.programsStore.programs.map((p) => [p.meta.id, p.meta.name.toLowerCase()]),
+        this.programsStore.programs.map((p) => [
+          p.meta.id,
+          p.meta.name.toLowerCase(),
+        ]),
       );
     },
     staffLookupMap() {
@@ -340,13 +346,18 @@ export default defineComponent({
           return false;
 
         if (this.filterGroup) {
-          if (!event.spec.groupIds || !event.spec.groupIds.includes(this.filterGroup)) {
+          if (
+            !event.spec.groupIds ||
+            !event.spec.groupIds.includes(this.filterGroup)
+          ) {
             return false;
           }
         }
 
         if (this.filterStaff) {
-          const eventStaffIds = this.eventsStore.getEventStaffIds(event.meta.id);
+          const eventStaffIds = this.eventsStore.getEventStaffIds(
+            event.meta.id,
+          );
           if (!eventStaffIds.includes(this.filterStaff)) {
             return false;
           }
@@ -368,7 +379,9 @@ export default defineComponent({
           }
 
           // Search in assigned staff names (using memoized map for O(1) lookup)
-          const eventStaffIds = this.eventsStore.getEventStaffIds(event.meta.id);
+          const eventStaffIds = this.eventsStore.getEventStaffIds(
+            event.meta.id,
+          );
           if (eventStaffIds.length > 0) {
             const hasMatchingStaff = eventStaffIds.some((staffId) => {
               const staffName = staffMap.get(staffId);

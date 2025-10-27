@@ -112,8 +112,8 @@ export default defineComponent({
     },
     getSessionName(sessionId: string): string {
       return (
-        this.sessionsStore.sessions.find((s) => s.meta.id === sessionId)?.meta.name ||
-        "Unknown Session"
+        this.sessionsStore.sessions.find((s) => s.meta.id === sessionId)?.meta
+          .name || "Unknown Session"
       );
     },
     getSessionDateRange(sessionId: string): string {

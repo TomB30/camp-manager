@@ -74,7 +74,7 @@ describe("RoleCard", () => {
       const style = cardIcon.attributes("style");
       expect(style).toContain("background");
       expect(
-        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)")
+        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)"),
       ).toBe(true);
     });
 
@@ -92,7 +92,7 @@ describe("RoleCard", () => {
       const style = cardIcon.attributes("style");
       // Default color is #6366f1
       expect(
-        style?.includes("#6366f1") || style?.includes("rgb(99, 102, 241)")
+        style?.includes("#6366f1") || style?.includes("rgb(99, 102, 241)"),
       ).toBe(true);
     });
 

@@ -13,11 +13,11 @@ export const campService = {
  */
 async function getCamp(): Promise<Camp> {
   const camps = await storageService.getAll<Camp>(STORAGE_KEYS.CAMP);
-  
+
   if (camps.length === 0) {
     return await initializeDefaultCamp();
   }
-  
+
   return camps[0];
 }
 
@@ -26,7 +26,7 @@ async function getCamp(): Promise<Camp> {
  */
 async function updateCamp(campUpdate: CampUpdateRequest): Promise<Camp> {
   const existingCamp = await getCamp();
-  
+
   const updatedCamp: Camp = {
     meta: {
       id: existingCamp.meta.id,
@@ -40,7 +40,7 @@ async function updateCamp(campUpdate: CampUpdateRequest): Promise<Camp> {
       ...campUpdate.spec,
     },
   };
-  
+
   return storageService.save<Camp>(STORAGE_KEYS.CAMP, updatedCamp);
 }
 
@@ -65,7 +65,6 @@ async function initializeDefaultCamp(): Promise<Camp> {
       dailyEndTime: "20:00",
     },
   };
-  
+
   return storageService.save<Camp>(STORAGE_KEYS.CAMP, defaultCamp);
 }
-

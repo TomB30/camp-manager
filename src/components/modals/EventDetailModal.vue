@@ -5,7 +5,8 @@
         <div class="mb-3">
           <div class="text-sm text-grey-7 text-subtitle2 mb-1">Time</div>
           <div>
-            {{ formatTime(event.spec.startDate) }} - {{ formatTime(event.spec.endDate) }}
+            {{ formatTime(event.spec.startDate) }} -
+            {{ formatTime(event.spec.endDate) }}
           </div>
         </div>
 
@@ -66,7 +67,8 @@
               <span class="font-medium">{{ enrolledCamperCount }}</span> campers
               <span
                 v-if="
-                  event.spec.excludeCamperIds && event.spec.excludeCamperIds.length > 0
+                  event.spec.excludeCamperIds &&
+                  event.spec.excludeCamperIds.length > 0
                 "
                 class="text-xs text-grey-7 text-subtitle2 ml-2"
               >
@@ -76,7 +78,10 @@
             <div class="participant-count">
               <span class="font-medium">{{ assignedStaffCount }}</span> staff
               <span
-                v-if="event.spec.excludeStaffIds && event.spec.excludeStaffIds.length > 0"
+                v-if="
+                  event.spec.excludeStaffIds &&
+                  event.spec.excludeStaffIds.length > 0
+                "
                 class="text-xs text-grey-7 text-subtitle2 ml-2"
               >
                 ({{ event.spec.excludeStaffIds.length }} excluded)
@@ -87,7 +92,10 @@
 
         <!-- Excluded Campers -->
         <div
-          v-if="event.spec.excludeCamperIds && event.spec.excludeCamperIds.length > 0"
+          v-if="
+            event.spec.excludeCamperIds &&
+            event.spec.excludeCamperIds.length > 0
+          "
           class="mb-3"
         >
           <div class="text-sm text-grey-7 text-subtitle2 mb-1">
@@ -106,7 +114,9 @@
 
         <!-- Excluded Staff -->
         <div
-          v-if="event.spec.excludeStaffIds && event.spec.excludeStaffIds.length > 0"
+          v-if="
+            event.spec.excludeStaffIds && event.spec.excludeStaffIds.length > 0
+          "
           class="mb-3"
         >
           <div class="text-sm text-grey-7 text-subtitle2 mb-1">
@@ -235,11 +245,15 @@ export default defineComponent({
     },
     getCamperName(camperId: string): string {
       const camper = this.campersStore.getCamperById(camperId);
-      return camper ? `${camper.spec.firstName} ${camper.spec.lastName}` : "Unknown";
+      return camper
+        ? `${camper.spec.firstName} ${camper.spec.lastName}`
+        : "Unknown";
     },
     getStaffName(staffId: string): string {
       const staff = this.staffMembersStore.getStaffMemberById(staffId);
-      return staff ? `${staff.spec.firstName} ${staff.spec.lastName}` : "Unknown";
+      return staff
+        ? `${staff.spec.firstName} ${staff.spec.lastName}`
+        : "Unknown";
     },
     getGroupName(groupId: string): string {
       // Check groups
@@ -262,7 +276,10 @@ export default defineComponent({
       if (!this.event) return;
 
       try {
-        await this.eventsStore.removeGroupFromEvent(this.event.meta.id, groupId);
+        await this.eventsStore.removeGroupFromEvent(
+          this.event.meta.id,
+          groupId,
+        );
         this.toast.success("Group removed from event");
       } catch (error: any) {
         this.toast.error("Failed to remove group", error.message);

@@ -9,4 +9,3 @@ properties:
   description:
     type: string
     description: Description of the entity
-

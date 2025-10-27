@@ -36,7 +36,8 @@ export const useEventsStore = defineStore("events", {
     getEventCamperIds(): (eventId: string) => string[] {
       return (eventId: string): string[] => {
         const event = this.events.find((e) => e.meta.id === eventId);
-        if (!event || !event.spec.groupIds || event.spec.groupIds.length === 0) return [];
+        if (!event || !event.spec.groupIds || event.spec.groupIds.length === 0)
+          return [];
 
         const groupsStore = useGroupsStore();
 
@@ -53,7 +54,10 @@ export const useEventsStore = defineStore("events", {
         });
 
         // Remove excluded campers
-        if (event.spec.excludeCamperIds && event.spec.excludeCamperIds.length > 0) {
+        if (
+          event.spec.excludeCamperIds &&
+          event.spec.excludeCamperIds.length > 0
+        ) {
           event.spec.excludeCamperIds.forEach((id) => camperIds.delete(id));
         }
 
@@ -67,7 +71,8 @@ export const useEventsStore = defineStore("events", {
     getEventStaffIds(): (eventId: string) => string[] {
       return (eventId: string): string[] => {
         const event = this.events.find((e) => e.meta.id === eventId);
-        if (!event || !event.spec.groupIds || event.spec.groupIds.length === 0) return [];
+        if (!event || !event.spec.groupIds || event.spec.groupIds.length === 0)
+          return [];
 
         const staffIds = new Set<string>();
 
@@ -85,7 +90,10 @@ export const useEventsStore = defineStore("events", {
         });
 
         // Remove excluded staff
-        if (event.spec.excludeStaffIds && event.spec.excludeStaffIds.length > 0) {
+        if (
+          event.spec.excludeStaffIds &&
+          event.spec.excludeStaffIds.length > 0
+        ) {
           event.spec.excludeStaffIds.forEach((id) => staffIds.delete(id));
         }
 
@@ -113,7 +121,9 @@ export const useEventsStore = defineStore("events", {
 
     locationEvents(state): (locationId: string) => Event[] {
       return (locationId: string): Event[] => {
-        return state.events.filter((event) => event.spec.locationId === locationId);
+        return state.events.filter(
+          (event) => event.spec.locationId === locationId,
+        );
       };
     },
 
@@ -192,7 +202,8 @@ export const useEventsStore = defineStore("events", {
       const event = this.events.find((e) => e.meta.id === eventId);
       if (!event) throw new Error("Event not found");
 
-      event.spec.groupIds = event.spec.groupIds?.filter((id) => id !== groupId) || [];
+      event.spec.groupIds =
+        event.spec.groupIds?.filter((id) => id !== groupId) || [];
       const updated = await eventsService.updateEvent(event.meta.id, event);
       const index = this.events.findIndex((e) => e.meta.id === event.meta.id);
       if (index >= 0) {

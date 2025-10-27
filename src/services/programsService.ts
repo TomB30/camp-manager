@@ -110,10 +110,14 @@ async function getProgramById(id: string): Promise<Program | null> {
 
 async function getProgramsForStaffMember(staffId: string): Promise<Program[]> {
   const programs = await listPrograms();
-  return programs.filter((p) => p.spec.staffMemberIds?.includes(staffId) || false);
+  return programs.filter(
+    (p) => p.spec.staffMemberIds?.includes(staffId) || false,
+  );
 }
 
 async function getProgramsForLocation(locationId: string): Promise<Program[]> {
   const programs = await listPrograms();
-  return programs.filter((p) => p.spec.locationIds?.includes(locationId) || false);
+  return programs.filter(
+    (p) => p.spec.locationIds?.includes(locationId) || false,
+  );
 }

@@ -125,9 +125,9 @@ describe("RolesTab", () => {
 
       const filtered = vm.filteredRoles;
       expect(filtered.length).toBeGreaterThan(0);
-      expect(filtered.every((role: Role) => role.meta.name.includes("Counselor"))).toBe(
-        true,
-      );
+      expect(
+        filtered.every((role: Role) => role.meta.name.includes("Counselor")),
+      ).toBe(true);
     });
 
     it("filters roles by description", async () => {
@@ -139,9 +139,9 @@ describe("RolesTab", () => {
 
       const filtered = vm.filteredRoles;
       expect(filtered.length).toBeGreaterThan(0);
-      expect(filtered.every((role: Role) => role.meta.description?.includes("camp"))).toBe(
-        true,
-      );
+      expect(
+        filtered.every((role: Role) => role.meta.description?.includes("camp")),
+      ).toBe(true);
     });
 
     it("returns empty array when no roles match search", async () => {

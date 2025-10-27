@@ -3,7 +3,6 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
   "/sessions": {
     /** List all sessions */
@@ -1368,7 +1367,13 @@ export interface components {
       meta: components["schemas"]["EntityMeta"];
       spec: {
         /** @enum {string} */
-        type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
+        type:
+          | "classroom"
+          | "activity"
+          | "sports"
+          | "dining"
+          | "outdoor"
+          | "arts";
         capacity?: number;
         /**
          * Format: uuid
@@ -1383,7 +1388,13 @@ export interface components {
       meta: components["schemas"]["EntityCreationRequestMeta"];
       spec: {
         /** @enum {string} */
-        type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
+        type:
+          | "classroom"
+          | "activity"
+          | "sports"
+          | "dining"
+          | "outdoor"
+          | "arts";
         capacity?: number;
         /**
          * Format: uuid
@@ -1398,7 +1409,13 @@ export interface components {
       meta: components["schemas"]["EntityCreationRequestMeta"];
       spec: {
         /** @enum {string} */
-        type: "classroom" | "activity" | "sports" | "dining" | "outdoor" | "arts";
+        type:
+          | "classroom"
+          | "activity"
+          | "sports"
+          | "dining"
+          | "outdoor"
+          | "arts";
         capacity?: number;
         /**
          * Format: uuid

@@ -80,7 +80,7 @@ export default defineComponent({
           name: "",
           description: "",
         },
-        spec: { 
+        spec: {
           colorId: undefined,
           activityIds: [],
           staffMemberIds: [],

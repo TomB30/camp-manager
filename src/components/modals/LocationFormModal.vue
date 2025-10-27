@@ -221,12 +221,12 @@ export default defineComponent({
         this.loading = true;
         await this.locationsStore.updateLocation(
           this.locationId,
-          this.localFormData
+          this.localFormData,
         );
         this.toast.success("Location updated successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to update location"
+          (error as Error).message || "Failed to update location",
         );
       } finally {
         this.loading = false;
@@ -240,7 +240,7 @@ export default defineComponent({
         this.toast.success("Location created successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to create location"
+          (error as Error).message || "Failed to create location",
         );
       } finally {
         this.loading = false;

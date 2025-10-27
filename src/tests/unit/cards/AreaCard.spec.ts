@@ -86,7 +86,7 @@ describe("AreaCard", () => {
 
       if (area.spec.equipment && area.spec.equipment.length > 0) {
         expect(wrapper.text()).toContain(
-          `${area.spec.equipment.length} equipment`
+          `${area.spec.equipment.length} equipment`,
         );
       }
     });
@@ -154,7 +154,10 @@ describe("AreaCard", () => {
     });
 
     it("applies correct badge class for outdoor type", () => {
-      const area: Area = { ...areasFixture[0], spec: { ...areasFixture[0].spec, type: "outdoor" } };
+      const area: Area = {
+        ...areasFixture[0],
+        spec: { ...areasFixture[0].spec, type: "outdoor" },
+      };
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -167,7 +170,10 @@ describe("AreaCard", () => {
     });
 
     it("applies correct badge class for water type", () => {
-      const area: Area = { ...areasFixture[0], spec: { ...areasFixture[0].spec, type: "water" } };
+      const area: Area = {
+        ...areasFixture[0],
+        spec: { ...areasFixture[0].spec, type: "water" },
+      };
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -195,7 +201,7 @@ describe("AreaCard", () => {
       const style = cardIcon.attributes("style");
       expect(style).toContain("background");
       expect(
-        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)")
+        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)"),
       ).toBe(true);
     });
 
@@ -254,7 +260,10 @@ describe("AreaCard", () => {
 
   describe("Edge Cases", () => {
     it("handles area without capacity", () => {
-      const area: Area = { ...areasFixture[0], spec: { ...areasFixture[0].spec, capacity: undefined } };
+      const area: Area = {
+        ...areasFixture[0],
+        spec: { ...areasFixture[0].spec, capacity: undefined },
+      };
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
@@ -268,7 +277,13 @@ describe("AreaCard", () => {
     it("handles very long equipment list", () => {
       const area: Area = {
         ...areasFixture[0],
-        spec: { ...areasFixture[0].spec, equipment: Array.from({ length: 50 }, (_, i) => `Equipment ${i + 1}`) as string[] },
+        spec: {
+          ...areasFixture[0].spec,
+          equipment: Array.from(
+            { length: 50 },
+            (_, i) => `Equipment ${i + 1}`,
+          ) as string[],
+        },
       };
       const wrapper = createWrapper(AreaCard, {
         props: {

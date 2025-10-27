@@ -18,7 +18,8 @@
           {{ formatType }}
         </span>
         <span v-if="area.spec.capacity" class="badge badge-sm badge-secondary">
-          <Icon name="Users" :size="12" class="inline" /> {{ area.spec.capacity }}
+          <Icon name="Users" :size="12" class="inline" />
+          {{ area.spec.capacity }}
         </span>
       </div>
       <p v-if="area.meta.description" class="card-description">

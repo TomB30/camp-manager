@@ -25,7 +25,7 @@
 
         <div class="detail-section">
           <div class="detail-label">Created</div>
-          <div>{{ formatDateTime(durationPreset.meta.createdAt || '') }}</div>
+          <div>{{ formatDateTime(durationPreset.meta.createdAt || "") }}</div>
         </div>
 
         <div v-if="durationPreset.meta.updatedAt" class="detail-section">
@@ -130,4 +130,3 @@ export default defineComponent({
   color: var(--text-primary);
 }
 </style>
-

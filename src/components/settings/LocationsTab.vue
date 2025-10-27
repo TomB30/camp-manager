@@ -115,7 +115,9 @@
       </template>
 
       <template #cell-events="{ item }">
-        <span class="event-count">{{ getLocationEvents(item.meta.id).length }}</span>
+        <span class="event-count">{{
+          getLocationEvents(item.meta.id).length
+        }}</span>
       </template>
 
       <template #cell-actions="{ item }">

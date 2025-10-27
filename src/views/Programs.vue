@@ -588,14 +588,16 @@ export default defineComponent({
       if (!this.selectedProgram) return [];
       return this.staffMembersStore.staffMembers.filter(
         (staff) =>
-          !this.selectedProgram!.spec.staffMemberIds?.includes(staff.meta.id) || false,
+          !this.selectedProgram!.spec.staffMemberIds?.includes(staff.meta.id) ||
+          false,
       );
     },
     availableLocations(): Location[] {
       if (!this.selectedProgram) return [];
       return this.locationsStore.locations.filter(
         (location) =>
-          !this.selectedProgram!.spec.locationIds?.includes(location.meta.id) || false,
+          !this.selectedProgram!.spec.locationIds?.includes(location.meta.id) ||
+          false,
       );
     },
     programStaffIds: {

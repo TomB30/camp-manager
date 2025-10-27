@@ -20,7 +20,7 @@ async function listDurationPresets(): Promise<DurationPreset[]> {
 }
 
 async function createDurationPreset(
-  preset: DurationPresetCreationRequest
+  preset: DurationPresetCreationRequest,
 ): Promise<DurationPreset> {
   // If this preset is being set as default, unset other defaults
   if (preset.spec.default) {
@@ -48,17 +48,17 @@ async function createDurationPreset(
 
   return storageService.save<DurationPreset>(
     STORAGE_KEYS.DURATION_PRESETS,
-    newPreset
+    newPreset,
   );
 }
 
 async function updateDurationPreset(
   id: string,
-  preset: DurationPresetUpdateRequest
+  preset: DurationPresetUpdateRequest,
 ): Promise<DurationPreset> {
   const existingPreset = await storageService.getById<DurationPreset>(
     STORAGE_KEYS.DURATION_PRESETS,
-    id
+    id,
   );
 
   if (!existingPreset) {
@@ -77,7 +77,7 @@ async function updateDurationPreset(
 
         await storageService.save<DurationPreset>(
           STORAGE_KEYS.DURATION_PRESETS,
-          updated
+          updated,
         );
       }
     }
@@ -86,12 +86,17 @@ async function updateDurationPreset(
   const updatedPreset: DurationPreset = {
     ...existingPreset,
     ...preset,
-    meta: { ...existingPreset.meta, name: preset.meta.name, description: preset.meta.description, updatedAt: new Date().toISOString() },
+    meta: {
+      ...existingPreset.meta,
+      name: preset.meta.name,
+      description: preset.meta.description,
+      updatedAt: new Date().toISOString(),
+    },
   };
 
   return storageService.save<DurationPreset>(
     STORAGE_KEYS.DURATION_PRESETS,
-    updatedPreset
+    updatedPreset,
   );
 }
 
@@ -100,11 +105,11 @@ async function deleteDurationPreset(id: string): Promise<void> {
 }
 
 async function getDurationPresetById(
-  id: string
+  id: string,
 ): Promise<DurationPreset | null> {
   return storageService.getById<DurationPreset>(
     STORAGE_KEYS.DURATION_PRESETS,
-    id
+    id,
   );
 }
 

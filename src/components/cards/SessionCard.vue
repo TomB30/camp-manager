@@ -28,7 +28,7 @@
         <span class="detail-value">{{
           dateUtils.calculateDuration(
             session.spec.startDate,
-            session.spec.endDate
+            session.spec.endDate,
           )
         }}</span>
       </div>

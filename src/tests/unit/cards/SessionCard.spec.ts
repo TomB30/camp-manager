@@ -7,7 +7,10 @@ import { Session } from "@/types";
 describe("SessionCard", () => {
   describe("Rendering", () => {
     it("renders session name correctly", () => {
-      const session: Session = { ...sessionsFixture[0], meta: { ...sessionsFixture[0].meta, name: "Session 1" } };
+      const session: Session = {
+        ...sessionsFixture[0],
+        meta: { ...sessionsFixture[0].meta, name: "Session 1" },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });
@@ -16,7 +19,13 @@ describe("SessionCard", () => {
     });
 
     it("renders session description when provided", () => {
-      const session: Session = { ...sessionsFixture[0], meta: { ...sessionsFixture[0].meta, description: "Session 1 description" } };
+      const session: Session = {
+        ...sessionsFixture[0],
+        meta: {
+          ...sessionsFixture[0].meta,
+          description: "Session 1 description",
+        },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });
@@ -27,7 +36,14 @@ describe("SessionCard", () => {
     });
 
     it("displays formatted dates", () => {
-      const session: Session = { ...sessionsFixture[1], spec: { ...sessionsFixture[1].spec, startDate: "2025-10-01", endDate: "2025-10-05" } };
+      const session: Session = {
+        ...sessionsFixture[1],
+        spec: {
+          ...sessionsFixture[1].spec,
+          startDate: "2025-10-01",
+          endDate: "2025-10-05",
+        },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });
@@ -38,7 +54,14 @@ describe("SessionCard", () => {
     });
 
     it("displays duration", () => {
-      const session: Session = { ...sessionsFixture[0], spec: { ...sessionsFixture[0].spec, startDate: "2025-10-01", endDate: "2025-10-05" } };
+      const session: Session = {
+        ...sessionsFixture[0],
+        spec: {
+          ...sessionsFixture[0].spec,
+          startDate: "2025-10-01",
+          endDate: "2025-10-05",
+        },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });
@@ -49,7 +72,14 @@ describe("SessionCard", () => {
 
   describe("Icons", () => {
     it("renders calendar icon in header", () => {
-      const session: Session = { ...sessionsFixture[0], spec: { ...sessionsFixture[0].spec, startDate: "2025-10-01", endDate: "2025-10-05" } };
+      const session: Session = {
+        ...sessionsFixture[0],
+        spec: {
+          ...sessionsFixture[0].spec,
+          startDate: "2025-10-01",
+          endDate: "2025-10-05",
+        },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });
@@ -59,7 +89,14 @@ describe("SessionCard", () => {
     });
 
     it("displays detail icons for each section", () => {
-      const session: Session = { ...sessionsFixture[0], spec: { ...sessionsFixture[0].spec, startDate: "2025-10-01", endDate: "2025-10-05" } };
+      const session: Session = {
+        ...sessionsFixture[0],
+        spec: {
+          ...sessionsFixture[0].spec,
+          startDate: "2025-10-01",
+          endDate: "2025-10-05",
+        },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });
@@ -71,7 +108,14 @@ describe("SessionCard", () => {
 
   describe("Click Event", () => {
     it("emits click event with session id when card is clicked", async () => {
-      const session: Session = { ...sessionsFixture[0], spec: { ...sessionsFixture[0].spec, startDate: "2025-10-01", endDate: "2025-10-05" } };
+      const session: Session = {
+        ...sessionsFixture[0],
+        spec: {
+          ...sessionsFixture[0].spec,
+          startDate: "2025-10-01",
+          endDate: "2025-10-05",
+        },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });
@@ -85,7 +129,14 @@ describe("SessionCard", () => {
 
   describe("Styling", () => {
     it("has session-card class", () => {
-      const session: Session = { ...sessionsFixture[0], spec: { ...sessionsFixture[0].spec, startDate: "2025-10-01", endDate: "2025-10-05" } };
+      const session: Session = {
+        ...sessionsFixture[0],
+        spec: {
+          ...sessionsFixture[0].spec,
+          startDate: "2025-10-01",
+          endDate: "2025-10-05",
+        },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });
@@ -94,7 +145,14 @@ describe("SessionCard", () => {
     });
 
     it("displays session header section", () => {
-      const session: Session = { ...sessionsFixture[0], spec: { ...sessionsFixture[0].spec, startDate: "2025-10-01", endDate: "2025-10-05" } };
+      const session: Session = {
+        ...sessionsFixture[0],
+        spec: {
+          ...sessionsFixture[0].spec,
+          startDate: "2025-10-01",
+          endDate: "2025-10-05",
+        },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });
@@ -103,7 +161,14 @@ describe("SessionCard", () => {
     });
 
     it("displays session details section", () => {
-      const session: Session = { ...sessionsFixture[0], spec: { ...sessionsFixture[0].spec, startDate: "2025-10-01", endDate: "2025-10-05" } };
+      const session: Session = {
+        ...sessionsFixture[0],
+        spec: {
+          ...sessionsFixture[0].spec,
+          startDate: "2025-10-01",
+          endDate: "2025-10-05",
+        },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });
@@ -112,7 +177,14 @@ describe("SessionCard", () => {
     });
 
     it("shows session icon with gradient background", () => {
-      const session: Session = { ...sessionsFixture[0], spec: { ...sessionsFixture[0].spec, startDate: "2025-10-01", endDate: "2025-10-05" } };
+      const session: Session = {
+        ...sessionsFixture[0],
+        spec: {
+          ...sessionsFixture[0].spec,
+          startDate: "2025-10-01",
+          endDate: "2025-10-05",
+        },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });
@@ -124,7 +196,10 @@ describe("SessionCard", () => {
 
   describe("Edge Cases", () => {
     it("renders without description", () => {
-      const session: Session = { ...sessionsFixture[0], meta: { ...sessionsFixture[0].meta, description: undefined } };
+      const session: Session = {
+        ...sessionsFixture[0],
+        meta: { ...sessionsFixture[0].meta, description: undefined },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });
@@ -133,7 +208,14 @@ describe("SessionCard", () => {
     });
 
     it("formats dates correctly for different months", () => {
-      const session: Session = { ...sessionsFixture[2], spec: { ...sessionsFixture[2].spec, startDate: "2025-11-01", endDate: "2025-11-05" } };
+      const session: Session = {
+        ...sessionsFixture[2],
+        spec: {
+          ...sessionsFixture[2].spec,
+          startDate: "2025-11-01",
+          endDate: "2025-11-05",
+        },
+      };
       const wrapper = createWrapper(SessionCard, {
         props: { session },
       });

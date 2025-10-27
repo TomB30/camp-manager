@@ -133,7 +133,8 @@ export const useGroupsStore = defineStore("groups", {
             return false;
 
           // Gender filter
-          if (filters.gender && camper.spec.gender !== filters.gender) return false;
+          if (filters.gender && camper.spec.gender !== filters.gender)
+            return false;
 
           return true;
         });
@@ -158,11 +159,15 @@ export const useGroupsStore = defineStore("groups", {
 
           // Certification filter
           if (filters.certificationIds && filters.certificationIds.length > 0) {
-            if (!staff.spec.certificationIds || staff.spec.certificationIds.length === 0)
+            if (
+              !staff.spec.certificationIds ||
+              staff.spec.certificationIds.length === 0
+            )
               return false;
             // Staff must have all required certifications
-            const hasAllCerts = filters.certificationIds.every((certId) =>
-              staff.spec.certificationIds?.includes(certId) || false,
+            const hasAllCerts = filters.certificationIds.every(
+              (certId) =>
+                staff.spec.certificationIds?.includes(certId) || false,
             );
             if (!hasAllCerts) return false;
           }
@@ -211,7 +216,9 @@ export const useGroupsStore = defineStore("groups", {
           }
 
           if (options.isNested !== undefined) {
-            const isNested = !!(group.spec.groupIds && group.spec.groupIds.length > 0);
+            const isNested = !!(
+              group.spec.groupIds && group.spec.groupIds.length > 0
+            );
             if (isNested !== options.isNested) return false;
           }
 
@@ -269,7 +276,11 @@ export const useGroupsStore = defineStore("groups", {
       }
 
       // Cannot use both staffFilters and staffIds
-      if (group.spec.staffFilters && group.spec.staffIds && group.spec.staffIds.length > 0) {
+      if (
+        group.spec.staffFilters &&
+        group.spec.staffIds &&
+        group.spec.staffIds.length > 0
+      ) {
         errors.push("Cannot use both staff filters and explicit staff IDs");
       }
 
@@ -307,7 +318,10 @@ export const useGroupsStore = defineStore("groups", {
         g.meta.id === groupId ? updatedGroup : g,
       );
     },
-    async removeCamperFromGroup(groupId: string, camperId: string): Promise<void> {
+    async removeCamperFromGroup(
+      groupId: string,
+      camperId: string,
+    ): Promise<void> {
       const group = this.groups.find((g) => g.meta.id === groupId);
       if (!group) return;
 
@@ -315,7 +329,8 @@ export const useGroupsStore = defineStore("groups", {
         ...group,
         spec: {
           ...group.spec,
-          camperIds: group.spec.camperIds?.filter((id) => id !== camperId) || [],
+          camperIds:
+            group.spec.camperIds?.filter((id) => id !== camperId) || [],
         },
       };
       const updatedGroup = await groupsService.updateGroup(

@@ -26,13 +26,23 @@ describe("CamperCard", () => {
     });
 
     it("renders gender badge when formattedGender prop is provided", () => {
-      const camper: Camper = { ...campersFixture[0], spec: { ...campersFixture[0].spec, gender: "female" } };
-      const wrapper = createWrapper(CamperCard, { props: { camper, formattedGender: "Female" } });
+      const camper: Camper = {
+        ...campersFixture[0],
+        spec: { ...campersFixture[0].spec, gender: "female" },
+      };
+      const wrapper = createWrapper(CamperCard, {
+        props: { camper, formattedGender: "Female" },
+      });
       expect(wrapper.text()).toContain("Female");
     });
     it("renders session badge when sessionName prop is provided", () => {
-      const camper: Camper = { ...campersFixture[0], spec: { ...campersFixture[0].spec, sessionId: "session-1" } };
-      const wrapper = createWrapper(CamperCard, { props: { camper, sessionName: "Current Session" } });
+      const camper: Camper = {
+        ...campersFixture[0],
+        spec: { ...campersFixture[0].spec, sessionId: "session-1" },
+      };
+      const wrapper = createWrapper(CamperCard, {
+        props: { camper, sessionName: "Current Session" },
+      });
 
       expect(wrapper.text()).toContain("Current Session");
     });
@@ -40,7 +50,10 @@ describe("CamperCard", () => {
 
   describe("Avatar Display", () => {
     it("renders AvatarInitials component with camper name", () => {
-      const camper: Camper = { ...campersFixture[0], spec: { ...campersFixture[0].spec, firstName: "John", lastName: "Doe" } };
+      const camper: Camper = {
+        ...campersFixture[0],
+        spec: { ...campersFixture[0].spec, firstName: "John", lastName: "Doe" },
+      };
       const wrapper = createWrapper(CamperCard, {
         props: { camper },
       });
@@ -54,7 +67,10 @@ describe("CamperCard", () => {
 
   describe("Click Event", () => {
     it("emits click event with camper when card is clicked", async () => {
-      const camper: Camper = { ...campersFixture[0], spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" } };
+      const camper: Camper = {
+        ...campersFixture[0],
+        spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" },
+      };
       const wrapper = createWrapper(CamperCard, {
         props: { camper },
       });
@@ -68,7 +84,10 @@ describe("CamperCard", () => {
 
   describe("Styling", () => {
     it("has card-clickable class for hover effect", () => {
-      const camper: Camper = { ...campersFixture[0], spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" } };
+      const camper: Camper = {
+        ...campersFixture[0],
+        spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" },
+      };
       const wrapper = createWrapper(CamperCard, {
         props: { camper },
       });
@@ -77,7 +96,10 @@ describe("CamperCard", () => {
     });
 
     it("has card-horizontal class for layout", () => {
-      const camper: Camper = { ...campersFixture[0], spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" } };
+      const camper: Camper = {
+        ...campersFixture[0],
+        spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" },
+      };
       const wrapper = createWrapper(CamperCard, {
         props: { camper },
       });
@@ -115,7 +137,10 @@ describe("CamperCard", () => {
     });
 
     it("handles empty allergy array", () => {
-      const camper: Camper = { ...campersFixture[0], spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" } };
+      const camper: Camper = {
+        ...campersFixture[0],
+        spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" },
+      };
       const wrapper = createWrapper(CamperCard, {
         props: { camper },
       });
@@ -124,10 +149,13 @@ describe("CamperCard", () => {
     });
 
     it("renders without optional props", () => {
-      const camper: Camper = { ...campersFixture[0], spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" } };
+      const camper: Camper = {
+        ...campersFixture[0],
+        spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" },
+      };
       const wrapper = createWrapper(CamperCard, {
         props: { camper },
-      }); 
+      });
 
       expect(wrapper.exists()).toBe(true);
     });

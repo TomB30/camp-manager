@@ -123,7 +123,8 @@ export default defineComponent({
       // Sort by start date
       return [...filtered].sort((a, b) => {
         return (
-          new Date(a.spec.startDate).getTime() - new Date(b.spec.startDate).getTime()
+          new Date(a.spec.startDate).getTime() -
+          new Date(b.spec.startDate).getTime()
         );
       });
     },

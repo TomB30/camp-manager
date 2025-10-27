@@ -4,13 +4,14 @@
     @close="$emit('close')"
   >
     <template #body>
-      <ActivityForm
-        v-model="localFormData"
-        v-model:is-custom-duration="isCustomDuration"
-        :room-options="roomOptions"
-        :certifications="certificationsStore.certifications"
-        @submit="handleSave"
-      />
+      <q-form @submit.prevent="handleSave" ref="formRef">
+        <ActivityForm
+          v-model="localFormData"
+          v-model:is-custom-duration="isCustomDuration"
+          :room-options="roomOptions"
+          :certifications="certificationsStore.certifications"
+        />
+      </q-form>
     </template>
 
     <template #footer>
@@ -18,7 +19,7 @@
         <BaseButton flat @click="$emit('close')" label="Cancel" />
         <BaseButton
           color="primary"
-          @click="handleSave"
+          type="submit"
           :label="isEditing ? 'Save Changes' : 'Create Activity'"
         />
       </div>
@@ -41,6 +42,7 @@ import ActivityForm, {
 } from "@/components/ActivityForm.vue";
 import { type AutocompleteOption } from "@/components/Autocomplete.vue";
 import type { Activity } from "@/types";
+import { QForm } from "quasar";
 
 export default defineComponent({
   name: "ActivityFormModal",
@@ -139,7 +141,9 @@ export default defineComponent({
         })
         .filter((name) => name !== "");
     },
-    handleSave() {
+    async handleSave() {
+      const isValid = await (this.$refs.formRef as QForm).validate();
+      if (!isValid) return;
       // Determine programIds for the activity
       let activityProgramIds: string[];
 

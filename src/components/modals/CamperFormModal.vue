@@ -189,13 +189,16 @@ export default defineComponent({
       return this.sessions.map((session) => {
         const startDate = new Date(session.spec.startDate).toLocaleDateString(
           "en-US",
-          { month: "short", day: "numeric" }
+          { month: "short", day: "numeric" },
         );
-        const endDate = new Date(session.spec.endDate).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        });
+        const endDate = new Date(session.spec.endDate).toLocaleDateString(
+          "en-US",
+          {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          },
+        );
         return {
           label: `${session.meta.name} (${startDate} - ${endDate})`,
           value: session.meta.id,
@@ -209,7 +212,7 @@ export default defineComponent({
       }
 
       const filteredGroups = this.groups.filter(
-        (group) => group.spec.sessionId === this.formData.spec.sessionId
+        (group) => group.spec.sessionId === this.formData.spec.sessionId,
       );
 
       return filteredGroups.map((group) => ({

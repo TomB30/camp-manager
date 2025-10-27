@@ -76,7 +76,9 @@ export const useDurationPresetsStore = defineStore("durationPresets", {
         presetId,
         presetUpdate,
       );
-      const index = this.durationPresets.findIndex((p) => p.meta.id === presetId);
+      const index = this.durationPresets.findIndex(
+        (p) => p.meta.id === presetId,
+      );
       if (index >= 0) {
         this.durationPresets[index] = updatedPreset;
       }
@@ -93,4 +95,3 @@ export const useDurationPresetsStore = defineStore("durationPresets", {
     },
   },
 });
-

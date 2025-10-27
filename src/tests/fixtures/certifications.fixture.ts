@@ -9,7 +9,7 @@ export const certificationsFixture: Certification[] = [
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
-    spec: {}
+    spec: {},
   },
   {
     meta: {
@@ -19,7 +19,7 @@ export const certificationsFixture: Certification[] = [
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
-    spec: {}
+    spec: {},
   },
   {
     meta: {
@@ -29,7 +29,7 @@ export const certificationsFixture: Certification[] = [
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
-    spec: {}
+    spec: {},
   },
   {
     meta: {
@@ -39,7 +39,7 @@ export const certificationsFixture: Certification[] = [
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
-    spec: {}
+    spec: {},
   },
   {
     meta: {
@@ -49,6 +49,6 @@ export const certificationsFixture: Certification[] = [
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
-    spec: {}
+    spec: {},
   },
 ];

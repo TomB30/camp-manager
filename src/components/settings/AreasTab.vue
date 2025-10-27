@@ -45,7 +45,11 @@
         @click="selectArea(area.meta.id)"
       >
         <template #icon>
-          <Icon :name="AreaTypeIcon(area.spec.type)" :size="24" :stroke-width="2" />
+          <Icon
+            :name="AreaTypeIcon(area.spec.type)"
+            :size="24"
+            :stroke-width="2"
+          />
         </template>
       </AreaCard>
     </div>
@@ -231,7 +235,9 @@ export default defineComponent({
         this.filterType !== "" &&
         this.filterType !== "all"
       ) {
-        filtered = filtered.filter((area) => area.spec.type === this.filterType);
+        filtered = filtered.filter(
+          (area) => area.spec.type === this.filterType,
+        );
       }
 
       return filtered.sort((a, b) => a.meta.name.localeCompare(b.meta.name));

@@ -644,7 +644,7 @@ export default defineComponent({
 
       this.programsStore.programs.forEach((program) => {
         const programActivities = this.activitiesStore.getActivitiesInProgram(
-          program.meta.id
+          program.meta.id,
         );
         if (programActivities.length > 0) {
           programActivities.forEach((activity) => {
@@ -662,7 +662,10 @@ export default defineComponent({
       return this.groups;
     },
     campersInAssignedGroups(): Camper[] {
-      if (!this.formData.spec.groupIds || this.formData.spec.groupIds.length === 0) {
+      if (
+        !this.formData.spec.groupIds ||
+        this.formData.spec.groupIds.length === 0
+      ) {
         return [];
       }
 
@@ -682,7 +685,10 @@ export default defineComponent({
       return this.campersStore.campers.filter((c) => camperIds.has(c.meta.id));
     },
     staffInAssignedGroups(): StaffMember[] {
-      if (!this.formData.spec.groupIds || this.formData.spec.groupIds.length === 0) {
+      if (
+        !this.formData.spec.groupIds ||
+        this.formData.spec.groupIds.length === 0
+      ) {
         return [];
       }
 
@@ -692,10 +698,12 @@ export default defineComponent({
       this.formData.spec.groupIds.forEach((groupId: string) => {
         const group = this.groupsStore.getGroupById(groupId);
         if (group && group.spec.staffIds) {
-          group.spec.staffIds.forEach((staffId: string) => staffIds.add(staffId));
+          group.spec.staffIds.forEach((staffId: string) =>
+            staffIds.add(staffId),
+          );
         } else if (group && group.spec.staffFilters) {
           const staff = this.staffMembersStore.getStaffMembersByFilters(
-            group.spec.staffFilters
+            group.spec.staffFilters,
           );
           staff.forEach((s: StaffMember) => staffIds.add(s.meta.id));
         }
@@ -703,7 +711,7 @@ export default defineComponent({
 
       // Return full staff member objects
       return this.staffMembersStore.staffMembers.filter((s) =>
-        staffIds.has(s.meta.id)
+        staffIds.has(s.meta.id),
       );
     },
     recurrenceSummary(): string | null {
@@ -748,14 +756,14 @@ export default defineComponent({
       // Combine date and time into ISO datetime strings
       if (this.internalEventDate && this.internalStartTime) {
         const startDateTime = new Date(
-          `${this.internalEventDate}T${this.internalStartTime}:00`
+          `${this.internalEventDate}T${this.internalStartTime}:00`,
         );
         this.formData.spec.startDate = startDateTime.toISOString();
       }
 
       if (this.internalEventDate && this.internalEndTime) {
         const endDateTime = new Date(
-          `${this.internalEventDate}T${this.internalEndTime}:00`
+          `${this.internalEventDate}T${this.internalEndTime}:00`,
         );
         this.formData.spec.endDate = endDateTime.toISOString();
       }
@@ -776,7 +784,7 @@ export default defineComponent({
         startDate.setHours(hours, minutes, 0, 0);
 
         const endDate = new Date(
-          startDate.getTime() + (activity.spec.duration || 0) * 60000
+          startDate.getTime() + (activity.spec.duration || 0) * 60000,
         );
         const endHours = endDate.getHours().toString().padStart(2, "0");
         const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
@@ -797,7 +805,7 @@ export default defineComponent({
       // Inherit color from the program (use first program)
       if (activity.spec.programIds && activity.spec.programIds.length > 0) {
         const program = this.programsStore.getProgramById(
-          activity.spec.programIds[0]
+          activity.spec.programIds[0],
         );
         if (program && program.spec.colorId) {
           this.formData.spec.colorId = program.spec.colorId;
@@ -813,7 +821,7 @@ export default defineComponent({
           ...activity.spec.requiredCertificationIds,
         ];
         this.selectedCertificationIds = this.getCertificationIdsFromNames(
-          activity.spec.requiredCertificationIds
+          activity.spec.requiredCertificationIds,
         );
       }
 
@@ -838,7 +846,7 @@ export default defineComponent({
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.meta.name === name
+            (c) => c.meta.name === name,
           );
           return cert ? cert.meta.id : "";
         })
@@ -866,7 +874,9 @@ export default defineComponent({
     },
     getGroupLabel(group: Group): string {
       // Check if it's a camper group or family group
-      const camperCount = this.groupsStore.getCampersInGroup(group.meta.id).length;
+      const camperCount = this.groupsStore.getCampersInGroup(
+        group.meta.id,
+      ).length;
       return `${group.meta.name} (${camperCount} campers)`;
     },
     getGroupInitials(group: Group): string {
@@ -882,7 +892,7 @@ export default defineComponent({
     isStaffInSelectedProgram(staff: StaffMember): boolean {
       if (!this.formData.spec.programId) return false;
       const program = this.programsStore.getProgramById(
-        this.formData.spec.programId
+        this.formData.spec.programId,
       );
       return program
         ? program.spec.staffMemberIds?.includes(staff.meta.id) || false
@@ -890,10 +900,13 @@ export default defineComponent({
     },
     staffHasRequiredCertifications(staff: StaffMember): boolean {
       if (this.selectedCertificationIds.length === 0) return true;
-      if (!staff.spec.certificationIds || staff.spec.certificationIds.length === 0)
+      if (
+        !staff.spec.certificationIds ||
+        staff.spec.certificationIds.length === 0
+      )
         return false;
       return this.selectedCertificationIds.every((certId) =>
-        staff.spec.certificationIds!.includes(certId)
+        staff.spec.certificationIds!.includes(certId),
       );
     },
     isStaffAvailable(staff: StaffMember): {
@@ -911,7 +924,7 @@ export default defineComponent({
         this.eventsStore.events,
         this.eventId
           ? new Map<string, string[]>([[this.eventId, []]])
-          : undefined
+          : undefined,
       );
 
       return { available: result.canAssign, reason: result.reason };
@@ -984,7 +997,10 @@ export default defineComponent({
       if (!program) return;
 
       // Auto-apply program color if event color is not set or is default
-      if (!this.formData.spec.colorId || this.formData.spec.colorId === "#6366F1") {
+      if (
+        !this.formData.spec.colorId ||
+        this.formData.spec.colorId === "#6366F1"
+      ) {
         if (program.spec.colorId) {
           const color = this.colorsStore.getColorById(program.spec.colorId);
           if (color) {
@@ -1043,7 +1059,7 @@ export default defineComponent({
           this.formData,
           this.recurrenceData,
           new Date(this.formData.spec.startDate),
-          new Date(this.formData.spec.endDate)
+          new Date(this.formData.spec.endDate),
         );
       } else {
         return this.createSingleEvent();
@@ -1053,7 +1069,7 @@ export default defineComponent({
       formData: EventCreationRequest,
       recurrence: RecurrenceData,
       startDate: Date,
-      endDate: Date
+      endDate: Date,
     ): Promise<void> {
       try {
         // Generate all occurrence dates
@@ -1067,7 +1083,7 @@ export default defineComponent({
         // Show loading toast for large batches
         if (occurrenceDates.length > 10) {
           this.toast.info(
-            `Creating ${occurrenceDates.length} recurring events...`
+            `Creating ${occurrenceDates.length} recurring events...`,
           );
         }
 
@@ -1109,13 +1125,13 @@ export default defineComponent({
           };
 
           eventCreationRequestsPromises.push(
-            this.eventsStore.createEvent(event)
+            this.eventsStore.createEvent(event),
           );
         }
 
         await Promise.all(eventCreationRequestsPromises);
         this.toast.success(
-          `Successfully created ${occurrenceDates.length} recurring events`
+          `Successfully created ${occurrenceDates.length} recurring events`,
         );
       } catch (error: any) {
         this.toast.error("Failed to create recurring events", error.message);
