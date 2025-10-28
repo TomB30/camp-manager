@@ -96,6 +96,27 @@ import LocationsTab from "@/components/settings/LocationsTab.vue";
 import LabelsTab from "@/components/settings/LabelsTab.vue";
 import RolesTab from "@/components/settings/RolesTab.vue";
 
+interface TabItem {
+  id: TabId | CategoryTabId;
+  label: string;
+  icon: string;
+  count: number;
+  type: "regular" | "category";
+  subTabs?: TabItem[];
+}
+
+type TabId =
+  | "colors"
+  | "sessions"
+  | "duration-presets"
+  | "areas"
+  | "locations"
+  | "cabins"
+  | "certifications"
+  | "roles"
+  | "labels";
+type CategoryTabId = "date-times" | "areas-locations" | "roles-certifications";
+
 export default defineComponent({
   name: "CampSettings",
   components: {
@@ -143,38 +164,19 @@ export default defineComponent({
       | "certifications"
       | "roles"
       | "labels";
-    activeCategory: string | null;
+    activeCategory: CategoryTabId | null;
   } {
     return {
-      activeTab: "sessions",
-      activeCategory: "date-times",
+      activeTab: "sessions" as TabId,
+      activeCategory: "date-times" as CategoryTabId,
     };
   },
   computed: {
-    tabs(): Array<{
-      id: string;
-      label: string;
-      icon: any;
-      count: number;
-      type: "regular" | "category";
-      subTabs?: Array<{
-        id:
-          | "sessions"
-          | "duration-presets"
-          | "areas"
-          | "locations"
-          | "cabins"
-          | "certifications"
-          | "roles";
-        label: string;
-        icon: any;
-        count: number;
-      }>;
-    }> {
+    tabs(): Array<TabItem> {
       return [
         {
-          id: "date-times",
-          type: "category" as const,
+          id: "date-times" as CategoryTabId,
+          type: "category",
           label: "Date & Times",
           icon: "Clock",
           count:
@@ -182,22 +184,24 @@ export default defineComponent({
             this.durationPresetsStore.durationPresets.length,
           subTabs: [
             {
-              id: "sessions" as const,
+              id: "sessions",
               label: "Sessions",
               icon: "CalendarDays",
+              type: "regular",
               count: this.sessionsStore.sessions.length,
             },
             {
-              id: "duration-presets" as const,
+              id: "duration-presets",
               label: "Duration Presets",
               icon: "Timer",
+              type: "regular",
               count: this.durationPresetsStore.durationPresets.length,
             },
           ],
         },
         {
           id: "areas-locations",
-          type: "category" as const,
+          type: "category",
           label: "Areas & Locations",
           icon: "Map",
           count:
@@ -206,28 +210,31 @@ export default defineComponent({
             this.housingRoomsStore.housingRooms.length,
           subTabs: [
             {
-              id: "areas" as const,
+              id: "areas",
               label: "Areas",
               icon: "Map",
+              type: "regular",
               count: this.areasStore.areas.length,
             },
             {
-              id: "locations" as const,
+              id: "locations",
               label: "Locations",
               icon: "MapPin",
+              type: "regular",
               count: this.locationsStore.locations.length,
             },
             {
-              id: "cabins" as const,
+              id: "cabins",
               label: "Housing",
               icon: "Bed",
+              type: "regular",
               count: this.housingRoomsStore.housingRooms.length,
             },
           ],
         },
         {
           id: "roles-certifications",
-          type: "category" as const,
+          type: "category",
           label: "Roles & Certifications",
           icon: "Shield",
           count:
@@ -235,22 +242,24 @@ export default defineComponent({
             this.certificationsStore.certifications.length,
           subTabs: [
             {
-              id: "roles" as const,
+              id: "roles",
               label: "Roles",
               icon: "Shield",
+              type: "regular",
               count: this.rolesStore.roles.length,
             },
             {
-              id: "certifications" as const,
+              id: "certifications",
               label: "Certifications",
               icon: "Award",
+              type: "regular",
               count: this.certificationsStore.certifications.length,
             },
           ],
         },
         {
           id: "colors",
-          type: "regular" as const,
+          type: "regular",
           label: "Colors",
           icon: "Palette",
           count: this.colorsStore.colors.length,
@@ -270,19 +279,19 @@ export default defineComponent({
     },
   },
   methods: {
-    handleTabClick(tab: any) {
+    handleTabClick(tab: TabItem) {
       if (tab.type === "category" && tab.subTabs && tab.subTabs.length > 0) {
         // Set category and show first sub-tab
-        this.activeCategory = tab.meta.id;
-        this.activeTab = tab.subTabs[0].meta.id;
+        this.activeCategory = tab.id as CategoryTabId;
+        this.activeTab = tab.subTabs[0].id as TabId;
       } else {
         // Regular tab
         this.activeCategory = null;
-        this.activeTab = tab.meta.id;
+        this.activeTab = tab.id as TabId;
       }
     },
     handleSubTabClick(subTab: any) {
-      this.activeTab = subTab.meta.id;
+      this.activeTab = subTab.id;
     },
   },
 });
