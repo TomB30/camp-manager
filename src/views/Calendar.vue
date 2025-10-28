@@ -267,13 +267,9 @@ export default defineComponent({
           value: this.filterStaff,
           placeholder: "Filter by Staff",
           options: this.staffMembersStore.staffMembers
-            .sort((a, b) =>
-              `${a.spec.firstName} ${a.spec.lastName}`.localeCompare(
-                `${b.spec.firstName} ${b.spec.lastName}`,
-              ),
-            )
+            .sort((a, b) => a.meta.name.localeCompare(b.meta.name))
             .map((staff) => ({
-              label: `${staff.spec.firstName} ${staff.spec.lastName}`,
+              label: `${staff.meta.name}`,
               value: staff.meta.id,
             })),
         },
@@ -303,7 +299,7 @@ export default defineComponent({
       return new Map(
         this.staffMembersStore.staffMembers.map((s) => [
           s.meta.id,
-          `${s.spec.firstName} ${s.spec.lastName}`.toLowerCase(),
+          s.meta.name.toLowerCase(),
         ]),
       );
     },
@@ -366,7 +362,7 @@ export default defineComponent({
         // Search filter (most expensive, check last)
         if (searchQuery) {
           // Search in event title
-          if (event.spec.title.toLowerCase().includes(searchQuery)) return true;
+          if (event.meta.name.toLowerCase().includes(searchQuery)) return true;
 
           // Search in room name (using memoized map for O(1) lookup)
           const roomName = roomMap.get(event.spec.locationId || "");
@@ -482,7 +478,7 @@ export default defineComponent({
       const event = this.eventsStore.getEventById(this.selectedEventId);
       this.confirmAction = {
         type: "deleteEvent",
-        data: { eventId: this.selectedEventId, eventName: event?.spec.title },
+        data: { eventId: this.selectedEventId, eventName: event?.meta.name },
       };
       this.showConfirmModal = true;
     },

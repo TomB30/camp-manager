@@ -894,10 +894,14 @@ export default defineComponent({
 
     // Camper methods
     getCamperLabel(camper: Camper): string {
-      return `${camper.spec.firstName} ${camper.spec.lastName}`;
+      return camper.meta.name;
     },
     getCamperInitials(camper: Camper): string {
-      return `${camper.spec.firstName.charAt(0)}${camper.spec.lastName.charAt(0)}`;
+      const parts = camper.meta.name.split(" ");
+      if (parts.length >= 2) {
+        return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`;
+      }
+      return camper.meta.name.charAt(0).toUpperCase();
     },
     getCamperOption(camper: Camper): AutocompleteOption {
       // If this group has a housing room, check if the camper is already in another group with a housing room
@@ -926,7 +930,7 @@ export default defineComponent({
 
         if (occupyingGroup) {
           return {
-            label: `${camper.spec.firstName} ${camper.spec.lastName} (Age ${camper.spec.age}) - Assigned to ${occupyingGroup.meta.name}`,
+            label: `${camper.meta.name} (Age ${camper.spec.age}) - Assigned to ${occupyingGroup.meta.name}`,
             value: camper.meta.id,
             disabled: true,
           };
@@ -934,21 +938,25 @@ export default defineComponent({
       }
 
       return {
-        label: `${camper.spec.firstName} ${camper.spec.lastName} (Age ${camper.spec.age})`,
+        label: `${camper.meta.name} (Age ${camper.spec.age})`,
         value: camper.meta.id,
       };
     },
 
     // Staff methods
     getStaffLabel(staff: StaffMember): string {
-      return `${staff.spec.firstName} ${staff.spec.lastName} (${staff.spec.roleId})`;
+      return `${staff.meta.name} (${staff.spec.roleId})`;
     },
     getStaffInitials(staff: StaffMember): string {
-      return `${staff.spec.firstName.charAt(0)}${staff.spec.lastName.charAt(0)}`;
+      const parts = staff.meta.name.split(" ");
+      if (parts.length >= 2) {
+        return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`;
+      }
+      return staff.meta.name.charAt(0).toUpperCase();
     },
     getStaffOption(staff: StaffMember): AutocompleteOption {
       return {
-        label: `${staff.spec.firstName} ${staff.spec.lastName} (${staff.spec.roleId})`,
+        label: `${staff.meta.name} (${staff.spec.roleId})`,
         value: staff.meta.id,
       };
     },

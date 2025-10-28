@@ -31,7 +31,7 @@
               :style="getWeekEventStyle(event, day)"
               @click="$emit('select-event', event)"
             >
-              <div class="week-event-title">{{ event.spec.title }}</div>
+              <div class="week-event-title">{{ event.meta.name }}</div>
               <div class="week-event-details">
                 <div class="week-event-room text-xs">
                   {{ getLocationName(event.spec.locationId || "") }}

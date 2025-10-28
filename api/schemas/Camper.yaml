@@ -8,15 +8,9 @@ properties:
   spec:
     type: object
     required:
-      - firstName
-      - lastName
       - age
       - gender
     properties:
-      firstName:
-        type: string
-      lastName:
-        type: string
       age:
         type: integer
         minimum: 1

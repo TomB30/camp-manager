@@ -74,7 +74,7 @@ describe("CamperFormModal", () => {
         "input[placeholder='Enter first name']",
       );
       expect((firstNameInput.element as HTMLInputElement).value).toBe(
-        camper.spec.firstName,
+        camper.meta.name.split(" ")[0],
       );
     });
   });

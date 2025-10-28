@@ -79,7 +79,7 @@ describe("StaffMemberFormModal", () => {
         "input[placeholder='Enter first name']",
       );
       expect((firstNameInput.element as HTMLInputElement).value).toBe(
-        staffMember.spec.firstName,
+        staffMember.meta.name.split(" ")[0],
       );
     });
   });

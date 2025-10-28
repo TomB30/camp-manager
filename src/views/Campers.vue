@@ -251,9 +251,14 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         campers = campers.filter(
           (camper: Camper) =>
-            camper.spec.firstName.toLowerCase().includes(query) ||
-            camper.spec.lastName.toLowerCase().includes(query) ||
-            `${camper.spec.firstName} ${camper.spec.lastName}`
+            camper.meta.name.split(" ")[0].toLowerCase().includes(query) ||
+            camper.meta.name
+              .split(" ")
+              .slice(1)
+              .join(" ")
+              .toLowerCase()
+              .includes(query) ||
+            `${camper.meta.name.split(" ")[0]} ${camper.meta.name.split(" ").slice(1).join(" ")}`
               .toLowerCase()
               .includes(query),
         );
@@ -322,7 +327,7 @@ export default defineComponent({
 
       this.camperToDelete = {
         id: this.selectedCamperId,
-        name: `${camper.spec.firstName} ${camper.spec.lastName}`,
+        name: `${camper.meta.name.split(" ")[0]} ${camper.meta.name.split(" ").slice(1).join(" ")}`,
       };
       this.showConfirmModal = true;
     },

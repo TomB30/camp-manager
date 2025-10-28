@@ -155,7 +155,7 @@
               {{ formatTime(event.spec.endDate) }}
             </div>
             <div class="timeline-content">
-              <div class="timeline-title">{{ event.spec.title }}</div>
+              <div class="timeline-title">{{ event.meta.name }}</div>
               <div class="timeline-meta">
                 <span class="badge badge-primary">
                   {{ getLocationName(event.spec.locationId || "") }}
@@ -200,9 +200,7 @@
               :key="camper.meta.id"
               class="recent-item"
             >
-              <span class="font-medium"
-                >{{ camper.spec.firstName }} {{ camper.spec.lastName }}</span
-              >
+              <span class="font-medium">{{ camper.meta.name }}</span>
               <span class="text-xs text-secondary"
                 >Age {{ camper.spec.age }}</span
               >

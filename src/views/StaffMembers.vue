@@ -79,12 +79,12 @@
         <template #cell-name="{ item }">
           <div class="member-name-content">
             <AvatarInitials
-              :first-name="item.spec.firstName"
-              :last-name="item.spec.lastName"
+              :first-name="item.meta.name.split(' ')[0]"
+              :last-name="item.meta.name.split(' ').slice(1).join(' ')"
               size="sm"
             />
             <div class="member-fullname">
-              {{ item.spec.firstName }} {{ item.spec.lastName }}
+              {{ item.meta.name }}
             </div>
           </div>
         </template>
@@ -152,7 +152,7 @@
               :key="report.meta.id"
               class="badge badge-primary"
             >
-              {{ report.spec.firstName }} {{ report.spec.lastName }}
+              {{ report.meta.name }}
             </span>
           </div>
           <div v-else class="text-caption">No direct reports</div>
@@ -318,11 +318,7 @@ export default defineComponent({
         const query = this.searchQuery.toLowerCase();
         members = members.filter(
           (member: StaffMember) =>
-            member.spec.firstName.toLowerCase().includes(query) ||
-            member.spec.lastName.toLowerCase().includes(query) ||
-            `${member.spec.firstName} ${member.spec.lastName}`
-              .toLowerCase()
-              .includes(query) ||
+            member.meta.name.toLowerCase().includes(query) ||
             (member.spec.email &&
               member.spec.email.toLowerCase().includes(query)),
         );
@@ -390,9 +386,7 @@ export default defineComponent({
     getManagerName(managerId: string | undefined): string {
       if (!managerId) return "None";
       const manager = this.staffMembersStore.getStaffMemberById(managerId);
-      return manager
-        ? `${manager.spec.firstName} ${manager.spec.lastName}`
-        : "Unknown";
+      return manager ? manager.meta.name : "Unknown";
     },
     formatRole(roleId: string): string {
       const role = this.rolesStore.getRoleById(roleId);

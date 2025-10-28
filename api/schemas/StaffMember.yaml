@@ -8,14 +8,8 @@ properties:
   spec:
     type: object
     required:
-      - firstName
-      - lastName
       - roleId
     properties:
-      firstName:
-        type: string
-      lastName:
-        type: string
       roleId:
         type: string
         format: uuid

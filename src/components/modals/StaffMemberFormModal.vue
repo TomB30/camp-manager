@@ -9,7 +9,7 @@
           <div class="form-group">
             <label class="form-label">First Name</label>
             <BaseInput
-              v-model="localFormData.spec.firstName"
+              v-model="firstName"
               placeholder="Enter first name"
               :rules="[(val: string) => !!val || 'Enter first name']"
             />
@@ -18,7 +18,7 @@
           <div class="form-group">
             <label class="form-label">Last Name</label>
             <BaseInput
-              v-model="localFormData.spec.lastName"
+              v-model="lastName"
               placeholder="Enter last name"
               :rules="[(val: string) => !!val || 'Enter last name']"
             />
@@ -143,14 +143,14 @@ export default defineComponent({
   },
   data() {
     return {
+      firstName: "",
+      lastName: "",
       localFormData: {
         meta: {
           name: "",
           description: "",
         },
         spec: {
-          firstName: "",
-          lastName: "",
           roleId: "",
           email: "",
           certificationIds: [],
@@ -166,14 +166,18 @@ export default defineComponent({
       this.staffMemberId,
     );
     if (!staffMember) return;
+
+    // Split the name into firstName and lastName
+    const nameParts = staffMember.meta.name.split(" ");
+    this.firstName = nameParts[0] || "";
+    this.lastName = nameParts.slice(1).join(" ") || "";
+
     this.localFormData = {
       meta: {
         name: staffMember.meta.name,
         description: staffMember.meta.description || "",
       },
       spec: {
-        firstName: staffMember.spec.firstName,
-        lastName: staffMember.spec.lastName,
         roleId: staffMember.spec.roleId,
         email: staffMember.spec.email || "",
         certificationIds: staffMember.spec.certificationIds || [],
@@ -226,7 +230,7 @@ export default defineComponent({
           const role = this.rolesStore.getRoleById(member.spec.roleId);
           const roleName = role ? role.meta.name : "Unknown Role";
           return {
-            label: `${member.spec.firstName} ${member.spec.lastName} (${roleName})`,
+            label: `${member.meta.name} (${roleName})`,
             value: member.meta.id,
           };
         });
@@ -236,6 +240,10 @@ export default defineComponent({
     async handleSave(): Promise<void> {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
+
+      // Combine firstName and lastName into meta.name
+      this.localFormData.meta.name =
+        `${this.firstName} ${this.lastName}`.trim();
 
       if (this.isEditing) {
         return this.updateStaffMember();

@@ -29,7 +29,7 @@
         <div class="form-group">
           <label class="form-label">Title</label>
           <BaseInput
-            v-model="formData.spec.title"
+            v-model="formData.meta.name"
             placeholder="Enter event title"
             :rules="[(val: string) => !!val || 'Enter event title']"
           />
@@ -522,7 +522,6 @@ export default defineComponent({
           description: event.meta.description,
         },
         spec: {
-          title: event.spec.title,
           startDate: event.spec.startDate,
           endDate: event.spec.endDate,
           locationId: event.spec.locationId,
@@ -816,7 +815,7 @@ export default defineComponent({
       if (!activity) return;
 
       // Auto-populate form fields from activity template
-      this.formData.spec.title = activity.meta.name;
+      this.formData.meta.name = activity.meta.name;
 
       // Calculate end time based on start time and duration
       if (this.internalStartTime) {
@@ -869,14 +868,18 @@ export default defineComponent({
       this.formData.spec.activityId = activity.meta.id;
     },
     getCamperLabel(camper: Camper): string {
-      return `${camper.spec.firstName} ${camper.spec.lastName} (Age: ${camper.spec.age})`;
+      return `${camper.meta.name} (Age: ${camper.spec.age})`;
     },
     getCamperInitials(camper: Camper): string {
-      return `${camper.spec.firstName[0]}${camper.spec.lastName[0]}`.toUpperCase();
+      const parts = camper.meta.name.split(" ");
+      if (parts.length >= 2) {
+        return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+      }
+      return camper.meta.name.charAt(0).toUpperCase();
     },
     getCamperOption(camper: Camper): AutocompleteOption {
       return {
-        label: `${camper.spec.firstName} ${camper.spec.lastName} (Age: ${camper.spec.age})`,
+        label: `${camper.meta.name} (Age: ${camper.spec.age})`,
         value: camper.meta.id,
       };
     },
@@ -968,7 +971,7 @@ export default defineComponent({
       return { available: result.canAssign, reason: result.reason };
     },
     getStaffLabel(staff: StaffMember): string {
-      const baseLabel = `${staff.spec.firstName} ${staff.spec.lastName} - ${staff.spec.roleId}`;
+      const baseLabel = `${staff.meta.name} - ${staff.spec.roleId}`;
       const availability = this.isStaffAvailable(staff);
 
       let prefix = "";
@@ -994,10 +997,14 @@ export default defineComponent({
       return prefix + baseLabel;
     },
     getStaffInitials(staff: StaffMember): string {
-      return `${staff.spec.firstName[0]}${staff.spec.lastName[0]}`.toUpperCase();
+      const parts = staff.meta.name.split(" ");
+      if (parts.length >= 2) {
+        return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+      }
+      return staff.meta.name.charAt(0).toUpperCase();
     },
     getStaffOption(staff: StaffMember): AutocompleteOption {
-      const baseLabel = `${staff.spec.firstName} ${staff.spec.lastName} - ${staff.spec.roleId}`;
+      const baseLabel = `${staff.meta.name} - ${staff.spec.roleId}`;
       const availability = this.isStaffAvailable(staff);
 
       let prefix = "";
@@ -1145,7 +1152,6 @@ export default defineComponent({
               description: formData.meta.description,
             },
             spec: {
-              title: formData.spec.title,
               startDate: occurrenceStart.toISOString(),
               endDate: occurrenceEnd.toISOString(),
               locationId: formData.spec.locationId,

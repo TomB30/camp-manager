@@ -195,12 +195,11 @@
                 class="member-item"
               >
                 <div class="member-avatar">
-                  {{ camper.spec.firstName.charAt(0)
-                  }}{{ camper.spec.lastName.charAt(0) }}
+                  {{ getInitials(camper.meta.name) }}
                 </div>
                 <div class="member-info">
                   <div class="member-name">
-                    {{ camper.spec.firstName }} {{ camper.spec.lastName }}
+                    {{ camper.meta.name }}
                   </div>
                   <div class="member-meta">
                     Age {{ camper.spec.age }} •
@@ -229,12 +228,11 @@
                 class="member-item"
               >
                 <div class="member-avatar staff-avatar">
-                  {{ member.spec.firstName.charAt(0)
-                  }}{{ member.spec.lastName.charAt(0) }}
+                  {{ getInitials(member.meta.name) }}
                 </div>
                 <div class="member-info">
                   <div class="member-name">
-                    {{ member.spec.firstName }} {{ member.spec.lastName }}
+                    {{ member.meta.name }}
                   </div>
                   <div class="member-meta">
                     {{ getRoleName(member.spec.roleId) }}
@@ -399,6 +397,13 @@ export default defineComponent({
     },
   },
   methods: {
+    getInitials(fullName: string): string {
+      const parts = fullName.split(" ");
+      if (parts.length >= 2) {
+        return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`.toUpperCase();
+      }
+      return fullName.charAt(0).toUpperCase();
+    },
     getLabelName(labelId: string): string {
       const label = this.labelsStore.getLabelById(labelId);
       return label ? label.meta.name : "Unknown Label";

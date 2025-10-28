@@ -1,8 +1,5 @@
 <template>
-  <BaseModal
-    :title="member ? `${member.spec.firstName} ${member.spec.lastName}` : ''"
-    @close="$emit('close')"
-  >
+  <BaseModal :title="member ? member.meta.name : ''" @close="$emit('close')">
     <template #body>
       <div v-if="member">
         <div class="detail-section">

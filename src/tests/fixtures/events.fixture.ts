@@ -13,7 +13,7 @@ export const eventsFixture: Event[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Morning Painting",
+      // title: "Morning Painting",
       activityId: activitiesFixture[0].meta.id,
       locationId: locationsFixture[2].meta.id, // Art Studio
       startDate: "2025-10-20T09:00:00.000Z",
@@ -37,7 +37,7 @@ export const eventsFixture: Event[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Swimming Lessons - Beginners",
+      // title: "Swimming Lessons - Beginners",
       activityId: activitiesFixture[2].meta.id,
       locationId: locationsFixture[3].meta.id, // Swimming Area
       startDate: "2025-10-20T10:00:00.000Z",
@@ -61,7 +61,7 @@ export const eventsFixture: Event[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Nature Hike",
+      // title: "Nature Hike",
       activityId: activitiesFixture[4].meta.id,
       locationId: locationsFixture[5].meta.id, // North Trail Head
       startDate: "2025-10-20T14:00:00.000Z",
@@ -86,7 +86,7 @@ export const eventsFixture: Event[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Daily Archery",
+      // title: "Daily Archery",
       activityId: activitiesFixture[6].meta.id,
       locationId: locationsFixture[9].meta.id,
       startDate: "2025-10-20T15:00:00.000Z",
@@ -110,7 +110,7 @@ export const eventsFixture: Event[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Monday/Wednesday Pottery",
+      // title: "Monday/Wednesday Pottery",
       activityId: activitiesFixture[1].meta.id,
       locationId: locationsFixture[2].meta.id,
       startDate: "2025-10-20T13:00:00.000Z",
@@ -134,7 +134,7 @@ export const eventsFixture: Event[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Afternoon Kayaking",
+      // title: "Afternoon Kayaking",
       activityId: activitiesFixture[3].meta.id,
       locationId: locationsFixture[4].meta.id, // Boating Dock
       startDate: "2025-10-21T14:00:00.000Z",
@@ -158,7 +158,7 @@ export const eventsFixture: Event[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Rock Climbing Session",
+      // title: "Rock Climbing Session",
       activityId: activitiesFixture[5].meta.id,
       locationId: locationsFixture[0].meta.id,
       startDate: "2025-10-21T10:00:00.000Z",
@@ -182,7 +182,7 @@ export const eventsFixture: Event[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Crafts Time",
+      // title: "Crafts Time",
       activityId: activitiesFixture[7].meta.id,
       locationId: locationsFixture[2].meta.id,
       startDate: "2025-10-22T09:00:00.000Z",
@@ -206,7 +206,7 @@ export const eventsFixture: Event[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Morning Canoeing",
+      // title: "Morning Canoeing",
       activityId: activitiesFixture[8].meta.id,
       locationId: locationsFixture[4].meta.id,
       startDate: "2025-10-22T08:00:00.000Z",
@@ -230,7 +230,7 @@ export const eventsFixture: Event[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Survival Skills Workshop",
+      // title: "Survival Skills Workshop",
       activityId: activitiesFixture[9].meta.id,
       locationId: locationsFixture[6].meta.id, // Nature Center
       startDate: "2025-10-22T13:00:00.000Z",
@@ -255,7 +255,7 @@ export const eventsFixture: Event[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Conflicting Painting Session",
+      // title: "Conflicting Painting Session",
       activityId: activitiesFixture[0].meta.id,
       locationId: locationsFixture[2].meta.id, // Same as event-1
       startDate: "2025-10-20T09:30:00.000Z", // Overlaps with event-1
@@ -280,7 +280,7 @@ export const eventsFixture: Event[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Staff Conflict Swimming",
+      // title: "Staff Conflict Swimming",
       activityId: activitiesFixture[2].meta.id,
       locationId: locationsFixture[3].meta.id,
       startDate: "2025-10-20T10:30:00.000Z", // Overlaps with event-2

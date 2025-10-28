@@ -923,8 +923,6 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      firstName: "Sarah",
-      lastName: "Johnson",
       roleId: roles[0].meta.id, // Camp Director
       email: "sarah.johnson@camp.com",
       phone: "555-0101",
@@ -940,8 +938,6 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      firstName: "Michael",
-      lastName: "Chen",
       roleId: roles[1].meta.id, // Program Supervisor
       email: "michael.chen@camp.com",
       phone: "555-0102",
@@ -957,8 +953,6 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      firstName: "Emily",
-      lastName: "Rodriguez",
       roleId: roles[2].meta.id, // Camp Counselor
       email: "emily.rodriguez@camp.com",
       phone: "555-0103",
@@ -974,8 +968,6 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      firstName: "David",
-      lastName: "Thompson",
       roleId: roles[2].meta.id, // Camp Counselor
       email: "david.thompson@camp.com",
       phone: "555-0104",
@@ -991,8 +983,6 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      firstName: "Jessica",
-      lastName: "Martinez",
       roleId: roles[3].meta.id, // Camp Nurse
       email: "jessica.martinez@camp.com",
       phone: "555-0105",
@@ -1008,8 +998,6 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      firstName: "Daniel",
-      lastName: "Lee",
       roleId: roles[4].meta.id, // Activity Instructor
       email: "daniel.lee@camp.com",
       phone: "555-0106",
@@ -1025,8 +1013,6 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      firstName: "Ashley",
-      lastName: "Wilson",
       roleId: roles[2].meta.id, // Camp Counselor
       email: "ashley.wilson@camp.com",
       phone: "555-0107",
@@ -1042,8 +1028,6 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      firstName: "Andrew",
-      lastName: "Nguyen",
       roleId: roles[2].meta.id, // Camp Counselor
       email: "andrew.nguyen@camp.com",
       phone: "555-0108",
@@ -1059,8 +1043,6 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      firstName: "Olivia",
-      lastName: "Patel",
       roleId: roles[1].meta.id, // Program Supervisor
       email: "olivia.patel@camp.com",
       phone: "555-0109",
@@ -1076,8 +1058,6 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      firstName: "Ethan",
-      lastName: "Kim",
       roleId: roles[4].meta.id, // Activity Instructor
       email: "ethan.kim@camp.com",
       phone: "555-0110",
@@ -1325,8 +1305,6 @@ groups.forEach((group, groupIndex) => {
         updatedAt: octoberDate(1),
       },
       spec: {
-        firstName: camperFirstNames[camperIndex],
-        lastName: camperLastNames[camperIndex],
         age,
         gender,
         photoUrl: `https://i.pravatar.cc/150?u=camper${camperIndex}`,
@@ -1777,7 +1755,6 @@ const createDailyEvents = (day: number, sessionIndex: number) => {
         updatedAt: octoberDate(day, time.hour, time.duration),
       },
       spec: {
-        title: activity.meta.name,
         startDate: octoberDate(day, time.hour, 0),
         endDate: octoberDate(day, time.hour, time.duration),
         locationId: activity.spec.defaultLocationId || locations[0].meta.id,

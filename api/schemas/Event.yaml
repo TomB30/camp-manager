@@ -8,12 +8,9 @@ properties:
   spec:
     type: object
     required:
-      - title
       - startDate
       - endDate
     properties:
-      title:
-        type: string
       startDate:
         type: string
         format: date-time

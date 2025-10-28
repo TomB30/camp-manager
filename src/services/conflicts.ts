@@ -59,7 +59,7 @@ export class ConflictDetector {
 
         conflicts.push({
           type: "event_overcapacity",
-          message: `Event "${event.spec.title}" on ${formattedDate} has ${enrolledCount} campers enrolled but capacity is ${event.spec.capacity}`,
+          message: `Event "${event.meta.name}" on ${formattedDate} has ${enrolledCount} campers enrolled but capacity is ${event.spec.capacity}`,
           entityId: event.meta.id,
           conflictingIds: enrolledCamperIds,
         });
@@ -157,7 +157,7 @@ export class ConflictDetector {
 
             conflicts.push({
               type: "camper_double_booked",
-              message: `${camper.spec.firstName} ${camper.spec.lastName} is enrolled in overlapping events on ${formattedDate} ("${camperEvents[i].spec.title}" at ${event1Time} and "${camperEvents[j].spec.title}" at ${event2Time})`,
+              message: `${camper.meta.name} is enrolled in overlapping events on ${formattedDate} ("${camperEvents[i].meta.name}" at ${event1Time} and "${camperEvents[j].meta.name}" at ${event2Time})`,
               entityId: camperId,
               conflictingIds: [
                 camperEvents[i].meta.id,
@@ -210,7 +210,7 @@ export class ConflictDetector {
 
             conflicts.push({
               type: "staff_double_booked",
-              message: `${staff.spec.firstName} ${staff.spec.lastName} is assigned to overlapping events on ${formattedDate} ("${staffEvents[i].spec.title}" at ${event1Time} and "${staffEvents[j].spec.title}" at ${event2Time})`,
+              message: `${staff.meta.name} is assigned to overlapping events on ${formattedDate} ("${staffEvents[i].meta.name}" at ${event1Time} and "${staffEvents[j].meta.name}" at ${event2Time})`,
               entityId: staffId,
               conflictingIds: [staffEvents[i].meta.id, staffEvents[j].meta.id],
             });
@@ -271,7 +271,7 @@ export class ConflictDetector {
         );
         conflicts.push({
           type: "missing_certification",
-          message: `Event "${event.spec.title}" on ${formattedDate} requires certifications: ${missingCertNames.join(", ")}`,
+          message: `Event "${event.meta.name}" on ${formattedDate} requires certifications: ${missingCertNames.join(", ")}`,
           entityId: event.meta.id,
           conflictingIds: assignedStaffIds,
         });
@@ -330,7 +330,7 @@ export class ConflictDetector {
         });
         return {
           canAssign: false,
-          reason: `Already assigned to "${existingEvent.spec.title}" at ${startDate}`,
+          reason: `Already assigned to "${existingEvent.meta.name}" at ${startDate}`,
           conflictingEvent: existingEvent,
         };
       }

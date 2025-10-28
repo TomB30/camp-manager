@@ -11,8 +11,6 @@ describe("StaffCard", () => {
         ...staffMembersFixture[0],
         spec: {
           ...staffMembersFixture[0].spec,
-          firstName: "John",
-          lastName: "Doe",
         },
       };
       const wrapper = createWrapper(StaffCard, {
@@ -22,8 +20,7 @@ describe("StaffCard", () => {
         },
       });
 
-      expect(wrapper.text()).toContain(member.spec.firstName);
-      expect(wrapper.text()).toContain(member.spec.lastName);
+      expect(wrapper.text()).toContain(member.meta.name);
     });
 
     it("renders formatted role badge", () => {
@@ -31,8 +28,6 @@ describe("StaffCard", () => {
         ...staffMembersFixture[0],
         spec: {
           ...staffMembersFixture[0].spec,
-          firstName: "John",
-          lastName: "Doe",
         },
       };
       const wrapper = createWrapper(StaffCard, {
@@ -50,8 +45,6 @@ describe("StaffCard", () => {
         ...staffMembersFixture[0],
         spec: {
           ...staffMembersFixture[0].spec,
-          firstName: "John",
-          lastName: "Doe",
           email: "john.doe@camp.com",
         },
       };
@@ -106,8 +99,6 @@ describe("StaffCard", () => {
         ...staffMembersFixture[0],
         spec: {
           ...staffMembersFixture[0].spec,
-          firstName: "John",
-          lastName: "Doe",
         },
       };
       const wrapper = createWrapper(StaffCard, {
@@ -119,8 +110,9 @@ describe("StaffCard", () => {
 
       const avatar = wrapper.findComponent({ name: "AvatarInitials" });
       expect(avatar.exists()).toBe(true);
-      expect(avatar.props("firstName")).toBe(member.spec.firstName);
-      expect(avatar.props("lastName")).toBe(member.spec.lastName);
+      const nameParts = member.meta.name.split(" ");
+      expect(avatar.props("firstName")).toBe(nameParts[0]);
+      expect(avatar.props("lastName")).toBe(nameParts.slice(1).join(" "));
       expect(avatar.props("size")).toBe("lg");
     });
   });
@@ -131,8 +123,6 @@ describe("StaffCard", () => {
         ...staffMembersFixture[0],
         spec: {
           ...staffMembersFixture[0].spec,
-          firstName: "John",
-          lastName: "Doe",
         },
       };
       const wrapper = createWrapper(StaffCard, {
@@ -155,8 +145,6 @@ describe("StaffCard", () => {
         ...staffMembersFixture[0],
         spec: {
           ...staffMembersFixture[0].spec,
-          firstName: "John",
-          lastName: "Doe",
         },
       };
       const wrapper = createWrapper(StaffCard, {
@@ -174,8 +162,6 @@ describe("StaffCard", () => {
         ...staffMembersFixture[0],
         spec: {
           ...staffMembersFixture[0].spec,
-          firstName: "John",
-          lastName: "Doe",
         },
       };
       const wrapper = createWrapper(StaffCard, {

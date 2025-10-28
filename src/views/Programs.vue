@@ -241,9 +241,9 @@
             <EntityListItem
               v-for="staff in programStaff"
               :key="staff.meta.id"
-              :first-name="staff.spec.firstName"
-              :last-name="staff.spec.lastName"
-              :title="`${staff.spec.firstName} ${staff.spec.lastName}`"
+              :first-name="staff.meta.name.split(' ')[0]"
+              :last-name="staff.meta.name.split(' ').slice(1).join(' ')"
+              :title="`${staff.meta.name}`"
               :subtitle="formatRole(staff.spec.roleId)"
               :removable="true"
               @remove="confirmRemoveStaff(staff.meta.id)"
@@ -649,7 +649,7 @@ export default defineComponent({
         const staff = this.staffMembersStore.getStaffMemberById(
           this.deleteTarget.id,
         );
-        return `Are you sure you want to remove "${staff?.spec.firstName} ${staff?.spec.lastName}" from this program?`;
+        return `Are you sure you want to remove "${staff?.meta.name}" from this program?`;
       } else if (this.deleteTarget.type === "location") {
         const location = this.locationsStore.getLocationById(
           this.deleteTarget.id,
@@ -856,14 +856,18 @@ export default defineComponent({
     },
     // Staff helper methods
     getStaffLabel(staff: any): string {
-      return `${staff.spec.firstName} ${staff.spec.lastName}`;
+      return `${staff.meta.name}`;
     },
     getStaffInitials(staff: any): string {
-      return `${staff.spec.firstName.charAt(0)}${staff.spec.lastName.charAt(0)}`;
+      const parts = staff.meta.name.split(" ");
+      if (parts.length >= 2) {
+        return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`;
+      }
+      return staff.meta.name.charAt(0).toUpperCase();
     },
     getStaffOption(staff: any): AutocompleteOption {
       return {
-        label: `${staff.spec.firstName} ${staff.spec.lastName} (${this.formatRole(staff.spec.roleId)})`,
+        label: `${staff.meta.name} (${this.formatRole(staff.spec.roleId)})`,
         value: staff.meta.id,
       };
     },

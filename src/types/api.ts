@@ -1171,8 +1171,6 @@ export interface components {
     Camper: {
       meta: components["schemas"]["EntityMeta"];
       spec: {
-        firstName: string;
-        lastName: string;
         age: number;
         /** @enum {string} */
         gender: "male" | "female";
@@ -1199,8 +1197,6 @@ export interface components {
     CamperCreationRequest: {
       meta: components["schemas"]["EntityCreationRequestMeta"];
       spec: {
-        firstName: string;
-        lastName: string;
         age: number;
         /** @enum {string} */
         gender: "male" | "female";
@@ -1227,8 +1223,6 @@ export interface components {
     CamperUpdateRequest: {
       meta: components["schemas"]["EntityCreationRequestMeta"];
       spec: {
-        firstName: string;
-        lastName: string;
         age: number;
         /** @enum {string} */
         gender: "male" | "female";
@@ -1255,8 +1249,6 @@ export interface components {
     StaffMember: {
       meta: components["schemas"]["EntityMeta"];
       spec: {
-        firstName: string;
-        lastName: string;
         /**
          * Format: uuid
          * @description ID of the role this staff member has
@@ -1278,8 +1270,6 @@ export interface components {
     StaffMemberCreationRequest: {
       meta: components["schemas"]["EntityCreationRequestMeta"];
       spec: {
-        firstName: string;
-        lastName: string;
         /**
          * Format: uuid
          * @description ID of the role this staff member has
@@ -1301,8 +1291,6 @@ export interface components {
     StaffMemberUpdateRequest: {
       meta: components["schemas"]["EntityCreationRequestMeta"];
       spec: {
-        firstName: string;
-        lastName: string;
         /**
          * Format: uuid
          * @description ID of the role this staff member has
@@ -1765,7 +1753,6 @@ export interface components {
     Event: {
       meta: components["schemas"]["EntityMeta"];
       spec: {
-        title: string;
         /** Format: date-time */
         startDate: string;
         /** Format: date-time */
@@ -1799,7 +1786,6 @@ export interface components {
     EventCreationRequest: {
       meta: components["schemas"]["EntityCreationRequestMeta"];
       spec: {
-        title: string;
         /** Format: date-time */
         startDate: string;
         /** Format: date-time */
@@ -1833,7 +1819,6 @@ export interface components {
     EventUpdateRequest: {
       meta: components["schemas"]["EntityCreationRequestMeta"];
       spec: {
-        title: string;
         /** Format: date-time */
         startDate: string;
         /** Format: date-time */

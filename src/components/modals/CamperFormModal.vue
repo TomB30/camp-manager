@@ -9,7 +9,7 @@
           <div class="form-group">
             <label class="form-label">First Name</label>
             <BaseInput
-              v-model="formData.spec.firstName"
+              v-model="firstName"
               placeholder="Enter first name"
               :rules="[(val: string) => !!val || 'Enter first name']"
             />
@@ -18,7 +18,7 @@
           <div class="form-group">
             <label class="form-label">Last Name</label>
             <BaseInput
-              v-model="formData.spec.lastName"
+              v-model="lastName"
               placeholder="Enter last name"
               :rules="[(val: string) => !!val || 'Enter last name']"
             />
@@ -124,14 +124,14 @@ export default defineComponent({
       groupsStore: useGroupsStore(),
       campersStore: useCampersStore(),
       toast: useToast(),
+      firstName: "",
+      lastName: "",
       formData: {
         meta: {
           name: "",
           description: "",
         },
         spec: {
-          firstName: "",
-          lastName: "",
           age: 0,
           gender: "male",
           sessionId: "",
@@ -150,14 +150,18 @@ export default defineComponent({
     if (!this.camperId) return;
     const camper = this.campersStore.getCamperById(this.camperId);
     if (!camper) return;
+
+    // Split the name into firstName and lastName
+    const nameParts = camper.meta.name.split(" ");
+    this.firstName = nameParts[0] || "";
+    this.lastName = nameParts.slice(1).join(" ") || "";
+
     this.formData = {
       meta: {
         name: camper.meta.name,
         description: camper.meta.description,
       },
       spec: {
-        firstName: camper.spec.firstName,
-        lastName: camper.spec.lastName,
         age: camper.spec.age,
         gender: camper.spec.gender,
         sessionId: camper.spec.sessionId || "",
@@ -225,6 +229,9 @@ export default defineComponent({
     async handleSave(): Promise<void> {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
+
+      // Combine firstName and lastName into meta.name
+      this.formData.meta.name = `${this.firstName} ${this.lastName}`.trim();
 
       if (this.camperId) {
         this.updateCamper();

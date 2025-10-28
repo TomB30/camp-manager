@@ -8,16 +8,10 @@ properties:
   spec:
     type: object
     required:
-      - firstName
-      - lastName
       - age
       - gender
       - sessionId
     properties:
-      firstName:
-        type: string
-      lastName:
-        type: string
       age:
         type: integer
         minimum: 1

@@ -12,8 +12,7 @@ describe("CamperCard", () => {
         props: { camper },
       });
 
-      expect(wrapper.text()).toContain(camper.spec.firstName);
-      expect(wrapper.text()).toContain(camper.spec.lastName);
+      expect(wrapper.text()).toContain(camper.meta.name);
     });
 
     it("renders camper age badge", () => {
@@ -52,7 +51,7 @@ describe("CamperCard", () => {
     it("renders AvatarInitials component with camper name", () => {
       const camper: Camper = {
         ...campersFixture[0],
-        spec: { ...campersFixture[0].spec, firstName: "John", lastName: "Doe" },
+        spec: { ...campersFixture[0].spec },
       };
       const wrapper = createWrapper(CamperCard, {
         props: { camper },
@@ -60,8 +59,9 @@ describe("CamperCard", () => {
 
       const avatar = wrapper.findComponent({ name: "AvatarInitials" });
       expect(avatar.exists()).toBe(true);
-      expect(avatar.props("firstName")).toBe(camper.spec.firstName);
-      expect(avatar.props("lastName")).toBe(camper.spec.lastName);
+      const nameParts = camper.meta.name.split(" ");
+      expect(avatar.props("firstName")).toBe(nameParts[0]);
+      expect(avatar.props("lastName")).toBe(nameParts.slice(1).join(" "));
     });
   });
 
@@ -119,8 +119,6 @@ describe("CamperCard", () => {
           updatedAt: new Date().toISOString(),
         },
         spec: {
-          firstName: "John",
-          lastName: "Doe",
           age: 10,
           gender: "male" as const,
           sessionId: "session-1",
@@ -132,7 +130,7 @@ describe("CamperCard", () => {
         props: { camper: minimalCamper },
       });
 
-      expect(wrapper.text()).toContain("John Doe");
+      expect(wrapper.text()).toContain("Test Camper");
       expect(wrapper.text()).toContain("Age 10");
     });
 

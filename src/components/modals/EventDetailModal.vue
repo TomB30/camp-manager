@@ -245,15 +245,11 @@ export default defineComponent({
     },
     getCamperName(camperId: string): string {
       const camper = this.campersStore.getCamperById(camperId);
-      return camper
-        ? `${camper.spec.firstName} ${camper.spec.lastName}`
-        : "Unknown";
+      return camper ? camper.meta.name : "Unknown";
     },
     getStaffName(staffId: string): string {
       const staff = this.staffMembersStore.getStaffMemberById(staffId);
-      return staff
-        ? `${staff.spec.firstName} ${staff.spec.lastName}`
-        : "Unknown";
+      return staff ? staff.meta.name : "Unknown";
     },
     getGroupName(groupId: string): string {
       // Check groups

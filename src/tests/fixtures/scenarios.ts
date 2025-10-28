@@ -23,7 +23,7 @@ export const conflictingEventsScenario = (): Event[] => {
         updatedAt: "2025-10-01T09:00:00.000Z",
       },
       spec: {
-        title: "First Event",
+        // title: "First Event",
         locationId,
         startDate: baseDateTime,
         endDate,
@@ -37,7 +37,7 @@ export const conflictingEventsScenario = (): Event[] => {
         updatedAt: "2025-10-01T09:00:00.000Z",
       },
       spec: {
-        title: "Conflicting Event",
+        // title: "Conflicting Event",
         locationId,
         startDate: baseDateTime,
         endDate,
@@ -63,7 +63,7 @@ export const staffConflictScenario = (): Event[] => {
         updatedAt: "2025-10-01T09:00:00.000Z",
       },
       spec: {
-        title: "Event 1",
+        // title: "Event 1",
         excludeStaffIds: [staffId],
         startDate: baseDateTime,
         endDate,
@@ -77,7 +77,7 @@ export const staffConflictScenario = (): Event[] => {
         updatedAt: "2025-10-01T09:00:00.000Z",
       },
       spec: {
-        title: "Event 2",
+        // title: "Event 2",
         excludeStaffIds: [staffId],
         startDate: baseDateTime,
         endDate,
@@ -307,7 +307,7 @@ export const eventAtCapacityScenario = (): Event => {
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      title: "Full Event",
+      // title: "Full Event",
       startDate: "2025-10-20T10:00:00.000Z",
       endDate: "2025-10-20T11:00:00.000Z",
       capacity: 10,
@@ -331,7 +331,7 @@ export const missingCertificationScenario = () => {
         updatedAt: "2025-10-01T09:00:00.000Z",
       },
       spec: {
-        title: "Swimming Event",
+        // title: "Swimming Event",
         activityId: "activity-swimming",
         startDate: "2025-10-20T10:00:00.000Z",
         endDate: "2025-10-20T11:00:00.000Z",

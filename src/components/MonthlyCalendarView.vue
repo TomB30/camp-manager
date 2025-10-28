@@ -34,13 +34,13 @@
                   ? colorsStore.getColorById(event.spec.colorId)?.spec.hexValue
                   : '#3B82F6',
               }"
-              :title="event.spec.title"
+              :title="event.meta.name"
               @click.stop="$emit('select-event', event)"
             >
               <span class="event-time">{{
                 formatEventTime(event.spec.startDate)
               }}</span>
-              <span class="event-title">{{ event.spec.title }}</span>
+              <span class="event-title">{{ event.meta.name }}</span>
             </div>
             <div
               v-if="day.events.length > maxEventsPerDay"

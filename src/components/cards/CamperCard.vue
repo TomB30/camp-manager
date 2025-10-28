@@ -4,12 +4,12 @@
     @click="$emit('click', camper)"
   >
     <AvatarInitials
-      :first-name="camper.spec.firstName"
-      :last-name="camper.spec.lastName"
+      :first-name="getFirstName(camper.meta.name)"
+      :last-name="getLastName(camper.meta.name)"
       size="lg"
     />
     <div class="card-details">
-      <h4>{{ camper.spec.firstName }} {{ camper.spec.lastName }}</h4>
+      <h4>{{ camper.meta.name }}</h4>
       <div class="card-meta">
         <span class="badge badge-primary">Age {{ camper.spec.age }}</span>
         <span class="badge badge-primary">{{ formattedGender }}</span>
@@ -46,6 +46,14 @@ export default defineComponent({
     },
   },
   emits: ["click"],
+  methods: {
+    getFirstName(fullName: string): string {
+      return fullName.split(" ")[0] || "";
+    },
+    getLastName(fullName: string): string {
+      return fullName.split(" ").slice(1).join(" ") || "";
+    },
+  },
 });
 </script>
 

@@ -28,8 +28,6 @@ export const buildCamper = (overrides: Partial<Camper> = {}): Camper => ({
     updatedAt: new Date().toISOString(),
   },
   spec: {
-    firstName: "Test",
-    lastName: "Camper",
     age: 12,
     gender: "male",
     sessionId: "session-2",
@@ -49,8 +47,6 @@ export const buildStaffMember = (
     updatedAt: new Date().toISOString(),
   },
   spec: {
-    firstName: "Test",
-    lastName: "Staff",
     email: "test.staff@camp.com",
     phone: "555-0000",
     roleId: "role-1",
@@ -87,7 +83,6 @@ export const buildEvent = (overrides: Partial<Event> = {}): Event => ({
     updatedAt: new Date().toISOString(),
   },
   spec: {
-    title: "Test Event",
     activityId: "activity-1",
     locationId: "location-1",
     startDate: new Date().toISOString(),
@@ -173,8 +168,6 @@ export const buildStaffWithCertifications = (
       updatedAt: new Date().toISOString(),
     },
     spec: {
-      firstName: "Test",
-      lastName: "Staff",
       roleId: "role-1",
       email: "test.staff@camp.com",
       phone: "555-0000",
@@ -196,7 +189,6 @@ export const buildRecurringEvent = (overrides: Partial<Event> = {}): Event =>
       updatedAt: new Date().toISOString(),
     },
     spec: {
-      title: "Test Event",
       startDate: new Date().toISOString(),
       endDate: new Date(Date.now() + 3600000).toISOString(),
       locationId: "location-1",

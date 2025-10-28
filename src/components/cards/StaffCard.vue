@@ -4,12 +4,12 @@
     @click="$emit('click', member)"
   >
     <AvatarInitials
-      :first-name="member.spec.firstName"
-      :last-name="member.spec.lastName"
+      :first-name="getFirstName(member.meta.name)"
+      :last-name="getLastName(member.meta.name)"
       size="lg"
     />
     <div class="card-details">
-      <h4>{{ member.spec.firstName }} {{ member.spec.lastName }}</h4>
+      <h4>{{ member.meta.name }}</h4>
       <div class="member-role">
         <span class="badge badge-primary">{{ formattedRole }}</span>
       </div>
@@ -47,6 +47,14 @@ export default defineComponent({
   computed: {
     certificationCount(): number {
       return this.member.spec.certificationIds?.length || 0;
+    },
+  },
+  methods: {
+    getFirstName(fullName: string): string {
+      return fullName.split(" ")[0] || "";
+    },
+    getLastName(fullName: string): string {
+      return fullName.split(" ").slice(1).join(" ") || "";
     },
   },
 });
