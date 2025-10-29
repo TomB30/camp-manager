@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Color, ColorCreationRequest, ColorUpdateRequest } from "@/types";
+import type { Color, ColorCreationRequest, ColorUpdateRequest } from "@/generated/api";
 import { colorsService } from "@/services";
 
 export const useColorsStore = defineStore("colors", {

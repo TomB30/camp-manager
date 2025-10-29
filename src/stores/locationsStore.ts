@@ -3,7 +3,7 @@ import type {
   Location,
   LocationCreationRequest,
   LocationUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { locationsService } from "@/services";
 
 export const useLocationsStore = defineStore("locations", {

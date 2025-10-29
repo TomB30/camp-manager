@@ -3,7 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import SessionFormModal from "@/components/modals/SessionFormModal.vue";
 import { sessionsFixture } from "@/tests/fixtures";
 import { useSessionsStore } from "@/stores";
-import { Session } from "@/types";
+import { Session } from "@/generated/api";
 
 describe("SessionFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

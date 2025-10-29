@@ -4,7 +4,7 @@ import type {
   StaffMember,
   ProgramCreationRequest,
   ProgramUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { programsService } from "@/services";
 import { useActivitiesStore } from "./activitiesStore";
 import { useStaffMembersStore } from "./staffMembersStore";

@@ -277,7 +277,7 @@
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
 import Icon from "@/components/Icon.vue";
-import type { Group, Camper, StaffMember } from "@/types";
+import type { Group, Camper, StaffMember } from "@/generated/api";
 import {
   useLabelsStore,
   useHousingRoomsStore,

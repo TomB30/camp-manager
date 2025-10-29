@@ -109,7 +109,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useRolesStore } from "@/stores";
-import type { Role } from "@/types";
+import type { Role } from "@/generated/api";
 import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import RoleCard from "@/components/cards/RoleCard.vue";

@@ -3,7 +3,7 @@ import type {
   Activity,
   ActivityCreationRequest,
   ActivityUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { activitiesService } from "@/services";
 import { useProgramsStore } from "./programsStore";
 

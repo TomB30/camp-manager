@@ -7,7 +7,7 @@ import {
   groupsFixture,
 } from "@/tests/fixtures";
 import { useSessionsStore, useGroupsStore, useCampersStore } from "@/stores";
-import { Camper } from "@/types";
+import { Camper } from "@/generated/api";
 
 describe("CamperFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

@@ -46,7 +46,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import type { Session } from "@/types";
+import type { Session } from "@/generated/api";
 import { dateUtils } from "@/utils/dateUtils";
 
 export default defineComponent({

@@ -44,7 +44,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import type { Area } from "@/types";
+import type { Area } from "@/generated/api";
 import Icon from "../Icon.vue";
 
 export default defineComponent({

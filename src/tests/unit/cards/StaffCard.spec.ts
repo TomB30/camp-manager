@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createWrapper } from "@/tests/utils";
 import StaffCard from "@/components/cards/StaffCard.vue";
 import { staffMembersFixture } from "@/tests/fixtures";
-import { StaffMember } from "@/types";
+import { StaffMember } from "@/generated/api";
 
 describe("StaffCard", () => {
   describe("Rendering", () => {

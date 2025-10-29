@@ -3,7 +3,7 @@ import type {
   DurationPreset,
   DurationPresetCreationRequest,
   DurationPresetUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { durationPresetsService } from "@/services";
 
 export const useDurationPresetsStore = defineStore("durationPresets", {

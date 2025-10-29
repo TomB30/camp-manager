@@ -182,7 +182,7 @@ import {
   useCertificationsStore,
 } from "@/stores";
 import { useToastStore } from "@/stores/toastStore";
-import type { Event } from "@/types";
+import type { Event } from "@/generated/api";
 
 export default defineComponent({
   name: "EventDetailModal",

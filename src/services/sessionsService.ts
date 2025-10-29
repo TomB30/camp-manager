@@ -2,7 +2,7 @@ import type {
   Session,
   SessionCreationRequest,
   SessionUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 

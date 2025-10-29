@@ -1,4 +1,4 @@
-import type { StaffMember } from "@/types";
+import type { StaffMember } from "@/generated/api";
 import { rolesFixture } from "./roles.fixture";
 import { certificationsFixture } from "./certifications.fixture";
 

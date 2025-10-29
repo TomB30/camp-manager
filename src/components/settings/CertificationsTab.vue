@@ -107,7 +107,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useCertificationsStore } from "@/stores";
-import type { Certification } from "@/types";
+import type { Certification } from "@/generated/api";
 import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import CertificationCard from "@/components/cards/CertificationCard.vue";

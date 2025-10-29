@@ -136,7 +136,7 @@ import {
   useHousingRoomsStore,
   useSessionsStore,
 } from "@/stores";
-import type { Group, HousingRoom } from "@/types";
+import type { Group, HousingRoom } from "@/generated/api";
 import HousingRoomCard from "@/components/cards/HousingRoomCard.vue";
 import FilterBar from "@/components/FilterBar.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";

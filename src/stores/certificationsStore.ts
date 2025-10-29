@@ -3,7 +3,7 @@ import type {
   Certification,
   CertificationCreationRequest,
   CertificationUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { certificationsService } from "@/services";
 
 export const useCertificationsStore = defineStore("certifications", {

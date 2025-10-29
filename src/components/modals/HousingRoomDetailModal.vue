@@ -74,7 +74,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import type { Group, HousingRoom } from "@/types";
+import type { Group, HousingRoom } from "@/generated/api";
 import { useAreasStore, useGroupsStore, useSessionsStore } from "@/stores";
 
 export default defineComponent({

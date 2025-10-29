@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createWrapper } from "@/tests/utils";
 import AreaCard from "@/components/cards/AreaCard.vue";
 import { areasFixture } from "@/tests/fixtures";
-import { Area } from "@/types";
+import { Area } from "@/generated/api";
 
 describe("AreaCard", () => {
   describe("Rendering", () => {

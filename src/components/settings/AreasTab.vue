@@ -142,7 +142,7 @@ import { defineComponent } from "vue";
 // Stores
 import { useAreasStore } from "@/stores";
 // Types
-import type { Area } from "@/types";
+import type { Area } from "@/generated/api";
 import type { IconName } from "@/components/Icon.vue";
 // Components
 import AreaCard from "@/components/cards/AreaCard.vue";

@@ -4,7 +4,7 @@ import type {
   StaffMember,
   StaffMemberCreationRequest,
   StaffMemberUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { staffMembersService } from "@/services";
 
 export const useStaffMembersStore = defineStore("staffMembers", {

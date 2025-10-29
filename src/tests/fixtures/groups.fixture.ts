@@ -1,4 +1,4 @@
-import type { Group } from "@/types";
+import type { Group } from "@/generated/api";
 import { campersFixture } from "./campers.fixture";
 import { staffMembersFixture } from "./staffMembers.fixture";
 import { sessionsFixture } from "./sessions.fixture";

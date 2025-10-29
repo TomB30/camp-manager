@@ -91,7 +91,7 @@
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
 import EventsByDate from "@/components/EventsByDate.vue";
-import type { Camper, Event, Group } from "@/types";
+import type { Camper, Event, Group } from "@/generated/api";
 import { format } from "date-fns";
 import {
   useSessionsStore,

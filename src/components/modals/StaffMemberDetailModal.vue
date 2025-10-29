@@ -98,7 +98,7 @@ import {
   useCertificationsStore,
   useRolesStore,
 } from "@/stores";
-import type { StaffMember } from "@/types";
+import type { StaffMember } from "@/generated/api";
 
 export default defineComponent({
   name: "StaffMemberDetailModal",

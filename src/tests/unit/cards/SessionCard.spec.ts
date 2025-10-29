@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createWrapper } from "@/tests/utils";
 import SessionCard from "@/components/cards/SessionCard.vue";
 import { sessionsFixture } from "@/tests/fixtures";
-import { Session } from "@/types";
+import { Session } from "@/generated/api";
 
 describe("SessionCard", () => {
   describe("Rendering", () => {

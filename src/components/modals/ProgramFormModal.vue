@@ -50,7 +50,7 @@ import BaseModal from "@/components/BaseModal.vue";
 import ColorPicker from "@/components/ColorPicker.vue";
 import { useColorsStore, useProgramsStore } from "@/stores";
 import type { QForm } from "quasar";
-import type { Program, ProgramCreationRequest } from "@/types";
+import type { Program, ProgramCreationRequest } from "@/generated/api";
 import { useToast } from "@/composables/useToast";
 
 export default defineComponent({

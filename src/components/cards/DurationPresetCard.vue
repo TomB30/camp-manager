@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import type { DurationPreset } from "@/types";
+import type { DurationPreset } from "@/generated/api";
 import Icon from "../Icon.vue";
 
 export default defineComponent({

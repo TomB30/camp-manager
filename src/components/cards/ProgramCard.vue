@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import type { Program } from "@/types";
+import type { Program } from "@/generated/api";
 import { useColorsStore } from "@/stores";
 import Icon from "../Icon.vue";
 

@@ -438,7 +438,7 @@ import {
   useRolesStore,
 } from "@/stores";
 import { useToast } from "@/composables/useToast";
-import type { Program, Activity, StaffMember, Location } from "@/types";
+import type { Program, Activity, StaffMember, Location } from "@/generated/api";
 import { Users, UsersRound, Home, Clock, ListChecks } from "lucide-vue-next";
 import ViewHeader from "@/components/ViewHeader.vue";
 import EmptyState from "@/components/EmptyState.vue";

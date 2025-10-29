@@ -432,7 +432,7 @@ import type {
   Session,
   HousingRoom,
   Certification,
-} from "@/types";
+} from "@/generated/api";
 import {
   useColorsStore,
   useSessionsStore,

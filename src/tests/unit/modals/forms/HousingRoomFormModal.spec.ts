@@ -3,7 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import HousingRoomFormModal from "@/components/modals/HousingRoomFormModal.vue";
 import { housingRoomsFixture } from "@/tests/fixtures";
 import { useHousingRoomsStore } from "@/stores";
-import { HousingRoom } from "@/types";
+import { HousingRoom } from "@/generated/api";
 
 describe("HousingRoomFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

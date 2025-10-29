@@ -1,4 +1,4 @@
-import type { Certification } from "@/types";
+import type { Certification } from "@/generated/api";
 
 export const certificationsFixture: Certification[] = [
   {

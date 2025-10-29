@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import type { Session } from "@/types";
+import type { Session } from "@/generated/api";
 import Icon from "../Icon.vue";
 import { dateUtils } from "@/utils/dateUtils";
 

@@ -3,7 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import RolesTab from "@/components/settings/RolesTab.vue";
 import { rolesFixture } from "@/tests/fixtures";
 import { useRolesStore } from "@/stores";
-import { Role } from "@/types";
+import { Role } from "@/generated/api";
 
 describe("RolesTab", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

@@ -7,7 +7,7 @@ import {
   sessionsFixture,
 } from "@/tests/fixtures";
 import { useHousingRoomsStore, useSessionsStore } from "@/stores";
-import { Group } from "@/types";
+import { Group } from "@/generated/api";
 
 describe("GroupCard", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

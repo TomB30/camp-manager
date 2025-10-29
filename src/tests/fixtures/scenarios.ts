@@ -3,7 +3,7 @@
  * These scenarios represent common or edge-case situations
  */
 
-import type { Event, Group, HousingRoom } from "@/types";
+import type { Event, Group, HousingRoom } from "@/generated/api";
 import { buildEvent, buildGroup, buildHousingRoom } from "./builders";
 
 /**

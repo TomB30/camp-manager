@@ -130,7 +130,7 @@ import {
   useColorsStore,
   useCertificationsStore,
 } from "@/stores";
-import type { Activity } from "@/types";
+import type { Activity } from "@/generated/api";
 import BaseModal from "@/components/BaseModal.vue";
 import ActivityForm, {
   type ActivityFormData,

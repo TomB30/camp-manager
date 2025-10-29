@@ -56,7 +56,7 @@
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
 import Icon from "@/components/Icon.vue";
-import type { DurationPreset } from "@/types";
+import type { DurationPreset } from "@/generated/api";
 
 export default defineComponent({
   name: "DurationPresetDetailModal",

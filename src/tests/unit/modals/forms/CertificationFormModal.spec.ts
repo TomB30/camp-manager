@@ -3,7 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import CertificationFormModal from "@/components/modals/CertificationFormModal.vue";
 import { certificationsFixture } from "@/tests/fixtures";
 import { useCertificationsStore } from "@/stores";
-import { Certification } from "@/types";
+import { Certification } from "@/generated/api";
 
 describe("CertificationFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

@@ -3,7 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import ColorFormModal from "@/components/modals/ColorFormModal.vue";
 import { colorsFixture } from "@/tests/fixtures";
 import { useColorsStore } from "@/stores";
-import { Color } from "@/types";
+import { Color } from "@/generated/api";
 
 describe("ColorFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

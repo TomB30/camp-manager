@@ -111,7 +111,7 @@ import {
 } from "@/stores";
 import BaseModal from "@/components/BaseModal.vue";
 import DurationDisplay from "@/components/DurationDisplay.vue";
-import type { Activity } from "@/types";
+import type { Activity } from "@/generated/api";
 
 export default defineComponent({
   name: "ActivityDetailModal",

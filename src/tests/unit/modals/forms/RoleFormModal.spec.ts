@@ -3,7 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import RoleFormModal from "@/components/modals/RoleFormModal.vue";
 import { rolesFixture } from "@/tests/fixtures";
 import { useRolesStore } from "@/stores";
-import { Role } from "@/types";
+import { Role } from "@/generated/api";
 
 describe("RoleFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

@@ -88,7 +88,7 @@ import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
 import { useAreasStore, useLocationsStore } from "@/stores";
-import type { Location, LocationCreationRequest } from "@/types";
+import type { Location, LocationCreationRequest } from "@/generated/api";
 import type { QForm } from "quasar";
 import { useToast } from "@/composables/useToast";
 

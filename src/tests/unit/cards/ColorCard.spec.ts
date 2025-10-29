@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createWrapper } from "@/tests/utils";
 import ColorCard from "@/components/cards/ColorCard.vue";
 import { colorsFixture } from "@/tests/fixtures";
-import { Color } from "@/types";
+import { Color } from "@/generated/api";
 
 describe("ColorCard", () => {
   describe("Rendering", () => {

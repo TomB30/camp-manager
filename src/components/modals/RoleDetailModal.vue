@@ -44,7 +44,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import type { Role } from "@/types";
+import type { Role } from "@/generated/api";
 
 export default defineComponent({
   name: "RoleDetailModal",

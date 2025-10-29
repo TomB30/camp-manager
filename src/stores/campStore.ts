@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Camp, CampUpdateRequest } from "@/types";
+import type { Camp, CampUpdateRequest } from "@/generated/api";
 import { campService } from "@/services";
 
 export const useCampStore = defineStore("camp", {

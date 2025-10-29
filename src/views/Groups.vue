@@ -200,7 +200,7 @@ import {
   useHousingRoomsStore,
   useCertificationsStore,
 } from "@/stores";
-import type { Group, Camper, StaffMember, Label, Session } from "@/types";
+import type { Group, Camper, StaffMember, Label, Session } from "@/generated/api";
 import ViewHeader from "@/components/ViewHeader.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import GroupCard from "@/components/cards/GroupCard.vue";

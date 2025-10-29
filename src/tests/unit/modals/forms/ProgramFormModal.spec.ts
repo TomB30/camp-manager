@@ -3,7 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import ProgramFormModal from "@/components/modals/ProgramFormModal.vue";
 import { programsFixture, colorsFixture } from "@/tests/fixtures";
 import { useColorsStore, useProgramsStore } from "@/stores";
-import { Program } from "@/types";
+import { Program } from "@/generated/api";
 
 describe("ProgramFormModal", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Area, AreaCreationRequest, AreaUpdateRequest } from "@/types";
+import type { Area, AreaCreationRequest, AreaUpdateRequest } from "@/generated/api";
 import { areasService } from "@/services";
 
 export const useAreasStore = defineStore("areas", {

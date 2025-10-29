@@ -7,7 +7,7 @@ import type {
   HousingRoom,
   Certification,
   Group,
-} from "@/types";
+} from "@/generated/api";
 
 export class ConflictDetector {
   /**

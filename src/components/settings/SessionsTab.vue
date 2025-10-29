@@ -68,7 +68,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useSessionsStore } from "@/stores";
-import type { Session } from "@/types";
+import type { Session } from "@/generated/api";
 import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import SessionCard from "@/components/cards/SessionCard.vue";

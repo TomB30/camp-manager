@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Label } from "@/types";
+import type { Label } from "@/generated/api";
 import { labelsService } from "@/services";
 import type { LabelCreationRequest, LabelUpdateRequest } from "@/services";
 

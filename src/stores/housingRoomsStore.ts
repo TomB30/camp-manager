@@ -3,7 +3,7 @@ import type {
   HousingRoom,
   HousingRoomCreationRequest,
   HousingRoomUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { housingRoomsService } from "@/services";
 
 export const useHousingRoomsStore = defineStore("housingRooms", {

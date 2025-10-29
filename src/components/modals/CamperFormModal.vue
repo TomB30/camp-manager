@@ -100,7 +100,7 @@ import BaseModal from "@/components/BaseModal.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import type { Session, Group, CamperCreationRequest } from "@/types";
+import type { Session, Group, CamperCreationRequest } from "@/generated/api";
 import type { QForm } from "quasar";
 import { useCampersStore, useGroupsStore, useSessionsStore } from "@/stores";
 import { useToast } from "@/composables/useToast";

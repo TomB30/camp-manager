@@ -1,4 +1,4 @@
-import type { Camper } from "@/types";
+import type { Camper } from "@/generated/api";
 import { sessionsFixture } from "./sessions.fixture";
 
 export const campersFixture: Camper[] = [

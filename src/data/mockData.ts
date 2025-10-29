@@ -19,7 +19,7 @@ import type {
   Role,
   Camp,
   DurationPreset,
-} from "@/types";
+} from "@/generated/api";
 
 // Helper function to generate UUIDs (simple version for mock data)
 let idCounter = 0;

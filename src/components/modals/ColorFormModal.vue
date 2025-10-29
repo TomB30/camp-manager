@@ -118,7 +118,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import type { ColorCreationRequest } from "@/types";
+import type { ColorCreationRequest } from "@/generated/api";
 import { useColorsStore } from "@/stores";
 import type { QForm } from "quasar";
 import { useToast } from "@/composables/useToast";

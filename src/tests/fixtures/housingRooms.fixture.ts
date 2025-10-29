@@ -1,4 +1,4 @@
-import type { HousingRoom } from "@/types";
+import type { HousingRoom } from "@/generated/api";
 
 export const housingRoomsFixture: HousingRoom[] = [
   {

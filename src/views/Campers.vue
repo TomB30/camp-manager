@@ -148,7 +148,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useCampersStore, useSessionsStore } from "@/stores";
-import type { Camper } from "@/types";
+import type { Camper } from "@/generated/api";
 import ViewHeader from "@/components/ViewHeader.vue";
 import AvatarInitials from "@/components/AvatarInitials.vue";
 import CamperCard from "@/components/cards/CamperCard.vue";

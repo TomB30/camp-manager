@@ -30,7 +30,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useColorsStore } from "@/stores";
-import type { Color } from "@/types";
+import type { Color } from "@/generated/api";
 
 export default defineComponent({
   name: "ColorPicker",

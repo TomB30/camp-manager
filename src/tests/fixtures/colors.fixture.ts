@@ -1,4 +1,4 @@
-import type { Color } from "@/types";
+import type { Color } from "@/generated/api";
 
 export const colorsFixture: Color[] = [
   {

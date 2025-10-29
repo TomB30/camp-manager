@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createWrapper } from "@/tests/utils";
 import CamperCard from "@/components/cards/CamperCard.vue";
 import { campersFixture } from "@/tests/fixtures";
-import { Camper } from "@/types";
+import { Camper } from "@/generated/api";
 
 describe("CamperCard", () => {
   describe("Rendering", () => {

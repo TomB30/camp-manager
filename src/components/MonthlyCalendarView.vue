@@ -67,7 +67,7 @@ import {
   isSameDay,
   format,
 } from "date-fns";
-import type { Event } from "@/types";
+import type { Event } from "@/generated/api";
 import { useColorsStore } from "@/stores";
 
 interface CalendarDay {

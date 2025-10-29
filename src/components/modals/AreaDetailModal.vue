@@ -74,7 +74,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import type { Area } from "@/types";
+import type { Area } from "@/generated/api";
 
 export default defineComponent({
   name: "AreaDetailModal",

@@ -62,7 +62,7 @@ import Autocomplete, {
 import { useAreasStore, useHousingRoomsStore } from "@/stores";
 import type { QForm } from "quasar";
 import { useToast } from "@/composables/useToast";
-import type { HousingRoomCreationRequest } from "@/types";
+import type { HousingRoomCreationRequest } from "@/generated/api";
 
 export default defineComponent({
   name: "HousingRoomFormModal",

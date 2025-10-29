@@ -3,7 +3,7 @@ import type {
   Camper,
   CamperCreationRequest,
   CamperUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { campersService } from "@/services";
 import { useGroupsStore } from "./groupsStore";
 

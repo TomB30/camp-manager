@@ -69,7 +69,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { format } from "date-fns";
-import type { Event } from "@/types";
+import type { Event } from "@/generated/api";
 import { useColorsStore, useEventsStore } from "@/stores";
 
 export default defineComponent({

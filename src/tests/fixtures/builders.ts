@@ -11,7 +11,7 @@ import type {
   HousingRoom,
   Activity,
   Location,
-} from "@/types";
+} from "@/generated/api";
 
 let idCounter = 0;
 const generateTestId = (prefix: string): string => {

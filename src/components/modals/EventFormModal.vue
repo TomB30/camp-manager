@@ -387,8 +387,8 @@ import type {
   StaffMember,
   Group,
   EventCreationRequest,
-} from "@/types";
-import type { Certification } from "@/types";
+} from "@/generated/api";
+import type { Certification } from "@/generated/api";
 import {
   type RecurrenceData,
   type DayOfWeek,

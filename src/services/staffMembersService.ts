@@ -2,7 +2,7 @@ import type {
   StaffMember,
   StaffMemberCreationRequest,
   StaffMemberUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 

@@ -1,4 +1,4 @@
-import type { Camp, CampUpdateRequest } from "@/types";
+import type { Camp, CampUpdateRequest } from "@/generated/api";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 

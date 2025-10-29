@@ -115,7 +115,7 @@ import {
   useStaffMembersStore,
 } from "@/stores";
 // Types
-import type { StaffMember, StaffMemberCreationRequest } from "@/types";
+import type { StaffMember, StaffMemberCreationRequest } from "@/generated/api";
 import type { QForm } from "quasar";
 // Composables
 import { useToast } from "@/composables/useToast";

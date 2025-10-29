@@ -83,7 +83,7 @@ import BaseInput from "@/components/common/BaseInput.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import type { Area, AreaCreationRequest } from "@/types";
+import type { Area, AreaCreationRequest } from "@/generated/api";
 import type { QForm } from "quasar";
 import { useAreasStore } from "@/stores";
 import { useToast } from "@/composables/useToast";

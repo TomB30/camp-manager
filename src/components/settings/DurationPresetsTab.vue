@@ -68,7 +68,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useDurationPresetsStore } from "@/stores";
-import type { DurationPreset } from "@/types";
+import type { DurationPreset } from "@/generated/api";
 import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import DurationPresetCard from "@/components/cards/DurationPresetCard.vue";

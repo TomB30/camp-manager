@@ -63,7 +63,7 @@ import { defineComponent } from "vue";
 // Stores
 import { useColorsStore } from "@/stores";
 // Types
-import type { Color } from "@/types";
+import type { Color } from "@/generated/api";
 // Components
 import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";

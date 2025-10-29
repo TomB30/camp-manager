@@ -145,7 +145,7 @@ import EventFormModal from "@/components/modals/EventFormModal.vue";
 import DailyCalendarView from "@/components/DailyCalendarView.vue";
 import WeeklyCalendarView from "@/components/WeeklyCalendarView.vue";
 import MonthlyCalendarView from "@/components/MonthlyCalendarView.vue";
-import type { Event } from "@/types";
+import type { Event } from "@/generated/api";
 
 export default defineComponent({
   name: "Calendar",

@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import type { HousingRoom, Group } from "@/types";
+import type { HousingRoom, Group } from "@/generated/api";
 import { useAreasStore } from "@/stores";
 import Icon from "../Icon.vue";
 

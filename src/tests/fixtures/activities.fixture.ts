@@ -1,4 +1,4 @@
-import type { Activity } from "@/types";
+import type { Activity } from "@/generated/api";
 import { programsFixture } from "./programs.fixture";
 import { certificationsFixture } from "./certifications.fixture";
 

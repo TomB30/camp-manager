@@ -68,7 +68,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import { DurationPresetCreationRequest } from "@/types";
+import { DurationPresetCreationRequest } from "@/generated/api";
 import { useDurationPresetsStore } from "@/stores";
 import type { QForm } from "quasar";
 import { useToast } from "@/composables/useToast";

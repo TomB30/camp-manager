@@ -3,7 +3,7 @@ import type {
   Session,
   SessionCreationRequest,
   SessionUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { sessionsService } from "@/services";
 
 export const useSessionsStore = defineStore("sessions", {

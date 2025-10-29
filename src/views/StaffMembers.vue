@@ -201,7 +201,7 @@ import {
   useAreasStore,
   useRolesStore,
 } from "@/stores";
-import type { StaffMember, Event } from "@/types";
+import type { StaffMember, Event } from "@/generated/api";
 import ViewHeader from "@/components/ViewHeader.vue";
 import AvatarInitials from "@/components/AvatarInitials.vue";
 import StaffCard from "@/components/cards/StaffCard.vue";

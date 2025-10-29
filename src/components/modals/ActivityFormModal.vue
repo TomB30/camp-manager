@@ -41,7 +41,7 @@ import ActivityForm, {
   type ActivityFormData,
 } from "@/components/ActivityForm.vue";
 import { type AutocompleteOption } from "@/components/Autocomplete.vue";
-import type { Activity } from "@/types";
+import type { Activity } from "@/generated/api";
 import { QForm } from "quasar";
 
 export default defineComponent({

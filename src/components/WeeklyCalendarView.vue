@@ -55,7 +55,7 @@ import { defineComponent, type PropType } from "vue";
 import { format } from "date-fns";
 import { dateUtils } from "@/utils/dateUtils";
 import { useColorsStore, useEventsStore } from "@/stores";
-import type { Event, Location } from "@/types";
+import type { Event, Location } from "@/generated/api";
 
 export default defineComponent({
   name: "WeeklyCalendarView",

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createWrapper } from "@/tests/utils";
 import RoleDetailModal from "@/components/modals/RoleDetailModal.vue";
 import { rolesFixture } from "@/tests/fixtures";
-import { Role } from "@/types";
+import { Role } from "@/generated/api";
 
 describe("RoleDetailModal", () => {
   describe("Rendering", () => {

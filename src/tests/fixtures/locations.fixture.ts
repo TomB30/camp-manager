@@ -1,4 +1,4 @@
-import type { Location } from "@/types";
+import type { Location } from "@/generated/api";
 import { areasFixture } from "./areas.fixture";
 
 export const locationsFixture: Location[] = [

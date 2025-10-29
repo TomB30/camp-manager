@@ -1,4 +1,4 @@
-import type { Area, AreaCreationRequest, AreaUpdateRequest } from "@/types";
+import type { Area, AreaCreationRequest, AreaUpdateRequest } from "@/generated/api";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 

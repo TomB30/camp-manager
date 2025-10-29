@@ -1,4 +1,4 @@
-import type { Event } from "@/types";
+import type { Event } from "@/generated/api";
 import { activitiesFixture } from "./activities.fixture";
 import { locationsFixture } from "./locations.fixture";
 

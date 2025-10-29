@@ -45,7 +45,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import { useColorsStore, useEventsStore } from "@/stores";
-import type { Event, Location } from "@/types";
+import type { Event, Location } from "@/generated/api";
 
 export default defineComponent({
   name: "DailyCalendarView",

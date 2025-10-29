@@ -1,4 +1,4 @@
-import type { Area } from "@/types";
+import type { Area } from "@/generated/api";
 
 export const areasFixture: Area[] = [
   {

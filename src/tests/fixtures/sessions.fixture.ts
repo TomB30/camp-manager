@@ -1,4 +1,4 @@
-import type { Session } from "@/types";
+import type { Session } from "@/generated/api";
 
 export const sessionsFixture: Session[] = [
   {

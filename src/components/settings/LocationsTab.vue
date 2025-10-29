@@ -173,7 +173,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useLocationsStore, useAreasStore, useEventsStore } from "@/stores";
-import type { Location } from "@/types";
+import type { Location } from "@/generated/api";
 import LocationCard from "@/components/cards/LocationCard.vue";
 import FilterBar, { type Filter } from "@/components/FilterBar.vue";
 import EventsByDate from "@/components/EventsByDate.vue";

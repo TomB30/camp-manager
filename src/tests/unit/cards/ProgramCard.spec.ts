@@ -3,7 +3,7 @@ import { createWrapper, setupTestPinia } from "@/tests/utils";
 import ProgramCard from "@/components/cards/ProgramCard.vue";
 import { programsFixture, colorsFixture } from "@/tests/fixtures";
 import { useColorsStore } from "@/stores";
-import { Program } from "@/types";
+import { Program } from "@/generated/api";
 
 describe("ProgramCard", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

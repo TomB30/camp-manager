@@ -4,7 +4,7 @@ import type {
   StaffMember,
   EventCreationRequest,
   EventUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { eventsService } from "@/services";
 import { dateUtils } from "@/utils/dateUtils";
 import { useGroupsStore } from "./groupsStore";

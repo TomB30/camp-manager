@@ -5,7 +5,7 @@ import type {
   StaffMember,
   GroupCreationRequest,
   GroupUpdateRequest,
-} from "@/types";
+} from "@/generated/api";
 import { groupsService } from "@/services";
 import { useCampersStore } from "./campersStore";
 import { useStaffMembersStore } from "./staffMembersStore";

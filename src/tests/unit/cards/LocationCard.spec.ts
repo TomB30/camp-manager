@@ -7,7 +7,7 @@ import {
   eventsFixture,
 } from "@/tests/fixtures";
 import { useAreasStore, useEventsStore } from "@/stores";
-import { Location } from "@/types";
+import { Location } from "@/generated/api";
 
 describe("LocationCard", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

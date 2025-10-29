@@ -43,7 +43,7 @@
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
 import type { QForm } from "quasar";
-import type { CertificationCreationRequest } from "@/types";
+import type { CertificationCreationRequest } from "@/generated/api";
 import { useCertificationsStore } from "@/stores";
 import { useToast } from "@/composables/useToast";
 

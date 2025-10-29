@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import type { Camper } from "@/types";
+import type { Camper } from "@/generated/api";
 import AvatarInitials from "@/components/AvatarInitials.vue";
 
 export default defineComponent({

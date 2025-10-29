@@ -7,7 +7,7 @@ import {
   areasFixture,
 } from "@/tests/fixtures";
 import { useAreasStore } from "@/stores";
-import { HousingRoom } from "@/types";
+import { HousingRoom } from "@/generated/api";
 
 describe("HousingRoomCard", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

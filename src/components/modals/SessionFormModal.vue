@@ -68,7 +68,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
-import { SessionCreationRequest } from "@/types";
+import { SessionCreationRequest } from "@/generated/api";
 import { useSessionsStore } from "@/stores";
 import type { QForm } from "quasar";
 import { useToast } from "@/composables/useToast";

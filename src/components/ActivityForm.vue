@@ -120,7 +120,7 @@ import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
 import SelectionList from "@/components/SelectionList.vue";
-import type { Certification } from "@/types";
+import type { Certification } from "@/generated/api";
 import { useDurationPresetsStore } from "@/stores";
 
 export interface ActivityFormData {

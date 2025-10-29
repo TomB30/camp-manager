@@ -1,4 +1,4 @@
-import type { Program } from "@/types";
+import type { Program } from "@/generated/api";
 import { colorsFixture } from "./colors.fixture";
 
 export const programsFixture: Program[] = [

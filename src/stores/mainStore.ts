@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Conflict } from "@/types";
+import type { Conflict } from "@/generated/api";
 import { conflictDetector } from "@/services";
 import { useCampersStore } from "./campersStore";
 import { useStaffMembersStore } from "./staffMembersStore";
