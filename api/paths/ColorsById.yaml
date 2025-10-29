@@ -2,6 +2,7 @@ parameters:
   - $ref: "../parameters/id.yaml"
 get:
   summary: Get color by ID
+  operationId: getColorById
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
             $ref: "../schemas/Color.yaml"
 put:
   summary: Update color by ID
+  operationId: updateColorById
   requestBody:
     required: true
     content:
@@ -26,6 +28,7 @@ put:
             $ref: "../schemas/Color.yaml"
 delete:
   summary: Delete color by ID
+  operationId: deleteColorById
   responses:
     "204":
       description: Deleted

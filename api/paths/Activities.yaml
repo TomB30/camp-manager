@@ -1,5 +1,6 @@
 get:
   summary: List all activities
+  operationId: listActivities
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/Activity.yaml"
 post:
   summary: Create a new activity
+  operationId: createActivity
   requestBody:
     required: true
     content:

@@ -2,6 +2,7 @@ parameters:
   - $ref: "../parameters/id.yaml"
 get:
   summary: Get group by ID
+  operationId: getGroupById
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
             $ref: "../schemas/Group.yaml"
 put:
   summary: Update group by ID
+  operationId: updateGroupById
   requestBody:
     required: true
     content:
@@ -26,6 +28,7 @@ put:
             $ref: "../schemas/Group.yaml"
 delete:
   summary: Delete group by ID
+  operationId: deleteGroupById
   responses:
     "204":
       description: Deleted

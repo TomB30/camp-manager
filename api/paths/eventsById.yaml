@@ -2,6 +2,7 @@ parameters:
   - $ref: "../parameters/id.yaml"
 get:
   summary: Get event by ID
+  operationId: getEventById
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
             $ref: "../schemas/Event.yaml"
 put:
   summary: Update event
+  operationId: updateEventById
   requestBody:
     required: true
     content:
@@ -26,6 +28,7 @@ put:
             $ref: "../schemas/Event.yaml"
 delete:
   summary: Delete event
+  operationId: deleteEventById
   responses:
     "204":
       description: Deleted

@@ -1,5 +1,6 @@
 get:
   summary: List all roles
+  operationId: listRoles
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/Role.yaml"
 post:
   summary: Create a new role
+  operationId: createRole
   requestBody:
     required: true
     content:

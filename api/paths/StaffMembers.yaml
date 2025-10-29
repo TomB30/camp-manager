@@ -1,5 +1,6 @@
 get:
   summary: List all staff members
+  operationId: listStaffMembers
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/StaffMember.yaml"
 post:
   summary: Create a new staff member
+  operationId: createStaffMember
   requestBody:
     required: true
     content:

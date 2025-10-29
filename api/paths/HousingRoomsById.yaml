@@ -2,6 +2,7 @@ parameters:
   - $ref: "../parameters/id.yaml"
 get:
   summary: Get housing room by ID
+  operationId: getHousingRoomById
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
             $ref: "../schemas/HousingRoom.yaml"
 put:
   summary: Update housing room
+  operationId: updateHousingRoomById
   requestBody:
     required: true
     content:
@@ -26,6 +28,7 @@ put:
             $ref: "../schemas/HousingRoom.yaml"
 delete:
   summary: Delete housing room by ID
+  operationId: deleteHousingRoomById
   responses:
     "204":
       description: Deleted

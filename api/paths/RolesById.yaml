@@ -2,6 +2,7 @@ parameters:
   - $ref: "../parameters/id.yaml"
 get:
   summary: Get role by ID
+  operationId: getRoleById
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
             $ref: "../schemas/Role.yaml"
 put:
   summary: Update role by ID
+  operationId: updateRoleById
   requestBody:
     required: true
     content:
@@ -26,6 +28,7 @@ put:
             $ref: "../schemas/Role.yaml"
 delete:
   summary: Delete role by ID
+  operationId: deleteRoleById
   responses:
     "204":
       description: Deleted

@@ -1,5 +1,6 @@
 get:
   summary: List all events
+  operationId: listEvents
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/Event.yaml"
 post:
   summary: Create a new event
+  operationId: createEvent
   requestBody:
     required: true
     content:

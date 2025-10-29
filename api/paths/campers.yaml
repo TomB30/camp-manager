@@ -1,5 +1,6 @@
 get:
   summary: List all campers
+  operationId: listCampers
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/Camper.yaml"
 post:
   summary: Create a new camper
+  operationId: createCamper
   requestBody:
     required: true
     content:

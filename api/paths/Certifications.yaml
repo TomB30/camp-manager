@@ -1,5 +1,6 @@
 get:
   summary: List all certifications
+  operationId: listCertifications
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/Certification.yaml"
 post:
   summary: Create a new certification
+  operationId: createCertification
   requestBody:
     required: true
     content:

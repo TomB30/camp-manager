@@ -1,5 +1,6 @@
 get:
   summary: List all housing rooms
+  operationId: listHousingRooms
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/HousingRoom.yaml"
 post:
   summary: Create a new housing room
+  operationId: createHousingRoom
   requestBody:
     required: true
     content:

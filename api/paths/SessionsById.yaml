@@ -2,6 +2,7 @@ parameters:
   - $ref: "../parameters/id.yaml"
 get:
   summary: Get session by ID
+  operationId: getSessionById
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
             $ref: "../schemas/Session.yaml"
 put:
   summary: Update session by ID
+  operationId: updateSessionById
   requestBody:
     required: true
     content:
@@ -26,6 +28,7 @@ put:
             $ref: "../schemas/Session.yaml"
 delete:
   summary: Delete session by ID
+  operationId: deleteSessionById
   responses:
     "204":
       description: Deleted

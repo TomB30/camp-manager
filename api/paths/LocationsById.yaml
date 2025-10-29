@@ -2,6 +2,7 @@ parameters:
   - $ref: "../parameters/id.yaml"
 get:
   summary: Get location by ID
+  operationId: getLocationById
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
             $ref: "../schemas/Location.yaml"
 put:
   summary: Update location by ID
+  operationId: updateLocationById
   requestBody:
     required: true
     content:
@@ -26,6 +28,7 @@ put:
             $ref: "../schemas/Location.yaml"
 delete:
   summary: Delete location by ID
+  operationId: deleteLocationById
   responses:
     "204":
       description: Deleted

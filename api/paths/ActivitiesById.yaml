@@ -2,6 +2,7 @@ parameters:
   - $ref: "../parameters/id.yaml"
 get:
   summary: Get activity by ID
+  operationId: getActivityById
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
             $ref: "../schemas/Activity.yaml"
 put:
   summary: Update activity by ID
+  operationId: updateActivityById
   requestBody:
     required: true
     content:
@@ -26,6 +28,7 @@ put:
             $ref: "../schemas/Activity.yaml"
 delete:
   summary: Delete activity by ID
+  operationId: deleteActivityById
   responses:
     "204":
       description: Deleted

@@ -1,5 +1,6 @@
 get:
   summary: List all groups
+  operationId: listGroups
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/Group.yaml"
 post:
   summary: Create a new group
+  operationId: createGroup
   requestBody:
     required: true
     content:

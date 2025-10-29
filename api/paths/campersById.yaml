@@ -2,6 +2,7 @@ parameters:
   - $ref: "../parameters/id.yaml"
 get:
   summary: Get camper by ID
+  operationId: getCamperById
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
             $ref: "../schemas/Camper.yaml"
 put:
   summary: Update camper
+  operationId: updateCamperById
   requestBody:
     required: true
     content:
@@ -26,6 +28,7 @@ put:
             $ref: "../schemas/Camper.yaml"
 delete:
   summary: Delete camper
+  operationId: deleteCamperById
   responses:
     "204":
       description: Deleted

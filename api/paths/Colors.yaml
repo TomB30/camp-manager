@@ -1,5 +1,6 @@
 get:
   summary: List all colors
+  operationId: listColors
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/Color.yaml"
 post:
   summary: Create a new color
+  operationId: createColor
   requestBody:
     required: true
     content:

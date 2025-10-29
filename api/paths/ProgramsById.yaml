@@ -2,6 +2,7 @@ parameters:
   - $ref: "../parameters/id.yaml"
 get:
   summary: Get program by ID
+  operationId: getProgramById
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
             $ref: "../schemas/Program.yaml"
 put:
   summary: Update program by ID
+  operationId: updateProgramById
   requestBody:
     required: true
     content:
@@ -26,6 +28,7 @@ put:
             $ref: "../schemas/Program.yaml"
 delete:
   summary: Delete program by ID
+  operationId: deleteProgramById
   responses:
     "204":
       description: Deleted

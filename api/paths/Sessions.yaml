@@ -1,5 +1,6 @@
 get:
   summary: List all sessions
+  operationId: listSessions
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/Session.yaml"
 post:
   summary: Create a new session
+  operationId: createSession
   requestBody:
     required: true
     content:

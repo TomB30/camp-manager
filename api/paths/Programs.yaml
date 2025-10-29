@@ -1,5 +1,6 @@
 get:
   summary: List all programs
+  operationId: listPrograms
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/Program.yaml"
 post:
   summary: Create a new program
+  operationId: createProgram
   requestBody:
     required: true
     content:

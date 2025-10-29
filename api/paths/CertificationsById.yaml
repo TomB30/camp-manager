@@ -2,6 +2,7 @@ parameters:
   - $ref: "../parameters/id.yaml"
 get:
   summary: Get certification by ID
+  operationId: getCertificationById
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
             $ref: "../schemas/Certification.yaml"
 put:
   summary: Update certification by ID
+  operationId: updateCertificationById
   requestBody:
     required: true
     content:
@@ -26,6 +28,7 @@ put:
             $ref: "../schemas/Certification.yaml"
 delete:
   summary: Delete certification by ID
+  operationId: deleteCertificationById
   responses:
     "204":
       description: Deleted

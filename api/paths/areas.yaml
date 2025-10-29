@@ -1,5 +1,6 @@
 get:
   summary: List all areas
+  operationId: listAreas
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/Area.yaml"
 post:
   summary: Create a new area
+  operationId: createArea
   requestBody:
     required: true
     content:

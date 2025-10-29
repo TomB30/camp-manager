@@ -1,5 +1,6 @@
 get:
   summary: List all locations
+  operationId: listLocations
   responses:
     "200":
       description: Success
@@ -11,6 +12,7 @@ get:
               $ref: "../schemas/Location.yaml"
 post:
   summary: Create a new location
+  operationId: createLocation
   requestBody:
     required: true
     content:
