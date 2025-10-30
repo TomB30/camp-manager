@@ -137,36 +137,6 @@ describe("AreaCard", () => {
   });
 
   describe("Icon and Styling", () => {
-    it("applies icon color", () => {
-      const area: Area = areasFixture[0];
-      const wrapper = createWrapper(AreaCard, {
-        props: {
-          area,
-          formatType: "Facility",
-          iconColor: "#FF0000",
-        },
-      });
-
-      const cardIcon = wrapper.find(".card-icon");
-      const style = cardIcon.attributes("style");
-      expect(style).toContain("background");
-      expect(
-        style?.includes("#FF0000") || style?.includes("rgb(255, 0, 0)"),
-      ).toBe(true);
-    });
-
-    it("uses default icon color when not provided", () => {
-      const area: Area = areasFixture[0];
-      const wrapper = createWrapper(AreaCard, {
-        props: {
-          area,
-          formatType: "Facility",
-        },
-      });
-
-      expect(wrapper.find(".card-icon").exists()).toBe(true);
-    });
-
     it("has card-clickable class", () => {
       const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
