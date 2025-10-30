@@ -14,7 +14,6 @@
     <!-- Search and Filters -->
     <FilterBar
       v-model:searchQuery="searchQuery"
-      :filters="[]"
       :filtered-count="filteredRooms.length"
       :total-count="housingRoomsStore.housingRooms.length"
       @clear="clearFilters"

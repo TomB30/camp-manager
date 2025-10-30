@@ -14,9 +14,10 @@
     <!-- Search and Filters -->
     <FilterBar
       v-model:searchQuery="searchQuery"
-      v-model:filter-capacity="filterCapacity"
+      v-model:filter-area="filterArea"
       :filters="locationFilters"
       :filtered-count="filteredLocations.length"
+      search-placeholder="Search by location name..."
       :total-count="locationsStore.locations.length"
       @clear="clearFilters"
     >
@@ -159,7 +160,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useLocationsStore, useAreasStore, useEventsStore } from "@/stores";
-import type { Location } from "@/generated/api";
+import type { Area, Location } from "@/generated/api";
 import LocationCard from "@/components/cards/LocationCard.vue";
 import FilterBar, { type Filter } from "@/components/FilterBar.vue";
 import EventsByDate from "@/components/EventsByDate.vue";
@@ -206,7 +207,7 @@ export default defineComponent({
       currentPage: 1,
       pageSize: 10,
       searchQuery: "",
-      filterCapacity: "",
+      filterArea: "",
       locationColumns: [
         { key: "name", label: "Location Name", width: "200px" },
         { key: "capacity", label: "Capacity", width: "100px" },
@@ -222,14 +223,13 @@ export default defineComponent({
     locationFilters(): Filter[] {
       return [
         {
-          model: "filterCapacity",
-          value: this.filterCapacity,
-          placeholder: "Filter by Capacity",
-          options: [
-            { label: "Small (< 15)", value: "small" },
-            { label: "Medium (15-30)", value: "medium" },
-            { label: "Large (> 30)", value: "large" },
-          ],
+          model: "filterArea",
+          value: this.filterArea,
+          placeholder: "Filter by Area",
+          options: this.areasStore.areas.map((area: Area) => ({
+            label: area.meta.name,
+            value: area.meta.id,
+          })),
         },
       ];
     },
@@ -245,32 +245,9 @@ export default defineComponent({
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        locations = locations.filter((location: Location) => {
-          const areaName = location.spec.areaId
-            ? this.areasStore.getAreaById(location.spec.areaId)?.meta.name
-            : undefined;
-          return (
-            location.meta.name.toLowerCase().includes(query) ||
-            (areaName && areaName.toLowerCase().includes(query))
-          );
-        });
-      }
-
-      // Capacity filter
-      if (this.filterCapacity) {
-        locations = locations.filter((location: Location) => {
-          if (this.filterCapacity === "small")
-            return location.spec.capacity && location.spec.capacity < 15;
-          if (this.filterCapacity === "medium")
-            return (
-              location.spec.capacity &&
-              location.spec.capacity >= 15 &&
-              location.spec.capacity <= 30
-            );
-          if (this.filterCapacity === "large")
-            return location.spec.capacity && location.spec.capacity > 30;
-          return true;
-        });
+        locations = locations.filter((location: Location) =>
+          location.meta.name.toLowerCase().includes(query)
+        );
       }
 
       return locations;
@@ -280,14 +257,14 @@ export default defineComponent({
     searchQuery() {
       this.currentPage = 1;
     },
-    filterCapacity() {
+    filterArea() {
       this.currentPage = 1;
     },
   },
   methods: {
     clearFilters() {
       this.searchQuery = "";
-      this.filterCapacity = "";
+      this.filterArea = "";
     },
     getLocationEvents(locationId: string) {
       return this.eventsStore.locationEvents(locationId);

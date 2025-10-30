@@ -14,7 +14,6 @@
     <FilterBar
       v-if="durationPresetsStore.durationPresets.length > 0"
       v-model:searchQuery="searchQuery"
-      :filters="[]"
       :filtered-count="filteredPresets.length"
       :total-count="durationPresetsStore.durationPresets.length"
       @clear="clearFilters"

@@ -14,7 +14,7 @@
     <!-- Search and Filters -->
     <FilterBar
       v-model:searchQuery="searchQuery"
-      :filters="[]"
+      search-placeholder="Search by area name..."
       :filtered-count="filteredAreas.length"
       :total-count="areasStore.areas.length"
       @clear="clearFilters"
@@ -177,19 +177,17 @@ export default defineComponent({
   },
   computed: {
     filteredAreas(): Area[] {
-      let filtered = this.areasStore.areas;
+      const areas = this.areasStore.areas;
 
       // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        filtered = filtered.filter(
-          (area) =>
-            area.meta.name.toLowerCase().includes(query) ||
-            area.meta.description?.toLowerCase().includes(query),
+        return areas.filter((area: Area) =>
+          area.meta.name.toLowerCase().includes(query)
         );
       }
 
-      return filtered.sort((a, b) => a.meta.name.localeCompare(b.meta.name));
+      return areas;
     },
     selectedArea(): Area | null {
       if (!this.selectedAreaId) return null;

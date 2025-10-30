@@ -14,7 +14,6 @@
     <FilterBar
       v-if="colorsStore.colors.length > 0"
       v-model:searchQuery="searchQuery"
-      :filters="[]"
       :filtered-count="filteredColors.length"
       :total-count="colorsStore.colors.length"
       @clear="clearFilters"

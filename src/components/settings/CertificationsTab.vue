@@ -14,7 +14,6 @@
     <!-- Search and Filters -->
     <FilterBar
       v-model:searchQuery="searchQuery"
-      :filters="[]"
       :filtered-count="filteredCertifications.length"
       :total-count="certificationsStore.certifications.length"
       @clear="clearFilters"

@@ -14,7 +14,6 @@
     <FilterBar
       v-if="labelsStore.labels.length > 0"
       v-model:searchQuery="searchQuery"
-      :filters="[]"
       :filtered-count="filteredLabels.length"
       :total-count="labelsStore.labels.length"
       @clear="clearFilters"

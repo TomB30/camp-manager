@@ -14,7 +14,6 @@
     <FilterBar
       v-if="sessionsStore.sessions.length > 0"
       v-model:searchQuery="searchQuery"
-      :filters="[]"
       :filtered-count="filteredSessions.length"
       :total-count="sessionsStore.sessions.length"
       @clear="clearFilters"

@@ -31,7 +31,6 @@
         <!-- Search and Filters -->
         <FilterBar
           v-model:searchQuery="searchQuery"
-          :filters="[]"
           :filtered-count="filteredPrograms.length"
           :total-count="programsStore.programs.length"
           search-placeholder="Search programs..."

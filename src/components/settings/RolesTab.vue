@@ -14,7 +14,6 @@
     <!-- Search and Filters -->
     <FilterBar
       v-model:searchQuery="searchQuery"
-      :filters="[]"
       :filtered-count="filteredRoles.length"
       :total-count="rolesStore.roles.length"
       @clear="clearFilters"

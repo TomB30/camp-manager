@@ -127,7 +127,7 @@ export default defineComponent({
     },
     filters: {
       type: Array as PropType<Filter[]>,
-      required: true,
+      default: () => [],
     },
     filteredCount: {
       type: Number,
