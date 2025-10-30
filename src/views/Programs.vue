@@ -300,7 +300,9 @@
               </template>
               <template #metadata>
                 <div class="location-meta">
-                  <span v-if="location.spec.capacity">Capacity: {{ location.spec.capacity }}</span>
+                  <span v-if="location.spec.capacity"
+                    >Capacity: {{ location.spec.capacity }}</span
+                  >
                   <span v-if="location.spec.areaId">
                     • {{ getAreaName(location.spec.areaId) }}</span
                   >
@@ -435,7 +437,13 @@ import {
   useRolesStore,
 } from "@/stores";
 import { useToast } from "@/composables/useToast";
-import type { Program, Activity, StaffMember, Location, ProgramUpdateRequest } from "@/generated/api";
+import type {
+  Program,
+  Activity,
+  StaffMember,
+  Location,
+  ProgramUpdateRequest,
+} from "@/generated/api";
 import { Users, UsersRound, Home, Clock, ListChecks } from "lucide-vue-next";
 import ViewHeader from "@/components/ViewHeader.vue";
 import EmptyState from "@/components/EmptyState.vue";
