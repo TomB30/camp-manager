@@ -98,7 +98,7 @@ import {
   useCertificationsStore,
   useRolesStore,
 } from "@/stores";
-import type { StaffMember } from "@/generated/api";
+import type { Program, StaffMember } from "@/generated/api";
 
 export default defineComponent({
   name: "StaffMemberDetailModal",
@@ -136,9 +136,9 @@ export default defineComponent({
     },
   },
   methods: {
-    getProgramColor(program: any): string {
-      if (program.colorId) {
-        const color = this.colorsStore.getColorById(program.colorId);
+    getProgramColor(program: Program): string {
+      if (program.spec.colorId) {
+        const color = this.colorsStore.getColorById(program.spec.colorId);
         return color?.spec.hexValue || "#6366F1";
       }
       return "#6366F1";

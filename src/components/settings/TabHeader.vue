@@ -49,7 +49,7 @@ export default defineComponent({
   background: var(--surface);
   border-radius: var(--radius-lg);
   padding: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow);
 }

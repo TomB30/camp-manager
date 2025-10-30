@@ -107,7 +107,7 @@ export default defineComponent({
           description: "",
         },
         spec: {
-          capacity: 0,
+          capacity: undefined,
           areaId: undefined,
           equipment: [],
           notes: "",
@@ -127,7 +127,7 @@ export default defineComponent({
           description: location.meta.description,
         },
         spec: {
-          capacity: location.spec.capacity || 0,
+          capacity: location.spec.capacity || undefined,
           areaId: location.spec.areaId,
           equipment: location.spec.equipment || [],
           notes: location.spec.notes || "",

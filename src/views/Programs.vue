@@ -300,7 +300,7 @@
               </template>
               <template #metadata>
                 <div class="location-meta">
-                  <span>Capacity: {{ location.spec.capacity }}</span>
+                  <span v-if="location.spec.capacity">Capacity: {{ location.spec.capacity }}</span>
                   <span v-if="location.spec.areaId">
                     • {{ getAreaName(location.spec.areaId) }}</span
                   >
@@ -435,7 +435,7 @@ import {
   useRolesStore,
 } from "@/stores";
 import { useToast } from "@/composables/useToast";
-import type { Program, Activity, StaffMember, Location } from "@/generated/api";
+import type { Program, Activity, StaffMember, Location, ProgramUpdateRequest } from "@/generated/api";
 import { Users, UsersRound, Home, Clock, ListChecks } from "lucide-vue-next";
 import ViewHeader from "@/components/ViewHeader.vue";
 import EmptyState from "@/components/EmptyState.vue";
@@ -663,9 +663,9 @@ export default defineComponent({
     selectProgram(id: string) {
       this.selectedProgramId = id;
     },
-    getProgramColor(program: any): string {
-      if (program.colorId) {
-        const color = this.colorsStore.getColorById(program.colorId);
+    getProgramColor(program: Program): string {
+      if (program.spec.colorId) {
+        const color = this.colorsStore.getColorById(program.spec.colorId);
         return color?.spec.hexValue || "#6366F1";
       }
       return "#6366F1";
@@ -695,10 +695,10 @@ export default defineComponent({
         ? role.meta.name.charAt(0).toUpperCase() + role.meta.name.slice(1)
         : "Unknown Role";
     },
-    getStaffCertificationNames(staff: any): string[] {
-      if (!staff.certificationIds) return [];
+    getStaffCertificationNames(staff: StaffMember): string[] {
+      if (!staff.spec.certificationIds) return [];
       return (
-        staff.certificationIds?.map((id: string) => {
+        staff.spec.certificationIds?.map((id: string) => {
           const cert = this.certificationsStore.getCertificationById(id);
           return cert ? cert.meta.name : "";
         }) || []
@@ -782,11 +782,14 @@ export default defineComponent({
     async removeStaffFromProgram(staffId: string) {
       if (!this.selectedProgram) return;
 
-      const updatedProgram = {
-        ...this.selectedProgram,
-        staffMemberIds: this.selectedProgram.spec.staffMemberIds?.filter(
-          (id: string) => id !== staffId,
-        ),
+      const updatedProgram: ProgramUpdateRequest = {
+        meta: this.selectedProgram.meta,
+        spec: {
+          ...this.selectedProgram.spec,
+          staffMemberIds: this.selectedProgram.spec.staffMemberIds?.filter(
+            (id: string) => id !== staffId,
+          ),
+        },
       };
 
       try {
@@ -802,11 +805,14 @@ export default defineComponent({
     async removeLocationFromProgram(locationId: string) {
       if (!this.selectedProgram) return;
 
-      const updatedProgram = {
-        ...this.selectedProgram,
-        locationIds: this.selectedProgram.spec.locationIds?.filter(
-          (id) => id !== locationId,
-        ),
+      const updatedProgram: ProgramUpdateRequest = {
+        meta: this.selectedProgram.meta,
+        spec: {
+          ...this.selectedProgram.spec,
+          locationIds: this.selectedProgram.spec.locationIds?.filter(
+            (id: string) => id !== locationId,
+          ),
+        },
       };
 
       try {
@@ -846,36 +852,36 @@ export default defineComponent({
       this.deleteTarget = null;
     },
     // Staff helper methods
-    getStaffLabel(staff: any): string {
+    getStaffLabel(staff: StaffMember): string {
       return `${staff.meta.name}`;
     },
-    getStaffInitials(staff: any): string {
+    getStaffInitials(staff: StaffMember): string {
       const parts = staff.meta.name.split(" ");
       if (parts.length >= 2) {
         return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`;
       }
       return staff.meta.name.charAt(0).toUpperCase();
     },
-    getStaffOption(staff: any): AutocompleteOption {
+    getStaffOption(staff: StaffMember): AutocompleteOption {
       return {
         label: `${staff.meta.name} (${this.formatRole(staff.spec.roleId)})`,
         value: staff.meta.id,
       };
     },
     // Location helper methods
-    getLocationLabel(location: any): string {
+    getLocationLabel(location: Location): string {
       return `${location.meta.name}`;
     },
-    getLocationInitials(location: any): string {
+    getLocationInitials(location: Location): string {
       const words = location.meta.name.split(" ");
       if (words.length >= 2) {
         return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
       }
       return location.meta.name.substring(0, 2).toUpperCase();
     },
-    getLocationOption(location: any): AutocompleteOption {
+    getLocationOption(location: Location): AutocompleteOption {
       return {
-        label: `${location.meta.name} (Capacity: ${location.capacity})`,
+        label: `${location.meta.name} ${location.spec.capacity ? `(Capacity: ${location.spec.capacity})` : ""}`,
         value: location.meta.id,
       };
     },
@@ -883,9 +889,12 @@ export default defineComponent({
     async updateProgramStaff(staffIds: string[]) {
       if (!this.selectedProgram) return;
 
-      const updatedProgram = {
-        ...this.selectedProgram,
-        staffMemberIds: staffIds,
+      const updatedProgram: ProgramUpdateRequest = {
+        meta: this.selectedProgram.meta,
+        spec: {
+          ...this.selectedProgram.spec,
+          staffMemberIds: staffIds,
+        },
       };
 
       try {
@@ -901,9 +910,12 @@ export default defineComponent({
     async updateProgramLocations(locationIds: string[]) {
       if (!this.selectedProgram) return;
 
-      const updatedProgram = {
-        ...this.selectedProgram,
-        locationIds: locationIds,
+      const updatedProgram: ProgramUpdateRequest = {
+        meta: this.selectedProgram.meta,
+        spec: {
+          ...this.selectedProgram.spec,
+          locationIds: locationIds,
+        },
       };
 
       try {
