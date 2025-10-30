@@ -81,7 +81,6 @@ export default defineComponent({
           description: "",
         },
         spec: {
-          colorId: undefined,
           activityIds: [],
           staffMemberIds: [],
           locationIds: [],
@@ -91,6 +90,10 @@ export default defineComponent({
     };
   },
   created() {
+    if (this.defaultColorId) {
+      this.localFormData.spec.colorId = this.defaultColorId;
+    }
+    
     if (this.programId) {
       const program = this.programsStore.getProgramById(this.programId);
       if (!program) return;
@@ -111,6 +114,9 @@ export default defineComponent({
     }
   },
   computed: {
+    defaultColorId(): string | null {
+      return this.colorsStore.getDefaultColor?.meta.id || null;
+    },
     isEditing() {
       return !!this.programId;
     },
@@ -139,12 +145,12 @@ export default defineComponent({
       try {
         await this.programsStore.updateProgram(
           this.programId,
-          this.localFormData,
+          this.localFormData
         );
         this.toast.success("Program updated successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to update program",
+          (error as Error).message || "Failed to update program"
         );
       } finally {
         this.$emit("close");
@@ -156,7 +162,7 @@ export default defineComponent({
         this.toast.success("Program created successfully");
       } catch (error) {
         this.toast.error(
-          (error as Error).message || "Failed to create program",
+          (error as Error).message || "Failed to create program"
         );
       } finally {
         this.$emit("close");
