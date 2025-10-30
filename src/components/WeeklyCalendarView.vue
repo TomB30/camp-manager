@@ -67,7 +67,7 @@ import { defineComponent, type PropType } from "vue";
 import { format } from "date-fns";
 import { dateUtils } from "@/utils/dateUtils";
 import { useColorsStore, useEventsStore, useGroupsStore } from "@/stores";
-import type { Event, Location } from "@/generated/api";
+import type { Event, Group, Location } from "@/generated/api";
 
 export default defineComponent({
   name: "WeeklyCalendarView",
@@ -100,7 +100,7 @@ export default defineComponent({
   computed: {
     groupNamesById(): Record<string, string> {
       return this.groupsStore.groups.reduce(
-        (acc, group) => {
+        (acc: Record<string, string>, group: Group) => {
           acc[group.meta.id] = group.meta.name;
           return acc;
         },

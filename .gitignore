@@ -31,8 +31,5 @@ dist-ssr
 # coverage
 coverage
 
-# Auto-generated API client
-src/generated/
-
 # openapi-ts error logs
 openapi-ts-error-*.log

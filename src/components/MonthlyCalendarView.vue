@@ -79,7 +79,7 @@ import {
   isSameDay,
   format,
 } from "date-fns";
-import type { Event } from "@/generated/api";
+import type { Event, Group } from "@/generated/api";
 import { useColorsStore, useGroupsStore } from "@/stores";
 
 interface CalendarDay {
@@ -147,7 +147,7 @@ export default defineComponent({
     },
     groupNamesById(): Record<string, string> {
       return this.groupsStore.groups.reduce(
-        (acc, group) => {
+        (acc: Record<string, string>, group: Group) => {
           acc[group.meta.id] = group.meta.name;
           return acc;
         },
