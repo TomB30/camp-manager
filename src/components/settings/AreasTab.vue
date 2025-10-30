@@ -183,7 +183,7 @@ export default defineComponent({
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         return areas.filter((area: Area) =>
-          area.meta.name.toLowerCase().includes(query)
+          area.meta.name.toLowerCase().includes(query),
         );
       }
 

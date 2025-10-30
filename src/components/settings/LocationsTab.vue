@@ -246,7 +246,7 @@ export default defineComponent({
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         locations = locations.filter((location: Location) =>
-          location.meta.name.toLowerCase().includes(query)
+          location.meta.name.toLowerCase().includes(query),
         );
       }
 

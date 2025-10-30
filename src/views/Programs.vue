@@ -301,8 +301,8 @@
               <template #metadata>
                 <div class="location-meta">
                   <span>Capacity: {{ location.spec.capacity }}</span>
-                  <span v-if="location.spec.areaId"
-                    > • {{ getAreaName(location.spec.areaId) }}</span
+                  <span v-if="location.spec.areaId">
+                    • {{ getAreaName(location.spec.areaId) }}</span
                   >
                 </div>
               </template>
