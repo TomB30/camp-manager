@@ -1,4 +1,8 @@
-import type { Color, ColorCreationRequest, ColorUpdateRequest } from "@/generated/api";
+import type {
+  Color,
+  ColorCreationRequest,
+  ColorUpdateRequest,
+} from "@/generated/api";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 

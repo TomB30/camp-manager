@@ -29,7 +29,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import type { Label } from "@/generated/api";
+import type { Label } from "@/types";
 import Icon from "../Icon.vue";
 
 export default defineComponent({

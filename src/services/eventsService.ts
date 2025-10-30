@@ -1,4 +1,8 @@
-import type { Event, EventCreationRequest, EventUpdateRequest } from "@/generated/api";
+import type {
+  Event,
+  EventCreationRequest,
+  EventUpdateRequest,
+} from "@/generated/api";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 

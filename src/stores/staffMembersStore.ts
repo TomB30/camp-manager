@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import type {
-  GroupStaffFilters,
+  Group,
   StaffMember,
   StaffMemberCreationRequest,
   StaffMemberUpdateRequest,
 } from "@/generated/api";
 import { staffMembersService } from "@/services";
+type GroupStaffFilters = Group["spec"]["staffFilters"];
 
 export const useStaffMembersStore = defineStore("staffMembers", {
   state: () => ({

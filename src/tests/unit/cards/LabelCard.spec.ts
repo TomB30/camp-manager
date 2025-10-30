@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createWrapper, setupTestPinia } from "@/tests/utils";
 import LabelCard from "@/components/cards/LabelCard.vue";
-import type { Label } from "@/generated/api";
+import type { Label } from "@/types";
 
 describe("LabelCard", () => {
   let pinia: ReturnType<typeof setupTestPinia>;

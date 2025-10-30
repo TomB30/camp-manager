@@ -41,9 +41,16 @@
                 formatEventTime(event.spec.startDate)
               }}</span>
               <span class="event-title">{{ event.meta.name }}</span>
-              <div class="event-groups text-xs" v-if="event.spec.groupIds && event.spec.groupIds.length > 0">
-                <span v-for="(groupId, idx) in event.spec.groupIds" :key="groupId">
-                  {{ groupNamesById[groupId] }}<span v-if="idx < event.spec.groupIds.length - 1">, </span>
+              <div
+                class="event-groups text-xs"
+                v-if="event.spec.groupIds && event.spec.groupIds.length > 0"
+              >
+                <span
+                  v-for="(groupId, idx) in event.spec.groupIds"
+                  :key="groupId"
+                >
+                  {{ groupNamesById[groupId]
+                  }}<span v-if="idx < event.spec.groupIds.length - 1">, </span>
                 </span>
               </div>
             </div>
@@ -100,7 +107,7 @@ export default defineComponent({
   data() {
     return {
       daysOfWeek: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-      maxEventsPerDay: 3, // Maximum events to show before displaying "+x more" 
+      maxEventsPerDay: 3, // Maximum events to show before displaying "+x more"
     };
   },
   computed: {
@@ -139,10 +146,13 @@ export default defineComponent({
       });
     },
     groupNamesById(): Record<string, string> {
-      return this.groupsStore.groups.reduce((acc, group) => {
-        acc[group.meta.id] = group.meta.name;
-        return acc;
-      }, {} as Record<string, string>);
+      return this.groupsStore.groups.reduce(
+        (acc, group) => {
+          acc[group.meta.id] = group.meta.name;
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
     },
   },
   methods: {

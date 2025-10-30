@@ -1,4 +1,4 @@
-import type { Label } from "@/generated/api";
+import type { Label } from "@/types";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 

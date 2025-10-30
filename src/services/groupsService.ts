@@ -1,4 +1,8 @@
-import type { Group, GroupCreationRequest, GroupUpdateRequest } from "@/generated/api";
+import type {
+  Group,
+  GroupCreationRequest,
+  GroupUpdateRequest,
+} from "@/generated/api";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 

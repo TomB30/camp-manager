@@ -61,7 +61,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useLabelsStore } from "@/stores";
-import type { Label } from "@/generated/api";
+import type { Label } from "@/types";
 import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import LabelCard from "@/components/cards/LabelCard.vue";

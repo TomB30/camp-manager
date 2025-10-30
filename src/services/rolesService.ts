@@ -1,4 +1,8 @@
-import type { Role, RoleCreationRequest, RoleUpdateRequest } from "@/generated/api";
+import type {
+  Role,
+  RoleCreationRequest,
+  RoleUpdateRequest,
+} from "@/generated/api";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
 

@@ -506,7 +506,7 @@ export default defineComponent({
   .view {
     margin: 0 0;
   }
-}  
+}
 /* Calendar View Toggle */
 .calendar-view-toggle {
   display: flex;
@@ -559,5 +559,4 @@ export default defineComponent({
     }
   }
 }
-
 </style>

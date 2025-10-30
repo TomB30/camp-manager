@@ -424,10 +424,10 @@ import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
 import SelectionList from "@/components/SelectionList.vue";
+import type { Label } from "@/types";
 import type {
   Camper,
   StaffMember,
-  Label,
   Group,
   Session,
   HousingRoom,

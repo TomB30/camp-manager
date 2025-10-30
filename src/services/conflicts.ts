@@ -1,5 +1,4 @@
 import type {
-  Conflict,
   Event,
   Camper,
   StaffMember,
@@ -8,6 +7,7 @@ import type {
   Certification,
   Group,
 } from "@/generated/api";
+import type { Conflict } from "@/types";
 
 export class ConflictDetector {
   /**

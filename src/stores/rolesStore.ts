@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
-import type { Role, RoleCreationRequest, RoleUpdateRequest } from "@/generated/api";
+import type {
+  Role,
+  RoleCreationRequest,
+  RoleUpdateRequest,
+} from "@/generated/api";
 import { rolesService } from "@/services/rolesService";
 
 export const useRolesStore = defineStore("roles", {

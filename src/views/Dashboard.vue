@@ -254,7 +254,8 @@ import {
 import { format } from "date-fns";
 import Icon from "@/components/Icon.vue";
 import ViewHeader from "@/components/ViewHeader.vue";
-import type { Event, Camper, Conflict } from "@/generated/api";
+import type { Event, Camper } from "@/generated/api";
+import type { Conflict } from "@/types";
 
 export default defineComponent({
   name: "Dashboard",
