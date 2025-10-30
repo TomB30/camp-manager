@@ -24,12 +24,6 @@ export const useLocationsStore = defineStore("locations", {
         return state.locations.filter((l) => l.spec.areaId === areaId);
       };
     },
-
-    getLocationsByType(state): (type: Location["spec"]["type"]) => Location[] {
-      return (type: Location["spec"]["type"]): Location[] => {
-        return state.locations.filter((l) => l.spec.type === type);
-      };
-    },
   },
 
   actions: {

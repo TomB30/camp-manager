@@ -145,7 +145,6 @@ export const buildLocation = (overrides: Partial<Location> = {}): Location => ({
   },
   spec: {
     capacity: 25,
-    type: "classroom",
     areaId: "area-1",
     equipment: [],
   },

@@ -14,7 +14,6 @@
     <!-- Search and Filters -->
     <FilterBar
       v-model:searchQuery="searchQuery"
-      v-model:filter-type="filterType"
       v-model:filter-capacity="filterCapacity"
       :filters="locationFilters"
       :filtered-count="filteredLocations.length"
@@ -57,24 +56,11 @@
     >
       <template #cell-name="{ item }">
         <div class="location-name-content">
-          <div
-            class="location-icon-sm"
-            :style="{ background: getLocationTypeColor(item.spec.type) }"
-          >
-            <Icon
-              :name="LocationTypeIcon(item.spec.type)"
-              :size="18"
-              :stroke-width="2"
-            />
+          <div class="location-icon-sm" :style="{ background: '#3b82f6' }">
+            <Icon name="MapPin" :size="18" :stroke-width="2" />
           </div>
           <div class="location-name">{{ item.meta.name }}</div>
         </div>
-      </template>
-
-      <template #cell-type="{ item }">
-        <span class="badge badge-primary badge-sm">{{
-          formatLocationType(item.spec.type)
-        }}</span>
       </template>
 
       <template #cell-location="{ item }">
@@ -186,7 +172,6 @@ import EmptyState from "@/components/EmptyState.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import Icon from "../Icon.vue";
 import { useToast } from "@/composables/useToast";
-import type { IconName } from "../Icon.vue";
 
 export default defineComponent({
   name: "LocationsTab",
@@ -221,11 +206,9 @@ export default defineComponent({
       currentPage: 1,
       pageSize: 10,
       searchQuery: "",
-      filterType: "",
       filterCapacity: "",
       locationColumns: [
         { key: "name", label: "Location Name", width: "200px" },
-        { key: "type", label: "Type", width: "120px" },
         { key: "capacity", label: "Capacity", width: "100px" },
         { key: "location", label: "Area", width: "180px" },
         { key: "equipment", label: "Equipment", width: "120px" },
@@ -238,18 +221,6 @@ export default defineComponent({
   computed: {
     locationFilters(): Filter[] {
       return [
-        {
-          model: "filterType",
-          value: this.filterType,
-          placeholder: "Filter by Type",
-          options: [
-            { label: "Classroom", value: "classroom" },
-            { label: "Outdoor", value: "outdoor" },
-            { label: "Sports", value: "sports" },
-            { label: "Arts", value: "arts" },
-            { label: "Dining", value: "dining" },
-          ],
-        },
         {
           model: "filterCapacity",
           value: this.filterCapacity,
@@ -285,13 +256,6 @@ export default defineComponent({
         });
       }
 
-      // Type filter
-      if (this.filterType) {
-        locations = locations.filter(
-          (location: Location) => location.spec.type === this.filterType,
-        );
-      }
-
       // Capacity filter
       if (this.filterCapacity) {
         locations = locations.filter((location: Location) => {
@@ -316,9 +280,6 @@ export default defineComponent({
     searchQuery() {
       this.currentPage = 1;
     },
-    filterType() {
-      this.currentPage = 1;
-    },
     filterCapacity() {
       this.currentPage = 1;
     },
@@ -326,34 +287,7 @@ export default defineComponent({
   methods: {
     clearFilters() {
       this.searchQuery = "";
-      this.filterType = "";
       this.filterCapacity = "";
-    },
-    formatLocationType(type: string | undefined): string | undefined {
-      if (!type) return undefined;
-      return type.charAt(0).toUpperCase() + type.slice(1);
-    },
-    LocationTypeIcon(type: Location["spec"]["type"]): IconName {
-      const iconMap: Record<Location["spec"]["type"], IconName> = {
-        classroom: "BookOpen",
-        activity: "Target",
-        sports: "Dumbbell",
-        dining: "Utensils",
-        outdoor: "Trees",
-        arts: "Palette",
-      };
-      return iconMap[type] || "MapPin";
-    },
-    getLocationTypeColor(type: Location["spec"]["type"]): string {
-      const colors: Record<Location["spec"]["type"], string> = {
-        classroom: "#2196F3",
-        activity: "#4CAF50",
-        sports: "#FF9800",
-        dining: "#795548",
-        outdoor: "#8BC34A",
-        arts: "#9C27B0",
-      };
-      return colors[type] || "#757575";
     },
     getLocationEvents(locationId: string) {
       return this.eventsStore.locationEvents(locationId);

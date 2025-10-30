@@ -11,23 +11,10 @@ describe("AreaCard", () => {
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
-          formatType: "Facility",
         },
       });
 
       expect(wrapper.text()).toContain(area.meta.name);
-    });
-
-    it("renders formatted type badge", () => {
-      const area: Area = areasFixture[0];
-      const wrapper = createWrapper(AreaCard, {
-        props: {
-          area,
-          formatType: "Facility",
-        },
-      });
-
-      expect(wrapper.text()).toContain("Facility");
     });
 
     it("displays capacity when provided", () => {
@@ -35,7 +22,6 @@ describe("AreaCard", () => {
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
-          formatType: "Facility",
         },
       });
 
@@ -136,53 +122,17 @@ describe("AreaCard", () => {
     });
   });
 
-  describe("Type Badge Styling", () => {
-    it("applies correct badge class for indoor type", () => {
-      const area: Area = {
-        ...areasFixture[0],
-        spec: { ...areasFixture[0].spec, type: "indoor" },
-      };
+  describe("Icon Display", () => {
+    it("displays Map icon", () => {
+      const area: Area = areasFixture[0];
       const wrapper = createWrapper(AreaCard, {
         props: {
           area,
-          formatType: "Indoor",
         },
       });
 
-      const badge = wrapper.find(".badge-primary");
-      expect(badge.exists()).toBe(true);
-    });
-
-    it("applies correct badge class for outdoor type", () => {
-      const area: Area = {
-        ...areasFixture[0],
-        spec: { ...areasFixture[0].spec, type: "outdoor" },
-      };
-      const wrapper = createWrapper(AreaCard, {
-        props: {
-          area,
-          formatType: "Outdoor",
-        },
-      });
-
-      const badge = wrapper.find(".badge-success");
-      expect(badge.exists()).toBe(true);
-    });
-
-    it("applies correct badge class for water type", () => {
-      const area: Area = {
-        ...areasFixture[0],
-        spec: { ...areasFixture[0].spec, type: "water" },
-      };
-      const wrapper = createWrapper(AreaCard, {
-        props: {
-          area,
-          formatType: "Water",
-        },
-      });
-
-      const badge = wrapper.find(".badge-blue");
-      expect(badge.exists()).toBe(true);
+      const cardIcon = wrapper.find(".card-icon");
+      expect(cardIcon.exists()).toBe(true);
     });
   });
 

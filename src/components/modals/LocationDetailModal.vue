@@ -3,15 +3,6 @@
     <template #body>
       <div v-if="location">
         <div class="detail-section">
-          <div class="detail-label">Type</div>
-          <div>
-            <span class="badge badge-primary">{{
-              formatLocationType(location.spec.type)
-            }}</span>
-          </div>
-        </div>
-
-        <div class="detail-section">
           <div class="detail-label">Capacity</div>
           <div>{{ location.spec.capacity }} people</div>
         </div>
@@ -86,9 +77,6 @@ export default defineComponent({
     return { areasStore };
   },
   methods: {
-    formatLocationType(type: string): string {
-      return type.charAt(0).toUpperCase() + type.slice(1);
-    },
     getAreaName(areaId: string): string {
       const area = this.areasStore.getAreaById(areaId);
       return area?.meta.name || "Unknown";

@@ -219,7 +219,7 @@ export default defineComponent({
     roomOptions(): AutocompleteOption[] {
       return this.locationsStore.locations.map((room) => ({
         value: room.meta.id,
-        label: `${room.meta.name} (${room.spec.type})`,
+        label: room.meta.name,
       }));
     },
   },

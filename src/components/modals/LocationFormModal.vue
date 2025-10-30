@@ -14,26 +14,14 @@
           />
         </div>
 
-        <div class="grid grid-cols-2">
-          <div class="form-group">
-            <label class="form-label">Type</label>
-            <Autocomplete
-              v-model="localFormData.spec.type"
-              :options="locationTypeOptions"
-              placeholder="Select location type..."
-              :required="true"
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Capacity</label>
-            <BaseInput
-              v-model="capacityModel"
-              type="number"
-              placeholder="Enter capacity"
-              :rules="[isValidCapacity]"
-            />
-          </div>
+        <div class="form-group">
+          <label class="form-label">Capacity</label>
+          <BaseInput
+            v-model="capacityModel"
+            type="number"
+            placeholder="Enter capacity"
+            :rules="[isValidCapacity]"
+          />
         </div>
 
         <div class="form-group">
@@ -88,7 +76,7 @@ import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
 import { useAreasStore, useLocationsStore } from "@/stores";
-import type { Location, LocationCreationRequest } from "@/generated/api";
+import type { LocationCreationRequest } from "@/generated/api";
 import type { QForm } from "quasar";
 import { useToast } from "@/composables/useToast";
 
@@ -119,21 +107,12 @@ export default defineComponent({
           description: "",
         },
         spec: {
-          type: "classroom" as Location["spec"]["type"],
           capacity: 0,
           areaId: undefined,
           equipment: [],
           notes: "",
         },
       } as LocationCreationRequest,
-      locationTypeOptions: [
-        { label: "Classroom", value: "classroom" },
-        { label: "Activity", value: "activity" },
-        { label: "Sports", value: "sports" },
-        { label: "Dining", value: "dining" },
-        { label: "Outdoor", value: "outdoor" },
-        { label: "Arts", value: "arts" },
-      ] as AutocompleteOption[],
       formRef: null as any,
       loading: false as boolean,
     };
@@ -148,7 +127,6 @@ export default defineComponent({
           description: location.meta.description,
         },
         spec: {
-          type: location.spec.type,
           capacity: location.spec.capacity || 0,
           areaId: location.spec.areaId,
           equipment: location.spec.equipment || [],

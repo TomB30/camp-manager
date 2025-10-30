@@ -301,11 +301,9 @@
               </template>
               <template #metadata>
                 <div class="location-meta">
-                  <span>{{ formatLocationType(location.spec.type) }}</span>
-                  <span>•</span>
                   <span>Capacity: {{ location.spec.capacity }}</span>
                   <span v-if="location.spec.areaId"
-                    >• {{ getAreaName(location.spec.areaId) }}</span
+                    > • {{ getAreaName(location.spec.areaId) }}</span
                   >
                 </div>
               </template>
@@ -707,12 +705,6 @@ export default defineComponent({
         }) || []
       ).filter((name: string) => name.length > 0);
     },
-    formatLocationType(type: string) {
-      return type
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-    },
     closeProgramModal() {
       this.showProgramModal = false;
       this.editingProgram = null;
@@ -884,7 +876,7 @@ export default defineComponent({
     },
     getLocationOption(location: any): AutocompleteOption {
       return {
-        label: `${location.meta.name} (${this.formatLocationType(location.type)} • Capacity: ${location.capacity})`,
+        label: `${location.meta.name} (Capacity: ${location.capacity})`,
         value: location.meta.id,
       };
     },

@@ -118,7 +118,7 @@ export default defineComponent({
     roomOptions(): AutocompleteOption[] {
       return this.locationsStore.locations.map((location) => ({
         value: location.meta.id,
-        label: `${location.meta.name} (${location.spec.type})`,
+        label: location.meta.name,
       }));
     },
   },

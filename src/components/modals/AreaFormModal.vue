@@ -24,24 +24,13 @@
           />
         </div>
 
-        <div class="grid grid-cols-2">
-          <div class="form-group">
-            <label class="form-label">Type</label>
-            <Autocomplete
-              v-model="formData.spec.type"
-              :options="areaTypeOptions"
-              placeholder="Select area type..."
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Capacity</label>
-            <BaseInput
-              v-model="capacityModel"
-              type="number"
-              placeholder="Optional capacity"
-            />
-          </div>
+        <div class="form-group">
+          <label class="form-label">Capacity</label>
+          <BaseInput
+            v-model="capacityModel"
+            type="number"
+            placeholder="Optional capacity"
+          />
         </div>
 
         <div class="form-group">
@@ -80,9 +69,6 @@
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
 import BaseInput from "@/components/common/BaseInput.vue";
-import Autocomplete, {
-  type AutocompleteOption,
-} from "@/components/Autocomplete.vue";
 import type { Area, AreaCreationRequest } from "@/generated/api";
 import type { QForm } from "quasar";
 import { useAreasStore } from "@/stores";
@@ -99,7 +85,6 @@ export default defineComponent({
   components: {
     BaseModal,
     BaseInput,
-    Autocomplete,
   },
   props: {
     areaId: {
@@ -118,20 +103,11 @@ export default defineComponent({
           description: "",
         },
         spec: {
-          type: undefined,
           capacity: 0,
           equipment: [],
           notes: "",
         },
       } as AreaCreationRequest,
-      areaTypeOptions: [
-        { label: "Indoor", value: "indoor" },
-        { label: "Outdoor", value: "outdoor" },
-        { label: "Facility", value: "facility" },
-        { label: "Field", value: "field" },
-        { label: "Water", value: "water" },
-        { label: "Other", value: "other" },
-      ] as AutocompleteOption[],
       formRef: null as any,
     };
   },
@@ -147,7 +123,6 @@ export default defineComponent({
         description: area.meta.description,
       },
       spec: {
-        type: area.spec.type,
         capacity: area.spec.capacity,
         equipment: area.spec.equipment,
         notes: area.spec.notes,

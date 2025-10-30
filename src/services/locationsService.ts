@@ -13,7 +13,6 @@ export const locationsService = {
   deleteLocation,
   getLocationById,
   getLocationsByArea,
-  getLocationsByType,
 };
 
 async function listLocations(): Promise<Location[]> {
@@ -71,11 +70,4 @@ async function getLocationById(id: string): Promise<Location | null> {
 async function getLocationsByArea(areaId: string): Promise<Location[]> {
   const locations = await listLocations();
   return locations.filter((l) => l.spec.areaId === areaId);
-}
-
-async function getLocationsByType(
-  type: Location["spec"]["type"],
-): Promise<Location[]> {
-  const locations = await listLocations();
-  return locations.filter((l) => l.spec.type === type);
 }

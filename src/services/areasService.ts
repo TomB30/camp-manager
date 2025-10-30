@@ -12,7 +12,6 @@ export const areasService = {
   updateArea,
   deleteArea,
   getAreaById,
-  getAreasByType,
 };
 
 async function listAreas(): Promise<Area[]> {
@@ -61,9 +60,4 @@ async function deleteArea(id: string): Promise<void> {
 
 async function getAreaById(id: string): Promise<Area | null> {
   return storageService.getById<Area>(STORAGE_KEYS.AREAS, id);
-}
-
-async function getAreasByType(type: Area["spec"]["type"]): Promise<Area[]> {
-  const areas = await listAreas();
-  return areas.filter((a) => a.spec.type === type);
 }

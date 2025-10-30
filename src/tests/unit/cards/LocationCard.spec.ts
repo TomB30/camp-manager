@@ -32,24 +32,6 @@ describe("LocationCard", () => {
       expect(wrapper.text()).toContain(location.meta.name);
     });
 
-    it("renders formatted type badge", () => {
-      const location: Location = {
-        ...locationsFixture[0],
-        spec: { ...locationsFixture[0].spec, type: "classroom" },
-      };
-      const wrapper = createWrapper(LocationCard, {
-        props: {
-          location,
-        },
-        pinia,
-      });
-
-      const expectedType =
-        location.spec.type.charAt(0).toUpperCase() +
-        location.spec.type.slice(1);
-      expect(wrapper.text()).toContain(expectedType);
-    });
-
     it("displays capacity badge", () => {
       const location: Location = {
         ...locationsFixture[0],
@@ -170,10 +152,9 @@ describe("LocationCard", () => {
   });
 
   describe("Icon and Styling", () => {
-    it("applies appropriate icon color based on location type", () => {
+    it("displays icon with correct styling", () => {
       const location: Location = {
         ...locationsFixture[0],
-        spec: { ...locationsFixture[0].spec, type: "classroom" },
       };
       const wrapper = createWrapper(LocationCard, {
         props: {
@@ -190,7 +171,6 @@ describe("LocationCard", () => {
     it("has card-clickable class", () => {
       const location: Location = {
         ...locationsFixture[0],
-        spec: { ...locationsFixture[0].spec, type: "classroom" },
       };
       const wrapper = createWrapper(LocationCard, {
         props: {
@@ -246,29 +226,6 @@ describe("LocationCard", () => {
       });
 
       expect(wrapper.text()).toContain("0% average usage");
-    });
-
-    it("formats different location types correctly", () => {
-      const testTypes: Array<{ type: any; expected: string }> = [
-        { type: "classroom", expected: "Classroom" },
-        { type: "sports", expected: "Sports" },
-        { type: "outdoor", expected: "Outdoor" },
-      ];
-
-      testTypes.forEach(({ type, expected }) => {
-        const location: Location = {
-          ...locationsFixture[0],
-          spec: { ...locationsFixture[0].spec, type },
-        };
-        const wrapper = createWrapper(LocationCard, {
-          props: {
-            location,
-          },
-          pinia,
-        });
-
-        expect(wrapper.text()).toContain(expected);
-      });
     });
   });
 });

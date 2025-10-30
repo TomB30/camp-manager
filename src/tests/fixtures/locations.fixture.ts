@@ -13,7 +13,6 @@ export const locationsFixture: Location[] = [
     },
     spec: {
       capacity: 25,
-      type: "classroom",
       areaId: areasFixture[0].meta.id,
       equipment: ["Projector", "Whiteboard"],
       notes: "Main classroom",
@@ -29,7 +28,6 @@ export const locationsFixture: Location[] = [
     },
     spec: {
       capacity: 25,
-      type: "classroom",
       areaId: areasFixture[0].meta.id,
       equipment: ["Projector", "Whiteboard"],
       notes: "Science lab",
@@ -45,7 +43,6 @@ export const locationsFixture: Location[] = [
     },
     spec: {
       capacity: 20,
-      type: "arts",
       areaId: areasFixture[0].meta.id,
       equipment: ["Easels", "Paint supplies", "Clay"],
       notes: "Creative space",
@@ -62,7 +59,6 @@ export const locationsFixture: Location[] = [
     },
     spec: {
       capacity: 30,
-      type: "outdoor",
       areaId: areasFixture[1].meta.id,
       equipment: ["Life jackets", "Floats"],
       notes: "Supervised swimming",
@@ -78,7 +74,6 @@ export const locationsFixture: Location[] = [
     },
     spec: {
       capacity: 20,
-      type: "outdoor",
       areaId: areasFixture[1].meta.id,
       equipment: ["Kayaks", "Canoes", "Paddles"],
       notes: "Water activities",
@@ -95,7 +90,6 @@ export const locationsFixture: Location[] = [
     },
     spec: {
       capacity: 25,
-      type: "outdoor",
       areaId: areasFixture[2].meta.id,
       equipment: ["Trail maps", "First aid kit"],
       notes: "Hiking start point",
@@ -111,7 +105,6 @@ export const locationsFixture: Location[] = [
     },
     spec: {
       capacity: 30,
-      type: "activity",
       areaId: areasFixture[2].meta.id,
       equipment: ["Microscopes", "Field guides", "Specimens"],
       notes: "Educational center",
@@ -128,7 +121,6 @@ export const locationsFixture: Location[] = [
     },
     spec: {
       capacity: 150,
-      type: "dining",
       areaId: areasFixture[3].meta.id,
       equipment: ["Tables", "Chairs", "Kitchen"],
       notes: "Main meals",
@@ -144,7 +136,6 @@ export const locationsFixture: Location[] = [
     },
     spec: {
       capacity: 200,
-      type: "activity",
       areaId: areasFixture[3].meta.id,
       equipment: ["Stage", "Sound system", "Lights"],
       notes: "Large gatherings",
@@ -161,7 +152,6 @@ export const locationsFixture: Location[] = [
     },
     spec: {
       capacity: 40,
-      type: "sports",
       areaId: areasFixture[4].meta.id,
       equipment: ["Soccer balls", "Goals", "Cones"],
       notes: "Outdoor field",

@@ -7,15 +7,6 @@
           <div>{{ area.meta.description }}</div>
         </div>
 
-        <div class="detail-section">
-          <div class="detail-label">Type</div>
-          <div>
-            <span class="badge badge-primary">{{
-              formatAreaType(area.spec.type || "other")
-            }}</span>
-          </div>
-        </div>
-
         <div v-if="area.spec.capacity" class="detail-section">
           <div class="detail-label">Capacity</div>
           <div>{{ area.spec.capacity }} people</div>
@@ -89,17 +80,6 @@ export default defineComponent({
   },
   emits: ["close", "edit", "delete"],
   methods: {
-    formatAreaType(type: string): string {
-      const typeMap: Record<string, string> = {
-        indoor: "Indoor",
-        outdoor: "Outdoor",
-        facility: "Facility",
-        field: "Field",
-        water: "Water",
-        other: "Other",
-      };
-      return typeMap[type] || type.charAt(0).toUpperCase() + type.slice(1);
-    },
     formatDate(dateString: string): string {
       const date = new Date(dateString);
       return date.toLocaleDateString("en-US", {

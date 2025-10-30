@@ -27,12 +27,6 @@ describe("AreaFormModal", () => {
       ).toBe(true);
     });
 
-    it("renders type selector", () => {
-      const wrapper = createWrapper(AreaFormModal);
-
-      expect(wrapper.text()).toContain("Type");
-    });
-
     it("contains form element", () => {
       const wrapper = createWrapper(AreaFormModal);
 

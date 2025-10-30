@@ -18,12 +18,6 @@ export const useAreasStore = defineStore("areas", {
         return state.areas.find((a) => a.meta.id === id);
       };
     },
-
-    getAreasByType(state): (type: Area["spec"]["type"]) => Area[] {
-      return (type: Area["spec"]["type"]): Area[] => {
-        return state.areas.filter((a) => a.spec.type === type);
-      };
-    },
   },
 
   actions: {

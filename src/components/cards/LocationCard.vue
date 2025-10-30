@@ -3,15 +3,12 @@
     class="card card-clickable card-horizontal"
     @click="$emit('click', location)"
   >
-    <div class="card-icon" :style="{ background: iconColor }">
-      <Icon :name="locationTypeIcon" :size="24" :stroke-width="2" />
+    <div class="card-icon" :style="{ background: '#3b82f6' }">
+      <Icon name="MapPin" :size="24" :stroke-width="2" />
     </div>
     <div class="card-details">
       <h4>{{ location.meta.name }}</h4>
       <div class="card-meta row items-center">
-        <span class="badge badge-primary" v-if="location.spec.type">
-          {{ formattedType }}
-        </span>
         <span v-if="location.spec.capacity" class="badge badge-success">
           Capacity: {{ location.spec.capacity }}
         </span>
@@ -48,7 +45,7 @@
 import { defineComponent, type PropType } from "vue";
 import type { Location } from "@/generated/api";
 import { useAreasStore, useEventsStore, useLocationsStore } from "@/stores";
-import Icon, { type IconName } from "../Icon.vue";
+import Icon from "../Icon.vue";
 
 export default defineComponent({
   name: "LocationCard",
@@ -75,35 +72,6 @@ export default defineComponent({
           .name;
       }
       return undefined;
-    },
-    formattedType(): string {
-      if (!this.location.spec.type) return "";
-      return (
-        this.location.spec.type.charAt(0).toUpperCase() +
-        this.location.spec.type.slice(1)
-      );
-    },
-    iconColor(): string {
-      const colors: Record<Location["spec"]["type"], string> = {
-        classroom: "#2196F3",
-        activity: "#4CAF50",
-        sports: "#FF9800",
-        dining: "#795548",
-        outdoor: "#8BC34A",
-        arts: "#9C27B0",
-      };
-      return colors[this.location.spec.type] || "#757575";
-    },
-    locationTypeIcon(): IconName {
-      const iconMap: Record<Location["spec"]["type"], IconName> = {
-        classroom: "BookOpen",
-        activity: "Target",
-        sports: "Dumbbell",
-        dining: "Utensils",
-        outdoor: "Trees",
-        arts: "Palette",
-      };
-      return iconMap[this.location.spec.type] || "MapPin";
     },
     usagePercent(): number {
       const locationEvents = this.eventsStore.locationEvents(

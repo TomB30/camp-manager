@@ -8,9 +8,6 @@ properties:
   spec:
     type: object
     properties:
-      type:
-        type: string
-        enum: [indoor, outdoor, facility, field, water, other]
       capacity:
         type: integer
         minimum: 1

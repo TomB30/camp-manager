@@ -393,7 +393,6 @@ export const areas: Area[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "facility",
       capacity: 150,
       equipment: ["Tables", "Chairs", "Whiteboards", "Projectors"],
       notes: "Primary area for structured activities",
@@ -408,7 +407,6 @@ export const areas: Area[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "water",
       capacity: 60,
       equipment: ["Kayaks", "Life jackets", "Canoes", "Swimming platforms"],
       notes: "Requires lifeguard certification",
@@ -423,7 +421,6 @@ export const areas: Area[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "outdoor",
       capacity: 80,
       equipment: ["Trail markers", "First aid stations", "Binoculars"],
       notes: "Great for nature exploration",
@@ -438,7 +435,6 @@ export const areas: Area[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "indoor",
       capacity: 200,
       equipment: ["Tables", "Chairs", "Kitchen facilities", "Stage"],
       notes: "Main dining and assembly area",
@@ -458,7 +454,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "classroom",
       capacity: 25,
       areaId: areas[0].meta.id,
       equipment: ["Projector", "Whiteboard"],
@@ -474,7 +469,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "classroom",
       capacity: 25,
       areaId: areas[0].meta.id,
       equipment: ["Projector", "Whiteboard"],
@@ -490,7 +484,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "arts",
       capacity: 20,
       areaId: areas[0].meta.id,
       equipment: ["Easels", "Paint supplies", "Clay"],
@@ -506,7 +499,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "sports",
       capacity: 30,
       areaId: areas[0].meta.id,
       equipment: ["Soccer balls", "Goals", "Cones"],
@@ -522,7 +514,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "sports",
       capacity: 40,
       areaId: areas[0].meta.id,
       equipment: ["Soccer balls", "Goals", "Cones"],
@@ -539,7 +530,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "outdoor",
       capacity: 30,
       areaId: areas[1].meta.id,
       equipment: ["Life jackets", "Floats"],
@@ -555,7 +545,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "outdoor",
       capacity: 20,
       areaId: areas[1].meta.id,
       equipment: ["Kayaks", "Canoes", "Paddles"],
@@ -571,7 +560,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "outdoor",
       capacity: 40,
       areaId: areas[1].meta.id,
       equipment: ["Beach toys", "Umbrellas"],
@@ -589,7 +577,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "outdoor",
       capacity: 25,
       areaId: areas[2].meta.id,
       equipment: ["Trail maps", "First aid kit"],
@@ -605,7 +592,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "activity",
       capacity: 30,
       areaId: areas[2].meta.id,
       equipment: ["Microscopes", "Field guides", "Specimens"],
@@ -621,7 +607,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "outdoor",
       capacity: 50,
       areaId: areas[2].meta.id,
       equipment: ["Fire pit", "Benches", "S'more supplies"],
@@ -639,7 +624,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "dining",
       capacity: 150,
       areaId: areas[3].meta.id,
       equipment: ["Tables", "Chairs", "Serving stations"],
@@ -655,7 +639,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "activity",
       capacity: 200,
       areaId: areas[3].meta.id,
       equipment: ["Stage", "Sound system", "Projector"],
@@ -671,7 +654,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "activity",
       capacity: 30,
       areaId: areas[3].meta.id,
       equipment: ["Board games", "Video games", "Pool table"],
@@ -687,7 +669,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "arts",
       capacity: 25,
       areaId: areas[3].meta.id,
       equipment: ["Craft supplies", "Tools", "Workbenches"],
@@ -703,7 +684,6 @@ export const locations: Location[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      type: "activity",
       capacity: 20,
       areaId: areas[3].meta.id,
       equipment: ["Instruments", "Music stands", "Speakers"],

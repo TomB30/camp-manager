@@ -10,7 +10,6 @@ export const areasFixture: Area[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      type: "facility",
       capacity: 150,
       equipment: ["Tables", "Chairs", "Whiteboards", "Projectors"],
       notes: "Primary area for structured activities",
@@ -25,7 +24,6 @@ export const areasFixture: Area[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      type: "water",
       capacity: 60,
       equipment: ["Kayaks", "Life jackets", "Canoes", "Swimming platforms"],
       notes: "Requires lifeguard certification",
@@ -40,7 +38,6 @@ export const areasFixture: Area[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      type: "outdoor",
       capacity: 80,
       equipment: ["Trail markers", "First aid stations", "Binoculars"],
       notes: "Great for nature exploration",
@@ -55,7 +52,6 @@ export const areasFixture: Area[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      type: "indoor",
       capacity: 200,
       equipment: ["Tables", "Chairs", "Kitchen facilities", "Stage"],
       notes: "Main dining and assembly area",
@@ -70,7 +66,6 @@ export const areasFixture: Area[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      type: "field",
       capacity: 100,
       equipment: ["Balls", "Goals", "Nets", "Cones"],
       notes: "Various sports activities",

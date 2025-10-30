@@ -7,12 +7,7 @@ properties:
     $ref: "./EntityMeta.yaml"
   spec:
     type: object
-    required:
-      - type
     properties:
-      type:
-        type: string
-        enum: [classroom, activity, sports, dining, outdoor, arts]
       capacity:
         type: integer
         minimum: 1

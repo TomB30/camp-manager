@@ -14,8 +14,7 @@
     <!-- Search and Filters -->
     <FilterBar
       v-model:searchQuery="searchQuery"
-      v-model:filter-type="filterType"
-      :filters="areaFilters"
+      :filters="[]"
       :filtered-count="filteredAreas.length"
       :total-count="areasStore.areas.length"
       @clear="clearFilters"
@@ -40,16 +39,10 @@
         v-for="area in filteredAreas"
         :key="area.meta.id"
         :area="area"
-        :format-type="formatAreaType(area.spec.type)"
-        :icon-color="getAreaTypeColor(area.spec.type)"
         @click="selectArea(area.meta.id)"
       >
         <template #icon>
-          <Icon
-            :name="AreaTypeIcon(area.spec.type)"
-            :size="24"
-            :stroke-width="2"
-          />
+          <Icon name="Map" :size="24" :stroke-width="2" />
         </template>
       </AreaCard>
     </div>
@@ -65,24 +58,11 @@
     >
       <template #cell-name="{ item }">
         <div class="area-name-content">
-          <div
-            class="area-icon-sm"
-            :style="{ background: getAreaTypeColor(item.spec.type) }"
-          >
-            <Icon
-              :name="AreaTypeIcon(item.spec.type)"
-              :size="18"
-              :stroke-width="2"
-            />
+          <div class="area-icon-sm" :style="{ background: '#3b82f6' }">
+            <Icon name="Map" :size="18" :stroke-width="2" />
           </div>
           <div class="area-name">{{ item.meta.name }}</div>
         </div>
-      </template>
-
-      <template #cell-type="{ item }">
-        <span class="badge badge-primary badge-sm">{{
-          formatAreaType(item.spec.type)
-        }}</span>
       </template>
 
       <template #cell-capacity="{ item }">
@@ -143,10 +123,9 @@ import { defineComponent } from "vue";
 import { useAreasStore } from "@/stores";
 // Types
 import type { Area } from "@/generated/api";
-import type { IconName } from "@/components/Icon.vue";
 // Components
 import AreaCard from "@/components/cards/AreaCard.vue";
-import FilterBar, { type Filter } from "@/components/FilterBar.vue";
+import FilterBar from "@/components/FilterBar.vue";
 import AreaDetailModal from "@/components/modals/AreaDetailModal.vue";
 import AreaFormModal from "@/components/modals/AreaFormModal.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
@@ -184,14 +163,12 @@ export default defineComponent({
       editingAreaId: null as string | null,
       selectedAreaId: null as string | null,
       searchQuery: "",
-      filterType: "",
       viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
       confirmAction: null as (() => void) | null,
       areaColumns: [
         { key: "name", label: "Area Name", sortable: true },
-        { key: "type", label: "Type", sortable: true },
         { key: "capacity", label: "Capacity", sortable: true },
         { key: "equipment", label: "Equipment" },
         { key: "actions", label: "", width: "120px" },
@@ -199,23 +176,6 @@ export default defineComponent({
     };
   },
   computed: {
-    areaFilters(): Filter[] {
-      return [
-        {
-          model: "filterType",
-          value: this.filterType,
-          placeholder: "Filter by Type",
-          options: [
-            { value: "indoor", label: "Indoor" },
-            { value: "outdoor", label: "Outdoor" },
-            { value: "facility", label: "Facility" },
-            { value: "field", label: "Field" },
-            { value: "water", label: "Water" },
-            { value: "other", label: "Other" },
-          ],
-        },
-      ];
-    },
     filteredAreas(): Area[] {
       let filtered = this.areasStore.areas;
 
@@ -226,17 +186,6 @@ export default defineComponent({
           (area) =>
             area.meta.name.toLowerCase().includes(query) ||
             area.meta.description?.toLowerCase().includes(query),
-        );
-      }
-
-      // Type filter
-      if (
-        this.filterType &&
-        this.filterType !== "" &&
-        this.filterType !== "all"
-      ) {
-        filtered = filtered.filter(
-          (area) => area.spec.type === this.filterType,
         );
       }
 
@@ -275,7 +224,6 @@ export default defineComponent({
     },
     clearFilters() {
       this.searchQuery = "";
-      this.filterType = "";
     },
     handleConfirmAction() {
       if (this.confirmAction) {
@@ -287,39 +235,6 @@ export default defineComponent({
     handleCancelConfirm() {
       this.confirmAction = null;
       this.showConfirmModal = false;
-    },
-    formatAreaType(type: Area["spec"]["type"]): string {
-      const typeMap: Record<NonNullable<Area["spec"]["type"]>, string> = {
-        indoor: "Indoor",
-        outdoor: "Outdoor",
-        facility: "Facility",
-        field: "Field",
-        water: "Water",
-        other: "Other",
-      };
-      return typeMap[type as NonNullable<Area["spec"]["type"]>] || "";
-    },
-    getAreaTypeColor(type: Area["spec"]["type"]): string {
-      const colorMap: Record<NonNullable<Area["spec"]["type"]>, string> = {
-        indoor: "#3b82f6",
-        outdoor: "#10b981",
-        facility: "#6366f1",
-        field: "#f59e0b",
-        water: "#06b6d4",
-        other: "#6b7280",
-      };
-      return colorMap[type as NonNullable<Area["spec"]["type"]>] || "#6b7280";
-    },
-    AreaTypeIcon(type: Area["spec"]["type"]): IconName {
-      const iconMap: Record<NonNullable<Area["spec"]["type"]>, IconName> = {
-        indoor: "Home",
-        outdoor: "Trees",
-        facility: "Activity",
-        field: "Activity",
-        water: "Waves",
-        other: "MoreHorizontal",
-      };
-      return iconMap[type as NonNullable<Area["spec"]["type"]>] || "MapPin";
     },
   },
 });

@@ -3,20 +3,14 @@
     class="card card-clickable card-horizontal area-card"
     @click="$emit('click')"
   >
-    <div class="card-icon" :style="{ background: iconColor }">
+    <div class="card-icon" :style="{ background: '#3b82f6' }">
       <slot name="icon">
-        <Icon name="MapPin" :size="28" :stroke-width="2" />
+        <Icon name="Map" :size="28" :stroke-width="2" />
       </slot>
     </div>
     <div class="card-details">
       <h4>{{ area.meta.name }}</h4>
       <div class="card-meta">
-        <span
-          class="badge badge-sm"
-          :class="getTypeBadgeClass(area.spec.type || 'other')"
-        >
-          {{ formatType }}
-        </span>
         <span v-if="area.spec.capacity" class="badge badge-sm badge-secondary">
           <Icon name="Users" :size="12" class="inline" />
           {{ area.spec.capacity }}
@@ -57,29 +51,8 @@ export default defineComponent({
       type: Object as PropType<Area>,
       required: true,
     },
-    formatType: {
-      type: String,
-      default: "",
-    },
-    iconColor: {
-      type: String,
-      default: "#3b82f6",
-    },
   },
   emits: ["click"],
-  methods: {
-    getTypeBadgeClass(type: string): string {
-      const typeMap: Record<string, string> = {
-        indoor: "badge-primary",
-        outdoor: "badge-success",
-        facility: "badge-info",
-        field: "badge-warning",
-        water: "badge-blue",
-        other: "badge-secondary",
-      };
-      return typeMap[type] || "badge-secondary";
-    },
-  },
 });
 </script>
 
