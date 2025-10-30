@@ -372,6 +372,7 @@ import {
   useColorsStore,
   useCertificationsStore,
   useDurationPresetsStore,
+  useSessionsStore,
 } from "@/stores";
 import { conflictDetector } from "@/services/conflicts";
 import { useToast } from "@/composables/useToast";
@@ -432,6 +433,7 @@ export default defineComponent({
     const certificationsStore = useCertificationsStore();
     const durationPresetsStore = useDurationPresetsStore();
     const toast = useToast();
+    const sessionsStore = useSessionsStore();
     return {
       eventsStore,
       campersStore,
@@ -444,6 +446,7 @@ export default defineComponent({
       certificationsStore,
       durationPresetsStore,
       toast,
+      sessionsStore,
     };
   },
   data() {
@@ -472,7 +475,7 @@ export default defineComponent({
           startDate: defaultDate.toISOString(),
           endDate: "",
           locationId: "",
-          capacity: 0,
+          capacity: null as number | null,
           colorId: "",
           requiredCertificationIds: [],
           groupIds: [],
@@ -678,6 +681,38 @@ export default defineComponent({
       return optionsWithGroups;
     },
     allGroups(): Array<Group> {
+      // Filter groups by session dates
+      const eventDate = this.eventDate;
+      if (!eventDate) {
+        return this.groups;
+      }
+
+      // Parse event date as YYYY-MM-DD
+      const eventDateObj = new Date(eventDate);
+      eventDateObj.setHours(0, 0, 0, 0);
+
+      return this.groups.filter((group) => {
+        // Groups without session assignment are assignable to all events
+        if (!group.spec.sessionId) {
+          return true;
+        }
+
+        // Find the session for this group
+        const session = this.sessionsStore.getSessionById(group.spec.sessionId);
+        if (!session || !session.spec.startDate || !session.spec.endDate) {
+          // If the session or its dates are missing, exclude the group
+          return false;
+        }
+
+        // Parse session start/end dates as YYYY-MM-DD
+        const start = new Date(session.spec.startDate);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(session.spec.endDate);
+        end.setHours(0, 0, 0, 0);
+
+        // Check if event date is within the session's date range (inclusive)
+        return eventDateObj >= start && eventDateObj <= end;
+      });
       return this.groups;
     },
     campersInAssignedGroups(): Camper[] {

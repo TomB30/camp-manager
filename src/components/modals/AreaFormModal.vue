@@ -103,7 +103,7 @@ export default defineComponent({
           description: "",
         },
         spec: {
-          capacity: 0,
+          capacity: null as number | null,
           equipment: [],
           notes: "",
         },

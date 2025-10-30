@@ -36,7 +36,7 @@
                 <div class="week-event-room text-xs">
                   {{ getLocationName(event.spec.locationId || "") }}
                 </div>
-                <div class="week-event-capacity text-xs">
+                <div class="week-event-capacity text-xs" v-if="event.spec.capacity">
                   {{ getEnrolledCount(event.meta.id) }}/{{
                     event.spec.capacity
                   }}
