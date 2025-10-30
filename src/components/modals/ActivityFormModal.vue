@@ -4,7 +4,7 @@
     @close="$emit('close')"
   >
     <template #body>
-      <q-form @submit.prevent="handleSave" ref="formRef">
+      <q-form @submit.prevent ref="formRef">
         <ActivityForm
           v-model="localFormData"
           v-model:is-custom-duration="isCustomDuration"
@@ -18,6 +18,7 @@
       <div class="flex q-gutter-x-sm">
         <BaseButton flat @click="$emit('close')" label="Cancel" />
         <BaseButton
+          @click="handleSave"
           color="primary"
           type="submit"
           :label="isEditing ? 'Save Changes' : 'Create Activity'"
@@ -126,7 +127,7 @@ export default defineComponent({
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.meta.name === name,
+            (c) => c.meta.name === name
           );
           return cert ? cert.meta.id : "";
         })
