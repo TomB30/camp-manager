@@ -390,8 +390,7 @@ export default defineComponent({
 
 .group-badge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  color: white;
+  color: var(--text-primary);
   border-radius: var(--radius);
   font-size: 0.875rem;
   font-weight: 500;

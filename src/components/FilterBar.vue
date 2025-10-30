@@ -237,8 +237,8 @@ export default defineComponent({
 
 <style scoped>
 .filter-bar {
-  padding: 0.625rem 0.75rem;
-  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .filter-bar-content {

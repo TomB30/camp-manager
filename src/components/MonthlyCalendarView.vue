@@ -41,6 +41,11 @@
                 formatEventTime(event.spec.startDate)
               }}</span>
               <span class="event-title">{{ event.meta.name }}</span>
+              <div class="event-groups text-xs" v-if="event.spec.groupIds && event.spec.groupIds.length > 0">
+                <span v-for="(groupId, idx) in event.spec.groupIds" :key="groupId">
+                  {{ groupNamesById[groupId] }}<span v-if="idx < event.spec.groupIds.length - 1">, </span>
+                </span>
+              </div>
             </div>
             <div
               v-if="day.events.length > maxEventsPerDay"
@@ -68,7 +73,7 @@ import {
   format,
 } from "date-fns";
 import type { Event } from "@/generated/api";
-import { useColorsStore } from "@/stores";
+import { useColorsStore, useGroupsStore } from "@/stores";
 
 interface CalendarDay {
   date: Date;
@@ -95,11 +100,16 @@ export default defineComponent({
   data() {
     return {
       daysOfWeek: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-      maxEventsPerDay: 3, // Maximum events to show before displaying "+x more"
-      colorsStore: useColorsStore(),
+      maxEventsPerDay: 3, // Maximum events to show before displaying "+x more" 
     };
   },
   computed: {
+    colorsStore() {
+      return useColorsStore();
+    },
+    groupsStore() {
+      return useGroupsStore();
+    },
     calendarDays(): CalendarDay[] {
       const monthStart = startOfMonth(this.selectedDate);
       const monthEnd = endOfMonth(this.selectedDate);
@@ -127,6 +137,12 @@ export default defineComponent({
           events: dayEvents,
         };
       });
+    },
+    groupNamesById(): Record<string, string> {
+      return this.groupsStore.groups.reduce((acc, group) => {
+        acc[group.meta.id] = group.meta.name;
+        return acc;
+      }, {} as Record<string, string>);
     },
   },
   methods: {

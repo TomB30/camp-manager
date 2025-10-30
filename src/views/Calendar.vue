@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="calendar-view">
     <div class="view">
       <ViewHeader title="Event Calendar">
         <template #actions>
@@ -501,7 +501,12 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.calendar-view {
+  .view {
+    margin: 0 0;
+  }
+}  
 /* Calendar View Toggle */
 .calendar-view-toggle {
   display: flex;
@@ -518,6 +523,10 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+  }
 }
 
 /* Date Navigation Bar */
@@ -526,36 +535,29 @@ export default defineComponent({
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   background: var(--surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   box-shadow: var(--shadow);
-}
-
-.date-display h3 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.date-controls {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-@media (max-width: 1024px) {
-  .date-navigation {
-    flex-direction: column;
-    text-align: center;
+  .date-display h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
   }
-
   .date-controls {
-    justify-content: center;
-    width: 100%;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    .btn {
+      @media (max-width: 768px) {
+        padding: 0.5rem;
+      }
+    }
   }
 }
+
 </style>

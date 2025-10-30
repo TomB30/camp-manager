@@ -42,6 +42,11 @@
                   }}
                 </div>
               </div>
+              <div class="event-groups text-xs" v-if="event.spec.groupIds && event.spec.groupIds.length > 0">
+                <span v-for="(groupId, idx) in event.spec.groupIds" :key="groupId">
+                  {{ groupNamesById[groupId] }}<span v-if="idx < event.spec.groupIds.length - 1">, </span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -54,7 +59,7 @@
 import { defineComponent, type PropType } from "vue";
 import { format } from "date-fns";
 import { dateUtils } from "@/utils/dateUtils";
-import { useColorsStore, useEventsStore } from "@/stores";
+import { useColorsStore, useEventsStore, useGroupsStore } from "@/stores";
 import type { Event, Location } from "@/generated/api";
 
 export default defineComponent({
@@ -77,12 +82,21 @@ export default defineComponent({
   setup() {
     const eventsStore = useEventsStore();
     const colorsStore = useColorsStore();
-    return { eventsStore, colorsStore };
+    const groupsStore = useGroupsStore();
+    return { eventsStore, colorsStore, groupsStore };
   },
   data() {
     return {
       hours: Array.from({ length: 14 }, (_, i) => i + 7),
     };
+  },
+  computed: {
+    groupNamesById(): Record<string, string> {
+      return this.groupsStore.groups.reduce((acc, group) => {
+        acc[group.meta.id] = group.meta.name;
+        return acc;
+      }, {} as Record<string, string>);
+    },
   },
   methods: {
     formatHour(hour: number): string {
