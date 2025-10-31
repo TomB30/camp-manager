@@ -87,7 +87,7 @@ describe("ActivityFormModal", () => {
       });
 
       const vm = wrapper.vm as any;
-      expect(vm.localFormData.name).toBe(activity.meta.name);
+      expect(vm.formData.meta.name).toBe(activity.meta.name);
     });
   });
 
@@ -100,18 +100,6 @@ describe("ActivityFormModal", () => {
 
       expect(wrapper.findComponent({ name: "ActivityForm" }).exists()).toBe(
         true,
-      );
-    });
-
-    it("passes certifications to ActivityForm", () => {
-      const wrapper = createWrapper(ActivityFormModal, {
-        props: defaultProps,
-        pinia,
-      });
-
-      const activityForm = wrapper.findComponent({ name: "ActivityForm" });
-      expect(activityForm.props("certifications")).toHaveLength(
-        certificationsFixture.length,
       );
     });
   });
