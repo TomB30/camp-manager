@@ -37,11 +37,6 @@
           <q-form @submit.prevent="handleCreateNew" ref="formRef">
             <ActivityForm
               v-model="formData"
-              v-model:selected-certification-ids="selectedCertificationIds"
-              v-model:is-custom-duration="isCustomDuration"
-              :room-options="roomOptions"
-              :certifications="certificationsStore.certifications"
-              :compact-mode="true"
             />
           </q-form>
         </div>
@@ -130,15 +125,14 @@ import {
   useColorsStore,
   useCertificationsStore,
 } from "@/stores";
-import type { Activity } from "@/generated/api";
+import type { Activity, ActivityCreationRequest } from "@/generated/api";
 import BaseModal from "@/components/BaseModal.vue";
-import ActivityForm, {
-  type ActivityFormData,
-} from "@/components/ActivityForm.vue";
+import ActivityForm from "@/components/ActivityForm.vue";
 import { type AutocompleteOption } from "@/components/Autocomplete.vue";
 import DurationDisplay from "@/components/DurationDisplay.vue";
 import Icon from "@/components/Icon.vue";
 import { QForm } from "quasar";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
   name: "ActivitySelectorModal",
@@ -161,12 +155,14 @@ export default defineComponent({
     const locationsStore = useLocationsStore();
     const colorsStore = useColorsStore();
     const certificationsStore = useCertificationsStore();
+    const toast = useToast();
     return {
       activitiesStore,
       programsStore,
       locationsStore,
       colorsStore,
       certificationsStore,
+      toast,
     };
   },
   data() {
@@ -175,14 +171,19 @@ export default defineComponent({
       selectedActivityId: null as string | null,
       searchQuery: "",
       formData: {
-        name: "",
-        description: "",
-        duration: 60,
-        defaultLocationId: "",
-        requiredCertificationIds: [],
-        minStaff: 0,
-        defaultCapacity: 0,
-      } as ActivityFormData,
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {
+          programIds: [],
+          duration: 60,
+          defaultLocationId: "",
+          requiredCertificationIds: [],
+          minStaff: undefined as number | undefined,
+          defaultCapacity: undefined as number | undefined,
+        },
+      } as ActivityCreationRequest,
       selectedCertificationIds: [] as string[],
       isCustomDuration: false,
     };
@@ -229,13 +230,18 @@ export default defineComponent({
       this.selectedActivityId = null;
       this.searchQuery = "";
       this.formData = {
-        name: "",
-        description: "",
-        duration: 60,
-        defaultLocationId: "",
-        requiredCertificationIds: [],
-        minStaff: 0,
-        defaultCapacity: 0,
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {
+          programIds: [],
+          duration: 60,
+          defaultLocationId: "",
+          requiredCertificationIds: [],
+          minStaff: undefined as number | undefined,
+          defaultCapacity: undefined as number | undefined,
+        },
       };
       this.selectedCertificationIds = [];
       this.isCustomDuration = false;
@@ -246,35 +252,42 @@ export default defineComponent({
     async handleCreateNew() {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
-      const now = new Date().toISOString();
 
-      const activityData: Activity = {
+      const activityData: ActivityCreationRequest = {
         meta: {
-          id: crypto.randomUUID(),
-          name: this.formData.name,
-          description: this.formData.description || undefined,
-          createdAt: now,
-          updatedAt: now,
+          name: this.formData.meta.name,
+          description: this.formData.meta.description || undefined,
         },
         spec: {
           programIds: [this.programId],
-          duration: this.formData.duration,
-          defaultLocationId: this.formData.defaultLocationId || undefined,
+          duration: this.formData.spec.duration,
+          defaultLocationId: this.formData.spec.defaultLocationId || undefined,
           requiredCertificationIds:
             this.selectedCertificationIds.length > 0
               ? this.selectedCertificationIds
               : undefined,
-          minStaff: this.formData.minStaff || undefined,
-          defaultCapacity: this.formData.defaultCapacity || undefined,
+          minStaff: this.formData.spec.minStaff || undefined as number | undefined,
+          defaultCapacity: this.formData.spec.defaultCapacity || undefined as number | undefined,
         },
       };
 
-      this.$emit("create-new", activityData);
+      try {
+        await this.activitiesStore.addActivity(activityData);
+        this.toast.success("Activity created successfully");
+      } catch (error: any) {
+        this.toast.error(error.message || "Failed to create activity");
+      }
+
       this.$emit("close");
     },
-    handleAddExisting() {
+    async handleAddExisting() {
       if (this.selectedActivityId) {
-        this.$emit("add-existing", this.selectedActivityId);
+        try {
+          await this.activitiesStore.addActivityToProgram(this.programId, this.selectedActivityId);
+          this.toast.success("Activity added successfully");
+        } catch (error: any) {
+          this.toast.error(error.message || "Failed to add activity");
+        }
         this.$emit("close");
       }
     },

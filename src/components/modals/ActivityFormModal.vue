@@ -5,12 +5,7 @@
   >
     <template #body>
       <q-form @submit.prevent ref="formRef">
-        <ActivityForm
-          v-model="localFormData"
-          v-model:is-custom-duration="isCustomDuration"
-          :room-options="roomOptions"
-          :certifications="certificationsStore.certifications"
-        />
+        <ActivityForm v-model="formData" />
       </q-form>
     </template>
 
@@ -38,12 +33,11 @@ import {
   useActivitiesStore,
 } from "@/stores";
 import BaseModal from "@/components/BaseModal.vue";
-import ActivityForm, {
-  type ActivityFormData,
-} from "@/components/ActivityForm.vue";
+import ActivityForm from "@/components/ActivityForm.vue";
 import { type AutocompleteOption } from "@/components/Autocomplete.vue";
-import type { Activity } from "@/generated/api";
+import type { Activity, ActivityCreationRequest } from "@/generated/api";
 import { QForm } from "quasar";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
   name: "ActivityFormModal",
@@ -72,25 +66,32 @@ export default defineComponent({
     const colorsStore = useColorsStore();
     const certificationsStore = useCertificationsStore();
     const activitiesStore = useActivitiesStore();
+    const toast = useToast();
     return {
       programsStore,
       locationsStore,
       colorsStore,
       certificationsStore,
       activitiesStore,
+      toast,
     };
   },
   data() {
     return {
-      localFormData: {
-        name: "",
-        description: "",
-        duration: 60,
-        defaultLocationId: "",
-        requiredCertificationIds: [],
-        minStaff: null as number | null,
-        defaultCapacity: null as number | null,
-      } as ActivityFormData,
+      formData: {
+        meta: {
+          name: "",
+          description: "",
+        },
+        spec: {
+          programIds: [],
+          duration: 60,
+          defaultLocationId: "",
+          requiredCertificationIds: [],
+          minStaff: null as number | null,
+          defaultCapacity: null as number | null,
+        },
+      } as ActivityCreationRequest,
       isCustomDuration: false,
       editingActivity: null as Activity | null,
     };
@@ -100,14 +101,20 @@ export default defineComponent({
       const activity = this.activitiesStore.getActivityById(this.activityId);
       if (!activity) return;
       this.editingActivity = activity;
-      this.localFormData = {
-        name: activity.meta.name,
-        description: activity.meta.description || "",
-        duration: activity.spec.duration || 60,
-        defaultLocationId: activity.spec.defaultLocationId || "",
-        requiredCertificationIds: activity.spec.requiredCertificationIds || [],
-        minStaff: activity.spec.minStaff || 0,
-        defaultCapacity: activity.spec.defaultCapacity || 0,
+      this.formData = {
+        meta: {
+          name: activity.meta.name,
+          description: activity.meta.description || "",
+        },
+        spec: {
+          programIds: activity.spec.programIds,
+          duration: activity.spec.duration || 60,
+          defaultLocationId: activity.spec.defaultLocationId || "",
+          requiredCertificationIds:
+            activity.spec.requiredCertificationIds || [],
+          minStaff: activity.spec.minStaff || 0,
+          defaultCapacity: activity.spec.defaultCapacity || 0,
+        },
       };
     }
   },
@@ -127,7 +134,7 @@ export default defineComponent({
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.meta.name === name,
+            (c) => c.meta.name === name
           );
           return cert ? cert.meta.id : "";
         })
@@ -161,28 +168,42 @@ export default defineComponent({
         return;
       }
 
-      const now = new Date().toISOString();
-
-      const activityData: Activity = {
+      const activityData: ActivityCreationRequest = {
         meta: {
-          id: crypto.randomUUID(),
-          name: this.localFormData.name,
-          description: this.localFormData.description || undefined,
-          createdAt: now,
-          updatedAt: now,
+          name: this.formData.meta.name,
+          description: this.formData.meta.description || undefined,
         },
         spec: {
           programIds: activityProgramIds,
-          duration: this.localFormData.duration,
-          defaultLocationId: this.localFormData.defaultLocationId || undefined,
+          duration: this.formData.spec.duration,
+          defaultLocationId:
+            this.formData.spec.defaultLocationId || undefined,
           requiredCertificationIds:
-            this.localFormData.requiredCertificationIds || undefined,
-          minStaff: this.localFormData.minStaff || undefined,
-          defaultCapacity: this.localFormData.defaultCapacity || undefined,
+            this.formData.spec.requiredCertificationIds || undefined,
+          minStaff: this.formData.spec.minStaff || undefined,
+          defaultCapacity: this.formData.spec.defaultCapacity || undefined,
         },
       };
 
-      this.$emit("save", activityData);
+      if (this.activityId) {
+        try {
+          await this.activitiesStore.updateActivity(
+            this.activityId,
+            activityData
+          );
+          this.toast.success("Activity updated successfully");
+        } catch (error: any) {
+          this.toast.error(error.message || "Failed to update activity");
+        }
+      } else {
+        try {
+          await this.activitiesStore.addActivity(activityData);
+          this.toast.success("Activity created successfully");
+        } catch (error: any) {
+          this.toast.error(error.message || "Failed to create activity");
+        }
+      }
+      this.$emit("close");
     },
   },
 });

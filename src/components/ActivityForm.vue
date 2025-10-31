@@ -3,8 +3,8 @@
     <div class="form-group">
       <label class="form-label">Activity Name</label>
       <BaseInput
-        :model-value="modelValue.name"
-        @update:model-value="updateField('name', $event)"
+        :model-value="modelValue.meta.name"
+        @update:model-value="updateMetaField('name', $event)"
         type="text"
         placeholder="e.g., Wakeboarding, Pottery"
         :rules="[(val: string) => !!val || 'Enter activity name']"
@@ -14,8 +14,8 @@
     <div class="form-group">
       <label class="form-label">Description</label>
       <BaseInput
-        :model-value="modelValue.description"
-        @update:model-value="updateField('description', $event)"
+        :model-value="modelValue.meta.description"
+        @update:model-value="updateMetaField('description', $event)"
         type="textarea"
         :rows="3"
         placeholder="Describe this activity..."
@@ -34,7 +34,7 @@
             active:
               preset.minutes === null
                 ? isCustomDuration
-                : modelValue.duration === preset.minutes,
+                : modelValue.spec.duration === preset.minutes,
           }"
           @click="handleDurationPresetClick(preset)"
         >
@@ -43,8 +43,8 @@
       </div>
       <div v-if="isCustomDuration" class="custom-duration-input">
         <BaseInput
-          :model-value="String(modelValue.duration)"
-          @update:model-value="updateField('duration', Number($event))"
+          :model-value="String(modelValue.spec.duration)"
+          @update:model-value="updateSpecField('duration', Number($event))"
           type="number"
           :min="1"
           placeholder="Enter custom duration in minutes"
@@ -56,9 +56,9 @@
     <div class="form-group">
       <label class="form-label">Default Location</label>
       <Autocomplete
-        :model-value="modelValue.defaultLocationId"
-        @update:model-value="updateField('defaultLocationId', $event)"
-        :options="roomOptions"
+        :model-value="modelValue.spec.defaultLocationId"
+        @update:model-value="updateSpecField('defaultLocationId', $event)"
+        :options="locations"
         placeholder="Select a default location"
       />
     </div>
@@ -66,8 +66,8 @@
     <div class="form-group">
       <label class="form-label">Default Capacity</label>
       <BaseInput
-        :model-value="String(modelValue.defaultCapacity)"
-        @update:model-value="updateField('defaultCapacity', Number($event))"
+        :model-value="String(modelValue.spec.defaultCapacity)"
+        @update:model-value="updateSpecField('defaultCapacity', Number($event))"
         type="number"
         :min="1"
         placeholder="Maximum number of campers"
@@ -78,8 +78,8 @@
       <label class="form-label">Minimum Staff for Activity</label>
       <div>
         <BaseInput
-          :model-value="String(modelValue.minStaff)"
-          @update:model-value="updateField('minStaff', $event)"
+          :model-value="String(modelValue.spec.minStaff)"
+          @update:model-value="updateSpecField('minStaff', $event)"
           type="number"
           :min="0"
           placeholder="Minimum number of staff required"
@@ -89,22 +89,20 @@
 
     <div class="form-group">
       <label class="form-label">Required Certifications</label>
-      <SelectionList
-        :model-value="modelValue.requiredCertificationIds"
-        @update:model-value="updateField('requiredCertificationIds', $event)"
-        :items="certifications"
-        item-type="certification"
-        placeholder="Select a certification..."
-        empty-text="No certifications required"
-        add-button-text="Add"
-        mode="multiple"
-        :get-label-fn="(cert) => cert.meta.name"
-        :get-initials-fn="
-          (cert) => cert.meta.name.substring(0, 2).toUpperCase()
+      <q-select
+        class="certifications-select"
+        outlined
+        dense
+        :model-value="modelValue.spec.requiredCertificationIds || []"
+        @update:model-value="
+          updateSpecField('requiredCertificationIds', $event)
         "
-        :get-options-fn="
-          (cert) => ({ label: cert.meta.name, value: cert.meta.id })
-        "
+        :options="certifications"
+        placeholder="Select certifications..."
+        use-chips
+        multiple
+        emit-value
+        map-options
       />
       <p class="form-help-text">
         Staff assigned to events using this activity will need these
@@ -120,18 +118,12 @@ import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
 import SelectionList from "@/components/SelectionList.vue";
-import type { Certification } from "@/generated/api";
-import { useDurationPresetsStore } from "@/stores";
-
-export interface ActivityFormData {
-  name: string;
-  description: string;
-  duration: number;
-  defaultLocationId: string;
-  requiredCertificationIds: string[];
-  minStaff: number;
-  defaultCapacity: number;
-}
+import type { ActivityCreationRequest } from "@/generated/api";
+import {
+  useCertificationsStore,
+  useDurationPresetsStore,
+  useLocationsStore,
+} from "@/stores";
 
 export default defineComponent({
   name: "ActivityForm",
@@ -141,32 +133,38 @@ export default defineComponent({
   },
   props: {
     modelValue: {
-      type: Object as PropType<ActivityFormData>,
+      type: Object as PropType<ActivityCreationRequest>,
       required: true,
-    },
-    roomOptions: {
-      type: Array as PropType<AutocompleteOption[]>,
-      required: true,
-    },
-    certifications: {
-      type: Array as PropType<Certification[]>,
-      required: true,
-    },
-    isCustomDuration: {
-      type: Boolean,
-      required: true,
-    },
-    compactMode: {
-      type: Boolean,
-      default: false,
     },
   },
-  emits: ["update:modelValue", "update:isCustomDuration"],
+  emits: ["update:modelValue"],
   setup() {
     const durationPresetsStore = useDurationPresetsStore();
     return { durationPresetsStore };
   },
+  data() {
+    return {
+      isCustomDuration: false,
+    };
+  },
+  created() {
+    this.isCustomDuration = !this.durationPresets.find(
+      (preset) => preset.minutes === this.modelValue.spec.duration
+    );
+  },
   computed: {
+    locations(): AutocompleteOption[] {
+      return useLocationsStore().locations.map((location) => ({
+        value: location.meta.id,
+        label: location.meta.name,
+      }));
+    },
+    certifications(): AutocompleteOption[] {
+      return useCertificationsStore().certifications.map((certification) => ({
+        value: certification.meta.id,
+        label: certification.meta.name,
+      }));
+    },
     durationPresets(): { label: string; minutes: number | null }[] {
       // Build presets from store
       const presets: { label: string; minutes: number | null }[] =
@@ -182,10 +180,22 @@ export default defineComponent({
     },
   },
   methods: {
-    updateField(field: keyof ActivityFormData, value: any) {
+    updateSpecField(field: keyof ActivityCreationRequest["spec"], value: any) {
       this.$emit("update:modelValue", {
         ...this.modelValue,
-        [field]: value,
+        spec: {
+          ...this.modelValue.spec,
+          [field]: value,
+        },
+      });
+    },
+    updateMetaField(field: keyof ActivityCreationRequest["meta"], value: any) {
+      this.$emit("update:modelValue", {
+        ...this.modelValue,
+        meta: {
+          ...this.modelValue.meta,
+          [field]: value,
+        },
       });
     },
     handleDurationPresetClick(preset: {
@@ -194,11 +204,11 @@ export default defineComponent({
     }) {
       if (preset.minutes === null) {
         // Custom option selected
-        this.$emit("update:isCustomDuration", true);
+        this.isCustomDuration = true;
       } else {
         // Preset option selected
-        this.$emit("update:isCustomDuration", false);
-        this.updateField("duration", preset.minutes);
+        this.isCustomDuration = false;
+        this.updateSpecField("duration", preset.minutes as number);
       }
     },
     formatDuration(minutes: number): string {
