@@ -87,12 +87,6 @@
     <template #footer>
       <BaseButton
         outline
-        color="negative"
-        @click="$emit('delete', activity)"
-        label="Delete"
-      />
-      <BaseButton
-        outline
         color="grey-8"
         @click="$emit('edit', activity)"
         label="Edit"
@@ -125,7 +119,7 @@ export default defineComponent({
       default: null,
     },
   },
-  emits: ["close", "edit", "delete"],
+  emits: ["close", "edit"],
   setup() {
     const programsStore = useProgramsStore();
     const locationsStore = useLocationsStore();

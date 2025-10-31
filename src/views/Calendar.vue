@@ -179,6 +179,9 @@ export default defineComponent({
       defaultEventDate: new Date(),
     };
   },
+  created() {
+    this.eventsStore.loadEvents();
+  },
   mounted() {
     this.handleEventIdFromQuery();
   },

@@ -134,7 +134,7 @@ export default defineComponent({
       return names
         .map((name) => {
           const cert = this.certificationsStore.certifications.find(
-            (c) => c.meta.name === name
+            (c) => c.meta.name === name,
           );
           return cert ? cert.meta.id : "";
         })
@@ -176,8 +176,7 @@ export default defineComponent({
         spec: {
           programIds: activityProgramIds,
           duration: this.formData.spec.duration,
-          defaultLocationId:
-            this.formData.spec.defaultLocationId || undefined,
+          defaultLocationId: this.formData.spec.defaultLocationId || undefined,
           requiredCertificationIds:
             this.formData.spec.requiredCertificationIds || undefined,
           minStaff: this.formData.spec.minStaff || undefined,
@@ -189,7 +188,7 @@ export default defineComponent({
         try {
           await this.activitiesStore.updateActivity(
             this.activityId,
-            activityData
+            activityData,
           );
           this.toast.success("Activity updated successfully");
         } catch (error: any) {

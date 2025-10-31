@@ -149,7 +149,7 @@ export default defineComponent({
   },
   created() {
     this.isCustomDuration = !this.durationPresets.find(
-      (preset) => preset.minutes === this.modelValue.spec.duration
+      (preset) => preset.minutes === this.modelValue.spec.duration,
     );
   },
   computed: {

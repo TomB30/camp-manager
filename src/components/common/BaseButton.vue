@@ -1,5 +1,5 @@
 <template>
-  <q-btn v-bind="$attrs" no-caps @click="$emit('click')">
+  <q-btn v-bind="$attrs" no-caps @click.stop="$emit('click')">
     <slot></slot>
   </q-btn>
 </template>
@@ -10,10 +10,5 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "BaseButton",
   emits: ["click"],
-  methods: {
-    handleClick() {
-      this.$emit("click");
-    },
-  },
 });
 </script>

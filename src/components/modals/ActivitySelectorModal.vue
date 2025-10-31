@@ -35,9 +35,7 @@
         <!-- Create New Activity Form -->
         <div v-if="mode === 'create'" class="activity-form">
           <q-form @submit.prevent="handleCreateNew" ref="formRef">
-            <ActivityForm
-              v-model="formData"
-            />
+            <ActivityForm v-model="formData" />
           </q-form>
         </div>
 
@@ -266,8 +264,11 @@ export default defineComponent({
             this.selectedCertificationIds.length > 0
               ? this.selectedCertificationIds
               : undefined,
-          minStaff: this.formData.spec.minStaff || undefined as number | undefined,
-          defaultCapacity: this.formData.spec.defaultCapacity || undefined as number | undefined,
+          minStaff:
+            this.formData.spec.minStaff || (undefined as number | undefined),
+          defaultCapacity:
+            this.formData.spec.defaultCapacity ||
+            (undefined as number | undefined),
         },
       };
 
@@ -283,7 +284,10 @@ export default defineComponent({
     async handleAddExisting() {
       if (this.selectedActivityId) {
         try {
-          await this.activitiesStore.addActivityToProgram(this.programId, this.selectedActivityId);
+          await this.activitiesStore.addActivityToProgram(
+            this.selectedActivityId,
+            this.programId,
+          );
           this.toast.success("Activity added successfully");
         } catch (error: any) {
           this.toast.error(error.message || "Failed to add activity");

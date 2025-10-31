@@ -3,6 +3,7 @@ import type {
   ActivityCreationRequest,
   ActivityUpdateRequest,
   Program,
+  Event,
 } from "@/generated/api";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
@@ -67,26 +68,38 @@ async function updateActivity(
 
 async function deleteActivity(id: string): Promise<void> {
   const activity = await getActivityById(id);
+  if (!activity) return;
+  // Remove from all programs' activityIds
+  const programs = await storageService.getAll<Program>(STORAGE_KEYS.PROGRAMS);
+  const updatedPrograms: Program[] = programs.map((p: Program) => {
+    return {
+      ...p,
+      spec: {
+        ...p.spec,
+        activityIds: p.spec.activityIds?.filter((aid) => aid !== id) || [],
+      },
+    };
+  });
+  const programsPrm = storageService.saveBatch<Program>(
+    STORAGE_KEYS.PROGRAMS,
+    updatedPrograms,
+  );
 
-  if (activity) {
-    // Remove from all programs' activityIds
-    const programs = await storageService.getAll<Program>(
-      STORAGE_KEYS.PROGRAMS,
-    );
+  //  Remove all the events for this activity
+  const events = await storageService.getAll<Event>(STORAGE_KEYS.EVENTS);
+  const updatedEvents: Event[] = events.filter(
+    (e: Event) => e.spec.activityId !== id,
+  );
+  const eventsPrm = storageService.seed<Event>(
+    STORAGE_KEYS.EVENTS,
+    updatedEvents,
+  );
 
-    for (const program of programs) {
-      if (program.spec.activityIds && program.spec.activityIds.includes(id)) {
-        const updatedProgram = {
-          ...program,
-          activityIds:
-            program.spec.activityIds?.filter((aid) => aid !== id) || [],
-        };
-        await storageService.save(STORAGE_KEYS.PROGRAMS, updatedProgram);
-      }
-    }
-  }
-
-  return storageService.delete(STORAGE_KEYS.ACTIVITIES, id);
+  await Promise.all([
+    programsPrm,
+    eventsPrm,
+    storageService.delete(STORAGE_KEYS.ACTIVITIES, id),
+  ]);
 }
 
 async function getActivityById(id: string): Promise<Activity | null> {

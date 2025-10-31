@@ -3,6 +3,7 @@ import type {
   Activity,
   ActivityCreationRequest,
   ActivityUpdateRequest,
+  Program,
 } from "@/generated/api";
 import { activitiesService } from "@/services";
 import { useProgramsStore } from "./programsStore";
@@ -139,29 +140,31 @@ export const useActivitiesStore = defineStore("activities", {
 
     async deleteActivity(id: string): Promise<void> {
       const activity = this.activities.find((a) => a.meta.id === id);
-      if (activity) {
-        // Remove from all programs' activityIds
-        const programsStore = useProgramsStore();
-        for (const programId of activity.spec.programIds) {
-          const program = programsStore.programs.find(
-            (p) => p.meta.id === programId,
-          );
-          if (program) {
-            const updatedActivityIds = program.spec.activityIds?.filter(
-              (aid) => aid !== id,
-            );
-            await programsStore.updateProgram(program.meta.id, {
-              meta: program.meta,
-              spec: {
-                ...program.spec,
-                activityIds: updatedActivityIds,
-              },
-            });
-          }
-        }
+      if (!activity) return;
+      // Remove from all programs' activityIds
+      const programsStore = useProgramsStore();
+      const updateGroupPrms: Promise<void>[] = [];
+      for (const programId of activity.spec.programIds) {
+        const program = programsStore.programs.find(
+          (p) => p.meta.id === programId,
+        );
+        if (!program) continue;
+        updateGroupPrms.push(
+          programsStore.updateProgram(program.meta.id, {
+            meta: program.meta,
+            spec: {
+              ...program.spec,
+              activityIds: program.spec.activityIds?.filter(
+                (aid) => aid !== id,
+              ),
+            },
+          }),
+        );
       }
-
-      await activitiesService.deleteActivity(id);
+      await Promise.all([
+        ...updateGroupPrms,
+        activitiesService.deleteActivity(id),
+      ]);
       this.activities = this.activities.filter((a) => a.meta.id !== id);
     },
 
@@ -172,10 +175,12 @@ export const useActivitiesStore = defineStore("activities", {
       await activitiesService.addActivityToProgram(activityId, programId);
 
       // Update state
-      const activity = this.activities.find((a) => a.meta.id === activityId);
+      const activity = this.activities.find(
+        (a: Activity) => a.meta.id === activityId,
+      );
       const programsStore = useProgramsStore();
       const program = programsStore.programs.find(
-        (p) => p.meta.id === programId,
+        (p: Program) => p.meta.id === programId,
       );
 
       if (activity && !activity.spec.programIds.includes(programId)) {

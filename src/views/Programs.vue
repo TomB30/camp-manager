@@ -189,28 +189,42 @@
             <div
               v-for="activity in programActivities"
               :key="activity.meta.id"
-              class="activity-item card"
+              class="activity-item card row justify-between"
               @click="viewActivity(activity)"
             >
-              <div class="activity-info">
-                <h4>{{ activity.meta.name }}</h4>
-                <p v-if="activity.meta.description" class="text-caption">
-                  {{ activity.meta.description }}
-                </p>
+              <div>
+                <div class="activity-info">
+                  <h4>{{ activity.meta.name }}</h4>
+                  <p v-if="activity.meta.description" class="text-caption">
+                    {{ activity.meta.description }}
+                  </p>
+                </div>
+                <div class="activity-meta">
+                  <span class="meta-item">
+                    <Clock :size="14" />
+                    <DurationDisplay :minutes="activity.spec.duration || 0" />
+                  </span>
+                  <span
+                    v-if="activity.spec.defaultLocationId"
+                    class="meta-item"
+                  >
+                    <Home :size="14" />
+                    {{ getLocationName(activity.spec.defaultLocationId) }}
+                  </span>
+                  <span v-if="activity.spec.defaultCapacity" class="meta-item">
+                    <Users :size="14" />
+                    {{ activity.spec.defaultCapacity }} max
+                  </span>
+                </div>
               </div>
-              <div class="activity-meta">
-                <span class="meta-item">
-                  <Clock :size="14" />
-                  <DurationDisplay :minutes="activity.spec.duration || 0" />
-                </span>
-                <span v-if="activity.spec.defaultLocationId" class="meta-item">
-                  <Home :size="14" />
-                  {{ getLocationName(activity.spec.defaultLocationId) }}
-                </span>
-                <span v-if="activity.spec.defaultCapacity" class="meta-item">
-                  <Users :size="14" />
-                  {{ activity.spec.defaultCapacity }} max
-                </span>
+              <div class="activity-actions">
+                <BaseButton
+                  color="negative"
+                  outline
+                  size="sm"
+                  label="Remove"
+                  @click="showDeleteActivityModal(activity)"
+                />
               </div>
             </div>
           </div>
@@ -348,7 +362,13 @@
       :activity="selectedActivity"
       @close="selectedActivityId = null"
       @edit="editActivity"
-      @delete="deleteActivityConfirm"
+    />
+
+    <ActivityDeleteModal
+      v-if="showActivityDeleteModal && activityToDelete"
+      :activity="activityToDelete"
+      :program-id="selectedProgramId || ''"
+      @close="closeActivityDeleteModal"
     />
 
     <!-- Staff Selector Modal -->
@@ -462,7 +482,7 @@ import ActivitySelectorModal from "@/components/modals/ActivitySelectorModal.vue
 import SelectionList from "@/components/SelectionList.vue";
 import type { AutocompleteOption } from "@/components/Autocomplete.vue";
 import DurationDisplay from "@/components/DurationDisplay.vue";
-
+import ActivityDeleteModal from "@/components/ActivityDeleteModal.vue";
 export default defineComponent({
   name: "Programs",
   components: {
@@ -487,6 +507,7 @@ export default defineComponent({
     ActivitySelectorModal,
     SelectionList,
     DurationDisplay,
+    ActivityDeleteModal,
   },
   data() {
     return {
@@ -502,6 +523,8 @@ export default defineComponent({
       showStaffSelector: false,
       showLocationSelector: false,
       showDeleteConfirm: false,
+      showActivityDeleteModal: false,
+      activityToDelete: null as Activity | null,
       editingProgram: null as Program | null,
       editingActivity: null as Activity | null,
       deleteTarget: null as {
@@ -774,11 +797,6 @@ export default defineComponent({
         this.toast.error(error.message || "Failed to save activity");
       }
     },
-    deleteActivityConfirm(activity: Activity) {
-      this.deleteTarget = { type: "activity", id: activity.meta.id };
-      this.showDeleteConfirm = true;
-      this.selectedActivityId = null;
-    },
     confirmRemoveStaff(staffId: string) {
       this.deleteTarget = { type: "staff", id: staffId };
       this.showDeleteConfirm = true;
@@ -786,6 +804,16 @@ export default defineComponent({
     confirmRemoveLocation(locationId: string) {
       this.deleteTarget = { type: "location", id: locationId };
       this.showDeleteConfirm = true;
+    },
+    showDeleteActivityModal(activity: Activity) {
+      console.log("showDeleteActivityModal", activity);
+      this.activityToDelete = activity;
+      this.showActivityDeleteModal = true;
+    },
+    closeActivityDeleteModal(): void {
+      this.selectedActivityId = null;
+      this.showActivityDeleteModal = false;
+      this.showActivityModal = false;
     },
     async removeStaffFromProgram(staffId: string) {
       if (!this.selectedProgram) return;
