@@ -32,15 +32,9 @@
           </p>
           <SelectionList
             v-model="localFormData.labelIds"
-            :items="labels"
-            item-type="label"
-            placeholder="Add a label..."
-            empty-text="No labels assigned yet"
-            add-button-text="Add"
-            mode="multiple"
-            :get-label-fn="getLabelLabel"
-            :get-initials-fn="getLabelInitials"
-            :get-options-fn="getLabelOption"
+            :options="labelOptions"
+            multiple
+            label="Select Labels"
           />
         </div>
 
@@ -54,15 +48,8 @@
             <label class="form-label">Camp Session</label>
             <SelectionList
               v-model="localFormData.sessionId"
-              :items="sessions"
-              item-type="session"
-              placeholder="Select a session..."
-              empty-text="No session selected"
-              add-button-text="Select"
-              mode="single"
-              :get-label-fn="getSessionLabel"
-              :get-initials-fn="getSessionInitials"
-              :get-options-fn="getSessionOption"
+              :options="sessionOptions"
+              label="Select Session"
             />
           </div>
 
@@ -72,15 +59,8 @@
               class="housing-selection"
               v-model="localFormData.housingRoomId"
               @update:modelValue="handleHousingRoomChange"
-              :items="availableHousingRooms"
-              item-type="housing"
-              placeholder="Select a housing..."
-              empty-text="No housing"
-              add-button-text="Select"
-              mode="single"
-              :get-label-fn="getRoomLabel"
-              :get-initials-fn="getRoomInitials"
-              :get-options-fn="getRoomOption"
+              :options="availableHousingRoomsOptions"
+              label="Select Housing"
               :disabled="!localFormData.sessionId"
             />
             <q-tooltip
@@ -224,7 +204,6 @@
             <Autocomplete
               v-model="localFormData.camperFilters.gender"
               :options="genderFilterOptions"
-              placeholder="Any gender"
             />
           </div>
 
@@ -260,22 +239,16 @@
         </div>
 
         <!-- Manual Camper Selection -->
-        <div v-if="groupType === 'manual'" class="form-section">
+        <div v-if="groupType === 'manual'">
           <h4 class="form-section-title">Select Campers</h4>
 
           <div class="form-group">
             <label class="form-label">Campers in this Group</label>
             <SelectionList
               v-model="localFormData.camperIds"
-              :items="campers"
-              item-type="camper"
-              placeholder="Add a camper..."
-              empty-text="No campers selected"
-              add-button-text="Add"
-              mode="multiple"
-              :get-label-fn="getCamperLabel"
-              :get-initials-fn="getCamperInitials"
-              :get-options-fn="getCamperOption"
+              :options="campersOptions"
+              multiple
+              label="Select Campers"
             />
           </div>
         </div>
@@ -344,7 +317,7 @@
             <p class="form-help-text">Select roles to include</p>
             <div class="checkbox-group">
               <label
-                v-for="role in staffRoles"
+                v-for="role in rolesOptions"
                 :key="role.value"
                 class="checkbox-label"
               >
@@ -363,15 +336,9 @@
             <label class="form-label">Required Certifications</label>
             <SelectionList
               v-model="localFormData.staffFilters.certificationIds"
-              :items="certifications"
-              item-type="certification"
-              placeholder="Add a certification..."
-              empty-text="No certifications required"
-              add-button-text="Add"
-              mode="multiple"
-              :get-label-fn="getCertificationLabel"
-              :get-initials-fn="getCertificationInitials"
-              :get-options-fn="getCertificationOption"
+              :options="certificationOptions"
+              multiple
+              label="Select Certifications"
             />
           </div>
 
@@ -382,22 +349,16 @@
         </div>
 
         <!-- Manual Staff Selection -->
-        <div v-if="staffType === 'manual'" class="form-section">
+        <div v-if="staffType === 'manual'">
           <h4 class="form-section-title">Select Staff</h4>
 
           <div class="form-group">
             <label class="form-label">Staff Members</label>
             <SelectionList
               v-model="localFormData.staffIds"
-              :items="staffMembers"
-              item-type="staff member"
-              placeholder="Add a staff member..."
-              empty-text="No staff selected"
-              add-button-text="Add"
-              mode="multiple"
-              :get-label-fn="getStaffLabel"
-              :get-initials-fn="getStaffInitials"
-              :get-options-fn="getStaffOption"
+              :options="staffMembersOptions"
+              multiple
+              label="Select Staff"
             />
           </div>
         </div>
@@ -423,7 +384,7 @@ import BaseModal from "@/components/BaseModal.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import SelectionList from "@/components/SelectionList.vue";
+import SelectionList, { ISelectOption } from "@/components/SelectionList.vue";
 import type { Label } from "@/types";
 import type {
   Camper,
@@ -432,12 +393,14 @@ import type {
   Session,
   HousingRoom,
   Certification,
+  Role,
 } from "@/generated/api";
 import {
   useColorsStore,
   useSessionsStore,
   useGroupsStore,
   useHousingRoomsStore,
+  useRolesStore,
 } from "@/stores";
 import type { QForm } from "quasar";
 
@@ -512,16 +475,45 @@ export default defineComponent({
         { label: "Male", value: "male" },
         { label: "Female", value: "female" },
       ] as AutocompleteOption[],
-      staffRoles: [
-        { label: "Counselor", value: "counselor" },
-        { label: "Supervisor", value: "supervisor" },
-        { label: "Director", value: "director" },
-        { label: "Nurse", value: "nurse" },
-        { label: "Instructor", value: "instructor" },
-      ],
     };
   },
   computed: {
+    rolesOptions(): ISelectOption[] {
+      return this.rolesStore.roles.map((role: Role) => ({
+        label: role.meta.name,
+        value: role.meta.id,
+      }));
+    },
+    staffMembersOptions(): ISelectOption[] {
+      return this.staffMembers.map((staffMember: StaffMember) => ({
+        label: staffMember.meta.name,
+        value: staffMember.meta.id,
+      }));
+    },
+    campersOptions(): ISelectOption[] {
+      return this.campers.map((camper: Camper) => ({
+        label: camper.meta.name,
+        value: camper.meta.id,
+      }));
+    },
+    certificationOptions(): ISelectOption[] {
+      return this.certifications.map((certification: Certification) => ({
+        label: certification.meta.name,
+        value: certification.meta.id,
+      }));
+    },
+    sessionOptions(): ISelectOption[] {
+      return this.sessions.map((session: Session) => ({
+        label: session.meta.name,
+        value: session.meta.id,
+      }));
+    },
+    availableHousingRoomsOptions(): ISelectOption[] {
+      return this.availableHousingRooms.map((room: HousingRoom) => ({
+        label: room.meta.name,
+        value: room.meta.id,
+      }));
+    },
     sessionsStore() {
       return useSessionsStore();
     },
@@ -542,6 +534,15 @@ export default defineComponent({
     },
     colorsStore() {
       return useColorsStore();
+    },
+    rolesStore() {
+      return useRolesStore();
+    },
+    labelOptions(): ISelectOption[] {
+      return this.labels.map((label) => ({
+        label: label.meta.name,
+        value: label.meta.id,
+      }));
     },
     descriptionModel: {
       get(): string {

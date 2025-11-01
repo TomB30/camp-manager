@@ -380,15 +380,10 @@
       <template #body>
         <SelectionList
           v-model="programStaffIds"
-          :items="staffMembersStore.staffMembers"
-          item-type="staff member"
-          placeholder="Add a staff member..."
-          empty-text="No staff members assigned yet"
-          add-button-text="Add"
-          mode="multiple"
-          :get-label-fn="getStaffLabel"
-          :get-initials-fn="getStaffInitials"
-          :get-options-fn="getStaffOption"
+          :options="staffMembersOptions"
+          multiple
+          label="Select Staff Members"
+          flat
         />
       </template>
       <template #footer>
@@ -410,15 +405,10 @@
       <template #body>
         <SelectionList
           v-model="programLocationIds"
-          :items="locationsStore.locations"
-          item-type="location"
-          placeholder="Add a location..."
-          empty-text="No locations assigned yet"
-          add-button-text="Add"
-          mode="multiple"
-          :get-label-fn="getLocationLabel"
-          :get-initials-fn="getLocationInitials"
-          :get-options-fn="getLocationOption"
+          :options="locationsOptions"
+          multiple
+          label="Select Locations"
+          flat
         />
       </template>
       <template #footer>
@@ -479,10 +469,10 @@ import ProgramFormModal from "@/components/modals/ProgramFormModal.vue";
 import ActivityFormModal from "@/components/modals/ActivityFormModal.vue";
 import ActivityDetailModal from "@/components/modals/ActivityDetailModal.vue";
 import ActivitySelectorModal from "@/components/modals/ActivitySelectorModal.vue";
-import SelectionList from "@/components/SelectionList.vue";
 import type { AutocompleteOption } from "@/components/Autocomplete.vue";
 import DurationDisplay from "@/components/DurationDisplay.vue";
 import ActivityDeleteModal from "@/components/ActivityDeleteModal.vue";
+import SelectionList from "@/components/SelectionList.vue";
 export default defineComponent({
   name: "Programs",
   components: {
@@ -505,9 +495,9 @@ export default defineComponent({
     ActivityFormModal,
     ActivityDetailModal,
     ActivitySelectorModal,
-    SelectionList,
     DurationDisplay,
     ActivityDeleteModal,
+    SelectionList,
   },
   data() {
     return {
@@ -568,6 +558,18 @@ export default defineComponent({
     },
     toast() {
       return useToast();
+    },
+    staffMembersOptions(): AutocompleteOption[] {
+      return this.staffMembersStore.staffMembers.map((staff) => ({
+        label: `${staff.meta.name} (${this.formatRole(staff.spec.roleId)})`,
+        value: staff.meta.id,
+      }));
+    },
+    locationsOptions(): AutocompleteOption[] {
+      return this.locationsStore.locations.map((location) => ({
+        label: `${location.meta.name}`,
+        value: location.meta.id,
+      }));
     },
     filteredPrograms() {
       const query = this.searchQuery.toLowerCase().trim();

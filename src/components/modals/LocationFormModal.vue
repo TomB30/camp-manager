@@ -29,7 +29,6 @@
           <Autocomplete
             v-model="localFormData.spec.areaId"
             :options="areaOptions"
-            placeholder="Select an area..."
             :required="false"
           />
           <p class="form-help-text">

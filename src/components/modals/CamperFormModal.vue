@@ -45,7 +45,6 @@
             <Autocomplete
               v-model="formData.spec.gender"
               :options="genderOptions"
-              placeholder="Select gender..."
               :required="true"
             />
           </div>
@@ -56,7 +55,6 @@
           <Autocomplete
             v-model="formData.spec.sessionId"
             :options="sessionOptions"
-            placeholder="Select a session..."
             :required="true"
           />
         </div>
@@ -67,7 +65,6 @@
             class="family-group-autocomplete"
             v-model="formData.spec.familyGroupId"
             :options="availableGroupOptions"
-            placeholder="Select a family group..."
             :disabled="!formData.spec.sessionId"
             no-option-text="No family groups available for this session"
           />

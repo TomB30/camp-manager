@@ -17,7 +17,6 @@
           <Autocomplete
             v-model="selectedActivityId"
             :options="activityOptions"
-            placeholder="Select an activity template..."
             @update:modelValue="applyActivityTemplate"
           />
           <div
@@ -227,7 +226,6 @@
           <Autocomplete
             v-model="formData.spec.locationId"
             :options="locationOptions"
-            placeholder="Select a location"
             :required="true"
           />
         </div>
@@ -248,7 +246,6 @@
           <Autocomplete
             v-model="formData.spec.programId"
             :options="programOptions"
-            placeholder="Select a program..."
             @update:modelValue="onProgramSelected"
           />
           <p class="form-help-text">
@@ -261,15 +258,9 @@
           <label class="form-label">Required Certifications (Optional)</label>
           <SelectionList
             v-model="selectedCertificationIds"
-            :items="certificationsStore.certifications"
-            item-type="certification"
-            placeholder="Select a certification..."
-            empty-text="No certifications required"
-            add-button-text="Add"
-            mode="multiple"
-            :get-label-fn="getCertificationLabel"
-            :get-initials-fn="getCertificationInitials"
-            :get-options-fn="getCertificationOption"
+            :options="certificationOptions"
+            multiple
+            label="Select Certifications"
           />
           <p class="form-help-text">
             Staff assigned to this event should have these certifications
@@ -284,15 +275,9 @@
           </div>
           <SelectionList
             v-model="groupIds"
-            :items="allGroups"
-            item-type="group"
-            placeholder="Select groups..."
-            empty-text="No groups assigned"
-            add-button-text="Add Group"
-            mode="multiple"
-            :get-label-fn="getGroupLabel"
-            :get-initials-fn="getGroupInitials"
-            :get-options-fn="getGroupOption"
+            :options="groupOptions"
+            multiple
+            label="Select Groups"
           />
         </div>
 
@@ -309,15 +294,9 @@
           </div>
           <SelectionList
             v-model="excludeCamperIds"
-            :items="campersInAssignedGroups"
-            item-type="camper"
-            placeholder="Select campers to exclude..."
-            empty-text="No campers excluded"
-            add-button-text="Exclude"
-            mode="multiple"
-            :get-label-fn="getCamperLabel"
-            :get-initials-fn="getCamperInitials"
-            :get-options-fn="getCamperOption"
+            :options="campersInAssignedGroupsOptions"
+            multiple
+            label="Select Campers to Exclude"
           />
         </div>
 
@@ -332,15 +311,9 @@
           </div>
           <SelectionList
             v-model="excludeStaffIds"
-            :items="staffInAssignedGroups"
-            item-type="staff member"
-            placeholder="Select staff to exclude..."
-            empty-text="No staff excluded"
-            add-button-text="Exclude"
-            mode="multiple"
-            :get-label-fn="getStaffLabel"
-            :get-initials-fn="getStaffInitials"
-            :get-options-fn="getStaffOption"
+            :options="staffInAssignedGroupsOptions"
+            multiple
+            label="Select Staff to Exclude"
           />
         </div>
       </q-form>
@@ -380,7 +353,6 @@ import BaseModal from "@/components/BaseModal.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import SelectionList from "@/components/SelectionList.vue";
 import NumberInput from "@/components/NumberInput.vue";
 import type {
   Location,
@@ -400,15 +372,17 @@ import {
 import type { QForm } from "quasar";
 import { compareAsc } from "date-fns";
 import InfoTooltip from "../InfoTooltip.vue";
+import type { ISelectOption } from "@/components/SelectionList.vue";
+import SelectionList from "@/components/SelectionList.vue";
 
 export default defineComponent({
   name: "EventFormModal",
   components: {
     BaseModal,
     Autocomplete,
-    SelectionList,
     NumberInput,
     InfoTooltip,
+    SelectionList,
   },
   props: {
     defaultEventDate: {
@@ -549,6 +523,20 @@ export default defineComponent({
     }
   },
   computed: {
+    groupOptions(): ISelectOption[] {
+      return this.groups.map((group: Group) => ({
+        label: group.meta.name,
+        value: group.meta.id,
+      }));
+    },
+    certificationOptions(): ISelectOption[] {
+      return this.certificationsStore.certifications.map(
+        (certification: Certification) => ({
+          label: certification.meta.name,
+          value: certification.meta.id,
+        }),
+      );
+    },
     selectedCertificationIds: {
       get(): string[] {
         return this.formData.spec.requiredCertificationIds || [];
@@ -715,12 +703,12 @@ export default defineComponent({
       });
       return this.groups;
     },
-    campersInAssignedGroups(): Camper[] {
+    campersInAssignedGroupsOptions(): ISelectOption[] {
       if (
         !this.formData.spec.groupIds ||
         this.formData.spec.groupIds.length === 0
       ) {
-        return [];
+        return [] as ISelectOption[];
       }
 
       const camperIds = new Set<string>();
@@ -736,14 +724,19 @@ export default defineComponent({
       });
 
       // Return full camper objects
-      return this.campersStore.campers.filter((c) => camperIds.has(c.meta.id));
+      return this.campersStore.campers
+        .filter((c) => camperIds.has(c.meta.id))
+        .map((c: Camper) => ({
+          label: c.meta.name,
+          value: c.meta.id,
+        }));
     },
-    staffInAssignedGroups(): StaffMember[] {
+    staffInAssignedGroupsOptions(): ISelectOption[] {
       if (
         !this.formData.spec.groupIds ||
         this.formData.spec.groupIds.length === 0
       ) {
-        return [];
+        return [] as ISelectOption[];
       }
 
       const staffIds = new Set<string>();
@@ -764,9 +757,12 @@ export default defineComponent({
       });
 
       // Return full staff member objects
-      return this.staffMembersStore.staffMembers.filter((s) =>
-        staffIds.has(s.meta.id),
-      );
+      return this.staffMembersStore.staffMembers
+        .filter((s) => staffIds.has(s.meta.id))
+        .map((s: StaffMember) => ({
+          label: s.meta.name,
+          value: s.meta.id,
+        }));
     },
     recurrenceSummary(): string | null {
       if (!this.recurrenceData.enabled) return null;

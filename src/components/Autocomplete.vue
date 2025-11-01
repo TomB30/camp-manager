@@ -48,10 +48,6 @@ export default defineComponent({
       type: Array as PropType<AutocompleteOption[] | any[]>,
       required: true,
     },
-    placeholder: {
-      type: String,
-      default: "Search...",
-    },
     required: {
       type: Boolean,
       default: false,

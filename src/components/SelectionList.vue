@@ -1,97 +1,78 @@
 <template>
-  <div class="selection-container">
-    <div v-if="hasSelection" class="selected-items">
-      <div v-for="itemId in selectedIds" :key="itemId" class="selected-item">
-        <div class="item-info">
-          <div class="item-avatar">
-            {{ getInitials(itemId) }}
-          </div>
-          <span>{{ getLabel(itemId) }}</span>
+  <div class="selector-container rounded-borders" :class="{ flat: flat }">
+    <q-select
+      ref="selectRef"
+      :model-value="modelValue"
+      @update:model-value="updateModelValue"
+      :options="filteredOptions"
+      :multiple="multiple"
+      :label="label"
+      :disabled="disabled"
+      outlined
+      dense
+      use-input
+      hide-selected
+      emit-value
+      map-options
+      @filter="filterFn"
+    />
+    <div v-if="selectedOptions.length > 0" class="selection-list q-mt-md">
+      <div v-for="item in selectedOptions" :key="item.value">
+        <div class="selection-list-item row justify-between items-center">
+          <span>{{ item.label }}</span>
+          <BaseButton
+            outline
+            color="red-9"
+            icon="close"
+            round
+            dense
+            size="sm"
+            @click="removeItem(item.value)"
+          />
         </div>
-        <BaseButton
-          outline
-          round
-          dense
-          color="red-9"
-          size="sm"
-          icon="close"
-          @click="removeItem(itemId)"
-          :disabled="disabled"
-        />
       </div>
-      <slot name="after-items" />
-    </div>
-    <div v-else>
-      {{ emptyText }}
-    </div>
-
-    <div v-if="showAddSection" class="add-item-section">
-      <Autocomplete
-        class="autocomplete-select"
-        v-model="selectedToAdd"
-        @update:model-value="addItem"
-        :options="availableOptions"
-        :placeholder="placeholder"
-        :disabled="disabled"
-      />
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { QSelect } from "quasar";
 import { defineComponent, type PropType } from "vue";
-import Autocomplete, {
-  type AutocompleteOption,
-} from "@/components/Autocomplete.vue";
+// Types
+export interface ISelectOption {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
 
 export default defineComponent({
   name: "SelectionList",
-  components: {
-    Autocomplete,
-  },
   props: {
     modelValue: {
       type: [Array, String] as PropType<string[] | string>,
       required: true,
     },
-    items: {
-      type: Array as PropType<any[]>,
+    options: {
+      type: Array as PropType<ISelectOption[]>,
       required: true,
     },
-    itemType: {
+    multiple: {
+      type: Boolean,
+      default: false,
+    },
+    label: {
       type: String,
-      default: "item",
-    },
-    placeholder: {
-      type: String,
-      default: "Select an item...",
-    },
-    emptyText: {
-      type: String,
-      default: "No items selected",
-    },
-    addButtonText: {
-      type: String,
-      default: "Add",
-    },
-    mode: {
-      type: String as PropType<"single" | "multiple">,
-      default: "multiple",
-      validator: (value: string) => ["single", "multiple"].includes(value),
-    },
-    getLabelFn: {
-      type: Function as PropType<(item: any) => string>,
-      required: true,
-    },
-    getInitialsFn: {
-      type: Function as PropType<(item: any) => string>,
-      required: true,
-    },
-    getOptionsFn: {
-      type: Function as PropType<(item: any) => AutocompleteOption>,
-      required: true,
+      default: "Select...",
     },
     disabled: {
+      type: Boolean,
+      default: false,
+    },
+    disabledTooltip: {
+      type: String,
+      default: "",
+    },
+    flat: {
       type: Boolean,
       default: false,
     },
@@ -99,162 +80,73 @@ export default defineComponent({
   emits: ["update:modelValue"],
   data() {
     return {
-      selectedToAdd: "",
+      filteredOptions: [] as ISelectOption[],
     };
   },
   computed: {
-    selectedIds(): string[] {
-      if (this.mode === "single") {
-        return this.modelValue ? [this.modelValue as string] : [];
-      }
-      return this.modelValue as string[];
-    },
-    hasSelection(): boolean {
-      return this.selectedIds.length > 0;
-    },
-    showAddSection(): boolean {
-      if (this.mode === "single") {
-        return !this.modelValue;
-      }
-      return true;
-    },
-    availableItems(): any[] {
-      return this.items.filter(
-        (item) => !this.selectedIds.includes(item.meta.id),
+    selectedOptions(): ISelectOption[] {
+      return this.options.filter((option) =>
+        this.modelValue.includes(option.value),
       );
-    },
-    availableOptions(): AutocompleteOption[] {
-      return this.availableItems.map((item) => this.getOptionsFn(item));
     },
   },
   methods: {
-    getLabel(itemId: string): string {
-      const item = this.items.find((i) => i.meta.id === itemId);
-      return item ? this.getLabelFn(item) : "Unknown";
-    },
-    getInitials(itemId: string): string {
-      const item = this.items.find((i) => i.meta.id === itemId);
-      return item ? this.getInitialsFn(item) : "??";
-    },
-    addItem(): void {
-      if (!this.selectedToAdd) return;
-
-      if (this.mode === "single") {
-        this.$emit("update:modelValue", this.selectedToAdd);
-      } else {
-        const currentIds = this.modelValue as string[];
-        if (!currentIds.includes(this.selectedToAdd)) {
-          this.$emit("update:modelValue", [...currentIds, this.selectedToAdd]);
-        }
+    filterFn(val: string, update: (callback: () => void) => void) {
+      if (val === "") {
+        update(() => {
+          this.filteredOptions = this.options;
+        });
+        return;
       }
-      this.selectedToAdd = "";
+
+      update(() => {
+        const needle = val.toLowerCase();
+        this.filteredOptions = this.options.filter((option) => {
+          return option.label.toLowerCase().indexOf(needle) > -1;
+        });
+      });
     },
-    removeItem(itemId: string): void {
-      if (this.mode === "single") {
-        this.$emit("update:modelValue", "");
-      } else {
-        const currentIds = this.modelValue as string[];
+    removeItem(value: string) {
+      if (this.multiple && Array.isArray(this.modelValue)) {
         this.$emit(
           "update:modelValue",
-          currentIds.filter((id) => id !== itemId),
+          this.modelValue.filter((item) => item !== value),
         );
+      } else {
+        this.$emit("update:modelValue", "");
       }
+    },
+    updateModelValue(value: string[] | string) {
+      if (!this.multiple) {
+        (this.$refs.selectRef as QSelect).blur();
+      }
+      this.$emit("update:modelValue", value);
     },
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.selection-container {
+.selector-container {
   border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  padding: 0.75rem;
-  background: var(--background);
-}
-
-.selected-items {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.selected-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 0.5rem;
-  background: white;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  transition: background 0.15s ease;
-}
 
-.selected-item:hover {
-  background: var(--surface);
-}
-
-.item-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex: 1;
-}
-
-.item-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.75rem;
-  flex-shrink: 0;
-}
-
-.btn-remove {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  border: 1px solid #ef4444;
-  color: #ef4444;
-  font-size: 0.875rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s ease;
-  padding: 0;
-  line-height: 1;
-}
-
-.btn-remove:hover:not(:disabled) {
-  transform: scale(1.1);
-}
-
-.btn-remove:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.add-item-section {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  align-items: center;
-
-  .autocomplete-select {
-    width: 100%;
+  &.flat {
+    border: none;
+    padding: 0;
   }
 }
 
-.mb-2 {
-  margin-bottom: 0.5rem;
+.selection-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.selection-list-item {
+  border: 1px solid var(--border-light);
+  padding: 0.5rem;
+  background: var(--surface-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
 }
 </style>

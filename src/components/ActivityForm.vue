@@ -59,7 +59,6 @@
         :model-value="modelValue.spec.defaultLocationId"
         @update:model-value="updateSpecField('defaultLocationId', $event)"
         :options="locations"
-        placeholder="Select a default location"
       />
     </div>
 
@@ -117,7 +116,6 @@ import { defineComponent, type PropType } from "vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import SelectionList from "@/components/SelectionList.vue";
 import type { ActivityCreationRequest } from "@/generated/api";
 import {
   useCertificationsStore,
@@ -129,7 +127,6 @@ export default defineComponent({
   name: "ActivityForm",
   components: {
     Autocomplete,
-    SelectionList,
   },
   props: {
     modelValue: {

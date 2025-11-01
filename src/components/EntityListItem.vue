@@ -13,7 +13,7 @@
     <div class="entity-info">
       <slot>
         <div class="entity-name">{{ title }}</div>
-        <div v-if="subtitle" class="entity-subtitle text-secondary">
+        <div v-if="subtitle" class="entity-subtitle">
           {{ subtitle }}
         </div>
         <div v-if="$slots.metadata" class="entity-metadata">

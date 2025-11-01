@@ -26,21 +26,10 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Role</label>
-          <Autocomplete
-            v-model="localFormData.spec.roleId"
-            :options="roleOptions"
-            placeholder="Select role..."
-            :required="true"
-          />
-        </div>
-
-        <div class="form-group">
           <label class="form-label">Manager</label>
           <Autocomplete
             v-model="localFormData.spec.managerId"
             :options="managerOptions"
-            placeholder="No Manager (Top Level)"
           />
         </div>
 
@@ -63,22 +52,20 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">Role</label>
+          <Autocomplete
+            v-model="localFormData.spec.roleId"
+            :options="roleOptions"
+          />
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Certifications</label>
           <SelectionList
             v-model="certificationIdsModel"
-            :items="certificationsStore.certifications"
-            item-type="certification"
-            placeholder="Select a certification..."
-            empty-text="No certifications selected"
-            add-button-text="Add"
-            mode="multiple"
-            :get-label-fn="(cert) => cert.meta.name"
-            :get-initials-fn="
-              (cert) => cert.meta.name.substring(0, 2).toUpperCase()
-            "
-            :get-options-fn="
-              (cert) => ({ label: cert.meta.name, value: cert.meta.id })
-            "
+            :options="certificationOptions"
+            multiple
+            label="Select Certifications"
           />
           <p class="form-help-text">
             Select certifications from the prepared list
@@ -115,10 +102,16 @@ import {
   useStaffMembersStore,
 } from "@/stores";
 // Types
-import type { StaffMember, StaffMemberCreationRequest } from "@/generated/api";
+import type {
+  Certification,
+  Role,
+  StaffMember,
+  StaffMemberCreationRequest,
+} from "@/generated/api";
 import type { QForm } from "quasar";
 // Composables
 import { useToast } from "@/composables/useToast";
+import type { ISelectOption } from "@/components/SelectionList.vue";
 
 export default defineComponent({
   name: "StaffMemberFormModal",
@@ -186,14 +179,22 @@ export default defineComponent({
     };
   },
   computed: {
+    certificationOptions(): ISelectOption[] {
+      return this.certificationsStore.certifications.map(
+        (certification: Certification) => ({
+          label: certification.meta.name,
+          value: certification.meta.id,
+        }),
+      );
+    },
     staffMembers(): StaffMember[] {
       return this.staffMembersStore.staffMembers;
     },
     isEditing() {
       return !!this.staffMemberId;
     },
-    roleOptions(): AutocompleteOption[] {
-      return this.rolesStore.roles.map((role) => ({
+    roleOptions(): ISelectOption[] {
+      return this.rolesStore.roles.map((role: Role) => ({
         label: role.meta.name,
         value: role.meta.id,
       }));

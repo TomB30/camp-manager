@@ -32,7 +32,6 @@
           <Autocomplete
             v-model="formModel.spec.areaId"
             :options="areaOptions"
-            placeholder="Select an area..."
             :required="false"
             hint="Select the physical area where this room is located"
           />
