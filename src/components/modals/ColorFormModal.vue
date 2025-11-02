@@ -282,7 +282,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .color-search-box {
   position: relative;
   display: flex;
@@ -423,6 +423,11 @@ export default defineComponent({
   .color-grid {
     grid-template-columns: repeat(5, 1fr);
     gap: 0.5rem;
+  }
+
+  .color-swatch {
+    width: 28px;
+    height: 28px;
   }
 }
 </style>
