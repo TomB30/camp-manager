@@ -19,21 +19,9 @@
               <Icon name="FolderOpen" :size="14" />
               Nested Group
             </span>
-            <span v-if="isFilterBasedCampers" class="badge badge-primary">
-              <Icon name="Filter" :size="14" />
-              Auto-assigned Campers
-            </span>
-            <span v-if="isManualCampers" class="badge badge-primary">
+            <span v-else class="badge badge-primary">
               <Icon name="Users" :size="14" />
-              Manual Campers
-            </span>
-            <span v-if="isFilterBasedStaff" class="badge badge-success">
-              <Icon name="Filter" :size="14" />
-              Auto-assigned Staff
-            </span>
-            <span v-if="isManualStaff" class="badge badge-success">
-              <Icon name="UserCheck" :size="14" />
-              Manual Staff
+              Manual Selection
             </span>
             <span v-if="group.spec.housingRoomId" class="badge badge-secondary">
               <Icon name="Bed" :size="14" />
@@ -99,94 +87,9 @@
           </div>
         </div>
 
-        <!-- Camper Filter Criteria -->
-        <div
-          v-if="group.spec.camperFilters && hasAnyCamperFilters"
-          class="detail-section"
-        >
-          <div class="detail-label">Camper Filter Criteria</div>
-          <div class="filter-tags">
-            <span v-if="group.spec.camperFilters.gender" class="filter-tag">
-              <strong>Gender:</strong>
-              {{ formatGender(group.spec.camperFilters.gender) }}
-            </span>
-            <span
-              v-if="
-                group.spec.camperFilters.ageMin !== undefined ||
-                group.spec.camperFilters.ageMax !== undefined
-              "
-              class="filter-tag"
-            >
-              <strong>Age:</strong>
-              {{
-                formatAgeRange(
-                  group.spec.camperFilters.ageMin,
-                  group.spec.camperFilters.ageMax,
-                )
-              }}
-            </span>
-            <span
-              v-if="group.spec.camperFilters.hasAllergies !== undefined"
-              class="filter-tag"
-            >
-              <strong>Allergies:</strong>
-              {{
-                group.spec.camperFilters.hasAllergies
-                  ? "Has allergies"
-                  : "No allergies"
-              }}
-            </span>
-            <span
-              v-if="
-                group.spec.camperFilters.familyGroupIds &&
-                group.spec.camperFilters.familyGroupIds.length > 0
-              "
-              class="filter-tag"
-            >
-              <strong>Family Groups:</strong>
-              {{ group.spec.camperFilters.familyGroupIds.length }} selected
-            </span>
-          </div>
-        </div>
-
-        <!-- Staff Filter Criteria -->
-        <div
-          v-if="group.spec.staffFilters && hasAnyStaffFilters"
-          class="detail-section"
-        >
-          <div class="detail-label">Staff Filter Criteria</div>
-          <div class="filter-tags">
-            <span
-              v-if="
-                group.spec.staffFilters.roles &&
-                group.spec.staffFilters.roles.length > 0
-              "
-              class="filter-tag"
-            >
-              <strong>Roles:</strong>
-              {{ group.spec.staffFilters.roles.join(", ") }}
-            </span>
-            <span
-              v-if="
-                group.spec.staffFilters.certificationIds &&
-                group.spec.staffFilters.certificationIds.length > 0
-              "
-              class="filter-tag"
-            >
-              <strong>Certifications:</strong>
-              {{ certificationNames.join(", ") }}
-            </span>
-          </div>
-        </div>
-
         <!-- Campers List -->
         <div class="detail-section">
-          <div class="detail-label">
-            Campers ({{ campers.length }})
-            <span v-if="isFilterBasedCampers" class="text-secondary text-sm">
-              - auto-assigned</span
-            >
-          </div>
+          <div class="detail-label">Campers ({{ campers.length }})</div>
           <slot name="campers-list">
             <div v-if="campers.length > 0" class="members-list">
               <div
@@ -214,12 +117,7 @@
 
         <!-- Staff List -->
         <div v-if="staff.length > 0" class="detail-section">
-          <div class="detail-label">
-            Staff Members ({{ staff.length }})
-            <span v-if="isFilterBasedStaff" class="text-secondary text-sm">
-              - auto-assigned</span
-            >
-          </div>
+          <div class="detail-label">Staff Members ({{ staff.length }})</div>
           <slot name="staff-list">
             <div class="members-list">
               <div
@@ -334,41 +232,6 @@ export default defineComponent({
         this.group?.spec.groupIds && this.group.spec.groupIds.length > 0
       );
     },
-    isFilterBasedCampers(): boolean {
-      return !!(this.group?.spec.camperFilters && !this.group?.spec.camperIds);
-    },
-    isManualCampers(): boolean {
-      return !!(
-        this.group?.spec.camperIds && this.group.spec.camperIds.length > 0
-      );
-    },
-    isFilterBasedStaff(): boolean {
-      return !!(this.group?.spec.staffFilters && !this.group?.spec.staffIds);
-    },
-    isManualStaff(): boolean {
-      return !!(
-        this.group?.spec.staffIds && this.group.spec.staffIds.length > 0
-      );
-    },
-    hasAnyCamperFilters(): boolean {
-      const f = this.group?.spec.camperFilters;
-      return !!(
-        f &&
-        (f.ageMin !== undefined ||
-          f.ageMax !== undefined ||
-          f.gender ||
-          f.hasAllergies !== undefined ||
-          (f.familyGroupIds && f.familyGroupIds.length > 0))
-      );
-    },
-    hasAnyStaffFilters(): boolean {
-      const f = this.group?.spec.staffFilters;
-      return !!(
-        f &&
-        ((f.roles && f.roles.length > 0) ||
-          (f.certificationIds && f.certificationIds.length > 0))
-      );
-    },
     childGroups(): Group[] {
       if (!this.group?.spec.groupIds) return [];
       return this.group.spec.groupIds
@@ -388,13 +251,6 @@ export default defineComponent({
         this.group.spec.housingRoomId,
       );
       return room?.meta.name || "Unknown Room";
-    },
-    certificationNames(): string[] {
-      if (!this.group?.spec.staffFilters?.certificationIds) return [];
-      return this.group.spec.staffFilters.certificationIds.map((id) => {
-        const cert = this.certificationsStore.getCertificationById(id);
-        return cert?.meta.name || "Unknown";
-      });
     },
   },
   methods: {

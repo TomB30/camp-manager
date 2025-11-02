@@ -1,14 +1,12 @@
 import { defineStore } from "pinia";
 import type {
   Event,
-  StaffMember,
   EventCreationRequest,
   EventUpdateRequest,
 } from "@/generated/api";
 import { eventsService } from "@/services";
 import { dateUtils } from "@/utils/dateUtils";
 import { useGroupsStore } from "./groupsStore";
-import { useStaffMembersStore } from "./staffMembersStore";
 
 export const useEventsStore = defineStore("events", {
   state: () => ({
@@ -81,11 +79,6 @@ export const useEventsStore = defineStore("events", {
           const group = useGroupsStore().getGroupById(groupId);
           if (group && group.spec.staffIds) {
             group.spec.staffIds.forEach((staffId) => staffIds.add(staffId));
-          } else if (group && group.spec.staffFilters) {
-            const staff = useStaffMembersStore().getStaffMembersByFilters(
-              group.spec.staffFilters,
-            );
-            staff.forEach((s: StaffMember) => staffIds.add(s.meta.id));
           }
         });
 

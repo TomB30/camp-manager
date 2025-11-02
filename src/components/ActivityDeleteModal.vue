@@ -7,10 +7,13 @@
       <div class="q-mb-md">
         <p>Are you sure you want to delete this activity?</p>
         <p>
-          Deleting an activity will delete all the events that were created from it.
+          Deleting an activity will delete all the events that were created from
+          it.
           <span v-if="hasMultiplePrograms">
-            <br>
-            <strong>Note:</strong> If you choose not to delete the activity entirely (i.e., only remove it from one program), any events created from this activity <b>will not be deleted</b>.
+            <br />
+            <strong>Note:</strong> If you choose not to delete the activity
+            entirely (i.e., only remove it from one program), any events created
+            from this activity <b>will not be deleted</b>.
           </span>
         </p>
       </div>

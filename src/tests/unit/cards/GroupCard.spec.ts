@@ -187,64 +187,6 @@ describe("GroupCard", () => {
     });
   });
 
-  describe("Filters Display", () => {
-    it("shows camper filters when present", () => {
-      const group: Group = {
-        ...groupsFixture[0],
-        spec: {
-          ...groupsFixture[0].spec,
-          camperFilters: {
-            gender: "female",
-            ageMin: 10,
-            ageMax: 15,
-          },
-        },
-      };
-      const wrapper = createWrapper(GroupCard, {
-        props: { group },
-      });
-
-      expect(wrapper.text()).toContain("Camper Filters");
-      expect(wrapper.text()).toContain("Female");
-      expect(wrapper.text()).toContain("10-15 years");
-    });
-
-    it("shows staff filters when present", () => {
-      const group: Group = {
-        ...groupsFixture[0],
-        spec: {
-          ...groupsFixture[0].spec,
-          staffFilters: {
-            roles: ["Counselor", "Lifeguard"],
-          },
-        },
-      };
-      const wrapper = createWrapper(GroupCard, {
-        props: { group },
-      });
-
-      expect(wrapper.text()).toContain("Staff Filters");
-      expect(wrapper.text()).toContain("Counselor, Lifeguard");
-    });
-
-    it("shows auto-assigned indicator for filtered campers", () => {
-      const group: Group = {
-        ...groupsFixture[0],
-        spec: {
-          ...groupsFixture[0].spec,
-          camperFilters: {
-            ageMin: 10,
-          },
-        },
-      };
-      const wrapper = createWrapper(GroupCard, {
-        props: { group },
-      });
-
-      expect(wrapper.text()).toContain("Auto-assigned campers");
-    });
-  });
-
   describe("Click Event", () => {
     it("emits click event with group when card is clicked", async () => {
       const group: Group = {

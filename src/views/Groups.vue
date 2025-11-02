@@ -84,11 +84,6 @@
               >Nested</span
             >
             <span
-              v-else-if="hasAutoAssignedCampers(item)"
-              class="badge badge-sm badge-primary"
-              >Auto Campers</span
-            >
-            <span
               v-else-if="hasManualCampers(item)"
               class="badge badge-sm badge-primary"
               >Manual Campers</span
@@ -246,18 +241,7 @@ export default defineComponent({
         sessionId: "",
         housingRoomId: "",
         groupIds: [] as string[],
-        camperFilters: {
-          ageMin: undefined as number | undefined,
-          ageMax: undefined as number | undefined,
-          gender: "" as "" | "male" | "female",
-          hasAllergies: undefined as boolean | undefined,
-          familyGroupIds: [] as string[],
-        },
         camperIds: [] as string[],
-        staffFilters: {
-          roles: [] as string[],
-          certificationIds: [] as string[],
-        },
         staffIds: [] as string[],
         labelIds: [] as string[],
       },
@@ -305,7 +289,6 @@ export default defineComponent({
           placeholder: "Filter by Type",
           options: [
             { label: "Nested Groups", value: "nested" },
-            { label: "Auto-assigned Campers", value: "auto-campers" },
             { label: "Manual Campers", value: "manual-campers" },
             { label: "With Housing", value: "has-housing" },
             { label: "With Session", value: "has-session" },
@@ -363,8 +346,6 @@ export default defineComponent({
           switch (this.filterType) {
             case "nested":
               return !!(group.spec.groupIds && group.spec.groupIds.length > 0);
-            case "auto-campers":
-              return !!(group.spec.camperFilters && !group.spec.camperIds);
             case "manual-campers":
               return !!(
                 group.spec.camperIds && group.spec.camperIds.length > 0
@@ -415,8 +396,8 @@ export default defineComponent({
     isNestedGroup(group: Group): boolean {
       return !!(group.spec.groupIds && group.spec.groupIds.length > 0);
     },
-    hasAutoAssignedCampers(group: Group): boolean {
-      return !!(group.spec.camperFilters && !group.spec.camperIds);
+    hasAutoAssignedCampers(): boolean {
+      return false; // No longer supporting auto-assigned campers
     },
     hasManualCampers(group: Group): boolean {
       return !!(group.spec.camperIds && group.spec.camperIds.length > 0);
@@ -442,20 +423,7 @@ export default defineComponent({
         sessionId: this.selectedGroup.spec.sessionId || "",
         housingRoomId: this.selectedGroup.spec.housingRoomId || "",
         groupIds: this.selectedGroup.spec.groupIds || [],
-        camperFilters: {
-          ageMin: this.selectedGroup.spec.camperFilters?.ageMin,
-          ageMax: this.selectedGroup.spec.camperFilters?.ageMax,
-          gender: this.selectedGroup.spec.camperFilters?.gender || "",
-          hasAllergies: this.selectedGroup.spec.camperFilters?.hasAllergies,
-          familyGroupIds:
-            this.selectedGroup.spec.camperFilters?.familyGroupIds || [],
-        },
         camperIds: this.selectedGroup.spec.camperIds || [],
-        staffFilters: {
-          roles: this.selectedGroup.spec.staffFilters?.roles || [],
-          certificationIds:
-            this.selectedGroup.spec.staffFilters?.certificationIds || [],
-        },
         staffIds: this.selectedGroup.spec.staffIds || [],
         labelIds: this.selectedGroup.spec.labelIds || [],
       };
@@ -480,48 +448,16 @@ export default defineComponent({
           housingRoomId: formData.housingRoomId || undefined,
           groupIds:
             formData.groupIds.length > 0 ? formData.groupIds : undefined,
-          camperFilters: undefined,
-          camperIds: undefined,
-          staffFilters: undefined,
-          staffIds: undefined,
+          camperIds:
+            formData.camperIds.length > 0 ? formData.camperIds : undefined,
+          staffIds:
+            formData.staffIds.length > 0 ? formData.staffIds : undefined,
           labelIds:
             formData.labelIds && formData.labelIds.length > 0
               ? formData.labelIds
               : undefined,
         },
       };
-
-      // Add camper assignment based on type
-      if (formData.camperIds.length > 0) {
-        groupData.spec.camperIds = formData.camperIds;
-      } else if (this.hasAnyCamperFilters(formData.camperFilters)) {
-        groupData.spec.camperFilters = {
-          ageMin: formData.camperFilters.ageMin,
-          ageMax: formData.camperFilters.ageMax,
-          gender: formData.camperFilters.gender || undefined,
-          hasAllergies: formData.camperFilters.hasAllergies,
-          familyGroupIds:
-            formData.camperFilters.familyGroupIds?.length > 0
-              ? formData.camperFilters.familyGroupIds
-              : undefined,
-        };
-      }
-
-      // Add staff assignment based on type
-      if (formData.staffIds.length > 0) {
-        groupData.spec.staffIds = formData.staffIds;
-      } else if (this.hasAnyStaffFilters(formData.staffFilters)) {
-        groupData.spec.staffFilters = {
-          roles:
-            formData.staffFilters.roles.length > 0
-              ? formData.staffFilters.roles
-              : undefined,
-          certificationIds:
-            formData.staffFilters.certificationIds.length > 0
-              ? formData.staffFilters.certificationIds
-              : undefined,
-        };
-      }
 
       // Validate the group
       const validation = this.groupsStore.validateGroup(groupData);
@@ -539,20 +475,6 @@ export default defineComponent({
       }
 
       this.closeModal();
-    },
-    hasAnyCamperFilters(filters: typeof this.formData.camperFilters): boolean {
-      return !!(
-        filters.ageMin !== undefined ||
-        filters.ageMax !== undefined ||
-        filters.gender ||
-        filters.hasAllergies !== undefined ||
-        (filters.familyGroupIds && filters.familyGroupIds.length > 0)
-      );
-    },
-    hasAnyStaffFilters(filters: typeof this.formData.staffFilters): boolean {
-      return !!(
-        filters.roles.length > 0 || filters.certificationIds.length > 0
-      );
     },
     deleteGroupConfirm(): void {
       if (!this.selectedGroupId) return;
@@ -589,18 +511,7 @@ export default defineComponent({
         sessionId: "",
         housingRoomId: "",
         groupIds: [],
-        camperFilters: {
-          ageMin: undefined,
-          ageMax: undefined,
-          gender: "",
-          hasAllergies: undefined,
-          familyGroupIds: [],
-        },
         camperIds: [],
-        staffFilters: {
-          roles: [],
-          certificationIds: [],
-        },
         staffIds: [],
         labelIds: [],
       };

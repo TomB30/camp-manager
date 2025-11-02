@@ -53,25 +53,13 @@
         >
       </div>
 
-      <!-- Filter-based campers -->
-      <div v-if="group.spec.camperFilters" class="info-item">
-        <Icon name="Filter" :size="16" />
-        <span>Auto-assigned campers</span>
-      </div>
-
       <!-- Manual campers -->
       <div
         v-if="group.spec.camperIds && group.spec.camperIds.length > 0"
         class="info-item"
       >
         <Icon name="Users" :size="16" />
-        <span>{{ group.spec.camperIds.length }} selected campers</span>
-      </div>
-
-      <!-- Filter-based staff -->
-      <div v-if="group.spec.staffFilters" class="info-item">
-        <Icon name="Filter" :size="16" />
-        <span>Auto-assigned staff</span>
+        <span>{{ group.spec.camperIds.length }} campers</span>
       </div>
 
       <!-- Manual staff -->
@@ -80,7 +68,7 @@
         class="info-item"
       >
         <Icon name="Users" :size="16" />
-        <span>{{ group.spec.staffIds.length }} selected staff</span>
+        <span>{{ group.spec.staffIds.length }} staff</span>
       </div>
 
       <!-- Housing room -->
@@ -94,70 +82,6 @@
         <Icon name="Calendar" :size="16" />
         <span>{{ sessionName }}</span>
       </div>
-    </div>
-
-    <!-- Filter criteria display -->
-    <div
-      v-if="group.spec.camperFilters && hasAnyCamperFilters"
-      class="group-filters"
-    >
-      <div class="filter-section-label">Camper Filters:</div>
-      <span v-if="group.spec.camperFilters.gender" class="filter-tag">
-        <strong>Gender:</strong>
-        {{ formatGender(group.spec.camperFilters.gender) }}
-      </span>
-      <span
-        v-if="
-          group.spec.camperFilters.ageMin !== undefined ||
-          group.spec.camperFilters.ageMax !== undefined
-        "
-        class="filter-tag"
-      >
-        <strong>Age:</strong>
-        {{
-          formatAgeRange(
-            group.spec.camperFilters.ageMin,
-            group.spec.camperFilters.ageMax,
-          )
-        }}
-      </span>
-      <span
-        v-if="group.spec.camperFilters.hasAllergies !== undefined"
-        class="filter-tag"
-      >
-        <strong>Allergies:</strong>
-        {{
-          group.spec.camperFilters.hasAllergies
-            ? "Has allergies"
-            : "No allergies"
-        }}
-      </span>
-    </div>
-
-    <div
-      v-if="group.spec.staffFilters && hasAnyStaffFilters"
-      class="group-filters"
-    >
-      <div class="filter-section-label">Staff Filters:</div>
-      <span
-        v-if="
-          group.spec.staffFilters.roles &&
-          group.spec.staffFilters.roles.length > 0
-        "
-        class="filter-tag"
-      >
-        <strong>Roles:</strong> {{ group.spec.staffFilters.roles.join(", ") }}
-      </span>
-      <span
-        v-if="
-          group.spec.staffFilters.certificationIds &&
-          group.spec.staffFilters.certificationIds.length > 0
-        "
-        class="filter-tag"
-      >
-        <strong>Certifications:</strong>
-        {{ group.spec.staffFilters.certificationIds.length }} required
-      </span>
     </div>
   </div>
 </template>
@@ -210,25 +134,6 @@ export default defineComponent({
     childGroupCount(): number {
       return this.group.spec.groupIds?.length || 0;
     },
-    hasAnyCamperFilters(): boolean {
-      const f = this.group.spec.camperFilters;
-      return !!(
-        f &&
-        (f.ageMin !== undefined ||
-          f.ageMax !== undefined ||
-          f.gender ||
-          f.hasAllergies !== undefined ||
-          (f.familyGroupIds && f.familyGroupIds.length > 0))
-      );
-    },
-    hasAnyStaffFilters(): boolean {
-      const f = this.group.spec.staffFilters;
-      return !!(
-        f &&
-        ((f.roles && f.roles.length > 0) ||
-          (f.certificationIds && f.certificationIds.length > 0))
-      );
-    },
     housingRoomName(): string {
       if (!this.group.spec.housingRoomId) return "";
       const room = this.housingRoomsStore.getHousingRoomById(
@@ -248,19 +153,6 @@ export default defineComponent({
     getLabelName(labelId: string): string {
       const label = this.labelsStore.getLabelById(labelId);
       return label ? label.meta.name : "Unknown Label";
-    },
-    formatGender(gender: string): string {
-      return gender.charAt(0).toUpperCase() + gender.slice(1);
-    },
-    formatAgeRange(min?: number, max?: number): string {
-      if (min !== undefined && max !== undefined) {
-        return `${min}-${max} years`;
-      } else if (min !== undefined) {
-        return `${min}+ years`;
-      } else if (max !== undefined) {
-        return `Up to ${max} years`;
-      }
-      return "Any age";
     },
   },
 });

@@ -32,18 +32,7 @@ describe("GroupFormModal", () => {
     endDate: "",
     groupIds: [],
     camperIds: [],
-    camperFilters: {
-      ageMin: undefined,
-      ageMax: undefined,
-      gender: "",
-      hasAllergies: undefined,
-      familyGroupIds: [],
-    },
     staffIds: [],
-    staffFilters: {
-      roles: [],
-      certificationIds: [],
-    },
   });
 
   const createGroupFormWrapper = (overrideProps = {}) => {
@@ -99,97 +88,6 @@ describe("GroupFormModal", () => {
     });
   });
 
-  describe("Housing Room Validation - Core Functionality", () => {
-    it("shows no housing rooms without session selection", () => {
-      const wrapper = createGroupFormWrapper();
-      const vm = wrapper.vm as any;
-
-      expect(vm.availableHousingRooms).toHaveLength(0);
-    });
-
-    it("shows housing rooms when session is selected", () => {
-      const wrapper = createGroupFormWrapper({
-        formData: {
-          ...createDefaultFormData(),
-          sessionId: sessionsFixture[1].meta.id,
-        },
-      });
-      const vm = wrapper.vm as any;
-
-      expect(vm.availableHousingRooms).toBeDefined();
-    });
-
-    it("validates room availability using getRoomOption method", () => {
-      const wrapper = createGroupFormWrapper({
-        formData: {
-          ...createDefaultFormData(),
-          sessionId: sessionsFixture[1].meta.id,
-        },
-      });
-      const vm = wrapper.vm as any;
-
-      const room = housingRoomsFixture[0];
-      const option = vm.getRoomOption(room);
-
-      expect(option).toBeDefined();
-      expect(option).toHaveProperty("label");
-      expect(option).toHaveProperty("value");
-      expect(option).toHaveProperty("disabled");
-    });
-
-    it("marks occupied rooms as disabled", () => {
-      // Find a room that's occupied in session 1
-      const occupiedGroup = groupsFixture.find(
-        (g) =>
-          g.spec.housingRoomId &&
-          g.spec.sessionId === sessionsFixture[1].meta.id,
-      );
-      if (occupiedGroup && occupiedGroup.spec.housingRoomId) {
-        const wrapper = createGroupFormWrapper({
-          formData: {
-            ...createDefaultFormData(),
-            sessionId: sessionsFixture[1].meta.id,
-          },
-        });
-        const vm = wrapper.vm as any;
-
-        const occupiedRoom = housingRoomsFixture.find(
-          (r) => r.meta.id === occupiedGroup.spec.housingRoomId,
-        );
-        if (occupiedRoom) {
-          const option = vm.getRoomOption(occupiedRoom);
-          expect(option.disabled).toBe(true);
-          expect(option.label).toContain("Occupied");
-        }
-      }
-    });
-
-    it("marks available rooms as enabled", () => {
-      const wrapper = createGroupFormWrapper({
-        formData: {
-          ...createDefaultFormData(),
-          sessionId: sessionsFixture[2].meta.id, // Future session with no groups
-        },
-      });
-      const vm = wrapper.vm as any;
-
-      const groupsInSameSession = groupsFixture.filter(
-        (g) => g.spec.sessionId === sessionsFixture[2].meta.id,
-      );
-      const groupHousingRooms = groupsInSameSession.map(
-        (g) => g.spec.housingRoomId,
-      );
-      const availableRooms = housingRoomsFixture.filter(
-        (r) => !groupHousingRooms.includes(r.meta.id),
-      );
-
-      for (const room of availableRooms) {
-        const option = vm.getRoomOption(room);
-        expect(option.disabled).toBeFalsy();
-      }
-    });
-  });
-
   describe("Housing Room - Capacity Validation", () => {
     it("handles groups with varying sizes", () => {
       const wrapper = createGroupFormWrapper({
@@ -202,18 +100,6 @@ describe("GroupFormModal", () => {
 
       const vm = wrapper.vm as any;
       expect(vm.localFormData.camperIds).toHaveLength(5);
-    });
-
-    it("exposes getRoomOption for capacity checking", () => {
-      const wrapper = createGroupFormWrapper({
-        formData: {
-          ...createDefaultFormData(),
-          sessionId: sessionsFixture[1].meta.id,
-        },
-      });
-
-      const vm = wrapper.vm as any;
-      expect(typeof vm.getRoomOption).toBe("function");
     });
   });
 

@@ -1,12 +1,10 @@
 import { defineStore } from "pinia";
 import type {
-  Group,
   StaffMember,
   StaffMemberCreationRequest,
   StaffMemberUpdateRequest,
 } from "@/generated/api";
 import { staffMembersService } from "@/services";
-type GroupStaffFilters = Group["spec"]["staffFilters"];
 
 export const useStaffMembersStore = defineStore("staffMembers", {
   state: () => ({
@@ -33,27 +31,6 @@ export const useStaffMembersStore = defineStore("staffMembers", {
     getStaffMembersByManager(state): (managerId: string) => StaffMember[] {
       return (managerId: string): StaffMember[] => {
         return state.staffMembers.filter((s) => s.spec.managerId === managerId);
-      };
-    },
-
-    getStaffMembersByFilters(
-      state,
-    ): (filters: GroupStaffFilters) => StaffMember[] {
-      return (filters: GroupStaffFilters | undefined): StaffMember[] => {
-        if (!filters) return [];
-        return state.staffMembers.filter((s) => {
-          if (filters.roles && filters.roles.length > 0) {
-            if (!filters.roles.includes(s.spec.roleId)) return false;
-          }
-          if (filters.certificationIds && filters.certificationIds.length > 0) {
-            if (
-              !s.spec.certificationIds ||
-              s.spec.certificationIds?.length === 0
-            )
-              return false;
-          }
-          return true;
-        });
       };
     },
   },

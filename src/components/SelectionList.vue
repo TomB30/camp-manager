@@ -7,7 +7,7 @@
       :options="filteredOptions"
       :multiple="multiple"
       :label="label"
-      :disabled="disabled"
+      :disable="disable"
       outlined
       dense
       use-input
@@ -15,7 +15,19 @@
       emit-value
       map-options
       @filter="filterFn"
-    />
+    >
+      <template v-slot:option="scope">
+        <q-item :="scope.itemProps">
+          <q-item-section>
+            <q-item-label>{{ scope.opt.label }}</q-item-label>
+          </q-item-section>
+
+          <q-tooltip v-if="scope.opt.disabledTooltip">{{
+            scope.opt.disabledTooltip
+          }}</q-tooltip>
+        </q-item>
+      </template>
+    </q-select>
     <div v-if="selectedOptions.length > 0" class="selection-list q-mt-md">
       <div v-for="item in selectedOptions" :key="item.value">
         <div class="selection-list-item row justify-between items-center">
@@ -64,7 +76,7 @@ export default defineComponent({
       type: String,
       default: "Select...",
     },
-    disabled: {
+    disable: {
       type: Boolean,
       default: false,
     },

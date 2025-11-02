@@ -486,45 +486,15 @@ export type GroupSpec = {
      */
     housingRoomId?: string;
     /**
-     * Filter criteria to automatically match campers
-     */
-    camperFilters?: {
-        ageMin?: number;
-        ageMax?: number;
-        gender?: 'male' | 'female';
-        hasAllergies?: boolean;
-        /**
-         * Filter by specific session
-         */
-        sessionId?: string;
-        /**
-         * Filter by specific family groups
-         */
-        familyGroupIds?: Array<string>;
-    };
-    /**
-     * Manually selected camper IDs (mutually exclusive with camperFilters)
+     * Manually selected camper IDs (cannot be used with groupIds)
      */
     camperIds?: Array<string>;
     /**
-     * Filter criteria to automatically match staff members
-     */
-    staffFilters?: {
-        /**
-         * Filter by staff roles
-         */
-        roles?: Array<string>;
-        /**
-         * Filter by certifications
-         */
-        certificationIds?: Array<string>;
-    };
-    /**
-     * Manually selected staff IDs (mutually exclusive with staffFilters)
+     * Manually selected staff IDs (cannot be used with groupIds)
      */
     staffIds?: Array<string>;
     /**
-     * Child group IDs for creating groups of groups
+     * Child group IDs for creating nested groups (cannot be used with camperIds or staffIds)
      */
     groupIds?: Array<string>;
     /**

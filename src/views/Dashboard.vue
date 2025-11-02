@@ -120,7 +120,7 @@
             v-for="conflict in mainStore.conflicts"
             :key="conflict.entityId"
             class="conflict-item"
-            @click="goToConflictEvent(conflict)"
+            @click="() => {}"
           >
             <span class="badge badge-error">{{
               formatConflictType(conflict.type)
@@ -302,7 +302,6 @@ import { format } from "date-fns";
 import Icon from "@/components/Icon.vue";
 import ViewHeader from "@/components/ViewHeader.vue";
 import type { Event, Camper } from "@/generated/api";
-import type { Conflict } from "@/types";
 import { dateUtils } from "@/utils/dateUtils";
 
 interface BirthdayPerson {

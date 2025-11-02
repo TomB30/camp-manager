@@ -9,7 +9,6 @@ import type {
 import { groupsService } from "@/services";
 import { useCampersStore } from "./campersStore";
 import { useStaffMembersStore } from "./staffMembersStore";
-import { dateUtils } from "@/utils/dateUtils";
 
 export const useGroupsStore = defineStore("groups", {
   state: () => ({
@@ -51,11 +50,6 @@ export const useGroupsStore = defineStore("groups", {
             .filter((c): c is Camper => c !== undefined);
         }
 
-        // Otherwise, use filters to determine campers
-        if (group.spec.camperFilters) {
-          return this.filterCampers(group.spec.camperFilters);
-        }
-
         return [];
       };
     },
@@ -87,117 +81,7 @@ export const useGroupsStore = defineStore("groups", {
             .filter((s): s is StaffMember => s !== undefined);
         }
 
-        // Otherwise, use filters to determine staff
-        if (group.spec.staffFilters) {
-          return this.filterStaff(group.spec.staffFilters);
-        }
-
         return [];
-      };
-    },
-
-    /**
-     * Filter campers based on camper filter criteria
-     */
-    filterCampers(): (
-      filters: NonNullable<Group["spec"]["camperFilters"]>,
-    ) => Camper[] {
-      return (filters): Camper[] => {
-        const campersStore = useCampersStore();
-
-        // Determine base set of campers to filter
-        let baseCampers: Camper[];
-
-        if (filters.familyGroupIds && filters.familyGroupIds.length > 0) {
-          // If family groups are selected, only consider campers from those family groups
-          baseCampers = campersStore.campers.filter(
-            (c) =>
-              c.spec.familyGroupId &&
-              filters.familyGroupIds!.includes(c.spec.familyGroupId),
-          );
-        } else if (filters.sessionId) {
-          // If session is specified, only consider campers from that session
-          baseCampers = campersStore.campers.filter(
-            (c) => c.spec.sessionId === filters.sessionId,
-          );
-        } else {
-          // Otherwise, consider all campers
-          baseCampers = campersStore.campers;
-        }
-
-        // Apply filters to the base set of campers
-        return baseCampers.filter((camper) => {
-          // Age filter - calculate age from birthday
-          if (filters.ageMin !== undefined || filters.ageMax !== undefined) {
-            const age = camper.spec.birthday
-              ? dateUtils.calculateAge(camper.spec.birthday)
-              : 0;
-            if (filters.ageMin !== undefined && age < filters.ageMin)
-              return false;
-            if (filters.ageMax !== undefined && age > filters.ageMax)
-              return false;
-          }
-
-          // Gender filter
-          if (filters.gender && camper.spec.gender !== filters.gender)
-            return false;
-
-          return true;
-        });
-      };
-    },
-
-    /**
-     * Filter staff based on staff filter criteria
-     */
-    filterStaff(): (
-      filters: NonNullable<Group["spec"]["staffFilters"]>,
-    ) => StaffMember[] {
-      return (filters): StaffMember[] => {
-        const staffStore = useStaffMembersStore();
-        let baseStaff = staffStore.staffMembers;
-
-        return baseStaff.filter((staff) => {
-          // Role filter
-          if (filters.roles && filters.roles.length > 0) {
-            if (!filters.roles.includes(staff.spec.roleId)) return false;
-          }
-
-          // Certification filter
-          if (filters.certificationIds && filters.certificationIds.length > 0) {
-            if (
-              !staff.spec.certificationIds ||
-              staff.spec.certificationIds.length === 0
-            )
-              return false;
-            // Staff must have all required certifications
-            const hasAllCerts = filters.certificationIds.every(
-              (certId) =>
-                staff.spec.certificationIds?.includes(certId) || false,
-            );
-            if (!hasAllCerts) return false;
-          }
-
-          return true;
-        });
-      };
-    },
-
-    /**
-     * Check if a group is using filters vs explicit IDs
-     */
-    isFilterBasedGroup(): (groupId: string) => {
-      campers: boolean;
-      staff: boolean;
-    } {
-      return (groupId: string) => {
-        const group = this.groups.find((g) => g.meta.id === groupId);
-        if (!group) return { campers: false, staff: false };
-
-        return {
-          campers: !!(group.spec.camperFilters && !group.spec.camperIds),
-          staff: !!(group.spec.staffFilters && !group.spec.staffIds),
-        };
       };
     },
 
@@ -272,22 +156,16 @@ export const useGroupsStore = defineStore("groups", {
     validateGroup(group: Group): { valid: boolean; errors: string[] } {
       const errors: string[] = [];
 
-      // Cannot use both camperFilters and camperIds
+      // Cannot use both groupIds (nested) and camperIds/staffIds (manual)
       if (
-        group.spec.camperFilters &&
-        group.spec.camperIds &&
-        group.spec.camperIds.length > 0
+        group.spec.groupIds &&
+        group.spec.groupIds.length > 0 &&
+        ((group.spec.camperIds && group.spec.camperIds.length > 0) ||
+          (group.spec.staffIds && group.spec.staffIds.length > 0))
       ) {
-        errors.push("Cannot use both camper filters and explicit camper IDs");
-      }
-
-      // Cannot use both staffFilters and staffIds
-      if (
-        group.spec.staffFilters &&
-        group.spec.staffIds &&
-        group.spec.staffIds.length > 0
-      ) {
-        errors.push("Cannot use both staff filters and explicit staff IDs");
+        errors.push(
+          "Cannot use both nested groups and manual camper/staff selection",
+        );
       }
 
       // If has housing room, should have a session

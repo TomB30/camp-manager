@@ -113,12 +113,7 @@ export const fullCapacityRoomScenario = (): {
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      camperFilters: {
-        ageMin: 12,
-        ageMax: 18,
-        gender: "male",
-        sessionId: "session-1",
-      },
+      camperIds: [],
       housingRoomId: room.meta.id,
     },
   });
@@ -176,12 +171,7 @@ export const roomOccupiedScenario = (): {
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      camperFilters: {
-        ageMin: 12,
-        ageMax: 18,
-        gender: "male",
-        sessionId: "session-1",
-      },
+      camperIds: [],
       housingRoomId: room.meta.id,
     },
   });
@@ -212,12 +202,7 @@ export const partialDateOverlapScenario = (): {
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      camperFilters: {
-        ageMin: 12,
-        ageMax: 18,
-        gender: "male",
-        sessionId: "session-1",
-      },
+      camperIds: [],
       sessionId: "session-1",
       housingRoomId: roomId,
     },
@@ -231,12 +216,7 @@ export const partialDateOverlapScenario = (): {
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      camperFilters: {
-        ageMin: 12,
-        ageMax: 18,
-        gender: "male",
-        sessionId: "session-1",
-      },
+      camperIds: [],
       sessionId: "session-1",
       housingRoomId: roomId,
     },
@@ -262,12 +242,7 @@ export const sameDayCheckoutCheckinScenario = (): {
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      camperFilters: {
-        ageMin: 12,
-        ageMax: 18,
-        gender: "male",
-        sessionId: "session-1",
-      },
+      camperIds: [],
       sessionId: "session-1",
       housingRoomId: roomId,
     },
@@ -281,12 +256,7 @@ export const sameDayCheckoutCheckinScenario = (): {
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      camperFilters: {
-        ageMin: 12,
-        ageMax: 18,
-        gender: "male",
-        sessionId: "session-1",
-      },
+      camperIds: [],
       sessionId: "session-1",
       housingRoomId: roomId,
     },
@@ -390,12 +360,7 @@ export const roomBookingRaceConditionScenario = (): {
         updatedAt: "2025-10-01T09:00:00.000Z",
       },
       spec: {
-        camperFilters: {
-          ageMin: 12,
-          ageMax: 18,
-          gender: "male",
-          sessionId: "session-1",
-        },
+        camperIds: [],
         housingRoomId: room.meta.id,
       },
     }),
@@ -407,12 +372,7 @@ export const roomBookingRaceConditionScenario = (): {
         updatedAt: "2025-10-01T09:00:00.000Z",
       },
       spec: {
-        camperFilters: {
-          ageMin: 12,
-          ageMax: 18,
-          gender: "male",
-          sessionId: "session-1",
-        },
+        camperIds: [],
         housingRoomId: room.meta.id,
       },
     }),
@@ -424,12 +384,7 @@ export const roomBookingRaceConditionScenario = (): {
         updatedAt: "2025-10-01T09:00:00.000Z",
       },
       spec: {
-        camperFilters: {
-          ageMin: 12,
-          ageMax: 18,
-          gender: "male",
-          sessionId: "session-1",
-        },
+        camperIds: [],
         housingRoomId: room.meta.id,
       },
     }),

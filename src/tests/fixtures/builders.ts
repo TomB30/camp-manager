@@ -108,12 +108,7 @@ export const buildGroup = (overrides: Partial<Group> = {}): Group => ({
   spec: {
     sessionId: "session-2",
     housingRoomId: "room-1",
-    camperFilters: {
-      ageMin: 12,
-      ageMax: 18,
-      gender: "male",
-      sessionId: "session-2",
-    },
+    camperIds: [],
   },
   ...overrides,
 });

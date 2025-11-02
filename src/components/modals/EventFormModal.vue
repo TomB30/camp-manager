@@ -749,11 +749,6 @@ export default defineComponent({
           group.spec.staffIds.forEach((staffId: string) =>
             staffIds.add(staffId),
           );
-        } else if (group && group.spec.staffFilters) {
-          const staff = this.staffMembersStore.getStaffMembersByFilters(
-            group.spec.staffFilters,
-          );
-          staff.forEach((s: StaffMember) => staffIds.add(s.meta.id));
         }
       });
 
