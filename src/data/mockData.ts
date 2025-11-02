@@ -903,6 +903,7 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
+      birthday: "2006-12-01",
       roleId: roles[0].meta.id, // Camp Director
       email: "sarah.johnson@camp.com",
       phone: "555-0101",
@@ -918,6 +919,7 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
+      birthday: "2002-11-02",
       roleId: roles[1].meta.id, // Program Supervisor
       email: "michael.chen@camp.com",
       phone: "555-0102",
@@ -933,6 +935,7 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
+      birthday: "2005-01-03",
       roleId: roles[2].meta.id, // Camp Counselor
       email: "emily.rodriguez@camp.com",
       phone: "555-0103",
@@ -948,6 +951,7 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
+      birthday: "2009-11-07",
       roleId: roles[2].meta.id, // Camp Counselor
       email: "david.thompson@camp.com",
       phone: "555-0104",
@@ -963,6 +967,7 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
+      birthday: "2007-10-05",
       roleId: roles[3].meta.id, // Camp Nurse
       email: "jessica.martinez@camp.com",
       phone: "555-0105",
@@ -978,6 +983,7 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
+      birthday: "2008-03-06",
       roleId: roles[4].meta.id, // Activity Instructor
       email: "daniel.lee@camp.com",
       phone: "555-0106",
@@ -993,6 +999,7 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
+      birthday: "2008-04-07",
       roleId: roles[2].meta.id, // Camp Counselor
       email: "ashley.wilson@camp.com",
       phone: "555-0107",
@@ -1008,6 +1015,7 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
+      birthday: "2018-11-08",
       roleId: roles[2].meta.id, // Camp Counselor
       email: "andrew.nguyen@camp.com",
       phone: "555-0108",
@@ -1023,6 +1031,7 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
+      birthday: "2018-11-09",
       roleId: roles[1].meta.id, // Program Supervisor
       email: "olivia.patel@camp.com",
       phone: "555-0109",
@@ -1038,6 +1047,7 @@ export const staffMembers: StaffMember[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
+      birthday: "2019-11-10",
       roleId: roles[4].meta.id, // Activity Instructor
       email: "ethan.kim@camp.com",
       phone: "555-0110",
@@ -1300,6 +1310,10 @@ groups.forEach((group, groupIndex) => {
       },
     };
     campers.push(camper);
+    if (!group.spec.camperIds) {
+      group.spec.camperIds = [];
+    }
+    group.spec.camperIds.push(camper.meta.id);
     camperIndex++;
   }
 });
