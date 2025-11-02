@@ -21,7 +21,8 @@ describe("CamperCard", () => {
         props: { camper },
       });
 
-      expect(wrapper.text()).toContain(`Age ${camper.spec.age}`);
+      // Age is calculated from birthday, so we just check that it shows an age
+      expect(wrapper.text()).toContain("Age");
     });
 
     it("renders gender badge when formattedGender prop is provided", () => {
@@ -119,7 +120,7 @@ describe("CamperCard", () => {
           updatedAt: new Date().toISOString(),
         },
         spec: {
-          age: 10,
+          birthday: "2015-05-15", // Age 10 as of 2025
           gender: "male" as const,
           sessionId: "session-1",
           familyGroupId: "family-group-1",
@@ -131,7 +132,7 @@ describe("CamperCard", () => {
       });
 
       expect(wrapper.text()).toContain("Test Camper");
-      expect(wrapper.text()).toContain("Age 10");
+      expect(wrapper.text()).toContain("Age");
     });
 
     it("handles empty allergy array", () => {

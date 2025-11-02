@@ -334,6 +334,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
+import { dateUtils } from "@/utils/dateUtils";
 import {
   useEventsStore,
   useCampersStore,
@@ -899,7 +900,10 @@ export default defineComponent({
       this.formData.spec.activityId = activity.meta.id;
     },
     getCamperLabel(camper: Camper): string {
-      return `${camper.meta.name} (Age: ${camper.spec.age})`;
+      const age = camper.spec.birthday
+        ? dateUtils.calculateAge(camper.spec.birthday)
+        : 0;
+      return `${camper.meta.name} (Age: ${age})`;
     },
     getCamperInitials(camper: Camper): string {
       const parts = camper.meta.name.split(" ");
@@ -909,8 +913,11 @@ export default defineComponent({
       return camper.meta.name.charAt(0).toUpperCase();
     },
     getCamperOption(camper: Camper): AutocompleteOption {
+      const age = camper.spec.birthday
+        ? dateUtils.calculateAge(camper.spec.birthday)
+        : 0;
       return {
-        label: `${camper.meta.name} (Age: ${camper.spec.age})`,
+        label: `${camper.meta.name} (Age: ${age})`,
         value: camper.meta.id,
       };
     },

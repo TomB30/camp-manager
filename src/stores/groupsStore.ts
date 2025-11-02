@@ -9,6 +9,7 @@ import type {
 import { groupsService } from "@/services";
 import { useCampersStore } from "./campersStore";
 import { useStaffMembersStore } from "./staffMembersStore";
+import { dateUtils } from "@/utils/dateUtils";
 
 export const useGroupsStore = defineStore("groups", {
   state: () => ({
@@ -126,11 +127,16 @@ export const useGroupsStore = defineStore("groups", {
 
         // Apply filters to the base set of campers
         return baseCampers.filter((camper) => {
-          // Age filter
-          if (filters.ageMin !== undefined && camper.spec.age < filters.ageMin)
-            return false;
-          if (filters.ageMax !== undefined && camper.spec.age > filters.ageMax)
-            return false;
+          // Age filter - calculate age from birthday
+          if (filters.ageMin !== undefined || filters.ageMax !== undefined) {
+            const age = camper.spec.birthday
+              ? dateUtils.calculateAge(camper.spec.birthday)
+              : 0;
+            if (filters.ageMin !== undefined && age < filters.ageMin)
+              return false;
+            if (filters.ageMax !== undefined && age > filters.ageMax)
+              return false;
+          }
 
           // Gender filter
           if (filters.gender && camper.spec.gender !== filters.gender)

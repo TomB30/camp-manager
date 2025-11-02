@@ -28,7 +28,7 @@ export const buildCamper = (overrides: Partial<Camper> = {}): Camper => ({
     updatedAt: new Date().toISOString(),
   },
   spec: {
-    age: 12,
+    birthday: "2013-05-15", // Age 12 (as of 2025)
     gender: "male",
     sessionId: "session-2",
     registrationDate: new Date().toISOString(),

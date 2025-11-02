@@ -7,6 +7,7 @@ export const dateUtils = {
   filterEventsByDate,
   filterEventsByDateAndHour,
   calculateDuration,
+  calculateAge,
 };
 
 /**
@@ -84,4 +85,28 @@ function calculateDuration(startDate: string, endDate: string): string {
   } else {
     return `${weeks} week${weeks > 1 ? "s" : ""}, ${remainingDays} day${remainingDays > 1 ? "s" : ""}`;
   }
+}
+
+/**
+ * Calculate age from birthday
+ * @param birthday Birthday as a string (YYYY-MM-DD format)
+ * @param referenceDate Optional reference date (defaults to today)
+ * @returns Age in years
+ */
+function calculateAge(birthday: string, referenceDate?: Date): number {
+  const birthDate = new Date(birthday);
+  const today = referenceDate || new Date();
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+
+  // Adjust age if birthday hasn't occurred yet this year
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+  ) {
+    age--;
+  }
+
+  return age;
 }

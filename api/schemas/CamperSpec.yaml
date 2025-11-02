@@ -1,12 +1,13 @@
 type: object
 required:
-  - age
+  - birthday
   - gender
   - sessionId
 properties:
-  age:
-    type: integer
-    minimum: 1
+  birthday:
+    type: string
+    format: date
+    description: Date of birth of the camper
   gender:
     type: string
     enum: [male, female]

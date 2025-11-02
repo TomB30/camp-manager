@@ -1276,6 +1276,11 @@ groups.forEach((group, groupIndex) => {
   for (let i = 0; i < numCampers; i++) {
     const gender = Math.random() > 0.5 ? "male" : "female";
     const age = 8 + Math.floor(Math.random() * 7); // Ages 8-14
+    // Calculate birthday based on age (making them that age in October 2025)
+    const birthYear = 2025 - age;
+    const birthMonth = Math.floor(Math.random() * 12); // Random month 0-11
+    const birthDay = 1 + Math.floor(Math.random() * 28); // Day 1-28 (safe for all months)
+    const birthday = `${birthYear}-${String(birthMonth + 1).padStart(2, "0")}-${String(birthDay).padStart(2, "0")}`;
 
     const camper: Camper = {
       meta: {
@@ -1285,7 +1290,7 @@ groups.forEach((group, groupIndex) => {
         updatedAt: octoberDate(1),
       },
       spec: {
-        age,
+        birthday,
         gender,
         photoUrl: `https://i.pravatar.cc/150?u=camper${camperIndex}`,
         registrationDate: octoberDate(1, 10, camperIndex),

@@ -340,7 +340,10 @@ export type SessionSpec = {
 };
 
 export type CamperSpec = {
-    age: number;
+    /**
+     * Date of birth of the camper
+     */
+    birthday: string;
     gender: 'male' | 'female';
     /**
      * ID of the camp session this camper is registered in
@@ -359,6 +362,10 @@ export type CamperSpec = {
 };
 
 export type StaffMemberSpec = {
+    /**
+     * Date of birth of the staff member
+     */
+    birthday?: string;
     /**
      * ID of the role this staff member has
      */

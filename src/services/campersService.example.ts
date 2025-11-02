@@ -153,7 +153,7 @@ export async function directUsageExample() {
         description: "First-time camper",
       },
       spec: {
-        age: 10,
+        birthday: "2015-05-15", // Age 10 as of 2025
         gender: "female",
         sessionId: "session-123",
         familyGroupId: "family-456",

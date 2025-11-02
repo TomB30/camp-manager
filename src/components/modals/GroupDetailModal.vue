@@ -202,7 +202,7 @@
                     {{ camper.meta.name }}
                   </div>
                   <div class="member-meta">
-                    Age {{ camper.spec.age }} •
+                    Age {{ calculateAge(camper.spec.birthday) }} •
                     {{ formatGender(camper.spec.gender) }}
                   </div>
                 </div>
@@ -278,6 +278,7 @@ import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
 import Icon from "@/components/Icon.vue";
 import type { Group, Camper, StaffMember } from "@/generated/api";
+import { dateUtils } from "@/utils/dateUtils";
 import {
   useLabelsStore,
   useHousingRoomsStore,
@@ -397,6 +398,9 @@ export default defineComponent({
     },
   },
   methods: {
+    calculateAge(birthday: string): number {
+      return birthday ? dateUtils.calculateAge(birthday) : 0;
+    },
     getInitials(fullName: string): string {
       const parts = fullName.split(" ");
       if (parts.length >= 2) {

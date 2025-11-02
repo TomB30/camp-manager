@@ -83,6 +83,10 @@
           </div>
         </template>
 
+        <template #cell-age="{ item }">
+          {{ calculateAge(item.spec.birthday) }}
+        </template>
+
         <template #cell-gender="{ item }">
           <span class="badge badge-primary badge-sm">{{
             formatGender(item.gender)
@@ -159,6 +163,7 @@ import ViewToggle from "@/components/ViewToggle.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import CamperDetailModal from "@/components/modals/CamperDetailModal.vue";
 import CamperFormModal from "@/components/modals/CamperFormModal.vue";
+import { dateUtils } from "@/utils/dateUtils";
 
 export default defineComponent({
   name: "Campers",
@@ -278,22 +283,27 @@ export default defineComponent({
         );
       }
 
-      // Age filter
+      // Age filter - calculate age from birthday
       if (this.filterAge) {
         const [min, max] =
           this.filterAge === "15+"
             ? [15, 999]
             : this.filterAge.split("-").map(Number);
-        campers = campers.filter(
-          (camper: Camper) =>
-            camper.spec.age >= min && (max ? camper.spec.age <= max : true),
-        );
+        campers = campers.filter((camper: Camper) => {
+          const age = camper.spec.birthday
+            ? dateUtils.calculateAge(camper.spec.birthday)
+            : 0;
+          return age >= min && (max ? age <= max : true);
+        });
       }
 
       return campers;
     },
   },
   methods: {
+    calculateAge(birthday: string): number {
+      return birthday ? dateUtils.calculateAge(birthday) : 0;
+    },
     clearFilters(): void {
       this.searchQuery = "";
       this.filterGender = "";

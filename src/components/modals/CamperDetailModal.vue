@@ -4,7 +4,7 @@
       <div v-if="camper">
         <div class="detail-section">
           <div class="detail-label">Age</div>
-          <div>{{ camper.spec.age }} years old</div>
+          <div>{{ age }} years old</div>
         </div>
 
         <div class="detail-section">
@@ -100,6 +100,7 @@ import {
   useColorsStore,
   useGroupsStore,
 } from "@/stores";
+import { dateUtils } from "@/utils/dateUtils";
 
 export default defineComponent({
   name: "CamperDetailModal",
@@ -129,6 +130,11 @@ export default defineComponent({
     },
     groupsStore() {
       return useGroupsStore();
+    },
+    age(): number {
+      return this.camper?.spec.birthday
+        ? dateUtils.calculateAge(this.camper.spec.birthday)
+        : 0;
     },
   },
   methods: {

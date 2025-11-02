@@ -11,7 +11,7 @@
     <div class="card-details">
       <h4>{{ camper.meta.name }}</h4>
       <div class="card-meta">
-        <span class="badge badge-primary">Age {{ camper.spec.age }}</span>
+        <span class="badge badge-primary">Age {{ age }}</span>
         <span class="badge badge-primary">{{ formattedGender }}</span>
         <span v-if="sessionName" class="badge badge-primary">{{
           sessionName
@@ -25,6 +25,7 @@
 import { defineComponent, type PropType } from "vue";
 import type { Camper } from "@/generated/api";
 import AvatarInitials from "@/components/AvatarInitials.vue";
+import { dateUtils } from "@/utils/dateUtils";
 
 export default defineComponent({
   name: "CamperCard",
@@ -46,6 +47,13 @@ export default defineComponent({
     },
   },
   emits: ["click"],
+  computed: {
+    age(): number {
+      return this.camper.spec.birthday
+        ? dateUtils.calculateAge(this.camper.spec.birthday)
+        : 0;
+    },
+  },
   methods: {
     getFirstName(fullName: string): string {
       return fullName.split(" ")[0] || "";

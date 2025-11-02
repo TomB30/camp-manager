@@ -27,16 +27,12 @@
 
         <div class="grid grid-cols-2">
           <div class="form-group">
-            <label class="form-label">Age</label>
+            <label class="form-label">Birthday</label>
             <BaseInput
-              v-model="ageModel"
-              type="number"
-              placeholder="Enter age"
-              :rules="[
-                (val: string) => !!val || 'Enter age',
-                (val: string) =>
-                  parseInt(val) > 0 || 'Age must be greater than 0',
-              ]"
+              v-model="formData.spec.birthday"
+              type="date"
+              placeholder="Select birthday"
+              :rules="[(val: string) => !!val || 'Select birthday']"
             />
           </div>
 
@@ -129,7 +125,7 @@ export default defineComponent({
           description: "",
         },
         spec: {
-          age: 0,
+          birthday: "",
           gender: "male",
           sessionId: "",
           photoUrl: "",
@@ -159,7 +155,7 @@ export default defineComponent({
         description: camper.meta.description,
       },
       spec: {
-        age: camper.spec.age,
+        birthday: camper.spec.birthday || "",
         gender: camper.spec.gender,
         sessionId: camper.spec.sessionId || "",
         familyGroupId: camper.spec.familyGroupId || "",
@@ -176,15 +172,6 @@ export default defineComponent({
     },
     groups(): Group[] {
       return this.groupsStore.groups;
-    },
-    ageModel: {
-      get(): string {
-        return this.formData.spec.age?.toString() || "";
-      },
-      set(value: string) {
-        const num = parseInt(value);
-        this.formData.spec.age = isNaN(num) ? 0 : num;
-      },
     },
     sessionOptions(): AutocompleteOption[] {
       return this.sessions.map((session) => {

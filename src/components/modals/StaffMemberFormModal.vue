@@ -34,6 +34,15 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">Birthday</label>
+          <BaseInput
+            v-model="localFormData.spec.birthday"
+            type="date"
+            placeholder="Select birthday"
+          />
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Email</label>
           <BaseInput
             v-model="emailModel"
@@ -148,6 +157,7 @@ export default defineComponent({
           email: "",
           certificationIds: [],
           managerId: "",
+          birthday: "",
         },
       } as StaffMemberCreationRequest,
       formRef: null as any,
@@ -175,6 +185,7 @@ export default defineComponent({
         email: staffMember.spec.email || "",
         certificationIds: staffMember.spec.certificationIds || [],
         managerId: staffMember.spec.managerId || "",
+        birthday: staffMember.spec.birthday || "",
       },
     };
   },

@@ -386,6 +386,7 @@ import Autocomplete, {
 } from "@/components/Autocomplete.vue";
 import SelectionList, { ISelectOption } from "@/components/SelectionList.vue";
 import type { Label } from "@/types";
+import { dateUtils } from "@/utils/dateUtils";
 import type {
   Camper,
   StaffMember,
@@ -610,16 +611,25 @@ export default defineComponent({
 
       // Apply age, gender, and allergy filters
       return baseCampers.filter((camper) => {
+        // Calculate age from birthday for filtering
         if (
-          this.localFormData.camperFilters.ageMin !== undefined &&
-          camper.spec.age < this.localFormData.camperFilters.ageMin
-        )
-          return false;
-        if (
-          this.localFormData.camperFilters.ageMax !== undefined &&
-          camper.spec.age > this.localFormData.camperFilters.ageMax
-        )
-          return false;
+          this.localFormData.camperFilters.ageMin !== undefined ||
+          this.localFormData.camperFilters.ageMax !== undefined
+        ) {
+          const age = camper.spec.birthday
+            ? dateUtils.calculateAge(camper.spec.birthday)
+            : 0;
+          if (
+            this.localFormData.camperFilters.ageMin !== undefined &&
+            age < this.localFormData.camperFilters.ageMin
+          )
+            return false;
+          if (
+            this.localFormData.camperFilters.ageMax !== undefined &&
+            age > this.localFormData.camperFilters.ageMax
+          )
+            return false;
+        }
         if (
           this.localFormData.camperFilters.gender &&
           camper.spec.gender !== this.localFormData.camperFilters.gender
@@ -930,16 +940,22 @@ export default defineComponent({
         });
 
         if (occupyingGroup) {
+          const age = camper.spec.birthday
+            ? dateUtils.calculateAge(camper.spec.birthday)
+            : 0;
           return {
-            label: `${camper.meta.name} (Age ${camper.spec.age}) - Assigned to ${occupyingGroup.meta.name}`,
+            label: `${camper.meta.name} (Age ${age}) - Assigned to ${occupyingGroup.meta.name}`,
             value: camper.meta.id,
             disabled: true,
           };
         }
       }
 
+      const age = camper.spec.birthday
+        ? dateUtils.calculateAge(camper.spec.birthday)
+        : 0;
       return {
-        label: `${camper.meta.name} (Age ${camper.spec.age})`,
+        label: `${camper.meta.name} (Age ${age})`,
         value: camper.meta.id,
       };
     },

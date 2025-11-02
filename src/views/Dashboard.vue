@@ -137,7 +137,7 @@
           <h3>Today's Schedule</h3>
         </div>
         <div v-if="todayEvents.length === 0" class="empty-state">
-          <p class="text-secondary">No events scheduled for today</p>
+          <p>No events scheduled for today</p>
         </div>
         <div v-else class="events-timeline">
           <div
@@ -160,11 +160,58 @@
                 <span class="badge badge-primary">
                   {{ getLocationName(event.spec.locationId || "") }}
                 </span>
-                <span class="text-secondary text-sm">
+                <span class="text-sm">
                   {{ eventsStore.getEventCamperIds(event.meta.id).length }}/{{
                     event.spec.capacity
                   }}
                   campers
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Birthdays -->
+      <div class="birthdays-section">
+        <div class="card-header">
+          <h3>🎂 Upcoming Birthdays</h3>
+        </div>
+        <div v-if="upcomingBirthdays.length === 0" class="empty-state">
+          <p>No birthdays in the next 7 days</p>
+        </div>
+        <div v-else class="birthdays-list">
+          <div
+            v-for="birthday in upcomingBirthdays"
+            :key="`${birthday.type}-${birthday.id}`"
+            class="birthday-item"
+            :class="{ 'birthday-today': birthday.isToday }"
+          >
+            <div class="birthday-icon">
+              <Icon
+                :name="birthday.type === 'camper' ? 'Users' : 'UsersRound'"
+                :size="20"
+              />
+            </div>
+            <div class="birthday-content">
+              <div class="birthday-name">
+                {{ birthday.name }}
+                <span v-if="birthday.isToday" class="badge badge-success ml-2"
+                  >Today!</span
+                >
+              </div>
+              <div class="birthday-meta">
+                <span class="birthday-date">{{ birthday.dateFormatted }}</span>
+                <span class="birthday-age"
+                  >Turning {{ birthday.upcomingAge }}</span
+                >
+                <span
+                  class="badge badge-primary badge-sm"
+                  :class="{
+                    'badge-info': birthday.type === 'staff',
+                  }"
+                >
+                  {{ birthday.type === "camper" ? "Camper" : "Staff" }}
                 </span>
               </div>
             </div>
@@ -201,8 +248,8 @@
               class="recent-item"
             >
               <span class="font-medium">{{ camper.meta.name }}</span>
-              <span class="text-xs text-secondary"
-                >Age {{ camper.spec.age }}</span
+              <span class="text-xs"
+                >Age {{ calculateAge(camper.spec.birthday) }}</span
               >
             </div>
           </div>
@@ -256,6 +303,18 @@ import Icon from "@/components/Icon.vue";
 import ViewHeader from "@/components/ViewHeader.vue";
 import type { Event, Camper } from "@/generated/api";
 import type { Conflict } from "@/types";
+import { dateUtils } from "@/utils/dateUtils";
+
+interface BirthdayPerson {
+  id: string;
+  name: string;
+  type: "camper" | "staff";
+  birthday: string;
+  upcomingAge: number;
+  dateFormatted: string;
+  isToday: boolean;
+  daysUntil: number;
+}
 
 export default defineComponent({
   name: "Dashboard",
@@ -309,8 +368,110 @@ export default defineComponent({
         })
         .slice(0, 5);
     },
+    upcomingBirthdays(): BirthdayPerson[] {
+      const today = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        new Date().getDate(),
+      );
+      const daysToCheck = 7; // Show birthdays for the next 7 days
+      const birthdays: BirthdayPerson[] = [];
+
+      // Helper function to check if a birthday is within the next N days
+      const getBirthdayInfo = (
+        birthday: string,
+        name: string,
+        id: string,
+        type: "camper" | "staff",
+      ) => {
+        if (!birthday) return null;
+
+        const birthDate = new Date(birthday);
+        const currentYear = today.getFullYear();
+
+        // Get this year's birthday
+        const thisYearBirthday = new Date(
+          currentYear,
+          birthDate.getMonth(),
+          birthDate.getDate(),
+        );
+
+        // Get next year's birthday in case we've passed this year's
+        const nextYearBirthday = new Date(
+          currentYear + 1,
+          birthDate.getMonth(),
+          birthDate.getDate(),
+        );
+
+        // Determine which birthday to use
+        const upcomingBirthday =
+          thisYearBirthday >= today ? thisYearBirthday : nextYearBirthday;
+
+        // Calculate days until birthday
+        const diffTime = upcomingBirthday.getTime() - today.getTime();
+
+        const daysUntil = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        // Only include if within the next N days
+        if (daysUntil < 0 || daysUntil > daysToCheck) return null;
+
+        // Calculate upcoming age
+        const upcomingAge =
+          upcomingBirthday.getFullYear() - birthDate.getFullYear();
+
+        // Format the date
+        let dateFormatted: string;
+        if (daysUntil === 0) {
+          dateFormatted = "Today";
+        } else if (daysUntil === 1) {
+          dateFormatted = "Tomorrow";
+        } else {
+          dateFormatted = format(upcomingBirthday, "MMM d");
+        }
+
+        return {
+          id,
+          name,
+          type,
+          birthday,
+          upcomingAge,
+          dateFormatted,
+          isToday: daysUntil === 0,
+          daysUntil,
+        };
+      };
+
+      // Check campers
+      this.campersStore.campers.forEach((camper) => {
+        const info = getBirthdayInfo(
+          camper.spec.birthday,
+          camper.meta.name,
+          camper.meta.id,
+          "camper",
+        );
+        if (info) birthdays.push(info);
+      });
+
+      // Check staff members
+      this.staffMembersStore.staffMembers.forEach((staff) => {
+        const info = getBirthdayInfo(
+          staff.spec.birthday || "",
+          staff.meta.name,
+          staff.meta.id,
+          "staff",
+        );
+
+        if (info) birthdays.push(info);
+      });
+
+      // Sort by days until birthday (today first, then upcoming)
+      return birthdays.sort((a, b) => a.daysUntil - b.daysUntil);
+    },
   },
   methods: {
+    calculateAge(birthday: string): number {
+      return dateUtils.calculateAge(birthday);
+    },
     formatTime(dateStr: string): string {
       return format(new Date(dateStr), "h:mm a");
     },
@@ -428,7 +589,8 @@ export default defineComponent({
 
 /* Sections with consistent spacing */
 .conflicts-section,
-.schedule-section {
+.schedule-section,
+.birthdays-section {
   background: var(--surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
@@ -527,6 +689,86 @@ export default defineComponent({
 .empty-state {
   padding: 3rem;
   text-align: center;
+}
+
+/* Birthdays Section */
+.birthdays-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.birthday-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  background: var(--background);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+  transition: all 0.15s ease;
+}
+
+.birthday-item:hover {
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.birthday-item.birthday-today {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.1) 0%,
+    rgba(255, 193, 7, 0.05) 100%
+  );
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+.birthday-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.birthday-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.birthday-name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  margin-bottom: 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.birthday-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.birthday-date {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.birthday-age {
+  color: var(--text-secondary);
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
 }
 
 /* Quick Actions Grid */

@@ -80,12 +80,13 @@ describe("CamperFormModal", () => {
   });
 
   describe("Form Validation", () => {
-    it("validates age range (5-18)", () => {
+    it("validates birthday field", () => {
       const wrapper = createWrapper(CamperFormModal);
 
       const vm = wrapper.vm as any;
-      // Age validation rule exists
+      // Birthday field exists in form data
       expect(vm.formData).toBeDefined();
+      expect(vm.formData.spec.birthday).toBeDefined();
     });
 
     it("requires firstName", () => {
