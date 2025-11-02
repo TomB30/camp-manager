@@ -19,53 +19,18 @@
           <Icon name="Boxes" :size="20" class="nav-icon" />
           <span class="nav-text">Programs</span>
         </RouterLink>
+        <RouterLink to="/groups" class="nav-link" @click="handleNavClick">
+          <Icon name="FolderOpen" :size="20" class="nav-icon" />
+          <span class="nav-text">Groups</span>
+        </RouterLink>
         <RouterLink to="/staff" class="nav-link" @click="handleNavClick">
           <Icon name="UsersRound" :size="20" class="nav-icon" />
           <span class="nav-text">Staff</span>
         </RouterLink>
-
-        <!-- Collapsible Campers Section -->
-        <div class="nav-section">
-          <button
-            class="nav-section-header"
-            :class="{ 'has-active-route': isCampersRouteActiveWhileCollapsed }"
-            @click="toggleCampersSection"
-            type="button"
-          >
-            <Icon name="Users" :size="20" class="nav-icon" />
-            <span class="nav-text">Campers</span>
-            <span
-              v-if="isCampersRouteActiveWhileCollapsed"
-              class="active-indicator"
-            ></span>
-            <Icon
-              name="ChevronRight"
-              :size="16"
-              class="nav-chevron"
-              :class="{ 'nav-chevron-expanded': isCampersSectionExpanded }"
-            />
-          </button>
-          <Transition name="expand">
-            <div v-if="isCampersSectionExpanded" class="nav-subsection">
-              <RouterLink
-                to="/groups"
-                class="nav-link nav-sublink"
-                @click="handleNavClick"
-              >
-                <Icon name="FolderOpen" :size="18" class="nav-icon" />
-                <span class="nav-text">Groups</span>
-              </RouterLink>
-              <RouterLink
-                to="/campers"
-                class="nav-link nav-sublink"
-                @click="handleNavClick"
-              >
-                <Icon name="Users" :size="18" class="nav-icon" />
-                <span class="nav-text">All Campers</span>
-              </RouterLink>
-            </div>
-          </Transition>
-        </div>
+        <RouterLink to="/campers" class="nav-link" @click="handleNavClick">
+          <Icon name="Users" :size="20" class="nav-icon" />
+          <span class="nav-text">Campers</span>
+        </RouterLink>
       </nav>
 
       <!-- <div v-if="mainStore.conflicts.length > 0" class="conflicts-section">
@@ -106,42 +71,12 @@ export default defineComponent({
     },
   },
   emits: ["close"],
-  data() {
-    return {
-      isCampersSectionExpanded: false,
-    };
-  },
   computed: {
     mainStore() {
       return useMainStore();
     },
-    isCampersRouteActiveWhileCollapsed() {
-      const campersRoutes = ["/campers", "/groups", "/family-groups"];
-      return (
-        !this.isCampersSectionExpanded &&
-        campersRoutes.includes(this.$route.path)
-      );
-    },
-  },
-  watch: {
-    "$route.path": {
-      immediate: true,
-      handler(path: string) {
-        this.updateExpandedSections(path);
-      },
-    },
   },
   methods: {
-    updateExpandedSections(path: string) {
-      // Define routes for each section
-      const campersRoutes = ["/campers", "/groups", "/family-groups"];
-
-      // Set expanded state based on current route
-      this.isCampersSectionExpanded = campersRoutes.includes(path);
-    },
-    toggleCampersSection() {
-      this.isCampersSectionExpanded = !this.isCampersSectionExpanded;
-    },
     handleNavClick() {
       // Close mobile menu when a nav link is clicked (on mobile only)
       if (window.innerWidth <= 768) {
@@ -232,112 +167,6 @@ export default defineComponent({
 .nav-link.router-link-active {
   color: var(--accent-color);
   background: #eff6ff;
-}
-
-/* Collapsible Section Styles */
-.nav-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.nav-section-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  text-decoration: none;
-  color: var(--text-secondary);
-  font-family: inherit;
-  font-weight: 500;
-  font-size: 0.875rem;
-  padding: 0.75rem 0.875rem;
-  border-radius: var(--radius);
-  transition: all 0.15s ease;
-  background: none;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  text-align: left;
-}
-
-.nav-section-header:hover {
-  color: var(--text-primary);
-  background: var(--surface-secondary);
-}
-
-.nav-section-header.has-active-route {
-  color: var(--accent-color);
-  background: #eff6ff;
-}
-
-.active-indicator {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent-color);
-  margin-left: auto;
-  margin-right: 0.25rem;
-  flex-shrink: 0;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-.nav-chevron {
-  margin-left: auto;
-  transition: transform 0.2s ease;
-  flex-shrink: 0;
-}
-
-.nav-chevron-expanded {
-  transform: rotate(90deg);
-}
-
-.nav-subsection {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin-top: 0.25rem;
-  margin-left: 0.5rem;
-  padding-left: 0.75rem;
-  border-left: 2px solid var(--border-light);
-}
-
-.nav-sublink {
-  font-size: 0.8125rem;
-  padding: 0.625rem 0.875rem;
-}
-
-.nav-sublink .nav-icon {
-  opacity: 0.7;
-}
-
-/* Expand/Collapse Animation */
-.expand-enter-active,
-.expand-leave-active {
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.expand-enter-from,
-.expand-leave-to {
-  opacity: 0;
-  max-height: 0;
-  margin-top: 0;
-}
-
-.expand-enter-to,
-.expand-leave-from {
-  opacity: 1;
-  max-height: 500px;
-  margin-top: 0.25rem;
 }
 
 .settings-section {
