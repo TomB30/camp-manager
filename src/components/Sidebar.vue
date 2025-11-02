@@ -68,7 +68,7 @@
         </div>
       </nav>
 
-      <div v-if="mainStore.conflicts.length > 0" class="conflicts-section">
+      <!-- <div v-if="mainStore.conflicts.length > 0" class="conflicts-section">
         <div class="conflicts-badge">
           <span class="badge badge-error">
             <Icon name="AlertTriangle" :size="16" />
@@ -77,7 +77,7 @@
             }}
           </span>
         </div>
-      </div>
+      </div> -->
       <!-- Camp Settings (Bottom of Sidebar) -->
       <div class="settings-section">
         <RouterLink to="/settings" class="nav-link" @click="handleNavClick">

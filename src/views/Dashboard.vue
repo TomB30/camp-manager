@@ -107,7 +107,7 @@
       </div>
 
       <!-- Conflicts Alert -->
-      <div
+      <!-- <div
         v-if="mainStore.conflicts.length > 0"
         class="conflicts-section"
         style="border-left: 4px solid var(--error-color)"
@@ -129,7 +129,7 @@
             <span class="conflict-action">View Event →</span>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Today's Schedule -->
       <div class="schedule-section">
@@ -502,36 +502,36 @@ export default defineComponent({
 
       return totalUsage / roomEvents.length;
     },
-    goToConflictEvent(conflict: Conflict): void {
-      // Determine which event ID to use based on conflict type
-      let eventId: string | undefined;
+    // goToConflictEvent(conflict: Conflict): void {
+    //   // Determine which event ID to use based on conflict type
+    //   let eventId: string | undefined;
 
-      if (
-        conflict.type === "event_overcapacity" ||
-        conflict.type === "missing_certification"
-      ) {
-        // For event-specific conflicts, entityId is the event ID
-        eventId = conflict.entityId;
-      } else if (
-        conflict.conflictingIds &&
-        conflict.conflictingIds.length > 0
-      ) {
-        // For other conflicts (camper/staff double booking, room overcapacity), use first conflicting event
-        eventId = conflict.conflictingIds[0];
-      }
+    //   if (
+    //     conflict.type === "event_overcapacity" ||
+    //     conflict.type === "missing_certification"
+    //   ) {
+    //     // For event-specific conflicts, entityId is the event ID
+    //     eventId = conflict.entityId;
+    //   } else if (
+    //     conflict.conflictingIds &&
+    //     conflict.conflictingIds.length > 0
+    //   ) {
+    //     // For other conflicts (camper/staff double booking, room overcapacity), use first conflicting event
+    //     eventId = conflict.conflictingIds[0];
+    //   }
 
-      if (!eventId) return;
+    //   if (!eventId) return;
 
-      // Get the event to determine its date
-      const event = this.eventsStore.getEventById(eventId);
-      if (!event) return;
+    //   // Get the event to determine its date
+    //   const event = this.eventsStore.getEventById(eventId);
+    //   if (!event) return;
 
-      // Navigate to calendar with event ID as query parameter
-      this.$router.push({
-        path: "/calendar",
-        query: { eventId },
-      });
-    },
+    //   // Navigate to calendar with event ID as query parameter
+    //   this.$router.push({
+    //     path: "/calendar",
+    //     query: { eventId },
+    //   });
+    // },
   },
 });
 </script>
