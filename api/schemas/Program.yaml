@@ -6,26 +6,4 @@ properties:
   meta:
     $ref: "./EntityMeta.yaml"
   spec:
-    type: object
-    properties:
-      colorId:
-        type: string
-        format: uuid
-      activityIds:
-        type: array
-        items:
-          type: string
-          format: uuid
-        description: Activities belonging to this program
-      staffMemberIds:
-        type: array
-        items:
-          type: string
-          format: uuid
-        description: Staff members associated with this program
-      locationIds:
-        type: array
-        items:
-          type: string
-          format: uuid
-        description: Locations associated with this program
+    $ref: "./ProgramSpec.yaml"

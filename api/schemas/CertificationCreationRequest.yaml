@@ -6,4 +6,4 @@ properties:
   meta:
     $ref: "./EntityCreationRequestMeta.yaml"
   spec:
-    type: object
+    $ref: "./CertificationSpec.yaml"

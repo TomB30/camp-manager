@@ -6,4 +6,4 @@ properties:
   meta:
     $ref: "./EntityMeta.yaml"
   spec:
-    type: object
+    $ref: "./RoleSpec.yaml"

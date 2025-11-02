@@ -1,0 +1,57 @@
+type: object
+required:
+  - startDate
+  - endDate
+properties:
+  startDate:
+    type: string
+    format: date-time
+  endDate:
+    type: string
+    format: date-time
+  locationId:
+    type: string
+    format: uuid
+  capacity:
+    type: integer
+    minimum: 1
+  groupIds:
+    type: array
+    items:
+      type: string
+      format: uuid
+    description: IDs of groups assigned to this event
+  excludeStaffIds:
+    type: array
+    items:
+      type: string
+      format: uuid
+    description: IDs of staff members to exclude from assigned groups
+  excludeCamperIds:
+    type: array
+    items:
+      type: string
+      format: uuid
+    description: IDs of campers to exclude from assigned groups
+  requiredCertificationIds:
+    type: array
+    description: IDs of certifications required for this event
+    items:
+      type: string
+      format: uuid
+  colorId:
+    type: string
+    format: uuid
+  programId:
+    type: string
+    format: uuid
+  activityId:
+    type: string
+    format: uuid
+  recurrenceId:
+    type: string
+    format: uuid
+    description: Recurrence rule ID - links this event to a recurrence series
+  isRecurrenceParent:
+    type: boolean
+    description: Indicates if this is the parent event of a recurrence series

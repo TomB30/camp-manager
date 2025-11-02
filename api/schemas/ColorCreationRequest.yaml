@@ -6,13 +6,4 @@ properties:
   meta:
     $ref: "./EntityCreationRequestMeta.yaml"
   spec:
-    type: object
-    required:
-      - hexValue
-    properties:
-      hexValue:
-        type: string
-        description: Hex color value (e.g., "#FF5733")
-      default:
-        type: boolean
-        description: Whether this is the default color for events
+    $ref: "./ColorSpec.yaml"

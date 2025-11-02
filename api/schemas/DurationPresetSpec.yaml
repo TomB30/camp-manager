@@ -1,0 +1,11 @@
+type: object
+required:
+  - durationMinutes
+properties:
+  durationMinutes:
+    type: integer
+    minimum: 1
+    description: Duration in minutes
+  default:
+    type: boolean
+    description: Whether this is the default duration preset

@@ -6,21 +6,4 @@ properties:
   meta:
     $ref: "./EntityCreationRequestMeta.yaml"
   spec:
-    type: object
-    required:
-      - beds
-    properties:
-      beds:
-        type: integer
-        minimum: 1
-        description: Number of beds in this housing room
-      areaId:
-        type: string
-        format: uuid
-        description: ID of the physical area where this housing room is located
-      bathroom:
-        type: string
-        enum:
-          - private
-          - shared
-        description: Type of bathroom for this housing room
+    $ref: "./HousingRoomSpec.yaml"

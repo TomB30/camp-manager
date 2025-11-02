@@ -6,32 +6,4 @@ properties:
   meta:
     $ref: "./EntityCreationRequestMeta.yaml"
   spec:
-    type: object
-    required:
-      - age
-      - gender
-      - sessionId
-    properties:
-      age:
-        type: integer
-        minimum: 1
-      gender:
-        type: string
-        enum: [male, female]
-      sessionId:
-        type: string
-        format: uuid
-        description: ID of the camp session this camper is registered in
-      photoUrl:
-        type: string
-      registrationDate:
-        type: string
-        format: date-time
-      housingRoomId:
-        type: string
-        format: uuid
-        description: ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
-      familyGroupId:
-        type: string
-        format: uuid
-        description: ID of the family group this camper belongs to
+    $ref: "./CamperSpec.yaml"

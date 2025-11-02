@@ -6,14 +6,4 @@ properties:
   meta:
     $ref: "./EntityMeta.yaml"
   spec:
-    type: object
-    required:
-      - startDate
-      - endDate
-    properties:
-      startDate:
-        type: string
-        format: date
-      endDate:
-        type: string
-        format: date
+    $ref: "./SessionSpec.yaml"
