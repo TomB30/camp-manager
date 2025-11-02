@@ -21,7 +21,9 @@
         <div v-if="room.spec.bathroom" class="detail-section">
           <div class="detail-label">Bathroom Type</div>
           <div>
-            <span class="badge badge-info">{{ getBathroomLabel(room.spec.bathroom) }}</span>
+            <span class="badge badge-info">{{
+              getBathroomLabel(room.spec.bathroom)
+            }}</span>
           </div>
         </div>
 

@@ -10,10 +10,7 @@
       <h4>{{ room.meta.name }}</h4>
       <div class="card-meta row items-center">
         <span class="badge badge-primary">{{ room.spec.beds }} beds</span>
-        <span
-          v-if="room.spec.bathroom"
-          class="badge badge-primary"
-        >
+        <span v-if="room.spec.bathroom" class="badge badge-primary">
           {{ bathroomLabel }}
         </span>
         <span
@@ -78,7 +75,9 @@ export default defineComponent({
     },
     bathroomLabel(): string {
       if (!this.room.spec.bathroom) return "";
-      return this.room.spec.bathroom === "private" ? "Private Bathroom" : "Shared Bathroom";
+      return this.room.spec.bathroom === "private"
+        ? "Private Bathroom"
+        : "Shared Bathroom";
     },
   },
 });
