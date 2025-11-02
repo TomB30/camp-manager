@@ -1,15 +1,17 @@
 get:
   summary: List all groups
   operationId: listGroups
+  parameters:
+    - $ref: "../parameters/limit.yaml"
+    - $ref: "../parameters/offset.yaml"
+    - $ref: "../parameters/search.yaml"
   responses:
     "200":
       description: Success
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "../schemas/Group.yaml"
+            $ref: "../schemas/GroupsListResponse.yaml"
 post:
   summary: Create a new group
   operationId: createGroup

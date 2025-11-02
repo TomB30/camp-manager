@@ -11,12 +11,17 @@ components:
     EntityCreationRequestMeta:
       $ref: "./schemas/EntityCreationRequestMeta.yaml"
 
+    ListResponseBase:
+      $ref: "./schemas/ListResponseBase.yaml"
+
     Camper:
       $ref: "./schemas/Camper.yaml"
     CamperCreationRequest:
       $ref: "./schemas/CamperCreationRequest.yaml"
     CamperUpdateRequest:
       $ref: "./schemas/CamperUpdateRequest.yaml"
+    CampersListResponse:
+      $ref: "./schemas/CampersListResponse.yaml"
 
     StaffMember:
       $ref: "./schemas/StaffMember.yaml"
@@ -24,6 +29,8 @@ components:
       $ref: "./schemas/StaffMemberCreationRequest.yaml"
     StaffMemberUpdateRequest:
       $ref: "./schemas/StaffMemberUpdateRequest.yaml"
+    StaffMembersListResponse:
+      $ref: "./schemas/StaffMembersListResponse.yaml"
 
     Role:
       $ref: "./schemas/Role.yaml"
@@ -31,6 +38,8 @@ components:
       $ref: "./schemas/RoleCreationRequest.yaml"
     RoleUpdateRequest:
       $ref: "./schemas/RoleUpdateRequest.yaml"
+    RolesListResponse:
+      $ref: "./schemas/RolesListResponse.yaml"
 
     Area:
       $ref: "./schemas/Area.yaml"
@@ -38,6 +47,8 @@ components:
       $ref: "./schemas/AreaCreationRequest.yaml"
     AreaUpdateRequest:
       $ref: "./schemas/AreaUpdateRequest.yaml"
+    AreasListResponse:
+      $ref: "./schemas/AreasListResponse.yaml"
 
     Location:
       $ref: "./schemas/Location.yaml"
@@ -45,6 +56,8 @@ components:
       $ref: "./schemas/LocationCreationRequest.yaml"
     LocationUpdateRequest:
       $ref: "./schemas/LocationUpdateRequest.yaml"
+    LocationsListResponse:
+      $ref: "./schemas/LocationsListResponse.yaml"
 
     Program:
       $ref: "./schemas/Program.yaml"
@@ -52,6 +65,8 @@ components:
       $ref: "./schemas/ProgramCreationRequest.yaml"
     ProgramUpdateRequest:
       $ref: "./schemas/ProgramUpdateRequest.yaml"
+    ProgramsListResponse:
+      $ref: "./schemas/ProgramsListResponse.yaml"
 
     Activity:
       $ref: "./schemas/Activity.yaml"
@@ -59,6 +74,8 @@ components:
       $ref: "./schemas/ActivityCreationRequest.yaml"
     ActivityUpdateRequest:
       $ref: "./schemas/ActivityUpdateRequest.yaml"
+    ActivitiesListResponse:
+      $ref: "./schemas/ActivitiesListResponse.yaml"
 
     Color:
       $ref: "./schemas/Color.yaml"
@@ -66,6 +83,8 @@ components:
       $ref: "./schemas/ColorCreationRequest.yaml"
     ColorUpdateRequest:
       $ref: "./schemas/ColorUpdateRequest.yaml"
+    ColorsListResponse:
+      $ref: "./schemas/ColorsListResponse.yaml"
 
     Certification:
       $ref: "./schemas/Certification.yaml"
@@ -73,6 +92,8 @@ components:
       $ref: "./schemas/CertificationCreationRequest.yaml"
     CertificationUpdateRequest:
       $ref: "./schemas/CertificationUpdateRequest.yaml"
+    CertificationsListResponse:
+      $ref: "./schemas/CertificationsListResponse.yaml"
 
     HousingRoom:
       $ref: "./schemas/HousingRoom.yaml"
@@ -80,6 +101,8 @@ components:
       $ref: "./schemas/HousingRoomCreationRequest.yaml"
     HousingRoomUpdateRequest:
       $ref: "./schemas/HousingRoomUpdateRequest.yaml"
+    HousingRoomsListResponse:
+      $ref: "./schemas/HousingRoomsListResponse.yaml"
 
     Session:
       $ref: "./schemas/Session.yaml"
@@ -87,6 +110,8 @@ components:
       $ref: "./schemas/SessionCreationRequest.yaml"
     SessionUpdateRequest:
       $ref: "./schemas/SessionUpdateRequest.yaml"
+    SessionsListResponse:
+      $ref: "./schemas/SessionsListResponse.yaml"
 
     Group:
       $ref: "./schemas/Group.yaml"
@@ -94,6 +119,8 @@ components:
       $ref: "./schemas/GroupCreationRequest.yaml"
     GroupUpdateRequest:
       $ref: "./schemas/GroupUpdateRequest.yaml"
+    GroupsListResponse:
+      $ref: "./schemas/GroupsListResponse.yaml"
 
     Event:
       $ref: "./schemas/Event.yaml"
@@ -101,6 +128,8 @@ components:
       $ref: "./schemas/EventCreationRequest.yaml"
     EventUpdateRequest:
       $ref: "./schemas/EventUpdateRequest.yaml"
+    EventsListResponse:
+      $ref: "./schemas/EventsListResponse.yaml"
 
     Camp:
       $ref: "./schemas/Camp.yaml"

@@ -1289,7 +1289,7 @@ groups.forEach((group, groupIndex) => {
         gender,
         photoUrl: `https://i.pravatar.cc/150?u=camper${camperIndex}`,
         registrationDate: octoberDate(1, 10, camperIndex),
-        sessionId: group.spec.sessionId,
+        sessionId: group.spec.sessionId || "",
         housingRoomId: group.spec.housingRoomId,
         familyGroupId: group.meta.id,
       },

@@ -1,15 +1,17 @@
 get:
   summary: List all sessions
   operationId: listSessions
+  parameters:
+    - $ref: "../parameters/limit.yaml"
+    - $ref: "../parameters/offset.yaml"
+    - $ref: "../parameters/search.yaml"
   responses:
     "200":
       description: Success
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "../schemas/Session.yaml"
+            $ref: "../schemas/SessionsListResponse.yaml"
 post:
   summary: Create a new session
   operationId: createSession

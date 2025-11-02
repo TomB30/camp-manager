@@ -1,15 +1,17 @@
 get:
   summary: List all roles
   operationId: listRoles
+  parameters:
+    - $ref: "../parameters/limit.yaml"
+    - $ref: "../parameters/offset.yaml"
+    - $ref: "../parameters/search.yaml"
   responses:
     "200":
       description: Success
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "../schemas/Role.yaml"
+            $ref: "../schemas/RolesListResponse.yaml"
 post:
   summary: Create a new role
   operationId: createRole

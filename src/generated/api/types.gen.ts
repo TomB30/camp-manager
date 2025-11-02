@@ -38,947 +38,585 @@ export type EntityCreationRequestMeta = {
     description?: string;
 };
 
+export type ListResponseBase = {
+    /**
+     * Total count of all items across all pages
+     */
+    total: number;
+    /**
+     * Number of items per page
+     */
+    limit: number;
+    /**
+     * Current offset (starting position)
+     */
+    offset: number;
+    /**
+     * Next offset value to use for the next page, or null if no more pages available
+     */
+    next: number | null;
+};
+
 export type Camper = {
     meta: EntityMeta;
-    spec: {
-        age: number;
-        gender: 'male' | 'female';
-        photoUrl?: string;
-        registrationDate?: string;
-        /**
-         * ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
-         */
-        housingRoomId?: string;
-        /**
-         * ID of the family group this camper belongs to
-         */
-        familyGroupId?: string;
-        /**
-         * ID of the camp session this camper is registered for
-         */
-        sessionId?: string;
-    };
+    spec: CamperSpec;
 };
 
 export type CamperCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        age: number;
-        gender: 'male' | 'female';
-        /**
-         * ID of the camp session this camper is registered in
-         */
-        sessionId: string;
-        photoUrl?: string;
-        registrationDate?: string;
-        /**
-         * ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
-         */
-        housingRoomId?: string;
-        /**
-         * ID of the family group this camper belongs to
-         */
-        familyGroupId?: string;
-    };
+    spec: CamperSpec;
 };
 
 export type CamperUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        age: number;
-        gender: 'male' | 'female';
-        /**
-         * ID of the camp session this camper is registered in
-         */
-        sessionId: string;
-        photoUrl?: string;
-        registrationDate?: string;
-        /**
-         * ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
-         */
-        housingRoomId?: string;
-        /**
-         * ID of the family group this camper belongs to
-         */
-        familyGroupId?: string;
-    };
+    spec: CamperSpec;
+};
+
+export type CampersListResponse = ListResponseBase & {
+    items: Array<Camper>;
 };
 
 export type StaffMember = {
     meta: EntityMeta;
-    spec: {
-        /**
-         * ID of the role this staff member has
-         */
-        roleId: string;
-        email?: string;
-        phone?: string;
-        /**
-         * IDs of certifications this staff member holds
-         */
-        certificationIds?: Array<string>;
-        photoUrl?: string;
-        /**
-         * ID of the staff member who manages this person
-         */
-        managerId?: string;
-    };
+    spec: StaffMemberSpec;
 };
 
 export type StaffMemberCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * ID of the role this staff member has
-         */
-        roleId: string;
-        email?: string;
-        phone?: string;
-        /**
-         * IDs of certifications this staff member holds
-         */
-        certificationIds?: Array<string>;
-        photoUrl?: string;
-        /**
-         * ID of the staff member who manages this person
-         */
-        managerId?: string;
-    };
+    spec: StaffMemberSpec;
 };
 
 export type StaffMemberUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * ID of the role this staff member has
-         */
-        roleId: string;
-        email?: string;
-        phone?: string;
-        /**
-         * IDs of certifications this staff member holds
-         */
-        certificationIds?: Array<string>;
-        photoUrl?: string;
-        /**
-         * ID of the staff member who manages this person
-         */
-        managerId?: string;
-    };
+    spec: StaffMemberSpec;
+};
+
+export type StaffMembersListResponse = ListResponseBase & {
+    items: Array<StaffMember>;
 };
 
 export type Role = {
     meta: EntityMeta;
-    spec: {
-        [key: string]: unknown;
-    };
+    spec: RoleSpec;
 };
 
 export type RoleCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        [key: string]: unknown;
-    };
+    spec: RoleSpec;
 };
 
 export type RoleUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        [key: string]: unknown;
-    };
+    spec: RoleSpec;
+};
+
+export type RolesListResponse = ListResponseBase & {
+    items: Array<Role>;
 };
 
 export type Area = {
     meta: EntityMeta;
-    spec: {
-        capacity?: number;
-        equipment?: Array<string>;
-        notes?: string;
-    };
+    spec: AreaSpec;
 };
 
 export type AreaCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        capacity?: number;
-        equipment?: Array<string>;
-        notes?: string;
-    };
+    spec: AreaSpec;
 };
 
 export type AreaUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        capacity?: number;
-        equipment?: Array<string>;
-        notes?: string;
-    };
+    spec: AreaSpec;
+};
+
+export type AreasListResponse = ListResponseBase & {
+    items: Array<Area>;
 };
 
 export type Location = {
     meta: EntityMeta;
-    spec: {
-        capacity?: number;
-        /**
-         * ID of the physical area where this location is situated
-         */
-        areaId?: string;
-        equipment?: Array<string>;
-        notes?: string;
-    };
+    spec: LocationSpec;
 };
 
 export type LocationCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        capacity?: number;
-        /**
-         * ID of the physical area where this location is situated
-         */
-        areaId?: string;
-        equipment?: Array<string>;
-        notes?: string;
-    };
+    spec: LocationSpec;
 };
 
 export type LocationUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        capacity?: number;
-        /**
-         * ID of the physical area where this location is situated
-         */
-        areaId?: string;
-        equipment?: Array<string>;
-        notes?: string;
-    };
+    spec: LocationSpec;
+};
+
+export type LocationsListResponse = ListResponseBase & {
+    items: Array<Location>;
 };
 
 export type Program = {
     meta: EntityMeta;
-    spec: {
-        colorId?: string;
-        /**
-         * Activities belonging to this program
-         */
-        activityIds?: Array<string>;
-        /**
-         * Staff members associated with this program
-         */
-        staffMemberIds?: Array<string>;
-        /**
-         * Locations associated with this program
-         */
-        locationIds?: Array<string>;
-    };
+    spec: ProgramSpec;
 };
 
 export type ProgramCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        colorId?: string;
-        /**
-         * Activities belonging to this program
-         */
-        activityIds?: Array<string>;
-        /**
-         * Staff members associated with this program
-         */
-        staffMemberIds?: Array<string>;
-        /**
-         * Locations associated with this program
-         */
-        locationIds?: Array<string>;
-    };
+    spec: ProgramSpec;
 };
 
 export type ProgramUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        colorId?: string;
-        /**
-         * Activities belonging to this program
-         */
-        activityIds?: Array<string>;
-        /**
-         * Staff members associated with this program
-         */
-        staffMemberIds?: Array<string>;
-        /**
-         * Locations associated with this program
-         */
-        locationIds?: Array<string>;
-    };
+    spec: ProgramSpec;
+};
+
+export type ProgramsListResponse = ListResponseBase & {
+    items: Array<Program>;
 };
 
 export type Activity = {
     meta: EntityMeta;
-    spec: {
-        /**
-         * IDs of programs this activity belongs to
-         */
-        programIds: Array<string>;
-        /**
-         * Default duration in minutes
-         */
-        duration?: number;
-        /**
-         * ID of the default location
-         */
-        defaultLocationId?: string;
-        /**
-         * IDs of required staff certifications
-         */
-        requiredCertificationIds?: Array<string>;
-        /**
-         * Minimum number of staff required
-         */
-        minStaff?: number;
-        /**
-         * Default activity capacity
-         */
-        defaultCapacity?: number;
-    };
+    spec: ActivitySpec;
 };
 
 export type ActivityCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * IDs of programs this activity belongs to
-         */
-        programIds: Array<string>;
-        /**
-         * Default duration in minutes
-         */
-        duration?: number;
-        /**
-         * ID of the default location
-         */
-        defaultLocationId?: string;
-        /**
-         * IDs of required staff certifications
-         */
-        requiredCertificationIds?: Array<string>;
-        /**
-         * Minimum number of staff required
-         */
-        minStaff?: number;
-        /**
-         * Default activity capacity
-         */
-        defaultCapacity?: number;
-    };
+    spec: ActivitySpec;
 };
 
 export type ActivityUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * IDs of programs this activity belongs to
-         */
-        programIds: Array<string>;
-        /**
-         * Default duration in minutes
-         */
-        duration?: number;
-        /**
-         * ID of the default location
-         */
-        defaultLocationId?: string;
-        /**
-         * IDs of required staff certifications
-         */
-        requiredCertificationIds?: Array<string>;
-        /**
-         * Minimum number of staff required
-         */
-        minStaff?: number;
-        /**
-         * Default activity capacity
-         */
-        defaultCapacity?: number;
-    };
+    spec: ActivitySpec;
+};
+
+export type ActivitiesListResponse = ListResponseBase & {
+    items: Array<Activity>;
 };
 
 export type Color = {
     meta: EntityMeta;
-    spec: {
-        /**
-         * Hex color value (e.g., "#FF5733")
-         */
-        hexValue: string;
-        /**
-         * Whether this is the default color for events
-         */
-        default?: boolean;
-    };
+    spec: ColorSpec;
 };
 
 export type ColorCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * Hex color value (e.g., "#FF5733")
-         */
-        hexValue: string;
-        /**
-         * Whether this is the default color for events
-         */
-        default?: boolean;
-    };
+    spec: ColorSpec;
 };
 
 export type ColorUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * Hex color value (e.g., "#FF5733")
-         */
-        hexValue: string;
-        /**
-         * Whether this is the default color for events
-         */
-        default?: boolean;
-    };
+    spec: ColorSpec;
+};
+
+export type ColorsListResponse = ListResponseBase & {
+    items: Array<Color>;
 };
 
 export type Certification = {
     meta: EntityMeta;
-    spec: {
-        [key: string]: unknown;
-    };
+    spec: CertificationSpec;
 };
 
 export type CertificationCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        [key: string]: unknown;
-    };
+    spec: CertificationSpec;
 };
 
 export type CertificationUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        [key: string]: unknown;
-    };
+    spec: CertificationSpec;
+};
+
+export type CertificationsListResponse = ListResponseBase & {
+    items: Array<Certification>;
 };
 
 export type HousingRoom = {
     meta: EntityMeta;
-    spec: {
-        /**
-         * Number of beds in this housing room
-         */
-        beds: number;
-        /**
-         * ID of the physical area where this housing room is located
-         */
-        areaId?: string;
-        /**
-         * Type of bathroom for this housing room
-         */
-        bathroom?: 'private' | 'shared';
-    };
+    spec: HousingRoomSpec;
 };
 
 export type HousingRoomCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * Number of beds in this housing room
-         */
-        beds: number;
-        /**
-         * ID of the physical area where this housing room is located
-         */
-        areaId?: string;
-        /**
-         * Type of bathroom for this housing room
-         */
-        bathroom?: 'private' | 'shared';
-    };
+    spec: HousingRoomSpec;
 };
 
 export type HousingRoomUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * Number of beds in this housing room
-         */
-        beds: number;
-        /**
-         * ID of the physical area where this housing room is located
-         */
-        areaId?: string;
-        /**
-         * Type of bathroom for this housing room
-         */
-        bathroom?: 'private' | 'shared';
-    };
+    spec: HousingRoomSpec;
+};
+
+export type HousingRoomsListResponse = ListResponseBase & {
+    items: Array<HousingRoom>;
 };
 
 export type Session = {
     meta: EntityMeta;
-    spec: {
-        startDate: string;
-        endDate: string;
-    };
+    spec: SessionSpec;
 };
 
 export type SessionCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        startDate: string;
-        endDate: string;
-    };
+    spec: SessionSpec;
 };
 
 export type SessionUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        startDate: string;
-        endDate: string;
-    };
+    spec: SessionSpec;
+};
+
+export type SessionsListResponse = ListResponseBase & {
+    items: Array<Session>;
 };
 
 export type Group = {
     meta: EntityMeta;
-    spec: {
-        /**
-         * Optional session this group belongs to
-         */
-        sessionId?: string;
-        /**
-         * Optional housing room assignment for this group
-         */
-        housingRoomId?: string;
-        /**
-         * Filter criteria to automatically match campers
-         */
-        camperFilters?: {
-            ageMin?: number;
-            ageMax?: number;
-            gender?: 'male' | 'female';
-            hasAllergies?: boolean;
-            /**
-             * Filter by specific session
-             */
-            sessionId?: string;
-            /**
-             * Filter by specific family groups
-             */
-            familyGroupIds?: Array<string>;
-        };
-        /**
-         * Manually selected camper IDs (mutually exclusive with camperFilters)
-         */
-        camperIds?: Array<string>;
-        /**
-         * Filter criteria to automatically match staff members
-         */
-        staffFilters?: {
-            /**
-             * Filter by staff roles
-             */
-            roles?: Array<string>;
-            /**
-             * Filter by certifications
-             */
-            certificationIds?: Array<string>;
-        };
-        /**
-         * Manually selected staff IDs (mutually exclusive with staffFilters)
-         */
-        staffIds?: Array<string>;
-        /**
-         * Child group IDs for creating groups of groups
-         */
-        groupIds?: Array<string>;
-        /**
-         * IDs of labels assigned to this group
-         */
-        labelIds?: Array<string>;
-    };
+    spec: GroupSpec;
 };
 
 export type GroupCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * Optional session this group belongs to
-         */
-        sessionId?: string;
-        /**
-         * Optional housing room assignment for this group
-         */
-        housingRoomId?: string;
-        /**
-         * Filter criteria to automatically match campers
-         */
-        camperFilters?: {
-            ageMin?: number;
-            ageMax?: number;
-            gender?: 'male' | 'female';
-            hasAllergies?: boolean;
-            /**
-             * Filter by specific session
-             */
-            sessionId?: string;
-            /**
-             * Filter by specific family groups
-             */
-            familyGroupIds?: Array<string>;
-        };
-        /**
-         * Manually selected camper IDs (mutually exclusive with camperFilters)
-         */
-        camperIds?: Array<string>;
-        /**
-         * Filter criteria to automatically match staff members
-         */
-        staffFilters?: {
-            /**
-             * Filter by staff roles
-             */
-            roles?: Array<string>;
-            /**
-             * Filter by certifications
-             */
-            certificationIds?: Array<string>;
-        };
-        /**
-         * Manually selected staff IDs (mutually exclusive with staffFilters)
-         */
-        staffIds?: Array<string>;
-        /**
-         * Child group IDs for creating groups of groups
-         */
-        groupIds?: Array<string>;
-        /**
-         * IDs of labels assigned to this group
-         */
-        labelIds?: Array<string>;
-    };
+    spec: GroupSpec;
 };
 
 export type GroupUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * Optional session this group belongs to
-         */
-        sessionId?: string;
-        /**
-         * Optional housing room assignment for this group
-         */
-        housingRoomId?: string;
-        /**
-         * Filter criteria to automatically match campers
-         */
-        camperFilters?: {
-            ageMin?: number;
-            ageMax?: number;
-            gender?: 'male' | 'female';
-            hasAllergies?: boolean;
-            /**
-             * Filter by specific session
-             */
-            sessionId?: string;
-            /**
-             * Filter by specific family groups
-             */
-            familyGroupIds?: Array<string>;
-        };
-        /**
-         * Manually selected camper IDs (mutually exclusive with camperFilters)
-         */
-        camperIds?: Array<string>;
-        /**
-         * Filter criteria to automatically match staff members
-         */
-        staffFilters?: {
-            /**
-             * Filter by staff roles
-             */
-            roles?: Array<string>;
-            /**
-             * Filter by certifications
-             */
-            certificationIds?: Array<string>;
-        };
-        /**
-         * Manually selected staff IDs (mutually exclusive with staffFilters)
-         */
-        staffIds?: Array<string>;
-        /**
-         * Child group IDs for creating groups of groups
-         */
-        groupIds?: Array<string>;
-        /**
-         * IDs of labels assigned to this group
-         */
-        labelIds?: Array<string>;
-    };
+    spec: GroupSpec;
+};
+
+export type GroupsListResponse = ListResponseBase & {
+    items: Array<Group>;
 };
 
 export type Event = {
     meta: EntityMeta;
-    spec: {
-        startDate: string;
-        endDate: string;
-        locationId?: string;
-        capacity?: number;
-        /**
-         * IDs of groups assigned to this event
-         */
-        groupIds?: Array<string>;
-        /**
-         * IDs of staff members to exclude from assigned groups
-         */
-        excludeStaffIds?: Array<string>;
-        /**
-         * IDs of campers to exclude from assigned groups
-         */
-        excludeCamperIds?: Array<string>;
-        /**
-         * IDs of certifications required for this event
-         */
-        requiredCertificationIds?: Array<string>;
-        colorId?: string;
-        programId?: string;
-        activityId?: string;
-        /**
-         * Recurrence rule ID - links this event to a recurrence series
-         */
-        recurrenceId?: string;
-        /**
-         * Indicates if this is the parent event of a recurrence series
-         */
-        isRecurrenceParent?: boolean;
-    };
+    spec: EventSpec;
 };
 
 export type EventCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        startDate: string;
-        endDate: string;
-        locationId?: string;
-        capacity?: number;
-        /**
-         * IDs of groups assigned to this event
-         */
-        groupIds?: Array<string>;
-        /**
-         * IDs of staff members to exclude from assigned groups
-         */
-        excludeStaffIds?: Array<string>;
-        /**
-         * IDs of campers to exclude from assigned groups
-         */
-        excludeCamperIds?: Array<string>;
-        /**
-         * IDs of certifications required for this event
-         */
-        requiredCertificationIds?: Array<string>;
-        colorId?: string;
-        programId?: string;
-        activityId?: string;
-        /**
-         * Recurrence rule ID - links this event to a recurrence series
-         */
-        recurrenceId?: string;
-        /**
-         * Indicates if this is the parent event of a recurrence series
-         */
-        isRecurrenceParent?: boolean;
-    };
+    spec: EventSpec;
 };
 
 export type EventUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        startDate: string;
-        endDate: string;
-        locationId?: string;
-        capacity?: number;
-        /**
-         * IDs of groups assigned to this event
-         */
-        groupIds?: Array<string>;
-        /**
-         * IDs of staff members to exclude from assigned groups
-         */
-        excludeStaffIds?: Array<string>;
-        /**
-         * IDs of campers to exclude from assigned groups
-         */
-        excludeCamperIds?: Array<string>;
-        /**
-         * IDs of certifications required for this event
-         */
-        requiredCertificationIds?: Array<string>;
-        colorId?: string;
-        programId?: string;
-        activityId?: string;
-        /**
-         * Recurrence rule ID - links this event to a recurrence series
-         */
-        recurrenceId?: string;
-        /**
-         * Indicates if this is the parent event of a recurrence series
-         */
-        isRecurrenceParent?: boolean;
-    };
+    spec: EventSpec;
+};
+
+export type EventsListResponse = ListResponseBase & {
+    items: Array<Event>;
 };
 
 export type Camp = {
     meta: EntityMeta;
-    spec: {
-        /**
-         * Overall camp season start date
-         */
-        startDate: string;
-        /**
-         * Overall camp season end date
-         */
-        endDate: string;
-        /**
-         * Daily start time for calendar display (24-hour format HH:MM)
-         */
-        dailyStartTime: string;
-        /**
-         * Daily end time for calendar display (24-hour format HH:MM)
-         */
-        dailyEndTime: string;
-        address?: {
-            street?: string;
-            city?: string;
-            state?: string;
-            zipCode?: string;
-            country?: string;
-        };
-        contactInfo?: {
-            phone?: string;
-            email?: string;
-            website?: string;
-        };
-        logoUrl?: string;
-    };
+    spec: CampSpec;
 };
 
 export type CampCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * Overall camp season start date
-         */
-        startDate: string;
-        /**
-         * Overall camp season end date
-         */
-        endDate: string;
-        /**
-         * Daily start time for calendar display (24-hour format HH:MM)
-         */
-        dailyStartTime: string;
-        /**
-         * Daily end time for calendar display (24-hour format HH:MM)
-         */
-        dailyEndTime: string;
-        address?: {
-            street?: string;
-            city?: string;
-            state?: string;
-            zipCode?: string;
-            country?: string;
-        };
-        contactInfo?: {
-            phone?: string;
-            email?: string;
-            website?: string;
-        };
-        logoUrl?: string;
-    };
+    spec: CampSpec;
 };
 
 export type CampUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * Overall camp season start date
-         */
-        startDate: string;
-        /**
-         * Overall camp season end date
-         */
-        endDate: string;
-        /**
-         * Daily start time for calendar display (24-hour format HH:MM)
-         */
-        dailyStartTime: string;
-        /**
-         * Daily end time for calendar display (24-hour format HH:MM)
-         */
-        dailyEndTime: string;
-        address?: {
-            street?: string;
-            city?: string;
-            state?: string;
-            zipCode?: string;
-            country?: string;
-        };
-        contactInfo?: {
-            phone?: string;
-            email?: string;
-            website?: string;
-        };
-        logoUrl?: string;
-    };
+    spec: CampSpec;
 };
 
 export type DurationPreset = {
     meta: EntityMeta;
-    spec: {
-        /**
-         * Duration in minutes
-         */
-        durationMinutes: number;
-        /**
-         * Whether this is the default duration preset
-         */
-        default?: boolean;
-    };
+    spec: DurationPresetSpec;
 };
 
 export type DurationPresetCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * Duration in minutes
-         */
-        durationMinutes: number;
-        /**
-         * Whether this is the default duration preset
-         */
-        default?: boolean;
-    };
+    spec: DurationPresetSpec;
 };
 
 export type DurationPresetUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: {
-        /**
-         * Duration in minutes
-         */
-        durationMinutes: number;
-        /**
-         * Whether this is the default duration preset
-         */
-        default?: boolean;
-    };
+    spec: DurationPresetSpec;
 };
+
+export type SessionSpec = {
+    startDate: string;
+    endDate: string;
+};
+
+export type CamperSpec = {
+    age: number;
+    gender: 'male' | 'female';
+    /**
+     * ID of the camp session this camper is registered in
+     */
+    sessionId: string;
+    photoUrl?: string;
+    registrationDate?: string;
+    /**
+     * ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
+     */
+    housingRoomId?: string;
+    /**
+     * ID of the family group this camper belongs to
+     */
+    familyGroupId?: string;
+};
+
+export type StaffMemberSpec = {
+    /**
+     * ID of the role this staff member has
+     */
+    roleId: string;
+    email?: string;
+    phone?: string;
+    /**
+     * IDs of certifications this staff member holds
+     */
+    certificationIds?: Array<string>;
+    photoUrl?: string;
+    /**
+     * ID of the staff member who manages this person
+     */
+    managerId?: string;
+};
+
+export type AreaSpec = {
+    capacity?: number;
+    equipment?: Array<string>;
+    notes?: string;
+};
+
+export type LocationSpec = {
+    capacity?: number;
+    /**
+     * ID of the physical area where this location is situated
+     */
+    areaId?: string;
+    equipment?: Array<string>;
+    notes?: string;
+};
+
+export type ProgramSpec = {
+    colorId?: string;
+    /**
+     * Activities belonging to this program
+     */
+    activityIds?: Array<string>;
+    /**
+     * Staff members associated with this program
+     */
+    staffMemberIds?: Array<string>;
+    /**
+     * Locations associated with this program
+     */
+    locationIds?: Array<string>;
+};
+
+export type ActivitySpec = {
+    /**
+     * IDs of programs this activity belongs to
+     */
+    programIds: Array<string>;
+    /**
+     * Default duration in minutes
+     */
+    duration?: number;
+    /**
+     * ID of the default location
+     */
+    defaultLocationId?: string;
+    /**
+     * IDs of required staff certifications
+     */
+    requiredCertificationIds?: Array<string>;
+    /**
+     * Minimum number of staff required
+     */
+    minStaff?: number;
+    /**
+     * Default activity capacity
+     */
+    defaultCapacity?: number;
+};
+
+export type ColorSpec = {
+    /**
+     * Hex color value (e.g., "#FF5733")
+     */
+    hexValue: string;
+    /**
+     * Whether this is the default color for events
+     */
+    default?: boolean;
+};
+
+export type RoleSpec = {
+    [key: string]: unknown;
+};
+
+export type CertificationSpec = {
+    [key: string]: unknown;
+};
+
+export type HousingRoomSpec = {
+    /**
+     * Number of beds in this housing room
+     */
+    beds: number;
+    /**
+     * ID of the physical area where this housing room is located
+     */
+    areaId?: string;
+    /**
+     * Type of bathroom for this housing room
+     */
+    bathroom?: 'private' | 'shared';
+};
+
+export type GroupSpec = {
+    /**
+     * Optional session this group belongs to
+     */
+    sessionId?: string;
+    /**
+     * Optional housing room assignment for this group
+     */
+    housingRoomId?: string;
+    /**
+     * Filter criteria to automatically match campers
+     */
+    camperFilters?: {
+        ageMin?: number;
+        ageMax?: number;
+        gender?: 'male' | 'female';
+        hasAllergies?: boolean;
+        /**
+         * Filter by specific session
+         */
+        sessionId?: string;
+        /**
+         * Filter by specific family groups
+         */
+        familyGroupIds?: Array<string>;
+    };
+    /**
+     * Manually selected camper IDs (mutually exclusive with camperFilters)
+     */
+    camperIds?: Array<string>;
+    /**
+     * Filter criteria to automatically match staff members
+     */
+    staffFilters?: {
+        /**
+         * Filter by staff roles
+         */
+        roles?: Array<string>;
+        /**
+         * Filter by certifications
+         */
+        certificationIds?: Array<string>;
+    };
+    /**
+     * Manually selected staff IDs (mutually exclusive with staffFilters)
+     */
+    staffIds?: Array<string>;
+    /**
+     * Child group IDs for creating groups of groups
+     */
+    groupIds?: Array<string>;
+    /**
+     * IDs of labels assigned to this group
+     */
+    labelIds?: Array<string>;
+};
+
+export type EventSpec = {
+    startDate: string;
+    endDate: string;
+    locationId?: string;
+    capacity?: number;
+    /**
+     * IDs of groups assigned to this event
+     */
+    groupIds?: Array<string>;
+    /**
+     * IDs of staff members to exclude from assigned groups
+     */
+    excludeStaffIds?: Array<string>;
+    /**
+     * IDs of campers to exclude from assigned groups
+     */
+    excludeCamperIds?: Array<string>;
+    /**
+     * IDs of certifications required for this event
+     */
+    requiredCertificationIds?: Array<string>;
+    colorId?: string;
+    programId?: string;
+    activityId?: string;
+    /**
+     * Recurrence rule ID - links this event to a recurrence series
+     */
+    recurrenceId?: string;
+    /**
+     * Indicates if this is the parent event of a recurrence series
+     */
+    isRecurrenceParent?: boolean;
+};
+
+export type CampSpec = {
+    /**
+     * Overall camp season start date
+     */
+    startDate: string;
+    /**
+     * Overall camp season end date
+     */
+    endDate: string;
+    /**
+     * Daily start time for calendar display (24-hour format HH:MM)
+     */
+    dailyStartTime: string;
+    /**
+     * Daily end time for calendar display (24-hour format HH:MM)
+     */
+    dailyEndTime: string;
+    address?: {
+        street?: string;
+        city?: string;
+        state?: string;
+        zipCode?: string;
+        country?: string;
+    };
+    contactInfo?: {
+        phone?: string;
+        email?: string;
+        website?: string;
+    };
+    logoUrl?: string;
+};
+
+export type DurationPresetSpec = {
+    /**
+     * Duration in minutes
+     */
+    durationMinutes: number;
+    /**
+     * Whether this is the default duration preset
+     */
+    default?: boolean;
+};
+
+/**
+ * Maximum number of items to return per page
+ */
+export type Limit = number;
+
+/**
+ * Number of items to skip before starting to return results
+ */
+export type Offset = number;
+
+/**
+ * Search term to filter items by name, title, or other text fields
+ */
+export type Search = string;
 
 /**
  * Resource ID
@@ -988,7 +626,20 @@ export type Id = string;
 export type ListSessionsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/sessions';
 };
 
@@ -996,7 +647,7 @@ export type ListSessionsResponses = {
     /**
      * Success
      */
-    200: Array<Session>;
+    200: SessionsListResponse;
 };
 
 export type ListSessionsResponse = ListSessionsResponses[keyof ListSessionsResponses];
@@ -1083,7 +734,20 @@ export type UpdateSessionByIdResponse = UpdateSessionByIdResponses[keyof UpdateS
 export type ListCampersData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/campers';
 };
 
@@ -1091,7 +755,7 @@ export type ListCampersResponses = {
     /**
      * Success
      */
-    200: Array<Camper>;
+    200: CampersListResponse;
 };
 
 export type ListCampersResponse = ListCampersResponses[keyof ListCampersResponses];
@@ -1178,7 +842,20 @@ export type UpdateCamperByIdResponse = UpdateCamperByIdResponses[keyof UpdateCam
 export type ListStaffMembersData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/staff-members';
 };
 
@@ -1186,7 +863,7 @@ export type ListStaffMembersResponses = {
     /**
      * Success
      */
-    200: Array<StaffMember>;
+    200: StaffMembersListResponse;
 };
 
 export type ListStaffMembersResponse = ListStaffMembersResponses[keyof ListStaffMembersResponses];
@@ -1273,7 +950,20 @@ export type UpdateStaffMemberByIdResponse = UpdateStaffMemberByIdResponses[keyof
 export type ListAreasData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/areas';
 };
 
@@ -1281,7 +971,7 @@ export type ListAreasResponses = {
     /**
      * Success
      */
-    200: Array<Area>;
+    200: AreasListResponse;
 };
 
 export type ListAreasResponse = ListAreasResponses[keyof ListAreasResponses];
@@ -1368,7 +1058,20 @@ export type UpdateAreaByIdResponse = UpdateAreaByIdResponses[keyof UpdateAreaByI
 export type ListLocationsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/locations';
 };
 
@@ -1376,7 +1079,7 @@ export type ListLocationsResponses = {
     /**
      * Success
      */
-    200: Array<Location>;
+    200: LocationsListResponse;
 };
 
 export type ListLocationsResponse = ListLocationsResponses[keyof ListLocationsResponses];
@@ -1463,7 +1166,20 @@ export type UpdateLocationByIdResponse = UpdateLocationByIdResponses[keyof Updat
 export type ListProgramsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/programs';
 };
 
@@ -1471,7 +1187,7 @@ export type ListProgramsResponses = {
     /**
      * Success
      */
-    200: Array<Program>;
+    200: ProgramsListResponse;
 };
 
 export type ListProgramsResponse = ListProgramsResponses[keyof ListProgramsResponses];
@@ -1558,7 +1274,20 @@ export type UpdateProgramByIdResponse = UpdateProgramByIdResponses[keyof UpdateP
 export type ListActivitiesData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/activities';
 };
 
@@ -1566,7 +1295,7 @@ export type ListActivitiesResponses = {
     /**
      * Success
      */
-    200: Array<Activity>;
+    200: ActivitiesListResponse;
 };
 
 export type ListActivitiesResponse = ListActivitiesResponses[keyof ListActivitiesResponses];
@@ -1653,7 +1382,20 @@ export type UpdateActivityByIdResponse = UpdateActivityByIdResponses[keyof Updat
 export type ListColorsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/colors';
 };
 
@@ -1661,7 +1403,7 @@ export type ListColorsResponses = {
     /**
      * Success
      */
-    200: Array<Color>;
+    200: ColorsListResponse;
 };
 
 export type ListColorsResponse = ListColorsResponses[keyof ListColorsResponses];
@@ -1748,7 +1490,20 @@ export type UpdateColorByIdResponse = UpdateColorByIdResponses[keyof UpdateColor
 export type ListRolesData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/roles';
 };
 
@@ -1756,7 +1511,7 @@ export type ListRolesResponses = {
     /**
      * Success
      */
-    200: Array<Role>;
+    200: RolesListResponse;
 };
 
 export type ListRolesResponse = ListRolesResponses[keyof ListRolesResponses];
@@ -1843,7 +1598,20 @@ export type UpdateRoleByIdResponse = UpdateRoleByIdResponses[keyof UpdateRoleByI
 export type ListCertificationsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/certifications';
 };
 
@@ -1851,7 +1619,7 @@ export type ListCertificationsResponses = {
     /**
      * Success
      */
-    200: Array<Certification>;
+    200: CertificationsListResponse;
 };
 
 export type ListCertificationsResponse = ListCertificationsResponses[keyof ListCertificationsResponses];
@@ -1938,7 +1706,20 @@ export type UpdateCertificationByIdResponse = UpdateCertificationByIdResponses[k
 export type ListHousingRoomsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/housing-rooms';
 };
 
@@ -1946,7 +1727,7 @@ export type ListHousingRoomsResponses = {
     /**
      * Success
      */
-    200: Array<HousingRoom>;
+    200: HousingRoomsListResponse;
 };
 
 export type ListHousingRoomsResponse = ListHousingRoomsResponses[keyof ListHousingRoomsResponses];
@@ -2033,7 +1814,20 @@ export type UpdateHousingRoomByIdResponse = UpdateHousingRoomByIdResponses[keyof
 export type ListGroupsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/groups';
 };
 
@@ -2041,7 +1835,7 @@ export type ListGroupsResponses = {
     /**
      * Success
      */
-    200: Array<Group>;
+    200: GroupsListResponse;
 };
 
 export type ListGroupsResponse = ListGroupsResponses[keyof ListGroupsResponses];
@@ -2128,7 +1922,20 @@ export type UpdateGroupByIdResponse = UpdateGroupByIdResponses[keyof UpdateGroup
 export type ListEventsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
     url: '/events';
 };
 
@@ -2136,7 +1943,7 @@ export type ListEventsResponses = {
     /**
      * Success
      */
-    200: Array<Event>;
+    200: EventsListResponse;
 };
 
 export type ListEventsResponse = ListEventsResponses[keyof ListEventsResponses];

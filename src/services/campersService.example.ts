@@ -54,7 +54,7 @@ export const campersServiceExample = {
       throw new Error("Failed to fetch campers");
     }
 
-    return data || [];
+    return data?.items || [];
   },
 
   /**

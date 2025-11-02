@@ -1,15 +1,17 @@
 get:
   summary: List all campers
   operationId: listCampers
+  parameters:
+    - $ref: "../parameters/limit.yaml"
+    - $ref: "../parameters/offset.yaml"
+    - $ref: "../parameters/search.yaml"
   responses:
     "200":
       description: Success
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "../schemas/Camper.yaml"
+            $ref: "../schemas/CampersListResponse.yaml"
 post:
   summary: Create a new camper
   operationId: createCamper
