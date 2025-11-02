@@ -36,6 +36,20 @@
             hint="Select the physical area where this room is located"
           />
         </div>
+
+        <div class="form-group">
+          <label class="form-label">Bathroom Type (optional)</label>
+          <q-select
+            v-model="formModel.spec.bathroom"
+            :options="bathroomOptions"
+            outlined
+            dense
+            clearable
+            emit-value
+            map-options
+            class="base-input"
+          />
+        </div>
       </q-form>
     </template>
 
@@ -92,10 +106,15 @@ export default defineComponent({
         spec: {
           beds: 0,
           areaId: undefined,
+          bathroom: undefined,
         },
       } as HousingRoomCreationRequest,
       formRef: null as any,
       loading: false as boolean,
+      bathroomOptions: [
+        { label: "Private", value: "private" },
+        { label: "Shared", value: "shared" },
+      ],
     };
   },
   created() {
@@ -110,6 +129,7 @@ export default defineComponent({
       spec: {
         beds: room.spec.beds,
         areaId: room.spec.areaId,
+        bathroom: room.spec.bathroom,
       },
     };
   },

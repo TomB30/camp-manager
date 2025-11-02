@@ -219,35 +219,9 @@ export default defineComponent({
 
       return rooms;
     },
-    selectedRoomGroups(): Array<any> {
+    selectedRoomGroups(): Group[] {
       if (!this.selectedRoomId) return [];
-      return this.getGroupsForRoom(this.selectedRoomId).map((g: Group) => {
-        const session = this.sessionsStore.sessions.find(
-          (s) => s.meta.id === g.spec.sessionId,
-        );
-        return {
-          id: g.meta.id,
-          name: g.meta.name,
-          description: g.meta.description,
-          camperCount: this.groupsStore.getCampersInGroup(g.meta.id).length,
-          staffCount: g.spec.staffIds?.length || 0,
-          sessionId: g.spec.sessionId,
-          sessionName: session?.meta.name || "Unknown Session",
-          sessionDateRange: session
-            ? `${new Date(session.spec.startDate).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              })} - ${new Date(session.spec.endDate).toLocaleDateString(
-                "en-US",
-                {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                },
-              )}`
-            : "Unknown",
-        };
-      });
+      return this.getGroupsForRoom(this.selectedRoomId);
     },
   },
   methods: {

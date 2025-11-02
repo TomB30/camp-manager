@@ -12,6 +12,7 @@ export const housingRoomsFixture: HousingRoom[] = [
     spec: {
       beds: 8,
       areaId: "area-1",
+      bathroom: "shared",
     },
   },
   {
@@ -25,6 +26,7 @@ export const housingRoomsFixture: HousingRoom[] = [
     spec: {
       beds: 6,
       areaId: "area-1",
+      bathroom: "shared",
     },
   },
   {
@@ -38,6 +40,7 @@ export const housingRoomsFixture: HousingRoom[] = [
     spec: {
       beds: 10,
       areaId: "area-2",
+      bathroom: "shared",
     },
   },
   {
@@ -64,6 +67,7 @@ export const housingRoomsFixture: HousingRoom[] = [
     spec: {
       beds: 12,
       areaId: "area-3",
+      bathroom: "shared",
     },
   },
   {
@@ -77,6 +81,7 @@ export const housingRoomsFixture: HousingRoom[] = [
     spec: {
       beds: 12,
       areaId: "area-3",
+      bathroom: "shared",
     },
   },
   {
@@ -90,6 +95,7 @@ export const housingRoomsFixture: HousingRoom[] = [
     spec: {
       beds: 4,
       areaId: "area-4",
+      bathroom: "private",
     },
   },
   {
@@ -103,6 +109,7 @@ export const housingRoomsFixture: HousingRoom[] = [
     spec: {
       beds: 4,
       areaId: "area-4",
+      bathroom: "private",
     },
   },
 ];

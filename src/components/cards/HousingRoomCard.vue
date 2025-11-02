@@ -11,6 +11,12 @@
       <div class="card-meta row items-center">
         <span class="badge badge-primary">{{ room.spec.beds }} beds</span>
         <span
+          v-if="room.spec.bathroom"
+          class="badge badge-primary"
+        >
+          {{ bathroomLabel }}
+        </span>
+        <span
           v-if="locationName"
           class="text-sm text-grey-7 text-subtitle2 row items-center q-gutter-x-xs"
         >
@@ -69,6 +75,10 @@ export default defineComponent({
         return this.areasStore.getAreaById(this.room.spec.areaId)?.meta.name;
       }
       return undefined;
+    },
+    bathroomLabel(): string {
+      if (!this.room.spec.bathroom) return "";
+      return this.room.spec.bathroom === "private" ? "Private Bathroom" : "Shared Bathroom";
     },
   },
 });

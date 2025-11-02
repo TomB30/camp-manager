@@ -702,7 +702,7 @@ export const housingRooms: HousingRoom[] = [
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
     },
-    spec: { beds: 10, areaId: areas[0].meta.id },
+    spec: { beds: 10, areaId: areas[0].meta.id, bathroom: "shared" },
   },
   {
     meta: {
@@ -712,7 +712,7 @@ export const housingRooms: HousingRoom[] = [
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
     },
-    spec: { beds: 10, areaId: areas[0].meta.id },
+    spec: { beds: 10, areaId: areas[0].meta.id, bathroom: "shared" },
   },
   {
     meta: {
@@ -722,7 +722,7 @@ export const housingRooms: HousingRoom[] = [
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
     },
-    spec: { beds: 8, areaId: areas[1].meta.id },
+    spec: { beds: 8, areaId: areas[1].meta.id, bathroom: "shared" },
   },
   {
     meta: {
@@ -732,7 +732,7 @@ export const housingRooms: HousingRoom[] = [
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
     },
-    spec: { beds: 8, areaId: areas[1].meta.id },
+    spec: { beds: 8, areaId: areas[1].meta.id, bathroom: "shared" },
   },
   {
     meta: {
@@ -742,7 +742,7 @@ export const housingRooms: HousingRoom[] = [
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
     },
-    spec: { beds: 10, areaId: areas[2].meta.id },
+    spec: { beds: 10, areaId: areas[2].meta.id, bathroom: "shared" },
   },
   {
     meta: {
@@ -752,7 +752,7 @@ export const housingRooms: HousingRoom[] = [
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
     },
-    spec: { beds: 4, areaId: areas[3].meta.id },
+    spec: { beds: 4, areaId: areas[3].meta.id, bathroom: "private" },
   },
 ];
 

@@ -18,3 +18,9 @@ properties:
         type: string
         format: uuid
         description: ID of the physical area where this housing room is located
+      bathroom:
+        type: string
+        enum:
+          - private
+          - shared
+        description: Type of bathroom for this housing room

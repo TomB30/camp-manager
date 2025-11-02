@@ -18,6 +18,13 @@
           <div>{{ getAreaName(room.spec.areaId) }}</div>
         </div>
 
+        <div v-if="room.spec.bathroom" class="detail-section">
+          <div class="detail-label">Bathroom Type</div>
+          <div>
+            <span class="badge badge-info">{{ getBathroomLabel(room.spec.bathroom) }}</span>
+          </div>
+        </div>
+
         <div class="detail-section">
           <div class="detail-label">Family Groups</div>
           <div v-if="groups.length > 0">
@@ -103,6 +110,9 @@ export default defineComponent({
     getAreaName(areaId: string): string {
       const area = this.areasStore.getAreaById(areaId);
       return area?.meta.name || "Unknown";
+    },
+    getBathroomLabel(bathroom: string): string {
+      return bathroom === "private" ? "Private Bath" : "Shared Bath";
     },
     getGroupCamperCount(groupId: string): number {
       return this.groupsStore.getCampersInGroup(groupId).length;
