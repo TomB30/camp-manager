@@ -245,12 +245,18 @@ export default defineComponent({
       if (this.localFormData.sessionId) {
         campers = campers.filter(
           (camper: Camper) =>
-            camper.spec.sessionId === this.localFormData.sessionId
+            camper.spec.sessionId === this.localFormData.sessionId,
         );
       }
 
       return campers.map((camper: Camper) => ({
-        label: camper.meta.name + " (" + dateUtils.calculateAge(camper.spec.birthday) + " years old - " + camper.spec.gender + ")",
+        label:
+          camper.meta.name +
+          " (" +
+          dateUtils.calculateAge(camper.spec.birthday) +
+          " years old - " +
+          camper.spec.gender +
+          ")",
         value: camper.meta.id,
       }));
     },
@@ -264,7 +270,7 @@ export default defineComponent({
       if (!this.localFormData.sessionId) return [];
 
       const groupsInSession = this.groups.filter(
-        (group: Group) => group.spec.sessionId === this.localFormData.sessionId
+        (group: Group) => group.spec.sessionId === this.localFormData.sessionId,
       );
 
       const housingRoomsInSession = groupsInSession

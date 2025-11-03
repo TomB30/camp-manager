@@ -47,7 +47,7 @@
           <div class="form-group">
             <label class="form-label">Start Time</label>
             <BaseInput
-              v-model="startTime"
+              :model-value="startTime"
               @update:model-value="handleStartTimeChange"
               type="time"
               :rules="[(val: string) => !!val || 'Enter start time']"
@@ -810,13 +810,45 @@ export default defineComponent({
         ) === -1 || "End time must be later than start time"
       );
     },
-    handleStartTimeChange(): void {
-      const result = compareAsc(
-        new Date(`${this.internalEventDate}T${this.internalStartTime}:00`),
-        new Date(`${this.internalEventDate}T${this.internalEndTime}:00`),
-      );
-      if (result === 1) {
-        this.endTime = this.startTime;
+    handleStartTimeChange(value: string): void {
+      // If endTime is set, keep the interval between startTime and endTime when startTime is changed
+      if (this.internalEndTime) {
+        const [oldStartHour, oldStartMinute] = this.internalStartTime
+          .split(":")
+          .map(Number);
+        const [endHour, endMinute] = this.internalEndTime
+          .split(":")
+          .map(Number);
+        // Calculate old duration in minutes
+        const oldStart = new Date(0, 0, 0, oldStartHour, oldStartMinute);
+        const oldEnd = new Date(0, 0, 0, endHour, endMinute);
+        let duration = (oldEnd.getTime() - oldStart.getTime()) / 60000;
+        // If duration is negative or 0, treat as 0
+        if (duration <= 0) {
+          duration = 0;
+        }
+
+        this.internalStartTime = value;
+
+        // Use the NEW start time ("startTime") and shift endTime by this interval
+        if (this.startTime) {
+          const [newStartHour, newStartMinute] = this.startTime
+            .split(":")
+            .map(Number);
+          const newStart = new Date(0, 0, 0, newStartHour, newStartMinute);
+          const newEnd = new Date(newStart.getTime() + duration * 60000);
+          const newEndHour = newEnd.getHours().toString().padStart(2, "0");
+          const newEndMinute = newEnd.getMinutes().toString().padStart(2, "0");
+          this.endTime = `${newEndHour}:${newEndMinute}`;
+        }
+      } else {
+        const result = compareAsc(
+          new Date(`${this.internalEventDate}T${this.internalStartTime}:00`),
+          new Date(`${this.internalEventDate}T${this.internalEndTime}:00`),
+        );
+        if (result === 1) {
+          this.endTime = this.startTime;
+        }
       }
     },
     updateFormDataDates() {
