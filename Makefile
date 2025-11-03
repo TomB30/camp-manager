@@ -39,10 +39,12 @@ help:
 	@echo "  make test-be         - Run backend tests"
 	@echo ""
 	@echo "$(GREEN)API:$(NC)"
-	@echo "  make api-validate    - Validate OpenAPI specification"
-	@echo "  make api-bundle      - Bundle OpenAPI files"
-	@echo "  make api-generate    - Generate TypeScript types from OpenAPI"
-	@echo "  make api-docs        - Serve API documentation"
+	@echo "  make api-validate       - Validate OpenAPI specification"
+	@echo "  make api-bundle         - Bundle OpenAPI files"
+	@echo "  make api-generate       - Generate TypeScript types from OpenAPI"
+	@echo "  make api-generate-go    - Generate Go client and types from OpenAPI"
+	@echo "  make api-generate-all   - Generate both TypeScript and Go clients"
+	@echo "  make api-docs           - Serve API documentation"
 	@echo ""
 	@echo "$(GREEN)Maintenance:$(NC)"
 	@echo "  make clean           - Clean build artifacts and dependencies"
@@ -159,6 +161,27 @@ api-generate:
 	@echo "$(BLUE)Generating TypeScript types from OpenAPI...$(NC)"
 	cd frontend && npm run api:generate-types
 	@echo "$(GREEN)✓ Types generated in frontend/src/generated/$(NC)"
+
+api-generate-go:
+	@echo "$(BLUE)Generating Go client and types from OpenAPI...$(NC)"
+	@$(MAKE) api-bundle
+	cd backend && make generate-client
+	@echo "$(GREEN)✓ Go client generated in backend/internal/api/$(NC)"
+
+api-generate-all:
+	@echo "$(BLUE)Generating all API clients (TypeScript + Go)...$(NC)"
+	@$(MAKE) api-bundle
+	@echo ""
+	@echo "$(BLUE)Generating TypeScript client...$(NC)"
+	cd frontend && npm run api:generate-types && npm run api:generate-client
+	@echo ""
+	@echo "$(BLUE)Generating Go client...$(NC)"
+	cd backend && make generate-client
+	@echo ""
+	@echo "$(GREEN)✓ All API clients generated:$(NC)"
+	@echo "  - TypeScript: frontend/src/types/api.ts"
+	@echo "  - TypeScript: frontend/src/generated/api/"
+	@echo "  - Go: backend/internal/api/"
 
 api-docs:
 	@echo "$(BLUE)Starting API documentation server...$(NC)"

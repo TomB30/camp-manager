@@ -1,0 +1,155 @@
+package main
+
+// This is an example of how to use the generated API client
+// Rename this file to remove .example extension to use it
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"net/http"
+	
+	"github.com/tbechar/camp-manager-backend/internal/api"
+)
+
+// Example 1: Using the generated client to call API endpoints
+func exampleUsingClient() {
+	// Create a client pointing to your API server
+	client, err := api.NewClientWithResponses("http://localhost:8080")
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	
+	ctx := context.Background()
+	
+	// Example: Get all campers with pagination
+	params := api.GetCampersParams{
+		Limit:  ptr(10),
+		Offset: ptr(0),
+	}
+	
+	resp, err := client.GetCampersWithResponse(ctx, &params)
+	if err != nil {
+		log.Fatalf("Failed to get campers: %v", err)
+	}
+	
+	// Handle response based on status code
+	switch resp.StatusCode() {
+	case http.StatusOK:
+		campers := resp.JSON200
+		fmt.Printf("Found %d campers (total: %d)\n", len(campers.Items), campers.Total)
+		
+		for _, camper := range campers.Items {
+			fmt.Printf("- %s %s (ID: %s)\n", 
+				camper.Spec.FirstName, 
+				camper.Spec.LastName, 
+				camper.Meta.Id)
+		}
+	case http.StatusBadRequest:
+		fmt.Printf("Bad request: %v\n", resp.JSON400)
+	default:
+		fmt.Printf("Unexpected status: %d\n", resp.StatusCode())
+	}
+}
+
+// Example 2: Creating a new camper
+func exampleCreateCamper() {
+	client, err := api.NewClientWithResponses("http://localhost:8080")
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	
+	ctx := context.Background()
+	
+	// Create a new camper request using generated types
+	newCamper := api.PostCampersJSONRequestBody{
+		Meta: api.EntityCreationRequestMeta{
+			Name: ptr("John Doe - Summer 2024"),
+		},
+		Spec: api.CamperSpec{
+			FirstName:  "John",
+			LastName:   "Doe",
+			Gender:     ptr(api.CamperSpecGenderMale),
+			Age:        ptr(12),
+			ProgramIds: &[]string{"program-123"},
+			SessionIds: &[]string{"session-456"},
+		},
+	}
+	
+	resp, err := client.PostCampersWithResponse(ctx, newCamper)
+	if err != nil {
+		log.Fatalf("Failed to create camper: %v", err)
+	}
+	
+	switch resp.StatusCode() {
+	case http.StatusCreated:
+		camper := resp.JSON201
+		fmt.Printf("Created camper: %s (ID: %s)\n", 
+			camper.Meta.Name, 
+			camper.Meta.Id)
+	case http.StatusBadRequest:
+		fmt.Printf("Validation error: %v\n", resp.JSON400)
+	default:
+		fmt.Printf("Unexpected status: %d\n", resp.StatusCode())
+	}
+}
+
+// Example 3: Using generated types in your own functions
+func processActivity(activity api.Activity) {
+	fmt.Printf("Processing activity: %s\n", activity.Meta.Name)
+	fmt.Printf("  Description: %s\n", activity.Spec.Description)
+	fmt.Printf("  Duration: %d minutes\n", activity.Spec.Duration)
+	
+	if activity.Spec.MinCapacity != nil {
+		fmt.Printf("  Min capacity: %d\n", *activity.Spec.MinCapacity)
+	}
+	
+	if activity.Spec.MaxCapacity != nil {
+		fmt.Printf("  Max capacity: %d\n", *activity.Spec.MaxCapacity)
+	}
+}
+
+// Example 4: Implementing a server handler
+type ServerImpl struct {
+	// Your dependencies (database, services, etc.)
+}
+
+// Implement the GetCampers endpoint
+func (s *ServerImpl) GetCampers(w http.ResponseWriter, r *http.Request, params api.GetCampersParams) {
+	// Type-safe access to query parameters
+	limit := 10
+	if params.Limit != nil {
+		limit = *params.Limit
+	}
+	
+	offset := 0
+	if params.Offset != nil {
+		offset = *params.Offset
+	}
+	
+	// Fetch campers from your database
+	// campers := s.db.GetCampers(limit, offset)
+	
+	// Build response using generated types
+	response := api.CampersListResponse{
+		Items: []api.Camper{
+			// Your campers here
+		},
+		Limit:  limit,
+		Offset: offset,
+		Total:  100, // Total count from database
+		Next:   ptr(offset + limit),
+	}
+	
+	// Send JSON response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	// json.NewEncoder(w).Encode(response)
+	_ = response // Placeholder to avoid unused variable error
+}
+
+// Helper function for creating pointers
+func ptr[T any](v T) *T {
+	return &v
+}
+

@@ -1,0 +1,10 @@
+# Configuration for generating Go client from OpenAPI spec
+package: api
+generate:
+  client: true
+  embedded-spec: false
+output-options:
+  skip-prune: true
+compatibility:
+  always-prefix-enum-values: true
+

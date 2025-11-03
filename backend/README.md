@@ -110,6 +110,7 @@ camp-manager-backend/
 - `make docker-logs` - View PostgreSQL logs
 - `make test` - Run tests
 - `make lint` - Run linters (requires golangci-lint)
+- `make generate-client` - Generate Go client and types from OpenAPI spec
 - `make clean` - Remove build artifacts
 - `make tidy` - Tidy dependencies
 
@@ -132,6 +133,23 @@ docker-compose down
 # View logs
 docker-compose logs -f postgres
 ```
+
+## API Client Generation
+
+The backend can generate Go client libraries and types from the OpenAPI specification:
+
+```bash
+make generate-client
+```
+
+This generates three files in `internal/api/`:
+- `types.gen.go` - Go types for all API schemas
+- `client.gen.go` - HTTP client for calling API endpoints  
+- `server.gen.go` - Server interfaces for implementing handlers
+
+**Note:** The generation uses Docker by default if `oapi-codegen` is not installed locally. Docker must be installed for this to work.
+
+For detailed documentation and usage examples, see [GO_CLIENT_GENERATION.md](./GO_CLIENT_GENERATION.md).
 
 ## Configuration
 

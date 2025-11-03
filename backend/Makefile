@@ -1,17 +1,19 @@
-.PHONY: help run build docker-up docker-down docker-logs test lint clean tidy
+.PHONY: help run build docker-up docker-down docker-logs test lint clean tidy generate-client install-tools
 
 # Default target
 help:
 	@echo "Available targets:"
-	@echo "  run          - Run the server"
-	@echo "  build        - Build the binary"
-	@echo "  docker-up    - Start PostgreSQL container"
-	@echo "  docker-down  - Stop PostgreSQL container"
-	@echo "  docker-logs  - View PostgreSQL logs"
-	@echo "  test         - Run tests"
-	@echo "  lint         - Run linters"
-	@echo "  clean        - Remove build artifacts"
-	@echo "  tidy         - Tidy and verify dependencies"
+	@echo "  run             - Run the server"
+	@echo "  build           - Build the binary"
+	@echo "  docker-up       - Start PostgreSQL container"
+	@echo "  docker-down     - Stop PostgreSQL container"
+	@echo "  docker-logs     - View PostgreSQL logs"
+	@echo "  test            - Run tests"
+	@echo "  lint            - Run linters"
+	@echo "  clean           - Remove build artifacts"
+	@echo "  tidy            - Tidy and verify dependencies"
+	@echo "  generate-client - Generate Go client and types from OpenAPI spec"
+	@echo "  install-tools   - Install required tools (oapi-codegen)"
 
 # Run the server
 run:
@@ -62,4 +64,27 @@ tidy:
 	@echo "Tidying dependencies..."
 	go mod tidy
 	go mod verify
+
+# Install required tools
+install-tools:
+	@echo "Checking for oapi-codegen..."
+	@which oapi-codegen > /dev/null 2>&1 && echo "✓ oapi-codegen found in PATH" || echo "Note: oapi-codegen not found, will use Docker-based script"
+
+# Generate Go client and types from OpenAPI spec
+# If oapi-codegen is available locally, use it; otherwise use Docker
+generate-client: install-tools
+	@if which oapi-codegen > /dev/null 2>&1; then \
+		echo "Generating Go types and client from OpenAPI spec (using local oapi-codegen)..."; \
+		mkdir -p internal/api; \
+		echo "  - Generating types..."; \
+		oapi-codegen -config .oapi-codegen-types.yaml -o internal/api/types.gen.go ../api/openapi-bundled.yaml; \
+		echo "  - Generating client..."; \
+		oapi-codegen -config .oapi-codegen-client.yaml -o internal/api/client.gen.go ../api/openapi-bundled.yaml; \
+		echo "  - Generating server interfaces..."; \
+		oapi-codegen -config .oapi-codegen-server.yaml -o internal/api/server.gen.go ../api/openapi-bundled.yaml; \
+		echo "✓ Go client and types generated in internal/api/"; \
+	else \
+		echo "Using Docker-based generation (oapi-codegen not in PATH)..."; \
+		./scripts/generate-client.sh; \
+	fi
 
