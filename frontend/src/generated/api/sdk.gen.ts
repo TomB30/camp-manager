@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateActivityData, CreateActivityResponses, CreateAreaData, CreateAreaResponses, CreateCamperData, CreateCamperResponses, CreateCertificationData, CreateCertificationResponses, CreateColorData, CreateColorResponses, CreateEventData, CreateEventResponses, CreateGroupData, CreateGroupResponses, CreateHousingRoomData, CreateHousingRoomResponses, CreateLocationData, CreateLocationResponses, CreateProgramData, CreateProgramResponses, CreateRoleData, CreateRoleResponses, CreateSessionData, CreateSessionResponses, CreateStaffMemberData, CreateStaffMemberResponses, DeleteActivityByIdData, DeleteActivityByIdResponses, DeleteAreaByIdData, DeleteAreaByIdResponses, DeleteCamperByIdData, DeleteCamperByIdResponses, DeleteCertificationByIdData, DeleteCertificationByIdResponses, DeleteColorByIdData, DeleteColorByIdResponses, DeleteEventByIdData, DeleteEventByIdResponses, DeleteGroupByIdData, DeleteGroupByIdResponses, DeleteHousingRoomByIdData, DeleteHousingRoomByIdResponses, DeleteLocationByIdData, DeleteLocationByIdResponses, DeleteProgramByIdData, DeleteProgramByIdResponses, DeleteRoleByIdData, DeleteRoleByIdResponses, DeleteSessionByIdData, DeleteSessionByIdResponses, DeleteStaffMemberByIdData, DeleteStaffMemberByIdResponses, GetActivityByIdData, GetActivityByIdResponses, GetAreaByIdData, GetAreaByIdResponses, GetCamperByIdData, GetCamperByIdResponses, GetCertificationByIdData, GetCertificationByIdResponses, GetColorByIdData, GetColorByIdResponses, GetEventByIdData, GetEventByIdResponses, GetGroupByIdData, GetGroupByIdResponses, GetHousingRoomByIdData, GetHousingRoomByIdResponses, GetLocationByIdData, GetLocationByIdResponses, GetProgramByIdData, GetProgramByIdResponses, GetRoleByIdData, GetRoleByIdResponses, GetSessionByIdData, GetSessionByIdResponses, GetStaffMemberByIdData, GetStaffMemberByIdResponses, ListActivitiesData, ListActivitiesResponses, ListAreasData, ListAreasResponses, ListCampersData, ListCampersResponses, ListCertificationsData, ListCertificationsResponses, ListColorsData, ListColorsResponses, ListEventsData, ListEventsResponses, ListGroupsData, ListGroupsResponses, ListHousingRoomsData, ListHousingRoomsResponses, ListLocationsData, ListLocationsResponses, ListProgramsData, ListProgramsResponses, ListRolesData, ListRolesResponses, ListSessionsData, ListSessionsResponses, ListStaffMembersData, ListStaffMembersResponses, UpdateActivityByIdData, UpdateActivityByIdResponses, UpdateAreaByIdData, UpdateAreaByIdResponses, UpdateCamperByIdData, UpdateCamperByIdResponses, UpdateCertificationByIdData, UpdateCertificationByIdResponses, UpdateColorByIdData, UpdateColorByIdResponses, UpdateEventByIdData, UpdateEventByIdResponses, UpdateGroupByIdData, UpdateGroupByIdResponses, UpdateHousingRoomByIdData, UpdateHousingRoomByIdResponses, UpdateLocationByIdData, UpdateLocationByIdResponses, UpdateProgramByIdData, UpdateProgramByIdResponses, UpdateRoleByIdData, UpdateRoleByIdResponses, UpdateSessionByIdData, UpdateSessionByIdResponses, UpdateStaffMemberByIdData, UpdateStaffMemberByIdResponses } from './types.gen';
+import type { CreateActivityData, CreateActivityResponses, CreateAreaData, CreateAreaResponses, CreateCampData, CreateCamperData, CreateCamperResponses, CreateCampResponses, CreateCertificationData, CreateCertificationResponses, CreateColorData, CreateColorResponses, CreateEventData, CreateEventResponses, CreateGroupData, CreateGroupResponses, CreateHousingRoomData, CreateHousingRoomResponses, CreateLocationData, CreateLocationResponses, CreateProgramData, CreateProgramResponses, CreateRoleData, CreateRoleResponses, CreateSessionData, CreateSessionResponses, CreateStaffMemberData, CreateStaffMemberResponses, DeleteActivityByIdData, DeleteActivityByIdResponses, DeleteAreaByIdData, DeleteAreaByIdResponses, DeleteCampByIdData, DeleteCampByIdResponses, DeleteCamperByIdData, DeleteCamperByIdResponses, DeleteCertificationByIdData, DeleteCertificationByIdResponses, DeleteColorByIdData, DeleteColorByIdResponses, DeleteEventByIdData, DeleteEventByIdResponses, DeleteGroupByIdData, DeleteGroupByIdResponses, DeleteHousingRoomByIdData, DeleteHousingRoomByIdResponses, DeleteLocationByIdData, DeleteLocationByIdResponses, DeleteProgramByIdData, DeleteProgramByIdResponses, DeleteRoleByIdData, DeleteRoleByIdResponses, DeleteSessionByIdData, DeleteSessionByIdResponses, DeleteStaffMemberByIdData, DeleteStaffMemberByIdResponses, GetActivityByIdData, GetActivityByIdResponses, GetAreaByIdData, GetAreaByIdResponses, GetCampByIdData, GetCampByIdResponses, GetCamperByIdData, GetCamperByIdResponses, GetCampsData, GetCampsResponses, GetCertificationByIdData, GetCertificationByIdResponses, GetColorByIdData, GetColorByIdResponses, GetEventByIdData, GetEventByIdResponses, GetGroupByIdData, GetGroupByIdResponses, GetHousingRoomByIdData, GetHousingRoomByIdResponses, GetLocationByIdData, GetLocationByIdResponses, GetProgramByIdData, GetProgramByIdResponses, GetRoleByIdData, GetRoleByIdResponses, GetSessionByIdData, GetSessionByIdResponses, GetStaffMemberByIdData, GetStaffMemberByIdResponses, GetTenantByIdData, GetTenantByIdResponses, GetTenantsData, GetTenantsResponses, ListActivitiesData, ListActivitiesResponses, ListAreasData, ListAreasResponses, ListCampersData, ListCampersResponses, ListCertificationsData, ListCertificationsResponses, ListColorsData, ListColorsResponses, ListEventsData, ListEventsResponses, ListGroupsData, ListGroupsResponses, ListHousingRoomsData, ListHousingRoomsResponses, ListLocationsData, ListLocationsResponses, ListProgramsData, ListProgramsResponses, ListRolesData, ListRolesResponses, ListSessionsData, ListSessionsResponses, ListStaffMembersData, ListStaffMembersResponses, UpdateActivityByIdData, UpdateActivityByIdResponses, UpdateAreaByIdData, UpdateAreaByIdResponses, UpdateCampByIdData, UpdateCampByIdResponses, UpdateCamperByIdData, UpdateCamperByIdResponses, UpdateCertificationByIdData, UpdateCertificationByIdResponses, UpdateColorByIdData, UpdateColorByIdResponses, UpdateEventByIdData, UpdateEventByIdResponses, UpdateGroupByIdData, UpdateGroupByIdResponses, UpdateHousingRoomByIdData, UpdateHousingRoomByIdResponses, UpdateLocationByIdData, UpdateLocationByIdResponses, UpdateProgramByIdData, UpdateProgramByIdResponses, UpdateRoleByIdData, UpdateRoleByIdResponses, UpdateSessionByIdData, UpdateSessionByIdResponses, UpdateStaffMemberByIdData, UpdateStaffMemberByIdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -769,5 +769,83 @@ export const updateEventById = <ThrowOnError extends boolean = false>(options: O
             'Content-Type': 'application/json',
             ...options.headers
         }
+    });
+};
+
+/**
+ * Get all camps
+ */
+export const getCamps = <ThrowOnError extends boolean = false>(options?: Options<GetCampsData, ThrowOnError>) => {
+    return (options?.client ?? client).get<GetCampsResponses, unknown, ThrowOnError>({
+        url: '/camps',
+        ...options
+    });
+};
+
+/**
+ * Create a new camp
+ */
+export const createCamp = <ThrowOnError extends boolean = false>(options: Options<CreateCampData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateCampResponses, unknown, ThrowOnError>({
+        url: '/camps',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete camp by ID
+ */
+export const deleteCampById = <ThrowOnError extends boolean = false>(options: Options<DeleteCampByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteCampByIdResponses, unknown, ThrowOnError>({
+        url: '/camps/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get camp by ID
+ */
+export const getCampById = <ThrowOnError extends boolean = false>(options: Options<GetCampByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetCampByIdResponses, unknown, ThrowOnError>({
+        url: '/camps/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update camp by ID
+ */
+export const updateCampById = <ThrowOnError extends boolean = false>(options: Options<UpdateCampByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateCampByIdResponses, unknown, ThrowOnError>({
+        url: '/camps/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Get all tenants
+ */
+export const getTenants = <ThrowOnError extends boolean = false>(options?: Options<GetTenantsData, ThrowOnError>) => {
+    return (options?.client ?? client).get<GetTenantsResponses, unknown, ThrowOnError>({
+        url: '/tenants',
+        ...options
+    });
+};
+
+/**
+ * Get tenant by ID
+ */
+export const getTenantById = <ThrowOnError extends boolean = false>(options: Options<GetTenantByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetTenantByIdResponses, unknown, ThrowOnError>({
+        url: '/tenants/{id}',
+        ...options
     });
 };

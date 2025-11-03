@@ -58,6 +58,21 @@ type ServerInterface interface {
 	// Update camper
 	// (PUT /campers/{id})
 	UpdateCamperById(w http.ResponseWriter, r *http.Request, id Id)
+	// Get all camps
+	// (GET /camps)
+	GetCamps(w http.ResponseWriter, r *http.Request)
+	// Create a new camp
+	// (POST /camps)
+	CreateCamp(w http.ResponseWriter, r *http.Request)
+	// Delete camp by ID
+	// (DELETE /camps/{id})
+	DeleteCampById(w http.ResponseWriter, r *http.Request, id Id)
+	// Get camp by ID
+	// (GET /camps/{id})
+	GetCampById(w http.ResponseWriter, r *http.Request, id Id)
+	// Update camp by ID
+	// (PUT /camps/{id})
+	UpdateCampById(w http.ResponseWriter, r *http.Request, id Id)
 	// List all certifications
 	// (GET /certifications)
 	ListCertifications(w http.ResponseWriter, r *http.Request, params ListCertificationsParams)
@@ -208,6 +223,12 @@ type ServerInterface interface {
 	// Update staff member by ID
 	// (PUT /staff-members/{id})
 	UpdateStaffMemberById(w http.ResponseWriter, r *http.Request, id Id)
+	// Get all tenants
+	// (GET /tenants)
+	GetTenants(w http.ResponseWriter, r *http.Request)
+	// Get tenant by ID
+	// (GET /tenants/{id})
+	GetTenantById(w http.ResponseWriter, r *http.Request, id Id)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -301,6 +322,36 @@ func (_ Unimplemented) GetCamperById(w http.ResponseWriter, r *http.Request, id 
 // Update camper
 // (PUT /campers/{id})
 func (_ Unimplemented) UpdateCamperById(w http.ResponseWriter, r *http.Request, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get all camps
+// (GET /camps)
+func (_ Unimplemented) GetCamps(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new camp
+// (POST /camps)
+func (_ Unimplemented) CreateCamp(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete camp by ID
+// (DELETE /camps/{id})
+func (_ Unimplemented) DeleteCampById(w http.ResponseWriter, r *http.Request, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get camp by ID
+// (GET /camps/{id})
+func (_ Unimplemented) GetCampById(w http.ResponseWriter, r *http.Request, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update camp by ID
+// (PUT /camps/{id})
+func (_ Unimplemented) UpdateCampById(w http.ResponseWriter, r *http.Request, id Id) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -601,6 +652,18 @@ func (_ Unimplemented) GetStaffMemberById(w http.ResponseWriter, r *http.Request
 // Update staff member by ID
 // (PUT /staff-members/{id})
 func (_ Unimplemented) UpdateStaffMemberById(w http.ResponseWriter, r *http.Request, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get all tenants
+// (GET /tenants)
+func (_ Unimplemented) GetTenants(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get tenant by ID
+// (GET /tenants/{id})
+func (_ Unimplemented) GetTenantById(w http.ResponseWriter, r *http.Request, id Id) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1000,6 +1063,109 @@ func (siw *ServerInterfaceWrapper) UpdateCamperById(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateCamperById(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetCamps operation middleware
+func (siw *ServerInterfaceWrapper) GetCamps(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetCamps(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateCamp operation middleware
+func (siw *ServerInterfaceWrapper) CreateCamp(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateCamp(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteCampById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteCampById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteCampById(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetCampById operation middleware
+func (siw *ServerInterfaceWrapper) GetCampById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetCampById(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateCampById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateCampById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateCampById(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2329,6 +2495,45 @@ func (siw *ServerInterfaceWrapper) UpdateStaffMemberById(w http.ResponseWriter, 
 	handler.ServeHTTP(w, r)
 }
 
+// GetTenants operation middleware
+func (siw *ServerInterfaceWrapper) GetTenants(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetTenants(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetTenantById operation middleware
+func (siw *ServerInterfaceWrapper) GetTenantById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetTenantById(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -2488,6 +2693,21 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Put(options.BaseURL+"/campers/{id}", wrapper.UpdateCamperById)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/camps", wrapper.GetCamps)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/camps", wrapper.CreateCamp)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/camps/{id}", wrapper.DeleteCampById)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/camps/{id}", wrapper.GetCampById)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/camps/{id}", wrapper.UpdateCampById)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/certifications", wrapper.ListCertifications)
 	})
 	r.Group(func(r chi.Router) {
@@ -2636,6 +2856,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Put(options.BaseURL+"/staff-members/{id}", wrapper.UpdateStaffMemberById)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/tenants", wrapper.GetTenants)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/tenants/{id}", wrapper.GetTenantById)
 	})
 
 	return r

@@ -6,23 +6,23 @@ export type ClientOptions = {
 
 export type EntityMeta = {
     /**
-     * Unique identifier for the entity
+     * The unique identifier of the entity
      */
     id: string;
     /**
-     * Name of the entity
+     * The name of the entity
      */
     name: string;
     /**
-     * Description of the entity
+     * The description of the entity
      */
     description?: string;
     /**
-     * Timestamp when the entity was created
+     * The date and time the entity was created
      */
     createdAt: string;
     /**
-     * Timestamp when the entity was last updated
+     * The date and time the entity was last updated
      */
     updatedAt: string;
 };
@@ -305,7 +305,32 @@ export type EventsListResponse = ListResponseBase & {
 };
 
 export type Camp = {
-    meta: EntityMeta;
+    meta: {
+        /**
+         * The unique identifier of the camp
+         */
+        id: string;
+        /**
+         * The unique identifier of the tenant that owns the camp
+         */
+        tenantId: string;
+        /**
+         * The name of the camp
+         */
+        name: string;
+        /**
+         * The description of the camp
+         */
+        description?: string;
+        /**
+         * The date and time the camp was created
+         */
+        createdAt: string;
+        /**
+         * The date and time the camp was last updated
+         */
+        updatedAt: string;
+    };
     spec: CampSpec;
 };
 
@@ -567,6 +592,57 @@ export type CampSpec = {
         website?: string;
     };
     logoUrl?: string;
+};
+
+export type CampsListResponse = ListResponseBase & {
+    items: Array<Camp>;
+};
+
+export type Tenant = {
+    /**
+     * The unique identifier of the tenant
+     */
+    id: string;
+    /**
+     * The name of the tenant
+     */
+    name: string;
+    /**
+     * The description of the tenant
+     */
+    description: string;
+    /**
+     * The date and time the tenant's subscription expires
+     */
+    expirationDate?: string;
+    /**
+     * The maximum number of camps the tenant can create with their subscription
+     */
+    maxCamps?: number;
+    /**
+     * The type of contract the tenant has with the camp
+     */
+    contractType?: 'trial' | 'normal';
+    /**
+     * The date and time the tenant's contract started
+     */
+    contractStartDate?: string;
+    /**
+     * The date and time the tenant's contract ends
+     */
+    contractEndDate?: string;
+    /**
+     * The date and time the tenant was created
+     */
+    createdAt: string;
+    /**
+     * The date and time the tenant was last updated
+     */
+    updatedAt: string;
+};
+
+export type TenantsListResponse = ListResponseBase & {
+    items: Array<Tenant>;
 };
 
 export type DurationPresetSpec = {
@@ -2003,3 +2079,133 @@ export type UpdateEventByIdResponses = {
 };
 
 export type UpdateEventByIdResponse = UpdateEventByIdResponses[keyof UpdateEventByIdResponses];
+
+export type GetCampsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/camps';
+};
+
+export type GetCampsResponses = {
+    /**
+     * Success
+     */
+    200: CampsListResponse;
+};
+
+export type GetCampsResponse = GetCampsResponses[keyof GetCampsResponses];
+
+export type CreateCampData = {
+    body: CampCreationRequest;
+    path?: never;
+    query?: never;
+    url: '/camps';
+};
+
+export type CreateCampResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type DeleteCampByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/camps/{id}';
+};
+
+export type DeleteCampByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteCampByIdResponse = DeleteCampByIdResponses[keyof DeleteCampByIdResponses];
+
+export type GetCampByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/camps/{id}';
+};
+
+export type GetCampByIdResponses = {
+    /**
+     * Success
+     */
+    200: Camp;
+};
+
+export type GetCampByIdResponse = GetCampByIdResponses[keyof GetCampByIdResponses];
+
+export type UpdateCampByIdData = {
+    body: CampUpdateRequest;
+    path: {
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/camps/{id}';
+};
+
+export type UpdateCampByIdResponses = {
+    /**
+     * Success
+     */
+    200: Camp;
+};
+
+export type UpdateCampByIdResponse = UpdateCampByIdResponses[keyof UpdateCampByIdResponses];
+
+export type GetTenantsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/tenants';
+};
+
+export type GetTenantsResponses = {
+    /**
+     * Success
+     */
+    200: TenantsListResponse;
+};
+
+export type GetTenantsResponse = GetTenantsResponses[keyof GetTenantsResponses];
+
+export type GetTenantByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/tenants/{id}';
+};
+
+export type GetTenantByIdResponses = {
+    /**
+     * Success
+     */
+    200: Tenant;
+};
+
+export type GetTenantByIdResponse = GetTenantByIdResponses[keyof GetTenantByIdResponses];

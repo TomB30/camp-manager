@@ -1,0 +1,12 @@
+parameters:
+  - $ref: "../parameters/id.yaml"
+get:
+  summary: Get tenant by ID
+  operationId: getTenantById
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Tenant.yaml"

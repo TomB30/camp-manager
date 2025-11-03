@@ -30,6 +30,7 @@ async function updateCamp(campUpdate: CampUpdateRequest): Promise<Camp> {
   const updatedCamp: Camp = {
     meta: {
       id: existingCamp.meta.id,
+      tenantId: existingCamp.meta.tenantId,
       name: campUpdate.meta.name,
       description: campUpdate.meta.description,
       createdAt: existingCamp.meta.createdAt,
@@ -51,6 +52,7 @@ async function initializeDefaultCamp(): Promise<Camp> {
   const defaultCamp: Camp = {
     meta: {
       id: crypto.randomUUID(),
+      tenantId: crypto.randomUUID(),
       name: "My Summer Camp",
       description: "Welcome to our summer camp!",
       createdAt: new Date().toISOString(),

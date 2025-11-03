@@ -1,0 +1,48 @@
+type: object
+required:
+  - id
+  - name
+  - description
+  - campsAmount
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    type: string
+    format: uuid
+    description: The unique identifier of the tenant
+  name:
+    type: string
+    description: The name of the tenant
+  description:
+    type: string
+    description: The description of the tenant
+  expirationDate:
+    type: string
+    format: date-time
+    description: The date and time the tenant's subscription expires
+  maxCamps:
+    type: integer
+    description: The maximum number of camps the tenant can create with their subscription
+  contractType:
+    type: string
+    description: The type of contract the tenant has with the camp
+    enum:
+      - trial
+      - normal
+  contractStartDate:
+    type: string
+    format: date-time
+    description: The date and time the tenant's contract started
+  contractEndDate:
+    type: string
+    format: date-time
+    description: The date and time the tenant's contract ends
+  createdAt:
+    type: string
+    format: date-time
+    description: The date and time the tenant was created
+  updatedAt:
+    type: string
+    format: date-time
+    description: The date and time the tenant was last updated

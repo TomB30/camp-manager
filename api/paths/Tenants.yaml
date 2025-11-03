@@ -1,0 +1,10 @@
+get:
+  summary: Get all tenants
+  operationId: getTenants
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/TenantsListResponse.yaml"

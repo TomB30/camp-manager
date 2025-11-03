@@ -210,3 +210,13 @@ paths:
     $ref: "./paths/Events.yaml"
   /events/{id}:
     $ref: "./paths/EventsById.yaml"
+
+  /camps:
+    $ref: "./paths/Camps.yaml"
+  /camps/{id}:
+    $ref: "./paths/CampsById.yaml"
+
+  /tenants:
+    $ref: "./paths/Tenants.yaml"
+  /tenants/{id}:
+    $ref: "./paths/TenantsById.yaml"

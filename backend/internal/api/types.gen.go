@@ -21,6 +21,12 @@ const (
 	HousingRoomSpecBathroomShared  HousingRoomSpecBathroom = "shared"
 )
 
+// Defines values for TenantContractType.
+const (
+	TenantContractTypeNormal TenantContractType = "normal"
+	TenantContractTypeTrial  TenantContractType = "trial"
+)
+
 // ActivitiesListResponse defines model for ActivitiesListResponse.
 type ActivitiesListResponse struct {
 	Items []Activity `json:"items"`
@@ -121,8 +127,26 @@ type AreasListResponse struct {
 
 // Camp defines model for Camp.
 type Camp struct {
-	Meta EntityMeta `json:"meta"`
-	Spec CampSpec   `json:"spec"`
+	Meta struct {
+		// CreatedAt The date and time the camp was created
+		CreatedAt time.Time `json:"createdAt"`
+
+		// Description The description of the camp
+		Description *string `json:"description,omitempty"`
+
+		// Id The unique identifier of the camp
+		Id openapi_types.UUID `json:"id"`
+
+		// Name The name of the camp
+		Name string `json:"name"`
+
+		// TenantId The unique identifier of the tenant that owns the camp
+		TenantId openapi_types.UUID `json:"tenantId"`
+
+		// UpdatedAt The date and time the camp was last updated
+		UpdatedAt time.Time `json:"updatedAt"`
+	} `json:"meta"`
+	Spec CampSpec `json:"spec"`
 }
 
 // CampCreationRequest defines model for CampCreationRequest.
@@ -208,6 +232,23 @@ type CamperUpdateRequest struct {
 // CampersListResponse defines model for CampersListResponse.
 type CampersListResponse struct {
 	Items []Camper `json:"items"`
+
+	// Limit Number of items per page
+	Limit int `json:"limit"`
+
+	// Next Next offset value to use for the next page, or null if no more pages available
+	Next *int `json:"next"`
+
+	// Offset Current offset (starting position)
+	Offset int `json:"offset"`
+
+	// Total Total count of all items across all pages
+	Total int `json:"total"`
+}
+
+// CampsListResponse defines model for CampsListResponse.
+type CampsListResponse struct {
+	Items []Camp `json:"items"`
 
 	// Limit Number of items per page
 	Limit int `json:"limit"`
@@ -342,19 +383,19 @@ type EntityCreationRequestMeta struct {
 
 // EntityMeta defines model for EntityMeta.
 type EntityMeta struct {
-	// CreatedAt Timestamp when the entity was created
+	// CreatedAt The date and time the entity was created
 	CreatedAt time.Time `json:"createdAt"`
 
-	// Description Description of the entity
+	// Description The description of the entity
 	Description *string `json:"description,omitempty"`
 
-	// Id Unique identifier for the entity
+	// Id The unique identifier of the entity
 	Id openapi_types.UUID `json:"id"`
 
-	// Name Name of the entity
+	// Name The name of the entity
 	Name string `json:"name"`
 
-	// UpdatedAt Timestamp when the entity was last updated
+	// UpdatedAt The date and time the entity was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
@@ -767,6 +808,59 @@ type StaffMembersListResponse struct {
 	Total int `json:"total"`
 }
 
+// Tenant defines model for Tenant.
+type Tenant struct {
+	// ContractEndDate The date and time the tenant's contract ends
+	ContractEndDate *time.Time `json:"contractEndDate,omitempty"`
+
+	// ContractStartDate The date and time the tenant's contract started
+	ContractStartDate *time.Time `json:"contractStartDate,omitempty"`
+
+	// ContractType The type of contract the tenant has with the camp
+	ContractType *TenantContractType `json:"contractType,omitempty"`
+
+	// CreatedAt The date and time the tenant was created
+	CreatedAt time.Time `json:"createdAt"`
+
+	// Description The description of the tenant
+	Description string `json:"description"`
+
+	// ExpirationDate The date and time the tenant's subscription expires
+	ExpirationDate *time.Time `json:"expirationDate,omitempty"`
+
+	// Id The unique identifier of the tenant
+	Id openapi_types.UUID `json:"id"`
+
+	// MaxCamps The maximum number of camps the tenant can create with their subscription
+	MaxCamps *int `json:"maxCamps,omitempty"`
+
+	// Name The name of the tenant
+	Name string `json:"name"`
+
+	// UpdatedAt The date and time the tenant was last updated
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// TenantContractType The type of contract the tenant has with the camp
+type TenantContractType string
+
+// TenantsListResponse defines model for TenantsListResponse.
+type TenantsListResponse struct {
+	Items []Tenant `json:"items"`
+
+	// Limit Number of items per page
+	Limit int `json:"limit"`
+
+	// Next Next offset value to use for the next page, or null if no more pages available
+	Next *int `json:"next"`
+
+	// Offset Current offset (starting position)
+	Offset int `json:"offset"`
+
+	// Total Total count of all items across all pages
+	Total int `json:"total"`
+}
+
 // Id defines model for id.
 type Id = string
 
@@ -952,6 +1046,12 @@ type CreateCamperJSONRequestBody = CamperCreationRequest
 
 // UpdateCamperByIdJSONRequestBody defines body for UpdateCamperById for application/json ContentType.
 type UpdateCamperByIdJSONRequestBody = CamperUpdateRequest
+
+// CreateCampJSONRequestBody defines body for CreateCamp for application/json ContentType.
+type CreateCampJSONRequestBody = CampCreationRequest
+
+// UpdateCampByIdJSONRequestBody defines body for UpdateCampById for application/json ContentType.
+type UpdateCampByIdJSONRequestBody = CampUpdateRequest
 
 // CreateCertificationJSONRequestBody defines body for CreateCertification for application/json ContentType.
 type CreateCertificationJSONRequestBody = CertificationCreationRequest

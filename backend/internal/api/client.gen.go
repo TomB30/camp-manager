@@ -146,6 +146,25 @@ type ClientInterface interface {
 
 	UpdateCamperById(ctx context.Context, id Id, body UpdateCamperByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetCamps request
+	GetCamps(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateCampWithBody request with any body
+	CreateCampWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateCamp(ctx context.Context, body CreateCampJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteCampById request
+	DeleteCampById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCampById request
+	GetCampById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateCampByIdWithBody request with any body
+	UpdateCampByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateCampById(ctx context.Context, id Id, body UpdateCampByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListCertifications request
 	ListCertifications(ctx context.Context, params *ListCertificationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -335,6 +354,12 @@ type ClientInterface interface {
 	UpdateStaffMemberByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateStaffMemberById(ctx context.Context, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetTenants request
+	GetTenants(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetTenantById request
+	GetTenantById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) ListActivities(ctx context.Context, params *ListActivitiesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -579,6 +604,90 @@ func (c *Client) UpdateCamperByIdWithBody(ctx context.Context, id Id, contentTyp
 
 func (c *Client) UpdateCamperById(ctx context.Context, id Id, body UpdateCamperByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateCamperByIdRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCamps(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCampsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateCampWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateCampRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateCamp(ctx context.Context, body CreateCampJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateCampRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteCampById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteCampByIdRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCampById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCampByIdRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateCampByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateCampByIdRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateCampById(ctx context.Context, id Id, body UpdateCampByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateCampByIdRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1429,6 +1538,30 @@ func (c *Client) UpdateStaffMemberById(ctx context.Context, id Id, body UpdateSt
 	return c.Client.Do(req)
 }
 
+func (c *Client) GetTenants(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetTenantsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetTenantById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetTenantByIdRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // NewListActivitiesRequest generates requests for ListActivities
 func NewListActivitiesRequest(server string, params *ListActivitiesParams) (*http.Request, error) {
 	var err error
@@ -2118,6 +2251,188 @@ func NewUpdateCamperByIdRequestWithBody(server string, id Id, contentType string
 	}
 
 	operationPath := fmt.Sprintf("/campers/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetCampsRequest generates requests for GetCamps
+func NewGetCampsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/camps")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateCampRequest calls the generic CreateCamp builder with application/json body
+func NewCreateCampRequest(server string, body CreateCampJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateCampRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateCampRequestWithBody generates requests for CreateCamp with any type of body
+func NewCreateCampRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/camps")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteCampByIdRequest generates requests for DeleteCampById
+func NewDeleteCampByIdRequest(server string, id Id) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/camps/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetCampByIdRequest generates requests for GetCampById
+func NewGetCampByIdRequest(server string, id Id) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/camps/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateCampByIdRequest calls the generic UpdateCampById builder with application/json body
+func NewUpdateCampByIdRequest(server string, id Id, body UpdateCampByIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateCampByIdRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateCampByIdRequestWithBody generates requests for UpdateCampById with any type of body
+func NewUpdateCampByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/camps/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4497,6 +4812,67 @@ func NewUpdateStaffMemberByIdRequestWithBody(server string, id Id, contentType s
 	return req, nil
 }
 
+// NewGetTenantsRequest generates requests for GetTenants
+func NewGetTenantsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/tenants")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetTenantByIdRequest generates requests for GetTenantById
+func NewGetTenantByIdRequest(server string, id Id) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/tenants/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -4596,6 +4972,25 @@ type ClientWithResponsesInterface interface {
 	UpdateCamperByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCamperByIdResponse, error)
 
 	UpdateCamperByIdWithResponse(ctx context.Context, id Id, body UpdateCamperByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCamperByIdResponse, error)
+
+	// GetCampsWithResponse request
+	GetCampsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCampsResponse, error)
+
+	// CreateCampWithBodyWithResponse request with any body
+	CreateCampWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCampResponse, error)
+
+	CreateCampWithResponse(ctx context.Context, body CreateCampJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCampResponse, error)
+
+	// DeleteCampByIdWithResponse request
+	DeleteCampByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteCampByIdResponse, error)
+
+	// GetCampByIdWithResponse request
+	GetCampByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetCampByIdResponse, error)
+
+	// UpdateCampByIdWithBodyWithResponse request with any body
+	UpdateCampByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCampByIdResponse, error)
+
+	UpdateCampByIdWithResponse(ctx context.Context, id Id, body UpdateCampByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCampByIdResponse, error)
 
 	// ListCertificationsWithResponse request
 	ListCertificationsWithResponse(ctx context.Context, params *ListCertificationsParams, reqEditors ...RequestEditorFn) (*ListCertificationsResponse, error)
@@ -4786,6 +5181,12 @@ type ClientWithResponsesInterface interface {
 	UpdateStaffMemberByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateStaffMemberByIdResponse, error)
 
 	UpdateStaffMemberByIdWithResponse(ctx context.Context, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateStaffMemberByIdResponse, error)
+
+	// GetTenantsWithResponse request
+	GetTenantsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetTenantsResponse, error)
+
+	// GetTenantByIdWithResponse request
+	GetTenantByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetTenantByIdResponse, error)
 }
 
 type ListActivitiesResponse struct {
@@ -5109,6 +5510,114 @@ func (r UpdateCamperByIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateCamperByIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCampsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CampsListResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCampsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCampsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateCampResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateCampResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateCampResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteCampByIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteCampByIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteCampByIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCampByIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Camp
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCampByIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCampByIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateCampByIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Camp
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateCampByIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateCampByIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6205,6 +6714,50 @@ func (r UpdateStaffMemberByIdResponse) StatusCode() int {
 	return 0
 }
 
+type GetTenantsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TenantsListResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetTenantsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetTenantsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetTenantByIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Tenant
+}
+
+// Status returns HTTPResponse.Status
+func (r GetTenantByIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetTenantByIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // ListActivitiesWithResponse request returning *ListActivitiesResponse
 func (c *ClientWithResponses) ListActivitiesWithResponse(ctx context.Context, params *ListActivitiesParams, reqEditors ...RequestEditorFn) (*ListActivitiesResponse, error) {
 	rsp, err := c.ListActivities(ctx, params, reqEditors...)
@@ -6386,6 +6939,67 @@ func (c *ClientWithResponses) UpdateCamperByIdWithResponse(ctx context.Context, 
 		return nil, err
 	}
 	return ParseUpdateCamperByIdResponse(rsp)
+}
+
+// GetCampsWithResponse request returning *GetCampsResponse
+func (c *ClientWithResponses) GetCampsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCampsResponse, error) {
+	rsp, err := c.GetCamps(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCampsResponse(rsp)
+}
+
+// CreateCampWithBodyWithResponse request with arbitrary body returning *CreateCampResponse
+func (c *ClientWithResponses) CreateCampWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCampResponse, error) {
+	rsp, err := c.CreateCampWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateCampResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateCampWithResponse(ctx context.Context, body CreateCampJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCampResponse, error) {
+	rsp, err := c.CreateCamp(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateCampResponse(rsp)
+}
+
+// DeleteCampByIdWithResponse request returning *DeleteCampByIdResponse
+func (c *ClientWithResponses) DeleteCampByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteCampByIdResponse, error) {
+	rsp, err := c.DeleteCampById(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteCampByIdResponse(rsp)
+}
+
+// GetCampByIdWithResponse request returning *GetCampByIdResponse
+func (c *ClientWithResponses) GetCampByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetCampByIdResponse, error) {
+	rsp, err := c.GetCampById(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCampByIdResponse(rsp)
+}
+
+// UpdateCampByIdWithBodyWithResponse request with arbitrary body returning *UpdateCampByIdResponse
+func (c *ClientWithResponses) UpdateCampByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCampByIdResponse, error) {
+	rsp, err := c.UpdateCampByIdWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateCampByIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateCampByIdWithResponse(ctx context.Context, id Id, body UpdateCampByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCampByIdResponse, error) {
+	rsp, err := c.UpdateCampById(ctx, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateCampByIdResponse(rsp)
 }
 
 // ListCertificationsWithResponse request returning *ListCertificationsResponse
@@ -6998,6 +7612,24 @@ func (c *ClientWithResponses) UpdateStaffMemberByIdWithResponse(ctx context.Cont
 	return ParseUpdateStaffMemberByIdResponse(rsp)
 }
 
+// GetTenantsWithResponse request returning *GetTenantsResponse
+func (c *ClientWithResponses) GetTenantsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetTenantsResponse, error) {
+	rsp, err := c.GetTenants(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetTenantsResponse(rsp)
+}
+
+// GetTenantByIdWithResponse request returning *GetTenantByIdResponse
+func (c *ClientWithResponses) GetTenantByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetTenantByIdResponse, error) {
+	rsp, err := c.GetTenantById(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetTenantByIdResponse(rsp)
+}
+
 // ParseListActivitiesResponse parses an HTTP response from a ListActivitiesWithResponse call
 func ParseListActivitiesResponse(rsp *http.Response) (*ListActivitiesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -7348,6 +7980,116 @@ func ParseUpdateCamperByIdResponse(rsp *http.Response) (*UpdateCamperByIdRespons
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest Camper
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCampsResponse parses an HTTP response from a GetCampsWithResponse call
+func ParseGetCampsResponse(rsp *http.Response) (*GetCampsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCampsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CampsListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateCampResponse parses an HTTP response from a CreateCampWithResponse call
+func ParseCreateCampResponse(rsp *http.Response) (*CreateCampResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateCampResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseDeleteCampByIdResponse parses an HTTP response from a DeleteCampByIdWithResponse call
+func ParseDeleteCampByIdResponse(rsp *http.Response) (*DeleteCampByIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteCampByIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseGetCampByIdResponse parses an HTTP response from a GetCampByIdWithResponse call
+func ParseGetCampByIdResponse(rsp *http.Response) (*GetCampByIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCampByIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Camp
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateCampByIdResponse parses an HTTP response from a UpdateCampByIdWithResponse call
+func ParseUpdateCampByIdResponse(rsp *http.Response) (*UpdateCampByIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateCampByIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Camp
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -8548,6 +9290,58 @@ func ParseUpdateStaffMemberByIdResponse(rsp *http.Response) (*UpdateStaffMemberB
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest StaffMember
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetTenantsResponse parses an HTTP response from a GetTenantsWithResponse call
+func ParseGetTenantsResponse(rsp *http.Response) (*GetTenantsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetTenantsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TenantsListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetTenantByIdResponse parses an HTTP response from a GetTenantByIdWithResponse call
+func ParseGetTenantByIdResponse(rsp *http.Response) (*GetTenantByIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetTenantByIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Tenant
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

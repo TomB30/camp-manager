@@ -173,7 +173,7 @@ api-generate-all:
 	@$(MAKE) api-bundle
 	@echo ""
 	@echo "$(BLUE)Generating TypeScript client...$(NC)"
-	cd frontend && npm run api:generate-types && npm run api:generate-client
+	cd frontend && npm run api:generate-client
 	@echo ""
 	@echo "$(BLUE)Generating Go client...$(NC)"
 	cd backend && make generate-client

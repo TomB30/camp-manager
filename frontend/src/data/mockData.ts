@@ -41,6 +41,7 @@ const octoberDate = (
 export const camp: Camp = {
   meta: {
     id: generateId(),
+    tenantId: generateId(),
     name: "Sunset Lake Summer Camp",
     description:
       "A premier summer camp experience nestled in the beautiful mountains, offering adventure, learning, and lifelong friendships.",

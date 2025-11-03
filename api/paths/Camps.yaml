@@ -1,0 +1,22 @@
+get:
+  summary: Get all camps
+  operationId: getCamps
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/CampsListResponse.yaml"
+post:
+  summary: Create a new camp
+  operationId: createCamp
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/CampCreationRequest.yaml"
+  responses:
+    "200":
+      description: Success

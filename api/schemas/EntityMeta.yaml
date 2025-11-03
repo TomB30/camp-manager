@@ -8,19 +8,19 @@ properties:
   id:
     type: string
     format: uuid
-    description: Unique identifier for the entity
+    description: The unique identifier of the entity
   name:
     type: string
-    min-length: 3
-    description: Name of the entity
+    minLength: 3
+    description: The name of the entity
   description:
     type: string
-    description: Description of the entity
+    description: The description of the entity
   createdAt:
     type: string
     format: date-time
-    description: Timestamp when the entity was created
+    description: The date and time the entity was created
   updatedAt:
     type: string
     format: date-time
-    description: Timestamp when the entity was last updated
+    description: The date and time the entity was last updated
