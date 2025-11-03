@@ -119,4 +119,3 @@ func (c *DatabaseConfig) GetDSN() string {
 		c.Host, c.Port, c.User, c.Password, c.Name, c.SSLMode,
 	)
 }
-
