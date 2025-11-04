@@ -13,6 +13,7 @@ import (
 type Handler struct {
 	activities     *ActivitiesHandler
 	areas          *AreasHandler
+	auth           *AuthHandler
 	campers        *CampersHandler
 	certifications *CertificationsHandler
 	colors         *ColorsHandler
@@ -43,10 +44,13 @@ func NewHandler(db *database.Database) *Handler {
 	rolesRepo := repository.NewRolesRepository(db)
 	sessionsRepo := repository.NewSessionsRepository(db)
 	staffMembersRepo := repository.NewStaffMembersRepository(db)
+	usersRepo := repository.NewUsersRepository(db)
+	tenantsRepo := repository.NewTenantsRepository(db)
 
 	// Initialize services
 	activitiesService := service.NewActivitiesService(activitiesRepo)
 	areasService := service.NewAreasService(areasRepo)
+	authService := service.NewAuthService(usersRepo, tenantsRepo)
 	campersService := service.NewCampersService(campersRepo)
 	certificationsService := service.NewCertificationsService(certificationsRepo)
 	colorsService := service.NewColorsService(colorsRepo)
@@ -63,6 +67,7 @@ func NewHandler(db *database.Database) *Handler {
 	return &Handler{
 		activities:     NewActivitiesHandler(activitiesService),
 		areas:          NewAreasHandler(areasService),
+		auth:           NewAuthHandler(authService),
 		campers:        NewCampersHandler(campersService),
 		certifications: NewCertificationsHandler(certificationsService),
 		colors:         NewColorsHandler(colorsService),
@@ -362,4 +367,22 @@ func (h *Handler) UpdateStaffMemberById(w http.ResponseWriter, r *http.Request, 
 
 func (h *Handler) DeleteStaffMemberById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	h.staffMembers.DeleteStaffMemberById(w, r, campId, id)
+}
+
+// Authentication handlers - delegate to AuthHandler
+
+func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+	h.auth.Login(w, r)
+}
+
+func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
+	h.auth.Signup(w, r)
+}
+
+func (h *Handler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
+	h.auth.GetCurrentUser(w, r)
+}
+
+func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	h.auth.Logout(w, r)
 }

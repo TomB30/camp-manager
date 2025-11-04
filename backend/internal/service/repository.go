@@ -124,3 +124,23 @@ type StaffMembersRepository interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
+// UsersRepository defines the data access interface for users
+type UsersRepository interface {
+	FindByEmail(ctx context.Context, email string) (*api.User, error)
+	FindByID(ctx context.Context, id string) (*api.User, error)
+	Create(ctx context.Context, user *api.User) error
+	Update(ctx context.Context, id string, user *api.User) error
+	Delete(ctx context.Context, id string) error
+	GetUserWithAccessRules(ctx context.Context, id string) (*api.User, error)
+}
+
+// TenantsRepository defines the data access interface for tenants
+type TenantsRepository interface {
+	FindByID(ctx context.Context, id string) (*api.Tenant, error)
+	List(ctx context.Context) ([]api.Tenant, error)
+	Create(ctx context.Context, tenant *api.Tenant) error
+	Update(ctx context.Context, id string, tenant *api.Tenant) error
+	Delete(ctx context.Context, id string) error
+	Exists(ctx context.Context, id string) (bool, error)
+}
+
