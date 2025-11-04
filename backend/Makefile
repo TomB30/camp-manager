@@ -1,4 +1,4 @@
-.PHONY: help run build docker-build docker-up docker-down docker-logs test lint clean tidy generate-client install-tools
+.PHONY: help run build docker-build docker-up docker-down docker-logs test lint clean tidy generate-client install-tools migrate-up migrate-down migrate-seed migrate-reset
 
 # Default target
 help:
@@ -9,6 +9,10 @@ help:
 	@echo "  docker-up       - Start PostgreSQL container"
 	@echo "  docker-down     - Stop PostgreSQL container"
 	@echo "  docker-logs     - View PostgreSQL logs"
+	@echo "  migrate-up      - Run database migrations"
+	@echo "  migrate-down    - Drop all database tables"
+	@echo "  migrate-seed    - Seed database with demo data"
+	@echo "  migrate-reset   - Reset database (drop, migrate, seed)"
 	@echo "  test            - Run tests"
 	@echo "  lint            - Run linters"
 	@echo "  clean           - Remove build artifacts"
@@ -25,6 +29,11 @@ run:
 build:
 	@echo "Building binary..."
 	go build -o bin/api cmd/api/main.go
+
+# Build the migrate binary
+build-migrate:
+	@echo "Building migrate binary..."
+	go build -o bin/migrate cmd/migrate/main.go
 
 # Build the binary using Docker (avoids local Go version issues)
 docker-build:
@@ -51,6 +60,26 @@ docker-down:
 # View PostgreSQL logs
 docker-logs:
 	docker-compose logs -f postgres
+
+# Run database migrations
+migrate-up:
+	@echo "Running database migrations..."
+	@go run cmd/migrate/main.go -action=up
+
+# Drop all database tables (DESTRUCTIVE!)
+migrate-down:
+	@echo "WARNING: This will drop all database tables!"
+	@go run cmd/migrate/main.go -action=down
+
+# Seed database with demo data
+migrate-seed:
+	@echo "Seeding database with demo data..."
+	@go run cmd/migrate/main.go -action=seed
+
+# Reset database (drop, migrate, seed)
+migrate-reset:
+	@echo "Resetting database..."
+	@go run cmd/migrate/main.go -action=reset
 
 # Run tests
 test:

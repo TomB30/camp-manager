@@ -56,6 +56,12 @@ func main() {
 		zap.String("database", cfg.Database.Name),
 	)
 
+	// Run database migrations
+	if err := db.RunMigrations(); err != nil {
+		log.Fatal("Failed to run database migrations", zap.Error(err))
+	}
+	log.Info("Database migrations completed successfully")
+
 	// Initialize handlers
 	healthHandler := handler.NewHealthHandler(db)
 
