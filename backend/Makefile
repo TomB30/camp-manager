@@ -1,10 +1,11 @@
-.PHONY: help run build docker-up docker-down docker-logs test lint clean tidy generate-client install-tools
+.PHONY: help run build docker-build docker-up docker-down docker-logs test lint clean tidy generate-client install-tools
 
 # Default target
 help:
 	@echo "Available targets:"
 	@echo "  run             - Run the server"
 	@echo "  build           - Build the binary"
+	@echo "  docker-build    - Build the binary using Docker"
 	@echo "  docker-up       - Start PostgreSQL container"
 	@echo "  docker-down     - Stop PostgreSQL container"
 	@echo "  docker-logs     - View PostgreSQL logs"
@@ -24,6 +25,16 @@ run:
 build:
 	@echo "Building binary..."
 	go build -o bin/api cmd/api/main.go
+
+# Build the binary using Docker (avoids local Go version issues)
+docker-build:
+	@echo "Building binary with Docker..."
+	@docker build --target builder -t camp-manager-backend-builder .
+	@docker create --name camp-manager-temp camp-manager-backend-builder
+	@mkdir -p bin
+	@docker cp camp-manager-temp:/build/bin/api bin/api
+	@docker rm camp-manager-temp
+	@echo "✓ Binary built successfully in bin/api"
 
 # Start PostgreSQL with Docker Compose
 docker-up:
