@@ -11,29 +11,29 @@ export function usePermissions() {
   const hasPermission = (
     action: "create" | "read" | "update" | "delete",
     scopeType: ScopeType,
-    scopeId?: string
+    scopeId?: string,
   ): boolean => {
     return authStore.hasPermission(action, scopeType, scopeId);
   };
 
-  const canCreate = (entity: string, scopeId?: string): boolean => {
+  const canCreate = (_: string, scopeId?: string): boolean => {
     // For now, determine scope type from entity
     // In the future, this could be more sophisticated
     const scopeType: ScopeType = "CAMP"; // Most entities are camp-scoped
     return hasPermission("create", scopeType, scopeId);
   };
 
-  const canEdit = (entity: string, id: string): boolean => {
+  const canEdit = (_: string, id: string): boolean => {
     const scopeType: ScopeType = "CAMP";
     return hasPermission("update", scopeType, id);
   };
 
-  const canDelete = (entity: string, id: string): boolean => {
+  const canDelete = (_: string, id: string): boolean => {
     const scopeType: ScopeType = "CAMP";
     return hasPermission("delete", scopeType, id);
   };
 
-  const canView = (entity: string, id?: string): boolean => {
+  const canView = (_: string, id?: string): boolean => {
     const scopeType: ScopeType = "CAMP";
     return hasPermission("read", scopeType, id);
   };
@@ -46,4 +46,3 @@ export function usePermissions() {
     canView,
   };
 }
-

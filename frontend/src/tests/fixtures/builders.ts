@@ -170,8 +170,8 @@ export const buildStaffWithCertifications = (
   buildStaffMember({
     meta: {
       id: generateTestId("staff"),
-    tenantId: "00000000-0000-0000-0000-000000000001",
-    campId: "00000000-0000-0000-0000-000000000002",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Test Staff",
       description: "A test staff member",
       createdAt: new Date().toISOString(),
@@ -193,8 +193,8 @@ export const buildRecurringEvent = (overrides: Partial<Event> = {}): Event =>
   buildEvent({
     meta: {
       id: generateTestId("event"),
-    tenantId: "00000000-0000-0000-0000-000000000001",
-    campId: "00000000-0000-0000-0000-000000000002",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Test Event",
       description: "A test event",
       createdAt: new Date().toISOString(),
@@ -228,8 +228,8 @@ export const buildGroupWithHousing = (
   return buildGroup({
     meta: {
       id: generateTestId("group"),
-    tenantId: "00000000-0000-0000-0000-000000000001",
-    campId: "00000000-0000-0000-0000-000000000002",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Test Group",
       description: "A test group",
       createdAt: new Date().toISOString(),

@@ -12,12 +12,12 @@ import { mockData } from "@/data/mockData";
  */
 export function getCurrentTenantId(): string {
   const campStore = useCampStore();
-  
+
   // Try to get from camp store first
   if (campStore.camp?.meta.tenantId) {
     return campStore.camp.meta.tenantId;
   }
-  
+
   // Fallback to mock data tenant ID
   return mockData.camp.meta.tenantId;
 }
@@ -28,12 +28,12 @@ export function getCurrentTenantId(): string {
  */
 export function getCurrentCampId(): string {
   const campStore = useCampStore();
-  
+
   // Try to get from camp store first
   if (campStore.camp?.meta.id) {
     return campStore.camp.meta.id;
   }
-  
+
   // Fallback to mock data camp ID
   return mockData.camp.meta.id;
 }
@@ -47,4 +47,3 @@ export function getTenantContext(): { tenantId: string; campId: string } {
     campId: getCurrentCampId(),
   };
 }
-

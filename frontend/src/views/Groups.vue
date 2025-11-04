@@ -433,7 +433,9 @@ export default defineComponent({
     },
     async saveGroup(formData: typeof this.formData): Promise<void> {
       const toast = useToast();
-      const { getCurrentTenantId, getCurrentCampId } = await import('@/utils/tenantContext');
+      const { getCurrentTenantId, getCurrentCampId } = await import(
+        "@/utils/tenantContext"
+      );
 
       // Build the group object
       const groupData: Group = {

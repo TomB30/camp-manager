@@ -6,7 +6,13 @@
           <Icon name="Sun" :size="32" />
           <h1>Summer Camp Manager</h1>
         </div>
-        <p class="subtitle">{{ mode === 'login' ? 'Sign in to your account' : 'Create a new account' }}</p>
+        <p class="subtitle">
+          {{
+            mode === "login"
+              ? "Sign in to your account"
+              : "Create a new account"
+          }}
+        </p>
       </div>
 
       <form @submit.prevent="handleSubmit" class="login-form">
@@ -52,13 +58,28 @@
           :disabled="loading"
           class="submit-btn"
         >
-          {{ loading ? 'Please wait...' : mode === 'login' ? 'Sign In' : 'Sign Up' }}
+          {{
+            loading
+              ? "Please wait..."
+              : mode === "login"
+                ? "Sign In"
+                : "Sign Up"
+          }}
         </BaseButton>
 
         <div class="mode-toggle">
-          <span>{{ mode === 'login' ? "Don't have an account?" : 'Already have an account?' }}</span>
-          <button type="button" @click="toggleMode" class="toggle-btn" :disabled="loading">
-            {{ mode === 'login' ? 'Sign Up' : 'Sign In' }}
+          <span>{{
+            mode === "login"
+              ? "Don't have an account?"
+              : "Already have an account?"
+          }}</span>
+          <button
+            type="button"
+            @click="toggleMode"
+            class="toggle-btn"
+            :disabled="loading"
+          >
+            {{ mode === "login" ? "Sign Up" : "Sign In" }}
           </button>
         </div>
       </form>
@@ -151,23 +172,23 @@ export default defineComponent({
         if (mode.value === "login") {
           await authStore.login(email.value, password.value);
           toastStore.success("Successfully logged in!");
-          
+
           // Load data after successful login
           await loadDataAfterAuth();
-          
+
           router.push("/");
         } else {
           await authStore.signup(email.value, password.value, tenantId.value);
           toastStore.success("Account created successfully!");
-          
+
           // Load data after successful signup
           await loadDataAfterAuth();
-          
+
           router.push("/");
         }
       } catch (error) {
         toastStore.error(
-          error instanceof Error ? error.message : "Authentication failed"
+          error instanceof Error ? error.message : "Authentication failed",
         );
       } finally {
         loading.value = false;
@@ -193,7 +214,11 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-dark) 100%
+  );
   padding: 1rem;
 }
 
@@ -345,7 +370,7 @@ export default defineComponent({
   background: var(--background);
   padding: 0.25rem 0.5rem;
   border-radius: var(--radius-sm);
-  font-family: 'Monaco', 'Courier New', monospace;
+  font-family: "Monaco", "Courier New", monospace;
   font-size: 0.75rem;
   color: var(--text-primary);
   display: inline-block;
@@ -391,4 +416,3 @@ export default defineComponent({
   }
 }
 </style>
-

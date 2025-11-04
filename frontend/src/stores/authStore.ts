@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { User, LoginRequest, AccessRule } from "@/generated/api";
+import type { User } from "@/generated/api";
 
 const AUTH_STORAGE_KEY = "camp_manager_auth";
 const SELECTED_CAMP_KEY = "camp_manager_selected_camp";
@@ -114,7 +114,7 @@ export const useAuthStore = defineStore("auth", {
       // Check for direct camp access
       const campRule = state.currentUser.accessRules.find(
         (rule) =>
-          rule.scopeType === "CAMP" && rule.scopeId === state.selectedCampId
+          rule.scopeType === "CAMP" && rule.scopeId === state.selectedCampId,
       );
 
       if (campRule) {
@@ -123,7 +123,7 @@ export const useAuthStore = defineStore("auth", {
 
       // Check for tenant-level access
       const tenantRule = state.currentUser.accessRules.find(
-        (rule) => rule.scopeType === "TENANT"
+        (rule) => rule.scopeType === "TENANT",
       );
 
       if (tenantRule) {
@@ -132,7 +132,7 @@ export const useAuthStore = defineStore("auth", {
 
       // Check for system-level access
       const systemRule = state.currentUser.accessRules.find(
-        (rule) => rule.scopeType === "SYSTEM"
+        (rule) => rule.scopeType === "SYSTEM",
       );
 
       if (systemRule) {
@@ -145,14 +145,14 @@ export const useAuthStore = defineStore("auth", {
     hasSystemAccess(state): boolean {
       if (!state.currentUser) return false;
       return state.currentUser.accessRules.some(
-        (rule) => rule.scopeType === "SYSTEM"
+        (rule) => rule.scopeType === "SYSTEM",
       );
     },
 
     hasTenantAccess(state): boolean {
       if (!state.currentUser) return false;
       return state.currentUser.accessRules.some(
-        (rule) => rule.scopeType === "TENANT" || rule.scopeType === "SYSTEM"
+        (rule) => rule.scopeType === "TENANT" || rule.scopeType === "SYSTEM",
       );
     },
   },
@@ -161,7 +161,7 @@ export const useAuthStore = defineStore("auth", {
     async login(email: string, password: string): Promise<void> {
       // Mock login - validate against mock users
       const user = MOCK_USERS.find(
-        (u) => u.email === email && u.password === password
+        (u) => u.email === email && u.password === password,
       );
 
       if (!user) {
@@ -184,8 +184,8 @@ export const useAuthStore = defineStore("auth", {
 
     async signup(
       email: string,
-      password: string,
-      tenantId: string
+      _: string, // password is not used for now
+      tenantId: string,
     ): Promise<void> {
       // Mock signup - in real implementation this would call the API
       const existingUser = MOCK_USERS.find((u) => u.email === email);
@@ -224,7 +224,7 @@ export const useAuthStore = defineStore("auth", {
       if (stored) {
         try {
           this.currentUser = JSON.parse(stored);
-          
+
           // Restore selected camp
           const selectedCamp = localStorage.getItem(SELECTED_CAMP_KEY);
           if (selectedCamp) {
@@ -236,7 +236,7 @@ export const useAuthStore = defineStore("auth", {
               this.setSelectedCamp(campIds[0]);
             }
           }
-          
+
           return true;
         } catch (e) {
           // Invalid stored data, clear it
@@ -259,7 +259,7 @@ export const useAuthStore = defineStore("auth", {
     hasPermission(
       action: "create" | "read" | "update" | "delete",
       scopeType: "SYSTEM" | "TENANT" | "CAMP",
-      scopeId?: string
+      scopeId?: string,
     ): boolean {
       // Stub for future implementation
       if (!this.currentUser) return false;
@@ -278,7 +278,7 @@ export const useAuthStore = defineStore("auth", {
       // Check specific camp access
       if (scopeType === "CAMP" && scopeId) {
         const campRule = this.currentUser.accessRules.find(
-          (rule) => rule.scopeType === "CAMP" && rule.scopeId === scopeId
+          (rule) => rule.scopeType === "CAMP" && rule.scopeId === scopeId,
         );
 
         if (campRule) {
@@ -305,11 +305,10 @@ export const useAuthStore = defineStore("auth", {
 
       // Check for specific camp access
       const campRule = this.currentUser.accessRules.find(
-        (rule) => rule.scopeType === "CAMP" && rule.scopeId === campId
+        (rule) => rule.scopeType === "CAMP" && rule.scopeId === campId,
       );
 
       return campRule ? campRule.roleId : null;
     },
   },
 });
-

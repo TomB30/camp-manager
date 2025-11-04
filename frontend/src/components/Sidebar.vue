@@ -121,7 +121,7 @@ export default defineComponent({
       () => authStore.selectedCampId,
       (newValue) => {
         selectedCampId.value = newValue;
-      }
+      },
     );
 
     const showCampSelector = computed(() => {
