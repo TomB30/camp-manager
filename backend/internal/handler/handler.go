@@ -80,286 +80,286 @@ func NewHandler(db *database.Database) *Handler {
 
 // Activities handlers - delegate to ActivitiesHandler
 
-func (h *Handler) ListActivities(w http.ResponseWriter, r *http.Request, params api.ListActivitiesParams) {
-	h.activities.ListActivities(w, r, params)
+func (h *Handler) ListActivities(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListActivitiesParams) {
+	h.activities.ListActivities(w, r, campId, params)
 }
 
-func (h *Handler) CreateActivity(w http.ResponseWriter, r *http.Request) {
-	h.activities.CreateActivity(w, r)
+func (h *Handler) CreateActivity(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.activities.CreateActivity(w, r, campId)
 }
 
-func (h *Handler) GetActivityById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.activities.GetActivityById(w, r, id)
+func (h *Handler) GetActivityById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.activities.GetActivityById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateActivityById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.activities.UpdateActivityById(w, r, id)
+func (h *Handler) UpdateActivityById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.activities.UpdateActivityById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteActivityById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.activities.DeleteActivityById(w, r, id)
+func (h *Handler) DeleteActivityById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.activities.DeleteActivityById(w, r, campId, id)
 }
 
 // Areas handlers - delegate to AreasHandler
 
-func (h *Handler) ListAreas(w http.ResponseWriter, r *http.Request, params api.ListAreasParams) {
-	h.areas.ListAreas(w, r, params)
+func (h *Handler) ListAreas(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListAreasParams) {
+	h.areas.ListAreas(w, r, campId, params)
 }
 
-func (h *Handler) CreateArea(w http.ResponseWriter, r *http.Request) {
-	h.areas.CreateArea(w, r)
+func (h *Handler) CreateArea(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.areas.CreateArea(w, r, campId)
 }
 
-func (h *Handler) GetAreaById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.areas.GetAreaById(w, r, id)
+func (h *Handler) GetAreaById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.areas.GetAreaById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateAreaById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.areas.UpdateAreaById(w, r, id)
+func (h *Handler) UpdateAreaById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.areas.UpdateAreaById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteAreaById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.areas.DeleteAreaById(w, r, id)
+func (h *Handler) DeleteAreaById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.areas.DeleteAreaById(w, r, campId, id)
 }
 
 // Campers handlers - delegate to CampersHandler
 
-func (h *Handler) ListCampers(w http.ResponseWriter, r *http.Request, params api.ListCampersParams) {
-	h.campers.ListCampers(w, r, params)
+func (h *Handler) ListCampers(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListCampersParams) {
+	h.campers.ListCampers(w, r, campId, params)
 }
 
-func (h *Handler) CreateCamper(w http.ResponseWriter, r *http.Request) {
-	h.campers.CreateCamper(w, r)
+func (h *Handler) CreateCamper(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.campers.CreateCamper(w, r, campId)
 }
 
-func (h *Handler) GetCamperById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.campers.GetCamperById(w, r, id)
+func (h *Handler) GetCamperById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.campers.GetCamperById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateCamperById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.campers.UpdateCamperById(w, r, id)
+func (h *Handler) UpdateCamperById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.campers.UpdateCamperById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteCamperById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.campers.DeleteCamperById(w, r, id)
+func (h *Handler) DeleteCamperById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.campers.DeleteCamperById(w, r, campId, id)
 }
 
 // Certifications handlers - delegate to CertificationsHandler
 
-func (h *Handler) ListCertifications(w http.ResponseWriter, r *http.Request, params api.ListCertificationsParams) {
-	h.certifications.ListCertifications(w, r, params)
+func (h *Handler) ListCertifications(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListCertificationsParams) {
+	h.certifications.ListCertifications(w, r, campId, params)
 }
 
-func (h *Handler) CreateCertification(w http.ResponseWriter, r *http.Request) {
-	h.certifications.CreateCertification(w, r)
+func (h *Handler) CreateCertification(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.certifications.CreateCertification(w, r, campId)
 }
 
-func (h *Handler) GetCertificationById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.certifications.GetCertificationById(w, r, id)
+func (h *Handler) GetCertificationById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.certifications.GetCertificationById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateCertificationById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.certifications.UpdateCertificationById(w, r, id)
+func (h *Handler) UpdateCertificationById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.certifications.UpdateCertificationById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteCertificationById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.certifications.DeleteCertificationById(w, r, id)
+func (h *Handler) DeleteCertificationById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.certifications.DeleteCertificationById(w, r, campId, id)
 }
 
 // Colors handlers - delegate to ColorsHandler
 
-func (h *Handler) ListColors(w http.ResponseWriter, r *http.Request, params api.ListColorsParams) {
-	h.colors.ListColors(w, r, params)
+func (h *Handler) ListColors(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListColorsParams) {
+	h.colors.ListColors(w, r, campId, params)
 }
 
-func (h *Handler) CreateColor(w http.ResponseWriter, r *http.Request) {
-	h.colors.CreateColor(w, r)
+func (h *Handler) CreateColor(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.colors.CreateColor(w, r, campId)
 }
 
-func (h *Handler) GetColorById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.colors.GetColorById(w, r, id)
+func (h *Handler) GetColorById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.colors.GetColorById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateColorById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.colors.UpdateColorById(w, r, id)
+func (h *Handler) UpdateColorById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.colors.UpdateColorById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteColorById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.colors.DeleteColorById(w, r, id)
+func (h *Handler) DeleteColorById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.colors.DeleteColorById(w, r, campId, id)
 }
 
 // Events handlers - delegate to EventsHandler
 
-func (h *Handler) ListEvents(w http.ResponseWriter, r *http.Request, params api.ListEventsParams) {
-	h.events.ListEvents(w, r, params)
+func (h *Handler) ListEvents(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListEventsParams) {
+	h.events.ListEvents(w, r, campId, params)
 }
 
-func (h *Handler) CreateEvent(w http.ResponseWriter, r *http.Request) {
-	h.events.CreateEvent(w, r)
+func (h *Handler) CreateEvent(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.events.CreateEvent(w, r, campId)
 }
 
-func (h *Handler) GetEventById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.events.GetEventById(w, r, id)
+func (h *Handler) GetEventById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.events.GetEventById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateEventById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.events.UpdateEventById(w, r, id)
+func (h *Handler) UpdateEventById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.events.UpdateEventById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteEventById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.events.DeleteEventById(w, r, id)
+func (h *Handler) DeleteEventById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.events.DeleteEventById(w, r, campId, id)
 }
 
 // Groups handlers - delegate to GroupsHandler
 
-func (h *Handler) ListGroups(w http.ResponseWriter, r *http.Request, params api.ListGroupsParams) {
-	h.groups.ListGroups(w, r, params)
+func (h *Handler) ListGroups(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListGroupsParams) {
+	h.groups.ListGroups(w, r, campId, params)
 }
 
-func (h *Handler) CreateGroup(w http.ResponseWriter, r *http.Request) {
-	h.groups.CreateGroup(w, r)
+func (h *Handler) CreateGroup(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.groups.CreateGroup(w, r, campId)
 }
 
-func (h *Handler) GetGroupById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.groups.GetGroupById(w, r, id)
+func (h *Handler) GetGroupById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.groups.GetGroupById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateGroupById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.groups.UpdateGroupById(w, r, id)
+func (h *Handler) UpdateGroupById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.groups.UpdateGroupById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteGroupById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.groups.DeleteGroupById(w, r, id)
+func (h *Handler) DeleteGroupById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.groups.DeleteGroupById(w, r, campId, id)
 }
 
 // Housing Rooms handlers - delegate to HousingRoomsHandler
 
-func (h *Handler) ListHousingRooms(w http.ResponseWriter, r *http.Request, params api.ListHousingRoomsParams) {
-	h.housingRooms.ListHousingRooms(w, r, params)
+func (h *Handler) ListHousingRooms(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListHousingRoomsParams) {
+	h.housingRooms.ListHousingRooms(w, r, campId, params)
 }
 
-func (h *Handler) CreateHousingRoom(w http.ResponseWriter, r *http.Request) {
-	h.housingRooms.CreateHousingRoom(w, r)
+func (h *Handler) CreateHousingRoom(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.housingRooms.CreateHousingRoom(w, r, campId)
 }
 
-func (h *Handler) GetHousingRoomById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.housingRooms.GetHousingRoomById(w, r, id)
+func (h *Handler) GetHousingRoomById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.housingRooms.GetHousingRoomById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateHousingRoomById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.housingRooms.UpdateHousingRoomById(w, r, id)
+func (h *Handler) UpdateHousingRoomById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.housingRooms.UpdateHousingRoomById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteHousingRoomById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.housingRooms.DeleteHousingRoomById(w, r, id)
+func (h *Handler) DeleteHousingRoomById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.housingRooms.DeleteHousingRoomById(w, r, campId, id)
 }
 
 // Locations handlers - delegate to LocationsHandler
 
-func (h *Handler) ListLocations(w http.ResponseWriter, r *http.Request, params api.ListLocationsParams) {
-	h.locations.ListLocations(w, r, params)
+func (h *Handler) ListLocations(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListLocationsParams) {
+	h.locations.ListLocations(w, r, campId, params)
 }
 
-func (h *Handler) CreateLocation(w http.ResponseWriter, r *http.Request) {
-	h.locations.CreateLocation(w, r)
+func (h *Handler) CreateLocation(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.locations.CreateLocation(w, r, campId)
 }
 
-func (h *Handler) GetLocationById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.locations.GetLocationById(w, r, id)
+func (h *Handler) GetLocationById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.locations.GetLocationById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateLocationById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.locations.UpdateLocationById(w, r, id)
+func (h *Handler) UpdateLocationById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.locations.UpdateLocationById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteLocationById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.locations.DeleteLocationById(w, r, id)
+func (h *Handler) DeleteLocationById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.locations.DeleteLocationById(w, r, campId, id)
 }
 
 // Programs handlers - delegate to ProgramsHandler
 
-func (h *Handler) ListPrograms(w http.ResponseWriter, r *http.Request, params api.ListProgramsParams) {
-	h.programs.ListPrograms(w, r, params)
+func (h *Handler) ListPrograms(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListProgramsParams) {
+	h.programs.ListPrograms(w, r, campId, params)
 }
 
-func (h *Handler) CreateProgram(w http.ResponseWriter, r *http.Request) {
-	h.programs.CreateProgram(w, r)
+func (h *Handler) CreateProgram(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.programs.CreateProgram(w, r, campId)
 }
 
-func (h *Handler) GetProgramById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.programs.GetProgramById(w, r, id)
+func (h *Handler) GetProgramById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.programs.GetProgramById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateProgramById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.programs.UpdateProgramById(w, r, id)
+func (h *Handler) UpdateProgramById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.programs.UpdateProgramById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteProgramById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.programs.DeleteProgramById(w, r, id)
+func (h *Handler) DeleteProgramById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.programs.DeleteProgramById(w, r, campId, id)
 }
 
 // Roles handlers - delegate to RolesHandler
 
-func (h *Handler) ListRoles(w http.ResponseWriter, r *http.Request, params api.ListRolesParams) {
-	h.roles.ListRoles(w, r, params)
+func (h *Handler) ListRoles(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListRolesParams) {
+	h.roles.ListRoles(w, r, campId, params)
 }
 
-func (h *Handler) CreateRole(w http.ResponseWriter, r *http.Request) {
-	h.roles.CreateRole(w, r)
+func (h *Handler) CreateRole(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.roles.CreateRole(w, r, campId)
 }
 
-func (h *Handler) GetRoleById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.roles.GetRoleById(w, r, id)
+func (h *Handler) GetRoleById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.roles.GetRoleById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateRoleById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.roles.UpdateRoleById(w, r, id)
+func (h *Handler) UpdateRoleById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.roles.UpdateRoleById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteRoleById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.roles.DeleteRoleById(w, r, id)
+func (h *Handler) DeleteRoleById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.roles.DeleteRoleById(w, r, campId, id)
 }
 
 // Sessions handlers - delegate to SessionsHandler
 
-func (h *Handler) ListSessions(w http.ResponseWriter, r *http.Request, params api.ListSessionsParams) {
-	h.sessions.ListSessions(w, r, params)
+func (h *Handler) ListSessions(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListSessionsParams) {
+	h.sessions.ListSessions(w, r, campId, params)
 }
 
-func (h *Handler) CreateSession(w http.ResponseWriter, r *http.Request) {
-	h.sessions.CreateSession(w, r)
+func (h *Handler) CreateSession(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.sessions.CreateSession(w, r, campId)
 }
 
-func (h *Handler) GetSessionById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.sessions.GetSessionById(w, r, id)
+func (h *Handler) GetSessionById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.sessions.GetSessionById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateSessionById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.sessions.UpdateSessionById(w, r, id)
+func (h *Handler) UpdateSessionById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.sessions.UpdateSessionById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteSessionById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.sessions.DeleteSessionById(w, r, id)
+func (h *Handler) DeleteSessionById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.sessions.DeleteSessionById(w, r, campId, id)
 }
 
 // Staff Members handlers - delegate to StaffMembersHandler
 
-func (h *Handler) ListStaffMembers(w http.ResponseWriter, r *http.Request, params api.ListStaffMembersParams) {
-	h.staffMembers.ListStaffMembers(w, r, params)
+func (h *Handler) ListStaffMembers(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListStaffMembersParams) {
+	h.staffMembers.ListStaffMembers(w, r, campId, params)
 }
 
-func (h *Handler) CreateStaffMember(w http.ResponseWriter, r *http.Request) {
-	h.staffMembers.CreateStaffMember(w, r)
+func (h *Handler) CreateStaffMember(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.staffMembers.CreateStaffMember(w, r, campId)
 }
 
-func (h *Handler) GetStaffMemberById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.staffMembers.GetStaffMemberById(w, r, id)
+func (h *Handler) GetStaffMemberById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.staffMembers.GetStaffMemberById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateStaffMemberById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.staffMembers.UpdateStaffMemberById(w, r, id)
+func (h *Handler) UpdateStaffMemberById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.staffMembers.UpdateStaffMemberById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteStaffMemberById(w http.ResponseWriter, r *http.Request, id api.Id) {
-	h.staffMembers.DeleteStaffMemberById(w, r, id)
+func (h *Handler) DeleteStaffMemberById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.staffMembers.DeleteStaffMemberById(w, r, campId, id)
 }

@@ -19,28 +19,33 @@ func NewAreasHandler(service service.AreasService) *AreasHandler {
 	}
 }
 
-// ListAreas handles GET /areas
-func (h *AreasHandler) ListAreas(w http.ResponseWriter, r *http.Request, params api.ListAreasParams) {
+// ListAreas handles GET /api/v1/camps/{camp_id}/areas
+func (h *AreasHandler) ListAreas(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListAreasParams) {
 	// TODO: Implement listing areas with pagination and search
+	// Use campId to filter areas for the specific camp
 }
 
-// CreateArea handles POST /areas
-func (h *AreasHandler) CreateArea(w http.ResponseWriter, r *http.Request) {
+// CreateArea handles POST /api/v1/camps/{camp_id}/areas
+func (h *AreasHandler) CreateArea(w http.ResponseWriter, r *http.Request, campId api.CampId) {
 	// TODO: Implement area creation
+	// Use campId to associate area with the specific camp
 }
 
-// GetAreaById handles GET /areas/{id}
-func (h *AreasHandler) GetAreaById(w http.ResponseWriter, r *http.Request, id api.Id) {
+// GetAreaById handles GET /api/v1/camps/{camp_id}/areas/{id}
+func (h *AreasHandler) GetAreaById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	// TODO: Implement get area by ID
+	// Use campId to ensure area belongs to the specified camp
 }
 
-// UpdateAreaById handles PUT /areas/{id}
-func (h *AreasHandler) UpdateAreaById(w http.ResponseWriter, r *http.Request, id api.Id) {
+// UpdateAreaById handles PUT /api/v1/camps/{camp_id}/areas/{id}
+func (h *AreasHandler) UpdateAreaById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	// TODO: Implement area update
+	// Use campId to ensure area belongs to the specified camp
 }
 
-// DeleteAreaById handles DELETE /areas/{id}
-func (h *AreasHandler) DeleteAreaById(w http.ResponseWriter, r *http.Request, id api.Id) {
+// DeleteAreaById handles DELETE /api/v1/camps/{camp_id}/areas/{id}
+func (h *AreasHandler) DeleteAreaById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	// TODO: Implement area deletion
+	// Use campId to ensure area belongs to the specified camp
 }
 

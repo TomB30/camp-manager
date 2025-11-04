@@ -19,28 +19,33 @@ func NewProgramsHandler(service service.ProgramsService) *ProgramsHandler {
 	}
 }
 
-// ListPrograms handles GET /programs
-func (h *ProgramsHandler) ListPrograms(w http.ResponseWriter, r *http.Request, params api.ListProgramsParams) {
+// ListPrograms handles GET /api/v1/camps/{camp_id}/programs
+func (h *ProgramsHandler) ListPrograms(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListProgramsParams) {
 	// TODO: Implement listing programs with pagination and search
+	// Use campId to filter programs for the specific camp
 }
 
-// CreateProgram handles POST /programs
-func (h *ProgramsHandler) CreateProgram(w http.ResponseWriter, r *http.Request) {
+// CreateProgram handles POST /api/v1/camps/{camp_id}/programs
+func (h *ProgramsHandler) CreateProgram(w http.ResponseWriter, r *http.Request, campId api.CampId) {
 	// TODO: Implement program creation
+	// Use campId to associate program with the specific camp
 }
 
-// GetProgramById handles GET /programs/{id}
-func (h *ProgramsHandler) GetProgramById(w http.ResponseWriter, r *http.Request, id api.Id) {
+// GetProgramById handles GET /api/v1/camps/{camp_id}/programs/{id}
+func (h *ProgramsHandler) GetProgramById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	// TODO: Implement get program by ID
+	// Use campId to ensure program belongs to the specified camp
 }
 
-// UpdateProgramById handles PUT /programs/{id}
-func (h *ProgramsHandler) UpdateProgramById(w http.ResponseWriter, r *http.Request, id api.Id) {
+// UpdateProgramById handles PUT /api/v1/camps/{camp_id}/programs/{id}
+func (h *ProgramsHandler) UpdateProgramById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	// TODO: Implement program update
+	// Use campId to ensure program belongs to the specified camp
 }
 
-// DeleteProgramById handles DELETE /programs/{id}
-func (h *ProgramsHandler) DeleteProgramById(w http.ResponseWriter, r *http.Request, id api.Id) {
+// DeleteProgramById handles DELETE /api/v1/camps/{camp_id}/programs/{id}
+func (h *ProgramsHandler) DeleteProgramById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	// TODO: Implement program deletion
+	// Use campId to ensure program belongs to the specified camp
 }
 

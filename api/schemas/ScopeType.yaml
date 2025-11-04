@@ -1,7 +1,6 @@
 type: string
 enum:
-  - SYSTEM
-  - TENANT
-  - CAMP
+  - system
+  - tenant
+  - camp
 description: The scope level for an access rule
-

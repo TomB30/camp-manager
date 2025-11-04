@@ -2,6 +2,7 @@ get:
   summary: List all housing rooms
   operationId: listHousingRooms
   parameters:
+    - $ref: "../parameters/camp_id.yaml"
     - $ref: "../parameters/limit.yaml"
     - $ref: "../parameters/offset.yaml"
     - $ref: "../parameters/search.yaml"
@@ -15,6 +16,8 @@ get:
 post:
   summary: Create a new housing room
   operationId: createHousingRoom
+  parameters:
+    - $ref: "../parameters/camp_id.yaml"
   requestBody:
     required: true
     content:

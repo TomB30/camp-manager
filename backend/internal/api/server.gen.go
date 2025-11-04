@@ -13,233 +13,233 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// List all activities
-	// (GET /activities)
-	ListActivities(w http.ResponseWriter, r *http.Request, params ListActivitiesParams)
-	// Create a new activity
-	// (POST /activities)
-	CreateActivity(w http.ResponseWriter, r *http.Request)
-	// Delete activity by ID
-	// (DELETE /activities/{id})
-	DeleteActivityById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get activity by ID
-	// (GET /activities/{id})
-	GetActivityById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update activity by ID
-	// (PUT /activities/{id})
-	UpdateActivityById(w http.ResponseWriter, r *http.Request, id Id)
-	// List all areas
-	// (GET /areas)
-	ListAreas(w http.ResponseWriter, r *http.Request, params ListAreasParams)
-	// Create a new area
-	// (POST /areas)
-	CreateArea(w http.ResponseWriter, r *http.Request)
-	// Delete area
-	// (DELETE /areas/{id})
-	DeleteAreaById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get area by ID
-	// (GET /areas/{id})
-	GetAreaById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update area
-	// (PUT /areas/{id})
-	UpdateAreaById(w http.ResponseWriter, r *http.Request, id Id)
 	// Authenticate user
-	// (POST /auth/login)
+	// (POST /api/v1/auth/login)
 	Login(w http.ResponseWriter, r *http.Request)
 	// Logout current user
-	// (POST /auth/logout)
+	// (POST /api/v1/auth/logout)
 	Logout(w http.ResponseWriter, r *http.Request)
 	// Get current authenticated user
-	// (GET /auth/me)
+	// (GET /api/v1/auth/me)
 	GetCurrentUser(w http.ResponseWriter, r *http.Request)
 	// Register a new user
-	// (POST /auth/signup)
+	// (POST /api/v1/auth/signup)
 	Signup(w http.ResponseWriter, r *http.Request)
-	// List all campers
-	// (GET /campers)
-	ListCampers(w http.ResponseWriter, r *http.Request, params ListCampersParams)
-	// Create a new camper
-	// (POST /campers)
-	CreateCamper(w http.ResponseWriter, r *http.Request)
-	// Delete camper
-	// (DELETE /campers/{id})
-	DeleteCamperById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get camper by ID
-	// (GET /campers/{id})
-	GetCamperById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update camper
-	// (PUT /campers/{id})
-	UpdateCamperById(w http.ResponseWriter, r *http.Request, id Id)
 	// Get all camps
-	// (GET /camps)
+	// (GET /api/v1/camps)
 	GetCamps(w http.ResponseWriter, r *http.Request)
 	// Create a new camp
-	// (POST /camps)
+	// (POST /api/v1/camps)
 	CreateCamp(w http.ResponseWriter, r *http.Request)
+	// List all activities
+	// (GET /api/v1/camps/{camp_id}/activities)
+	ListActivities(w http.ResponseWriter, r *http.Request, campId CampId, params ListActivitiesParams)
+	// Create a new activity
+	// (POST /api/v1/camps/{camp_id}/activities)
+	CreateActivity(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete activity by ID
+	// (DELETE /api/v1/camps/{camp_id}/activities/{id})
+	DeleteActivityById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get activity by ID
+	// (GET /api/v1/camps/{camp_id}/activities/{id})
+	GetActivityById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update activity by ID
+	// (PUT /api/v1/camps/{camp_id}/activities/{id})
+	UpdateActivityById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all areas
+	// (GET /api/v1/camps/{camp_id}/areas)
+	ListAreas(w http.ResponseWriter, r *http.Request, campId CampId, params ListAreasParams)
+	// Create a new area
+	// (POST /api/v1/camps/{camp_id}/areas)
+	CreateArea(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete area
+	// (DELETE /api/v1/camps/{camp_id}/areas/{id})
+	DeleteAreaById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get area by ID
+	// (GET /api/v1/camps/{camp_id}/areas/{id})
+	GetAreaById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update area
+	// (PUT /api/v1/camps/{camp_id}/areas/{id})
+	UpdateAreaById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all campers
+	// (GET /api/v1/camps/{camp_id}/campers)
+	ListCampers(w http.ResponseWriter, r *http.Request, campId CampId, params ListCampersParams)
+	// Create a new camper
+	// (POST /api/v1/camps/{camp_id}/campers)
+	CreateCamper(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete camper
+	// (DELETE /api/v1/camps/{camp_id}/campers/{id})
+	DeleteCamperById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get camper by ID
+	// (GET /api/v1/camps/{camp_id}/campers/{id})
+	GetCamperById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update camper
+	// (PUT /api/v1/camps/{camp_id}/campers/{id})
+	UpdateCamperById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all certifications
+	// (GET /api/v1/camps/{camp_id}/certifications)
+	ListCertifications(w http.ResponseWriter, r *http.Request, campId CampId, params ListCertificationsParams)
+	// Create a new certification
+	// (POST /api/v1/camps/{camp_id}/certifications)
+	CreateCertification(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete certification by ID
+	// (DELETE /api/v1/camps/{camp_id}/certifications/{id})
+	DeleteCertificationById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get certification by ID
+	// (GET /api/v1/camps/{camp_id}/certifications/{id})
+	GetCertificationById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update certification by ID
+	// (PUT /api/v1/camps/{camp_id}/certifications/{id})
+	UpdateCertificationById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all colors
+	// (GET /api/v1/camps/{camp_id}/colors)
+	ListColors(w http.ResponseWriter, r *http.Request, campId CampId, params ListColorsParams)
+	// Create a new color
+	// (POST /api/v1/camps/{camp_id}/colors)
+	CreateColor(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete color by ID
+	// (DELETE /api/v1/camps/{camp_id}/colors/{id})
+	DeleteColorById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get color by ID
+	// (GET /api/v1/camps/{camp_id}/colors/{id})
+	GetColorById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update color by ID
+	// (PUT /api/v1/camps/{camp_id}/colors/{id})
+	UpdateColorById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all events
+	// (GET /api/v1/camps/{camp_id}/events)
+	ListEvents(w http.ResponseWriter, r *http.Request, campId CampId, params ListEventsParams)
+	// Create a new event
+	// (POST /api/v1/camps/{camp_id}/events)
+	CreateEvent(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete event
+	// (DELETE /api/v1/camps/{camp_id}/events/{id})
+	DeleteEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get event by ID
+	// (GET /api/v1/camps/{camp_id}/events/{id})
+	GetEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update event
+	// (PUT /api/v1/camps/{camp_id}/events/{id})
+	UpdateEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all groups
+	// (GET /api/v1/camps/{camp_id}/groups)
+	ListGroups(w http.ResponseWriter, r *http.Request, campId CampId, params ListGroupsParams)
+	// Create a new group
+	// (POST /api/v1/camps/{camp_id}/groups)
+	CreateGroup(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete group by ID
+	// (DELETE /api/v1/camps/{camp_id}/groups/{id})
+	DeleteGroupById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get group by ID
+	// (GET /api/v1/camps/{camp_id}/groups/{id})
+	GetGroupById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update group by ID
+	// (PUT /api/v1/camps/{camp_id}/groups/{id})
+	UpdateGroupById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all housing rooms
+	// (GET /api/v1/camps/{camp_id}/housing-rooms)
+	ListHousingRooms(w http.ResponseWriter, r *http.Request, campId CampId, params ListHousingRoomsParams)
+	// Create a new housing room
+	// (POST /api/v1/camps/{camp_id}/housing-rooms)
+	CreateHousingRoom(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete housing room by ID
+	// (DELETE /api/v1/camps/{camp_id}/housing-rooms/{id})
+	DeleteHousingRoomById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get housing room by ID
+	// (GET /api/v1/camps/{camp_id}/housing-rooms/{id})
+	GetHousingRoomById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update housing room
+	// (PUT /api/v1/camps/{camp_id}/housing-rooms/{id})
+	UpdateHousingRoomById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all locations
+	// (GET /api/v1/camps/{camp_id}/locations)
+	ListLocations(w http.ResponseWriter, r *http.Request, campId CampId, params ListLocationsParams)
+	// Create a new location
+	// (POST /api/v1/camps/{camp_id}/locations)
+	CreateLocation(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete location by ID
+	// (DELETE /api/v1/camps/{camp_id}/locations/{id})
+	DeleteLocationById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get location by ID
+	// (GET /api/v1/camps/{camp_id}/locations/{id})
+	GetLocationById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update location by ID
+	// (PUT /api/v1/camps/{camp_id}/locations/{id})
+	UpdateLocationById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all programs
+	// (GET /api/v1/camps/{camp_id}/programs)
+	ListPrograms(w http.ResponseWriter, r *http.Request, campId CampId, params ListProgramsParams)
+	// Create a new program
+	// (POST /api/v1/camps/{camp_id}/programs)
+	CreateProgram(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete program by ID
+	// (DELETE /api/v1/camps/{camp_id}/programs/{id})
+	DeleteProgramById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get program by ID
+	// (GET /api/v1/camps/{camp_id}/programs/{id})
+	GetProgramById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update program by ID
+	// (PUT /api/v1/camps/{camp_id}/programs/{id})
+	UpdateProgramById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all roles
+	// (GET /api/v1/camps/{camp_id}/roles)
+	ListRoles(w http.ResponseWriter, r *http.Request, campId CampId, params ListRolesParams)
+	// Create a new role
+	// (POST /api/v1/camps/{camp_id}/roles)
+	CreateRole(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete role by ID
+	// (DELETE /api/v1/camps/{camp_id}/roles/{id})
+	DeleteRoleById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get role by ID
+	// (GET /api/v1/camps/{camp_id}/roles/{id})
+	GetRoleById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update role by ID
+	// (PUT /api/v1/camps/{camp_id}/roles/{id})
+	UpdateRoleById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all sessions
+	// (GET /api/v1/camps/{camp_id}/sessions)
+	ListSessions(w http.ResponseWriter, r *http.Request, campId CampId, params ListSessionsParams)
+	// Create a new session
+	// (POST /api/v1/camps/{camp_id}/sessions)
+	CreateSession(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete session by ID
+	// (DELETE /api/v1/camps/{camp_id}/sessions/{id})
+	DeleteSessionById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get session by ID
+	// (GET /api/v1/camps/{camp_id}/sessions/{id})
+	GetSessionById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update session by ID
+	// (PUT /api/v1/camps/{camp_id}/sessions/{id})
+	UpdateSessionById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all staff members
+	// (GET /api/v1/camps/{camp_id}/staff-members)
+	ListStaffMembers(w http.ResponseWriter, r *http.Request, campId CampId, params ListStaffMembersParams)
+	// Create a new staff member
+	// (POST /api/v1/camps/{camp_id}/staff-members)
+	CreateStaffMember(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete staff member by ID
+	// (DELETE /api/v1/camps/{camp_id}/staff-members/{id})
+	DeleteStaffMemberById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get staff member by ID
+	// (GET /api/v1/camps/{camp_id}/staff-members/{id})
+	GetStaffMemberById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update staff member by ID
+	// (PUT /api/v1/camps/{camp_id}/staff-members/{id})
+	UpdateStaffMemberById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
 	// Delete camp by ID
-	// (DELETE /camps/{id})
+	// (DELETE /api/v1/camps/{id})
 	DeleteCampById(w http.ResponseWriter, r *http.Request, id Id)
 	// Get camp by ID
-	// (GET /camps/{id})
+	// (GET /api/v1/camps/{id})
 	GetCampById(w http.ResponseWriter, r *http.Request, id Id)
 	// Update camp by ID
-	// (PUT /camps/{id})
+	// (PUT /api/v1/camps/{id})
 	UpdateCampById(w http.ResponseWriter, r *http.Request, id Id)
-	// List all certifications
-	// (GET /certifications)
-	ListCertifications(w http.ResponseWriter, r *http.Request, params ListCertificationsParams)
-	// Create a new certification
-	// (POST /certifications)
-	CreateCertification(w http.ResponseWriter, r *http.Request)
-	// Delete certification by ID
-	// (DELETE /certifications/{id})
-	DeleteCertificationById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get certification by ID
-	// (GET /certifications/{id})
-	GetCertificationById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update certification by ID
-	// (PUT /certifications/{id})
-	UpdateCertificationById(w http.ResponseWriter, r *http.Request, id Id)
-	// List all colors
-	// (GET /colors)
-	ListColors(w http.ResponseWriter, r *http.Request, params ListColorsParams)
-	// Create a new color
-	// (POST /colors)
-	CreateColor(w http.ResponseWriter, r *http.Request)
-	// Delete color by ID
-	// (DELETE /colors/{id})
-	DeleteColorById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get color by ID
-	// (GET /colors/{id})
-	GetColorById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update color by ID
-	// (PUT /colors/{id})
-	UpdateColorById(w http.ResponseWriter, r *http.Request, id Id)
-	// List all events
-	// (GET /events)
-	ListEvents(w http.ResponseWriter, r *http.Request, params ListEventsParams)
-	// Create a new event
-	// (POST /events)
-	CreateEvent(w http.ResponseWriter, r *http.Request)
-	// Delete event
-	// (DELETE /events/{id})
-	DeleteEventById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get event by ID
-	// (GET /events/{id})
-	GetEventById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update event
-	// (PUT /events/{id})
-	UpdateEventById(w http.ResponseWriter, r *http.Request, id Id)
-	// List all groups
-	// (GET /groups)
-	ListGroups(w http.ResponseWriter, r *http.Request, params ListGroupsParams)
-	// Create a new group
-	// (POST /groups)
-	CreateGroup(w http.ResponseWriter, r *http.Request)
-	// Delete group by ID
-	// (DELETE /groups/{id})
-	DeleteGroupById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get group by ID
-	// (GET /groups/{id})
-	GetGroupById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update group by ID
-	// (PUT /groups/{id})
-	UpdateGroupById(w http.ResponseWriter, r *http.Request, id Id)
-	// List all housing rooms
-	// (GET /housing-rooms)
-	ListHousingRooms(w http.ResponseWriter, r *http.Request, params ListHousingRoomsParams)
-	// Create a new housing room
-	// (POST /housing-rooms)
-	CreateHousingRoom(w http.ResponseWriter, r *http.Request)
-	// Delete housing room by ID
-	// (DELETE /housing-rooms/{id})
-	DeleteHousingRoomById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get housing room by ID
-	// (GET /housing-rooms/{id})
-	GetHousingRoomById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update housing room
-	// (PUT /housing-rooms/{id})
-	UpdateHousingRoomById(w http.ResponseWriter, r *http.Request, id Id)
-	// List all locations
-	// (GET /locations)
-	ListLocations(w http.ResponseWriter, r *http.Request, params ListLocationsParams)
-	// Create a new location
-	// (POST /locations)
-	CreateLocation(w http.ResponseWriter, r *http.Request)
-	// Delete location by ID
-	// (DELETE /locations/{id})
-	DeleteLocationById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get location by ID
-	// (GET /locations/{id})
-	GetLocationById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update location by ID
-	// (PUT /locations/{id})
-	UpdateLocationById(w http.ResponseWriter, r *http.Request, id Id)
-	// List all programs
-	// (GET /programs)
-	ListPrograms(w http.ResponseWriter, r *http.Request, params ListProgramsParams)
-	// Create a new program
-	// (POST /programs)
-	CreateProgram(w http.ResponseWriter, r *http.Request)
-	// Delete program by ID
-	// (DELETE /programs/{id})
-	DeleteProgramById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get program by ID
-	// (GET /programs/{id})
-	GetProgramById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update program by ID
-	// (PUT /programs/{id})
-	UpdateProgramById(w http.ResponseWriter, r *http.Request, id Id)
-	// List all roles
-	// (GET /roles)
-	ListRoles(w http.ResponseWriter, r *http.Request, params ListRolesParams)
-	// Create a new role
-	// (POST /roles)
-	CreateRole(w http.ResponseWriter, r *http.Request)
-	// Delete role by ID
-	// (DELETE /roles/{id})
-	DeleteRoleById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get role by ID
-	// (GET /roles/{id})
-	GetRoleById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update role by ID
-	// (PUT /roles/{id})
-	UpdateRoleById(w http.ResponseWriter, r *http.Request, id Id)
-	// List all sessions
-	// (GET /sessions)
-	ListSessions(w http.ResponseWriter, r *http.Request, params ListSessionsParams)
-	// Create a new session
-	// (POST /sessions)
-	CreateSession(w http.ResponseWriter, r *http.Request)
-	// Delete session by ID
-	// (DELETE /sessions/{id})
-	DeleteSessionById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get session by ID
-	// (GET /sessions/{id})
-	GetSessionById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update session by ID
-	// (PUT /sessions/{id})
-	UpdateSessionById(w http.ResponseWriter, r *http.Request, id Id)
-	// List all staff members
-	// (GET /staff-members)
-	ListStaffMembers(w http.ResponseWriter, r *http.Request, params ListStaffMembersParams)
-	// Create a new staff member
-	// (POST /staff-members)
-	CreateStaffMember(w http.ResponseWriter, r *http.Request)
-	// Delete staff member by ID
-	// (DELETE /staff-members/{id})
-	DeleteStaffMemberById(w http.ResponseWriter, r *http.Request, id Id)
-	// Get staff member by ID
-	// (GET /staff-members/{id})
-	GetStaffMemberById(w http.ResponseWriter, r *http.Request, id Id)
-	// Update staff member by ID
-	// (PUT /staff-members/{id})
-	UpdateStaffMemberById(w http.ResponseWriter, r *http.Request, id Id)
 	// Get all tenants
-	// (GET /tenants)
+	// (GET /api/v1/tenants)
 	GetTenants(w http.ResponseWriter, r *http.Request)
 	// Get tenant by ID
-	// (GET /tenants/{id})
+	// (GET /api/v1/tenants/{id})
 	GetTenantById(w http.ResponseWriter, r *http.Request, id Id)
 }
 
@@ -247,458 +247,458 @@ type ServerInterface interface {
 
 type Unimplemented struct{}
 
-// List all activities
-// (GET /activities)
-func (_ Unimplemented) ListActivities(w http.ResponseWriter, r *http.Request, params ListActivitiesParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new activity
-// (POST /activities)
-func (_ Unimplemented) CreateActivity(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete activity by ID
-// (DELETE /activities/{id})
-func (_ Unimplemented) DeleteActivityById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get activity by ID
-// (GET /activities/{id})
-func (_ Unimplemented) GetActivityById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update activity by ID
-// (PUT /activities/{id})
-func (_ Unimplemented) UpdateActivityById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all areas
-// (GET /areas)
-func (_ Unimplemented) ListAreas(w http.ResponseWriter, r *http.Request, params ListAreasParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new area
-// (POST /areas)
-func (_ Unimplemented) CreateArea(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete area
-// (DELETE /areas/{id})
-func (_ Unimplemented) DeleteAreaById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get area by ID
-// (GET /areas/{id})
-func (_ Unimplemented) GetAreaById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update area
-// (PUT /areas/{id})
-func (_ Unimplemented) UpdateAreaById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
 // Authenticate user
-// (POST /auth/login)
+// (POST /api/v1/auth/login)
 func (_ Unimplemented) Login(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Logout current user
-// (POST /auth/logout)
+// (POST /api/v1/auth/logout)
 func (_ Unimplemented) Logout(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get current authenticated user
-// (GET /auth/me)
+// (GET /api/v1/auth/me)
 func (_ Unimplemented) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Register a new user
-// (POST /auth/signup)
+// (POST /api/v1/auth/signup)
 func (_ Unimplemented) Signup(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// List all campers
-// (GET /campers)
-func (_ Unimplemented) ListCampers(w http.ResponseWriter, r *http.Request, params ListCampersParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new camper
-// (POST /campers)
-func (_ Unimplemented) CreateCamper(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete camper
-// (DELETE /campers/{id})
-func (_ Unimplemented) DeleteCamperById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get camper by ID
-// (GET /campers/{id})
-func (_ Unimplemented) GetCamperById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update camper
-// (PUT /campers/{id})
-func (_ Unimplemented) UpdateCamperById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
 // Get all camps
-// (GET /camps)
+// (GET /api/v1/camps)
 func (_ Unimplemented) GetCamps(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Create a new camp
-// (POST /camps)
+// (POST /api/v1/camps)
 func (_ Unimplemented) CreateCamp(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// List all activities
+// (GET /api/v1/camps/{camp_id}/activities)
+func (_ Unimplemented) ListActivities(w http.ResponseWriter, r *http.Request, campId CampId, params ListActivitiesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new activity
+// (POST /api/v1/camps/{camp_id}/activities)
+func (_ Unimplemented) CreateActivity(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete activity by ID
+// (DELETE /api/v1/camps/{camp_id}/activities/{id})
+func (_ Unimplemented) DeleteActivityById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get activity by ID
+// (GET /api/v1/camps/{camp_id}/activities/{id})
+func (_ Unimplemented) GetActivityById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update activity by ID
+// (PUT /api/v1/camps/{camp_id}/activities/{id})
+func (_ Unimplemented) UpdateActivityById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all areas
+// (GET /api/v1/camps/{camp_id}/areas)
+func (_ Unimplemented) ListAreas(w http.ResponseWriter, r *http.Request, campId CampId, params ListAreasParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new area
+// (POST /api/v1/camps/{camp_id}/areas)
+func (_ Unimplemented) CreateArea(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete area
+// (DELETE /api/v1/camps/{camp_id}/areas/{id})
+func (_ Unimplemented) DeleteAreaById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get area by ID
+// (GET /api/v1/camps/{camp_id}/areas/{id})
+func (_ Unimplemented) GetAreaById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update area
+// (PUT /api/v1/camps/{camp_id}/areas/{id})
+func (_ Unimplemented) UpdateAreaById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all campers
+// (GET /api/v1/camps/{camp_id}/campers)
+func (_ Unimplemented) ListCampers(w http.ResponseWriter, r *http.Request, campId CampId, params ListCampersParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new camper
+// (POST /api/v1/camps/{camp_id}/campers)
+func (_ Unimplemented) CreateCamper(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete camper
+// (DELETE /api/v1/camps/{camp_id}/campers/{id})
+func (_ Unimplemented) DeleteCamperById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get camper by ID
+// (GET /api/v1/camps/{camp_id}/campers/{id})
+func (_ Unimplemented) GetCamperById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update camper
+// (PUT /api/v1/camps/{camp_id}/campers/{id})
+func (_ Unimplemented) UpdateCamperById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all certifications
+// (GET /api/v1/camps/{camp_id}/certifications)
+func (_ Unimplemented) ListCertifications(w http.ResponseWriter, r *http.Request, campId CampId, params ListCertificationsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new certification
+// (POST /api/v1/camps/{camp_id}/certifications)
+func (_ Unimplemented) CreateCertification(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete certification by ID
+// (DELETE /api/v1/camps/{camp_id}/certifications/{id})
+func (_ Unimplemented) DeleteCertificationById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get certification by ID
+// (GET /api/v1/camps/{camp_id}/certifications/{id})
+func (_ Unimplemented) GetCertificationById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update certification by ID
+// (PUT /api/v1/camps/{camp_id}/certifications/{id})
+func (_ Unimplemented) UpdateCertificationById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all colors
+// (GET /api/v1/camps/{camp_id}/colors)
+func (_ Unimplemented) ListColors(w http.ResponseWriter, r *http.Request, campId CampId, params ListColorsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new color
+// (POST /api/v1/camps/{camp_id}/colors)
+func (_ Unimplemented) CreateColor(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete color by ID
+// (DELETE /api/v1/camps/{camp_id}/colors/{id})
+func (_ Unimplemented) DeleteColorById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get color by ID
+// (GET /api/v1/camps/{camp_id}/colors/{id})
+func (_ Unimplemented) GetColorById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update color by ID
+// (PUT /api/v1/camps/{camp_id}/colors/{id})
+func (_ Unimplemented) UpdateColorById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all events
+// (GET /api/v1/camps/{camp_id}/events)
+func (_ Unimplemented) ListEvents(w http.ResponseWriter, r *http.Request, campId CampId, params ListEventsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new event
+// (POST /api/v1/camps/{camp_id}/events)
+func (_ Unimplemented) CreateEvent(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete event
+// (DELETE /api/v1/camps/{camp_id}/events/{id})
+func (_ Unimplemented) DeleteEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get event by ID
+// (GET /api/v1/camps/{camp_id}/events/{id})
+func (_ Unimplemented) GetEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update event
+// (PUT /api/v1/camps/{camp_id}/events/{id})
+func (_ Unimplemented) UpdateEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all groups
+// (GET /api/v1/camps/{camp_id}/groups)
+func (_ Unimplemented) ListGroups(w http.ResponseWriter, r *http.Request, campId CampId, params ListGroupsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new group
+// (POST /api/v1/camps/{camp_id}/groups)
+func (_ Unimplemented) CreateGroup(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete group by ID
+// (DELETE /api/v1/camps/{camp_id}/groups/{id})
+func (_ Unimplemented) DeleteGroupById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get group by ID
+// (GET /api/v1/camps/{camp_id}/groups/{id})
+func (_ Unimplemented) GetGroupById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update group by ID
+// (PUT /api/v1/camps/{camp_id}/groups/{id})
+func (_ Unimplemented) UpdateGroupById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all housing rooms
+// (GET /api/v1/camps/{camp_id}/housing-rooms)
+func (_ Unimplemented) ListHousingRooms(w http.ResponseWriter, r *http.Request, campId CampId, params ListHousingRoomsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new housing room
+// (POST /api/v1/camps/{camp_id}/housing-rooms)
+func (_ Unimplemented) CreateHousingRoom(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete housing room by ID
+// (DELETE /api/v1/camps/{camp_id}/housing-rooms/{id})
+func (_ Unimplemented) DeleteHousingRoomById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get housing room by ID
+// (GET /api/v1/camps/{camp_id}/housing-rooms/{id})
+func (_ Unimplemented) GetHousingRoomById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update housing room
+// (PUT /api/v1/camps/{camp_id}/housing-rooms/{id})
+func (_ Unimplemented) UpdateHousingRoomById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all locations
+// (GET /api/v1/camps/{camp_id}/locations)
+func (_ Unimplemented) ListLocations(w http.ResponseWriter, r *http.Request, campId CampId, params ListLocationsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new location
+// (POST /api/v1/camps/{camp_id}/locations)
+func (_ Unimplemented) CreateLocation(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete location by ID
+// (DELETE /api/v1/camps/{camp_id}/locations/{id})
+func (_ Unimplemented) DeleteLocationById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get location by ID
+// (GET /api/v1/camps/{camp_id}/locations/{id})
+func (_ Unimplemented) GetLocationById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update location by ID
+// (PUT /api/v1/camps/{camp_id}/locations/{id})
+func (_ Unimplemented) UpdateLocationById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all programs
+// (GET /api/v1/camps/{camp_id}/programs)
+func (_ Unimplemented) ListPrograms(w http.ResponseWriter, r *http.Request, campId CampId, params ListProgramsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new program
+// (POST /api/v1/camps/{camp_id}/programs)
+func (_ Unimplemented) CreateProgram(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete program by ID
+// (DELETE /api/v1/camps/{camp_id}/programs/{id})
+func (_ Unimplemented) DeleteProgramById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get program by ID
+// (GET /api/v1/camps/{camp_id}/programs/{id})
+func (_ Unimplemented) GetProgramById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update program by ID
+// (PUT /api/v1/camps/{camp_id}/programs/{id})
+func (_ Unimplemented) UpdateProgramById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all roles
+// (GET /api/v1/camps/{camp_id}/roles)
+func (_ Unimplemented) ListRoles(w http.ResponseWriter, r *http.Request, campId CampId, params ListRolesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new role
+// (POST /api/v1/camps/{camp_id}/roles)
+func (_ Unimplemented) CreateRole(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete role by ID
+// (DELETE /api/v1/camps/{camp_id}/roles/{id})
+func (_ Unimplemented) DeleteRoleById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get role by ID
+// (GET /api/v1/camps/{camp_id}/roles/{id})
+func (_ Unimplemented) GetRoleById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update role by ID
+// (PUT /api/v1/camps/{camp_id}/roles/{id})
+func (_ Unimplemented) UpdateRoleById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all sessions
+// (GET /api/v1/camps/{camp_id}/sessions)
+func (_ Unimplemented) ListSessions(w http.ResponseWriter, r *http.Request, campId CampId, params ListSessionsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new session
+// (POST /api/v1/camps/{camp_id}/sessions)
+func (_ Unimplemented) CreateSession(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete session by ID
+// (DELETE /api/v1/camps/{camp_id}/sessions/{id})
+func (_ Unimplemented) DeleteSessionById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get session by ID
+// (GET /api/v1/camps/{camp_id}/sessions/{id})
+func (_ Unimplemented) GetSessionById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update session by ID
+// (PUT /api/v1/camps/{camp_id}/sessions/{id})
+func (_ Unimplemented) UpdateSessionById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all staff members
+// (GET /api/v1/camps/{camp_id}/staff-members)
+func (_ Unimplemented) ListStaffMembers(w http.ResponseWriter, r *http.Request, campId CampId, params ListStaffMembersParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new staff member
+// (POST /api/v1/camps/{camp_id}/staff-members)
+func (_ Unimplemented) CreateStaffMember(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete staff member by ID
+// (DELETE /api/v1/camps/{camp_id}/staff-members/{id})
+func (_ Unimplemented) DeleteStaffMemberById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get staff member by ID
+// (GET /api/v1/camps/{camp_id}/staff-members/{id})
+func (_ Unimplemented) GetStaffMemberById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update staff member by ID
+// (PUT /api/v1/camps/{camp_id}/staff-members/{id})
+func (_ Unimplemented) UpdateStaffMemberById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Delete camp by ID
-// (DELETE /camps/{id})
+// (DELETE /api/v1/camps/{id})
 func (_ Unimplemented) DeleteCampById(w http.ResponseWriter, r *http.Request, id Id) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get camp by ID
-// (GET /camps/{id})
+// (GET /api/v1/camps/{id})
 func (_ Unimplemented) GetCampById(w http.ResponseWriter, r *http.Request, id Id) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Update camp by ID
-// (PUT /camps/{id})
+// (PUT /api/v1/camps/{id})
 func (_ Unimplemented) UpdateCampById(w http.ResponseWriter, r *http.Request, id Id) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// List all certifications
-// (GET /certifications)
-func (_ Unimplemented) ListCertifications(w http.ResponseWriter, r *http.Request, params ListCertificationsParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new certification
-// (POST /certifications)
-func (_ Unimplemented) CreateCertification(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete certification by ID
-// (DELETE /certifications/{id})
-func (_ Unimplemented) DeleteCertificationById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get certification by ID
-// (GET /certifications/{id})
-func (_ Unimplemented) GetCertificationById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update certification by ID
-// (PUT /certifications/{id})
-func (_ Unimplemented) UpdateCertificationById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all colors
-// (GET /colors)
-func (_ Unimplemented) ListColors(w http.ResponseWriter, r *http.Request, params ListColorsParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new color
-// (POST /colors)
-func (_ Unimplemented) CreateColor(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete color by ID
-// (DELETE /colors/{id})
-func (_ Unimplemented) DeleteColorById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get color by ID
-// (GET /colors/{id})
-func (_ Unimplemented) GetColorById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update color by ID
-// (PUT /colors/{id})
-func (_ Unimplemented) UpdateColorById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all events
-// (GET /events)
-func (_ Unimplemented) ListEvents(w http.ResponseWriter, r *http.Request, params ListEventsParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new event
-// (POST /events)
-func (_ Unimplemented) CreateEvent(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete event
-// (DELETE /events/{id})
-func (_ Unimplemented) DeleteEventById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get event by ID
-// (GET /events/{id})
-func (_ Unimplemented) GetEventById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update event
-// (PUT /events/{id})
-func (_ Unimplemented) UpdateEventById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all groups
-// (GET /groups)
-func (_ Unimplemented) ListGroups(w http.ResponseWriter, r *http.Request, params ListGroupsParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new group
-// (POST /groups)
-func (_ Unimplemented) CreateGroup(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete group by ID
-// (DELETE /groups/{id})
-func (_ Unimplemented) DeleteGroupById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get group by ID
-// (GET /groups/{id})
-func (_ Unimplemented) GetGroupById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update group by ID
-// (PUT /groups/{id})
-func (_ Unimplemented) UpdateGroupById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all housing rooms
-// (GET /housing-rooms)
-func (_ Unimplemented) ListHousingRooms(w http.ResponseWriter, r *http.Request, params ListHousingRoomsParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new housing room
-// (POST /housing-rooms)
-func (_ Unimplemented) CreateHousingRoom(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete housing room by ID
-// (DELETE /housing-rooms/{id})
-func (_ Unimplemented) DeleteHousingRoomById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get housing room by ID
-// (GET /housing-rooms/{id})
-func (_ Unimplemented) GetHousingRoomById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update housing room
-// (PUT /housing-rooms/{id})
-func (_ Unimplemented) UpdateHousingRoomById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all locations
-// (GET /locations)
-func (_ Unimplemented) ListLocations(w http.ResponseWriter, r *http.Request, params ListLocationsParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new location
-// (POST /locations)
-func (_ Unimplemented) CreateLocation(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete location by ID
-// (DELETE /locations/{id})
-func (_ Unimplemented) DeleteLocationById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get location by ID
-// (GET /locations/{id})
-func (_ Unimplemented) GetLocationById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update location by ID
-// (PUT /locations/{id})
-func (_ Unimplemented) UpdateLocationById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all programs
-// (GET /programs)
-func (_ Unimplemented) ListPrograms(w http.ResponseWriter, r *http.Request, params ListProgramsParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new program
-// (POST /programs)
-func (_ Unimplemented) CreateProgram(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete program by ID
-// (DELETE /programs/{id})
-func (_ Unimplemented) DeleteProgramById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get program by ID
-// (GET /programs/{id})
-func (_ Unimplemented) GetProgramById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update program by ID
-// (PUT /programs/{id})
-func (_ Unimplemented) UpdateProgramById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all roles
-// (GET /roles)
-func (_ Unimplemented) ListRoles(w http.ResponseWriter, r *http.Request, params ListRolesParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new role
-// (POST /roles)
-func (_ Unimplemented) CreateRole(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete role by ID
-// (DELETE /roles/{id})
-func (_ Unimplemented) DeleteRoleById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get role by ID
-// (GET /roles/{id})
-func (_ Unimplemented) GetRoleById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update role by ID
-// (PUT /roles/{id})
-func (_ Unimplemented) UpdateRoleById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all sessions
-// (GET /sessions)
-func (_ Unimplemented) ListSessions(w http.ResponseWriter, r *http.Request, params ListSessionsParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new session
-// (POST /sessions)
-func (_ Unimplemented) CreateSession(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete session by ID
-// (DELETE /sessions/{id})
-func (_ Unimplemented) DeleteSessionById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get session by ID
-// (GET /sessions/{id})
-func (_ Unimplemented) GetSessionById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update session by ID
-// (PUT /sessions/{id})
-func (_ Unimplemented) UpdateSessionById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// List all staff members
-// (GET /staff-members)
-func (_ Unimplemented) ListStaffMembers(w http.ResponseWriter, r *http.Request, params ListStaffMembersParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Create a new staff member
-// (POST /staff-members)
-func (_ Unimplemented) CreateStaffMember(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete staff member by ID
-// (DELETE /staff-members/{id})
-func (_ Unimplemented) DeleteStaffMemberById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get staff member by ID
-// (GET /staff-members/{id})
-func (_ Unimplemented) GetStaffMemberById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Update staff member by ID
-// (PUT /staff-members/{id})
-func (_ Unimplemented) UpdateStaffMemberById(w http.ResponseWriter, r *http.Request, id Id) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
 // Get all tenants
-// (GET /tenants)
+// (GET /api/v1/tenants)
 func (_ Unimplemented) GetTenants(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // Get tenant by ID
-// (GET /tenants/{id})
+// (GET /api/v1/tenants/{id})
 func (_ Unimplemented) GetTenantById(w http.ResponseWriter, r *http.Request, id Id) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -711,270 +711,6 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
-
-// ListActivities operation middleware
-func (siw *ServerInterfaceWrapper) ListActivities(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListActivitiesParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListActivities(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateActivity operation middleware
-func (siw *ServerInterfaceWrapper) CreateActivity(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateActivity(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteActivityById operation middleware
-func (siw *ServerInterfaceWrapper) DeleteActivityById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteActivityById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetActivityById operation middleware
-func (siw *ServerInterfaceWrapper) GetActivityById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetActivityById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateActivityById operation middleware
-func (siw *ServerInterfaceWrapper) UpdateActivityById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateActivityById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListAreas operation middleware
-func (siw *ServerInterfaceWrapper) ListAreas(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListAreasParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListAreas(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateArea operation middleware
-func (siw *ServerInterfaceWrapper) CreateArea(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateArea(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteAreaById operation middleware
-func (siw *ServerInterfaceWrapper) DeleteAreaById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteAreaById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetAreaById operation middleware
-func (siw *ServerInterfaceWrapper) GetAreaById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetAreaById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateAreaById operation middleware
-func (siw *ServerInterfaceWrapper) UpdateAreaById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateAreaById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
 
 // Login operation middleware
 func (siw *ServerInterfaceWrapper) Login(w http.ResponseWriter, r *http.Request) {
@@ -1032,10 +768,405 @@ func (siw *ServerInterfaceWrapper) Signup(w http.ResponseWriter, r *http.Request
 	handler.ServeHTTP(w, r)
 }
 
+// GetCamps operation middleware
+func (siw *ServerInterfaceWrapper) GetCamps(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetCamps(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateCamp operation middleware
+func (siw *ServerInterfaceWrapper) CreateCamp(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateCamp(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListActivities operation middleware
+func (siw *ServerInterfaceWrapper) ListActivities(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListActivitiesParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListActivities(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateActivity operation middleware
+func (siw *ServerInterfaceWrapper) CreateActivity(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateActivity(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteActivityById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteActivityById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteActivityById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetActivityById operation middleware
+func (siw *ServerInterfaceWrapper) GetActivityById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetActivityById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateActivityById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateActivityById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateActivityById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListAreas operation middleware
+func (siw *ServerInterfaceWrapper) ListAreas(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListAreasParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListAreas(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateArea operation middleware
+func (siw *ServerInterfaceWrapper) CreateArea(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateArea(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteAreaById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteAreaById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteAreaById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetAreaById operation middleware
+func (siw *ServerInterfaceWrapper) GetAreaById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetAreaById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateAreaById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateAreaById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateAreaById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListCampers operation middleware
 func (siw *ServerInterfaceWrapper) ListCampers(w http.ResponseWriter, r *http.Request) {
 
 	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListCampersParams
@@ -1065,7 +1196,7 @@ func (siw *ServerInterfaceWrapper) ListCampers(w http.ResponseWriter, r *http.Re
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListCampers(w, r, params)
+		siw.Handler.ListCampers(w, r, campId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1078,8 +1209,19 @@ func (siw *ServerInterfaceWrapper) ListCampers(w http.ResponseWriter, r *http.Re
 // CreateCamper operation middleware
 func (siw *ServerInterfaceWrapper) CreateCamper(w http.ResponseWriter, r *http.Request) {
 
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateCamper(w, r)
+		siw.Handler.CreateCamper(w, r, campId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1094,6 +1236,15 @@ func (siw *ServerInterfaceWrapper) DeleteCamperById(w http.ResponseWriter, r *ht
 
 	var err error
 
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
 	// ------------- Path parameter "id" -------------
 	var id Id
 
@@ -1104,7 +1255,7 @@ func (siw *ServerInterfaceWrapper) DeleteCamperById(w http.ResponseWriter, r *ht
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteCamperById(w, r, id)
+		siw.Handler.DeleteCamperById(w, r, campId, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1119,6 +1270,15 @@ func (siw *ServerInterfaceWrapper) GetCamperById(w http.ResponseWriter, r *http.
 
 	var err error
 
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
 	// ------------- Path parameter "id" -------------
 	var id Id
 
@@ -1129,7 +1289,7 @@ func (siw *ServerInterfaceWrapper) GetCamperById(w http.ResponseWriter, r *http.
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetCamperById(w, r, id)
+		siw.Handler.GetCamperById(w, r, campId, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1144,6 +1304,15 @@ func (siw *ServerInterfaceWrapper) UpdateCamperById(w http.ResponseWriter, r *ht
 
 	var err error
 
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
 	// ------------- Path parameter "id" -------------
 	var id Id
 
@@ -1154,7 +1323,7 @@ func (siw *ServerInterfaceWrapper) UpdateCamperById(w http.ResponseWriter, r *ht
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateCamperById(w, r, id)
+		siw.Handler.UpdateCamperById(w, r, campId, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1164,11 +1333,49 @@ func (siw *ServerInterfaceWrapper) UpdateCamperById(w http.ResponseWriter, r *ht
 	handler.ServeHTTP(w, r)
 }
 
-// GetCamps operation middleware
-func (siw *ServerInterfaceWrapper) GetCamps(w http.ResponseWriter, r *http.Request) {
+// ListCertifications operation middleware
+func (siw *ServerInterfaceWrapper) ListCertifications(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListCertificationsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetCamps(w, r)
+		siw.Handler.ListCertifications(w, r, campId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1178,11 +1385,1735 @@ func (siw *ServerInterfaceWrapper) GetCamps(w http.ResponseWriter, r *http.Reque
 	handler.ServeHTTP(w, r)
 }
 
-// CreateCamp operation middleware
-func (siw *ServerInterfaceWrapper) CreateCamp(w http.ResponseWriter, r *http.Request) {
+// CreateCertification operation middleware
+func (siw *ServerInterfaceWrapper) CreateCertification(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateCamp(w, r)
+		siw.Handler.CreateCertification(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteCertificationById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteCertificationById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteCertificationById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetCertificationById operation middleware
+func (siw *ServerInterfaceWrapper) GetCertificationById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetCertificationById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateCertificationById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateCertificationById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateCertificationById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListColors operation middleware
+func (siw *ServerInterfaceWrapper) ListColors(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListColorsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListColors(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateColor operation middleware
+func (siw *ServerInterfaceWrapper) CreateColor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateColor(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteColorById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteColorById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteColorById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetColorById operation middleware
+func (siw *ServerInterfaceWrapper) GetColorById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetColorById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateColorById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateColorById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateColorById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListEvents operation middleware
+func (siw *ServerInterfaceWrapper) ListEvents(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListEventsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListEvents(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateEvent operation middleware
+func (siw *ServerInterfaceWrapper) CreateEvent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateEvent(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteEventById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteEventById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteEventById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetEventById operation middleware
+func (siw *ServerInterfaceWrapper) GetEventById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetEventById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateEventById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateEventById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateEventById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListGroups operation middleware
+func (siw *ServerInterfaceWrapper) ListGroups(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListGroupsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListGroups(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateGroup operation middleware
+func (siw *ServerInterfaceWrapper) CreateGroup(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateGroup(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteGroupById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteGroupById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteGroupById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetGroupById operation middleware
+func (siw *ServerInterfaceWrapper) GetGroupById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetGroupById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateGroupById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateGroupById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateGroupById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListHousingRooms operation middleware
+func (siw *ServerInterfaceWrapper) ListHousingRooms(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListHousingRoomsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListHousingRooms(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateHousingRoom operation middleware
+func (siw *ServerInterfaceWrapper) CreateHousingRoom(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateHousingRoom(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteHousingRoomById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteHousingRoomById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteHousingRoomById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetHousingRoomById operation middleware
+func (siw *ServerInterfaceWrapper) GetHousingRoomById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetHousingRoomById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateHousingRoomById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateHousingRoomById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateHousingRoomById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListLocations operation middleware
+func (siw *ServerInterfaceWrapper) ListLocations(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListLocationsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListLocations(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateLocation operation middleware
+func (siw *ServerInterfaceWrapper) CreateLocation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateLocation(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteLocationById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteLocationById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteLocationById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetLocationById operation middleware
+func (siw *ServerInterfaceWrapper) GetLocationById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetLocationById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateLocationById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateLocationById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateLocationById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListPrograms operation middleware
+func (siw *ServerInterfaceWrapper) ListPrograms(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListProgramsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListPrograms(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateProgram operation middleware
+func (siw *ServerInterfaceWrapper) CreateProgram(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateProgram(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteProgramById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteProgramById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteProgramById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetProgramById operation middleware
+func (siw *ServerInterfaceWrapper) GetProgramById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetProgramById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateProgramById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateProgramById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateProgramById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListRoles operation middleware
+func (siw *ServerInterfaceWrapper) ListRoles(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListRolesParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListRoles(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateRole operation middleware
+func (siw *ServerInterfaceWrapper) CreateRole(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateRole(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteRoleById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteRoleById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteRoleById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetRoleById operation middleware
+func (siw *ServerInterfaceWrapper) GetRoleById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetRoleById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateRoleById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateRoleById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateRoleById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListSessions operation middleware
+func (siw *ServerInterfaceWrapper) ListSessions(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListSessionsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListSessions(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateSession operation middleware
+func (siw *ServerInterfaceWrapper) CreateSession(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateSession(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteSessionById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteSessionById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteSessionById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetSessionById operation middleware
+func (siw *ServerInterfaceWrapper) GetSessionById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetSessionById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateSessionById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateSessionById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateSessionById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListStaffMembers operation middleware
+func (siw *ServerInterfaceWrapper) ListStaffMembers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListStaffMembersParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListStaffMembers(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateStaffMember operation middleware
+func (siw *ServerInterfaceWrapper) CreateStaffMember(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateStaffMember(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteStaffMemberById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteStaffMemberById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteStaffMemberById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetStaffMemberById operation middleware
+func (siw *ServerInterfaceWrapper) GetStaffMemberById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetStaffMemberById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateStaffMemberById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateStaffMemberById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateStaffMemberById(w, r, campId, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1258,1326 +3189,6 @@ func (siw *ServerInterfaceWrapper) UpdateCampById(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateCampById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListCertifications operation middleware
-func (siw *ServerInterfaceWrapper) ListCertifications(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListCertificationsParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListCertifications(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateCertification operation middleware
-func (siw *ServerInterfaceWrapper) CreateCertification(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateCertification(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteCertificationById operation middleware
-func (siw *ServerInterfaceWrapper) DeleteCertificationById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteCertificationById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetCertificationById operation middleware
-func (siw *ServerInterfaceWrapper) GetCertificationById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetCertificationById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateCertificationById operation middleware
-func (siw *ServerInterfaceWrapper) UpdateCertificationById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateCertificationById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListColors operation middleware
-func (siw *ServerInterfaceWrapper) ListColors(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListColorsParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListColors(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateColor operation middleware
-func (siw *ServerInterfaceWrapper) CreateColor(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateColor(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteColorById operation middleware
-func (siw *ServerInterfaceWrapper) DeleteColorById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteColorById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetColorById operation middleware
-func (siw *ServerInterfaceWrapper) GetColorById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetColorById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateColorById operation middleware
-func (siw *ServerInterfaceWrapper) UpdateColorById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateColorById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListEvents operation middleware
-func (siw *ServerInterfaceWrapper) ListEvents(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListEventsParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListEvents(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateEvent operation middleware
-func (siw *ServerInterfaceWrapper) CreateEvent(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateEvent(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteEventById operation middleware
-func (siw *ServerInterfaceWrapper) DeleteEventById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteEventById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetEventById operation middleware
-func (siw *ServerInterfaceWrapper) GetEventById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetEventById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateEventById operation middleware
-func (siw *ServerInterfaceWrapper) UpdateEventById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateEventById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListGroups operation middleware
-func (siw *ServerInterfaceWrapper) ListGroups(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListGroupsParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListGroups(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateGroup operation middleware
-func (siw *ServerInterfaceWrapper) CreateGroup(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateGroup(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteGroupById operation middleware
-func (siw *ServerInterfaceWrapper) DeleteGroupById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteGroupById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetGroupById operation middleware
-func (siw *ServerInterfaceWrapper) GetGroupById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetGroupById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateGroupById operation middleware
-func (siw *ServerInterfaceWrapper) UpdateGroupById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateGroupById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListHousingRooms operation middleware
-func (siw *ServerInterfaceWrapper) ListHousingRooms(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListHousingRoomsParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListHousingRooms(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateHousingRoom operation middleware
-func (siw *ServerInterfaceWrapper) CreateHousingRoom(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateHousingRoom(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteHousingRoomById operation middleware
-func (siw *ServerInterfaceWrapper) DeleteHousingRoomById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteHousingRoomById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetHousingRoomById operation middleware
-func (siw *ServerInterfaceWrapper) GetHousingRoomById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetHousingRoomById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateHousingRoomById operation middleware
-func (siw *ServerInterfaceWrapper) UpdateHousingRoomById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateHousingRoomById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListLocations operation middleware
-func (siw *ServerInterfaceWrapper) ListLocations(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListLocationsParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListLocations(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateLocation operation middleware
-func (siw *ServerInterfaceWrapper) CreateLocation(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateLocation(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteLocationById operation middleware
-func (siw *ServerInterfaceWrapper) DeleteLocationById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteLocationById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetLocationById operation middleware
-func (siw *ServerInterfaceWrapper) GetLocationById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetLocationById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateLocationById operation middleware
-func (siw *ServerInterfaceWrapper) UpdateLocationById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateLocationById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListPrograms operation middleware
-func (siw *ServerInterfaceWrapper) ListPrograms(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListProgramsParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListPrograms(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateProgram operation middleware
-func (siw *ServerInterfaceWrapper) CreateProgram(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateProgram(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteProgramById operation middleware
-func (siw *ServerInterfaceWrapper) DeleteProgramById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteProgramById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetProgramById operation middleware
-func (siw *ServerInterfaceWrapper) GetProgramById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetProgramById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateProgramById operation middleware
-func (siw *ServerInterfaceWrapper) UpdateProgramById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateProgramById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListRoles operation middleware
-func (siw *ServerInterfaceWrapper) ListRoles(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListRolesParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListRoles(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateRole operation middleware
-func (siw *ServerInterfaceWrapper) CreateRole(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateRole(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteRoleById operation middleware
-func (siw *ServerInterfaceWrapper) DeleteRoleById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteRoleById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetRoleById operation middleware
-func (siw *ServerInterfaceWrapper) GetRoleById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetRoleById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateRoleById operation middleware
-func (siw *ServerInterfaceWrapper) UpdateRoleById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateRoleById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListSessions operation middleware
-func (siw *ServerInterfaceWrapper) ListSessions(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListSessionsParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListSessions(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateSession operation middleware
-func (siw *ServerInterfaceWrapper) CreateSession(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateSession(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteSessionById operation middleware
-func (siw *ServerInterfaceWrapper) DeleteSessionById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteSessionById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetSessionById operation middleware
-func (siw *ServerInterfaceWrapper) GetSessionById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetSessionById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateSessionById operation middleware
-func (siw *ServerInterfaceWrapper) UpdateSessionById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateSessionById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// ListStaffMembers operation middleware
-func (siw *ServerInterfaceWrapper) ListStaffMembers(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params ListStaffMembersParams
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "offset" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.ListStaffMembers(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// CreateStaffMember operation middleware
-func (siw *ServerInterfaceWrapper) CreateStaffMember(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CreateStaffMember(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteStaffMemberById operation middleware
-func (siw *ServerInterfaceWrapper) DeleteStaffMemberById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteStaffMemberById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetStaffMemberById operation middleware
-func (siw *ServerInterfaceWrapper) GetStaffMemberById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetStaffMemberById(w, r, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// UpdateStaffMemberById operation middleware
-func (siw *ServerInterfaceWrapper) UpdateStaffMemberById(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id Id
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateStaffMemberById(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2740,232 +3351,232 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/activities", wrapper.ListActivities)
+		r.Post(options.BaseURL+"/api/v1/auth/login", wrapper.Login)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/activities", wrapper.CreateActivity)
+		r.Post(options.BaseURL+"/api/v1/auth/logout", wrapper.Logout)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/activities/{id}", wrapper.DeleteActivityById)
+		r.Get(options.BaseURL+"/api/v1/auth/me", wrapper.GetCurrentUser)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/activities/{id}", wrapper.GetActivityById)
+		r.Post(options.BaseURL+"/api/v1/auth/signup", wrapper.Signup)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/activities/{id}", wrapper.UpdateActivityById)
+		r.Get(options.BaseURL+"/api/v1/camps", wrapper.GetCamps)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/areas", wrapper.ListAreas)
+		r.Post(options.BaseURL+"/api/v1/camps", wrapper.CreateCamp)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/areas", wrapper.CreateArea)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/activities", wrapper.ListActivities)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/areas/{id}", wrapper.DeleteAreaById)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/activities", wrapper.CreateActivity)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/areas/{id}", wrapper.GetAreaById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/activities/{id}", wrapper.DeleteActivityById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/areas/{id}", wrapper.UpdateAreaById)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/activities/{id}", wrapper.GetActivityById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/auth/login", wrapper.Login)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/activities/{id}", wrapper.UpdateActivityById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/auth/logout", wrapper.Logout)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/areas", wrapper.ListAreas)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/auth/me", wrapper.GetCurrentUser)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/areas", wrapper.CreateArea)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/auth/signup", wrapper.Signup)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/areas/{id}", wrapper.DeleteAreaById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/campers", wrapper.ListCampers)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/areas/{id}", wrapper.GetAreaById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/campers", wrapper.CreateCamper)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/areas/{id}", wrapper.UpdateAreaById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/campers/{id}", wrapper.DeleteCamperById)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/campers", wrapper.ListCampers)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/campers/{id}", wrapper.GetCamperById)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/campers", wrapper.CreateCamper)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/campers/{id}", wrapper.UpdateCamperById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/campers/{id}", wrapper.DeleteCamperById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/camps", wrapper.GetCamps)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/campers/{id}", wrapper.GetCamperById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/camps", wrapper.CreateCamp)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/campers/{id}", wrapper.UpdateCamperById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/camps/{id}", wrapper.DeleteCampById)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/certifications", wrapper.ListCertifications)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/camps/{id}", wrapper.GetCampById)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/certifications", wrapper.CreateCertification)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/camps/{id}", wrapper.UpdateCampById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/certifications/{id}", wrapper.DeleteCertificationById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/certifications", wrapper.ListCertifications)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/certifications/{id}", wrapper.GetCertificationById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/certifications", wrapper.CreateCertification)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/certifications/{id}", wrapper.UpdateCertificationById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/certifications/{id}", wrapper.DeleteCertificationById)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/colors", wrapper.ListColors)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/certifications/{id}", wrapper.GetCertificationById)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/colors", wrapper.CreateColor)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/certifications/{id}", wrapper.UpdateCertificationById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/colors/{id}", wrapper.DeleteColorById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/colors", wrapper.ListColors)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/colors/{id}", wrapper.GetColorById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/colors", wrapper.CreateColor)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/colors/{id}", wrapper.UpdateColorById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/colors/{id}", wrapper.DeleteColorById)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/events", wrapper.ListEvents)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/colors/{id}", wrapper.GetColorById)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/events", wrapper.CreateEvent)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/colors/{id}", wrapper.UpdateColorById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/events/{id}", wrapper.DeleteEventById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/events", wrapper.ListEvents)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/events/{id}", wrapper.GetEventById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/events", wrapper.CreateEvent)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/events/{id}", wrapper.UpdateEventById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/events/{id}", wrapper.DeleteEventById)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/groups", wrapper.ListGroups)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/events/{id}", wrapper.GetEventById)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/groups", wrapper.CreateGroup)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/events/{id}", wrapper.UpdateEventById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/groups/{id}", wrapper.DeleteGroupById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/groups", wrapper.ListGroups)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/groups/{id}", wrapper.GetGroupById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/groups", wrapper.CreateGroup)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/groups/{id}", wrapper.UpdateGroupById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/groups/{id}", wrapper.DeleteGroupById)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/housing-rooms", wrapper.ListHousingRooms)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/groups/{id}", wrapper.GetGroupById)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/housing-rooms", wrapper.CreateHousingRoom)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/groups/{id}", wrapper.UpdateGroupById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/housing-rooms/{id}", wrapper.DeleteHousingRoomById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/housing-rooms", wrapper.ListHousingRooms)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/housing-rooms/{id}", wrapper.GetHousingRoomById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/housing-rooms", wrapper.CreateHousingRoom)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/housing-rooms/{id}", wrapper.UpdateHousingRoomById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/housing-rooms/{id}", wrapper.DeleteHousingRoomById)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/locations", wrapper.ListLocations)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/housing-rooms/{id}", wrapper.GetHousingRoomById)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/locations", wrapper.CreateLocation)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/housing-rooms/{id}", wrapper.UpdateHousingRoomById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/locations/{id}", wrapper.DeleteLocationById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/locations", wrapper.ListLocations)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/locations/{id}", wrapper.GetLocationById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/locations", wrapper.CreateLocation)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/locations/{id}", wrapper.UpdateLocationById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/locations/{id}", wrapper.DeleteLocationById)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/programs", wrapper.ListPrograms)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/locations/{id}", wrapper.GetLocationById)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/programs", wrapper.CreateProgram)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/locations/{id}", wrapper.UpdateLocationById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/programs/{id}", wrapper.DeleteProgramById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/programs", wrapper.ListPrograms)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/programs/{id}", wrapper.GetProgramById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/programs", wrapper.CreateProgram)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/programs/{id}", wrapper.UpdateProgramById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/programs/{id}", wrapper.DeleteProgramById)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/roles", wrapper.ListRoles)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/programs/{id}", wrapper.GetProgramById)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/roles", wrapper.CreateRole)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/programs/{id}", wrapper.UpdateProgramById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/roles/{id}", wrapper.DeleteRoleById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/roles", wrapper.ListRoles)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/roles/{id}", wrapper.GetRoleById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/roles", wrapper.CreateRole)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/roles/{id}", wrapper.UpdateRoleById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/roles/{id}", wrapper.DeleteRoleById)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/sessions", wrapper.ListSessions)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/roles/{id}", wrapper.GetRoleById)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/sessions", wrapper.CreateSession)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/roles/{id}", wrapper.UpdateRoleById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/sessions/{id}", wrapper.DeleteSessionById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/sessions", wrapper.ListSessions)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/sessions/{id}", wrapper.GetSessionById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/sessions", wrapper.CreateSession)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/sessions/{id}", wrapper.UpdateSessionById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/sessions/{id}", wrapper.DeleteSessionById)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/staff-members", wrapper.ListStaffMembers)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/sessions/{id}", wrapper.GetSessionById)
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/staff-members", wrapper.CreateStaffMember)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/sessions/{id}", wrapper.UpdateSessionById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/staff-members/{id}", wrapper.DeleteStaffMemberById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/staff-members", wrapper.ListStaffMembers)
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/staff-members/{id}", wrapper.GetStaffMemberById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/staff-members", wrapper.CreateStaffMember)
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/staff-members/{id}", wrapper.UpdateStaffMemberById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/staff-members/{id}", wrapper.DeleteStaffMemberById)
+		r.Delete(options.BaseURL+"/api/v1/camps/{id}", wrapper.DeleteCampById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/staff-members/{id}", wrapper.GetStaffMemberById)
+		r.Get(options.BaseURL+"/api/v1/camps/{id}", wrapper.GetCampById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/staff-members/{id}", wrapper.UpdateStaffMemberById)
+		r.Put(options.BaseURL+"/api/v1/camps/{id}", wrapper.UpdateCampById)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/tenants", wrapper.GetTenants)
+		r.Get(options.BaseURL+"/api/v1/tenants", wrapper.GetTenants)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/tenants/{id}", wrapper.GetTenantById)
+		r.Get(options.BaseURL+"/api/v1/tenants/{id}", wrapper.GetTenantById)
 	})
 
 	return r

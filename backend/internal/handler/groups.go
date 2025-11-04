@@ -19,27 +19,32 @@ func NewGroupsHandler(service service.GroupsService) *GroupsHandler {
 	}
 }
 
-// ListGroups handles GET /groups
-func (h *GroupsHandler) ListGroups(w http.ResponseWriter, r *http.Request, params api.ListGroupsParams) {
+// ListGroups handles GET /api/v1/camps/{camp_id}/groups
+func (h *GroupsHandler) ListGroups(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListGroupsParams) {
 	// TODO: Implement listing groups with pagination and search
+	// Use campId to filter groups for the specific camp
 }
 
-// CreateGroup handles POST /groups
-func (h *GroupsHandler) CreateGroup(w http.ResponseWriter, r *http.Request) {
+// CreateGroup handles POST /api/v1/camps/{camp_id}/groups
+func (h *GroupsHandler) CreateGroup(w http.ResponseWriter, r *http.Request, campId api.CampId) {
 	// TODO: Implement group creation
+	// Use campId to associate group with the specific camp
 }
 
-// GetGroupById handles GET /groups/{id}
-func (h *GroupsHandler) GetGroupById(w http.ResponseWriter, r *http.Request, id api.Id) {
+// GetGroupById handles GET /api/v1/camps/{camp_id}/groups/{id}
+func (h *GroupsHandler) GetGroupById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	// TODO: Implement get group by ID
+	// Use campId to ensure group belongs to the specified camp
 }
 
-// UpdateGroupById handles PUT /groups/{id}
-func (h *GroupsHandler) UpdateGroupById(w http.ResponseWriter, r *http.Request, id api.Id) {
+// UpdateGroupById handles PUT /api/v1/camps/{camp_id}/groups/{id}
+func (h *GroupsHandler) UpdateGroupById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	// TODO: Implement group update
+	// Use campId to ensure group belongs to the specified camp
 }
 
-// DeleteGroupById handles DELETE /groups/{id}
-func (h *GroupsHandler) DeleteGroupById(w http.ResponseWriter, r *http.Request, id api.Id) {
+// DeleteGroupById handles DELETE /api/v1/camps/{camp_id}/groups/{id}
+func (h *GroupsHandler) DeleteGroupById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	// TODO: Implement group deletion
+	// Use campId to ensure group belongs to the specified camp
 }

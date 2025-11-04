@@ -165,86 +165,89 @@ components:
 
 paths:
   # Authentication endpoints
-  /auth/login:
+  /api/v1/auth/login:
     $ref: "./paths/Auth.yaml"
-  /auth/signup:
+  /api/v1/auth/signup:
     $ref: "./paths/AuthSignup.yaml"
-  /auth/me:
+  /api/v1/auth/me:
     $ref: "./paths/AuthMe.yaml"
-  /auth/logout:
+  /api/v1/auth/logout:
     $ref: "./paths/AuthLogout.yaml"
 
-  /sessions:
-    $ref: "./paths/Sessions.yaml"
-  /sessions/{id}:
-    $ref: "./paths/SessionsById.yaml"
+  # Tenant management (tenant admin only)
+  /api/v1/tenants:
+    $ref: "./paths/Tenants.yaml"
+  /api/v1/tenants/{id}:
+    $ref: "./paths/TenantsById.yaml"
 
-  /campers:
-    $ref: "./paths/Campers.yaml"
-  /campers/{id}:
-    $ref: "./paths/CampersById.yaml"
-
-  /staff-members:
-    $ref: "./paths/StaffMembers.yaml"
-  /staff-members/{id}:
-    $ref: "./paths/StaffMembersById.yaml"
-
-  /areas:
-    $ref: "./paths/Areas.yaml"
-  /areas/{id}:
-    $ref: "./paths/AreasById.yaml"
-
-  /locations:
-    $ref: "./paths/Locations.yaml"
-  /locations/{id}:
-    $ref: "./paths/LocationsById.yaml"
-
-  /programs:
-    $ref: "./paths/Programs.yaml"
-  /programs/{id}:
-    $ref: "./paths/ProgramsById.yaml"
-
-  /activities:
-    $ref: "./paths/Activities.yaml"
-  /activities/{id}:
-    $ref: "./paths/ActivitiesById.yaml"
-
-  /colors:
-    $ref: "./paths/Colors.yaml"
-  /colors/{id}:
-    $ref: "./paths/ColorsById.yaml"
-
-  /roles:
-    $ref: "./paths/Roles.yaml"
-  /roles/{id}:
-    $ref: "./paths/RolesById.yaml"
-
-  /certifications:
-    $ref: "./paths/Certifications.yaml"
-  /certifications/{id}:
-    $ref: "./paths/CertificationsById.yaml"
-
-  /housing-rooms:
-    $ref: "./paths/HousingRooms.yaml"
-  /housing-rooms/{id}:
-    $ref: "./paths/HousingRoomsById.yaml"
-
-  /groups:
-    $ref: "./paths/Groups.yaml"
-  /groups/{id}:
-    $ref: "./paths/GroupsById.yaml"
-
-  /events:
-    $ref: "./paths/Events.yaml"
-  /events/{id}:
-    $ref: "./paths/EventsById.yaml"
-
-  /camps:
+  # Camp management
+  /api/v1/camps:
     $ref: "./paths/Camps.yaml"
-  /camps/{id}:
+  /api/v1/camps/{id}:
     $ref: "./paths/CampsById.yaml"
 
-  /tenants:
-    $ref: "./paths/Tenants.yaml"
-  /tenants/{id}:
-    $ref: "./paths/TenantsById.yaml"
+  # Camp-scoped resources
+  /api/v1/camps/{camp_id}/sessions:
+    $ref: "./paths/Sessions.yaml"
+  /api/v1/camps/{camp_id}/sessions/{id}:
+    $ref: "./paths/SessionsById.yaml"
+
+  /api/v1/camps/{camp_id}/campers:
+    $ref: "./paths/Campers.yaml"
+  /api/v1/camps/{camp_id}/campers/{id}:
+    $ref: "./paths/CampersById.yaml"
+
+  /api/v1/camps/{camp_id}/staff-members:
+    $ref: "./paths/StaffMembers.yaml"
+  /api/v1/camps/{camp_id}/staff-members/{id}:
+    $ref: "./paths/StaffMembersById.yaml"
+
+  /api/v1/camps/{camp_id}/areas:
+    $ref: "./paths/Areas.yaml"
+  /api/v1/camps/{camp_id}/areas/{id}:
+    $ref: "./paths/AreasById.yaml"
+
+  /api/v1/camps/{camp_id}/locations:
+    $ref: "./paths/Locations.yaml"
+  /api/v1/camps/{camp_id}/locations/{id}:
+    $ref: "./paths/LocationsById.yaml"
+
+  /api/v1/camps/{camp_id}/programs:
+    $ref: "./paths/Programs.yaml"
+  /api/v1/camps/{camp_id}/programs/{id}:
+    $ref: "./paths/ProgramsById.yaml"
+
+  /api/v1/camps/{camp_id}/activities:
+    $ref: "./paths/Activities.yaml"
+  /api/v1/camps/{camp_id}/activities/{id}:
+    $ref: "./paths/ActivitiesById.yaml"
+
+  /api/v1/camps/{camp_id}/colors:
+    $ref: "./paths/Colors.yaml"
+  /api/v1/camps/{camp_id}/colors/{id}:
+    $ref: "./paths/ColorsById.yaml"
+
+  /api/v1/camps/{camp_id}/roles:
+    $ref: "./paths/Roles.yaml"
+  /api/v1/camps/{camp_id}/roles/{id}:
+    $ref: "./paths/RolesById.yaml"
+
+  /api/v1/camps/{camp_id}/certifications:
+    $ref: "./paths/Certifications.yaml"
+  /api/v1/camps/{camp_id}/certifications/{id}:
+    $ref: "./paths/CertificationsById.yaml"
+
+  /api/v1/camps/{camp_id}/housing-rooms:
+    $ref: "./paths/HousingRooms.yaml"
+  /api/v1/camps/{camp_id}/housing-rooms/{id}:
+    $ref: "./paths/HousingRoomsById.yaml"
+
+  /api/v1/camps/{camp_id}/groups:
+    $ref: "./paths/Groups.yaml"
+  /api/v1/camps/{camp_id}/groups/{id}:
+    $ref: "./paths/GroupsById.yaml"
+
+  /api/v1/camps/{camp_id}/events:
+    $ref: "./paths/Events.yaml"
+  /api/v1/camps/{camp_id}/events/{id}:
+    $ref: "./paths/EventsById.yaml"

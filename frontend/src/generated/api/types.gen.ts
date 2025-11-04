@@ -85,13 +85,10 @@ export type User = {
 };
 
 export type AccessRule = {
-    /**
-     * Reference to the role ID (e.g., role-tenant-admin, role-camp-admin, role-viewer)
-     */
-    roleId: string;
+    role: 'admin' | 'program-admin' | 'viewer';
     scopeType: ScopeType;
     /**
-     * The ID of the scope entity (null for SYSTEM, tenantId for TENANT, campId for CAMP)
+     * The unique identifier of the tenant or camp according to the scope type (null for system)
      */
     scopeId?: string | null;
 };
@@ -99,7 +96,7 @@ export type AccessRule = {
 /**
  * The scope level for an access rule
  */
-export type ScopeType = 'SYSTEM' | 'TENANT' | 'CAMP';
+export type ScopeType = 'system' | 'tenant' | 'camp';
 
 export type Tenant = {
     /**
@@ -452,6 +449,46 @@ export type DurationPresetUpdateRequest = {
     spec: DurationPresetSpec;
 };
 
+export type TenantsListResponse = ListResponseBase & {
+    items: Array<Tenant>;
+};
+
+export type CampSpec = {
+    /**
+     * Overall camp season start date
+     */
+    startDate: string;
+    /**
+     * Overall camp season end date
+     */
+    endDate: string;
+    /**
+     * Daily start time for calendar display (24-hour format HH:MM)
+     */
+    dailyStartTime: string;
+    /**
+     * Daily end time for calendar display (24-hour format HH:MM)
+     */
+    dailyEndTime: string;
+    address?: {
+        street?: string;
+        city?: string;
+        state?: string;
+        zipCode?: string;
+        country?: string;
+    };
+    contactInfo?: {
+        phone?: string;
+        email?: string;
+        website?: string;
+    };
+    logoUrl?: string;
+};
+
+export type CampsListResponse = ListResponseBase & {
+    items: Array<Camp>;
+};
+
 export type SessionSpec = {
     startDate: string;
     endDate: string;
@@ -655,46 +692,6 @@ export type EventSpec = {
     isRecurrenceParent?: boolean;
 };
 
-export type CampSpec = {
-    /**
-     * Overall camp season start date
-     */
-    startDate: string;
-    /**
-     * Overall camp season end date
-     */
-    endDate: string;
-    /**
-     * Daily start time for calendar display (24-hour format HH:MM)
-     */
-    dailyStartTime: string;
-    /**
-     * Daily end time for calendar display (24-hour format HH:MM)
-     */
-    dailyEndTime: string;
-    address?: {
-        street?: string;
-        city?: string;
-        state?: string;
-        zipCode?: string;
-        country?: string;
-    };
-    contactInfo?: {
-        phone?: string;
-        email?: string;
-        website?: string;
-    };
-    logoUrl?: string;
-};
-
-export type CampsListResponse = ListResponseBase & {
-    items: Array<Camp>;
-};
-
-export type TenantsListResponse = ListResponseBase & {
-    items: Array<Tenant>;
-};
-
 export type DurationPresetSpec = {
     /**
      * Duration in minutes
@@ -705,6 +702,16 @@ export type DurationPresetSpec = {
      */
     default?: boolean;
 };
+
+/**
+ * Resource ID
+ */
+export type Id = string;
+
+/**
+ * Camp ID
+ */
+export type CampId = string;
 
 /**
  * Maximum number of items to return per page
@@ -721,16 +728,11 @@ export type Offset = number;
  */
 export type Search = string;
 
-/**
- * Resource ID
- */
-export type Id = string;
-
 export type LoginData = {
     body: LoginRequest;
     path?: never;
     query?: never;
-    url: '/auth/login';
+    url: '/api/v1/auth/login';
 };
 
 export type LoginErrors = {
@@ -753,7 +755,7 @@ export type SignupData = {
     body: SignupRequest;
     path?: never;
     query?: never;
-    url: '/auth/signup';
+    url: '/api/v1/auth/signup';
 };
 
 export type SignupErrors = {
@@ -776,7 +778,7 @@ export type GetCurrentUserData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/auth/me';
+    url: '/api/v1/auth/me';
 };
 
 export type GetCurrentUserErrors = {
@@ -799,7 +801,7 @@ export type LogoutData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/auth/logout';
+    url: '/api/v1/auth/logout';
 };
 
 export type LogoutErrors = {
@@ -816,1508 +818,11 @@ export type LogoutResponses = {
     200: unknown;
 };
 
-export type ListSessionsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/sessions';
-};
-
-export type ListSessionsResponses = {
-    /**
-     * Success
-     */
-    200: SessionsListResponse;
-};
-
-export type ListSessionsResponse = ListSessionsResponses[keyof ListSessionsResponses];
-
-export type CreateSessionData = {
-    body: SessionCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/sessions';
-};
-
-export type CreateSessionResponses = {
-    /**
-     * Success
-     */
-    200: Session;
-};
-
-export type CreateSessionResponse = CreateSessionResponses[keyof CreateSessionResponses];
-
-export type DeleteSessionByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/sessions/{id}';
-};
-
-export type DeleteSessionByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteSessionByIdResponse = DeleteSessionByIdResponses[keyof DeleteSessionByIdResponses];
-
-export type GetSessionByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/sessions/{id}';
-};
-
-export type GetSessionByIdResponses = {
-    /**
-     * Success
-     */
-    200: Session;
-};
-
-export type GetSessionByIdResponse = GetSessionByIdResponses[keyof GetSessionByIdResponses];
-
-export type UpdateSessionByIdData = {
-    body: SessionUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/sessions/{id}';
-};
-
-export type UpdateSessionByIdResponses = {
-    /**
-     * Success
-     */
-    200: Session;
-};
-
-export type UpdateSessionByIdResponse = UpdateSessionByIdResponses[keyof UpdateSessionByIdResponses];
-
-export type ListCampersData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/campers';
-};
-
-export type ListCampersResponses = {
-    /**
-     * Success
-     */
-    200: CampersListResponse;
-};
-
-export type ListCampersResponse = ListCampersResponses[keyof ListCampersResponses];
-
-export type CreateCamperData = {
-    body: CamperCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/campers';
-};
-
-export type CreateCamperResponses = {
-    /**
-     * Success
-     */
-    200: Camper;
-};
-
-export type CreateCamperResponse = CreateCamperResponses[keyof CreateCamperResponses];
-
-export type DeleteCamperByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/campers/{id}';
-};
-
-export type DeleteCamperByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteCamperByIdResponse = DeleteCamperByIdResponses[keyof DeleteCamperByIdResponses];
-
-export type GetCamperByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/campers/{id}';
-};
-
-export type GetCamperByIdResponses = {
-    /**
-     * Success
-     */
-    200: Camper;
-};
-
-export type GetCamperByIdResponse = GetCamperByIdResponses[keyof GetCamperByIdResponses];
-
-export type UpdateCamperByIdData = {
-    body: CamperUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/campers/{id}';
-};
-
-export type UpdateCamperByIdResponses = {
-    /**
-     * Success
-     */
-    200: Camper;
-};
-
-export type UpdateCamperByIdResponse = UpdateCamperByIdResponses[keyof UpdateCamperByIdResponses];
-
-export type ListStaffMembersData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/staff-members';
-};
-
-export type ListStaffMembersResponses = {
-    /**
-     * Success
-     */
-    200: StaffMembersListResponse;
-};
-
-export type ListStaffMembersResponse = ListStaffMembersResponses[keyof ListStaffMembersResponses];
-
-export type CreateStaffMemberData = {
-    body: StaffMemberCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/staff-members';
-};
-
-export type CreateStaffMemberResponses = {
-    /**
-     * Success
-     */
-    200: StaffMember;
-};
-
-export type CreateStaffMemberResponse = CreateStaffMemberResponses[keyof CreateStaffMemberResponses];
-
-export type DeleteStaffMemberByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/staff-members/{id}';
-};
-
-export type DeleteStaffMemberByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteStaffMemberByIdResponse = DeleteStaffMemberByIdResponses[keyof DeleteStaffMemberByIdResponses];
-
-export type GetStaffMemberByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/staff-members/{id}';
-};
-
-export type GetStaffMemberByIdResponses = {
-    /**
-     * Success
-     */
-    200: StaffMember;
-};
-
-export type GetStaffMemberByIdResponse = GetStaffMemberByIdResponses[keyof GetStaffMemberByIdResponses];
-
-export type UpdateStaffMemberByIdData = {
-    body: StaffMemberUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/staff-members/{id}';
-};
-
-export type UpdateStaffMemberByIdResponses = {
-    /**
-     * Success
-     */
-    200: StaffMember;
-};
-
-export type UpdateStaffMemberByIdResponse = UpdateStaffMemberByIdResponses[keyof UpdateStaffMemberByIdResponses];
-
-export type ListAreasData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/areas';
-};
-
-export type ListAreasResponses = {
-    /**
-     * Success
-     */
-    200: AreasListResponse;
-};
-
-export type ListAreasResponse = ListAreasResponses[keyof ListAreasResponses];
-
-export type CreateAreaData = {
-    body: AreaCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/areas';
-};
-
-export type CreateAreaResponses = {
-    /**
-     * Success
-     */
-    200: Area;
-};
-
-export type CreateAreaResponse = CreateAreaResponses[keyof CreateAreaResponses];
-
-export type DeleteAreaByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/areas/{id}';
-};
-
-export type DeleteAreaByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteAreaByIdResponse = DeleteAreaByIdResponses[keyof DeleteAreaByIdResponses];
-
-export type GetAreaByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/areas/{id}';
-};
-
-export type GetAreaByIdResponses = {
-    /**
-     * Success
-     */
-    200: Area;
-};
-
-export type GetAreaByIdResponse = GetAreaByIdResponses[keyof GetAreaByIdResponses];
-
-export type UpdateAreaByIdData = {
-    body: AreaUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/areas/{id}';
-};
-
-export type UpdateAreaByIdResponses = {
-    /**
-     * Success
-     */
-    200: Area;
-};
-
-export type UpdateAreaByIdResponse = UpdateAreaByIdResponses[keyof UpdateAreaByIdResponses];
-
-export type ListLocationsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/locations';
-};
-
-export type ListLocationsResponses = {
-    /**
-     * Success
-     */
-    200: LocationsListResponse;
-};
-
-export type ListLocationsResponse = ListLocationsResponses[keyof ListLocationsResponses];
-
-export type CreateLocationData = {
-    body: LocationCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/locations';
-};
-
-export type CreateLocationResponses = {
-    /**
-     * Success
-     */
-    200: Location;
-};
-
-export type CreateLocationResponse = CreateLocationResponses[keyof CreateLocationResponses];
-
-export type DeleteLocationByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/locations/{id}';
-};
-
-export type DeleteLocationByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteLocationByIdResponse = DeleteLocationByIdResponses[keyof DeleteLocationByIdResponses];
-
-export type GetLocationByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/locations/{id}';
-};
-
-export type GetLocationByIdResponses = {
-    /**
-     * Success
-     */
-    200: Location;
-};
-
-export type GetLocationByIdResponse = GetLocationByIdResponses[keyof GetLocationByIdResponses];
-
-export type UpdateLocationByIdData = {
-    body: LocationUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/locations/{id}';
-};
-
-export type UpdateLocationByIdResponses = {
-    /**
-     * Success
-     */
-    200: Location;
-};
-
-export type UpdateLocationByIdResponse = UpdateLocationByIdResponses[keyof UpdateLocationByIdResponses];
-
-export type ListProgramsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/programs';
-};
-
-export type ListProgramsResponses = {
-    /**
-     * Success
-     */
-    200: ProgramsListResponse;
-};
-
-export type ListProgramsResponse = ListProgramsResponses[keyof ListProgramsResponses];
-
-export type CreateProgramData = {
-    body: ProgramCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/programs';
-};
-
-export type CreateProgramResponses = {
-    /**
-     * Success
-     */
-    200: Program;
-};
-
-export type CreateProgramResponse = CreateProgramResponses[keyof CreateProgramResponses];
-
-export type DeleteProgramByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/programs/{id}';
-};
-
-export type DeleteProgramByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteProgramByIdResponse = DeleteProgramByIdResponses[keyof DeleteProgramByIdResponses];
-
-export type GetProgramByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/programs/{id}';
-};
-
-export type GetProgramByIdResponses = {
-    /**
-     * Success
-     */
-    200: Program;
-};
-
-export type GetProgramByIdResponse = GetProgramByIdResponses[keyof GetProgramByIdResponses];
-
-export type UpdateProgramByIdData = {
-    body: ProgramUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/programs/{id}';
-};
-
-export type UpdateProgramByIdResponses = {
-    /**
-     * Success
-     */
-    200: Program;
-};
-
-export type UpdateProgramByIdResponse = UpdateProgramByIdResponses[keyof UpdateProgramByIdResponses];
-
-export type ListActivitiesData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/activities';
-};
-
-export type ListActivitiesResponses = {
-    /**
-     * Success
-     */
-    200: ActivitiesListResponse;
-};
-
-export type ListActivitiesResponse = ListActivitiesResponses[keyof ListActivitiesResponses];
-
-export type CreateActivityData = {
-    body: ActivityCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/activities';
-};
-
-export type CreateActivityResponses = {
-    /**
-     * Success
-     */
-    200: Activity;
-};
-
-export type CreateActivityResponse = CreateActivityResponses[keyof CreateActivityResponses];
-
-export type DeleteActivityByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/activities/{id}';
-};
-
-export type DeleteActivityByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteActivityByIdResponse = DeleteActivityByIdResponses[keyof DeleteActivityByIdResponses];
-
-export type GetActivityByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/activities/{id}';
-};
-
-export type GetActivityByIdResponses = {
-    /**
-     * Success
-     */
-    200: Activity;
-};
-
-export type GetActivityByIdResponse = GetActivityByIdResponses[keyof GetActivityByIdResponses];
-
-export type UpdateActivityByIdData = {
-    body: ActivityUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/activities/{id}';
-};
-
-export type UpdateActivityByIdResponses = {
-    /**
-     * Success
-     */
-    200: Activity;
-};
-
-export type UpdateActivityByIdResponse = UpdateActivityByIdResponses[keyof UpdateActivityByIdResponses];
-
-export type ListColorsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/colors';
-};
-
-export type ListColorsResponses = {
-    /**
-     * Success
-     */
-    200: ColorsListResponse;
-};
-
-export type ListColorsResponse = ListColorsResponses[keyof ListColorsResponses];
-
-export type CreateColorData = {
-    body: ColorCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/colors';
-};
-
-export type CreateColorResponses = {
-    /**
-     * Success
-     */
-    200: Color;
-};
-
-export type CreateColorResponse = CreateColorResponses[keyof CreateColorResponses];
-
-export type DeleteColorByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/colors/{id}';
-};
-
-export type DeleteColorByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteColorByIdResponse = DeleteColorByIdResponses[keyof DeleteColorByIdResponses];
-
-export type GetColorByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/colors/{id}';
-};
-
-export type GetColorByIdResponses = {
-    /**
-     * Success
-     */
-    200: Color;
-};
-
-export type GetColorByIdResponse = GetColorByIdResponses[keyof GetColorByIdResponses];
-
-export type UpdateColorByIdData = {
-    body: ColorUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/colors/{id}';
-};
-
-export type UpdateColorByIdResponses = {
-    /**
-     * Success
-     */
-    200: Color;
-};
-
-export type UpdateColorByIdResponse = UpdateColorByIdResponses[keyof UpdateColorByIdResponses];
-
-export type ListRolesData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/roles';
-};
-
-export type ListRolesResponses = {
-    /**
-     * Success
-     */
-    200: RolesListResponse;
-};
-
-export type ListRolesResponse = ListRolesResponses[keyof ListRolesResponses];
-
-export type CreateRoleData = {
-    body: RoleCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/roles';
-};
-
-export type CreateRoleResponses = {
-    /**
-     * Success
-     */
-    200: Role;
-};
-
-export type CreateRoleResponse = CreateRoleResponses[keyof CreateRoleResponses];
-
-export type DeleteRoleByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/roles/{id}';
-};
-
-export type DeleteRoleByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteRoleByIdResponse = DeleteRoleByIdResponses[keyof DeleteRoleByIdResponses];
-
-export type GetRoleByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/roles/{id}';
-};
-
-export type GetRoleByIdResponses = {
-    /**
-     * Success
-     */
-    200: Role;
-};
-
-export type GetRoleByIdResponse = GetRoleByIdResponses[keyof GetRoleByIdResponses];
-
-export type UpdateRoleByIdData = {
-    body: RoleUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/roles/{id}';
-};
-
-export type UpdateRoleByIdResponses = {
-    /**
-     * Success
-     */
-    200: Role;
-};
-
-export type UpdateRoleByIdResponse = UpdateRoleByIdResponses[keyof UpdateRoleByIdResponses];
-
-export type ListCertificationsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/certifications';
-};
-
-export type ListCertificationsResponses = {
-    /**
-     * Success
-     */
-    200: CertificationsListResponse;
-};
-
-export type ListCertificationsResponse = ListCertificationsResponses[keyof ListCertificationsResponses];
-
-export type CreateCertificationData = {
-    body: CertificationCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/certifications';
-};
-
-export type CreateCertificationResponses = {
-    /**
-     * Success
-     */
-    200: Certification;
-};
-
-export type CreateCertificationResponse = CreateCertificationResponses[keyof CreateCertificationResponses];
-
-export type DeleteCertificationByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/certifications/{id}';
-};
-
-export type DeleteCertificationByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteCertificationByIdResponse = DeleteCertificationByIdResponses[keyof DeleteCertificationByIdResponses];
-
-export type GetCertificationByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/certifications/{id}';
-};
-
-export type GetCertificationByIdResponses = {
-    /**
-     * Success
-     */
-    200: Certification;
-};
-
-export type GetCertificationByIdResponse = GetCertificationByIdResponses[keyof GetCertificationByIdResponses];
-
-export type UpdateCertificationByIdData = {
-    body: CertificationUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/certifications/{id}';
-};
-
-export type UpdateCertificationByIdResponses = {
-    /**
-     * Success
-     */
-    200: Certification;
-};
-
-export type UpdateCertificationByIdResponse = UpdateCertificationByIdResponses[keyof UpdateCertificationByIdResponses];
-
-export type ListHousingRoomsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/housing-rooms';
-};
-
-export type ListHousingRoomsResponses = {
-    /**
-     * Success
-     */
-    200: HousingRoomsListResponse;
-};
-
-export type ListHousingRoomsResponse = ListHousingRoomsResponses[keyof ListHousingRoomsResponses];
-
-export type CreateHousingRoomData = {
-    body: HousingRoomCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/housing-rooms';
-};
-
-export type CreateHousingRoomResponses = {
-    /**
-     * Success
-     */
-    200: HousingRoom;
-};
-
-export type CreateHousingRoomResponse = CreateHousingRoomResponses[keyof CreateHousingRoomResponses];
-
-export type DeleteHousingRoomByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/housing-rooms/{id}';
-};
-
-export type DeleteHousingRoomByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteHousingRoomByIdResponse = DeleteHousingRoomByIdResponses[keyof DeleteHousingRoomByIdResponses];
-
-export type GetHousingRoomByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/housing-rooms/{id}';
-};
-
-export type GetHousingRoomByIdResponses = {
-    /**
-     * Success
-     */
-    200: HousingRoom;
-};
-
-export type GetHousingRoomByIdResponse = GetHousingRoomByIdResponses[keyof GetHousingRoomByIdResponses];
-
-export type UpdateHousingRoomByIdData = {
-    body: HousingRoomUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/housing-rooms/{id}';
-};
-
-export type UpdateHousingRoomByIdResponses = {
-    /**
-     * Success
-     */
-    200: HousingRoom;
-};
-
-export type UpdateHousingRoomByIdResponse = UpdateHousingRoomByIdResponses[keyof UpdateHousingRoomByIdResponses];
-
-export type ListGroupsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/groups';
-};
-
-export type ListGroupsResponses = {
-    /**
-     * Success
-     */
-    200: GroupsListResponse;
-};
-
-export type ListGroupsResponse = ListGroupsResponses[keyof ListGroupsResponses];
-
-export type CreateGroupData = {
-    body: GroupCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/groups';
-};
-
-export type CreateGroupResponses = {
-    /**
-     * Success
-     */
-    200: Group;
-};
-
-export type CreateGroupResponse = CreateGroupResponses[keyof CreateGroupResponses];
-
-export type DeleteGroupByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/groups/{id}';
-};
-
-export type DeleteGroupByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteGroupByIdResponse = DeleteGroupByIdResponses[keyof DeleteGroupByIdResponses];
-
-export type GetGroupByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/groups/{id}';
-};
-
-export type GetGroupByIdResponses = {
-    /**
-     * Success
-     */
-    200: Group;
-};
-
-export type GetGroupByIdResponse = GetGroupByIdResponses[keyof GetGroupByIdResponses];
-
-export type UpdateGroupByIdData = {
-    body: GroupUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/groups/{id}';
-};
-
-export type UpdateGroupByIdResponses = {
-    /**
-     * Success
-     */
-    200: Group;
-};
-
-export type UpdateGroupByIdResponse = UpdateGroupByIdResponses[keyof UpdateGroupByIdResponses];
-
-export type ListEventsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Maximum number of items to return per page
-         */
-        limit?: number;
-        /**
-         * Number of items to skip before starting to return results
-         */
-        offset?: number;
-        /**
-         * Search term to filter items by name, title, or other text fields
-         */
-        search?: string;
-    };
-    url: '/events';
-};
-
-export type ListEventsResponses = {
-    /**
-     * Success
-     */
-    200: EventsListResponse;
-};
-
-export type ListEventsResponse = ListEventsResponses[keyof ListEventsResponses];
-
-export type CreateEventData = {
-    body: EventCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/events';
-};
-
-export type CreateEventResponses = {
-    /**
-     * Success
-     */
-    200: Event;
-};
-
-export type CreateEventResponse = CreateEventResponses[keyof CreateEventResponses];
-
-export type DeleteEventByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/events/{id}';
-};
-
-export type DeleteEventByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteEventByIdResponse = DeleteEventByIdResponses[keyof DeleteEventByIdResponses];
-
-export type GetEventByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/events/{id}';
-};
-
-export type GetEventByIdResponses = {
-    /**
-     * Success
-     */
-    200: Event;
-};
-
-export type GetEventByIdResponse = GetEventByIdResponses[keyof GetEventByIdResponses];
-
-export type UpdateEventByIdData = {
-    body: EventUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/events/{id}';
-};
-
-export type UpdateEventByIdResponses = {
-    /**
-     * Success
-     */
-    200: Event;
-};
-
-export type UpdateEventByIdResponse = UpdateEventByIdResponses[keyof UpdateEventByIdResponses];
-
-export type GetCampsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/camps';
-};
-
-export type GetCampsResponses = {
-    /**
-     * Success
-     */
-    200: CampsListResponse;
-};
-
-export type GetCampsResponse = GetCampsResponses[keyof GetCampsResponses];
-
-export type CreateCampData = {
-    body: CampCreationRequest;
-    path?: never;
-    query?: never;
-    url: '/camps';
-};
-
-export type CreateCampResponses = {
-    /**
-     * Success
-     */
-    200: unknown;
-};
-
-export type DeleteCampByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/camps/{id}';
-};
-
-export type DeleteCampByIdResponses = {
-    /**
-     * Deleted
-     */
-    204: void;
-};
-
-export type DeleteCampByIdResponse = DeleteCampByIdResponses[keyof DeleteCampByIdResponses];
-
-export type GetCampByIdData = {
-    body?: never;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/camps/{id}';
-};
-
-export type GetCampByIdResponses = {
-    /**
-     * Success
-     */
-    200: Camp;
-};
-
-export type GetCampByIdResponse = GetCampByIdResponses[keyof GetCampByIdResponses];
-
-export type UpdateCampByIdData = {
-    body: CampUpdateRequest;
-    path: {
-        /**
-         * Resource ID
-         */
-        id: string;
-    };
-    query?: never;
-    url: '/camps/{id}';
-};
-
-export type UpdateCampByIdResponses = {
-    /**
-     * Success
-     */
-    200: Camp;
-};
-
-export type UpdateCampByIdResponse = UpdateCampByIdResponses[keyof UpdateCampByIdResponses];
-
 export type GetTenantsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/tenants';
+    url: '/api/v1/tenants';
 };
 
 export type GetTenantsResponses = {
@@ -2338,7 +843,7 @@ export type GetTenantByIdData = {
         id: string;
     };
     query?: never;
-    url: '/tenants/{id}';
+    url: '/api/v1/tenants/{id}';
 };
 
 export type GetTenantByIdResponses = {
@@ -2349,3 +854,1786 @@ export type GetTenantByIdResponses = {
 };
 
 export type GetTenantByIdResponse = GetTenantByIdResponses[keyof GetTenantByIdResponses];
+
+export type GetCampsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/camps';
+};
+
+export type GetCampsResponses = {
+    /**
+     * Success
+     */
+    200: CampsListResponse;
+};
+
+export type GetCampsResponse = GetCampsResponses[keyof GetCampsResponses];
+
+export type CreateCampData = {
+    body: CampCreationRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/camps';
+};
+
+export type CreateCampResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type DeleteCampByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{id}';
+};
+
+export type DeleteCampByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteCampByIdResponse = DeleteCampByIdResponses[keyof DeleteCampByIdResponses];
+
+export type GetCampByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{id}';
+};
+
+export type GetCampByIdResponses = {
+    /**
+     * Success
+     */
+    200: Camp;
+};
+
+export type GetCampByIdResponse = GetCampByIdResponses[keyof GetCampByIdResponses];
+
+export type UpdateCampByIdData = {
+    body: CampUpdateRequest;
+    path: {
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{id}';
+};
+
+export type UpdateCampByIdResponses = {
+    /**
+     * Success
+     */
+    200: Camp;
+};
+
+export type UpdateCampByIdResponse = UpdateCampByIdResponses[keyof UpdateCampByIdResponses];
+
+export type ListSessionsData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/sessions';
+};
+
+export type ListSessionsResponses = {
+    /**
+     * Success
+     */
+    200: SessionsListResponse;
+};
+
+export type ListSessionsResponse = ListSessionsResponses[keyof ListSessionsResponses];
+
+export type CreateSessionData = {
+    body: SessionCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/sessions';
+};
+
+export type CreateSessionResponses = {
+    /**
+     * Success
+     */
+    200: Session;
+};
+
+export type CreateSessionResponse = CreateSessionResponses[keyof CreateSessionResponses];
+
+export type DeleteSessionByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/sessions/{id}';
+};
+
+export type DeleteSessionByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteSessionByIdResponse = DeleteSessionByIdResponses[keyof DeleteSessionByIdResponses];
+
+export type GetSessionByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/sessions/{id}';
+};
+
+export type GetSessionByIdResponses = {
+    /**
+     * Success
+     */
+    200: Session;
+};
+
+export type GetSessionByIdResponse = GetSessionByIdResponses[keyof GetSessionByIdResponses];
+
+export type UpdateSessionByIdData = {
+    body: SessionUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/sessions/{id}';
+};
+
+export type UpdateSessionByIdResponses = {
+    /**
+     * Success
+     */
+    200: Session;
+};
+
+export type UpdateSessionByIdResponse = UpdateSessionByIdResponses[keyof UpdateSessionByIdResponses];
+
+export type ListCampersData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/campers';
+};
+
+export type ListCampersResponses = {
+    /**
+     * Success
+     */
+    200: CampersListResponse;
+};
+
+export type ListCampersResponse = ListCampersResponses[keyof ListCampersResponses];
+
+export type CreateCamperData = {
+    body: CamperCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/campers';
+};
+
+export type CreateCamperResponses = {
+    /**
+     * Success
+     */
+    200: Camper;
+};
+
+export type CreateCamperResponse = CreateCamperResponses[keyof CreateCamperResponses];
+
+export type DeleteCamperByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/campers/{id}';
+};
+
+export type DeleteCamperByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteCamperByIdResponse = DeleteCamperByIdResponses[keyof DeleteCamperByIdResponses];
+
+export type GetCamperByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/campers/{id}';
+};
+
+export type GetCamperByIdResponses = {
+    /**
+     * Success
+     */
+    200: Camper;
+};
+
+export type GetCamperByIdResponse = GetCamperByIdResponses[keyof GetCamperByIdResponses];
+
+export type UpdateCamperByIdData = {
+    body: CamperUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/campers/{id}';
+};
+
+export type UpdateCamperByIdResponses = {
+    /**
+     * Success
+     */
+    200: Camper;
+};
+
+export type UpdateCamperByIdResponse = UpdateCamperByIdResponses[keyof UpdateCamperByIdResponses];
+
+export type ListStaffMembersData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/staff-members';
+};
+
+export type ListStaffMembersResponses = {
+    /**
+     * Success
+     */
+    200: StaffMembersListResponse;
+};
+
+export type ListStaffMembersResponse = ListStaffMembersResponses[keyof ListStaffMembersResponses];
+
+export type CreateStaffMemberData = {
+    body: StaffMemberCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/staff-members';
+};
+
+export type CreateStaffMemberResponses = {
+    /**
+     * Success
+     */
+    200: StaffMember;
+};
+
+export type CreateStaffMemberResponse = CreateStaffMemberResponses[keyof CreateStaffMemberResponses];
+
+export type DeleteStaffMemberByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/staff-members/{id}';
+};
+
+export type DeleteStaffMemberByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteStaffMemberByIdResponse = DeleteStaffMemberByIdResponses[keyof DeleteStaffMemberByIdResponses];
+
+export type GetStaffMemberByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/staff-members/{id}';
+};
+
+export type GetStaffMemberByIdResponses = {
+    /**
+     * Success
+     */
+    200: StaffMember;
+};
+
+export type GetStaffMemberByIdResponse = GetStaffMemberByIdResponses[keyof GetStaffMemberByIdResponses];
+
+export type UpdateStaffMemberByIdData = {
+    body: StaffMemberUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/staff-members/{id}';
+};
+
+export type UpdateStaffMemberByIdResponses = {
+    /**
+     * Success
+     */
+    200: StaffMember;
+};
+
+export type UpdateStaffMemberByIdResponse = UpdateStaffMemberByIdResponses[keyof UpdateStaffMemberByIdResponses];
+
+export type ListAreasData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/areas';
+};
+
+export type ListAreasResponses = {
+    /**
+     * Success
+     */
+    200: AreasListResponse;
+};
+
+export type ListAreasResponse = ListAreasResponses[keyof ListAreasResponses];
+
+export type CreateAreaData = {
+    body: AreaCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/areas';
+};
+
+export type CreateAreaResponses = {
+    /**
+     * Success
+     */
+    200: Area;
+};
+
+export type CreateAreaResponse = CreateAreaResponses[keyof CreateAreaResponses];
+
+export type DeleteAreaByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/areas/{id}';
+};
+
+export type DeleteAreaByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteAreaByIdResponse = DeleteAreaByIdResponses[keyof DeleteAreaByIdResponses];
+
+export type GetAreaByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/areas/{id}';
+};
+
+export type GetAreaByIdResponses = {
+    /**
+     * Success
+     */
+    200: Area;
+};
+
+export type GetAreaByIdResponse = GetAreaByIdResponses[keyof GetAreaByIdResponses];
+
+export type UpdateAreaByIdData = {
+    body: AreaUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/areas/{id}';
+};
+
+export type UpdateAreaByIdResponses = {
+    /**
+     * Success
+     */
+    200: Area;
+};
+
+export type UpdateAreaByIdResponse = UpdateAreaByIdResponses[keyof UpdateAreaByIdResponses];
+
+export type ListLocationsData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/locations';
+};
+
+export type ListLocationsResponses = {
+    /**
+     * Success
+     */
+    200: LocationsListResponse;
+};
+
+export type ListLocationsResponse = ListLocationsResponses[keyof ListLocationsResponses];
+
+export type CreateLocationData = {
+    body: LocationCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/locations';
+};
+
+export type CreateLocationResponses = {
+    /**
+     * Success
+     */
+    200: Location;
+};
+
+export type CreateLocationResponse = CreateLocationResponses[keyof CreateLocationResponses];
+
+export type DeleteLocationByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/locations/{id}';
+};
+
+export type DeleteLocationByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteLocationByIdResponse = DeleteLocationByIdResponses[keyof DeleteLocationByIdResponses];
+
+export type GetLocationByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/locations/{id}';
+};
+
+export type GetLocationByIdResponses = {
+    /**
+     * Success
+     */
+    200: Location;
+};
+
+export type GetLocationByIdResponse = GetLocationByIdResponses[keyof GetLocationByIdResponses];
+
+export type UpdateLocationByIdData = {
+    body: LocationUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/locations/{id}';
+};
+
+export type UpdateLocationByIdResponses = {
+    /**
+     * Success
+     */
+    200: Location;
+};
+
+export type UpdateLocationByIdResponse = UpdateLocationByIdResponses[keyof UpdateLocationByIdResponses];
+
+export type ListProgramsData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/programs';
+};
+
+export type ListProgramsResponses = {
+    /**
+     * Success
+     */
+    200: ProgramsListResponse;
+};
+
+export type ListProgramsResponse = ListProgramsResponses[keyof ListProgramsResponses];
+
+export type CreateProgramData = {
+    body: ProgramCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/programs';
+};
+
+export type CreateProgramResponses = {
+    /**
+     * Success
+     */
+    200: Program;
+};
+
+export type CreateProgramResponse = CreateProgramResponses[keyof CreateProgramResponses];
+
+export type DeleteProgramByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/programs/{id}';
+};
+
+export type DeleteProgramByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteProgramByIdResponse = DeleteProgramByIdResponses[keyof DeleteProgramByIdResponses];
+
+export type GetProgramByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/programs/{id}';
+};
+
+export type GetProgramByIdResponses = {
+    /**
+     * Success
+     */
+    200: Program;
+};
+
+export type GetProgramByIdResponse = GetProgramByIdResponses[keyof GetProgramByIdResponses];
+
+export type UpdateProgramByIdData = {
+    body: ProgramUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/programs/{id}';
+};
+
+export type UpdateProgramByIdResponses = {
+    /**
+     * Success
+     */
+    200: Program;
+};
+
+export type UpdateProgramByIdResponse = UpdateProgramByIdResponses[keyof UpdateProgramByIdResponses];
+
+export type ListActivitiesData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/activities';
+};
+
+export type ListActivitiesResponses = {
+    /**
+     * Success
+     */
+    200: ActivitiesListResponse;
+};
+
+export type ListActivitiesResponse = ListActivitiesResponses[keyof ListActivitiesResponses];
+
+export type CreateActivityData = {
+    body: ActivityCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/activities';
+};
+
+export type CreateActivityResponses = {
+    /**
+     * Success
+     */
+    200: Activity;
+};
+
+export type CreateActivityResponse = CreateActivityResponses[keyof CreateActivityResponses];
+
+export type DeleteActivityByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/activities/{id}';
+};
+
+export type DeleteActivityByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteActivityByIdResponse = DeleteActivityByIdResponses[keyof DeleteActivityByIdResponses];
+
+export type GetActivityByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/activities/{id}';
+};
+
+export type GetActivityByIdResponses = {
+    /**
+     * Success
+     */
+    200: Activity;
+};
+
+export type GetActivityByIdResponse = GetActivityByIdResponses[keyof GetActivityByIdResponses];
+
+export type UpdateActivityByIdData = {
+    body: ActivityUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/activities/{id}';
+};
+
+export type UpdateActivityByIdResponses = {
+    /**
+     * Success
+     */
+    200: Activity;
+};
+
+export type UpdateActivityByIdResponse = UpdateActivityByIdResponses[keyof UpdateActivityByIdResponses];
+
+export type ListColorsData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/colors';
+};
+
+export type ListColorsResponses = {
+    /**
+     * Success
+     */
+    200: ColorsListResponse;
+};
+
+export type ListColorsResponse = ListColorsResponses[keyof ListColorsResponses];
+
+export type CreateColorData = {
+    body: ColorCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/colors';
+};
+
+export type CreateColorResponses = {
+    /**
+     * Success
+     */
+    200: Color;
+};
+
+export type CreateColorResponse = CreateColorResponses[keyof CreateColorResponses];
+
+export type DeleteColorByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/colors/{id}';
+};
+
+export type DeleteColorByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteColorByIdResponse = DeleteColorByIdResponses[keyof DeleteColorByIdResponses];
+
+export type GetColorByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/colors/{id}';
+};
+
+export type GetColorByIdResponses = {
+    /**
+     * Success
+     */
+    200: Color;
+};
+
+export type GetColorByIdResponse = GetColorByIdResponses[keyof GetColorByIdResponses];
+
+export type UpdateColorByIdData = {
+    body: ColorUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/colors/{id}';
+};
+
+export type UpdateColorByIdResponses = {
+    /**
+     * Success
+     */
+    200: Color;
+};
+
+export type UpdateColorByIdResponse = UpdateColorByIdResponses[keyof UpdateColorByIdResponses];
+
+export type ListRolesData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/roles';
+};
+
+export type ListRolesResponses = {
+    /**
+     * Success
+     */
+    200: RolesListResponse;
+};
+
+export type ListRolesResponse = ListRolesResponses[keyof ListRolesResponses];
+
+export type CreateRoleData = {
+    body: RoleCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/roles';
+};
+
+export type CreateRoleResponses = {
+    /**
+     * Success
+     */
+    200: Role;
+};
+
+export type CreateRoleResponse = CreateRoleResponses[keyof CreateRoleResponses];
+
+export type DeleteRoleByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/roles/{id}';
+};
+
+export type DeleteRoleByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteRoleByIdResponse = DeleteRoleByIdResponses[keyof DeleteRoleByIdResponses];
+
+export type GetRoleByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/roles/{id}';
+};
+
+export type GetRoleByIdResponses = {
+    /**
+     * Success
+     */
+    200: Role;
+};
+
+export type GetRoleByIdResponse = GetRoleByIdResponses[keyof GetRoleByIdResponses];
+
+export type UpdateRoleByIdData = {
+    body: RoleUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/roles/{id}';
+};
+
+export type UpdateRoleByIdResponses = {
+    /**
+     * Success
+     */
+    200: Role;
+};
+
+export type UpdateRoleByIdResponse = UpdateRoleByIdResponses[keyof UpdateRoleByIdResponses];
+
+export type ListCertificationsData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/certifications';
+};
+
+export type ListCertificationsResponses = {
+    /**
+     * Success
+     */
+    200: CertificationsListResponse;
+};
+
+export type ListCertificationsResponse = ListCertificationsResponses[keyof ListCertificationsResponses];
+
+export type CreateCertificationData = {
+    body: CertificationCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/certifications';
+};
+
+export type CreateCertificationResponses = {
+    /**
+     * Success
+     */
+    200: Certification;
+};
+
+export type CreateCertificationResponse = CreateCertificationResponses[keyof CreateCertificationResponses];
+
+export type DeleteCertificationByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/certifications/{id}';
+};
+
+export type DeleteCertificationByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteCertificationByIdResponse = DeleteCertificationByIdResponses[keyof DeleteCertificationByIdResponses];
+
+export type GetCertificationByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/certifications/{id}';
+};
+
+export type GetCertificationByIdResponses = {
+    /**
+     * Success
+     */
+    200: Certification;
+};
+
+export type GetCertificationByIdResponse = GetCertificationByIdResponses[keyof GetCertificationByIdResponses];
+
+export type UpdateCertificationByIdData = {
+    body: CertificationUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/certifications/{id}';
+};
+
+export type UpdateCertificationByIdResponses = {
+    /**
+     * Success
+     */
+    200: Certification;
+};
+
+export type UpdateCertificationByIdResponse = UpdateCertificationByIdResponses[keyof UpdateCertificationByIdResponses];
+
+export type ListHousingRoomsData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/housing-rooms';
+};
+
+export type ListHousingRoomsResponses = {
+    /**
+     * Success
+     */
+    200: HousingRoomsListResponse;
+};
+
+export type ListHousingRoomsResponse = ListHousingRoomsResponses[keyof ListHousingRoomsResponses];
+
+export type CreateHousingRoomData = {
+    body: HousingRoomCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/housing-rooms';
+};
+
+export type CreateHousingRoomResponses = {
+    /**
+     * Success
+     */
+    200: HousingRoom;
+};
+
+export type CreateHousingRoomResponse = CreateHousingRoomResponses[keyof CreateHousingRoomResponses];
+
+export type DeleteHousingRoomByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/housing-rooms/{id}';
+};
+
+export type DeleteHousingRoomByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteHousingRoomByIdResponse = DeleteHousingRoomByIdResponses[keyof DeleteHousingRoomByIdResponses];
+
+export type GetHousingRoomByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/housing-rooms/{id}';
+};
+
+export type GetHousingRoomByIdResponses = {
+    /**
+     * Success
+     */
+    200: HousingRoom;
+};
+
+export type GetHousingRoomByIdResponse = GetHousingRoomByIdResponses[keyof GetHousingRoomByIdResponses];
+
+export type UpdateHousingRoomByIdData = {
+    body: HousingRoomUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/housing-rooms/{id}';
+};
+
+export type UpdateHousingRoomByIdResponses = {
+    /**
+     * Success
+     */
+    200: HousingRoom;
+};
+
+export type UpdateHousingRoomByIdResponse = UpdateHousingRoomByIdResponses[keyof UpdateHousingRoomByIdResponses];
+
+export type ListGroupsData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/groups';
+};
+
+export type ListGroupsResponses = {
+    /**
+     * Success
+     */
+    200: GroupsListResponse;
+};
+
+export type ListGroupsResponse = ListGroupsResponses[keyof ListGroupsResponses];
+
+export type CreateGroupData = {
+    body: GroupCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/groups';
+};
+
+export type CreateGroupResponses = {
+    /**
+     * Success
+     */
+    200: Group;
+};
+
+export type CreateGroupResponse = CreateGroupResponses[keyof CreateGroupResponses];
+
+export type DeleteGroupByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/groups/{id}';
+};
+
+export type DeleteGroupByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteGroupByIdResponse = DeleteGroupByIdResponses[keyof DeleteGroupByIdResponses];
+
+export type GetGroupByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/groups/{id}';
+};
+
+export type GetGroupByIdResponses = {
+    /**
+     * Success
+     */
+    200: Group;
+};
+
+export type GetGroupByIdResponse = GetGroupByIdResponses[keyof GetGroupByIdResponses];
+
+export type UpdateGroupByIdData = {
+    body: GroupUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/groups/{id}';
+};
+
+export type UpdateGroupByIdResponses = {
+    /**
+     * Success
+     */
+    200: Group;
+};
+
+export type UpdateGroupByIdResponse = UpdateGroupByIdResponses[keyof UpdateGroupByIdResponses];
+
+export type ListEventsData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+    };
+    url: '/api/v1/camps/{camp_id}/events';
+};
+
+export type ListEventsResponses = {
+    /**
+     * Success
+     */
+    200: EventsListResponse;
+};
+
+export type ListEventsResponse = ListEventsResponses[keyof ListEventsResponses];
+
+export type CreateEventData = {
+    body: EventCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/events';
+};
+
+export type CreateEventResponses = {
+    /**
+     * Success
+     */
+    200: Event;
+};
+
+export type CreateEventResponse = CreateEventResponses[keyof CreateEventResponses];
+
+export type DeleteEventByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/events/{id}';
+};
+
+export type DeleteEventByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteEventByIdResponse = DeleteEventByIdResponses[keyof DeleteEventByIdResponses];
+
+export type GetEventByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/events/{id}';
+};
+
+export type GetEventByIdResponses = {
+    /**
+     * Success
+     */
+    200: Event;
+};
+
+export type GetEventByIdResponse = GetEventByIdResponses[keyof GetEventByIdResponses];
+
+export type UpdateEventByIdData = {
+    body: EventUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/events/{id}';
+};
+
+export type UpdateEventByIdResponses = {
+    /**
+     * Success
+     */
+    200: Event;
+};
+
+export type UpdateEventByIdResponse = UpdateEventByIdResponses[keyof UpdateEventByIdResponses];

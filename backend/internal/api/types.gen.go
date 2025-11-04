@@ -9,6 +9,13 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for AccessRuleRole.
+const (
+	AccessRuleRoleAdmin        AccessRuleRole = "admin"
+	AccessRuleRoleProgramAdmin AccessRuleRole = "program-admin"
+	AccessRuleRoleViewer       AccessRuleRole = "viewer"
+)
+
 // Defines values for CamperSpecGender.
 const (
 	CamperSpecGenderFemale CamperSpecGender = "female"
@@ -23,22 +30,24 @@ const (
 
 // Defines values for ScopeType.
 const (
-	ScopeTypeCAMP   ScopeType = "CAMP"
-	ScopeTypeSYSTEM ScopeType = "SYSTEM"
-	ScopeTypeTENANT ScopeType = "TENANT"
+	ScopeTypeCamp   ScopeType = "camp"
+	ScopeTypeSystem ScopeType = "system"
+	ScopeTypeTenant ScopeType = "tenant"
 )
 
 // AccessRule defines model for AccessRule.
 type AccessRule struct {
-	// RoleId Reference to the role ID (e.g., role-tenant-admin, role-camp-admin, role-viewer)
-	RoleId string `json:"roleId"`
+	Role AccessRuleRole `json:"role"`
 
-	// ScopeId The ID of the scope entity (null for SYSTEM, tenantId for TENANT, campId for CAMP)
+	// ScopeId The unique identifier of the tenant or camp according to the scope type (null for system)
 	ScopeId *string `json:"scopeId"`
 
 	// ScopeType The scope level for an access rule
 	ScopeType ScopeType `json:"scopeType"`
 }
+
+// AccessRuleRole defines model for AccessRule.Role.
+type AccessRuleRole string
 
 // ActivitiesListResponse defines model for ActivitiesListResponse.
 type ActivitiesListResponse struct {
@@ -904,6 +913,9 @@ type User struct {
 	TenantId string `json:"tenantId"`
 }
 
+// CampId defines model for camp_id.
+type CampId = openapi_types.UUID
+
 // Id defines model for id.
 type Id = string
 
@@ -1072,6 +1084,15 @@ type ListStaffMembersParams struct {
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
 }
 
+// LoginJSONRequestBody defines body for Login for application/json ContentType.
+type LoginJSONRequestBody = LoginRequest
+
+// SignupJSONRequestBody defines body for Signup for application/json ContentType.
+type SignupJSONRequestBody = SignupRequest
+
+// CreateCampJSONRequestBody defines body for CreateCamp for application/json ContentType.
+type CreateCampJSONRequestBody = CampCreationRequest
+
 // CreateActivityJSONRequestBody defines body for CreateActivity for application/json ContentType.
 type CreateActivityJSONRequestBody = ActivityCreationRequest
 
@@ -1084,23 +1105,11 @@ type CreateAreaJSONRequestBody = AreaCreationRequest
 // UpdateAreaByIdJSONRequestBody defines body for UpdateAreaById for application/json ContentType.
 type UpdateAreaByIdJSONRequestBody = AreaUpdateRequest
 
-// LoginJSONRequestBody defines body for Login for application/json ContentType.
-type LoginJSONRequestBody = LoginRequest
-
-// SignupJSONRequestBody defines body for Signup for application/json ContentType.
-type SignupJSONRequestBody = SignupRequest
-
 // CreateCamperJSONRequestBody defines body for CreateCamper for application/json ContentType.
 type CreateCamperJSONRequestBody = CamperCreationRequest
 
 // UpdateCamperByIdJSONRequestBody defines body for UpdateCamperById for application/json ContentType.
 type UpdateCamperByIdJSONRequestBody = CamperUpdateRequest
-
-// CreateCampJSONRequestBody defines body for CreateCamp for application/json ContentType.
-type CreateCampJSONRequestBody = CampCreationRequest
-
-// UpdateCampByIdJSONRequestBody defines body for UpdateCampById for application/json ContentType.
-type UpdateCampByIdJSONRequestBody = CampUpdateRequest
 
 // CreateCertificationJSONRequestBody defines body for CreateCertification for application/json ContentType.
 type CreateCertificationJSONRequestBody = CertificationCreationRequest
@@ -1161,3 +1170,6 @@ type CreateStaffMemberJSONRequestBody = StaffMemberCreationRequest
 
 // UpdateStaffMemberByIdJSONRequestBody defines body for UpdateStaffMemberById for application/json ContentType.
 type UpdateStaffMemberByIdJSONRequestBody = StaffMemberUpdateRequest
+
+// UpdateCampByIdJSONRequestBody defines body for UpdateCampById for application/json ContentType.
+type UpdateCampByIdJSONRequestBody = CampUpdateRequest

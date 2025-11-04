@@ -2,6 +2,7 @@ get:
   summary: List all locations
   operationId: listLocations
   parameters:
+    - $ref: "../parameters/camp_id.yaml"
     - $ref: "../parameters/limit.yaml"
     - $ref: "../parameters/offset.yaml"
     - $ref: "../parameters/search.yaml"
@@ -15,6 +16,8 @@ get:
 post:
   summary: Create a new location
   operationId: createLocation
+  parameters:
+    - $ref: "../parameters/camp_id.yaml"
   requestBody:
     required: true
     content:

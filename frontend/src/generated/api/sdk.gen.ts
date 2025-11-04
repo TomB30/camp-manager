@@ -23,7 +23,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  */
 export const login = <ThrowOnError extends boolean = false>(options: Options<LoginData, ThrowOnError>) => {
     return (options.client ?? client).post<LoginResponses, LoginErrors, ThrowOnError>({
-        url: '/auth/login',
+        url: '/api/v1/auth/login',
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ export const login = <ThrowOnError extends boolean = false>(options: Options<Log
  */
 export const signup = <ThrowOnError extends boolean = false>(options: Options<SignupData, ThrowOnError>) => {
     return (options.client ?? client).post<SignupResponses, SignupErrors, ThrowOnError>({
-        url: '/auth/signup',
+        url: '/api/v1/auth/signup',
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export const signup = <ThrowOnError extends boolean = false>(options: Options<Si
  */
 export const getCurrentUser = <ThrowOnError extends boolean = false>(options?: Options<GetCurrentUserData, ThrowOnError>) => {
     return (options?.client ?? client).get<GetCurrentUserResponses, GetCurrentUserErrors, ThrowOnError>({
-        url: '/auth/me',
+        url: '/api/v1/auth/me',
         ...options
     });
 };
@@ -61,762 +61,28 @@ export const getCurrentUser = <ThrowOnError extends boolean = false>(options?: O
  */
 export const logout = <ThrowOnError extends boolean = false>(options?: Options<LogoutData, ThrowOnError>) => {
     return (options?.client ?? client).post<LogoutResponses, LogoutErrors, ThrowOnError>({
-        url: '/auth/logout',
+        url: '/api/v1/auth/logout',
         ...options
     });
 };
 
 /**
- * List all sessions
+ * Get all tenants
  */
-export const listSessions = <ThrowOnError extends boolean = false>(options?: Options<ListSessionsData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListSessionsResponses, unknown, ThrowOnError>({
-        url: '/sessions',
+export const getTenants = <ThrowOnError extends boolean = false>(options?: Options<GetTenantsData, ThrowOnError>) => {
+    return (options?.client ?? client).get<GetTenantsResponses, unknown, ThrowOnError>({
+        url: '/api/v1/tenants',
         ...options
     });
 };
 
 /**
- * Create a new session
+ * Get tenant by ID
  */
-export const createSession = <ThrowOnError extends boolean = false>(options: Options<CreateSessionData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateSessionResponses, unknown, ThrowOnError>({
-        url: '/sessions',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete session by ID
- */
-export const deleteSessionById = <ThrowOnError extends boolean = false>(options: Options<DeleteSessionByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteSessionByIdResponses, unknown, ThrowOnError>({
-        url: '/sessions/{id}',
+export const getTenantById = <ThrowOnError extends boolean = false>(options: Options<GetTenantByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetTenantByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/tenants/{id}',
         ...options
-    });
-};
-
-/**
- * Get session by ID
- */
-export const getSessionById = <ThrowOnError extends boolean = false>(options: Options<GetSessionByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetSessionByIdResponses, unknown, ThrowOnError>({
-        url: '/sessions/{id}',
-        ...options
-    });
-};
-
-/**
- * Update session by ID
- */
-export const updateSessionById = <ThrowOnError extends boolean = false>(options: Options<UpdateSessionByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateSessionByIdResponses, unknown, ThrowOnError>({
-        url: '/sessions/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * List all campers
- */
-export const listCampers = <ThrowOnError extends boolean = false>(options?: Options<ListCampersData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListCampersResponses, unknown, ThrowOnError>({
-        url: '/campers',
-        ...options
-    });
-};
-
-/**
- * Create a new camper
- */
-export const createCamper = <ThrowOnError extends boolean = false>(options: Options<CreateCamperData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateCamperResponses, unknown, ThrowOnError>({
-        url: '/campers',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete camper
- */
-export const deleteCamperById = <ThrowOnError extends boolean = false>(options: Options<DeleteCamperByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteCamperByIdResponses, unknown, ThrowOnError>({
-        url: '/campers/{id}',
-        ...options
-    });
-};
-
-/**
- * Get camper by ID
- */
-export const getCamperById = <ThrowOnError extends boolean = false>(options: Options<GetCamperByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetCamperByIdResponses, unknown, ThrowOnError>({
-        url: '/campers/{id}',
-        ...options
-    });
-};
-
-/**
- * Update camper
- */
-export const updateCamperById = <ThrowOnError extends boolean = false>(options: Options<UpdateCamperByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateCamperByIdResponses, unknown, ThrowOnError>({
-        url: '/campers/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * List all staff members
- */
-export const listStaffMembers = <ThrowOnError extends boolean = false>(options?: Options<ListStaffMembersData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListStaffMembersResponses, unknown, ThrowOnError>({
-        url: '/staff-members',
-        ...options
-    });
-};
-
-/**
- * Create a new staff member
- */
-export const createStaffMember = <ThrowOnError extends boolean = false>(options: Options<CreateStaffMemberData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateStaffMemberResponses, unknown, ThrowOnError>({
-        url: '/staff-members',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete staff member by ID
- */
-export const deleteStaffMemberById = <ThrowOnError extends boolean = false>(options: Options<DeleteStaffMemberByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteStaffMemberByIdResponses, unknown, ThrowOnError>({
-        url: '/staff-members/{id}',
-        ...options
-    });
-};
-
-/**
- * Get staff member by ID
- */
-export const getStaffMemberById = <ThrowOnError extends boolean = false>(options: Options<GetStaffMemberByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetStaffMemberByIdResponses, unknown, ThrowOnError>({
-        url: '/staff-members/{id}',
-        ...options
-    });
-};
-
-/**
- * Update staff member by ID
- */
-export const updateStaffMemberById = <ThrowOnError extends boolean = false>(options: Options<UpdateStaffMemberByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateStaffMemberByIdResponses, unknown, ThrowOnError>({
-        url: '/staff-members/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * List all areas
- */
-export const listAreas = <ThrowOnError extends boolean = false>(options?: Options<ListAreasData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListAreasResponses, unknown, ThrowOnError>({
-        url: '/areas',
-        ...options
-    });
-};
-
-/**
- * Create a new area
- */
-export const createArea = <ThrowOnError extends boolean = false>(options: Options<CreateAreaData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateAreaResponses, unknown, ThrowOnError>({
-        url: '/areas',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete area
- */
-export const deleteAreaById = <ThrowOnError extends boolean = false>(options: Options<DeleteAreaByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteAreaByIdResponses, unknown, ThrowOnError>({
-        url: '/areas/{id}',
-        ...options
-    });
-};
-
-/**
- * Get area by ID
- */
-export const getAreaById = <ThrowOnError extends boolean = false>(options: Options<GetAreaByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetAreaByIdResponses, unknown, ThrowOnError>({
-        url: '/areas/{id}',
-        ...options
-    });
-};
-
-/**
- * Update area
- */
-export const updateAreaById = <ThrowOnError extends boolean = false>(options: Options<UpdateAreaByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateAreaByIdResponses, unknown, ThrowOnError>({
-        url: '/areas/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * List all locations
- */
-export const listLocations = <ThrowOnError extends boolean = false>(options?: Options<ListLocationsData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListLocationsResponses, unknown, ThrowOnError>({
-        url: '/locations',
-        ...options
-    });
-};
-
-/**
- * Create a new location
- */
-export const createLocation = <ThrowOnError extends boolean = false>(options: Options<CreateLocationData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateLocationResponses, unknown, ThrowOnError>({
-        url: '/locations',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete location by ID
- */
-export const deleteLocationById = <ThrowOnError extends boolean = false>(options: Options<DeleteLocationByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteLocationByIdResponses, unknown, ThrowOnError>({
-        url: '/locations/{id}',
-        ...options
-    });
-};
-
-/**
- * Get location by ID
- */
-export const getLocationById = <ThrowOnError extends boolean = false>(options: Options<GetLocationByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetLocationByIdResponses, unknown, ThrowOnError>({
-        url: '/locations/{id}',
-        ...options
-    });
-};
-
-/**
- * Update location by ID
- */
-export const updateLocationById = <ThrowOnError extends boolean = false>(options: Options<UpdateLocationByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateLocationByIdResponses, unknown, ThrowOnError>({
-        url: '/locations/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * List all programs
- */
-export const listPrograms = <ThrowOnError extends boolean = false>(options?: Options<ListProgramsData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListProgramsResponses, unknown, ThrowOnError>({
-        url: '/programs',
-        ...options
-    });
-};
-
-/**
- * Create a new program
- */
-export const createProgram = <ThrowOnError extends boolean = false>(options: Options<CreateProgramData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateProgramResponses, unknown, ThrowOnError>({
-        url: '/programs',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete program by ID
- */
-export const deleteProgramById = <ThrowOnError extends boolean = false>(options: Options<DeleteProgramByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteProgramByIdResponses, unknown, ThrowOnError>({
-        url: '/programs/{id}',
-        ...options
-    });
-};
-
-/**
- * Get program by ID
- */
-export const getProgramById = <ThrowOnError extends boolean = false>(options: Options<GetProgramByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetProgramByIdResponses, unknown, ThrowOnError>({
-        url: '/programs/{id}',
-        ...options
-    });
-};
-
-/**
- * Update program by ID
- */
-export const updateProgramById = <ThrowOnError extends boolean = false>(options: Options<UpdateProgramByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateProgramByIdResponses, unknown, ThrowOnError>({
-        url: '/programs/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * List all activities
- */
-export const listActivities = <ThrowOnError extends boolean = false>(options?: Options<ListActivitiesData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListActivitiesResponses, unknown, ThrowOnError>({
-        url: '/activities',
-        ...options
-    });
-};
-
-/**
- * Create a new activity
- */
-export const createActivity = <ThrowOnError extends boolean = false>(options: Options<CreateActivityData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateActivityResponses, unknown, ThrowOnError>({
-        url: '/activities',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete activity by ID
- */
-export const deleteActivityById = <ThrowOnError extends boolean = false>(options: Options<DeleteActivityByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteActivityByIdResponses, unknown, ThrowOnError>({
-        url: '/activities/{id}',
-        ...options
-    });
-};
-
-/**
- * Get activity by ID
- */
-export const getActivityById = <ThrowOnError extends boolean = false>(options: Options<GetActivityByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetActivityByIdResponses, unknown, ThrowOnError>({
-        url: '/activities/{id}',
-        ...options
-    });
-};
-
-/**
- * Update activity by ID
- */
-export const updateActivityById = <ThrowOnError extends boolean = false>(options: Options<UpdateActivityByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateActivityByIdResponses, unknown, ThrowOnError>({
-        url: '/activities/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * List all colors
- */
-export const listColors = <ThrowOnError extends boolean = false>(options?: Options<ListColorsData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListColorsResponses, unknown, ThrowOnError>({
-        url: '/colors',
-        ...options
-    });
-};
-
-/**
- * Create a new color
- */
-export const createColor = <ThrowOnError extends boolean = false>(options: Options<CreateColorData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateColorResponses, unknown, ThrowOnError>({
-        url: '/colors',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete color by ID
- */
-export const deleteColorById = <ThrowOnError extends boolean = false>(options: Options<DeleteColorByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteColorByIdResponses, unknown, ThrowOnError>({
-        url: '/colors/{id}',
-        ...options
-    });
-};
-
-/**
- * Get color by ID
- */
-export const getColorById = <ThrowOnError extends boolean = false>(options: Options<GetColorByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetColorByIdResponses, unknown, ThrowOnError>({
-        url: '/colors/{id}',
-        ...options
-    });
-};
-
-/**
- * Update color by ID
- */
-export const updateColorById = <ThrowOnError extends boolean = false>(options: Options<UpdateColorByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateColorByIdResponses, unknown, ThrowOnError>({
-        url: '/colors/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * List all roles
- */
-export const listRoles = <ThrowOnError extends boolean = false>(options?: Options<ListRolesData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListRolesResponses, unknown, ThrowOnError>({
-        url: '/roles',
-        ...options
-    });
-};
-
-/**
- * Create a new role
- */
-export const createRole = <ThrowOnError extends boolean = false>(options: Options<CreateRoleData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateRoleResponses, unknown, ThrowOnError>({
-        url: '/roles',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete role by ID
- */
-export const deleteRoleById = <ThrowOnError extends boolean = false>(options: Options<DeleteRoleByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteRoleByIdResponses, unknown, ThrowOnError>({
-        url: '/roles/{id}',
-        ...options
-    });
-};
-
-/**
- * Get role by ID
- */
-export const getRoleById = <ThrowOnError extends boolean = false>(options: Options<GetRoleByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetRoleByIdResponses, unknown, ThrowOnError>({
-        url: '/roles/{id}',
-        ...options
-    });
-};
-
-/**
- * Update role by ID
- */
-export const updateRoleById = <ThrowOnError extends boolean = false>(options: Options<UpdateRoleByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateRoleByIdResponses, unknown, ThrowOnError>({
-        url: '/roles/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * List all certifications
- */
-export const listCertifications = <ThrowOnError extends boolean = false>(options?: Options<ListCertificationsData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListCertificationsResponses, unknown, ThrowOnError>({
-        url: '/certifications',
-        ...options
-    });
-};
-
-/**
- * Create a new certification
- */
-export const createCertification = <ThrowOnError extends boolean = false>(options: Options<CreateCertificationData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateCertificationResponses, unknown, ThrowOnError>({
-        url: '/certifications',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete certification by ID
- */
-export const deleteCertificationById = <ThrowOnError extends boolean = false>(options: Options<DeleteCertificationByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteCertificationByIdResponses, unknown, ThrowOnError>({
-        url: '/certifications/{id}',
-        ...options
-    });
-};
-
-/**
- * Get certification by ID
- */
-export const getCertificationById = <ThrowOnError extends boolean = false>(options: Options<GetCertificationByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetCertificationByIdResponses, unknown, ThrowOnError>({
-        url: '/certifications/{id}',
-        ...options
-    });
-};
-
-/**
- * Update certification by ID
- */
-export const updateCertificationById = <ThrowOnError extends boolean = false>(options: Options<UpdateCertificationByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateCertificationByIdResponses, unknown, ThrowOnError>({
-        url: '/certifications/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * List all housing rooms
- */
-export const listHousingRooms = <ThrowOnError extends boolean = false>(options?: Options<ListHousingRoomsData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListHousingRoomsResponses, unknown, ThrowOnError>({
-        url: '/housing-rooms',
-        ...options
-    });
-};
-
-/**
- * Create a new housing room
- */
-export const createHousingRoom = <ThrowOnError extends boolean = false>(options: Options<CreateHousingRoomData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateHousingRoomResponses, unknown, ThrowOnError>({
-        url: '/housing-rooms',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete housing room by ID
- */
-export const deleteHousingRoomById = <ThrowOnError extends boolean = false>(options: Options<DeleteHousingRoomByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteHousingRoomByIdResponses, unknown, ThrowOnError>({
-        url: '/housing-rooms/{id}',
-        ...options
-    });
-};
-
-/**
- * Get housing room by ID
- */
-export const getHousingRoomById = <ThrowOnError extends boolean = false>(options: Options<GetHousingRoomByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetHousingRoomByIdResponses, unknown, ThrowOnError>({
-        url: '/housing-rooms/{id}',
-        ...options
-    });
-};
-
-/**
- * Update housing room
- */
-export const updateHousingRoomById = <ThrowOnError extends boolean = false>(options: Options<UpdateHousingRoomByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateHousingRoomByIdResponses, unknown, ThrowOnError>({
-        url: '/housing-rooms/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * List all groups
- */
-export const listGroups = <ThrowOnError extends boolean = false>(options?: Options<ListGroupsData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListGroupsResponses, unknown, ThrowOnError>({
-        url: '/groups',
-        ...options
-    });
-};
-
-/**
- * Create a new group
- */
-export const createGroup = <ThrowOnError extends boolean = false>(options: Options<CreateGroupData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateGroupResponses, unknown, ThrowOnError>({
-        url: '/groups',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete group by ID
- */
-export const deleteGroupById = <ThrowOnError extends boolean = false>(options: Options<DeleteGroupByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteGroupByIdResponses, unknown, ThrowOnError>({
-        url: '/groups/{id}',
-        ...options
-    });
-};
-
-/**
- * Get group by ID
- */
-export const getGroupById = <ThrowOnError extends boolean = false>(options: Options<GetGroupByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetGroupByIdResponses, unknown, ThrowOnError>({
-        url: '/groups/{id}',
-        ...options
-    });
-};
-
-/**
- * Update group by ID
- */
-export const updateGroupById = <ThrowOnError extends boolean = false>(options: Options<UpdateGroupByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateGroupByIdResponses, unknown, ThrowOnError>({
-        url: '/groups/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * List all events
- */
-export const listEvents = <ThrowOnError extends boolean = false>(options?: Options<ListEventsData, ThrowOnError>) => {
-    return (options?.client ?? client).get<ListEventsResponses, unknown, ThrowOnError>({
-        url: '/events',
-        ...options
-    });
-};
-
-/**
- * Create a new event
- */
-export const createEvent = <ThrowOnError extends boolean = false>(options: Options<CreateEventData, ThrowOnError>) => {
-    return (options.client ?? client).post<CreateEventResponses, unknown, ThrowOnError>({
-        url: '/events',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
-    });
-};
-
-/**
- * Delete event
- */
-export const deleteEventById = <ThrowOnError extends boolean = false>(options: Options<DeleteEventByIdData, ThrowOnError>) => {
-    return (options.client ?? client).delete<DeleteEventByIdResponses, unknown, ThrowOnError>({
-        url: '/events/{id}',
-        ...options
-    });
-};
-
-/**
- * Get event by ID
- */
-export const getEventById = <ThrowOnError extends boolean = false>(options: Options<GetEventByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetEventByIdResponses, unknown, ThrowOnError>({
-        url: '/events/{id}',
-        ...options
-    });
-};
-
-/**
- * Update event
- */
-export const updateEventById = <ThrowOnError extends boolean = false>(options: Options<UpdateEventByIdData, ThrowOnError>) => {
-    return (options.client ?? client).put<UpdateEventByIdResponses, unknown, ThrowOnError>({
-        url: '/events/{id}',
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        }
     });
 };
 
@@ -825,7 +91,7 @@ export const updateEventById = <ThrowOnError extends boolean = false>(options: O
  */
 export const getCamps = <ThrowOnError extends boolean = false>(options?: Options<GetCampsData, ThrowOnError>) => {
     return (options?.client ?? client).get<GetCampsResponses, unknown, ThrowOnError>({
-        url: '/camps',
+        url: '/api/v1/camps',
         ...options
     });
 };
@@ -835,7 +101,7 @@ export const getCamps = <ThrowOnError extends boolean = false>(options?: Options
  */
 export const createCamp = <ThrowOnError extends boolean = false>(options: Options<CreateCampData, ThrowOnError>) => {
     return (options.client ?? client).post<CreateCampResponses, unknown, ThrowOnError>({
-        url: '/camps',
+        url: '/api/v1/camps',
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -849,7 +115,7 @@ export const createCamp = <ThrowOnError extends boolean = false>(options: Option
  */
 export const deleteCampById = <ThrowOnError extends boolean = false>(options: Options<DeleteCampByIdData, ThrowOnError>) => {
     return (options.client ?? client).delete<DeleteCampByIdResponses, unknown, ThrowOnError>({
-        url: '/camps/{id}',
+        url: '/api/v1/camps/{id}',
         ...options
     });
 };
@@ -859,7 +125,7 @@ export const deleteCampById = <ThrowOnError extends boolean = false>(options: Op
  */
 export const getCampById = <ThrowOnError extends boolean = false>(options: Options<GetCampByIdData, ThrowOnError>) => {
     return (options.client ?? client).get<GetCampByIdResponses, unknown, ThrowOnError>({
-        url: '/camps/{id}',
+        url: '/api/v1/camps/{id}',
         ...options
     });
 };
@@ -869,7 +135,7 @@ export const getCampById = <ThrowOnError extends boolean = false>(options: Optio
  */
 export const updateCampById = <ThrowOnError extends boolean = false>(options: Options<UpdateCampByIdData, ThrowOnError>) => {
     return (options.client ?? client).put<UpdateCampByIdResponses, unknown, ThrowOnError>({
-        url: '/camps/{id}',
+        url: '/api/v1/camps/{id}',
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -879,21 +145,755 @@ export const updateCampById = <ThrowOnError extends boolean = false>(options: Op
 };
 
 /**
- * Get all tenants
+ * List all sessions
  */
-export const getTenants = <ThrowOnError extends boolean = false>(options?: Options<GetTenantsData, ThrowOnError>) => {
-    return (options?.client ?? client).get<GetTenantsResponses, unknown, ThrowOnError>({
-        url: '/tenants',
+export const listSessions = <ThrowOnError extends boolean = false>(options: Options<ListSessionsData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListSessionsResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/sessions',
         ...options
     });
 };
 
 /**
- * Get tenant by ID
+ * Create a new session
  */
-export const getTenantById = <ThrowOnError extends boolean = false>(options: Options<GetTenantByIdData, ThrowOnError>) => {
-    return (options.client ?? client).get<GetTenantByIdResponses, unknown, ThrowOnError>({
-        url: '/tenants/{id}',
+export const createSession = <ThrowOnError extends boolean = false>(options: Options<CreateSessionData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateSessionResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/sessions',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete session by ID
+ */
+export const deleteSessionById = <ThrowOnError extends boolean = false>(options: Options<DeleteSessionByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteSessionByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/sessions/{id}',
         ...options
+    });
+};
+
+/**
+ * Get session by ID
+ */
+export const getSessionById = <ThrowOnError extends boolean = false>(options: Options<GetSessionByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetSessionByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/sessions/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update session by ID
+ */
+export const updateSessionById = <ThrowOnError extends boolean = false>(options: Options<UpdateSessionByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateSessionByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/sessions/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List all campers
+ */
+export const listCampers = <ThrowOnError extends boolean = false>(options: Options<ListCampersData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListCampersResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/campers',
+        ...options
+    });
+};
+
+/**
+ * Create a new camper
+ */
+export const createCamper = <ThrowOnError extends boolean = false>(options: Options<CreateCamperData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateCamperResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/campers',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete camper
+ */
+export const deleteCamperById = <ThrowOnError extends boolean = false>(options: Options<DeleteCamperByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteCamperByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/campers/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get camper by ID
+ */
+export const getCamperById = <ThrowOnError extends boolean = false>(options: Options<GetCamperByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetCamperByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/campers/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update camper
+ */
+export const updateCamperById = <ThrowOnError extends boolean = false>(options: Options<UpdateCamperByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateCamperByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/campers/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List all staff members
+ */
+export const listStaffMembers = <ThrowOnError extends boolean = false>(options: Options<ListStaffMembersData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListStaffMembersResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/staff-members',
+        ...options
+    });
+};
+
+/**
+ * Create a new staff member
+ */
+export const createStaffMember = <ThrowOnError extends boolean = false>(options: Options<CreateStaffMemberData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateStaffMemberResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/staff-members',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete staff member by ID
+ */
+export const deleteStaffMemberById = <ThrowOnError extends boolean = false>(options: Options<DeleteStaffMemberByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteStaffMemberByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/staff-members/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get staff member by ID
+ */
+export const getStaffMemberById = <ThrowOnError extends boolean = false>(options: Options<GetStaffMemberByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetStaffMemberByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/staff-members/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update staff member by ID
+ */
+export const updateStaffMemberById = <ThrowOnError extends boolean = false>(options: Options<UpdateStaffMemberByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateStaffMemberByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/staff-members/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List all areas
+ */
+export const listAreas = <ThrowOnError extends boolean = false>(options: Options<ListAreasData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListAreasResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/areas',
+        ...options
+    });
+};
+
+/**
+ * Create a new area
+ */
+export const createArea = <ThrowOnError extends boolean = false>(options: Options<CreateAreaData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateAreaResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/areas',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete area
+ */
+export const deleteAreaById = <ThrowOnError extends boolean = false>(options: Options<DeleteAreaByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteAreaByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/areas/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get area by ID
+ */
+export const getAreaById = <ThrowOnError extends boolean = false>(options: Options<GetAreaByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetAreaByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/areas/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update area
+ */
+export const updateAreaById = <ThrowOnError extends boolean = false>(options: Options<UpdateAreaByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateAreaByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/areas/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List all locations
+ */
+export const listLocations = <ThrowOnError extends boolean = false>(options: Options<ListLocationsData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListLocationsResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/locations',
+        ...options
+    });
+};
+
+/**
+ * Create a new location
+ */
+export const createLocation = <ThrowOnError extends boolean = false>(options: Options<CreateLocationData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateLocationResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/locations',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete location by ID
+ */
+export const deleteLocationById = <ThrowOnError extends boolean = false>(options: Options<DeleteLocationByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteLocationByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/locations/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get location by ID
+ */
+export const getLocationById = <ThrowOnError extends boolean = false>(options: Options<GetLocationByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetLocationByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/locations/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update location by ID
+ */
+export const updateLocationById = <ThrowOnError extends boolean = false>(options: Options<UpdateLocationByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateLocationByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/locations/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List all programs
+ */
+export const listPrograms = <ThrowOnError extends boolean = false>(options: Options<ListProgramsData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListProgramsResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/programs',
+        ...options
+    });
+};
+
+/**
+ * Create a new program
+ */
+export const createProgram = <ThrowOnError extends boolean = false>(options: Options<CreateProgramData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateProgramResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/programs',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete program by ID
+ */
+export const deleteProgramById = <ThrowOnError extends boolean = false>(options: Options<DeleteProgramByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteProgramByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/programs/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get program by ID
+ */
+export const getProgramById = <ThrowOnError extends boolean = false>(options: Options<GetProgramByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetProgramByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/programs/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update program by ID
+ */
+export const updateProgramById = <ThrowOnError extends boolean = false>(options: Options<UpdateProgramByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateProgramByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/programs/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List all activities
+ */
+export const listActivities = <ThrowOnError extends boolean = false>(options: Options<ListActivitiesData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListActivitiesResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/activities',
+        ...options
+    });
+};
+
+/**
+ * Create a new activity
+ */
+export const createActivity = <ThrowOnError extends boolean = false>(options: Options<CreateActivityData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateActivityResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/activities',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete activity by ID
+ */
+export const deleteActivityById = <ThrowOnError extends boolean = false>(options: Options<DeleteActivityByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteActivityByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/activities/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get activity by ID
+ */
+export const getActivityById = <ThrowOnError extends boolean = false>(options: Options<GetActivityByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetActivityByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/activities/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update activity by ID
+ */
+export const updateActivityById = <ThrowOnError extends boolean = false>(options: Options<UpdateActivityByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateActivityByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/activities/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List all colors
+ */
+export const listColors = <ThrowOnError extends boolean = false>(options: Options<ListColorsData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListColorsResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/colors',
+        ...options
+    });
+};
+
+/**
+ * Create a new color
+ */
+export const createColor = <ThrowOnError extends boolean = false>(options: Options<CreateColorData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateColorResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/colors',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete color by ID
+ */
+export const deleteColorById = <ThrowOnError extends boolean = false>(options: Options<DeleteColorByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteColorByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/colors/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get color by ID
+ */
+export const getColorById = <ThrowOnError extends boolean = false>(options: Options<GetColorByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetColorByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/colors/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update color by ID
+ */
+export const updateColorById = <ThrowOnError extends boolean = false>(options: Options<UpdateColorByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateColorByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/colors/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List all roles
+ */
+export const listRoles = <ThrowOnError extends boolean = false>(options: Options<ListRolesData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListRolesResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/roles',
+        ...options
+    });
+};
+
+/**
+ * Create a new role
+ */
+export const createRole = <ThrowOnError extends boolean = false>(options: Options<CreateRoleData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateRoleResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/roles',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete role by ID
+ */
+export const deleteRoleById = <ThrowOnError extends boolean = false>(options: Options<DeleteRoleByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteRoleByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/roles/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get role by ID
+ */
+export const getRoleById = <ThrowOnError extends boolean = false>(options: Options<GetRoleByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetRoleByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/roles/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update role by ID
+ */
+export const updateRoleById = <ThrowOnError extends boolean = false>(options: Options<UpdateRoleByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateRoleByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/roles/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List all certifications
+ */
+export const listCertifications = <ThrowOnError extends boolean = false>(options: Options<ListCertificationsData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListCertificationsResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/certifications',
+        ...options
+    });
+};
+
+/**
+ * Create a new certification
+ */
+export const createCertification = <ThrowOnError extends boolean = false>(options: Options<CreateCertificationData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateCertificationResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/certifications',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete certification by ID
+ */
+export const deleteCertificationById = <ThrowOnError extends boolean = false>(options: Options<DeleteCertificationByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteCertificationByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/certifications/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get certification by ID
+ */
+export const getCertificationById = <ThrowOnError extends boolean = false>(options: Options<GetCertificationByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetCertificationByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/certifications/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update certification by ID
+ */
+export const updateCertificationById = <ThrowOnError extends boolean = false>(options: Options<UpdateCertificationByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateCertificationByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/certifications/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List all housing rooms
+ */
+export const listHousingRooms = <ThrowOnError extends boolean = false>(options: Options<ListHousingRoomsData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListHousingRoomsResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/housing-rooms',
+        ...options
+    });
+};
+
+/**
+ * Create a new housing room
+ */
+export const createHousingRoom = <ThrowOnError extends boolean = false>(options: Options<CreateHousingRoomData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateHousingRoomResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/housing-rooms',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete housing room by ID
+ */
+export const deleteHousingRoomById = <ThrowOnError extends boolean = false>(options: Options<DeleteHousingRoomByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteHousingRoomByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/housing-rooms/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get housing room by ID
+ */
+export const getHousingRoomById = <ThrowOnError extends boolean = false>(options: Options<GetHousingRoomByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetHousingRoomByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/housing-rooms/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update housing room
+ */
+export const updateHousingRoomById = <ThrowOnError extends boolean = false>(options: Options<UpdateHousingRoomByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateHousingRoomByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/housing-rooms/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List all groups
+ */
+export const listGroups = <ThrowOnError extends boolean = false>(options: Options<ListGroupsData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListGroupsResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/groups',
+        ...options
+    });
+};
+
+/**
+ * Create a new group
+ */
+export const createGroup = <ThrowOnError extends boolean = false>(options: Options<CreateGroupData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateGroupResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/groups',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete group by ID
+ */
+export const deleteGroupById = <ThrowOnError extends boolean = false>(options: Options<DeleteGroupByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteGroupByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/groups/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get group by ID
+ */
+export const getGroupById = <ThrowOnError extends boolean = false>(options: Options<GetGroupByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetGroupByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/groups/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update group by ID
+ */
+export const updateGroupById = <ThrowOnError extends boolean = false>(options: Options<UpdateGroupByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateGroupByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/groups/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * List all events
+ */
+export const listEvents = <ThrowOnError extends boolean = false>(options: Options<ListEventsData, ThrowOnError>) => {
+    return (options.client ?? client).get<ListEventsResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/events',
+        ...options
+    });
+};
+
+/**
+ * Create a new event
+ */
+export const createEvent = <ThrowOnError extends boolean = false>(options: Options<CreateEventData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateEventResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/events',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Delete event
+ */
+export const deleteEventById = <ThrowOnError extends boolean = false>(options: Options<DeleteEventByIdData, ThrowOnError>) => {
+    return (options.client ?? client).delete<DeleteEventByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/events/{id}',
+        ...options
+    });
+};
+
+/**
+ * Get event by ID
+ */
+export const getEventById = <ThrowOnError extends boolean = false>(options: Options<GetEventByIdData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetEventByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/events/{id}',
+        ...options
+    });
+};
+
+/**
+ * Update event
+ */
+export const updateEventById = <ThrowOnError extends boolean = false>(options: Options<UpdateEventByIdData, ThrowOnError>) => {
+    return (options.client ?? client).put<UpdateEventByIdResponses, unknown, ThrowOnError>({
+        url: '/api/v1/camps/{camp_id}/events/{id}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
     });
 };

@@ -19,28 +19,33 @@ func NewCampersHandler(service service.CampersService) *CampersHandler {
 	}
 }
 
-// ListCampers handles GET /campers
-func (h *CampersHandler) ListCampers(w http.ResponseWriter, r *http.Request, params api.ListCampersParams) {
+// ListCampers handles GET /api/v1/camps/{camp_id}/campers
+func (h *CampersHandler) ListCampers(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListCampersParams) {
 	// TODO: Implement listing campers with pagination and search
+	// Use campId to filter campers for the specific camp
 }
 
-// CreateCamper handles POST /campers
-func (h *CampersHandler) CreateCamper(w http.ResponseWriter, r *http.Request) {
+// CreateCamper handles POST /api/v1/camps/{camp_id}/campers
+func (h *CampersHandler) CreateCamper(w http.ResponseWriter, r *http.Request, campId api.CampId) {
 	// TODO: Implement camper creation
+	// Use campId to associate camper with the specific camp
 }
 
-// GetCamperById handles GET /campers/{id}
-func (h *CampersHandler) GetCamperById(w http.ResponseWriter, r *http.Request, id api.Id) {
+// GetCamperById handles GET /api/v1/camps/{camp_id}/campers/{id}
+func (h *CampersHandler) GetCamperById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	// TODO: Implement get camper by ID
+	// Use campId to ensure camper belongs to the specified camp
 }
 
-// UpdateCamperById handles PUT /campers/{id}
-func (h *CampersHandler) UpdateCamperById(w http.ResponseWriter, r *http.Request, id api.Id) {
+// UpdateCamperById handles PUT /api/v1/camps/{camp_id}/campers/{id}
+func (h *CampersHandler) UpdateCamperById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	// TODO: Implement camper update
+	// Use campId to ensure camper belongs to the specified camp
 }
 
-// DeleteCamperById handles DELETE /campers/{id}
-func (h *CampersHandler) DeleteCamperById(w http.ResponseWriter, r *http.Request, id api.Id) {
+// DeleteCamperById handles DELETE /api/v1/camps/{camp_id}/campers/{id}
+func (h *CampersHandler) DeleteCamperById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	// TODO: Implement camper deletion
+	// Use campId to ensure camper belongs to the specified camp
 }
 

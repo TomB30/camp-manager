@@ -1,4 +1,5 @@
 parameters:
+  - $ref: "../parameters/camp_id.yaml"
   - $ref: "../parameters/id.yaml"
 get:
   summary: Get certification by ID

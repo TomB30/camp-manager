@@ -89,44 +89,6 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
-	// ListActivities request
-	ListActivities(ctx context.Context, params *ListActivitiesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateActivityWithBody request with any body
-	CreateActivityWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateActivity(ctx context.Context, body CreateActivityJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteActivityById request
-	DeleteActivityById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetActivityById request
-	GetActivityById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateActivityByIdWithBody request with any body
-	UpdateActivityByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateActivityById(ctx context.Context, id Id, body UpdateActivityByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListAreas request
-	ListAreas(ctx context.Context, params *ListAreasParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateAreaWithBody request with any body
-	CreateAreaWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateArea(ctx context.Context, body CreateAreaJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteAreaById request
-	DeleteAreaById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetAreaById request
-	GetAreaById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateAreaByIdWithBody request with any body
-	UpdateAreaByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateAreaById(ctx context.Context, id Id, body UpdateAreaByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// LoginWithBody request with any body
 	LoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -143,25 +105,6 @@ type ClientInterface interface {
 
 	Signup(ctx context.Context, body SignupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ListCampers request
-	ListCampers(ctx context.Context, params *ListCampersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateCamperWithBody request with any body
-	CreateCamperWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateCamper(ctx context.Context, body CreateCamperJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteCamperById request
-	DeleteCamperById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetCamperById request
-	GetCamperById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateCamperByIdWithBody request with any body
-	UpdateCamperByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateCamperById(ctx context.Context, id Id, body UpdateCamperByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetCamps request
 	GetCamps(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -169,6 +112,253 @@ type ClientInterface interface {
 	CreateCampWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	CreateCamp(ctx context.Context, body CreateCampJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListActivities request
+	ListActivities(ctx context.Context, campId CampId, params *ListActivitiesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateActivityWithBody request with any body
+	CreateActivityWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateActivity(ctx context.Context, campId CampId, body CreateActivityJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteActivityById request
+	DeleteActivityById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetActivityById request
+	GetActivityById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateActivityByIdWithBody request with any body
+	UpdateActivityByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateActivityById(ctx context.Context, campId CampId, id Id, body UpdateActivityByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListAreas request
+	ListAreas(ctx context.Context, campId CampId, params *ListAreasParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateAreaWithBody request with any body
+	CreateAreaWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateArea(ctx context.Context, campId CampId, body CreateAreaJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteAreaById request
+	DeleteAreaById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetAreaById request
+	GetAreaById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateAreaByIdWithBody request with any body
+	UpdateAreaByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateAreaById(ctx context.Context, campId CampId, id Id, body UpdateAreaByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListCampers request
+	ListCampers(ctx context.Context, campId CampId, params *ListCampersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateCamperWithBody request with any body
+	CreateCamperWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateCamper(ctx context.Context, campId CampId, body CreateCamperJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteCamperById request
+	DeleteCamperById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCamperById request
+	GetCamperById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateCamperByIdWithBody request with any body
+	UpdateCamperByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateCamperById(ctx context.Context, campId CampId, id Id, body UpdateCamperByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListCertifications request
+	ListCertifications(ctx context.Context, campId CampId, params *ListCertificationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateCertificationWithBody request with any body
+	CreateCertificationWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateCertification(ctx context.Context, campId CampId, body CreateCertificationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteCertificationById request
+	DeleteCertificationById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCertificationById request
+	GetCertificationById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateCertificationByIdWithBody request with any body
+	UpdateCertificationByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateCertificationById(ctx context.Context, campId CampId, id Id, body UpdateCertificationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListColors request
+	ListColors(ctx context.Context, campId CampId, params *ListColorsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateColorWithBody request with any body
+	CreateColorWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateColor(ctx context.Context, campId CampId, body CreateColorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteColorById request
+	DeleteColorById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetColorById request
+	GetColorById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateColorByIdWithBody request with any body
+	UpdateColorByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateColorById(ctx context.Context, campId CampId, id Id, body UpdateColorByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListEvents request
+	ListEvents(ctx context.Context, campId CampId, params *ListEventsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateEventWithBody request with any body
+	CreateEventWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateEvent(ctx context.Context, campId CampId, body CreateEventJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteEventById request
+	DeleteEventById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetEventById request
+	GetEventById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateEventByIdWithBody request with any body
+	UpdateEventByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateEventById(ctx context.Context, campId CampId, id Id, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListGroups request
+	ListGroups(ctx context.Context, campId CampId, params *ListGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateGroupWithBody request with any body
+	CreateGroupWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateGroup(ctx context.Context, campId CampId, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteGroupById request
+	DeleteGroupById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetGroupById request
+	GetGroupById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateGroupByIdWithBody request with any body
+	UpdateGroupByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateGroupById(ctx context.Context, campId CampId, id Id, body UpdateGroupByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListHousingRooms request
+	ListHousingRooms(ctx context.Context, campId CampId, params *ListHousingRoomsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateHousingRoomWithBody request with any body
+	CreateHousingRoomWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateHousingRoom(ctx context.Context, campId CampId, body CreateHousingRoomJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteHousingRoomById request
+	DeleteHousingRoomById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetHousingRoomById request
+	GetHousingRoomById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateHousingRoomByIdWithBody request with any body
+	UpdateHousingRoomByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateHousingRoomById(ctx context.Context, campId CampId, id Id, body UpdateHousingRoomByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListLocations request
+	ListLocations(ctx context.Context, campId CampId, params *ListLocationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateLocationWithBody request with any body
+	CreateLocationWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateLocation(ctx context.Context, campId CampId, body CreateLocationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteLocationById request
+	DeleteLocationById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetLocationById request
+	GetLocationById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateLocationByIdWithBody request with any body
+	UpdateLocationByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateLocationById(ctx context.Context, campId CampId, id Id, body UpdateLocationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListPrograms request
+	ListPrograms(ctx context.Context, campId CampId, params *ListProgramsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateProgramWithBody request with any body
+	CreateProgramWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateProgram(ctx context.Context, campId CampId, body CreateProgramJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteProgramById request
+	DeleteProgramById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetProgramById request
+	GetProgramById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateProgramByIdWithBody request with any body
+	UpdateProgramByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateProgramById(ctx context.Context, campId CampId, id Id, body UpdateProgramByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListRoles request
+	ListRoles(ctx context.Context, campId CampId, params *ListRolesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateRoleWithBody request with any body
+	CreateRoleWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateRole(ctx context.Context, campId CampId, body CreateRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteRoleById request
+	DeleteRoleById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetRoleById request
+	GetRoleById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateRoleByIdWithBody request with any body
+	UpdateRoleByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateRoleById(ctx context.Context, campId CampId, id Id, body UpdateRoleByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListSessions request
+	ListSessions(ctx context.Context, campId CampId, params *ListSessionsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateSessionWithBody request with any body
+	CreateSessionWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateSession(ctx context.Context, campId CampId, body CreateSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteSessionById request
+	DeleteSessionById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetSessionById request
+	GetSessionById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateSessionByIdWithBody request with any body
+	UpdateSessionByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateSessionById(ctx context.Context, campId CampId, id Id, body UpdateSessionByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListStaffMembers request
+	ListStaffMembers(ctx context.Context, campId CampId, params *ListStaffMembersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateStaffMemberWithBody request with any body
+	CreateStaffMemberWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateStaffMember(ctx context.Context, campId CampId, body CreateStaffMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteStaffMemberById request
+	DeleteStaffMemberById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetStaffMemberById request
+	GetStaffMemberById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateStaffMemberByIdWithBody request with any body
+	UpdateStaffMemberByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateStaffMemberById(ctx context.Context, campId CampId, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteCampById request
 	DeleteCampById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -181,369 +371,11 @@ type ClientInterface interface {
 
 	UpdateCampById(ctx context.Context, id Id, body UpdateCampByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ListCertifications request
-	ListCertifications(ctx context.Context, params *ListCertificationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateCertificationWithBody request with any body
-	CreateCertificationWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateCertification(ctx context.Context, body CreateCertificationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteCertificationById request
-	DeleteCertificationById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetCertificationById request
-	GetCertificationById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateCertificationByIdWithBody request with any body
-	UpdateCertificationByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateCertificationById(ctx context.Context, id Id, body UpdateCertificationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListColors request
-	ListColors(ctx context.Context, params *ListColorsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateColorWithBody request with any body
-	CreateColorWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateColor(ctx context.Context, body CreateColorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteColorById request
-	DeleteColorById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetColorById request
-	GetColorById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateColorByIdWithBody request with any body
-	UpdateColorByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateColorById(ctx context.Context, id Id, body UpdateColorByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListEvents request
-	ListEvents(ctx context.Context, params *ListEventsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateEventWithBody request with any body
-	CreateEventWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateEvent(ctx context.Context, body CreateEventJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteEventById request
-	DeleteEventById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetEventById request
-	GetEventById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateEventByIdWithBody request with any body
-	UpdateEventByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateEventById(ctx context.Context, id Id, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListGroups request
-	ListGroups(ctx context.Context, params *ListGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateGroupWithBody request with any body
-	CreateGroupWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateGroup(ctx context.Context, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteGroupById request
-	DeleteGroupById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetGroupById request
-	GetGroupById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateGroupByIdWithBody request with any body
-	UpdateGroupByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateGroupById(ctx context.Context, id Id, body UpdateGroupByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListHousingRooms request
-	ListHousingRooms(ctx context.Context, params *ListHousingRoomsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateHousingRoomWithBody request with any body
-	CreateHousingRoomWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateHousingRoom(ctx context.Context, body CreateHousingRoomJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteHousingRoomById request
-	DeleteHousingRoomById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetHousingRoomById request
-	GetHousingRoomById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateHousingRoomByIdWithBody request with any body
-	UpdateHousingRoomByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateHousingRoomById(ctx context.Context, id Id, body UpdateHousingRoomByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListLocations request
-	ListLocations(ctx context.Context, params *ListLocationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateLocationWithBody request with any body
-	CreateLocationWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateLocation(ctx context.Context, body CreateLocationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteLocationById request
-	DeleteLocationById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetLocationById request
-	GetLocationById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateLocationByIdWithBody request with any body
-	UpdateLocationByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateLocationById(ctx context.Context, id Id, body UpdateLocationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListPrograms request
-	ListPrograms(ctx context.Context, params *ListProgramsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateProgramWithBody request with any body
-	CreateProgramWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateProgram(ctx context.Context, body CreateProgramJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteProgramById request
-	DeleteProgramById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetProgramById request
-	GetProgramById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateProgramByIdWithBody request with any body
-	UpdateProgramByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateProgramById(ctx context.Context, id Id, body UpdateProgramByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListRoles request
-	ListRoles(ctx context.Context, params *ListRolesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateRoleWithBody request with any body
-	CreateRoleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateRole(ctx context.Context, body CreateRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteRoleById request
-	DeleteRoleById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetRoleById request
-	GetRoleById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateRoleByIdWithBody request with any body
-	UpdateRoleByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateRoleById(ctx context.Context, id Id, body UpdateRoleByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListSessions request
-	ListSessions(ctx context.Context, params *ListSessionsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateSessionWithBody request with any body
-	CreateSessionWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateSession(ctx context.Context, body CreateSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteSessionById request
-	DeleteSessionById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetSessionById request
-	GetSessionById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateSessionByIdWithBody request with any body
-	UpdateSessionByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateSessionById(ctx context.Context, id Id, body UpdateSessionByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListStaffMembers request
-	ListStaffMembers(ctx context.Context, params *ListStaffMembersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateStaffMemberWithBody request with any body
-	CreateStaffMemberWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateStaffMember(ctx context.Context, body CreateStaffMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteStaffMemberById request
-	DeleteStaffMemberById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetStaffMemberById request
-	GetStaffMemberById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateStaffMemberByIdWithBody request with any body
-	UpdateStaffMemberByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpdateStaffMemberById(ctx context.Context, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetTenants request
 	GetTenants(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetTenantById request
 	GetTenantById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
-}
-
-func (c *Client) ListActivities(ctx context.Context, params *ListActivitiesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListActivitiesRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateActivityWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateActivityRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateActivity(ctx context.Context, body CreateActivityJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateActivityRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteActivityById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteActivityByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetActivityById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetActivityByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateActivityByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateActivityByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateActivityById(ctx context.Context, id Id, body UpdateActivityByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateActivityByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ListAreas(ctx context.Context, params *ListAreasParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListAreasRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateAreaWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateAreaRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateArea(ctx context.Context, body CreateAreaJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateAreaRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteAreaById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteAreaByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetAreaById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetAreaByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateAreaByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAreaByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateAreaById(ctx context.Context, id Id, body UpdateAreaByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAreaByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
 }
 
 func (c *Client) LoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -618,90 +450,6 @@ func (c *Client) Signup(ctx context.Context, body SignupJSONRequestBody, reqEdit
 	return c.Client.Do(req)
 }
 
-func (c *Client) ListCampers(ctx context.Context, params *ListCampersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListCampersRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateCamperWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateCamperRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateCamper(ctx context.Context, body CreateCamperJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateCamperRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteCamperById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteCamperByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetCamperById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetCamperByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateCamperByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateCamperByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateCamperById(ctx context.Context, id Id, body UpdateCamperByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateCamperByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) GetCamps(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetCampsRequest(c.Server)
 	if err != nil {
@@ -728,6 +476,1098 @@ func (c *Client) CreateCampWithBody(ctx context.Context, contentType string, bod
 
 func (c *Client) CreateCamp(ctx context.Context, body CreateCampJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateCampRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListActivities(ctx context.Context, campId CampId, params *ListActivitiesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListActivitiesRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateActivityWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateActivityRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateActivity(ctx context.Context, campId CampId, body CreateActivityJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateActivityRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteActivityById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteActivityByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetActivityById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetActivityByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateActivityByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateActivityByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateActivityById(ctx context.Context, campId CampId, id Id, body UpdateActivityByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateActivityByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListAreas(ctx context.Context, campId CampId, params *ListAreasParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListAreasRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateAreaWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateAreaRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateArea(ctx context.Context, campId CampId, body CreateAreaJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateAreaRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteAreaById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteAreaByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetAreaById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAreaByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateAreaByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateAreaByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateAreaById(ctx context.Context, campId CampId, id Id, body UpdateAreaByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateAreaByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListCampers(ctx context.Context, campId CampId, params *ListCampersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListCampersRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateCamperWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateCamperRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateCamper(ctx context.Context, campId CampId, body CreateCamperJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateCamperRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteCamperById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteCamperByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCamperById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCamperByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateCamperByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateCamperByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateCamperById(ctx context.Context, campId CampId, id Id, body UpdateCamperByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateCamperByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListCertifications(ctx context.Context, campId CampId, params *ListCertificationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListCertificationsRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateCertificationWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateCertificationRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateCertification(ctx context.Context, campId CampId, body CreateCertificationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateCertificationRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteCertificationById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteCertificationByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCertificationById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCertificationByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateCertificationByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateCertificationByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateCertificationById(ctx context.Context, campId CampId, id Id, body UpdateCertificationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateCertificationByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListColors(ctx context.Context, campId CampId, params *ListColorsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListColorsRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateColorWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateColorRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateColor(ctx context.Context, campId CampId, body CreateColorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateColorRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteColorById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteColorByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetColorById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetColorByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateColorByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateColorByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateColorById(ctx context.Context, campId CampId, id Id, body UpdateColorByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateColorByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListEvents(ctx context.Context, campId CampId, params *ListEventsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListEventsRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateEventWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateEventRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateEvent(ctx context.Context, campId CampId, body CreateEventJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateEventRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteEventById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteEventByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetEventById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetEventByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateEventByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateEventByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateEventById(ctx context.Context, campId CampId, id Id, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateEventByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListGroups(ctx context.Context, campId CampId, params *ListGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListGroupsRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateGroupWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateGroupRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateGroup(ctx context.Context, campId CampId, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateGroupRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteGroupById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteGroupByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetGroupById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetGroupByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateGroupByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateGroupByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateGroupById(ctx context.Context, campId CampId, id Id, body UpdateGroupByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateGroupByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListHousingRooms(ctx context.Context, campId CampId, params *ListHousingRoomsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListHousingRoomsRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateHousingRoomWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateHousingRoomRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateHousingRoom(ctx context.Context, campId CampId, body CreateHousingRoomJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateHousingRoomRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteHousingRoomById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteHousingRoomByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetHousingRoomById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetHousingRoomByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateHousingRoomByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateHousingRoomByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateHousingRoomById(ctx context.Context, campId CampId, id Id, body UpdateHousingRoomByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateHousingRoomByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListLocations(ctx context.Context, campId CampId, params *ListLocationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListLocationsRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateLocationWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateLocationRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateLocation(ctx context.Context, campId CampId, body CreateLocationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateLocationRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteLocationById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteLocationByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetLocationById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetLocationByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateLocationByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateLocationByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateLocationById(ctx context.Context, campId CampId, id Id, body UpdateLocationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateLocationByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListPrograms(ctx context.Context, campId CampId, params *ListProgramsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListProgramsRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateProgramWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateProgramRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateProgram(ctx context.Context, campId CampId, body CreateProgramJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateProgramRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteProgramById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteProgramByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetProgramById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetProgramByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateProgramByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateProgramByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateProgramById(ctx context.Context, campId CampId, id Id, body UpdateProgramByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateProgramByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListRoles(ctx context.Context, campId CampId, params *ListRolesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListRolesRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateRoleWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateRoleRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateRole(ctx context.Context, campId CampId, body CreateRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateRoleRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteRoleById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteRoleByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetRoleById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetRoleByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateRoleByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateRoleByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateRoleById(ctx context.Context, campId CampId, id Id, body UpdateRoleByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateRoleByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListSessions(ctx context.Context, campId CampId, params *ListSessionsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListSessionsRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSessionWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSessionRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateSession(ctx context.Context, campId CampId, body CreateSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateSessionRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteSessionById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteSessionByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetSessionById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSessionByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSessionByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSessionByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSessionById(ctx context.Context, campId CampId, id Id, body UpdateSessionByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSessionByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListStaffMembers(ctx context.Context, campId CampId, params *ListStaffMembersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListStaffMembersRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateStaffMemberWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateStaffMemberRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateStaffMember(ctx context.Context, campId CampId, body CreateStaffMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateStaffMemberRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteStaffMemberById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteStaffMemberByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetStaffMemberById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetStaffMemberByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateStaffMemberByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateStaffMemberByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateStaffMemberById(ctx context.Context, campId CampId, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateStaffMemberByIdRequest(c.Server, campId, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -786,846 +1626,6 @@ func (c *Client) UpdateCampById(ctx context.Context, id Id, body UpdateCampByIdJ
 	return c.Client.Do(req)
 }
 
-func (c *Client) ListCertifications(ctx context.Context, params *ListCertificationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListCertificationsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateCertificationWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateCertificationRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateCertification(ctx context.Context, body CreateCertificationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateCertificationRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteCertificationById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteCertificationByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetCertificationById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetCertificationByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateCertificationByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateCertificationByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateCertificationById(ctx context.Context, id Id, body UpdateCertificationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateCertificationByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ListColors(ctx context.Context, params *ListColorsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListColorsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateColorWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateColorRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateColor(ctx context.Context, body CreateColorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateColorRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteColorById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteColorByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetColorById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetColorByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateColorByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateColorByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateColorById(ctx context.Context, id Id, body UpdateColorByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateColorByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ListEvents(ctx context.Context, params *ListEventsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListEventsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateEventWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateEventRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateEvent(ctx context.Context, body CreateEventJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateEventRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteEventById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteEventByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetEventById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetEventByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateEventByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateEventByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateEventById(ctx context.Context, id Id, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateEventByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ListGroups(ctx context.Context, params *ListGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListGroupsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateGroupWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateGroupRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateGroup(ctx context.Context, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateGroupRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteGroupById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteGroupByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetGroupById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetGroupByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateGroupByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateGroupByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateGroupById(ctx context.Context, id Id, body UpdateGroupByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateGroupByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ListHousingRooms(ctx context.Context, params *ListHousingRoomsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListHousingRoomsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateHousingRoomWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateHousingRoomRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateHousingRoom(ctx context.Context, body CreateHousingRoomJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateHousingRoomRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteHousingRoomById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteHousingRoomByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetHousingRoomById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHousingRoomByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateHousingRoomByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateHousingRoomByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateHousingRoomById(ctx context.Context, id Id, body UpdateHousingRoomByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateHousingRoomByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ListLocations(ctx context.Context, params *ListLocationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListLocationsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateLocationWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateLocationRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateLocation(ctx context.Context, body CreateLocationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateLocationRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteLocationById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteLocationByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetLocationById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetLocationByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateLocationByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateLocationByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateLocationById(ctx context.Context, id Id, body UpdateLocationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateLocationByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ListPrograms(ctx context.Context, params *ListProgramsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListProgramsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateProgramWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateProgramRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateProgram(ctx context.Context, body CreateProgramJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateProgramRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteProgramById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteProgramByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetProgramById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetProgramByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateProgramByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateProgramByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateProgramById(ctx context.Context, id Id, body UpdateProgramByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateProgramByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ListRoles(ctx context.Context, params *ListRolesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListRolesRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateRoleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateRoleRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateRole(ctx context.Context, body CreateRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateRoleRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteRoleById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteRoleByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetRoleById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetRoleByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateRoleByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateRoleByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateRoleById(ctx context.Context, id Id, body UpdateRoleByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateRoleByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ListSessions(ctx context.Context, params *ListSessionsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListSessionsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateSessionWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateSessionRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateSession(ctx context.Context, body CreateSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateSessionRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteSessionById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteSessionByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetSessionById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetSessionByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateSessionByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateSessionByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateSessionById(ctx context.Context, id Id, body UpdateSessionByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateSessionByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ListStaffMembers(ctx context.Context, params *ListStaffMembersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListStaffMembersRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateStaffMemberWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateStaffMemberRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateStaffMember(ctx context.Context, body CreateStaffMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateStaffMemberRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteStaffMemberById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteStaffMemberByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetStaffMemberById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetStaffMemberByIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateStaffMemberByIdWithBody(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateStaffMemberByIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpdateStaffMemberById(ctx context.Context, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateStaffMemberByIdRequest(c.Server, id, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) GetTenants(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetTenantsRequest(c.Server)
 	if err != nil {
@@ -1650,8 +1650,19 @@ func (c *Client) GetTenantById(ctx context.Context, id Id, reqEditors ...Request
 	return c.Client.Do(req)
 }
 
-// NewListActivitiesRequest generates requests for ListActivities
-func NewListActivitiesRequest(server string, params *ListActivitiesParams) (*http.Request, error) {
+// NewLoginRequest calls the generic Login builder with application/json body
+func NewLoginRequest(server string, body LoginJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewLoginRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewLoginRequestWithBody generates requests for Login with any type of body
+func NewLoginRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1659,7 +1670,204 @@ func NewListActivitiesRequest(server string, params *ListActivitiesParams) (*htt
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/activities")
+	operationPath := fmt.Sprintf("/api/v1/auth/login")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewLogoutRequest generates requests for Logout
+func NewLogoutRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/auth/logout")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetCurrentUserRequest generates requests for GetCurrentUser
+func NewGetCurrentUserRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/auth/me")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewSignupRequest calls the generic Signup builder with application/json body
+func NewSignupRequest(server string, body SignupJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSignupRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewSignupRequestWithBody generates requests for Signup with any type of body
+func NewSignupRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/auth/signup")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetCampsRequest generates requests for GetCamps
+func NewGetCampsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateCampRequest calls the generic CreateCamp builder with application/json body
+func NewCreateCampRequest(server string, body CreateCampJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateCampRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateCampRequestWithBody generates requests for CreateCamp with any type of body
+func NewCreateCampRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListActivitiesRequest generates requests for ListActivities
+func NewListActivitiesRequest(server string, campId CampId, params *ListActivitiesParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/activities", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1732,26 +1940,33 @@ func NewListActivitiesRequest(server string, params *ListActivitiesParams) (*htt
 }
 
 // NewCreateActivityRequest calls the generic CreateActivity builder with application/json body
-func NewCreateActivityRequest(server string, body CreateActivityJSONRequestBody) (*http.Request, error) {
+func NewCreateActivityRequest(server string, campId CampId, body CreateActivityJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateActivityRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateActivityRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateActivityRequestWithBody generates requests for CreateActivity with any type of body
-func NewCreateActivityRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateActivityRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/activities")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/activities", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1772,12 +1987,19 @@ func NewCreateActivityRequestWithBody(server string, contentType string, body io
 }
 
 // NewDeleteActivityByIdRequest generates requests for DeleteActivityById
-func NewDeleteActivityByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteActivityByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -1787,7 +2009,7 @@ func NewDeleteActivityByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/activities/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/activities/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1806,12 +2028,19 @@ func NewDeleteActivityByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewGetActivityByIdRequest generates requests for GetActivityById
-func NewGetActivityByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetActivityByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -1821,7 +2050,7 @@ func NewGetActivityByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/activities/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/activities/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1840,23 +2069,30 @@ func NewGetActivityByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewUpdateActivityByIdRequest calls the generic UpdateActivityById builder with application/json body
-func NewUpdateActivityByIdRequest(server string, id Id, body UpdateActivityByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateActivityByIdRequest(server string, campId CampId, id Id, body UpdateActivityByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateActivityByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateActivityByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateActivityByIdRequestWithBody generates requests for UpdateActivityById with any type of body
-func NewUpdateActivityByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateActivityByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -1866,7 +2102,7 @@ func NewUpdateActivityByIdRequestWithBody(server string, id Id, contentType stri
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/activities/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/activities/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1887,15 +2123,22 @@ func NewUpdateActivityByIdRequestWithBody(server string, id Id, contentType stri
 }
 
 // NewListAreasRequest generates requests for ListAreas
-func NewListAreasRequest(server string, params *ListAreasParams) (*http.Request, error) {
+func NewListAreasRequest(server string, campId CampId, params *ListAreasParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/areas")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/areas", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1968,26 +2211,33 @@ func NewListAreasRequest(server string, params *ListAreasParams) (*http.Request,
 }
 
 // NewCreateAreaRequest calls the generic CreateArea builder with application/json body
-func NewCreateAreaRequest(server string, body CreateAreaJSONRequestBody) (*http.Request, error) {
+func NewCreateAreaRequest(server string, campId CampId, body CreateAreaJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateAreaRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateAreaRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateAreaRequestWithBody generates requests for CreateArea with any type of body
-func NewCreateAreaRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateAreaRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/areas")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/areas", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2008,12 +2258,19 @@ func NewCreateAreaRequestWithBody(server string, contentType string, body io.Rea
 }
 
 // NewDeleteAreaByIdRequest generates requests for DeleteAreaById
-func NewDeleteAreaByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteAreaByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -2023,7 +2280,7 @@ func NewDeleteAreaByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/areas/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/areas/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2042,12 +2299,19 @@ func NewDeleteAreaByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewGetAreaByIdRequest generates requests for GetAreaById
-func NewGetAreaByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetAreaByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -2057,7 +2321,7 @@ func NewGetAreaByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/areas/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/areas/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2076,23 +2340,30 @@ func NewGetAreaByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewUpdateAreaByIdRequest calls the generic UpdateAreaById builder with application/json body
-func NewUpdateAreaByIdRequest(server string, id Id, body UpdateAreaByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateAreaByIdRequest(server string, campId CampId, id Id, body UpdateAreaByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateAreaByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateAreaByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateAreaByIdRequestWithBody generates requests for UpdateAreaById with any type of body
-func NewUpdateAreaByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateAreaByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -2102,7 +2373,7 @@ func NewUpdateAreaByIdRequestWithBody(server string, id Id, contentType string, 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/areas/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/areas/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2122,150 +2393,23 @@ func NewUpdateAreaByIdRequestWithBody(server string, id Id, contentType string, 
 	return req, nil
 }
 
-// NewLoginRequest calls the generic Login builder with application/json body
-func NewLoginRequest(server string, body LoginJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewLoginRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewLoginRequestWithBody generates requests for Login with any type of body
-func NewLoginRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/auth/login")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewLogoutRequest generates requests for Logout
-func NewLogoutRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/auth/logout")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetCurrentUserRequest generates requests for GetCurrentUser
-func NewGetCurrentUserRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/auth/me")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewSignupRequest calls the generic Signup builder with application/json body
-func NewSignupRequest(server string, body SignupJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewSignupRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewSignupRequestWithBody generates requests for Signup with any type of body
-func NewSignupRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/auth/signup")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
 // NewListCampersRequest generates requests for ListCampers
-func NewListCampersRequest(server string, params *ListCampersParams) (*http.Request, error) {
+func NewListCampersRequest(server string, campId CampId, params *ListCampersParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/campers")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/campers", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2338,26 +2482,33 @@ func NewListCampersRequest(server string, params *ListCampersParams) (*http.Requ
 }
 
 // NewCreateCamperRequest calls the generic CreateCamper builder with application/json body
-func NewCreateCamperRequest(server string, body CreateCamperJSONRequestBody) (*http.Request, error) {
+func NewCreateCamperRequest(server string, campId CampId, body CreateCamperJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateCamperRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateCamperRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateCamperRequestWithBody generates requests for CreateCamper with any type of body
-func NewCreateCamperRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateCamperRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/campers")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/campers", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2378,12 +2529,19 @@ func NewCreateCamperRequestWithBody(server string, contentType string, body io.R
 }
 
 // NewDeleteCamperByIdRequest generates requests for DeleteCamperById
-func NewDeleteCamperByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteCamperByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -2393,7 +2551,7 @@ func NewDeleteCamperByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/campers/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/campers/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2412,12 +2570,19 @@ func NewDeleteCamperByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewGetCamperByIdRequest generates requests for GetCamperById
-func NewGetCamperByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetCamperByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -2427,7 +2592,7 @@ func NewGetCamperByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/campers/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/campers/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2446,23 +2611,30 @@ func NewGetCamperByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewUpdateCamperByIdRequest calls the generic UpdateCamperById builder with application/json body
-func NewUpdateCamperByIdRequest(server string, id Id, body UpdateCamperByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateCamperByIdRequest(server string, campId CampId, id Id, body UpdateCamperByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateCamperByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateCamperByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateCamperByIdRequestWithBody generates requests for UpdateCamperById with any type of body
-func NewUpdateCamperByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateCamperByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -2472,189 +2644,7 @@ func NewUpdateCamperByIdRequestWithBody(server string, id Id, contentType string
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/campers/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("PUT", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewGetCampsRequest generates requests for GetCamps
-func NewGetCampsRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/camps")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewCreateCampRequest calls the generic CreateCamp builder with application/json body
-func NewCreateCampRequest(server string, body CreateCampJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewCreateCampRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewCreateCampRequestWithBody generates requests for CreateCamp with any type of body
-func NewCreateCampRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/camps")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewDeleteCampByIdRequest generates requests for DeleteCampById
-func NewDeleteCampByIdRequest(server string, id Id) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/camps/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetCampByIdRequest generates requests for GetCampById
-func NewGetCampByIdRequest(server string, id Id) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/camps/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewUpdateCampByIdRequest calls the generic UpdateCampById builder with application/json body
-func NewUpdateCampByIdRequest(server string, id Id, body UpdateCampByIdJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewUpdateCampByIdRequestWithBody(server, id, "application/json", bodyReader)
-}
-
-// NewUpdateCampByIdRequestWithBody generates requests for UpdateCampById with any type of body
-func NewUpdateCampByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/camps/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/campers/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2675,15 +2665,22 @@ func NewUpdateCampByIdRequestWithBody(server string, id Id, contentType string, 
 }
 
 // NewListCertificationsRequest generates requests for ListCertifications
-func NewListCertificationsRequest(server string, params *ListCertificationsParams) (*http.Request, error) {
+func NewListCertificationsRequest(server string, campId CampId, params *ListCertificationsParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/certifications")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/certifications", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2756,26 +2753,33 @@ func NewListCertificationsRequest(server string, params *ListCertificationsParam
 }
 
 // NewCreateCertificationRequest calls the generic CreateCertification builder with application/json body
-func NewCreateCertificationRequest(server string, body CreateCertificationJSONRequestBody) (*http.Request, error) {
+func NewCreateCertificationRequest(server string, campId CampId, body CreateCertificationJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateCertificationRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateCertificationRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateCertificationRequestWithBody generates requests for CreateCertification with any type of body
-func NewCreateCertificationRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateCertificationRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/certifications")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/certifications", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2796,12 +2800,19 @@ func NewCreateCertificationRequestWithBody(server string, contentType string, bo
 }
 
 // NewDeleteCertificationByIdRequest generates requests for DeleteCertificationById
-func NewDeleteCertificationByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteCertificationByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -2811,7 +2822,7 @@ func NewDeleteCertificationByIdRequest(server string, id Id) (*http.Request, err
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/certifications/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/certifications/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2830,12 +2841,19 @@ func NewDeleteCertificationByIdRequest(server string, id Id) (*http.Request, err
 }
 
 // NewGetCertificationByIdRequest generates requests for GetCertificationById
-func NewGetCertificationByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetCertificationByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -2845,7 +2863,7 @@ func NewGetCertificationByIdRequest(server string, id Id) (*http.Request, error)
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/certifications/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/certifications/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2864,23 +2882,30 @@ func NewGetCertificationByIdRequest(server string, id Id) (*http.Request, error)
 }
 
 // NewUpdateCertificationByIdRequest calls the generic UpdateCertificationById builder with application/json body
-func NewUpdateCertificationByIdRequest(server string, id Id, body UpdateCertificationByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateCertificationByIdRequest(server string, campId CampId, id Id, body UpdateCertificationByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateCertificationByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateCertificationByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateCertificationByIdRequestWithBody generates requests for UpdateCertificationById with any type of body
-func NewUpdateCertificationByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateCertificationByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -2890,7 +2915,7 @@ func NewUpdateCertificationByIdRequestWithBody(server string, id Id, contentType
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/certifications/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/certifications/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2911,15 +2936,22 @@ func NewUpdateCertificationByIdRequestWithBody(server string, id Id, contentType
 }
 
 // NewListColorsRequest generates requests for ListColors
-func NewListColorsRequest(server string, params *ListColorsParams) (*http.Request, error) {
+func NewListColorsRequest(server string, campId CampId, params *ListColorsParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/colors")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/colors", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2992,26 +3024,33 @@ func NewListColorsRequest(server string, params *ListColorsParams) (*http.Reques
 }
 
 // NewCreateColorRequest calls the generic CreateColor builder with application/json body
-func NewCreateColorRequest(server string, body CreateColorJSONRequestBody) (*http.Request, error) {
+func NewCreateColorRequest(server string, campId CampId, body CreateColorJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateColorRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateColorRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateColorRequestWithBody generates requests for CreateColor with any type of body
-func NewCreateColorRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateColorRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/colors")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/colors", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3032,12 +3071,19 @@ func NewCreateColorRequestWithBody(server string, contentType string, body io.Re
 }
 
 // NewDeleteColorByIdRequest generates requests for DeleteColorById
-func NewDeleteColorByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteColorByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3047,7 +3093,7 @@ func NewDeleteColorByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/colors/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/colors/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3066,12 +3112,19 @@ func NewDeleteColorByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewGetColorByIdRequest generates requests for GetColorById
-func NewGetColorByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetColorByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3081,7 +3134,7 @@ func NewGetColorByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/colors/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/colors/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3100,23 +3153,30 @@ func NewGetColorByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewUpdateColorByIdRequest calls the generic UpdateColorById builder with application/json body
-func NewUpdateColorByIdRequest(server string, id Id, body UpdateColorByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateColorByIdRequest(server string, campId CampId, id Id, body UpdateColorByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateColorByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateColorByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateColorByIdRequestWithBody generates requests for UpdateColorById with any type of body
-func NewUpdateColorByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateColorByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3126,7 +3186,7 @@ func NewUpdateColorByIdRequestWithBody(server string, id Id, contentType string,
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/colors/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/colors/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3147,15 +3207,22 @@ func NewUpdateColorByIdRequestWithBody(server string, id Id, contentType string,
 }
 
 // NewListEventsRequest generates requests for ListEvents
-func NewListEventsRequest(server string, params *ListEventsParams) (*http.Request, error) {
+func NewListEventsRequest(server string, campId CampId, params *ListEventsParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/events")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/events", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3228,26 +3295,33 @@ func NewListEventsRequest(server string, params *ListEventsParams) (*http.Reques
 }
 
 // NewCreateEventRequest calls the generic CreateEvent builder with application/json body
-func NewCreateEventRequest(server string, body CreateEventJSONRequestBody) (*http.Request, error) {
+func NewCreateEventRequest(server string, campId CampId, body CreateEventJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateEventRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateEventRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateEventRequestWithBody generates requests for CreateEvent with any type of body
-func NewCreateEventRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateEventRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/events")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/events", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3268,12 +3342,19 @@ func NewCreateEventRequestWithBody(server string, contentType string, body io.Re
 }
 
 // NewDeleteEventByIdRequest generates requests for DeleteEventById
-func NewDeleteEventByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteEventByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3283,7 +3364,7 @@ func NewDeleteEventByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/events/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/events/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3302,12 +3383,19 @@ func NewDeleteEventByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewGetEventByIdRequest generates requests for GetEventById
-func NewGetEventByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetEventByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3317,7 +3405,7 @@ func NewGetEventByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/events/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/events/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3336,23 +3424,30 @@ func NewGetEventByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewUpdateEventByIdRequest calls the generic UpdateEventById builder with application/json body
-func NewUpdateEventByIdRequest(server string, id Id, body UpdateEventByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateEventByIdRequest(server string, campId CampId, id Id, body UpdateEventByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateEventByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateEventByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateEventByIdRequestWithBody generates requests for UpdateEventById with any type of body
-func NewUpdateEventByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateEventByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3362,7 +3457,7 @@ func NewUpdateEventByIdRequestWithBody(server string, id Id, contentType string,
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/events/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/events/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3383,15 +3478,22 @@ func NewUpdateEventByIdRequestWithBody(server string, id Id, contentType string,
 }
 
 // NewListGroupsRequest generates requests for ListGroups
-func NewListGroupsRequest(server string, params *ListGroupsParams) (*http.Request, error) {
+func NewListGroupsRequest(server string, campId CampId, params *ListGroupsParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/groups")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/groups", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3464,26 +3566,33 @@ func NewListGroupsRequest(server string, params *ListGroupsParams) (*http.Reques
 }
 
 // NewCreateGroupRequest calls the generic CreateGroup builder with application/json body
-func NewCreateGroupRequest(server string, body CreateGroupJSONRequestBody) (*http.Request, error) {
+func NewCreateGroupRequest(server string, campId CampId, body CreateGroupJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateGroupRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateGroupRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateGroupRequestWithBody generates requests for CreateGroup with any type of body
-func NewCreateGroupRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateGroupRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/groups")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/groups", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3504,12 +3613,19 @@ func NewCreateGroupRequestWithBody(server string, contentType string, body io.Re
 }
 
 // NewDeleteGroupByIdRequest generates requests for DeleteGroupById
-func NewDeleteGroupByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteGroupByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3519,7 +3635,7 @@ func NewDeleteGroupByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/groups/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/groups/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3538,12 +3654,19 @@ func NewDeleteGroupByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewGetGroupByIdRequest generates requests for GetGroupById
-func NewGetGroupByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetGroupByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3553,7 +3676,7 @@ func NewGetGroupByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/groups/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/groups/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3572,23 +3695,30 @@ func NewGetGroupByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewUpdateGroupByIdRequest calls the generic UpdateGroupById builder with application/json body
-func NewUpdateGroupByIdRequest(server string, id Id, body UpdateGroupByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateGroupByIdRequest(server string, campId CampId, id Id, body UpdateGroupByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateGroupByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateGroupByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateGroupByIdRequestWithBody generates requests for UpdateGroupById with any type of body
-func NewUpdateGroupByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateGroupByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3598,7 +3728,7 @@ func NewUpdateGroupByIdRequestWithBody(server string, id Id, contentType string,
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/groups/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/groups/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3619,15 +3749,22 @@ func NewUpdateGroupByIdRequestWithBody(server string, id Id, contentType string,
 }
 
 // NewListHousingRoomsRequest generates requests for ListHousingRooms
-func NewListHousingRoomsRequest(server string, params *ListHousingRoomsParams) (*http.Request, error) {
+func NewListHousingRoomsRequest(server string, campId CampId, params *ListHousingRoomsParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/housing-rooms")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/housing-rooms", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3700,26 +3837,33 @@ func NewListHousingRoomsRequest(server string, params *ListHousingRoomsParams) (
 }
 
 // NewCreateHousingRoomRequest calls the generic CreateHousingRoom builder with application/json body
-func NewCreateHousingRoomRequest(server string, body CreateHousingRoomJSONRequestBody) (*http.Request, error) {
+func NewCreateHousingRoomRequest(server string, campId CampId, body CreateHousingRoomJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateHousingRoomRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateHousingRoomRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateHousingRoomRequestWithBody generates requests for CreateHousingRoom with any type of body
-func NewCreateHousingRoomRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateHousingRoomRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/housing-rooms")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/housing-rooms", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3740,12 +3884,19 @@ func NewCreateHousingRoomRequestWithBody(server string, contentType string, body
 }
 
 // NewDeleteHousingRoomByIdRequest generates requests for DeleteHousingRoomById
-func NewDeleteHousingRoomByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteHousingRoomByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3755,7 +3906,7 @@ func NewDeleteHousingRoomByIdRequest(server string, id Id) (*http.Request, error
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/housing-rooms/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/housing-rooms/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3774,12 +3925,19 @@ func NewDeleteHousingRoomByIdRequest(server string, id Id) (*http.Request, error
 }
 
 // NewGetHousingRoomByIdRequest generates requests for GetHousingRoomById
-func NewGetHousingRoomByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetHousingRoomByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3789,7 +3947,7 @@ func NewGetHousingRoomByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/housing-rooms/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/housing-rooms/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3808,23 +3966,30 @@ func NewGetHousingRoomByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewUpdateHousingRoomByIdRequest calls the generic UpdateHousingRoomById builder with application/json body
-func NewUpdateHousingRoomByIdRequest(server string, id Id, body UpdateHousingRoomByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateHousingRoomByIdRequest(server string, campId CampId, id Id, body UpdateHousingRoomByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateHousingRoomByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateHousingRoomByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateHousingRoomByIdRequestWithBody generates requests for UpdateHousingRoomById with any type of body
-func NewUpdateHousingRoomByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateHousingRoomByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3834,7 +3999,7 @@ func NewUpdateHousingRoomByIdRequestWithBody(server string, id Id, contentType s
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/housing-rooms/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/housing-rooms/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3855,15 +4020,22 @@ func NewUpdateHousingRoomByIdRequestWithBody(server string, id Id, contentType s
 }
 
 // NewListLocationsRequest generates requests for ListLocations
-func NewListLocationsRequest(server string, params *ListLocationsParams) (*http.Request, error) {
+func NewListLocationsRequest(server string, campId CampId, params *ListLocationsParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/locations")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/locations", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3936,26 +4108,33 @@ func NewListLocationsRequest(server string, params *ListLocationsParams) (*http.
 }
 
 // NewCreateLocationRequest calls the generic CreateLocation builder with application/json body
-func NewCreateLocationRequest(server string, body CreateLocationJSONRequestBody) (*http.Request, error) {
+func NewCreateLocationRequest(server string, campId CampId, body CreateLocationJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateLocationRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateLocationRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateLocationRequestWithBody generates requests for CreateLocation with any type of body
-func NewCreateLocationRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateLocationRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/locations")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/locations", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3976,12 +4155,19 @@ func NewCreateLocationRequestWithBody(server string, contentType string, body io
 }
 
 // NewDeleteLocationByIdRequest generates requests for DeleteLocationById
-func NewDeleteLocationByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteLocationByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -3991,7 +4177,7 @@ func NewDeleteLocationByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/locations/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/locations/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4010,12 +4196,19 @@ func NewDeleteLocationByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewGetLocationByIdRequest generates requests for GetLocationById
-func NewGetLocationByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetLocationByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4025,7 +4218,7 @@ func NewGetLocationByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/locations/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/locations/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4044,23 +4237,30 @@ func NewGetLocationByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewUpdateLocationByIdRequest calls the generic UpdateLocationById builder with application/json body
-func NewUpdateLocationByIdRequest(server string, id Id, body UpdateLocationByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateLocationByIdRequest(server string, campId CampId, id Id, body UpdateLocationByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateLocationByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateLocationByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateLocationByIdRequestWithBody generates requests for UpdateLocationById with any type of body
-func NewUpdateLocationByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateLocationByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4070,7 +4270,7 @@ func NewUpdateLocationByIdRequestWithBody(server string, id Id, contentType stri
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/locations/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/locations/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4091,15 +4291,22 @@ func NewUpdateLocationByIdRequestWithBody(server string, id Id, contentType stri
 }
 
 // NewListProgramsRequest generates requests for ListPrograms
-func NewListProgramsRequest(server string, params *ListProgramsParams) (*http.Request, error) {
+func NewListProgramsRequest(server string, campId CampId, params *ListProgramsParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/programs")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/programs", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4172,26 +4379,33 @@ func NewListProgramsRequest(server string, params *ListProgramsParams) (*http.Re
 }
 
 // NewCreateProgramRequest calls the generic CreateProgram builder with application/json body
-func NewCreateProgramRequest(server string, body CreateProgramJSONRequestBody) (*http.Request, error) {
+func NewCreateProgramRequest(server string, campId CampId, body CreateProgramJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateProgramRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateProgramRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateProgramRequestWithBody generates requests for CreateProgram with any type of body
-func NewCreateProgramRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateProgramRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/programs")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/programs", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4212,12 +4426,19 @@ func NewCreateProgramRequestWithBody(server string, contentType string, body io.
 }
 
 // NewDeleteProgramByIdRequest generates requests for DeleteProgramById
-func NewDeleteProgramByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteProgramByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4227,7 +4448,7 @@ func NewDeleteProgramByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/programs/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/programs/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4246,12 +4467,19 @@ func NewDeleteProgramByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewGetProgramByIdRequest generates requests for GetProgramById
-func NewGetProgramByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetProgramByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4261,7 +4489,7 @@ func NewGetProgramByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/programs/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/programs/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4280,23 +4508,30 @@ func NewGetProgramByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewUpdateProgramByIdRequest calls the generic UpdateProgramById builder with application/json body
-func NewUpdateProgramByIdRequest(server string, id Id, body UpdateProgramByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateProgramByIdRequest(server string, campId CampId, id Id, body UpdateProgramByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateProgramByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateProgramByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateProgramByIdRequestWithBody generates requests for UpdateProgramById with any type of body
-func NewUpdateProgramByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateProgramByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4306,7 +4541,7 @@ func NewUpdateProgramByIdRequestWithBody(server string, id Id, contentType strin
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/programs/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/programs/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4327,15 +4562,22 @@ func NewUpdateProgramByIdRequestWithBody(server string, id Id, contentType strin
 }
 
 // NewListRolesRequest generates requests for ListRoles
-func NewListRolesRequest(server string, params *ListRolesParams) (*http.Request, error) {
+func NewListRolesRequest(server string, campId CampId, params *ListRolesParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/roles")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/roles", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4408,26 +4650,33 @@ func NewListRolesRequest(server string, params *ListRolesParams) (*http.Request,
 }
 
 // NewCreateRoleRequest calls the generic CreateRole builder with application/json body
-func NewCreateRoleRequest(server string, body CreateRoleJSONRequestBody) (*http.Request, error) {
+func NewCreateRoleRequest(server string, campId CampId, body CreateRoleJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateRoleRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateRoleRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateRoleRequestWithBody generates requests for CreateRole with any type of body
-func NewCreateRoleRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateRoleRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/roles")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/roles", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4448,12 +4697,19 @@ func NewCreateRoleRequestWithBody(server string, contentType string, body io.Rea
 }
 
 // NewDeleteRoleByIdRequest generates requests for DeleteRoleById
-func NewDeleteRoleByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteRoleByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4463,7 +4719,7 @@ func NewDeleteRoleByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/roles/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/roles/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4482,12 +4738,19 @@ func NewDeleteRoleByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewGetRoleByIdRequest generates requests for GetRoleById
-func NewGetRoleByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetRoleByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4497,7 +4760,7 @@ func NewGetRoleByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/roles/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/roles/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4516,23 +4779,30 @@ func NewGetRoleByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewUpdateRoleByIdRequest calls the generic UpdateRoleById builder with application/json body
-func NewUpdateRoleByIdRequest(server string, id Id, body UpdateRoleByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateRoleByIdRequest(server string, campId CampId, id Id, body UpdateRoleByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateRoleByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateRoleByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateRoleByIdRequestWithBody generates requests for UpdateRoleById with any type of body
-func NewUpdateRoleByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateRoleByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4542,7 +4812,7 @@ func NewUpdateRoleByIdRequestWithBody(server string, id Id, contentType string, 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/roles/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/roles/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4563,15 +4833,22 @@ func NewUpdateRoleByIdRequestWithBody(server string, id Id, contentType string, 
 }
 
 // NewListSessionsRequest generates requests for ListSessions
-func NewListSessionsRequest(server string, params *ListSessionsParams) (*http.Request, error) {
+func NewListSessionsRequest(server string, campId CampId, params *ListSessionsParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/sessions")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/sessions", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4644,26 +4921,33 @@ func NewListSessionsRequest(server string, params *ListSessionsParams) (*http.Re
 }
 
 // NewCreateSessionRequest calls the generic CreateSession builder with application/json body
-func NewCreateSessionRequest(server string, body CreateSessionJSONRequestBody) (*http.Request, error) {
+func NewCreateSessionRequest(server string, campId CampId, body CreateSessionJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateSessionRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateSessionRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateSessionRequestWithBody generates requests for CreateSession with any type of body
-func NewCreateSessionRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateSessionRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/sessions")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/sessions", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4684,12 +4968,19 @@ func NewCreateSessionRequestWithBody(server string, contentType string, body io.
 }
 
 // NewDeleteSessionByIdRequest generates requests for DeleteSessionById
-func NewDeleteSessionByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteSessionByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4699,7 +4990,7 @@ func NewDeleteSessionByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/sessions/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/sessions/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4718,12 +5009,19 @@ func NewDeleteSessionByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewGetSessionByIdRequest generates requests for GetSessionById
-func NewGetSessionByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetSessionByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4733,7 +5031,7 @@ func NewGetSessionByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/sessions/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/sessions/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4752,23 +5050,30 @@ func NewGetSessionByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewUpdateSessionByIdRequest calls the generic UpdateSessionById builder with application/json body
-func NewUpdateSessionByIdRequest(server string, id Id, body UpdateSessionByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateSessionByIdRequest(server string, campId CampId, id Id, body UpdateSessionByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateSessionByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateSessionByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateSessionByIdRequestWithBody generates requests for UpdateSessionById with any type of body
-func NewUpdateSessionByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateSessionByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4778,7 +5083,7 @@ func NewUpdateSessionByIdRequestWithBody(server string, id Id, contentType strin
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/sessions/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/sessions/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4799,15 +5104,22 @@ func NewUpdateSessionByIdRequestWithBody(server string, id Id, contentType strin
 }
 
 // NewListStaffMembersRequest generates requests for ListStaffMembers
-func NewListStaffMembersRequest(server string, params *ListStaffMembersParams) (*http.Request, error) {
+func NewListStaffMembersRequest(server string, campId CampId, params *ListStaffMembersParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/staff-members")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/staff-members", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4880,26 +5192,33 @@ func NewListStaffMembersRequest(server string, params *ListStaffMembersParams) (
 }
 
 // NewCreateStaffMemberRequest calls the generic CreateStaffMember builder with application/json body
-func NewCreateStaffMemberRequest(server string, body CreateStaffMemberJSONRequestBody) (*http.Request, error) {
+func NewCreateStaffMemberRequest(server string, campId CampId, body CreateStaffMemberJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateStaffMemberRequestWithBody(server, "application/json", bodyReader)
+	return NewCreateStaffMemberRequestWithBody(server, campId, "application/json", bodyReader)
 }
 
 // NewCreateStaffMemberRequestWithBody generates requests for CreateStaffMember with any type of body
-func NewCreateStaffMemberRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateStaffMemberRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/staff-members")
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/staff-members", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4920,12 +5239,19 @@ func NewCreateStaffMemberRequestWithBody(server string, contentType string, body
 }
 
 // NewDeleteStaffMemberByIdRequest generates requests for DeleteStaffMemberById
-func NewDeleteStaffMemberByIdRequest(server string, id Id) (*http.Request, error) {
+func NewDeleteStaffMemberByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4935,7 +5261,7 @@ func NewDeleteStaffMemberByIdRequest(server string, id Id) (*http.Request, error
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/staff-members/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/staff-members/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4954,12 +5280,19 @@ func NewDeleteStaffMemberByIdRequest(server string, id Id) (*http.Request, error
 }
 
 // NewGetStaffMemberByIdRequest generates requests for GetStaffMemberById
-func NewGetStaffMemberByIdRequest(server string, id Id) (*http.Request, error) {
+func NewGetStaffMemberByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
 	if err != nil {
 		return nil, err
 	}
@@ -4969,7 +5302,7 @@ func NewGetStaffMemberByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/staff-members/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/staff-members/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4988,18 +5321,61 @@ func NewGetStaffMemberByIdRequest(server string, id Id) (*http.Request, error) {
 }
 
 // NewUpdateStaffMemberByIdRequest calls the generic UpdateStaffMemberById builder with application/json body
-func NewUpdateStaffMemberByIdRequest(server string, id Id, body UpdateStaffMemberByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateStaffMemberByIdRequest(server string, campId CampId, id Id, body UpdateStaffMemberByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateStaffMemberByIdRequestWithBody(server, id, "application/json", bodyReader)
+	return NewUpdateStaffMemberByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
 }
 
 // NewUpdateStaffMemberByIdRequestWithBody generates requests for UpdateStaffMemberById with any type of body
-func NewUpdateStaffMemberByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateStaffMemberByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/staff-members/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteCampByIdRequest generates requests for DeleteCampById
+func NewDeleteCampByIdRequest(server string, id Id) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -5014,7 +5390,86 @@ func NewUpdateStaffMemberByIdRequestWithBody(server string, id Id, contentType s
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/staff-members/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/camps/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetCampByIdRequest generates requests for GetCampById
+func NewGetCampByIdRequest(server string, id Id) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateCampByIdRequest calls the generic UpdateCampById builder with application/json body
+func NewUpdateCampByIdRequest(server string, id Id, body UpdateCampByIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateCampByIdRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateCampByIdRequestWithBody generates requests for UpdateCampById with any type of body
+func NewUpdateCampByIdRequestWithBody(server string, id Id, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -5043,7 +5498,7 @@ func NewGetTenantsRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/tenants")
+	operationPath := fmt.Sprintf("/api/v1/tenants")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -5077,7 +5532,7 @@ func NewGetTenantByIdRequest(server string, id Id) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/tenants/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/tenants/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -5138,44 +5593,6 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// ListActivitiesWithResponse request
-	ListActivitiesWithResponse(ctx context.Context, params *ListActivitiesParams, reqEditors ...RequestEditorFn) (*ListActivitiesHTTPResponse, error)
-
-	// CreateActivityWithBodyWithResponse request with any body
-	CreateActivityWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateActivityHTTPResponse, error)
-
-	CreateActivityWithResponse(ctx context.Context, body CreateActivityJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateActivityHTTPResponse, error)
-
-	// DeleteActivityByIdWithResponse request
-	DeleteActivityByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteActivityByIdHTTPResponse, error)
-
-	// GetActivityByIdWithResponse request
-	GetActivityByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetActivityByIdHTTPResponse, error)
-
-	// UpdateActivityByIdWithBodyWithResponse request with any body
-	UpdateActivityByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateActivityByIdHTTPResponse, error)
-
-	UpdateActivityByIdWithResponse(ctx context.Context, id Id, body UpdateActivityByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateActivityByIdHTTPResponse, error)
-
-	// ListAreasWithResponse request
-	ListAreasWithResponse(ctx context.Context, params *ListAreasParams, reqEditors ...RequestEditorFn) (*ListAreasHTTPResponse, error)
-
-	// CreateAreaWithBodyWithResponse request with any body
-	CreateAreaWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAreaHTTPResponse, error)
-
-	CreateAreaWithResponse(ctx context.Context, body CreateAreaJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAreaHTTPResponse, error)
-
-	// DeleteAreaByIdWithResponse request
-	DeleteAreaByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteAreaByIdHTTPResponse, error)
-
-	// GetAreaByIdWithResponse request
-	GetAreaByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetAreaByIdHTTPResponse, error)
-
-	// UpdateAreaByIdWithBodyWithResponse request with any body
-	UpdateAreaByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAreaByIdHTTPResponse, error)
-
-	UpdateAreaByIdWithResponse(ctx context.Context, id Id, body UpdateAreaByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAreaByIdHTTPResponse, error)
-
 	// LoginWithBodyWithResponse request with any body
 	LoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginHTTPResponse, error)
 
@@ -5192,25 +5609,6 @@ type ClientWithResponsesInterface interface {
 
 	SignupWithResponse(ctx context.Context, body SignupJSONRequestBody, reqEditors ...RequestEditorFn) (*SignupHTTPResponse, error)
 
-	// ListCampersWithResponse request
-	ListCampersWithResponse(ctx context.Context, params *ListCampersParams, reqEditors ...RequestEditorFn) (*ListCampersHTTPResponse, error)
-
-	// CreateCamperWithBodyWithResponse request with any body
-	CreateCamperWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCamperHTTPResponse, error)
-
-	CreateCamperWithResponse(ctx context.Context, body CreateCamperJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCamperHTTPResponse, error)
-
-	// DeleteCamperByIdWithResponse request
-	DeleteCamperByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteCamperByIdHTTPResponse, error)
-
-	// GetCamperByIdWithResponse request
-	GetCamperByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetCamperByIdHTTPResponse, error)
-
-	// UpdateCamperByIdWithBodyWithResponse request with any body
-	UpdateCamperByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCamperByIdHTTPResponse, error)
-
-	UpdateCamperByIdWithResponse(ctx context.Context, id Id, body UpdateCamperByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCamperByIdHTTPResponse, error)
-
 	// GetCampsWithResponse request
 	GetCampsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCampsHTTPResponse, error)
 
@@ -5218,6 +5616,253 @@ type ClientWithResponsesInterface interface {
 	CreateCampWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCampHTTPResponse, error)
 
 	CreateCampWithResponse(ctx context.Context, body CreateCampJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCampHTTPResponse, error)
+
+	// ListActivitiesWithResponse request
+	ListActivitiesWithResponse(ctx context.Context, campId CampId, params *ListActivitiesParams, reqEditors ...RequestEditorFn) (*ListActivitiesHTTPResponse, error)
+
+	// CreateActivityWithBodyWithResponse request with any body
+	CreateActivityWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateActivityHTTPResponse, error)
+
+	CreateActivityWithResponse(ctx context.Context, campId CampId, body CreateActivityJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateActivityHTTPResponse, error)
+
+	// DeleteActivityByIdWithResponse request
+	DeleteActivityByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteActivityByIdHTTPResponse, error)
+
+	// GetActivityByIdWithResponse request
+	GetActivityByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetActivityByIdHTTPResponse, error)
+
+	// UpdateActivityByIdWithBodyWithResponse request with any body
+	UpdateActivityByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateActivityByIdHTTPResponse, error)
+
+	UpdateActivityByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateActivityByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateActivityByIdHTTPResponse, error)
+
+	// ListAreasWithResponse request
+	ListAreasWithResponse(ctx context.Context, campId CampId, params *ListAreasParams, reqEditors ...RequestEditorFn) (*ListAreasHTTPResponse, error)
+
+	// CreateAreaWithBodyWithResponse request with any body
+	CreateAreaWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAreaHTTPResponse, error)
+
+	CreateAreaWithResponse(ctx context.Context, campId CampId, body CreateAreaJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAreaHTTPResponse, error)
+
+	// DeleteAreaByIdWithResponse request
+	DeleteAreaByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteAreaByIdHTTPResponse, error)
+
+	// GetAreaByIdWithResponse request
+	GetAreaByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetAreaByIdHTTPResponse, error)
+
+	// UpdateAreaByIdWithBodyWithResponse request with any body
+	UpdateAreaByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAreaByIdHTTPResponse, error)
+
+	UpdateAreaByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateAreaByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAreaByIdHTTPResponse, error)
+
+	// ListCampersWithResponse request
+	ListCampersWithResponse(ctx context.Context, campId CampId, params *ListCampersParams, reqEditors ...RequestEditorFn) (*ListCampersHTTPResponse, error)
+
+	// CreateCamperWithBodyWithResponse request with any body
+	CreateCamperWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCamperHTTPResponse, error)
+
+	CreateCamperWithResponse(ctx context.Context, campId CampId, body CreateCamperJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCamperHTTPResponse, error)
+
+	// DeleteCamperByIdWithResponse request
+	DeleteCamperByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteCamperByIdHTTPResponse, error)
+
+	// GetCamperByIdWithResponse request
+	GetCamperByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetCamperByIdHTTPResponse, error)
+
+	// UpdateCamperByIdWithBodyWithResponse request with any body
+	UpdateCamperByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCamperByIdHTTPResponse, error)
+
+	UpdateCamperByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateCamperByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCamperByIdHTTPResponse, error)
+
+	// ListCertificationsWithResponse request
+	ListCertificationsWithResponse(ctx context.Context, campId CampId, params *ListCertificationsParams, reqEditors ...RequestEditorFn) (*ListCertificationsHTTPResponse, error)
+
+	// CreateCertificationWithBodyWithResponse request with any body
+	CreateCertificationWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCertificationHTTPResponse, error)
+
+	CreateCertificationWithResponse(ctx context.Context, campId CampId, body CreateCertificationJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCertificationHTTPResponse, error)
+
+	// DeleteCertificationByIdWithResponse request
+	DeleteCertificationByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteCertificationByIdHTTPResponse, error)
+
+	// GetCertificationByIdWithResponse request
+	GetCertificationByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetCertificationByIdHTTPResponse, error)
+
+	// UpdateCertificationByIdWithBodyWithResponse request with any body
+	UpdateCertificationByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCertificationByIdHTTPResponse, error)
+
+	UpdateCertificationByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateCertificationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCertificationByIdHTTPResponse, error)
+
+	// ListColorsWithResponse request
+	ListColorsWithResponse(ctx context.Context, campId CampId, params *ListColorsParams, reqEditors ...RequestEditorFn) (*ListColorsHTTPResponse, error)
+
+	// CreateColorWithBodyWithResponse request with any body
+	CreateColorWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateColorHTTPResponse, error)
+
+	CreateColorWithResponse(ctx context.Context, campId CampId, body CreateColorJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateColorHTTPResponse, error)
+
+	// DeleteColorByIdWithResponse request
+	DeleteColorByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteColorByIdHTTPResponse, error)
+
+	// GetColorByIdWithResponse request
+	GetColorByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetColorByIdHTTPResponse, error)
+
+	// UpdateColorByIdWithBodyWithResponse request with any body
+	UpdateColorByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateColorByIdHTTPResponse, error)
+
+	UpdateColorByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateColorByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateColorByIdHTTPResponse, error)
+
+	// ListEventsWithResponse request
+	ListEventsWithResponse(ctx context.Context, campId CampId, params *ListEventsParams, reqEditors ...RequestEditorFn) (*ListEventsHTTPResponse, error)
+
+	// CreateEventWithBodyWithResponse request with any body
+	CreateEventWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateEventHTTPResponse, error)
+
+	CreateEventWithResponse(ctx context.Context, campId CampId, body CreateEventJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateEventHTTPResponse, error)
+
+	// DeleteEventByIdWithResponse request
+	DeleteEventByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteEventByIdHTTPResponse, error)
+
+	// GetEventByIdWithResponse request
+	GetEventByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetEventByIdHTTPResponse, error)
+
+	// UpdateEventByIdWithBodyWithResponse request with any body
+	UpdateEventByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error)
+
+	UpdateEventByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error)
+
+	// ListGroupsWithResponse request
+	ListGroupsWithResponse(ctx context.Context, campId CampId, params *ListGroupsParams, reqEditors ...RequestEditorFn) (*ListGroupsHTTPResponse, error)
+
+	// CreateGroupWithBodyWithResponse request with any body
+	CreateGroupWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateGroupHTTPResponse, error)
+
+	CreateGroupWithResponse(ctx context.Context, campId CampId, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateGroupHTTPResponse, error)
+
+	// DeleteGroupByIdWithResponse request
+	DeleteGroupByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteGroupByIdHTTPResponse, error)
+
+	// GetGroupByIdWithResponse request
+	GetGroupByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetGroupByIdHTTPResponse, error)
+
+	// UpdateGroupByIdWithBodyWithResponse request with any body
+	UpdateGroupByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateGroupByIdHTTPResponse, error)
+
+	UpdateGroupByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateGroupByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupByIdHTTPResponse, error)
+
+	// ListHousingRoomsWithResponse request
+	ListHousingRoomsWithResponse(ctx context.Context, campId CampId, params *ListHousingRoomsParams, reqEditors ...RequestEditorFn) (*ListHousingRoomsHTTPResponse, error)
+
+	// CreateHousingRoomWithBodyWithResponse request with any body
+	CreateHousingRoomWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateHousingRoomHTTPResponse, error)
+
+	CreateHousingRoomWithResponse(ctx context.Context, campId CampId, body CreateHousingRoomJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateHousingRoomHTTPResponse, error)
+
+	// DeleteHousingRoomByIdWithResponse request
+	DeleteHousingRoomByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteHousingRoomByIdHTTPResponse, error)
+
+	// GetHousingRoomByIdWithResponse request
+	GetHousingRoomByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetHousingRoomByIdHTTPResponse, error)
+
+	// UpdateHousingRoomByIdWithBodyWithResponse request with any body
+	UpdateHousingRoomByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateHousingRoomByIdHTTPResponse, error)
+
+	UpdateHousingRoomByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateHousingRoomByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateHousingRoomByIdHTTPResponse, error)
+
+	// ListLocationsWithResponse request
+	ListLocationsWithResponse(ctx context.Context, campId CampId, params *ListLocationsParams, reqEditors ...RequestEditorFn) (*ListLocationsHTTPResponse, error)
+
+	// CreateLocationWithBodyWithResponse request with any body
+	CreateLocationWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateLocationHTTPResponse, error)
+
+	CreateLocationWithResponse(ctx context.Context, campId CampId, body CreateLocationJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateLocationHTTPResponse, error)
+
+	// DeleteLocationByIdWithResponse request
+	DeleteLocationByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteLocationByIdHTTPResponse, error)
+
+	// GetLocationByIdWithResponse request
+	GetLocationByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetLocationByIdHTTPResponse, error)
+
+	// UpdateLocationByIdWithBodyWithResponse request with any body
+	UpdateLocationByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateLocationByIdHTTPResponse, error)
+
+	UpdateLocationByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateLocationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateLocationByIdHTTPResponse, error)
+
+	// ListProgramsWithResponse request
+	ListProgramsWithResponse(ctx context.Context, campId CampId, params *ListProgramsParams, reqEditors ...RequestEditorFn) (*ListProgramsHTTPResponse, error)
+
+	// CreateProgramWithBodyWithResponse request with any body
+	CreateProgramWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateProgramHTTPResponse, error)
+
+	CreateProgramWithResponse(ctx context.Context, campId CampId, body CreateProgramJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateProgramHTTPResponse, error)
+
+	// DeleteProgramByIdWithResponse request
+	DeleteProgramByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteProgramByIdHTTPResponse, error)
+
+	// GetProgramByIdWithResponse request
+	GetProgramByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetProgramByIdHTTPResponse, error)
+
+	// UpdateProgramByIdWithBodyWithResponse request with any body
+	UpdateProgramByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateProgramByIdHTTPResponse, error)
+
+	UpdateProgramByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateProgramByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateProgramByIdHTTPResponse, error)
+
+	// ListRolesWithResponse request
+	ListRolesWithResponse(ctx context.Context, campId CampId, params *ListRolesParams, reqEditors ...RequestEditorFn) (*ListRolesHTTPResponse, error)
+
+	// CreateRoleWithBodyWithResponse request with any body
+	CreateRoleWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateRoleHTTPResponse, error)
+
+	CreateRoleWithResponse(ctx context.Context, campId CampId, body CreateRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateRoleHTTPResponse, error)
+
+	// DeleteRoleByIdWithResponse request
+	DeleteRoleByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteRoleByIdHTTPResponse, error)
+
+	// GetRoleByIdWithResponse request
+	GetRoleByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetRoleByIdHTTPResponse, error)
+
+	// UpdateRoleByIdWithBodyWithResponse request with any body
+	UpdateRoleByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRoleByIdHTTPResponse, error)
+
+	UpdateRoleByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateRoleByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRoleByIdHTTPResponse, error)
+
+	// ListSessionsWithResponse request
+	ListSessionsWithResponse(ctx context.Context, campId CampId, params *ListSessionsParams, reqEditors ...RequestEditorFn) (*ListSessionsHTTPResponse, error)
+
+	// CreateSessionWithBodyWithResponse request with any body
+	CreateSessionWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSessionHTTPResponse, error)
+
+	CreateSessionWithResponse(ctx context.Context, campId CampId, body CreateSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSessionHTTPResponse, error)
+
+	// DeleteSessionByIdWithResponse request
+	DeleteSessionByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteSessionByIdHTTPResponse, error)
+
+	// GetSessionByIdWithResponse request
+	GetSessionByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetSessionByIdHTTPResponse, error)
+
+	// UpdateSessionByIdWithBodyWithResponse request with any body
+	UpdateSessionByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSessionByIdHTTPResponse, error)
+
+	UpdateSessionByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateSessionByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSessionByIdHTTPResponse, error)
+
+	// ListStaffMembersWithResponse request
+	ListStaffMembersWithResponse(ctx context.Context, campId CampId, params *ListStaffMembersParams, reqEditors ...RequestEditorFn) (*ListStaffMembersHTTPResponse, error)
+
+	// CreateStaffMemberWithBodyWithResponse request with any body
+	CreateStaffMemberWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateStaffMemberHTTPResponse, error)
+
+	CreateStaffMemberWithResponse(ctx context.Context, campId CampId, body CreateStaffMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateStaffMemberHTTPResponse, error)
+
+	// DeleteStaffMemberByIdWithResponse request
+	DeleteStaffMemberByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteStaffMemberByIdHTTPResponse, error)
+
+	// GetStaffMemberByIdWithResponse request
+	GetStaffMemberByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetStaffMemberByIdHTTPResponse, error)
+
+	// UpdateStaffMemberByIdWithBodyWithResponse request with any body
+	UpdateStaffMemberByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateStaffMemberByIdHTTPResponse, error)
+
+	UpdateStaffMemberByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateStaffMemberByIdHTTPResponse, error)
 
 	// DeleteCampByIdWithResponse request
 	DeleteCampByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteCampByIdHTTPResponse, error)
@@ -5230,201 +5875,141 @@ type ClientWithResponsesInterface interface {
 
 	UpdateCampByIdWithResponse(ctx context.Context, id Id, body UpdateCampByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCampByIdHTTPResponse, error)
 
-	// ListCertificationsWithResponse request
-	ListCertificationsWithResponse(ctx context.Context, params *ListCertificationsParams, reqEditors ...RequestEditorFn) (*ListCertificationsHTTPResponse, error)
-
-	// CreateCertificationWithBodyWithResponse request with any body
-	CreateCertificationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCertificationHTTPResponse, error)
-
-	CreateCertificationWithResponse(ctx context.Context, body CreateCertificationJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCertificationHTTPResponse, error)
-
-	// DeleteCertificationByIdWithResponse request
-	DeleteCertificationByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteCertificationByIdHTTPResponse, error)
-
-	// GetCertificationByIdWithResponse request
-	GetCertificationByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetCertificationByIdHTTPResponse, error)
-
-	// UpdateCertificationByIdWithBodyWithResponse request with any body
-	UpdateCertificationByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCertificationByIdHTTPResponse, error)
-
-	UpdateCertificationByIdWithResponse(ctx context.Context, id Id, body UpdateCertificationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCertificationByIdHTTPResponse, error)
-
-	// ListColorsWithResponse request
-	ListColorsWithResponse(ctx context.Context, params *ListColorsParams, reqEditors ...RequestEditorFn) (*ListColorsHTTPResponse, error)
-
-	// CreateColorWithBodyWithResponse request with any body
-	CreateColorWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateColorHTTPResponse, error)
-
-	CreateColorWithResponse(ctx context.Context, body CreateColorJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateColorHTTPResponse, error)
-
-	// DeleteColorByIdWithResponse request
-	DeleteColorByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteColorByIdHTTPResponse, error)
-
-	// GetColorByIdWithResponse request
-	GetColorByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetColorByIdHTTPResponse, error)
-
-	// UpdateColorByIdWithBodyWithResponse request with any body
-	UpdateColorByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateColorByIdHTTPResponse, error)
-
-	UpdateColorByIdWithResponse(ctx context.Context, id Id, body UpdateColorByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateColorByIdHTTPResponse, error)
-
-	// ListEventsWithResponse request
-	ListEventsWithResponse(ctx context.Context, params *ListEventsParams, reqEditors ...RequestEditorFn) (*ListEventsHTTPResponse, error)
-
-	// CreateEventWithBodyWithResponse request with any body
-	CreateEventWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateEventHTTPResponse, error)
-
-	CreateEventWithResponse(ctx context.Context, body CreateEventJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateEventHTTPResponse, error)
-
-	// DeleteEventByIdWithResponse request
-	DeleteEventByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteEventByIdHTTPResponse, error)
-
-	// GetEventByIdWithResponse request
-	GetEventByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetEventByIdHTTPResponse, error)
-
-	// UpdateEventByIdWithBodyWithResponse request with any body
-	UpdateEventByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error)
-
-	UpdateEventByIdWithResponse(ctx context.Context, id Id, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error)
-
-	// ListGroupsWithResponse request
-	ListGroupsWithResponse(ctx context.Context, params *ListGroupsParams, reqEditors ...RequestEditorFn) (*ListGroupsHTTPResponse, error)
-
-	// CreateGroupWithBodyWithResponse request with any body
-	CreateGroupWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateGroupHTTPResponse, error)
-
-	CreateGroupWithResponse(ctx context.Context, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateGroupHTTPResponse, error)
-
-	// DeleteGroupByIdWithResponse request
-	DeleteGroupByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteGroupByIdHTTPResponse, error)
-
-	// GetGroupByIdWithResponse request
-	GetGroupByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetGroupByIdHTTPResponse, error)
-
-	// UpdateGroupByIdWithBodyWithResponse request with any body
-	UpdateGroupByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateGroupByIdHTTPResponse, error)
-
-	UpdateGroupByIdWithResponse(ctx context.Context, id Id, body UpdateGroupByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupByIdHTTPResponse, error)
-
-	// ListHousingRoomsWithResponse request
-	ListHousingRoomsWithResponse(ctx context.Context, params *ListHousingRoomsParams, reqEditors ...RequestEditorFn) (*ListHousingRoomsHTTPResponse, error)
-
-	// CreateHousingRoomWithBodyWithResponse request with any body
-	CreateHousingRoomWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateHousingRoomHTTPResponse, error)
-
-	CreateHousingRoomWithResponse(ctx context.Context, body CreateHousingRoomJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateHousingRoomHTTPResponse, error)
-
-	// DeleteHousingRoomByIdWithResponse request
-	DeleteHousingRoomByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteHousingRoomByIdHTTPResponse, error)
-
-	// GetHousingRoomByIdWithResponse request
-	GetHousingRoomByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetHousingRoomByIdHTTPResponse, error)
-
-	// UpdateHousingRoomByIdWithBodyWithResponse request with any body
-	UpdateHousingRoomByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateHousingRoomByIdHTTPResponse, error)
-
-	UpdateHousingRoomByIdWithResponse(ctx context.Context, id Id, body UpdateHousingRoomByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateHousingRoomByIdHTTPResponse, error)
-
-	// ListLocationsWithResponse request
-	ListLocationsWithResponse(ctx context.Context, params *ListLocationsParams, reqEditors ...RequestEditorFn) (*ListLocationsHTTPResponse, error)
-
-	// CreateLocationWithBodyWithResponse request with any body
-	CreateLocationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateLocationHTTPResponse, error)
-
-	CreateLocationWithResponse(ctx context.Context, body CreateLocationJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateLocationHTTPResponse, error)
-
-	// DeleteLocationByIdWithResponse request
-	DeleteLocationByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteLocationByIdHTTPResponse, error)
-
-	// GetLocationByIdWithResponse request
-	GetLocationByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetLocationByIdHTTPResponse, error)
-
-	// UpdateLocationByIdWithBodyWithResponse request with any body
-	UpdateLocationByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateLocationByIdHTTPResponse, error)
-
-	UpdateLocationByIdWithResponse(ctx context.Context, id Id, body UpdateLocationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateLocationByIdHTTPResponse, error)
-
-	// ListProgramsWithResponse request
-	ListProgramsWithResponse(ctx context.Context, params *ListProgramsParams, reqEditors ...RequestEditorFn) (*ListProgramsHTTPResponse, error)
-
-	// CreateProgramWithBodyWithResponse request with any body
-	CreateProgramWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateProgramHTTPResponse, error)
-
-	CreateProgramWithResponse(ctx context.Context, body CreateProgramJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateProgramHTTPResponse, error)
-
-	// DeleteProgramByIdWithResponse request
-	DeleteProgramByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteProgramByIdHTTPResponse, error)
-
-	// GetProgramByIdWithResponse request
-	GetProgramByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetProgramByIdHTTPResponse, error)
-
-	// UpdateProgramByIdWithBodyWithResponse request with any body
-	UpdateProgramByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateProgramByIdHTTPResponse, error)
-
-	UpdateProgramByIdWithResponse(ctx context.Context, id Id, body UpdateProgramByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateProgramByIdHTTPResponse, error)
-
-	// ListRolesWithResponse request
-	ListRolesWithResponse(ctx context.Context, params *ListRolesParams, reqEditors ...RequestEditorFn) (*ListRolesHTTPResponse, error)
-
-	// CreateRoleWithBodyWithResponse request with any body
-	CreateRoleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateRoleHTTPResponse, error)
-
-	CreateRoleWithResponse(ctx context.Context, body CreateRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateRoleHTTPResponse, error)
-
-	// DeleteRoleByIdWithResponse request
-	DeleteRoleByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteRoleByIdHTTPResponse, error)
-
-	// GetRoleByIdWithResponse request
-	GetRoleByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetRoleByIdHTTPResponse, error)
-
-	// UpdateRoleByIdWithBodyWithResponse request with any body
-	UpdateRoleByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRoleByIdHTTPResponse, error)
-
-	UpdateRoleByIdWithResponse(ctx context.Context, id Id, body UpdateRoleByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRoleByIdHTTPResponse, error)
-
-	// ListSessionsWithResponse request
-	ListSessionsWithResponse(ctx context.Context, params *ListSessionsParams, reqEditors ...RequestEditorFn) (*ListSessionsHTTPResponse, error)
-
-	// CreateSessionWithBodyWithResponse request with any body
-	CreateSessionWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSessionHTTPResponse, error)
-
-	CreateSessionWithResponse(ctx context.Context, body CreateSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSessionHTTPResponse, error)
-
-	// DeleteSessionByIdWithResponse request
-	DeleteSessionByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteSessionByIdHTTPResponse, error)
-
-	// GetSessionByIdWithResponse request
-	GetSessionByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetSessionByIdHTTPResponse, error)
-
-	// UpdateSessionByIdWithBodyWithResponse request with any body
-	UpdateSessionByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSessionByIdHTTPResponse, error)
-
-	UpdateSessionByIdWithResponse(ctx context.Context, id Id, body UpdateSessionByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSessionByIdHTTPResponse, error)
-
-	// ListStaffMembersWithResponse request
-	ListStaffMembersWithResponse(ctx context.Context, params *ListStaffMembersParams, reqEditors ...RequestEditorFn) (*ListStaffMembersHTTPResponse, error)
-
-	// CreateStaffMemberWithBodyWithResponse request with any body
-	CreateStaffMemberWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateStaffMemberHTTPResponse, error)
-
-	CreateStaffMemberWithResponse(ctx context.Context, body CreateStaffMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateStaffMemberHTTPResponse, error)
-
-	// DeleteStaffMemberByIdWithResponse request
-	DeleteStaffMemberByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteStaffMemberByIdHTTPResponse, error)
-
-	// GetStaffMemberByIdWithResponse request
-	GetStaffMemberByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetStaffMemberByIdHTTPResponse, error)
-
-	// UpdateStaffMemberByIdWithBodyWithResponse request with any body
-	UpdateStaffMemberByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateStaffMemberByIdHTTPResponse, error)
-
-	UpdateStaffMemberByIdWithResponse(ctx context.Context, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateStaffMemberByIdHTTPResponse, error)
-
 	// GetTenantsWithResponse request
 	GetTenantsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetTenantsHTTPResponse, error)
 
 	// GetTenantByIdWithResponse request
 	GetTenantByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetTenantByIdHTTPResponse, error)
+}
+
+type LoginHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *LoginResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r LoginHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r LoginHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type LogoutHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r LogoutHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r LogoutHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCurrentUserHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AuthMe
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCurrentUserHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCurrentUserHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type SignupHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *LoginResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r SignupHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SignupHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCampsHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CampsListResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCampsHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCampsHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateCampHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateCampHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateCampHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type ListActivitiesHTTPResponse struct {
@@ -5645,93 +6230,6 @@ func (r UpdateAreaByIdHTTPResponse) StatusCode() int {
 	return 0
 }
 
-type LoginHTTPResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *LoginResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r LoginHTTPResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r LoginHTTPResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type LogoutHTTPResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r LogoutHTTPResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r LogoutHTTPResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetCurrentUserHTTPResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *AuthMe
-}
-
-// Status returns HTTPResponse.Status
-func (r GetCurrentUserHTTPResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetCurrentUserHTTPResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type SignupHTTPResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *LoginResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r SignupHTTPResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r SignupHTTPResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type ListCampersHTTPResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5835,114 +6333,6 @@ func (r UpdateCamperByIdHTTPResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateCamperByIdHTTPResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetCampsHTTPResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *CampsListResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r GetCampsHTTPResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetCampsHTTPResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type CreateCampHTTPResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r CreateCampHTTPResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r CreateCampHTTPResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type DeleteCampByIdHTTPResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r DeleteCampByIdHTTPResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r DeleteCampByIdHTTPResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetCampByIdHTTPResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *Camp
-}
-
-// Status returns HTTPResponse.Status
-func (r GetCampByIdHTTPResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetCampByIdHTTPResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type UpdateCampByIdHTTPResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *Camp
-}
-
-// Status returns HTTPResponse.Status
-func (r UpdateCampByIdHTTPResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r UpdateCampByIdHTTPResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -7039,6 +7429,71 @@ func (r UpdateStaffMemberByIdHTTPResponse) StatusCode() int {
 	return 0
 }
 
+type DeleteCampByIdHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteCampByIdHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteCampByIdHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetCampByIdHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Camp
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCampByIdHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCampByIdHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateCampByIdHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Camp
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateCampByIdHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateCampByIdHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetTenantsHTTPResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -7081,128 +7536,6 @@ func (r GetTenantByIdHTTPResponse) StatusCode() int {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
-}
-
-// ListActivitiesWithResponse request returning *ListActivitiesHTTPResponse
-func (c *ClientWithResponses) ListActivitiesWithResponse(ctx context.Context, params *ListActivitiesParams, reqEditors ...RequestEditorFn) (*ListActivitiesHTTPResponse, error) {
-	rsp, err := c.ListActivities(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListActivitiesHTTPResponse(rsp)
-}
-
-// CreateActivityWithBodyWithResponse request with arbitrary body returning *CreateActivityHTTPResponse
-func (c *ClientWithResponses) CreateActivityWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateActivityHTTPResponse, error) {
-	rsp, err := c.CreateActivityWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateActivityHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateActivityWithResponse(ctx context.Context, body CreateActivityJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateActivityHTTPResponse, error) {
-	rsp, err := c.CreateActivity(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateActivityHTTPResponse(rsp)
-}
-
-// DeleteActivityByIdWithResponse request returning *DeleteActivityByIdHTTPResponse
-func (c *ClientWithResponses) DeleteActivityByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteActivityByIdHTTPResponse, error) {
-	rsp, err := c.DeleteActivityById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteActivityByIdHTTPResponse(rsp)
-}
-
-// GetActivityByIdWithResponse request returning *GetActivityByIdHTTPResponse
-func (c *ClientWithResponses) GetActivityByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetActivityByIdHTTPResponse, error) {
-	rsp, err := c.GetActivityById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetActivityByIdHTTPResponse(rsp)
-}
-
-// UpdateActivityByIdWithBodyWithResponse request with arbitrary body returning *UpdateActivityByIdHTTPResponse
-func (c *ClientWithResponses) UpdateActivityByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateActivityByIdHTTPResponse, error) {
-	rsp, err := c.UpdateActivityByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateActivityByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateActivityByIdWithResponse(ctx context.Context, id Id, body UpdateActivityByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateActivityByIdHTTPResponse, error) {
-	rsp, err := c.UpdateActivityById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateActivityByIdHTTPResponse(rsp)
-}
-
-// ListAreasWithResponse request returning *ListAreasHTTPResponse
-func (c *ClientWithResponses) ListAreasWithResponse(ctx context.Context, params *ListAreasParams, reqEditors ...RequestEditorFn) (*ListAreasHTTPResponse, error) {
-	rsp, err := c.ListAreas(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListAreasHTTPResponse(rsp)
-}
-
-// CreateAreaWithBodyWithResponse request with arbitrary body returning *CreateAreaHTTPResponse
-func (c *ClientWithResponses) CreateAreaWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAreaHTTPResponse, error) {
-	rsp, err := c.CreateAreaWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateAreaHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateAreaWithResponse(ctx context.Context, body CreateAreaJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAreaHTTPResponse, error) {
-	rsp, err := c.CreateArea(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateAreaHTTPResponse(rsp)
-}
-
-// DeleteAreaByIdWithResponse request returning *DeleteAreaByIdHTTPResponse
-func (c *ClientWithResponses) DeleteAreaByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteAreaByIdHTTPResponse, error) {
-	rsp, err := c.DeleteAreaById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteAreaByIdHTTPResponse(rsp)
-}
-
-// GetAreaByIdWithResponse request returning *GetAreaByIdHTTPResponse
-func (c *ClientWithResponses) GetAreaByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetAreaByIdHTTPResponse, error) {
-	rsp, err := c.GetAreaById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetAreaByIdHTTPResponse(rsp)
-}
-
-// UpdateAreaByIdWithBodyWithResponse request with arbitrary body returning *UpdateAreaByIdHTTPResponse
-func (c *ClientWithResponses) UpdateAreaByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAreaByIdHTTPResponse, error) {
-	rsp, err := c.UpdateAreaByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateAreaByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateAreaByIdWithResponse(ctx context.Context, id Id, body UpdateAreaByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAreaByIdHTTPResponse, error) {
-	rsp, err := c.UpdateAreaById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateAreaByIdHTTPResponse(rsp)
 }
 
 // LoginWithBodyWithResponse request with arbitrary body returning *LoginHTTPResponse
@@ -7257,67 +7590,6 @@ func (c *ClientWithResponses) SignupWithResponse(ctx context.Context, body Signu
 	return ParseSignupHTTPResponse(rsp)
 }
 
-// ListCampersWithResponse request returning *ListCampersHTTPResponse
-func (c *ClientWithResponses) ListCampersWithResponse(ctx context.Context, params *ListCampersParams, reqEditors ...RequestEditorFn) (*ListCampersHTTPResponse, error) {
-	rsp, err := c.ListCampers(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListCampersHTTPResponse(rsp)
-}
-
-// CreateCamperWithBodyWithResponse request with arbitrary body returning *CreateCamperHTTPResponse
-func (c *ClientWithResponses) CreateCamperWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCamperHTTPResponse, error) {
-	rsp, err := c.CreateCamperWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateCamperHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateCamperWithResponse(ctx context.Context, body CreateCamperJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCamperHTTPResponse, error) {
-	rsp, err := c.CreateCamper(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateCamperHTTPResponse(rsp)
-}
-
-// DeleteCamperByIdWithResponse request returning *DeleteCamperByIdHTTPResponse
-func (c *ClientWithResponses) DeleteCamperByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteCamperByIdHTTPResponse, error) {
-	rsp, err := c.DeleteCamperById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteCamperByIdHTTPResponse(rsp)
-}
-
-// GetCamperByIdWithResponse request returning *GetCamperByIdHTTPResponse
-func (c *ClientWithResponses) GetCamperByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetCamperByIdHTTPResponse, error) {
-	rsp, err := c.GetCamperById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetCamperByIdHTTPResponse(rsp)
-}
-
-// UpdateCamperByIdWithBodyWithResponse request with arbitrary body returning *UpdateCamperByIdHTTPResponse
-func (c *ClientWithResponses) UpdateCamperByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCamperByIdHTTPResponse, error) {
-	rsp, err := c.UpdateCamperByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateCamperByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateCamperByIdWithResponse(ctx context.Context, id Id, body UpdateCamperByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCamperByIdHTTPResponse, error) {
-	rsp, err := c.UpdateCamperById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateCamperByIdHTTPResponse(rsp)
-}
-
 // GetCampsWithResponse request returning *GetCampsHTTPResponse
 func (c *ClientWithResponses) GetCampsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCampsHTTPResponse, error) {
 	rsp, err := c.GetCamps(ctx, reqEditors...)
@@ -7342,6 +7614,799 @@ func (c *ClientWithResponses) CreateCampWithResponse(ctx context.Context, body C
 		return nil, err
 	}
 	return ParseCreateCampHTTPResponse(rsp)
+}
+
+// ListActivitiesWithResponse request returning *ListActivitiesHTTPResponse
+func (c *ClientWithResponses) ListActivitiesWithResponse(ctx context.Context, campId CampId, params *ListActivitiesParams, reqEditors ...RequestEditorFn) (*ListActivitiesHTTPResponse, error) {
+	rsp, err := c.ListActivities(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListActivitiesHTTPResponse(rsp)
+}
+
+// CreateActivityWithBodyWithResponse request with arbitrary body returning *CreateActivityHTTPResponse
+func (c *ClientWithResponses) CreateActivityWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateActivityHTTPResponse, error) {
+	rsp, err := c.CreateActivityWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateActivityHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateActivityWithResponse(ctx context.Context, campId CampId, body CreateActivityJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateActivityHTTPResponse, error) {
+	rsp, err := c.CreateActivity(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateActivityHTTPResponse(rsp)
+}
+
+// DeleteActivityByIdWithResponse request returning *DeleteActivityByIdHTTPResponse
+func (c *ClientWithResponses) DeleteActivityByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteActivityByIdHTTPResponse, error) {
+	rsp, err := c.DeleteActivityById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteActivityByIdHTTPResponse(rsp)
+}
+
+// GetActivityByIdWithResponse request returning *GetActivityByIdHTTPResponse
+func (c *ClientWithResponses) GetActivityByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetActivityByIdHTTPResponse, error) {
+	rsp, err := c.GetActivityById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetActivityByIdHTTPResponse(rsp)
+}
+
+// UpdateActivityByIdWithBodyWithResponse request with arbitrary body returning *UpdateActivityByIdHTTPResponse
+func (c *ClientWithResponses) UpdateActivityByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateActivityByIdHTTPResponse, error) {
+	rsp, err := c.UpdateActivityByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateActivityByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateActivityByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateActivityByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateActivityByIdHTTPResponse, error) {
+	rsp, err := c.UpdateActivityById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateActivityByIdHTTPResponse(rsp)
+}
+
+// ListAreasWithResponse request returning *ListAreasHTTPResponse
+func (c *ClientWithResponses) ListAreasWithResponse(ctx context.Context, campId CampId, params *ListAreasParams, reqEditors ...RequestEditorFn) (*ListAreasHTTPResponse, error) {
+	rsp, err := c.ListAreas(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListAreasHTTPResponse(rsp)
+}
+
+// CreateAreaWithBodyWithResponse request with arbitrary body returning *CreateAreaHTTPResponse
+func (c *ClientWithResponses) CreateAreaWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAreaHTTPResponse, error) {
+	rsp, err := c.CreateAreaWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateAreaHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateAreaWithResponse(ctx context.Context, campId CampId, body CreateAreaJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAreaHTTPResponse, error) {
+	rsp, err := c.CreateArea(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateAreaHTTPResponse(rsp)
+}
+
+// DeleteAreaByIdWithResponse request returning *DeleteAreaByIdHTTPResponse
+func (c *ClientWithResponses) DeleteAreaByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteAreaByIdHTTPResponse, error) {
+	rsp, err := c.DeleteAreaById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteAreaByIdHTTPResponse(rsp)
+}
+
+// GetAreaByIdWithResponse request returning *GetAreaByIdHTTPResponse
+func (c *ClientWithResponses) GetAreaByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetAreaByIdHTTPResponse, error) {
+	rsp, err := c.GetAreaById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetAreaByIdHTTPResponse(rsp)
+}
+
+// UpdateAreaByIdWithBodyWithResponse request with arbitrary body returning *UpdateAreaByIdHTTPResponse
+func (c *ClientWithResponses) UpdateAreaByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAreaByIdHTTPResponse, error) {
+	rsp, err := c.UpdateAreaByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateAreaByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateAreaByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateAreaByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAreaByIdHTTPResponse, error) {
+	rsp, err := c.UpdateAreaById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateAreaByIdHTTPResponse(rsp)
+}
+
+// ListCampersWithResponse request returning *ListCampersHTTPResponse
+func (c *ClientWithResponses) ListCampersWithResponse(ctx context.Context, campId CampId, params *ListCampersParams, reqEditors ...RequestEditorFn) (*ListCampersHTTPResponse, error) {
+	rsp, err := c.ListCampers(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListCampersHTTPResponse(rsp)
+}
+
+// CreateCamperWithBodyWithResponse request with arbitrary body returning *CreateCamperHTTPResponse
+func (c *ClientWithResponses) CreateCamperWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCamperHTTPResponse, error) {
+	rsp, err := c.CreateCamperWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateCamperHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateCamperWithResponse(ctx context.Context, campId CampId, body CreateCamperJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCamperHTTPResponse, error) {
+	rsp, err := c.CreateCamper(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateCamperHTTPResponse(rsp)
+}
+
+// DeleteCamperByIdWithResponse request returning *DeleteCamperByIdHTTPResponse
+func (c *ClientWithResponses) DeleteCamperByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteCamperByIdHTTPResponse, error) {
+	rsp, err := c.DeleteCamperById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteCamperByIdHTTPResponse(rsp)
+}
+
+// GetCamperByIdWithResponse request returning *GetCamperByIdHTTPResponse
+func (c *ClientWithResponses) GetCamperByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetCamperByIdHTTPResponse, error) {
+	rsp, err := c.GetCamperById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCamperByIdHTTPResponse(rsp)
+}
+
+// UpdateCamperByIdWithBodyWithResponse request with arbitrary body returning *UpdateCamperByIdHTTPResponse
+func (c *ClientWithResponses) UpdateCamperByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCamperByIdHTTPResponse, error) {
+	rsp, err := c.UpdateCamperByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateCamperByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateCamperByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateCamperByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCamperByIdHTTPResponse, error) {
+	rsp, err := c.UpdateCamperById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateCamperByIdHTTPResponse(rsp)
+}
+
+// ListCertificationsWithResponse request returning *ListCertificationsHTTPResponse
+func (c *ClientWithResponses) ListCertificationsWithResponse(ctx context.Context, campId CampId, params *ListCertificationsParams, reqEditors ...RequestEditorFn) (*ListCertificationsHTTPResponse, error) {
+	rsp, err := c.ListCertifications(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListCertificationsHTTPResponse(rsp)
+}
+
+// CreateCertificationWithBodyWithResponse request with arbitrary body returning *CreateCertificationHTTPResponse
+func (c *ClientWithResponses) CreateCertificationWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCertificationHTTPResponse, error) {
+	rsp, err := c.CreateCertificationWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateCertificationHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateCertificationWithResponse(ctx context.Context, campId CampId, body CreateCertificationJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCertificationHTTPResponse, error) {
+	rsp, err := c.CreateCertification(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateCertificationHTTPResponse(rsp)
+}
+
+// DeleteCertificationByIdWithResponse request returning *DeleteCertificationByIdHTTPResponse
+func (c *ClientWithResponses) DeleteCertificationByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteCertificationByIdHTTPResponse, error) {
+	rsp, err := c.DeleteCertificationById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteCertificationByIdHTTPResponse(rsp)
+}
+
+// GetCertificationByIdWithResponse request returning *GetCertificationByIdHTTPResponse
+func (c *ClientWithResponses) GetCertificationByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetCertificationByIdHTTPResponse, error) {
+	rsp, err := c.GetCertificationById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCertificationByIdHTTPResponse(rsp)
+}
+
+// UpdateCertificationByIdWithBodyWithResponse request with arbitrary body returning *UpdateCertificationByIdHTTPResponse
+func (c *ClientWithResponses) UpdateCertificationByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCertificationByIdHTTPResponse, error) {
+	rsp, err := c.UpdateCertificationByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateCertificationByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateCertificationByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateCertificationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCertificationByIdHTTPResponse, error) {
+	rsp, err := c.UpdateCertificationById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateCertificationByIdHTTPResponse(rsp)
+}
+
+// ListColorsWithResponse request returning *ListColorsHTTPResponse
+func (c *ClientWithResponses) ListColorsWithResponse(ctx context.Context, campId CampId, params *ListColorsParams, reqEditors ...RequestEditorFn) (*ListColorsHTTPResponse, error) {
+	rsp, err := c.ListColors(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListColorsHTTPResponse(rsp)
+}
+
+// CreateColorWithBodyWithResponse request with arbitrary body returning *CreateColorHTTPResponse
+func (c *ClientWithResponses) CreateColorWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateColorHTTPResponse, error) {
+	rsp, err := c.CreateColorWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateColorHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateColorWithResponse(ctx context.Context, campId CampId, body CreateColorJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateColorHTTPResponse, error) {
+	rsp, err := c.CreateColor(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateColorHTTPResponse(rsp)
+}
+
+// DeleteColorByIdWithResponse request returning *DeleteColorByIdHTTPResponse
+func (c *ClientWithResponses) DeleteColorByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteColorByIdHTTPResponse, error) {
+	rsp, err := c.DeleteColorById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteColorByIdHTTPResponse(rsp)
+}
+
+// GetColorByIdWithResponse request returning *GetColorByIdHTTPResponse
+func (c *ClientWithResponses) GetColorByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetColorByIdHTTPResponse, error) {
+	rsp, err := c.GetColorById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetColorByIdHTTPResponse(rsp)
+}
+
+// UpdateColorByIdWithBodyWithResponse request with arbitrary body returning *UpdateColorByIdHTTPResponse
+func (c *ClientWithResponses) UpdateColorByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateColorByIdHTTPResponse, error) {
+	rsp, err := c.UpdateColorByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateColorByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateColorByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateColorByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateColorByIdHTTPResponse, error) {
+	rsp, err := c.UpdateColorById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateColorByIdHTTPResponse(rsp)
+}
+
+// ListEventsWithResponse request returning *ListEventsHTTPResponse
+func (c *ClientWithResponses) ListEventsWithResponse(ctx context.Context, campId CampId, params *ListEventsParams, reqEditors ...RequestEditorFn) (*ListEventsHTTPResponse, error) {
+	rsp, err := c.ListEvents(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListEventsHTTPResponse(rsp)
+}
+
+// CreateEventWithBodyWithResponse request with arbitrary body returning *CreateEventHTTPResponse
+func (c *ClientWithResponses) CreateEventWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateEventHTTPResponse, error) {
+	rsp, err := c.CreateEventWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateEventHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateEventWithResponse(ctx context.Context, campId CampId, body CreateEventJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateEventHTTPResponse, error) {
+	rsp, err := c.CreateEvent(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateEventHTTPResponse(rsp)
+}
+
+// DeleteEventByIdWithResponse request returning *DeleteEventByIdHTTPResponse
+func (c *ClientWithResponses) DeleteEventByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteEventByIdHTTPResponse, error) {
+	rsp, err := c.DeleteEventById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteEventByIdHTTPResponse(rsp)
+}
+
+// GetEventByIdWithResponse request returning *GetEventByIdHTTPResponse
+func (c *ClientWithResponses) GetEventByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetEventByIdHTTPResponse, error) {
+	rsp, err := c.GetEventById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetEventByIdHTTPResponse(rsp)
+}
+
+// UpdateEventByIdWithBodyWithResponse request with arbitrary body returning *UpdateEventByIdHTTPResponse
+func (c *ClientWithResponses) UpdateEventByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error) {
+	rsp, err := c.UpdateEventByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateEventByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateEventByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error) {
+	rsp, err := c.UpdateEventById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateEventByIdHTTPResponse(rsp)
+}
+
+// ListGroupsWithResponse request returning *ListGroupsHTTPResponse
+func (c *ClientWithResponses) ListGroupsWithResponse(ctx context.Context, campId CampId, params *ListGroupsParams, reqEditors ...RequestEditorFn) (*ListGroupsHTTPResponse, error) {
+	rsp, err := c.ListGroups(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListGroupsHTTPResponse(rsp)
+}
+
+// CreateGroupWithBodyWithResponse request with arbitrary body returning *CreateGroupHTTPResponse
+func (c *ClientWithResponses) CreateGroupWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateGroupHTTPResponse, error) {
+	rsp, err := c.CreateGroupWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateGroupHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateGroupWithResponse(ctx context.Context, campId CampId, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateGroupHTTPResponse, error) {
+	rsp, err := c.CreateGroup(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateGroupHTTPResponse(rsp)
+}
+
+// DeleteGroupByIdWithResponse request returning *DeleteGroupByIdHTTPResponse
+func (c *ClientWithResponses) DeleteGroupByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteGroupByIdHTTPResponse, error) {
+	rsp, err := c.DeleteGroupById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteGroupByIdHTTPResponse(rsp)
+}
+
+// GetGroupByIdWithResponse request returning *GetGroupByIdHTTPResponse
+func (c *ClientWithResponses) GetGroupByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetGroupByIdHTTPResponse, error) {
+	rsp, err := c.GetGroupById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetGroupByIdHTTPResponse(rsp)
+}
+
+// UpdateGroupByIdWithBodyWithResponse request with arbitrary body returning *UpdateGroupByIdHTTPResponse
+func (c *ClientWithResponses) UpdateGroupByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateGroupByIdHTTPResponse, error) {
+	rsp, err := c.UpdateGroupByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateGroupByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateGroupByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateGroupByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupByIdHTTPResponse, error) {
+	rsp, err := c.UpdateGroupById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateGroupByIdHTTPResponse(rsp)
+}
+
+// ListHousingRoomsWithResponse request returning *ListHousingRoomsHTTPResponse
+func (c *ClientWithResponses) ListHousingRoomsWithResponse(ctx context.Context, campId CampId, params *ListHousingRoomsParams, reqEditors ...RequestEditorFn) (*ListHousingRoomsHTTPResponse, error) {
+	rsp, err := c.ListHousingRooms(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListHousingRoomsHTTPResponse(rsp)
+}
+
+// CreateHousingRoomWithBodyWithResponse request with arbitrary body returning *CreateHousingRoomHTTPResponse
+func (c *ClientWithResponses) CreateHousingRoomWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateHousingRoomHTTPResponse, error) {
+	rsp, err := c.CreateHousingRoomWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateHousingRoomHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateHousingRoomWithResponse(ctx context.Context, campId CampId, body CreateHousingRoomJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateHousingRoomHTTPResponse, error) {
+	rsp, err := c.CreateHousingRoom(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateHousingRoomHTTPResponse(rsp)
+}
+
+// DeleteHousingRoomByIdWithResponse request returning *DeleteHousingRoomByIdHTTPResponse
+func (c *ClientWithResponses) DeleteHousingRoomByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteHousingRoomByIdHTTPResponse, error) {
+	rsp, err := c.DeleteHousingRoomById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteHousingRoomByIdHTTPResponse(rsp)
+}
+
+// GetHousingRoomByIdWithResponse request returning *GetHousingRoomByIdHTTPResponse
+func (c *ClientWithResponses) GetHousingRoomByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetHousingRoomByIdHTTPResponse, error) {
+	rsp, err := c.GetHousingRoomById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetHousingRoomByIdHTTPResponse(rsp)
+}
+
+// UpdateHousingRoomByIdWithBodyWithResponse request with arbitrary body returning *UpdateHousingRoomByIdHTTPResponse
+func (c *ClientWithResponses) UpdateHousingRoomByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateHousingRoomByIdHTTPResponse, error) {
+	rsp, err := c.UpdateHousingRoomByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateHousingRoomByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateHousingRoomByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateHousingRoomByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateHousingRoomByIdHTTPResponse, error) {
+	rsp, err := c.UpdateHousingRoomById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateHousingRoomByIdHTTPResponse(rsp)
+}
+
+// ListLocationsWithResponse request returning *ListLocationsHTTPResponse
+func (c *ClientWithResponses) ListLocationsWithResponse(ctx context.Context, campId CampId, params *ListLocationsParams, reqEditors ...RequestEditorFn) (*ListLocationsHTTPResponse, error) {
+	rsp, err := c.ListLocations(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListLocationsHTTPResponse(rsp)
+}
+
+// CreateLocationWithBodyWithResponse request with arbitrary body returning *CreateLocationHTTPResponse
+func (c *ClientWithResponses) CreateLocationWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateLocationHTTPResponse, error) {
+	rsp, err := c.CreateLocationWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateLocationHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateLocationWithResponse(ctx context.Context, campId CampId, body CreateLocationJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateLocationHTTPResponse, error) {
+	rsp, err := c.CreateLocation(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateLocationHTTPResponse(rsp)
+}
+
+// DeleteLocationByIdWithResponse request returning *DeleteLocationByIdHTTPResponse
+func (c *ClientWithResponses) DeleteLocationByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteLocationByIdHTTPResponse, error) {
+	rsp, err := c.DeleteLocationById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteLocationByIdHTTPResponse(rsp)
+}
+
+// GetLocationByIdWithResponse request returning *GetLocationByIdHTTPResponse
+func (c *ClientWithResponses) GetLocationByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetLocationByIdHTTPResponse, error) {
+	rsp, err := c.GetLocationById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetLocationByIdHTTPResponse(rsp)
+}
+
+// UpdateLocationByIdWithBodyWithResponse request with arbitrary body returning *UpdateLocationByIdHTTPResponse
+func (c *ClientWithResponses) UpdateLocationByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateLocationByIdHTTPResponse, error) {
+	rsp, err := c.UpdateLocationByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateLocationByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateLocationByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateLocationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateLocationByIdHTTPResponse, error) {
+	rsp, err := c.UpdateLocationById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateLocationByIdHTTPResponse(rsp)
+}
+
+// ListProgramsWithResponse request returning *ListProgramsHTTPResponse
+func (c *ClientWithResponses) ListProgramsWithResponse(ctx context.Context, campId CampId, params *ListProgramsParams, reqEditors ...RequestEditorFn) (*ListProgramsHTTPResponse, error) {
+	rsp, err := c.ListPrograms(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListProgramsHTTPResponse(rsp)
+}
+
+// CreateProgramWithBodyWithResponse request with arbitrary body returning *CreateProgramHTTPResponse
+func (c *ClientWithResponses) CreateProgramWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateProgramHTTPResponse, error) {
+	rsp, err := c.CreateProgramWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateProgramHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateProgramWithResponse(ctx context.Context, campId CampId, body CreateProgramJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateProgramHTTPResponse, error) {
+	rsp, err := c.CreateProgram(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateProgramHTTPResponse(rsp)
+}
+
+// DeleteProgramByIdWithResponse request returning *DeleteProgramByIdHTTPResponse
+func (c *ClientWithResponses) DeleteProgramByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteProgramByIdHTTPResponse, error) {
+	rsp, err := c.DeleteProgramById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteProgramByIdHTTPResponse(rsp)
+}
+
+// GetProgramByIdWithResponse request returning *GetProgramByIdHTTPResponse
+func (c *ClientWithResponses) GetProgramByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetProgramByIdHTTPResponse, error) {
+	rsp, err := c.GetProgramById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetProgramByIdHTTPResponse(rsp)
+}
+
+// UpdateProgramByIdWithBodyWithResponse request with arbitrary body returning *UpdateProgramByIdHTTPResponse
+func (c *ClientWithResponses) UpdateProgramByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateProgramByIdHTTPResponse, error) {
+	rsp, err := c.UpdateProgramByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateProgramByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateProgramByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateProgramByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateProgramByIdHTTPResponse, error) {
+	rsp, err := c.UpdateProgramById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateProgramByIdHTTPResponse(rsp)
+}
+
+// ListRolesWithResponse request returning *ListRolesHTTPResponse
+func (c *ClientWithResponses) ListRolesWithResponse(ctx context.Context, campId CampId, params *ListRolesParams, reqEditors ...RequestEditorFn) (*ListRolesHTTPResponse, error) {
+	rsp, err := c.ListRoles(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListRolesHTTPResponse(rsp)
+}
+
+// CreateRoleWithBodyWithResponse request with arbitrary body returning *CreateRoleHTTPResponse
+func (c *ClientWithResponses) CreateRoleWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateRoleHTTPResponse, error) {
+	rsp, err := c.CreateRoleWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateRoleHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateRoleWithResponse(ctx context.Context, campId CampId, body CreateRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateRoleHTTPResponse, error) {
+	rsp, err := c.CreateRole(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateRoleHTTPResponse(rsp)
+}
+
+// DeleteRoleByIdWithResponse request returning *DeleteRoleByIdHTTPResponse
+func (c *ClientWithResponses) DeleteRoleByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteRoleByIdHTTPResponse, error) {
+	rsp, err := c.DeleteRoleById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteRoleByIdHTTPResponse(rsp)
+}
+
+// GetRoleByIdWithResponse request returning *GetRoleByIdHTTPResponse
+func (c *ClientWithResponses) GetRoleByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetRoleByIdHTTPResponse, error) {
+	rsp, err := c.GetRoleById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetRoleByIdHTTPResponse(rsp)
+}
+
+// UpdateRoleByIdWithBodyWithResponse request with arbitrary body returning *UpdateRoleByIdHTTPResponse
+func (c *ClientWithResponses) UpdateRoleByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRoleByIdHTTPResponse, error) {
+	rsp, err := c.UpdateRoleByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateRoleByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateRoleByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateRoleByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRoleByIdHTTPResponse, error) {
+	rsp, err := c.UpdateRoleById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateRoleByIdHTTPResponse(rsp)
+}
+
+// ListSessionsWithResponse request returning *ListSessionsHTTPResponse
+func (c *ClientWithResponses) ListSessionsWithResponse(ctx context.Context, campId CampId, params *ListSessionsParams, reqEditors ...RequestEditorFn) (*ListSessionsHTTPResponse, error) {
+	rsp, err := c.ListSessions(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListSessionsHTTPResponse(rsp)
+}
+
+// CreateSessionWithBodyWithResponse request with arbitrary body returning *CreateSessionHTTPResponse
+func (c *ClientWithResponses) CreateSessionWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSessionHTTPResponse, error) {
+	rsp, err := c.CreateSessionWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSessionHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateSessionWithResponse(ctx context.Context, campId CampId, body CreateSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSessionHTTPResponse, error) {
+	rsp, err := c.CreateSession(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateSessionHTTPResponse(rsp)
+}
+
+// DeleteSessionByIdWithResponse request returning *DeleteSessionByIdHTTPResponse
+func (c *ClientWithResponses) DeleteSessionByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteSessionByIdHTTPResponse, error) {
+	rsp, err := c.DeleteSessionById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteSessionByIdHTTPResponse(rsp)
+}
+
+// GetSessionByIdWithResponse request returning *GetSessionByIdHTTPResponse
+func (c *ClientWithResponses) GetSessionByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetSessionByIdHTTPResponse, error) {
+	rsp, err := c.GetSessionById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetSessionByIdHTTPResponse(rsp)
+}
+
+// UpdateSessionByIdWithBodyWithResponse request with arbitrary body returning *UpdateSessionByIdHTTPResponse
+func (c *ClientWithResponses) UpdateSessionByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSessionByIdHTTPResponse, error) {
+	rsp, err := c.UpdateSessionByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSessionByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateSessionByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateSessionByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSessionByIdHTTPResponse, error) {
+	rsp, err := c.UpdateSessionById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSessionByIdHTTPResponse(rsp)
+}
+
+// ListStaffMembersWithResponse request returning *ListStaffMembersHTTPResponse
+func (c *ClientWithResponses) ListStaffMembersWithResponse(ctx context.Context, campId CampId, params *ListStaffMembersParams, reqEditors ...RequestEditorFn) (*ListStaffMembersHTTPResponse, error) {
+	rsp, err := c.ListStaffMembers(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListStaffMembersHTTPResponse(rsp)
+}
+
+// CreateStaffMemberWithBodyWithResponse request with arbitrary body returning *CreateStaffMemberHTTPResponse
+func (c *ClientWithResponses) CreateStaffMemberWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateStaffMemberHTTPResponse, error) {
+	rsp, err := c.CreateStaffMemberWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateStaffMemberHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateStaffMemberWithResponse(ctx context.Context, campId CampId, body CreateStaffMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateStaffMemberHTTPResponse, error) {
+	rsp, err := c.CreateStaffMember(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateStaffMemberHTTPResponse(rsp)
+}
+
+// DeleteStaffMemberByIdWithResponse request returning *DeleteStaffMemberByIdHTTPResponse
+func (c *ClientWithResponses) DeleteStaffMemberByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteStaffMemberByIdHTTPResponse, error) {
+	rsp, err := c.DeleteStaffMemberById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteStaffMemberByIdHTTPResponse(rsp)
+}
+
+// GetStaffMemberByIdWithResponse request returning *GetStaffMemberByIdHTTPResponse
+func (c *ClientWithResponses) GetStaffMemberByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetStaffMemberByIdHTTPResponse, error) {
+	rsp, err := c.GetStaffMemberById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetStaffMemberByIdHTTPResponse(rsp)
+}
+
+// UpdateStaffMemberByIdWithBodyWithResponse request with arbitrary body returning *UpdateStaffMemberByIdHTTPResponse
+func (c *ClientWithResponses) UpdateStaffMemberByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateStaffMemberByIdHTTPResponse, error) {
+	rsp, err := c.UpdateStaffMemberByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateStaffMemberByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateStaffMemberByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateStaffMemberByIdHTTPResponse, error) {
+	rsp, err := c.UpdateStaffMemberById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateStaffMemberByIdHTTPResponse(rsp)
 }
 
 // DeleteCampByIdWithResponse request returning *DeleteCampByIdHTTPResponse
@@ -7379,616 +8444,6 @@ func (c *ClientWithResponses) UpdateCampByIdWithResponse(ctx context.Context, id
 	return ParseUpdateCampByIdHTTPResponse(rsp)
 }
 
-// ListCertificationsWithResponse request returning *ListCertificationsHTTPResponse
-func (c *ClientWithResponses) ListCertificationsWithResponse(ctx context.Context, params *ListCertificationsParams, reqEditors ...RequestEditorFn) (*ListCertificationsHTTPResponse, error) {
-	rsp, err := c.ListCertifications(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListCertificationsHTTPResponse(rsp)
-}
-
-// CreateCertificationWithBodyWithResponse request with arbitrary body returning *CreateCertificationHTTPResponse
-func (c *ClientWithResponses) CreateCertificationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateCertificationHTTPResponse, error) {
-	rsp, err := c.CreateCertificationWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateCertificationHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateCertificationWithResponse(ctx context.Context, body CreateCertificationJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateCertificationHTTPResponse, error) {
-	rsp, err := c.CreateCertification(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateCertificationHTTPResponse(rsp)
-}
-
-// DeleteCertificationByIdWithResponse request returning *DeleteCertificationByIdHTTPResponse
-func (c *ClientWithResponses) DeleteCertificationByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteCertificationByIdHTTPResponse, error) {
-	rsp, err := c.DeleteCertificationById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteCertificationByIdHTTPResponse(rsp)
-}
-
-// GetCertificationByIdWithResponse request returning *GetCertificationByIdHTTPResponse
-func (c *ClientWithResponses) GetCertificationByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetCertificationByIdHTTPResponse, error) {
-	rsp, err := c.GetCertificationById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetCertificationByIdHTTPResponse(rsp)
-}
-
-// UpdateCertificationByIdWithBodyWithResponse request with arbitrary body returning *UpdateCertificationByIdHTTPResponse
-func (c *ClientWithResponses) UpdateCertificationByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateCertificationByIdHTTPResponse, error) {
-	rsp, err := c.UpdateCertificationByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateCertificationByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateCertificationByIdWithResponse(ctx context.Context, id Id, body UpdateCertificationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateCertificationByIdHTTPResponse, error) {
-	rsp, err := c.UpdateCertificationById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateCertificationByIdHTTPResponse(rsp)
-}
-
-// ListColorsWithResponse request returning *ListColorsHTTPResponse
-func (c *ClientWithResponses) ListColorsWithResponse(ctx context.Context, params *ListColorsParams, reqEditors ...RequestEditorFn) (*ListColorsHTTPResponse, error) {
-	rsp, err := c.ListColors(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListColorsHTTPResponse(rsp)
-}
-
-// CreateColorWithBodyWithResponse request with arbitrary body returning *CreateColorHTTPResponse
-func (c *ClientWithResponses) CreateColorWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateColorHTTPResponse, error) {
-	rsp, err := c.CreateColorWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateColorHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateColorWithResponse(ctx context.Context, body CreateColorJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateColorHTTPResponse, error) {
-	rsp, err := c.CreateColor(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateColorHTTPResponse(rsp)
-}
-
-// DeleteColorByIdWithResponse request returning *DeleteColorByIdHTTPResponse
-func (c *ClientWithResponses) DeleteColorByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteColorByIdHTTPResponse, error) {
-	rsp, err := c.DeleteColorById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteColorByIdHTTPResponse(rsp)
-}
-
-// GetColorByIdWithResponse request returning *GetColorByIdHTTPResponse
-func (c *ClientWithResponses) GetColorByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetColorByIdHTTPResponse, error) {
-	rsp, err := c.GetColorById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetColorByIdHTTPResponse(rsp)
-}
-
-// UpdateColorByIdWithBodyWithResponse request with arbitrary body returning *UpdateColorByIdHTTPResponse
-func (c *ClientWithResponses) UpdateColorByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateColorByIdHTTPResponse, error) {
-	rsp, err := c.UpdateColorByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateColorByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateColorByIdWithResponse(ctx context.Context, id Id, body UpdateColorByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateColorByIdHTTPResponse, error) {
-	rsp, err := c.UpdateColorById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateColorByIdHTTPResponse(rsp)
-}
-
-// ListEventsWithResponse request returning *ListEventsHTTPResponse
-func (c *ClientWithResponses) ListEventsWithResponse(ctx context.Context, params *ListEventsParams, reqEditors ...RequestEditorFn) (*ListEventsHTTPResponse, error) {
-	rsp, err := c.ListEvents(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListEventsHTTPResponse(rsp)
-}
-
-// CreateEventWithBodyWithResponse request with arbitrary body returning *CreateEventHTTPResponse
-func (c *ClientWithResponses) CreateEventWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateEventHTTPResponse, error) {
-	rsp, err := c.CreateEventWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateEventHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateEventWithResponse(ctx context.Context, body CreateEventJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateEventHTTPResponse, error) {
-	rsp, err := c.CreateEvent(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateEventHTTPResponse(rsp)
-}
-
-// DeleteEventByIdWithResponse request returning *DeleteEventByIdHTTPResponse
-func (c *ClientWithResponses) DeleteEventByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteEventByIdHTTPResponse, error) {
-	rsp, err := c.DeleteEventById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteEventByIdHTTPResponse(rsp)
-}
-
-// GetEventByIdWithResponse request returning *GetEventByIdHTTPResponse
-func (c *ClientWithResponses) GetEventByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetEventByIdHTTPResponse, error) {
-	rsp, err := c.GetEventById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetEventByIdHTTPResponse(rsp)
-}
-
-// UpdateEventByIdWithBodyWithResponse request with arbitrary body returning *UpdateEventByIdHTTPResponse
-func (c *ClientWithResponses) UpdateEventByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error) {
-	rsp, err := c.UpdateEventByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateEventByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateEventByIdWithResponse(ctx context.Context, id Id, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error) {
-	rsp, err := c.UpdateEventById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateEventByIdHTTPResponse(rsp)
-}
-
-// ListGroupsWithResponse request returning *ListGroupsHTTPResponse
-func (c *ClientWithResponses) ListGroupsWithResponse(ctx context.Context, params *ListGroupsParams, reqEditors ...RequestEditorFn) (*ListGroupsHTTPResponse, error) {
-	rsp, err := c.ListGroups(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListGroupsHTTPResponse(rsp)
-}
-
-// CreateGroupWithBodyWithResponse request with arbitrary body returning *CreateGroupHTTPResponse
-func (c *ClientWithResponses) CreateGroupWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateGroupHTTPResponse, error) {
-	rsp, err := c.CreateGroupWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateGroupHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateGroupWithResponse(ctx context.Context, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateGroupHTTPResponse, error) {
-	rsp, err := c.CreateGroup(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateGroupHTTPResponse(rsp)
-}
-
-// DeleteGroupByIdWithResponse request returning *DeleteGroupByIdHTTPResponse
-func (c *ClientWithResponses) DeleteGroupByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteGroupByIdHTTPResponse, error) {
-	rsp, err := c.DeleteGroupById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteGroupByIdHTTPResponse(rsp)
-}
-
-// GetGroupByIdWithResponse request returning *GetGroupByIdHTTPResponse
-func (c *ClientWithResponses) GetGroupByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetGroupByIdHTTPResponse, error) {
-	rsp, err := c.GetGroupById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetGroupByIdHTTPResponse(rsp)
-}
-
-// UpdateGroupByIdWithBodyWithResponse request with arbitrary body returning *UpdateGroupByIdHTTPResponse
-func (c *ClientWithResponses) UpdateGroupByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateGroupByIdHTTPResponse, error) {
-	rsp, err := c.UpdateGroupByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateGroupByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateGroupByIdWithResponse(ctx context.Context, id Id, body UpdateGroupByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupByIdHTTPResponse, error) {
-	rsp, err := c.UpdateGroupById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateGroupByIdHTTPResponse(rsp)
-}
-
-// ListHousingRoomsWithResponse request returning *ListHousingRoomsHTTPResponse
-func (c *ClientWithResponses) ListHousingRoomsWithResponse(ctx context.Context, params *ListHousingRoomsParams, reqEditors ...RequestEditorFn) (*ListHousingRoomsHTTPResponse, error) {
-	rsp, err := c.ListHousingRooms(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListHousingRoomsHTTPResponse(rsp)
-}
-
-// CreateHousingRoomWithBodyWithResponse request with arbitrary body returning *CreateHousingRoomHTTPResponse
-func (c *ClientWithResponses) CreateHousingRoomWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateHousingRoomHTTPResponse, error) {
-	rsp, err := c.CreateHousingRoomWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateHousingRoomHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateHousingRoomWithResponse(ctx context.Context, body CreateHousingRoomJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateHousingRoomHTTPResponse, error) {
-	rsp, err := c.CreateHousingRoom(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateHousingRoomHTTPResponse(rsp)
-}
-
-// DeleteHousingRoomByIdWithResponse request returning *DeleteHousingRoomByIdHTTPResponse
-func (c *ClientWithResponses) DeleteHousingRoomByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteHousingRoomByIdHTTPResponse, error) {
-	rsp, err := c.DeleteHousingRoomById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteHousingRoomByIdHTTPResponse(rsp)
-}
-
-// GetHousingRoomByIdWithResponse request returning *GetHousingRoomByIdHTTPResponse
-func (c *ClientWithResponses) GetHousingRoomByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetHousingRoomByIdHTTPResponse, error) {
-	rsp, err := c.GetHousingRoomById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetHousingRoomByIdHTTPResponse(rsp)
-}
-
-// UpdateHousingRoomByIdWithBodyWithResponse request with arbitrary body returning *UpdateHousingRoomByIdHTTPResponse
-func (c *ClientWithResponses) UpdateHousingRoomByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateHousingRoomByIdHTTPResponse, error) {
-	rsp, err := c.UpdateHousingRoomByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateHousingRoomByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateHousingRoomByIdWithResponse(ctx context.Context, id Id, body UpdateHousingRoomByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateHousingRoomByIdHTTPResponse, error) {
-	rsp, err := c.UpdateHousingRoomById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateHousingRoomByIdHTTPResponse(rsp)
-}
-
-// ListLocationsWithResponse request returning *ListLocationsHTTPResponse
-func (c *ClientWithResponses) ListLocationsWithResponse(ctx context.Context, params *ListLocationsParams, reqEditors ...RequestEditorFn) (*ListLocationsHTTPResponse, error) {
-	rsp, err := c.ListLocations(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListLocationsHTTPResponse(rsp)
-}
-
-// CreateLocationWithBodyWithResponse request with arbitrary body returning *CreateLocationHTTPResponse
-func (c *ClientWithResponses) CreateLocationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateLocationHTTPResponse, error) {
-	rsp, err := c.CreateLocationWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateLocationHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateLocationWithResponse(ctx context.Context, body CreateLocationJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateLocationHTTPResponse, error) {
-	rsp, err := c.CreateLocation(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateLocationHTTPResponse(rsp)
-}
-
-// DeleteLocationByIdWithResponse request returning *DeleteLocationByIdHTTPResponse
-func (c *ClientWithResponses) DeleteLocationByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteLocationByIdHTTPResponse, error) {
-	rsp, err := c.DeleteLocationById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteLocationByIdHTTPResponse(rsp)
-}
-
-// GetLocationByIdWithResponse request returning *GetLocationByIdHTTPResponse
-func (c *ClientWithResponses) GetLocationByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetLocationByIdHTTPResponse, error) {
-	rsp, err := c.GetLocationById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetLocationByIdHTTPResponse(rsp)
-}
-
-// UpdateLocationByIdWithBodyWithResponse request with arbitrary body returning *UpdateLocationByIdHTTPResponse
-func (c *ClientWithResponses) UpdateLocationByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateLocationByIdHTTPResponse, error) {
-	rsp, err := c.UpdateLocationByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateLocationByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateLocationByIdWithResponse(ctx context.Context, id Id, body UpdateLocationByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateLocationByIdHTTPResponse, error) {
-	rsp, err := c.UpdateLocationById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateLocationByIdHTTPResponse(rsp)
-}
-
-// ListProgramsWithResponse request returning *ListProgramsHTTPResponse
-func (c *ClientWithResponses) ListProgramsWithResponse(ctx context.Context, params *ListProgramsParams, reqEditors ...RequestEditorFn) (*ListProgramsHTTPResponse, error) {
-	rsp, err := c.ListPrograms(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListProgramsHTTPResponse(rsp)
-}
-
-// CreateProgramWithBodyWithResponse request with arbitrary body returning *CreateProgramHTTPResponse
-func (c *ClientWithResponses) CreateProgramWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateProgramHTTPResponse, error) {
-	rsp, err := c.CreateProgramWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateProgramHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateProgramWithResponse(ctx context.Context, body CreateProgramJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateProgramHTTPResponse, error) {
-	rsp, err := c.CreateProgram(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateProgramHTTPResponse(rsp)
-}
-
-// DeleteProgramByIdWithResponse request returning *DeleteProgramByIdHTTPResponse
-func (c *ClientWithResponses) DeleteProgramByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteProgramByIdHTTPResponse, error) {
-	rsp, err := c.DeleteProgramById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteProgramByIdHTTPResponse(rsp)
-}
-
-// GetProgramByIdWithResponse request returning *GetProgramByIdHTTPResponse
-func (c *ClientWithResponses) GetProgramByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetProgramByIdHTTPResponse, error) {
-	rsp, err := c.GetProgramById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetProgramByIdHTTPResponse(rsp)
-}
-
-// UpdateProgramByIdWithBodyWithResponse request with arbitrary body returning *UpdateProgramByIdHTTPResponse
-func (c *ClientWithResponses) UpdateProgramByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateProgramByIdHTTPResponse, error) {
-	rsp, err := c.UpdateProgramByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateProgramByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateProgramByIdWithResponse(ctx context.Context, id Id, body UpdateProgramByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateProgramByIdHTTPResponse, error) {
-	rsp, err := c.UpdateProgramById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateProgramByIdHTTPResponse(rsp)
-}
-
-// ListRolesWithResponse request returning *ListRolesHTTPResponse
-func (c *ClientWithResponses) ListRolesWithResponse(ctx context.Context, params *ListRolesParams, reqEditors ...RequestEditorFn) (*ListRolesHTTPResponse, error) {
-	rsp, err := c.ListRoles(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListRolesHTTPResponse(rsp)
-}
-
-// CreateRoleWithBodyWithResponse request with arbitrary body returning *CreateRoleHTTPResponse
-func (c *ClientWithResponses) CreateRoleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateRoleHTTPResponse, error) {
-	rsp, err := c.CreateRoleWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateRoleHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateRoleWithResponse(ctx context.Context, body CreateRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateRoleHTTPResponse, error) {
-	rsp, err := c.CreateRole(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateRoleHTTPResponse(rsp)
-}
-
-// DeleteRoleByIdWithResponse request returning *DeleteRoleByIdHTTPResponse
-func (c *ClientWithResponses) DeleteRoleByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteRoleByIdHTTPResponse, error) {
-	rsp, err := c.DeleteRoleById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteRoleByIdHTTPResponse(rsp)
-}
-
-// GetRoleByIdWithResponse request returning *GetRoleByIdHTTPResponse
-func (c *ClientWithResponses) GetRoleByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetRoleByIdHTTPResponse, error) {
-	rsp, err := c.GetRoleById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetRoleByIdHTTPResponse(rsp)
-}
-
-// UpdateRoleByIdWithBodyWithResponse request with arbitrary body returning *UpdateRoleByIdHTTPResponse
-func (c *ClientWithResponses) UpdateRoleByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateRoleByIdHTTPResponse, error) {
-	rsp, err := c.UpdateRoleByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateRoleByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateRoleByIdWithResponse(ctx context.Context, id Id, body UpdateRoleByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateRoleByIdHTTPResponse, error) {
-	rsp, err := c.UpdateRoleById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateRoleByIdHTTPResponse(rsp)
-}
-
-// ListSessionsWithResponse request returning *ListSessionsHTTPResponse
-func (c *ClientWithResponses) ListSessionsWithResponse(ctx context.Context, params *ListSessionsParams, reqEditors ...RequestEditorFn) (*ListSessionsHTTPResponse, error) {
-	rsp, err := c.ListSessions(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListSessionsHTTPResponse(rsp)
-}
-
-// CreateSessionWithBodyWithResponse request with arbitrary body returning *CreateSessionHTTPResponse
-func (c *ClientWithResponses) CreateSessionWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateSessionHTTPResponse, error) {
-	rsp, err := c.CreateSessionWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateSessionHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateSessionWithResponse(ctx context.Context, body CreateSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSessionHTTPResponse, error) {
-	rsp, err := c.CreateSession(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateSessionHTTPResponse(rsp)
-}
-
-// DeleteSessionByIdWithResponse request returning *DeleteSessionByIdHTTPResponse
-func (c *ClientWithResponses) DeleteSessionByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteSessionByIdHTTPResponse, error) {
-	rsp, err := c.DeleteSessionById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteSessionByIdHTTPResponse(rsp)
-}
-
-// GetSessionByIdWithResponse request returning *GetSessionByIdHTTPResponse
-func (c *ClientWithResponses) GetSessionByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetSessionByIdHTTPResponse, error) {
-	rsp, err := c.GetSessionById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetSessionByIdHTTPResponse(rsp)
-}
-
-// UpdateSessionByIdWithBodyWithResponse request with arbitrary body returning *UpdateSessionByIdHTTPResponse
-func (c *ClientWithResponses) UpdateSessionByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSessionByIdHTTPResponse, error) {
-	rsp, err := c.UpdateSessionByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateSessionByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateSessionByIdWithResponse(ctx context.Context, id Id, body UpdateSessionByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSessionByIdHTTPResponse, error) {
-	rsp, err := c.UpdateSessionById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateSessionByIdHTTPResponse(rsp)
-}
-
-// ListStaffMembersWithResponse request returning *ListStaffMembersHTTPResponse
-func (c *ClientWithResponses) ListStaffMembersWithResponse(ctx context.Context, params *ListStaffMembersParams, reqEditors ...RequestEditorFn) (*ListStaffMembersHTTPResponse, error) {
-	rsp, err := c.ListStaffMembers(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListStaffMembersHTTPResponse(rsp)
-}
-
-// CreateStaffMemberWithBodyWithResponse request with arbitrary body returning *CreateStaffMemberHTTPResponse
-func (c *ClientWithResponses) CreateStaffMemberWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateStaffMemberHTTPResponse, error) {
-	rsp, err := c.CreateStaffMemberWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateStaffMemberHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateStaffMemberWithResponse(ctx context.Context, body CreateStaffMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateStaffMemberHTTPResponse, error) {
-	rsp, err := c.CreateStaffMember(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateStaffMemberHTTPResponse(rsp)
-}
-
-// DeleteStaffMemberByIdWithResponse request returning *DeleteStaffMemberByIdHTTPResponse
-func (c *ClientWithResponses) DeleteStaffMemberByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteStaffMemberByIdHTTPResponse, error) {
-	rsp, err := c.DeleteStaffMemberById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteStaffMemberByIdHTTPResponse(rsp)
-}
-
-// GetStaffMemberByIdWithResponse request returning *GetStaffMemberByIdHTTPResponse
-func (c *ClientWithResponses) GetStaffMemberByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*GetStaffMemberByIdHTTPResponse, error) {
-	rsp, err := c.GetStaffMemberById(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetStaffMemberByIdHTTPResponse(rsp)
-}
-
-// UpdateStaffMemberByIdWithBodyWithResponse request with arbitrary body returning *UpdateStaffMemberByIdHTTPResponse
-func (c *ClientWithResponses) UpdateStaffMemberByIdWithBodyWithResponse(ctx context.Context, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateStaffMemberByIdHTTPResponse, error) {
-	rsp, err := c.UpdateStaffMemberByIdWithBody(ctx, id, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateStaffMemberByIdHTTPResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateStaffMemberByIdWithResponse(ctx context.Context, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateStaffMemberByIdHTTPResponse, error) {
-	rsp, err := c.UpdateStaffMemberById(ctx, id, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateStaffMemberByIdHTTPResponse(rsp)
-}
-
 // GetTenantsWithResponse request returning *GetTenantsHTTPResponse
 func (c *ClientWithResponses) GetTenantsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetTenantsHTTPResponse, error) {
 	rsp, err := c.GetTenants(ctx, reqEditors...)
@@ -8005,6 +8460,142 @@ func (c *ClientWithResponses) GetTenantByIdWithResponse(ctx context.Context, id 
 		return nil, err
 	}
 	return ParseGetTenantByIdHTTPResponse(rsp)
+}
+
+// ParseLoginHTTPResponse parses an HTTP response from a LoginWithResponse call
+func ParseLoginHTTPResponse(rsp *http.Response) (*LoginHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &LoginHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest LoginResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseLogoutHTTPResponse parses an HTTP response from a LogoutWithResponse call
+func ParseLogoutHTTPResponse(rsp *http.Response) (*LogoutHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &LogoutHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseGetCurrentUserHTTPResponse parses an HTTP response from a GetCurrentUserWithResponse call
+func ParseGetCurrentUserHTTPResponse(rsp *http.Response) (*GetCurrentUserHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCurrentUserHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AuthMe
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSignupHTTPResponse parses an HTTP response from a SignupWithResponse call
+func ParseSignupHTTPResponse(rsp *http.Response) (*SignupHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SignupHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest LoginResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCampsHTTPResponse parses an HTTP response from a GetCampsWithResponse call
+func ParseGetCampsHTTPResponse(rsp *http.Response) (*GetCampsHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCampsHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CampsListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateCampHTTPResponse parses an HTTP response from a CreateCampWithResponse call
+func ParseCreateCampHTTPResponse(rsp *http.Response) (*CreateCampHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateCampHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
 }
 
 // ParseListActivitiesHTTPResponse parses an HTTP response from a ListActivitiesWithResponse call
@@ -8247,100 +8838,6 @@ func ParseUpdateAreaByIdHTTPResponse(rsp *http.Response) (*UpdateAreaByIdHTTPRes
 	return response, nil
 }
 
-// ParseLoginHTTPResponse parses an HTTP response from a LoginWithResponse call
-func ParseLoginHTTPResponse(rsp *http.Response) (*LoginHTTPResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &LoginHTTPResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest LoginResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseLogoutHTTPResponse parses an HTTP response from a LogoutWithResponse call
-func ParseLogoutHTTPResponse(rsp *http.Response) (*LogoutHTTPResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &LogoutHTTPResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
-// ParseGetCurrentUserHTTPResponse parses an HTTP response from a GetCurrentUserWithResponse call
-func ParseGetCurrentUserHTTPResponse(rsp *http.Response) (*GetCurrentUserHTTPResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetCurrentUserHTTPResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AuthMe
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseSignupHTTPResponse parses an HTTP response from a SignupWithResponse call
-func ParseSignupHTTPResponse(rsp *http.Response) (*SignupHTTPResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &SignupHTTPResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest LoginResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseListCampersHTTPResponse parses an HTTP response from a ListCampersWithResponse call
 func ParseListCampersHTTPResponse(rsp *http.Response) (*ListCampersHTTPResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -8451,116 +8948,6 @@ func ParseUpdateCamperByIdHTTPResponse(rsp *http.Response) (*UpdateCamperByIdHTT
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest Camper
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetCampsHTTPResponse parses an HTTP response from a GetCampsWithResponse call
-func ParseGetCampsHTTPResponse(rsp *http.Response) (*GetCampsHTTPResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetCampsHTTPResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest CampsListResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseCreateCampHTTPResponse parses an HTTP response from a CreateCampWithResponse call
-func ParseCreateCampHTTPResponse(rsp *http.Response) (*CreateCampHTTPResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &CreateCampHTTPResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
-// ParseDeleteCampByIdHTTPResponse parses an HTTP response from a DeleteCampByIdWithResponse call
-func ParseDeleteCampByIdHTTPResponse(rsp *http.Response) (*DeleteCampByIdHTTPResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &DeleteCampByIdHTTPResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
-// ParseGetCampByIdHTTPResponse parses an HTTP response from a GetCampByIdWithResponse call
-func ParseGetCampByIdHTTPResponse(rsp *http.Response) (*GetCampByIdHTTPResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetCampByIdHTTPResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Camp
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseUpdateCampByIdHTTPResponse parses an HTTP response from a UpdateCampByIdWithResponse call
-func ParseUpdateCampByIdHTTPResponse(rsp *http.Response) (*UpdateCampByIdHTTPResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &UpdateCampByIdHTTPResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Camp
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -9761,6 +10148,74 @@ func ParseUpdateStaffMemberByIdHTTPResponse(rsp *http.Response) (*UpdateStaffMem
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest StaffMember
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteCampByIdHTTPResponse parses an HTTP response from a DeleteCampByIdWithResponse call
+func ParseDeleteCampByIdHTTPResponse(rsp *http.Response) (*DeleteCampByIdHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteCampByIdHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseGetCampByIdHTTPResponse parses an HTTP response from a GetCampByIdWithResponse call
+func ParseGetCampByIdHTTPResponse(rsp *http.Response) (*GetCampByIdHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCampByIdHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Camp
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateCampByIdHTTPResponse parses an HTTP response from a UpdateCampByIdWithResponse call
+func ParseUpdateCampByIdHTTPResponse(rsp *http.Response) (*UpdateCampByIdHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateCampByIdHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Camp
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
