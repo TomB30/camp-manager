@@ -54,6 +54,7 @@ import {
   Search,
   Shield,
   Timer,
+  LogOut,
 } from "lucide-vue-next";
 
 export type IconName = keyof typeof icons;
@@ -102,6 +103,7 @@ const icons: Record<string, Component> = {
   Search,
   Shield,
   Timer,
+  LogOut,
 } as const;
 
 export default defineComponent({

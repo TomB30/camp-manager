@@ -4,6 +4,7 @@ import type {
   RoleUpdateRequest,
 } from "@/generated/api";
 import { storageService } from "./storage";
+import { getCurrentTenantId, getCurrentCampId } from "@/utils/tenantContext";
 import { STORAGE_KEYS } from "./storageKeys";
 
 export const rolesService = {
@@ -23,6 +24,8 @@ async function createRole(role: RoleCreationRequest): Promise<Role> {
     ...role,
     meta: {
       id: crypto.randomUUID(),
+      tenantId: getCurrentTenantId(),
+      campId: getCurrentCampId(),
       name: role.meta.name,
       description: role.meta.description,
       createdAt: new Date().toISOString(),
@@ -44,9 +47,12 @@ async function updateRole(id: string, role: RoleUpdateRequest): Promise<Role> {
     ...existingRole,
     ...role,
     meta: {
-      ...existingRole.meta,
+      id: existingRole.meta.id,
+      tenantId: existingRole.meta.tenantId,
+      campId: existingRole.meta.campId,
       name: role.meta.name,
       description: role.meta.description,
+      createdAt: existingRole.meta.createdAt,
       updatedAt: new Date().toISOString(),
     },
   };

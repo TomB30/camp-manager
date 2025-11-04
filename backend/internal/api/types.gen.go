@@ -21,11 +21,24 @@ const (
 	HousingRoomSpecBathroomShared  HousingRoomSpecBathroom = "shared"
 )
 
-// Defines values for TenantContractType.
+// Defines values for ScopeType.
 const (
-	TenantContractTypeNormal TenantContractType = "normal"
-	TenantContractTypeTrial  TenantContractType = "trial"
+	ScopeTypeCAMP   ScopeType = "CAMP"
+	ScopeTypeSYSTEM ScopeType = "SYSTEM"
+	ScopeTypeTENANT ScopeType = "TENANT"
 )
+
+// AccessRule defines model for AccessRule.
+type AccessRule struct {
+	// RoleId Reference to the role ID (e.g., role-tenant-admin, role-camp-admin, role-viewer)
+	RoleId string `json:"roleId"`
+
+	// ScopeId The ID of the scope entity (null for SYSTEM, tenantId for TENANT, campId for CAMP)
+	ScopeId *string `json:"scopeId"`
+
+	// ScopeType The scope level for an access rule
+	ScopeType ScopeType `json:"scopeType"`
+}
 
 // ActivitiesListResponse defines model for ActivitiesListResponse.
 type ActivitiesListResponse struct {
@@ -123,6 +136,11 @@ type AreasListResponse struct {
 
 	// Total Total count of all items across all pages
 	Total int `json:"total"`
+}
+
+// AuthMe defines model for AuthMe.
+type AuthMe struct {
+	User User `json:"user"`
 }
 
 // Camp defines model for Camp.
@@ -383,6 +401,9 @@ type EntityCreationRequestMeta struct {
 
 // EntityMeta defines model for EntityMeta.
 type EntityMeta struct {
+	// CampId The unique identifier of the camp this entity belongs to
+	CampId openapi_types.UUID `json:"campId"`
+
 	// CreatedAt The date and time the entity was created
 	CreatedAt time.Time `json:"createdAt"`
 
@@ -394,6 +415,9 @@ type EntityMeta struct {
 
 	// Name The name of the entity
 	Name string `json:"name"`
+
+	// TenantId The unique identifier of the tenant this entity belongs to
+	TenantId openapi_types.UUID `json:"tenantId"`
 
 	// UpdatedAt The date and time the entity was last updated
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -628,6 +652,22 @@ type LocationsListResponse struct {
 	Total int `json:"total"`
 }
 
+// LoginRequest defines model for LoginRequest.
+type LoginRequest struct {
+	// Email User's email address
+	Email openapi_types.Email `json:"email"`
+
+	// Password User's password
+	Password string `json:"password"`
+}
+
+// LoginResponse defines model for LoginResponse.
+type LoginResponse struct {
+	// Token Authentication token (placeholder for future implementation)
+	Token string `json:"token"`
+	User  User   `json:"user"`
+}
+
 // Program defines model for Program.
 type Program struct {
 	Meta EntityMeta  `json:"meta"`
@@ -714,6 +754,9 @@ type RolesListResponse struct {
 	Total int `json:"total"`
 }
 
+// ScopeType The scope level for an access rule
+type ScopeType string
+
 // Session defines model for Session.
 type Session struct {
 	Meta EntityMeta  `json:"meta"`
@@ -753,6 +796,18 @@ type SessionsListResponse struct {
 
 	// Total Total count of all items across all pages
 	Total int `json:"total"`
+}
+
+// SignupRequest defines model for SignupRequest.
+type SignupRequest struct {
+	// Email User's email address
+	Email openapi_types.Email `json:"email"`
+
+	// Password User's password
+	Password string `json:"password"`
+
+	// TenantId The tenant this user will belong to
+	TenantId string `json:"tenantId"`
 }
 
 // StaffMember defines model for StaffMember.
@@ -810,39 +865,12 @@ type StaffMembersListResponse struct {
 
 // Tenant defines model for Tenant.
 type Tenant struct {
-	// ContractEndDate The date and time the tenant's contract ends
-	ContractEndDate *time.Time `json:"contractEndDate,omitempty"`
+	// Id Unique identifier for the tenant
+	Id string `json:"id"`
 
-	// ContractStartDate The date and time the tenant's contract started
-	ContractStartDate *time.Time `json:"contractStartDate,omitempty"`
-
-	// ContractType The type of contract the tenant has with the camp
-	ContractType *TenantContractType `json:"contractType,omitempty"`
-
-	// CreatedAt The date and time the tenant was created
-	CreatedAt time.Time `json:"createdAt"`
-
-	// Description The description of the tenant
-	Description string `json:"description"`
-
-	// ExpirationDate The date and time the tenant's subscription expires
-	ExpirationDate *time.Time `json:"expirationDate,omitempty"`
-
-	// Id The unique identifier of the tenant
-	Id openapi_types.UUID `json:"id"`
-
-	// MaxCamps The maximum number of camps the tenant can create with their subscription
-	MaxCamps *int `json:"maxCamps,omitempty"`
-
-	// Name The name of the tenant
+	// Name Tenant name
 	Name string `json:"name"`
-
-	// UpdatedAt The date and time the tenant was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
 }
-
-// TenantContractType The type of contract the tenant has with the camp
-type TenantContractType string
 
 // TenantsListResponse defines model for TenantsListResponse.
 type TenantsListResponse struct {
@@ -859,6 +887,21 @@ type TenantsListResponse struct {
 
 	// Total Total count of all items across all pages
 	Total int `json:"total"`
+}
+
+// User defines model for User.
+type User struct {
+	// AccessRules Array of access rules defining user's permissions
+	AccessRules []AccessRule `json:"accessRules"`
+
+	// Email User's email address
+	Email openapi_types.Email `json:"email"`
+
+	// Id Unique identifier for the user
+	Id string `json:"id"`
+
+	// TenantId The tenant this user belongs to
+	TenantId string `json:"tenantId"`
 }
 
 // Id defines model for id.
@@ -1040,6 +1083,12 @@ type CreateAreaJSONRequestBody = AreaCreationRequest
 
 // UpdateAreaByIdJSONRequestBody defines body for UpdateAreaById for application/json ContentType.
 type UpdateAreaByIdJSONRequestBody = AreaUpdateRequest
+
+// LoginJSONRequestBody defines body for Login for application/json ContentType.
+type LoginJSONRequestBody = LoginRequest
+
+// SignupJSONRequestBody defines body for Signup for application/json ContentType.
+type SignupJSONRequestBody = SignupRequest
 
 // CreateCamperJSONRequestBody defines body for CreateCamper for application/json ContentType.
 type CreateCamperJSONRequestBody = CamperCreationRequest

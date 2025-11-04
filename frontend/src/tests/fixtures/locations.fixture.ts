@@ -6,6 +6,8 @@ export const locationsFixture: Location[] = [
   {
     meta: {
       id: "location-1",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Classroom A",
       description: "Main classroom",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -21,6 +23,8 @@ export const locationsFixture: Location[] = [
   {
     meta: {
       id: "location-2",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Classroom B",
       description: "Science lab",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -36,6 +40,8 @@ export const locationsFixture: Location[] = [
   {
     meta: {
       id: "location-3",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Art Studio",
       description: "Creative space",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -52,6 +58,8 @@ export const locationsFixture: Location[] = [
   {
     meta: {
       id: "location-4",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Swimming Area",
       description: "Supervised swimming",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -67,6 +75,8 @@ export const locationsFixture: Location[] = [
   {
     meta: {
       id: "location-5",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Boating Dock",
       description: "Water activities",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -83,6 +93,8 @@ export const locationsFixture: Location[] = [
   {
     meta: {
       id: "location-6",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "North Trail Head",
       description: "Hiking start point",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -98,6 +110,8 @@ export const locationsFixture: Location[] = [
   {
     meta: {
       id: "location-7",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Nature Center",
       description: "Educational center",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -114,6 +128,8 @@ export const locationsFixture: Location[] = [
   {
     meta: {
       id: "location-8",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Main Dining Hall",
       description: "Main meals",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -129,6 +145,8 @@ export const locationsFixture: Location[] = [
   {
     meta: {
       id: "location-9",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Assembly Hall",
       description: "Large gatherings",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -145,6 +163,8 @@ export const locationsFixture: Location[] = [
   {
     meta: {
       id: "location-10",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Soccer Field",
       description: "Outdoor field",
       createdAt: "2025-10-01T09:00:00.000Z",

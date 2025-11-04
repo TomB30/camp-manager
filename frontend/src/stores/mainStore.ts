@@ -33,6 +33,8 @@ export const useMainStore = defineStore("main", {
      * Load all data from all stores
      */
     async loadAll(): Promise<void> {
+      console.log("Loading all data...");
+      
       this.loading = true;
       try {
         const campersStore = useCampersStore();

@@ -5,6 +5,7 @@ import type {
 } from "@/generated/api";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
+import { getCurrentCampId, getCurrentTenantId } from "@/utils/tenantContext";
 
 export const housingRoomsService = {
   listHousingRooms,
@@ -26,6 +27,8 @@ async function createHousingRoom(
     ...housingRoom,
     meta: {
       id: crypto.randomUUID(),
+      tenantId: getCurrentTenantId(),
+      campId: getCurrentCampId(),
       name: housingRoom.meta.name,
       description: housingRoom.meta.description,
       createdAt: new Date().toISOString(),
@@ -53,9 +56,12 @@ async function updateHousingRoom(
     ...existingHousingRoom,
     ...housingRoom,
     meta: {
-      ...existingHousingRoom.meta,
+      id: existingHousingRoom.meta.id,
+      tenantId: existingHousingRoom.meta.tenantId,
+      campId: existingHousingRoom.meta.campId,
       name: housingRoom.meta.name,
       description: housingRoom.meta.description,
+      createdAt: existingHousingRoom.meta.createdAt,
       updatedAt: new Date().toISOString(),
     },
   };

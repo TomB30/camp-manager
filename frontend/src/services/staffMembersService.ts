@@ -4,6 +4,7 @@ import type {
   StaffMemberUpdateRequest,
 } from "@/generated/api";
 import { storageService } from "./storage";
+import { getCurrentTenantId, getCurrentCampId } from "@/utils/tenantContext";
 import { STORAGE_KEYS } from "./storageKeys";
 
 export const staffMembersService = {
@@ -27,6 +28,8 @@ async function createStaffMember(
     ...member,
     meta: {
       id: crypto.randomUUID(),
+      tenantId: getCurrentTenantId(),
+      campId: getCurrentCampId(),
       name: member.meta.name,
       description: member.meta.description,
       createdAt: new Date().toISOString(),
@@ -54,9 +57,12 @@ async function updateStaffMember(
     ...existingStaffMember,
     ...member,
     meta: {
-      ...existingStaffMember.meta,
+      id: existingStaffMember.meta.id,
+      tenantId: existingStaffMember.meta.tenantId,
+      campId: existingStaffMember.meta.campId,
       name: member.meta.name,
       description: member.meta.description,
+      createdAt: existingStaffMember.meta.createdAt,
       updatedAt: new Date().toISOString(),
     },
   };

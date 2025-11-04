@@ -14,6 +14,24 @@ components:
     ListResponseBase:
       $ref: "./schemas/ListResponseBase.yaml"
 
+    # Authentication schemas
+    User:
+      $ref: "./schemas/User.yaml"
+    AccessRule:
+      $ref: "./schemas/AccessRule.yaml"
+    ScopeType:
+      $ref: "./schemas/ScopeType.yaml"
+    Tenant:
+      $ref: "./schemas/Tenant.yaml"
+    LoginRequest:
+      $ref: "./schemas/LoginRequest.yaml"
+    LoginResponse:
+      $ref: "./schemas/LoginResponse.yaml"
+    SignupRequest:
+      $ref: "./schemas/SignupRequest.yaml"
+    AuthMe:
+      $ref: "./schemas/AuthMe.yaml"
+
     Camper:
       $ref: "./schemas/Camper.yaml"
     CamperCreationRequest:
@@ -146,6 +164,16 @@ components:
       $ref: "./schemas/DurationPresetUpdateRequest.yaml"
 
 paths:
+  # Authentication endpoints
+  /auth/login:
+    $ref: "./paths/Auth.yaml"
+  /auth/signup:
+    $ref: "./paths/AuthSignup.yaml"
+  /auth/me:
+    $ref: "./paths/AuthMe.yaml"
+  /auth/logout:
+    $ref: "./paths/AuthLogout.yaml"
+
   /sessions:
     $ref: "./paths/Sessions.yaml"
   /sessions/{id}:

@@ -18,6 +18,8 @@ export const conflictingEventsScenario = (): Event[] => {
     buildEvent({
       meta: {
         id: "conflict-event-1",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
         name: "First Event",
         createdAt: "2025-10-01T09:00:00.000Z",
         updatedAt: "2025-10-01T09:00:00.000Z",
@@ -32,6 +34,8 @@ export const conflictingEventsScenario = (): Event[] => {
     buildEvent({
       meta: {
         id: "conflict-event-2",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
         name: "Conflicting Event",
         createdAt: "2025-10-01T09:00:00.000Z",
         updatedAt: "2025-10-01T09:00:00.000Z",
@@ -58,6 +62,8 @@ export const staffConflictScenario = (): Event[] => {
     buildEvent({
       meta: {
         id: "staff-conflict-1",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
         name: "Event 1",
         createdAt: "2025-10-01T09:00:00.000Z",
         updatedAt: "2025-10-01T09:00:00.000Z",
@@ -72,6 +78,8 @@ export const staffConflictScenario = (): Event[] => {
     buildEvent({
       meta: {
         id: "staff-conflict-2",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
         name: "Event 2",
         createdAt: "2025-10-01T09:00:00.000Z",
         updatedAt: "2025-10-01T09:00:00.000Z",
@@ -96,6 +104,8 @@ export const fullCapacityRoomScenario = (): {
   const room = buildHousingRoom({
     meta: {
       id: "full-room",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Full Capacity Room",
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
@@ -108,6 +118,8 @@ export const fullCapacityRoomScenario = (): {
   const group = buildGroup({
     meta: {
       id: "full-group",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Full Capacity Group",
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
@@ -131,6 +143,8 @@ export const insufficientCapacityScenario = (): {
   const room = buildHousingRoom({
     meta: {
       id: "small-room",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Small Room",
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
@@ -154,6 +168,8 @@ export const roomOccupiedScenario = (): {
   const room = buildHousingRoom({
     meta: {
       id: "occupied-room",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Occupied Room",
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
@@ -166,6 +182,8 @@ export const roomOccupiedScenario = (): {
   const existingGroup = buildGroup({
     meta: {
       id: "existing-group",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Existing Group",
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
@@ -197,6 +215,8 @@ export const partialDateOverlapScenario = (): {
   const group1 = buildGroup({
     meta: {
       id: "group-1",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Group 1",
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
@@ -211,6 +231,8 @@ export const partialDateOverlapScenario = (): {
   const group2 = buildGroup({
     meta: {
       id: "group-2",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Group 2",
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
@@ -237,6 +259,8 @@ export const sameDayCheckoutCheckinScenario = (): {
   const group1 = buildGroup({
     meta: {
       id: "checkout-group",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Checking Out",
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
@@ -251,6 +275,8 @@ export const sameDayCheckoutCheckinScenario = (): {
   const group2 = buildGroup({
     meta: {
       id: "checkin-group",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Checking In",
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
@@ -272,6 +298,8 @@ export const eventAtCapacityScenario = (): Event => {
   return buildEvent({
     meta: {
       id: "capacity-event",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Full Event",
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
@@ -296,6 +324,8 @@ export const missingCertificationScenario = () => {
     event: buildEvent({
       meta: {
         id: "requires-cert",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
         name: "Swimming Event",
         createdAt: "2025-10-01T09:00:00.000Z",
         updatedAt: "2025-10-01T09:00:00.000Z",
@@ -310,6 +340,8 @@ export const missingCertificationScenario = () => {
     activity: {
       meta: {
         id: "activity-swimming",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
         name: "Swimming Activity",
         createdAt: "2025-10-01T09:00:00.000Z",
         updatedAt: "2025-10-01T09:00:00.000Z",
@@ -321,6 +353,8 @@ export const missingCertificationScenario = () => {
     staffMember: {
       meta: {
         id: "staff-no-cert",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
         name: "Staff Member without Certification",
         createdAt: "2025-10-01T09:00:00.000Z",
         updatedAt: "2025-10-01T09:00:00.000Z",
@@ -342,6 +376,8 @@ export const roomBookingRaceConditionScenario = (): {
   const room = buildHousingRoom({
     meta: {
       id: "popular-room",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Popular Room",
       createdAt: "2025-10-01T09:00:00.000Z",
       updatedAt: "2025-10-01T09:00:00.000Z",
@@ -355,6 +391,8 @@ export const roomBookingRaceConditionScenario = (): {
     buildGroup({
       meta: {
         id: "race-group-1",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
         name: "Group 1",
         createdAt: "2025-10-01T09:00:00.000Z",
         updatedAt: "2025-10-01T09:00:00.000Z",
@@ -367,6 +405,8 @@ export const roomBookingRaceConditionScenario = (): {
     buildGroup({
       meta: {
         id: "race-group-2",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
         name: "Group 2",
         createdAt: "2025-10-01T09:00:00.000Z",
         updatedAt: "2025-10-01T09:00:00.000Z",
@@ -379,6 +419,8 @@ export const roomBookingRaceConditionScenario = (): {
     buildGroup({
       meta: {
         id: "race-group-3",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
         name: "Group 3",
         createdAt: "2025-10-01T09:00:00.000Z",
         updatedAt: "2025-10-01T09:00:00.000Z",

@@ -9,6 +9,8 @@ export const groupsFixture: Group[] = [
   {
     meta: {
       id: "group-1",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Johnson Family",
       description: "Family group for siblings",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -24,6 +26,8 @@ export const groupsFixture: Group[] = [
   {
     meta: {
       id: "group-2",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Smith-Williams Family",
       description: "Mixed family group",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -40,6 +44,8 @@ export const groupsFixture: Group[] = [
   {
     meta: {
       id: "group-3",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Water Sports Enthusiasts",
       description: "Group for water activities",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -58,6 +64,8 @@ export const groupsFixture: Group[] = [
   {
     meta: {
       id: "group-4",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Arts Group",
       description: "Creative arts activities",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -77,6 +85,8 @@ export const groupsFixture: Group[] = [
   {
     meta: {
       id: "group-5",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Current Session - All Campers",
       description: "All campers in current session",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -101,6 +111,8 @@ export const groupsFixture: Group[] = [
   {
     meta: {
       id: "group-6",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Adventure Squad",
       description: "Outdoor adventure group with housing",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -124,6 +136,8 @@ export const groupsFixture: Group[] = [
   {
     meta: {
       id: "group-7",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Small Suite Group",
       description: "Group exactly at suite capacity",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -145,6 +159,8 @@ export const groupsFixture: Group[] = [
   {
     meta: {
       id: "group-8",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Overlapping Dates Group",
       description: "Group with dates that will conflict",
       createdAt: "2025-10-01T09:00:00.000Z",

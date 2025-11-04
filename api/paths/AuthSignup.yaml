@@ -1,0 +1,21 @@
+post:
+  summary: Register a new user
+  operationId: signup
+  tags:
+    - Authentication
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/SignupRequest.yaml"
+  responses:
+    "200":
+      description: Successfully registered
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/LoginResponse.yaml"
+    "400":
+      description: Invalid request or user already exists
+

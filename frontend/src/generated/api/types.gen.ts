@@ -18,6 +18,14 @@ export type EntityMeta = {
      */
     description?: string;
     /**
+     * The unique identifier of the tenant this entity belongs to
+     */
+    tenantId: string;
+    /**
+     * The unique identifier of the camp this entity belongs to
+     */
+    campId: string;
+    /**
      * The date and time the entity was created
      */
     createdAt: string;
@@ -55,6 +63,91 @@ export type ListResponseBase = {
      * Next offset value to use for the next page, or null if no more pages available
      */
     next: number | null;
+};
+
+export type User = {
+    /**
+     * Unique identifier for the user
+     */
+    id: string;
+    /**
+     * User's email address
+     */
+    email: string;
+    /**
+     * The tenant this user belongs to
+     */
+    tenantId: string;
+    /**
+     * Array of access rules defining user's permissions
+     */
+    accessRules: Array<AccessRule>;
+};
+
+export type AccessRule = {
+    /**
+     * Reference to the role ID (e.g., role-tenant-admin, role-camp-admin, role-viewer)
+     */
+    roleId: string;
+    scopeType: ScopeType;
+    /**
+     * The ID of the scope entity (null for SYSTEM, tenantId for TENANT, campId for CAMP)
+     */
+    scopeId?: string | null;
+};
+
+/**
+ * The scope level for an access rule
+ */
+export type ScopeType = 'SYSTEM' | 'TENANT' | 'CAMP';
+
+export type Tenant = {
+    /**
+     * Unique identifier for the tenant
+     */
+    id: string;
+    /**
+     * Tenant name
+     */
+    name: string;
+};
+
+export type LoginRequest = {
+    /**
+     * User's email address
+     */
+    email: string;
+    /**
+     * User's password
+     */
+    password: string;
+};
+
+export type LoginResponse = {
+    user: User;
+    /**
+     * Authentication token (placeholder for future implementation)
+     */
+    token: string;
+};
+
+export type SignupRequest = {
+    /**
+     * User's email address
+     */
+    email: string;
+    /**
+     * User's password
+     */
+    password: string;
+    /**
+     * The tenant this user will belong to
+     */
+    tenantId: string;
+};
+
+export type AuthMe = {
+    user: User;
 };
 
 export type Camper = {
@@ -598,49 +691,6 @@ export type CampsListResponse = ListResponseBase & {
     items: Array<Camp>;
 };
 
-export type Tenant = {
-    /**
-     * The unique identifier of the tenant
-     */
-    id: string;
-    /**
-     * The name of the tenant
-     */
-    name: string;
-    /**
-     * The description of the tenant
-     */
-    description: string;
-    /**
-     * The date and time the tenant's subscription expires
-     */
-    expirationDate?: string;
-    /**
-     * The maximum number of camps the tenant can create with their subscription
-     */
-    maxCamps?: number;
-    /**
-     * The type of contract the tenant has with the camp
-     */
-    contractType?: 'trial' | 'normal';
-    /**
-     * The date and time the tenant's contract started
-     */
-    contractStartDate?: string;
-    /**
-     * The date and time the tenant's contract ends
-     */
-    contractEndDate?: string;
-    /**
-     * The date and time the tenant was created
-     */
-    createdAt: string;
-    /**
-     * The date and time the tenant was last updated
-     */
-    updatedAt: string;
-};
-
 export type TenantsListResponse = ListResponseBase & {
     items: Array<Tenant>;
 };
@@ -675,6 +725,96 @@ export type Search = string;
  * Resource ID
  */
 export type Id = string;
+
+export type LoginData = {
+    body: LoginRequest;
+    path?: never;
+    query?: never;
+    url: '/auth/login';
+};
+
+export type LoginErrors = {
+    /**
+     * Invalid credentials
+     */
+    401: unknown;
+};
+
+export type LoginResponses = {
+    /**
+     * Successfully authenticated
+     */
+    200: LoginResponse;
+};
+
+export type LoginResponse2 = LoginResponses[keyof LoginResponses];
+
+export type SignupData = {
+    body: SignupRequest;
+    path?: never;
+    query?: never;
+    url: '/auth/signup';
+};
+
+export type SignupErrors = {
+    /**
+     * Invalid request or user already exists
+     */
+    400: unknown;
+};
+
+export type SignupResponses = {
+    /**
+     * Successfully registered
+     */
+    200: LoginResponse;
+};
+
+export type SignupResponse = SignupResponses[keyof SignupResponses];
+
+export type GetCurrentUserData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/me';
+};
+
+export type GetCurrentUserErrors = {
+    /**
+     * Not authenticated
+     */
+    401: unknown;
+};
+
+export type GetCurrentUserResponses = {
+    /**
+     * Current user information
+     */
+    200: AuthMe;
+};
+
+export type GetCurrentUserResponse = GetCurrentUserResponses[keyof GetCurrentUserResponses];
+
+export type LogoutData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/logout';
+};
+
+export type LogoutErrors = {
+    /**
+     * Not authenticated
+     */
+    401: unknown;
+};
+
+export type LogoutResponses = {
+    /**
+     * Successfully logged out
+     */
+    200: unknown;
+};
 
 export type ListSessionsData = {
     body?: never;

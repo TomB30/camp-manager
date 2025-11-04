@@ -4,6 +4,7 @@ import type {
   SessionUpdateRequest,
 } from "@/generated/api";
 import { storageService } from "./storage";
+import { getCurrentTenantId, getCurrentCampId } from "@/utils/tenantContext";
 import { STORAGE_KEYS } from "./storageKeys";
 
 export const sessionsService = {
@@ -28,6 +29,8 @@ async function createSession(
     ...session,
     meta: {
       id: crypto.randomUUID(),
+      tenantId: getCurrentTenantId(),
+      campId: getCurrentCampId(),
       name: session.meta.name,
       description: session.meta.description,
       createdAt: new Date().toISOString(),
@@ -52,9 +55,12 @@ async function updateSession(
     ...existingSession,
     ...session,
     meta: {
-      ...existingSession.meta,
+      id: existingSession.meta.id,
+      tenantId: existingSession.meta.tenantId,
+      campId: existingSession.meta.campId,
       name: session.meta.name,
       description: session.meta.description,
+      createdAt: existingSession.meta.createdAt,
       updatedAt: new Date().toISOString(),
     },
   };

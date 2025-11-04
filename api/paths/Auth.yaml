@@ -1,0 +1,21 @@
+post:
+  summary: Authenticate user
+  operationId: login
+  tags:
+    - Authentication
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/LoginRequest.yaml"
+  responses:
+    "200":
+      description: Successfully authenticated
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/LoginResponse.yaml"
+    "401":
+      description: Invalid credentials
+

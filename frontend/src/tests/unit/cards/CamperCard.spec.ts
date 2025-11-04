@@ -114,6 +114,8 @@ describe("CamperCard", () => {
       const minimalCamper: Camper = {
         meta: {
           id: "test-camper",
+          tenantId: "00000000-0000-0000-0000-000000000001",
+          campId: "00000000-0000-0000-0000-000000000002",
           name: "Test Camper",
           description: "A test camper",
           createdAt: new Date().toISOString(),

@@ -5,6 +5,7 @@ import type {
   Event,
 } from "@/generated/api";
 import { storageService } from "./storage";
+import { getCurrentCampId, getCurrentTenantId } from "@/utils/tenantContext";
 import { STORAGE_KEYS } from "./storageKeys";
 
 export const campersService = {
@@ -26,6 +27,8 @@ async function createCamper(camper: CamperCreationRequest): Promise<Camper> {
     ...camper,
     meta: {
       id: crypto.randomUUID(),
+      tenantId: getCurrentTenantId(),
+      campId: getCurrentCampId(),
       name: camper.meta.name,
       description: camper.meta.description,
       createdAt: new Date().toISOString(),
@@ -54,6 +57,8 @@ async function updateCamper(
     ...existingCamper,
     ...camper,
     meta: {
+      tenantId: existingCamper.meta.tenantId,
+      campId: existingCamper.meta.campId,
       id: existingCamper.meta.id,
       name: camper.meta.name,
       description: camper.meta.description,

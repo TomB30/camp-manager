@@ -4,6 +4,7 @@ import type {
   ColorUpdateRequest,
 } from "@/generated/api";
 import { storageService } from "./storage";
+import { getCurrentTenantId, getCurrentCampId } from "@/utils/tenantContext";
 import { STORAGE_KEYS } from "./storageKeys";
 
 export const colorsService = {
@@ -25,6 +26,8 @@ async function createColor(color: ColorCreationRequest): Promise<Color> {
     ...color,
     meta: {
       id: crypto.randomUUID(),
+      tenantId: getCurrentTenantId(),
+      campId: getCurrentCampId(),
       name: color.meta.name,
       description: color.meta.description,
       createdAt: new Date().toISOString(),
@@ -50,6 +53,8 @@ async function updateColor(
     ...color,
     meta: {
       id: existingColor.meta.id,
+      tenantId: existingColor.meta.tenantId,
+      campId: existingColor.meta.campId,
       name: color.meta.name,
       description: color.meta.description,
       createdAt: existingColor.meta.createdAt,

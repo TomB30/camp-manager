@@ -4,6 +4,8 @@ export const sessionsFixture: Session[] = [
   {
     meta: {
       id: "session-1",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Past Session",
       description: "A past session for testing",
       createdAt: "2025-09-01T09:00:00.000Z",
@@ -17,6 +19,8 @@ export const sessionsFixture: Session[] = [
   {
     meta: {
       id: "session-2",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Current Session",
       description: "The current active session",
       createdAt: "2025-09-01T09:00:00.000Z",
@@ -30,6 +34,8 @@ export const sessionsFixture: Session[] = [
   {
     meta: {
       id: "session-3",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Future Session",
       description: "An upcoming session",
       createdAt: "2025-10-01T09:00:00.000Z",

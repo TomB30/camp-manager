@@ -1,0 +1,15 @@
+get:
+  summary: Get current authenticated user
+  operationId: getCurrentUser
+  tags:
+    - Authentication
+  responses:
+    "200":
+      description: Current user information
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/AuthMe.yaml"
+    "401":
+      description: Not authenticated
+

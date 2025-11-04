@@ -1,0 +1,7 @@
+type: string
+enum:
+  - SYSTEM
+  - TENANT
+  - CAMP
+description: The scope level for an access rule
+

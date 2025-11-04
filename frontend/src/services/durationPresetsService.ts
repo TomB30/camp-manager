@@ -4,6 +4,7 @@ import type {
   DurationPresetUpdateRequest,
 } from "@/generated/api";
 import { storageService } from "./storage";
+import { getCurrentTenantId, getCurrentCampId } from "@/utils/tenantContext";
 import { STORAGE_KEYS } from "./storageKeys";
 
 export const durationPresetsService = {
@@ -38,6 +39,8 @@ async function createDurationPreset(
   const newPreset: DurationPreset = {
     meta: {
       id: crypto.randomUUID(),
+      tenantId: getCurrentTenantId(),
+      campId: getCurrentCampId(),
       name: preset.meta.name,
       description: preset.meta.description,
       createdAt: new Date().toISOString(),
@@ -87,9 +90,12 @@ async function updateDurationPreset(
     ...existingPreset,
     ...preset,
     meta: {
-      ...existingPreset.meta,
+      id: existingPreset.meta.id,
+      tenantId: existingPreset.meta.tenantId,
+      campId: existingPreset.meta.campId,
       name: preset.meta.name,
       description: preset.meta.description,
+      createdAt: existingPreset.meta.createdAt,
       updatedAt: new Date().toISOString(),
     },
   };

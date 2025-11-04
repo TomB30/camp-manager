@@ -37,11 +37,15 @@ const octoberDate = (
   return new Date(2025, 9, day, hour, minute).toISOString();
 };
 
+// Constants for multi-tenancy
+const TENANT_ID = generateId();
+const CAMP_ID = generateId();
+
 // Camp (singleton)
 export const camp: Camp = {
   meta: {
-    id: generateId(),
-    tenantId: generateId(),
+    id: CAMP_ID,
+    tenantId: TENANT_ID,
     name: "Sunset Lake Summer Camp",
     description:
       "A premier summer camp experience nestled in the beautiful mountains, offering adventure, learning, and lifelong friendships.",
@@ -74,6 +78,8 @@ export const durationPresets: DurationPreset[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Quick Activity",
       description: "Short 30-minute activities or transitions",
       createdAt: octoberDate(1),
@@ -86,6 +92,8 @@ export const durationPresets: DurationPreset[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Standard Session",
       description: "Standard 1-hour activity session",
       createdAt: octoberDate(1),
@@ -99,6 +107,8 @@ export const durationPresets: DurationPreset[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Extended Activity",
       description: "90-minute extended activity session",
       createdAt: octoberDate(1),
@@ -111,6 +121,8 @@ export const durationPresets: DurationPreset[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Half Day",
       description: "2-hour half-day program",
       createdAt: octoberDate(1),
@@ -123,6 +135,8 @@ export const durationPresets: DurationPreset[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Full Program",
       description: "3-hour full program session",
       createdAt: octoberDate(1),
@@ -139,6 +153,8 @@ export const colors: Color[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Ocean Blue",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -151,6 +167,8 @@ export const colors: Color[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Sunset Orange",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -162,6 +180,8 @@ export const colors: Color[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Forest Green",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -173,6 +193,8 @@ export const colors: Color[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Berry Purple",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -184,6 +206,8 @@ export const colors: Color[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Coral Pink",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -195,6 +219,8 @@ export const colors: Color[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Sky Blue",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -206,6 +232,8 @@ export const colors: Color[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Lemon Yellow",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -217,6 +245,8 @@ export const colors: Color[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Cherry Red",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -228,6 +258,8 @@ export const colors: Color[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Mint Green",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -239,6 +271,8 @@ export const colors: Color[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Lavender",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -254,6 +288,8 @@ export const sessions: Session[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Early Fall Session",
       description: "Perfect start to fall activities",
       createdAt: octoberDate(1),
@@ -267,6 +303,8 @@ export const sessions: Session[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Mid Fall Session A",
       description: "Mid-fall adventures",
       createdAt: octoberDate(1),
@@ -280,6 +318,8 @@ export const sessions: Session[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Mid Fall Session B",
       description: "Continued fall fun",
       createdAt: octoberDate(1),
@@ -293,6 +333,8 @@ export const sessions: Session[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Late Fall Session A",
       description: "Late fall exploration",
       createdAt: octoberDate(1),
@@ -306,6 +348,8 @@ export const sessions: Session[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Late Fall Session B",
       description: "Halloween prep week",
       createdAt: octoberDate(1),
@@ -319,6 +363,8 @@ export const sessions: Session[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Mid Fall Session A",
       description: "Mid-fall adventures",
       createdAt: octoberDate(1),
@@ -332,6 +378,8 @@ export const sessions: Session[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Mid Fall Session B",
       description: "Continued fall fun",
       createdAt: octoberDate(1),
@@ -345,6 +393,8 @@ export const sessions: Session[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Halloween Week",
       description: "Spooky fun and festivities",
       createdAt: octoberDate(1),
@@ -358,6 +408,8 @@ export const sessions: Session[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Late Fall Session B",
       description: "Halloween prep week",
       createdAt: octoberDate(1),
@@ -371,6 +423,8 @@ export const sessions: Session[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Halloween Week",
       description: "Spooky fun and festivities",
       createdAt: octoberDate(1),
@@ -388,6 +442,8 @@ export const areas: Area[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "North Campus",
       description: "Main activity area with classrooms and sports facilities",
       createdAt: octoberDate(1),
@@ -402,6 +458,8 @@ export const areas: Area[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Lakefront",
       description: "Waterfront area for aquatic activities",
       createdAt: octoberDate(1),
@@ -416,6 +474,8 @@ export const areas: Area[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Forest Trail",
       description: "Outdoor adventure area with hiking trails",
       createdAt: octoberDate(1),
@@ -430,6 +490,8 @@ export const areas: Area[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Central Commons",
       description: "Indoor gathering space and dining area",
       createdAt: octoberDate(1),
@@ -449,6 +511,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Classroom A",
       description: "Main classroom",
       createdAt: octoberDate(1),
@@ -464,6 +528,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Classroom B",
       description: "Science lab",
       createdAt: octoberDate(1),
@@ -479,6 +545,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Art Studio",
       description: "Creative space",
       createdAt: octoberDate(1),
@@ -494,6 +562,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Basketball Court",
       description: "Indoor court",
       createdAt: octoberDate(1),
@@ -509,6 +579,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Sports Field",
       description: "Outdoor field",
       createdAt: octoberDate(1),
@@ -525,6 +597,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Swimming Area",
       description: "Supervised swimming",
       createdAt: octoberDate(1),
@@ -540,6 +614,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Boating Dock",
       description: "Water activities",
       createdAt: octoberDate(1),
@@ -555,6 +631,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Beach Area",
       description: "Sandy beach",
       createdAt: octoberDate(1),
@@ -572,6 +650,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "North Trail Head",
       description: "Hiking start point",
       createdAt: octoberDate(1),
@@ -587,6 +667,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Nature Center",
       description: "Educational center",
       createdAt: octoberDate(1),
@@ -602,6 +684,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Campfire Circle",
       description: "Evening activities",
       createdAt: octoberDate(1),
@@ -619,6 +703,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Main Dining Hall",
       description: "All meals served here",
       createdAt: octoberDate(1),
@@ -634,6 +720,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Assembly Hall",
       description: "Large gatherings",
       createdAt: octoberDate(1),
@@ -649,6 +737,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Game Room",
       description: "Recreation",
       createdAt: octoberDate(1),
@@ -664,6 +754,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Craft Workshop",
       description: "Hands-on projects",
       createdAt: octoberDate(1),
@@ -679,6 +771,8 @@ export const locations: Location[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Music Room",
       description: "Music activities",
       createdAt: octoberDate(1),
@@ -698,6 +792,8 @@ export const housingRooms: HousingRoom[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Eagles Nest",
       description: "Eagles Nest",
       createdAt: octoberDate(1),
@@ -708,6 +804,8 @@ export const housingRooms: HousingRoom[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Bears Den",
       description: "Bears Den",
       createdAt: octoberDate(1),
@@ -718,6 +816,8 @@ export const housingRooms: HousingRoom[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Wolves Lodge",
       description: "Wolves Lodge",
       createdAt: octoberDate(1),
@@ -728,6 +828,8 @@ export const housingRooms: HousingRoom[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Hawks Haven",
       description: "Hawks Haven",
       createdAt: octoberDate(1),
@@ -738,6 +840,8 @@ export const housingRooms: HousingRoom[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Deer Cabin",
       description: "Deer Cabin",
       createdAt: octoberDate(1),
@@ -748,6 +852,8 @@ export const housingRooms: HousingRoom[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Fox Den",
       description: "Fox Den",
       createdAt: octoberDate(1),
@@ -762,6 +868,8 @@ export const certifications: Certification[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "First Aid",
       description: "First Aid",
       createdAt: octoberDate(1),
@@ -772,6 +880,8 @@ export const certifications: Certification[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Lifeguard",
       description: "Lifeguard",
       createdAt: octoberDate(1),
@@ -782,6 +892,8 @@ export const certifications: Certification[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Arts & Crafts Instructor",
       description: "Art education and safety certification",
       createdAt: octoberDate(1),
@@ -792,6 +904,8 @@ export const certifications: Certification[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Camp Director",
       description: "Overall camp management and leadership",
       createdAt: octoberDate(1),
@@ -802,6 +916,8 @@ export const certifications: Certification[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Program Supervisor",
       description: "Oversees program activities and staff coordination",
       createdAt: octoberDate(1),
@@ -812,6 +928,8 @@ export const certifications: Certification[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Camp Counselor",
       description: "Direct camper supervision and activity facilitation",
       createdAt: octoberDate(1),
@@ -822,6 +940,8 @@ export const certifications: Certification[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Camp Nurse",
       description: "Medical care and health management",
       createdAt: octoberDate(1),
@@ -832,6 +952,8 @@ export const certifications: Certification[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Activity Instructor",
       description: "Specialized activity instruction and skill development",
       createdAt: octoberDate(1),
@@ -845,6 +967,8 @@ export const roles: Role[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Camp Director",
       description: "Overall camp management and leadership",
       createdAt: octoberDate(1),
@@ -855,6 +979,8 @@ export const roles: Role[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Program Supervisor",
       description: "Oversees program activities and staff coordination",
       createdAt: octoberDate(1),
@@ -865,6 +991,8 @@ export const roles: Role[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Camp Counselor",
       description: "Direct camper supervision and activity facilitation",
       createdAt: octoberDate(1),
@@ -875,6 +1003,8 @@ export const roles: Role[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Camp Nurse",
       description: "Medical care and health management",
       createdAt: octoberDate(1),
@@ -885,6 +1015,8 @@ export const roles: Role[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Activity Instructor",
       description: "Specialized activity instruction and skill development",
       createdAt: octoberDate(1),
@@ -899,6 +1031,8 @@ export const staffMembers: StaffMember[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Sarah Johnson",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -915,6 +1049,8 @@ export const staffMembers: StaffMember[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Michael Chen",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -931,6 +1067,8 @@ export const staffMembers: StaffMember[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Emily Rodriguez",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -947,6 +1085,8 @@ export const staffMembers: StaffMember[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "David Thompson",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -963,6 +1103,8 @@ export const staffMembers: StaffMember[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Jessica Martinez",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -979,6 +1121,8 @@ export const staffMembers: StaffMember[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Daniel Lee",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -995,6 +1139,8 @@ export const staffMembers: StaffMember[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Ashley Wilson",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -1011,6 +1157,8 @@ export const staffMembers: StaffMember[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Andrew Nguyen",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -1027,6 +1175,8 @@ export const staffMembers: StaffMember[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Olivia Patel",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -1043,6 +1193,8 @@ export const staffMembers: StaffMember[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Ethan Kim",
       createdAt: octoberDate(1),
       updatedAt: octoberDate(1),
@@ -1074,6 +1226,8 @@ export const groups: Group[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Eagles Group",
       description: "Adventurous group in Eagles Nest",
       createdAt: octoberDate(1),
@@ -1090,6 +1244,8 @@ export const groups: Group[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Bears Group",
       description: "Strong and brave Bears group",
       createdAt: octoberDate(1),
@@ -1106,6 +1262,8 @@ export const groups: Group[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Wolves Group",
       description: "Pack-minded Wolves team",
       createdAt: octoberDate(1),
@@ -1122,6 +1280,8 @@ export const groups: Group[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Hawks Group",
       description: "Sharp-eyed Hawks group",
       createdAt: octoberDate(1),
@@ -1138,6 +1298,8 @@ export const groups: Group[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Deer Group",
       description: "Graceful and gentle Deer cabin",
       createdAt: octoberDate(1),
@@ -1154,6 +1316,8 @@ export const groups: Group[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Fox Group",
       description: "Clever Fox Den residents",
       createdAt: octoberDate(1),
@@ -1295,6 +1459,8 @@ groups.forEach((group, groupIndex) => {
 
     const camper: Camper = {
       meta: {
+        tenantId: TENANT_ID,
+        campId: CAMP_ID,
         id: generateId(),
         name: `${camperFirstNames[camperIndex]} ${camperLastNames[camperIndex]}`,
         createdAt: octoberDate(1),
@@ -1324,6 +1490,8 @@ export const programs: Program[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Outdoor Adventures",
       description: "Hiking, camping, and wilderness exploration",
       createdAt: octoberDate(1),
@@ -1347,6 +1515,8 @@ export const programs: Program[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Water Sports",
       description: "Swimming, kayaking, and water safety",
       createdAt: octoberDate(1),
@@ -1366,6 +1536,8 @@ export const programs: Program[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Arts & Creativity",
       description: "Painting, crafts, music, and creative expression",
       createdAt: octoberDate(1),
@@ -1385,6 +1557,8 @@ export const programs: Program[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Sports & Games",
       description: "Team sports, games, and physical activities",
       createdAt: octoberDate(1),
@@ -1413,6 +1587,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Nature Hike",
       description: "Guided nature walk through forest trails",
       createdAt: octoberDate(1),
@@ -1430,6 +1606,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Wildlife Discovery",
       description: "Learn about local wildlife and ecosystems",
       createdAt: octoberDate(1),
@@ -1447,6 +1625,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Campfire Stories",
       description: "Evening storytelling around the campfire",
       createdAt: octoberDate(1),
@@ -1464,6 +1644,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Outdoor Survival Skills",
       description: "Learn basic wilderness survival techniques",
       createdAt: octoberDate(1),
@@ -1483,6 +1665,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Swimming Lessons",
       description: "Learn to swim or improve swimming skills",
       createdAt: octoberDate(1),
@@ -1500,6 +1684,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Kayaking Adventure",
       description: "Kayaking basics and water exploration",
       createdAt: octoberDate(1),
@@ -1517,6 +1703,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Beach Games",
       description: "Fun games and activities on the beach",
       createdAt: octoberDate(1),
@@ -1535,6 +1723,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Painting Workshop",
       description: "Express yourself through watercolor and acrylics",
       createdAt: octoberDate(1),
@@ -1552,6 +1742,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Crafts & DIY",
       description: "Create handmade crafts and projects",
       createdAt: octoberDate(1),
@@ -1569,6 +1761,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Music Jam Session",
       description: "Learn instruments and make music together",
       createdAt: octoberDate(1),
@@ -1586,6 +1780,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Theater & Drama",
       description: "Acting, improvisation, and performance",
       createdAt: octoberDate(1),
@@ -1604,6 +1800,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Basketball",
       description: "Team basketball games and drills",
       createdAt: octoberDate(1),
@@ -1621,6 +1819,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Soccer Practice",
       description: "Soccer skills and friendly matches",
       createdAt: octoberDate(1),
@@ -1637,6 +1837,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Board Game Tournament",
       description: "Strategy games and friendly competition",
       createdAt: octoberDate(1),
@@ -1654,6 +1856,8 @@ export const activities: Activity[] = [
   {
     meta: {
       id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
       name: "Team Building Games",
       description: "Cooperative games and challenges",
       createdAt: octoberDate(1),
@@ -1749,6 +1953,8 @@ const createDailyEvents = (day: number, sessionIndex: number) => {
     events.push({
       meta: {
         id: generateId(),
+        tenantId: TENANT_ID,
+        campId: CAMP_ID,
         name: activity.meta.name,
         description: activity.meta.description,
         createdAt: octoberDate(day, time.hour, 0),

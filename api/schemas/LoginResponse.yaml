@@ -1,0 +1,11 @@
+type: object
+required:
+  - user
+  - token
+properties:
+  user:
+    $ref: "./User.yaml"
+  token:
+    type: string
+    description: Authentication token (placeholder for future implementation)
+

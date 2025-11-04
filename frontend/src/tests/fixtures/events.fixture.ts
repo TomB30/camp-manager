@@ -7,6 +7,8 @@ export const eventsFixture: Event[] = [
   {
     meta: {
       id: "event-1",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Morning Painting",
       description: "A morning painting event",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -31,6 +33,8 @@ export const eventsFixture: Event[] = [
   {
     meta: {
       id: "event-2",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Swimming Lessons - Beginners",
       description: "A swimming lessons event for beginners",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -55,6 +59,8 @@ export const eventsFixture: Event[] = [
   {
     meta: {
       id: "event-3",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Nature Hike",
       description: "A nature hike event",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -80,6 +86,8 @@ export const eventsFixture: Event[] = [
   {
     meta: {
       id: "event-4",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Daily Archery",
       description: "A daily archery event",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -104,6 +112,8 @@ export const eventsFixture: Event[] = [
   {
     meta: {
       id: "event-5",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Monday/Wednesday Pottery",
       description: "A Monday/Wednesday pottery event",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -128,6 +138,8 @@ export const eventsFixture: Event[] = [
   {
     meta: {
       id: "event-6",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Afternoon Kayaking",
       description: "A afternoon kayaking event",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -152,6 +164,8 @@ export const eventsFixture: Event[] = [
   {
     meta: {
       id: "event-7",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Rock Climbing Session",
       description: "A rock climbing session event",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -176,6 +190,8 @@ export const eventsFixture: Event[] = [
   {
     meta: {
       id: "event-8",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Crafts Time",
       description: "A crafts time event",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -200,6 +216,8 @@ export const eventsFixture: Event[] = [
   {
     meta: {
       id: "event-9",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Morning Canoeing",
       description: "A morning canoeing event",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -224,6 +242,8 @@ export const eventsFixture: Event[] = [
   {
     meta: {
       id: "event-10",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Survival Skills Workshop",
       description: "A survival skills workshop event",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -249,6 +269,8 @@ export const eventsFixture: Event[] = [
   {
     meta: {
       id: "event-11",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Conflicting Painting Session",
       description: "A conflicting painting session event",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -274,6 +296,8 @@ export const eventsFixture: Event[] = [
   {
     meta: {
       id: "event-12",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Staff Conflict Swimming",
       description: "A staff conflict swimming event",
       createdAt: "2025-10-01T09:00:00.000Z",

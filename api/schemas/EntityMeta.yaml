@@ -2,6 +2,8 @@ type: object
 required:
   - id
   - name
+  - tenantId
+  - campId
   - createdAt
   - updatedAt
 properties:
@@ -16,6 +18,14 @@ properties:
   description:
     type: string
     description: The description of the entity
+  tenantId:
+    type: string
+    format: uuid
+    description: The unique identifier of the tenant this entity belongs to
+  campId:
+    type: string
+    format: uuid
+    description: The unique identifier of the camp this entity belongs to
   createdAt:
     type: string
     format: date-time

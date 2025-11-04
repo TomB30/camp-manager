@@ -4,6 +4,7 @@ import type {
   LocationUpdateRequest,
 } from "@/generated/api";
 import { storageService } from "./storage";
+import { getCurrentTenantId, getCurrentCampId } from "@/utils/tenantContext";
 import { STORAGE_KEYS } from "./storageKeys";
 
 export const locationsService = {
@@ -26,6 +27,8 @@ async function createLocation(
     ...location,
     meta: {
       id: crypto.randomUUID(),
+      tenantId: getCurrentTenantId(),
+      campId: getCurrentCampId(),
       name: location.meta.name,
       description: location.meta.description,
       createdAt: new Date().toISOString(),
@@ -50,9 +53,12 @@ async function updateLocation(
     ...existingLocation,
     ...location,
     meta: {
-      ...existingLocation.meta,
+      id: existingLocation.meta.id,
+      tenantId: existingLocation.meta.tenantId,
+      campId: existingLocation.meta.campId,
       name: location.meta.name,
       description: location.meta.description,
+      createdAt: existingLocation.meta.createdAt,
       updatedAt: new Date().toISOString(),
     },
   };

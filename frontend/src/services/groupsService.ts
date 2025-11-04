@@ -4,6 +4,7 @@ import type {
   GroupUpdateRequest,
 } from "@/generated/api";
 import { storageService } from "./storage";
+import { getCurrentCampId, getCurrentTenantId } from "@/utils/tenantContext";
 import { STORAGE_KEYS } from "./storageKeys";
 
 export const groupsService = {
@@ -23,6 +24,8 @@ async function createGroup(group: GroupCreationRequest): Promise<Group> {
     ...group,
     meta: {
       id: crypto.randomUUID(),
+      tenantId: getCurrentTenantId(),
+      campId: getCurrentCampId(),
       name: group.meta.name,
       description: group.meta.description,
       createdAt: new Date().toISOString(),
@@ -47,9 +50,12 @@ async function updateGroup(
     ...existingGroup,
     ...group,
     meta: {
-      ...existingGroup.meta,
+      id: existingGroup.meta.id,
+      tenantId: existingGroup.meta.tenantId,
+      campId: existingGroup.meta.campId,
       name: group.meta.name,
       description: group.meta.description,
+      createdAt: existingGroup.meta.createdAt,
       updatedAt: new Date().toISOString(),
     },
   };

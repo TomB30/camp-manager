@@ -4,6 +4,7 @@ import type {
   AreaUpdateRequest,
 } from "@/generated/api";
 import { storageService } from "./storage";
+import { getTenantContext } from "@/utils/tenantContext";
 import { STORAGE_KEYS } from "./storageKeys";
 
 export const areasService = {
@@ -19,10 +20,13 @@ async function listAreas(): Promise<Area[]> {
 }
 
 async function createArea(area: AreaCreationRequest): Promise<Area> {
+  const { tenantId, campId } = getTenantContext();
   const newArea = {
     ...area,
     meta: {
       id: crypto.randomUUID(),
+      tenantId,
+      campId,
       name: area.meta.name,
       description: area.meta.description,
       createdAt: new Date().toISOString(),
@@ -45,6 +49,8 @@ async function updateArea(id: string, area: AreaUpdateRequest): Promise<Area> {
     ...area,
     meta: {
       id: existingArea.meta.id,
+      tenantId: existingArea.meta.tenantId,
+      campId: existingArea.meta.campId,
       name: area.meta.name,
       description: area.meta.description,
       createdAt: existingArea.meta.createdAt,

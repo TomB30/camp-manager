@@ -4,6 +4,7 @@ import type {
   EventUpdateRequest,
 } from "@/generated/api";
 import { storageService } from "./storage";
+import { getCurrentTenantId, getCurrentCampId } from "@/utils/tenantContext";
 import { STORAGE_KEYS } from "./storageKeys";
 
 export const eventsService = {
@@ -26,6 +27,8 @@ async function createEvent(event: EventCreationRequest): Promise<Event> {
   const newEvent = {
     meta: {
       id: crypto.randomUUID(),
+      tenantId: getCurrentTenantId(),
+      campId: getCurrentCampId(),
       name: event.meta.name,
       description: event.meta.description,
       createdAt: new Date().toISOString(),
@@ -51,9 +54,12 @@ async function updateEvent(
     ...existingEvent,
     ...event,
     meta: {
-      ...existingEvent.meta,
+      id: existingEvent.meta.id,
+      tenantId: existingEvent.meta.tenantId,
+      campId: existingEvent.meta.campId,
       name: event.meta.name,
       description: event.meta.description,
+      createdAt: existingEvent.meta.createdAt,
       updatedAt: new Date().toISOString(),
     },
   };

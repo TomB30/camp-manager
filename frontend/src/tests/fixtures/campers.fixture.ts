@@ -5,6 +5,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-1",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Emma Johnson",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -22,6 +24,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-2",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Liam Smith",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -39,6 +43,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-3",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Olivia Williams",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -56,6 +62,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-4",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Noah Brown",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -73,6 +81,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-5",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Ava Davis",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -90,6 +100,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-6",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Ethan Miller",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -107,6 +119,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-7",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Sophia Wilson",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -124,6 +138,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-8",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Mason Moore",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -141,6 +157,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-9",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Isabella Taylor",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -158,6 +176,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-10",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Lucas Anderson",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -175,6 +195,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-11",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Mia Thomas",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -192,6 +214,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-12",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Alex Martinez",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -209,6 +233,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-13",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Charlotte Garcia",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -226,6 +252,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-14",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "James Rodriguez",
       description: "A test camper",
       createdAt: new Date().toISOString(),
@@ -243,6 +271,8 @@ export const campersFixture: Camper[] = [
   {
     meta: {
       id: "camper-15",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Amelia Lopez",
       description: "A test camper",
       createdAt: new Date().toISOString(),

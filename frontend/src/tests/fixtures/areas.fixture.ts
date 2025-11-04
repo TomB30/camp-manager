@@ -4,6 +4,8 @@ export const areasFixture: Area[] = [
   {
     meta: {
       id: "area-1",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "North Campus",
       description: "Main activity area with classrooms and sports facilities",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -18,6 +20,8 @@ export const areasFixture: Area[] = [
   {
     meta: {
       id: "area-2",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Lakefront",
       description: "Waterfront area for aquatic activities",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -32,6 +36,8 @@ export const areasFixture: Area[] = [
   {
     meta: {
       id: "area-3",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Forest Trail",
       description: "Outdoor adventure area with hiking trails",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -46,6 +52,8 @@ export const areasFixture: Area[] = [
   {
     meta: {
       id: "area-4",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Central Commons",
       description: "Indoor gathering space and dining area",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -60,6 +68,8 @@ export const areasFixture: Area[] = [
   {
     meta: {
       id: "area-5",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Sports Complex",
       description: "Athletic fields and courts",
       createdAt: "2025-10-01T09:00:00.000Z",

@@ -23,5 +23,8 @@ export { useDurationPresetsStore } from "./durationPresetsStore";
 // Main coordinating store
 export { useMainStore } from "./mainStore";
 
+// Auth store
+export { useAuthStore } from "./authStore";
+
 // Other stores
 export { useToastStore } from "./toastStore";

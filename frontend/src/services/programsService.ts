@@ -5,6 +5,7 @@ import type {
   Activity,
 } from "@/generated/api";
 import { storageService } from "./storage";
+import { getCurrentTenantId, getCurrentCampId } from "@/utils/tenantContext";
 import { STORAGE_KEYS } from "./storageKeys";
 
 export const programsService = {
@@ -28,6 +29,8 @@ async function createProgram(
     ...program,
     meta: {
       id: crypto.randomUUID(),
+      tenantId: getCurrentTenantId(),
+      campId: getCurrentCampId(),
       name: program.meta.name,
       description: program.meta.description,
       createdAt: new Date().toISOString(),
@@ -52,9 +55,12 @@ async function updateProgram(
     ...existingProgram,
     ...program,
     meta: {
-      ...existingProgram.meta,
+      id: existingProgram.meta.id,
+      tenantId: existingProgram.meta.tenantId,
+      campId: existingProgram.meta.campId,
       name: program.meta.name,
       description: program.meta.description,
+      createdAt: existingProgram.meta.createdAt,
       updatedAt: new Date().toISOString(),
     },
   };

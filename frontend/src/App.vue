@@ -1,41 +1,50 @@
 <template>
-  <div id="app">
-    <!-- Mobile Header with Hamburger -->
-    <header class="mobile-header">
-      <button
-        class="hamburger-btn"
-        @click="toggleMobileMenu"
-        aria-label="Toggle menu"
-      >
-        <Icon name="Menu" :size="24" />
-      </button>
-      <div class="mobile-logo">
-        <Icon name="Sun" :size="20" />
-        <h1>Summer Camp</h1>
-      </div>
-      <div class="mobile-spacer"></div>
-    </header>
+  <div id="app" :class="{ 'app-unauthenticated': !isAuthenticated }">
+    <!-- Authenticated Layout -->
+    <template v-if="isAuthenticated">
+      <!-- Mobile Header with Hamburger -->
+      <header class="mobile-header">
+        <button
+          class="hamburger-btn"
+          @click="toggleMobileMenu"
+          aria-label="Toggle menu"
+        >
+          <Icon name="Menu" :size="24" />
+        </button>
+        <div class="mobile-logo">
+          <Icon name="Sun" :size="20" />
+          <h1>Summer Camp</h1>
+        </div>
+        <div class="mobile-spacer"></div>
+      </header>
 
-    <!-- Backdrop overlay for mobile -->
-    <div
-      v-if="isMobileMenuOpen"
-      class="mobile-backdrop"
-      @click="closeMobileMenu"
-    ></div>
+      <!-- Backdrop overlay for mobile -->
+      <div
+        v-if="isMobileMenuOpen"
+        class="mobile-backdrop"
+        @click="closeMobileMenu"
+      ></div>
 
-    <Sidebar :is-mobile-open="isMobileMenuOpen" @close="closeMobileMenu" />
-    <main class="main-content">
+      <Sidebar :is-mobile-open="isMobileMenuOpen" @close="closeMobileMenu" />
+      <main class="main-content">
+        <RouterView />
+      </main>
+    </template>
+
+    <!-- Unauthenticated Layout -->
+    <template v-else>
       <RouterView />
-    </main>
+    </template>
+
     <Toast />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 import Sidebar from "./components/Sidebar.vue";
 import Toast from "./components/Toast.vue";
-import { useMainStore } from "./stores";
+import { useMainStore, useAuthStore } from "./stores";
 import { campersService, storageService } from "./services";
 import Icon from "./components/Icon.vue";
 
@@ -51,6 +60,12 @@ export default defineComponent({
       isMobileMenuOpen: false,
     };
   },
+  computed: {
+    isAuthenticated(): boolean {
+      const authStore = useAuthStore();
+      return authStore.isAuthenticated;
+    },
+  },
   methods: {
     toggleMobileMenu() {
       this.isMobileMenuOpen = !this.isMobileMenuOpen;
@@ -60,18 +75,25 @@ export default defineComponent({
     },
   },
   async mounted(): Promise<void> {
+    const authStore = useAuthStore();
     const mainStore = useMainStore();
 
-    // Check if we have data, if not, seed with mock data
-    const existingCampers = await campersService.listCampers();
+    // Check authentication first
+    authStore.checkAuth();
 
-    if (existingCampers.length === 0) {
-      // Lazy load mock data only when needed
-      const { mockData } = await import("./data/mockData");
-      await storageService.seedData(mockData);
+    // Only load data if authenticated
+    if (authStore.isAuthenticated) {
+      // Check if we have data, if not, seed with mock data
+      const existingCampers = await campersService.listCampers();
+
+      if (existingCampers.length === 0) {
+        // Lazy load mock data only when needed
+        const { mockData } = await import("./data/mockData");
+        await storageService.seedData(mockData);
+      }
+
+      await mainStore.loadAll();
     }
-
-    await mainStore.loadAll();
   },
 });
 </script>
@@ -80,6 +102,10 @@ export default defineComponent({
 #app {
   min-height: 100vh;
   display: flex;
+}
+
+#app.app-unauthenticated {
+  display: block;
 }
 
 .main-content {

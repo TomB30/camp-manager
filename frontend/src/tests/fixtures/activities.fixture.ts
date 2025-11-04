@@ -6,6 +6,8 @@ export const activitiesFixture: Activity[] = [
   {
     meta: {
       id: "activity-1",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Painting Workshop",
       description: "Learn watercolor techniques",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -22,6 +24,8 @@ export const activitiesFixture: Activity[] = [
   {
     meta: {
       id: "activity-2",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Pottery Class",
       description: "Create ceramic pieces",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -38,6 +42,8 @@ export const activitiesFixture: Activity[] = [
   {
     meta: {
       id: "activity-3",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Swimming Lessons",
       description: "Basic swimming instruction",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -54,6 +60,8 @@ export const activitiesFixture: Activity[] = [
   {
     meta: {
       id: "activity-4",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Kayaking",
       description: "Kayaking on the lake",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -70,6 +78,8 @@ export const activitiesFixture: Activity[] = [
   {
     meta: {
       id: "activity-5",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Nature Hike",
       description: "Guided trail hike",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -86,6 +96,8 @@ export const activitiesFixture: Activity[] = [
   {
     meta: {
       id: "activity-6",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Rock Climbing",
       description: "Indoor climbing wall",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -102,6 +114,8 @@ export const activitiesFixture: Activity[] = [
   {
     meta: {
       id: "activity-7",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Archery",
       description: "Target practice with bows",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -118,6 +132,8 @@ export const activitiesFixture: Activity[] = [
   {
     meta: {
       id: "activity-8",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Crafts & Jewelry",
       description: "Make friendship bracelets and jewelry",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -134,6 +150,8 @@ export const activitiesFixture: Activity[] = [
   {
     meta: {
       id: "activity-9",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Canoeing",
       description: "Canoe expedition",
       createdAt: "2025-10-01T09:00:00.000Z",
@@ -150,6 +168,8 @@ export const activitiesFixture: Activity[] = [
   {
     meta: {
       id: "activity-10",
+      tenantId: "00000000-0000-0000-0000-000000000001",
+      campId: "00000000-0000-0000-0000-000000000002",
       name: "Wilderness Survival",
       description: "Learn basic survival skills",
       createdAt: "2025-10-01T09:00:00.000Z",

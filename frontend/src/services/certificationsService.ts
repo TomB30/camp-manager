@@ -4,6 +4,7 @@ import type {
   CertificationUpdateRequest,
 } from "@/generated/api";
 import { storageService } from "./storage";
+import { getCurrentTenantId, getCurrentCampId } from "@/utils/tenantContext";
 import { STORAGE_KEYS } from "./storageKeys";
 
 export const certificationsService = {
@@ -24,6 +25,8 @@ async function createCertification(
   const newCertification = {
     meta: {
       id: crypto.randomUUID(),
+      tenantId: getCurrentTenantId(),
+      campId: getCurrentCampId(),
       name: certification.meta.name,
       description: certification.meta.description,
       createdAt: new Date().toISOString(),
@@ -51,6 +54,8 @@ async function updateCertification(
   const updatedCertification = {
     meta: {
       id: existingCertification.meta.id,
+      tenantId: existingCertification.meta.tenantId,
+      campId: existingCertification.meta.campId,
       name: certification.meta.name,
       description: certification.meta.description,
       createdAt: existingCertification.meta.createdAt,

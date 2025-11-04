@@ -7,6 +7,7 @@ import type {
 } from "@/generated/api";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
+import { getTenantContext } from "@/utils/tenantContext";
 
 export const activitiesService = {
   listActivities,
@@ -26,9 +27,12 @@ async function listActivities(): Promise<Activity[]> {
 async function createActivity(
   activity: ActivityCreationRequest,
 ): Promise<Activity> {
+  const { tenantId, campId } = getTenantContext();
   const newActivity = {
     meta: {
       id: crypto.randomUUID(),
+      tenantId,
+      campId,
       name: activity.meta.name,
       description: activity.meta.description,
       createdAt: new Date().toISOString(),
@@ -53,6 +57,8 @@ async function updateActivity(
   const updatedActivity = {
     meta: {
       id: existingActivity.meta.id,
+      tenantId: existingActivity.meta.tenantId,
+      campId: existingActivity.meta.campId,
       name: activity.meta.name,
       description: activity.meta.description || "",
       createdAt: existingActivity.meta.createdAt,

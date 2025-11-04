@@ -6,6 +6,31 @@
         <h1>Summer Camp</h1>
       </div>
 
+      <!-- Camp Selector (for users with multiple camp access) -->
+      <div v-if="showCampSelector" class="camp-selector">
+        <label for="camp-select" class="camp-selector-label">
+          <Icon name="Building" :size="16" />
+          <span>Active Camp</span>
+        </label>
+        <select
+          id="camp-select"
+          v-model="selectedCampId"
+          @change="handleCampChange"
+          class="camp-select"
+        >
+          <option
+            v-for="camp in accessibleCamps"
+            :key="camp.campId"
+            :value="camp.campId"
+          >
+            {{ camp.campName }}
+            <template v-if="getCampRole(camp.campId)">
+              ({{ getRoleLabel(getCampRole(camp.campId)!) }})
+            </template>
+          </option>
+        </select>
+      </div>
+
       <nav class="nav">
         <RouterLink to="/" class="nav-link" @click="handleNavClick">
           <Icon name="LayoutDashboard" :size="20" class="nav-icon" />
@@ -50,14 +75,28 @@
           <span class="nav-text">Camp Settings</span>
         </RouterLink>
       </div>
+
+      <!-- Logout Button -->
+      <div class="nav-link" @click="handleLogout">
+        <Icon name="LogOut" :size="20" />
+        <span>Logout</span>
+      </div>
     </div>
   </aside>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { useMainStore } from "@/stores";
+import { defineComponent, computed, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useMainStore, useAuthStore } from "@/stores";
 import Icon from "./Icon.vue";
+
+// Mock camp data - will be replaced with API call in the future
+const MOCK_CAMPS = [
+  { campId: "camp-1", campName: "Summer Camp 2024" },
+  { campId: "camp-2", campName: "Adventure Camp 2024" },
+  { campId: "camp-3", campName: "Sports Camp 2024" },
+];
 
 export default defineComponent({
   name: "Sidebar",
@@ -71,6 +110,71 @@ export default defineComponent({
     },
   },
   emits: ["close"],
+  setup() {
+    const router = useRouter();
+    const authStore = useAuthStore();
+
+    const selectedCampId = ref(authStore.selectedCampId);
+
+    // Sync with auth store when it changes
+    watch(
+      () => authStore.selectedCampId,
+      (newValue) => {
+        selectedCampId.value = newValue;
+      }
+    );
+
+    const showCampSelector = computed(() => {
+      const accessibleCampIds = authStore.getAccessibleCamps();
+      // Show selector if user has specific camp access (not system/tenant admin)
+      return accessibleCampIds.length > 0;
+    });
+
+    const accessibleCamps = computed(() => {
+      const campIds = authStore.getAccessibleCamps();
+      if (campIds.length === 0) {
+        // System/Tenant admin - return all camps
+        return MOCK_CAMPS;
+      }
+      // Return only accessible camps
+      return MOCK_CAMPS.filter((camp) => campIds.includes(camp.campId));
+    });
+
+    const getCampRole = (campId: string): string | null => {
+      return authStore.getRoleForCamp(campId);
+    };
+
+    const getRoleLabel = (roleId: string): string => {
+      const roleLabels: Record<string, string> = {
+        "role-system-admin": "System Admin",
+        "role-tenant-admin": "Admin",
+        "role-camp-admin": "Admin",
+        "role-viewer": "Viewer",
+      };
+      return roleLabels[roleId] || roleId;
+    };
+
+    const handleCampChange = () => {
+      if (selectedCampId.value) {
+        authStore.setSelectedCamp(selectedCampId.value);
+      }
+    };
+
+    const handleLogout = () => {
+      authStore.logout();
+      router.push("/login");
+    };
+
+    return {
+      selectedCampId,
+      showCampSelector,
+      accessibleCamps,
+      getCampRole,
+      getRoleLabel,
+      handleCampChange,
+      handleLogout,
+    };
+  },
   computed: {
     mainStore() {
       return useMainStore();
@@ -130,6 +234,68 @@ export default defineComponent({
   letter-spacing: -0.02em;
 }
 
+.camp-selector {
+  padding: 0 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.camp-selector-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.camp-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.camp-select:hover {
+  border-color: var(--accent-color);
+}
+
+.camp-select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.logout-btn {
+  margin: 0.5rem 1rem 1rem;
+  padding: 0.625rem 0.875rem;
+  background: none;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  transition: all 0.15s ease;
+}
+
+.logout-btn:hover {
+  color: var(--error);
+  border-color: var(--error);
+  background: rgba(239, 68, 68, 0.05);
+}
+
 .nav {
   display: flex;
   flex-direction: column;
@@ -139,6 +305,7 @@ export default defineComponent({
 }
 
 .nav-link {
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -170,8 +337,8 @@ export default defineComponent({
 }
 
 .settings-section {
-  padding: 1rem;
   border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
   margin-top: auto;
 }
 

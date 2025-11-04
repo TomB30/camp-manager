@@ -1,0 +1,15 @@
+type: object
+required:
+  - roleId
+  - scopeType
+properties:
+  roleId:
+    type: string
+    description: Reference to the role ID (e.g., role-tenant-admin, role-camp-admin, role-viewer)
+  scopeType:
+    $ref: "./ScopeType.yaml"
+  scopeId:
+    type: string
+    nullable: true
+    description: The ID of the scope entity (null for SYSTEM, tenantId for TENANT, campId for CAMP)
+
