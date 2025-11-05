@@ -63,6 +63,7 @@ func main() {
 	log.Info("Database migrations completed successfully")
 
 	// Initialize handlers
+	h := handler.NewHandler(db, cfg)
 	healthHandler := handler.NewHealthHandler(db)
 
 	// Setup router
@@ -77,6 +78,13 @@ func main() {
 
 	// Routes
 	r.Get("/health", healthHandler.Handle)
+
+	// Mount API routes - note: we'll need to properly wire these with the generated server
+	// For now, we can manually add the auth routes
+	r.Post("/api/v1/auth/login", h.Login)
+	r.Post("/api/v1/auth/signup", h.Signup)
+	r.Get("/api/v1/auth/me", h.GetCurrentUser)
+	r.Post("/api/v1/auth/logout", h.Logout)
 
 	// Create HTTP server
 	srv := &http.Server{

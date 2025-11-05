@@ -15,6 +15,8 @@ require (
 	gorm.io/gorm v1.31.1
 )
 
+require github.com/golang-jwt/jwt/v5 v5.3.0
+
 require (
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect

@@ -12,6 +12,7 @@ type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
 	Logging  LoggingConfig
+	JWT      JWTConfig
 }
 
 // ServerConfig holds HTTP server configuration
@@ -20,6 +21,11 @@ type ServerConfig struct {
 	Port         string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
+}
+
+// JWTConfig holds JWT token configuration
+type JWTConfig struct {
+	SecretKey string
 }
 
 // DatabaseConfig holds database connection configuration
@@ -61,6 +67,9 @@ func Load() (*Config, error) {
 	viper.SetDefault("LOG_LEVEL", "debug")
 	viper.SetDefault("LOG_FORMAT", "json")
 
+	// JWT defaults - IMPORTANT: Change this in production!
+	viper.SetDefault("JWT_SECRET_KEY", "development-secret-key-change-in-production")
+
 	// Automatically read from environment variables
 	viper.AutomaticEnv()
 
@@ -78,6 +87,11 @@ func Load() (*Config, error) {
 	connMaxLifetime, err := time.ParseDuration(viper.GetString("DB_CONN_MAX_LIFETIME"))
 	if err != nil {
 		return nil, fmt.Errorf("invalid DB_CONN_MAX_LIFETIME: %w", err)
+	}
+
+	jwtSecretKey := viper.GetString("JWT_SECRET_KEY")
+	if jwtSecretKey == "" {
+		return nil, fmt.Errorf("JWT_SECRET_KEY is required")
 	}
 
 	config := &Config{
@@ -101,6 +115,9 @@ func Load() (*Config, error) {
 		Logging: LoggingConfig{
 			Level:  viper.GetString("LOG_LEVEL"),
 			Format: viper.GetString("LOG_FORMAT"),
+		},
+		JWT: JWTConfig{
+			SecretKey: jwtSecretKey,
 		},
 	}
 

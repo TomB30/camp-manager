@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	"github.com/tbechar/camp-manager-backend/internal/api"
+	"github.com/tbechar/camp-manager-backend/internal/config"
 	"github.com/tbechar/camp-manager-backend/internal/database"
+	"github.com/tbechar/camp-manager-backend/internal/domain"
 	"github.com/tbechar/camp-manager-backend/internal/repository"
 	"github.com/tbechar/camp-manager-backend/internal/service"
 )
@@ -29,7 +31,7 @@ type Handler struct {
 }
 
 // NewHandler creates a new handler with all dependencies wired up
-func NewHandler(db *database.Database) *Handler {
+func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	// Initialize repositories
 	activitiesRepo := repository.NewActivitiesRepository(db)
 	areasRepo := repository.NewAreasRepository(db)
@@ -47,10 +49,13 @@ func NewHandler(db *database.Database) *Handler {
 	usersRepo := repository.NewUsersRepository(db)
 	tenantsRepo := repository.NewTenantsRepository(db)
 
+	// Initialize JWT service
+	jwtService := domain.NewJWTService(cfg.JWT.SecretKey)
+
 	// Initialize services
 	activitiesService := service.NewActivitiesService(activitiesRepo)
 	areasService := service.NewAreasService(areasRepo)
-	authService := service.NewAuthService(usersRepo, tenantsRepo)
+	authService := service.NewAuthService(usersRepo, tenantsRepo, jwtService)
 	campersService := service.NewCampersService(campersRepo)
 	certificationsService := service.NewCertificationsService(certificationsRepo)
 	colorsService := service.NewColorsService(colorsRepo)

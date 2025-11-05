@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 
+	"github.com/tbechar/camp-manager-backend/internal/api"
 	"github.com/tbechar/camp-manager-backend/internal/service"
+	"github.com/tbechar/camp-manager-backend/pkg/errors"
 )
 
 // AuthHandler handles authentication-related HTTP requests
@@ -20,11 +23,26 @@ func NewAuthHandler(service service.AuthService) *AuthHandler {
 
 // Login handles POST /api/v1/auth/login
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement login handler
 	// 1. Parse request body into LoginRequest
+	var req api.LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid request body", err))
+		return
+	}
+
 	// 2. Call service.Login()
-	// 3. Handle errors appropriately (401 for invalid credentials)
+	response, err := h.service.Login(r.Context(), &req)
+	if err != nil {
+		// 3. Handle errors appropriately (401 for invalid credentials)
+		errors.WriteError(w, err)
+		return
+	}
+
 	// 4. Return LoginResponse with user and token
+	if err := errors.WriteJSON(w, http.StatusOK, response); err != nil {
+		errors.WriteError(w, errors.InternalServerError("Failed to write response", err))
+		return
+	}
 }
 
 // Signup handles POST /api/v1/auth/signup

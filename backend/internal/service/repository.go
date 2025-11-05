@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
+	"github.com/tbechar/camp-manager-backend/internal/domain"
 )
 
 // ActivitiesRepository defines the data access interface for activities
@@ -126,12 +127,13 @@ type StaffMembersRepository interface {
 
 // UsersRepository defines the data access interface for users
 type UsersRepository interface {
-	FindByEmail(ctx context.Context, email string) (*api.User, error)
+	FindByEmail(ctx context.Context, email string) (*domain.User, error)
 	FindByID(ctx context.Context, id string) (*api.User, error)
 	Create(ctx context.Context, user *api.User) error
 	Update(ctx context.Context, id string, user *api.User) error
 	Delete(ctx context.Context, id string) error
 	GetUserWithAccessRules(ctx context.Context, id string) (*api.User, error)
+	UpdateLastLogin(ctx context.Context, userID uuid.UUID) error
 }
 
 // TenantsRepository defines the data access interface for tenants
@@ -143,4 +145,3 @@ type TenantsRepository interface {
 	Delete(ctx context.Context, id string) error
 	Exists(ctx context.Context, id string) (bool, error)
 }
-
