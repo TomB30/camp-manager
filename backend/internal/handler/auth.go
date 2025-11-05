@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/tbechar/camp-manager-backend/internal/api"
-	"github.com/tbechar/camp-manager-backend/internal/middleware"
 	"github.com/tbechar/camp-manager-backend/internal/service"
+	pkgcontext "github.com/tbechar/camp-manager-backend/pkg/context"
 	"github.com/tbechar/camp-manager-backend/pkg/errors"
 )
 
@@ -58,9 +58,9 @@ func (h *AuthHandler) Signup(w http.ResponseWriter, r *http.Request) {
 // GetCurrentUser handles GET /api/v1/auth/me
 func (h *AuthHandler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	// 1. Extract user ID from context (set by auth middleware)
-	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
-	if !ok || userID == "" {
-		errors.WriteError(w, errors.Unauthorized("User not authenticated", nil))
+	userID, err := pkgcontext.ExtractUserID(r.Context())
+	if err != nil {
+		errors.WriteError(w, errors.Unauthorized("User not authenticated", err))
 		return
 	}
 
@@ -82,9 +82,9 @@ func (h *AuthHandler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 // Logout handles POST /api/v1/auth/logout
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	// 1. Extract user ID from context (set by auth middleware)
-	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
-	if !ok || userID == "" {
-		errors.WriteError(w, errors.Unauthorized("User not authenticated", nil))
+	userID, err := pkgcontext.ExtractUserID(r.Context())
+	if err != nil {
+		errors.WriteError(w, errors.Unauthorized("User not authenticated", err))
 		return
 	}
 

@@ -1,24 +1,12 @@
 package middleware
 
 import (
-	"context"
 	"net/http"
 	"strings"
 
 	"github.com/tbechar/camp-manager-backend/internal/domain"
+	pkgcontext "github.com/tbechar/camp-manager-backend/pkg/context"
 	"github.com/tbechar/camp-manager-backend/pkg/errors"
-)
-
-// ContextKey is a type for context keys to avoid collisions
-type ContextKey string
-
-const (
-	// UserIDKey is the context key for the user ID
-	UserIDKey ContextKey = "userID"
-	// TenantIDKey is the context key for the tenant ID
-	TenantIDKey ContextKey = "tenantID"
-	// EmailKey is the context key for the user email
-	EmailKey ContextKey = "email"
 )
 
 // AuthMiddleware validates JWT tokens and adds user information to the request context
@@ -61,29 +49,9 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 
 		// Add user information to the request context
 		ctx := r.Context()
-		ctx = context.WithValue(ctx, UserIDKey, claims.UserID)
-		ctx = context.WithValue(ctx, TenantIDKey, claims.TenantID)
-		ctx = context.WithValue(ctx, EmailKey, claims.Email)
+		ctx = pkgcontext.WithUserContext(ctx, claims.UserID, claims.TenantID, claims.Email)
 
 		// Call the next handler with the updated context
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
-}
-
-// GetUserID extracts the user ID from the request context
-func GetUserID(ctx context.Context) (string, bool) {
-	userID, ok := ctx.Value(UserIDKey).(string)
-	return userID, ok
-}
-
-// GetTenantID extracts the tenant ID from the request context
-func GetTenantID(ctx context.Context) (string, bool) {
-	tenantID, ok := ctx.Value(TenantIDKey).(string)
-	return tenantID, ok
-}
-
-// GetEmail extracts the email from the request context
-func GetEmail(ctx context.Context) (string, bool) {
-	email, ok := ctx.Value(EmailKey).(string)
-	return email, ok
 }
