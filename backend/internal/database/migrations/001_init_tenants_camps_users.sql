@@ -73,15 +73,12 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
-    role VARCHAR(50) NOT NULL DEFAULT 'staff',
     is_active BOOLEAN DEFAULT true,
     email_verified BOOLEAN DEFAULT false,
     last_login_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP,
-    
-    CONSTRAINT check_user_role CHECK (role IN ('tenant_admin', 'camp_admin', 'staff', 'parent'))
 );
 
 -- Indexes for users
@@ -180,7 +177,6 @@ COMMENT ON COLUMN camps.daily_start_time IS 'Daily start time in HH:MM format (2
 COMMENT ON COLUMN camps.daily_end_time IS 'Daily end time in HH:MM format (24-hour)';
 COMMENT ON COLUMN camps.timezone IS 'IANA timezone identifier (e.g., America/New_York)';
 
-COMMENT ON COLUMN users.role IS 'System-level role: tenant_admin, camp_admin, staff, parent';
 COMMENT ON COLUMN users.password_hash IS 'Bcrypt hashed password';
 
 COMMENT ON COLUMN access_rules.scope_type IS 'Scope level: system (platform admin), tenant (org admin), camp (camp admin)';

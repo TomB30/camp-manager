@@ -73,10 +73,6 @@ func (d *Database) createConstraints() error {
 		"ALTER TABLE tenants DROP CONSTRAINT IF EXISTS check_subscription_tier",
 		"ALTER TABLE tenants ADD CONSTRAINT check_subscription_tier CHECK (subscription_tier IN ('free', 'basic', 'premium', 'enterprise'))",
 		
-		// Ensure user role is valid
-		"ALTER TABLE users DROP CONSTRAINT IF EXISTS check_user_role",
-		"ALTER TABLE users ADD CONSTRAINT check_user_role CHECK (role IN ('tenant_admin', 'camp_admin', 'staff', 'parent'))",
-		
 		// Ensure access rule role is valid
 		"ALTER TABLE access_rules DROP CONSTRAINT IF EXISTS check_access_rule_role",
 		"ALTER TABLE access_rules ADD CONSTRAINT check_access_rule_role CHECK (role IN ('admin', 'program-admin', 'viewer'))",
@@ -152,7 +148,6 @@ func (d *Database) SeedData() error {
 		PasswordHash:  passwordHash,
 		FirstName:     "Admin",
 		LastName:      "User",
-		Role:          "tenant_admin",
 		IsActive:      true,
 		EmailVerified: true,
 	}
