@@ -10,13 +10,15 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	chi_middleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 
 	"github.com/tbechar/camp-manager-backend/internal/config"
 	"github.com/tbechar/camp-manager-backend/internal/database"
+	"github.com/tbechar/camp-manager-backend/internal/domain"
 	"github.com/tbechar/camp-manager-backend/internal/handler"
+	"github.com/tbechar/camp-manager-backend/internal/middleware"
 	"github.com/tbechar/camp-manager-backend/pkg/logger"
 )
 
@@ -66,25 +68,36 @@ func main() {
 	h := handler.NewHandler(db, cfg)
 	healthHandler := handler.NewHealthHandler(db)
 
+	// Initialize JWT middleware
+	jwtService := domain.NewJWTService(cfg.JWT.SecretKey)
+	authMiddleware := middleware.NewAuthMiddleware(jwtService)
+
 	// Setup router
 	r := chi.NewRouter()
 
-	// Middleware
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(60 * time.Second))
+	// Global middleware
+	r.Use(chi_middleware.RequestID)
+	r.Use(chi_middleware.RealIP)
+	r.Use(chi_middleware.Logger)
+	r.Use(chi_middleware.Recoverer)
+	r.Use(chi_middleware.Timeout(60 * time.Second))
 
-	// Routes
+	// Public routes
 	r.Get("/health", healthHandler.Handle)
 
-	// Mount API routes - note: we'll need to properly wire these with the generated server
-	// For now, we can manually add the auth routes
-	r.Post("/api/v1/auth/login", h.Login)
-	r.Post("/api/v1/auth/signup", h.Signup)
-	r.Get("/api/v1/auth/me", h.GetCurrentUser)
-	r.Post("/api/v1/auth/logout", h.Logout)
+	// Auth routes
+	r.Route("/api/v1/auth", func(r chi.Router) {
+		// Public auth routes (no authentication required)
+		r.Post("/login", h.Login)
+		r.Post("/signup", h.Signup)
+
+		// Protected auth routes (authentication required)
+		r.Group(func(r chi.Router) {
+			r.Use(authMiddleware.Authenticate)
+			r.Get("/me", h.GetCurrentUser)
+			r.Post("/logout", h.Logout)
+		})
+	})
 
 	// Create HTTP server
 	srv := &http.Server{

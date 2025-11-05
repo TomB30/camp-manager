@@ -132,18 +132,47 @@ func (s *authService) Signup(ctx context.Context, req *api.SignupRequest) (*api.
 
 // GetCurrentUser retrieves the current authenticated user's information
 func (s *authService) GetCurrentUser(ctx context.Context, userID string) (*api.AuthMe, error) {
-	// TODO: Implement get current user logic
-	// 1. Extract user ID from context (set by auth middleware)
-	// 2. Fetch user details from database
+	// 1. Validate user ID
+	if userID == "" {
+		return nil, errors.Unauthorized("User ID is required", nil)
+	}
+
+	// 2. Fetch user with access rules from database
+	user, err := s.usersRepo.GetUserWithAccessRules(ctx, userID)
+	if err != nil {
+		return nil, errors.NotFound("User not found", err)
+	}
+
 	// 3. Return user information
-	return nil, nil
+	return &api.AuthMe{
+		User: *user,
+	}, nil
 }
 
 // Logout logs out the current user
 func (s *authService) Logout(ctx context.Context, userID string) error {
-	// TODO: Implement logout logic
-	// 1. Invalidate token (if using token blacklist)
-	// 2. Clear any server-side session data
-	// 3. Return success
+	// 1. Validate user ID
+	if userID == "" {
+		return errors.Unauthorized("User ID is required", nil)
+	}
+
+	// 2. Verify user exists
+	_, err := s.usersRepo.FindByID(ctx, userID)
+	if err != nil {
+		return errors.NotFound("User not found", err)
+	}
+
+	// 3. Token invalidation
+	// Note: With JWT, tokens are stateless and cannot be invalidated server-side
+	// unless we implement a token blacklist. For now, the client is responsible
+	// for discarding the token. In the future, we can:
+	// - Implement a token blacklist in Redis
+	// - Store refresh tokens in the database and revoke them
+	// - Use short-lived tokens with refresh token rotation
+
+	// 4. Future: Clear any server-side session data, revoke refresh tokens, etc.
+	// TODO: Implement token blacklist or refresh token revocation
+
+	// For now, logout is successful once we verify the user exists
 	return nil
 }

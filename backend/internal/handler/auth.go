@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/tbechar/camp-manager-backend/internal/api"
+	"github.com/tbechar/camp-manager-backend/internal/middleware"
 	"github.com/tbechar/camp-manager-backend/internal/service"
 	"github.com/tbechar/camp-manager-backend/pkg/errors"
 )
@@ -56,19 +57,52 @@ func (h *AuthHandler) Signup(w http.ResponseWriter, r *http.Request) {
 
 // GetCurrentUser handles GET /api/v1/auth/me
 func (h *AuthHandler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement get current user handler
 	// 1. Extract user ID from context (set by auth middleware)
+	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
+	if !ok || userID == "" {
+		errors.WriteError(w, errors.Unauthorized("User not authenticated", nil))
+		return
+	}
+
 	// 2. Call service.GetCurrentUser()
-	// 3. Handle errors appropriately (401 if not authenticated)
+	response, err := h.service.GetCurrentUser(r.Context(), userID)
+	if err != nil {
+		// 3. Handle errors appropriately (401 if not authenticated)
+		errors.WriteError(w, err)
+		return
+	}
+
 	// 4. Return AuthMe response with user information
+	if err := errors.WriteJSON(w, http.StatusOK, response); err != nil {
+		errors.WriteError(w, errors.InternalServerError("Failed to write response", err))
+		return
+	}
 }
 
 // Logout handles POST /api/v1/auth/logout
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement logout handler
 	// 1. Extract user ID from context (set by auth middleware)
-	// 2. Call service.Logout()
-	// 3. Handle errors appropriately (401 if not authenticated)
-	// 4. Return success response
-}
+	userID, ok := r.Context().Value(middleware.UserIDKey).(string)
+	if !ok || userID == "" {
+		errors.WriteError(w, errors.Unauthorized("User not authenticated", nil))
+		return
+	}
 
+	// 2. Call service.Logout()
+	if err := h.service.Logout(r.Context(), userID); err != nil {
+		// 3. Handle errors appropriately (401 if not authenticated)
+		errors.WriteError(w, err)
+		return
+	}
+
+	// 4. Return success response
+	response := map[string]interface{}{
+		"success": true,
+		"message": "Successfully logged out",
+	}
+
+	if err := errors.WriteJSON(w, http.StatusOK, response); err != nil {
+		errors.WriteError(w, errors.InternalServerError("Failed to write response", err))
+		return
+	}
+}
