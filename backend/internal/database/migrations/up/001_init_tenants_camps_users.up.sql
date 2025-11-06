@@ -245,6 +245,32 @@ CREATE INDEX IF NOT EXISTS idx_roles_deleted_at ON roles(deleted_at);
 CREATE INDEX IF NOT EXISTS idx_roles_name ON roles(name);
 
 -- ============================================================================
+-- LOCATIONS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS locations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    area_id UUID REFERENCES areas(id) ON DELETE SET NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    capacity INTEGER,
+    equipment JSONB,
+    notes TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+-- Indexes for locations
+CREATE INDEX IF NOT EXISTS idx_locations_tenant_id ON locations(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_locations_camp_id ON locations(camp_id);
+CREATE INDEX IF NOT EXISTS idx_locations_area_id ON locations(area_id);
+CREATE INDEX IF NOT EXISTS idx_locations_tenant_id_camp_id ON locations(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_locations_deleted_at ON locations(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_locations_name ON locations(name);
+
+-- ============================================================================
 -- TRIGGERS FOR UPDATED_AT
 -- ============================================================================
 
@@ -313,6 +339,13 @@ CREATE TRIGGER update_roles_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+-- Trigger for locations
+DROP TRIGGER IF EXISTS update_locations_updated_at ON locations;
+CREATE TRIGGER update_locations_updated_at
+    BEFORE UPDATE ON locations
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================================================
 -- COMMENTS FOR DOCUMENTATION
 -- ============================================================================
@@ -327,6 +360,7 @@ COMMENT ON TABLE areas IS 'Physical areas within a camp such as fields, cabins, 
 COMMENT ON TABLE certifications IS 'Certifications of staff members';
 COMMENT ON TABLE sessions IS 'Camp sessions representing specific time periods within a camp';
 COMMENT ON TABLE roles IS 'Staff roles within a camp';
+COMMENT ON TABLE locations IS 'Specific locations within a camp, optionally associated with an area';
 
 COMMENT ON COLUMN tenants.slug IS 'URL-safe identifier for subdomain routing';
 COMMENT ON COLUMN tenants.subscription_tier IS 'Subscription level: free, basic, premium, enterprise';
@@ -355,3 +389,8 @@ COMMENT ON COLUMN sessions.start_date IS 'Start date of the session';
 COMMENT ON COLUMN sessions.end_date IS 'End date of the session';
 
 COMMENT ON COLUMN roles.description IS 'Description of the role';
+
+COMMENT ON COLUMN locations.area_id IS 'Optional reference to the area where this location is situated';
+COMMENT ON COLUMN locations.capacity IS 'Maximum capacity of the location (number of people)';
+COMMENT ON COLUMN locations.equipment IS 'JSON array of equipment available at this location';
+COMMENT ON COLUMN locations.notes IS 'Additional notes or details about the location';

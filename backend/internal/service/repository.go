@@ -91,11 +91,11 @@ type HousingRoomsRepository interface {
 
 // LocationsRepository defines the data access interface for locations
 type LocationsRepository interface {
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Location, int, error)
-	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Location, error)
-	Create(ctx context.Context, location *api.Location) error
-	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, location *api.Location) error
-	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Location, int64, error)
+	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Location, error)
+	Create(ctx context.Context, location *domain.Location) error
+	Update(ctx context.Context, tenantID, campID uuid.UUID, location *domain.Location) error
+	Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error
 }
 
 // ProgramsRepository defines the data access interface for programs

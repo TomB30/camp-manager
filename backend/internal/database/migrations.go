@@ -179,6 +179,7 @@ func (d *Database) createMigrationsTable() error {
 // DropAllTables drops all tables (use with caution - for testing only)
 func (d *Database) DropAllTables() error {
 	tables := []string{
+		"locations",
 		"roles",
 		"sessions",
 		"areas",
@@ -373,10 +374,13 @@ func (d *Database) SeedData() error {
 		},
 	}
 
-	for _, area := range areas {
+	// Store created areas for later reference
+	createdAreas := make([]domain.Area, len(areas))
+	for i, area := range areas {
 		if err := d.DB.Create(&area).Error; err != nil {
 			return fmt.Errorf("failed to create seed area: %w", err)
 		}
+		createdAreas[i] = area
 	}
 
 	// Create some default certifications for testing
@@ -531,10 +535,13 @@ func (d *Database) SeedData() error {
 		},
 	}
 
-	for _, area := range areas2 {
+	// Store created areas for later reference
+	createdAreas2 := make([]domain.Area, len(areas2))
+	for i, area := range areas2 {
 		if err := d.DB.Create(&area).Error; err != nil {
 			return fmt.Errorf("failed to create second tenant seed area: %w", err)
 		}
+		createdAreas2[i] = area
 	}
 
 	// Create some default certifications for the second tenant/camp
@@ -730,6 +737,217 @@ func (d *Database) SeedData() error {
 	for _, role := range roles2 {
 		if err := d.DB.Create(&role).Error; err != nil {
 			return fmt.Errorf("failed to create second tenant seed role: %w", err)
+		}
+	}
+
+	// Create some default locations for the first tenant/camp
+	// Using valid area IDs from the createdAreas slice
+	locations := []domain.Location{
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      &createdAreas[0].ID, // Main Field
+			Name:        "North Soccer Field",
+			Description: "Northern section of the main field, ideal for soccer games",
+			Capacity:    50,
+			Equipment:   []string{"Soccer goals", "Corner flags", "Cones"},
+			Notes:       "Well-maintained grass, best for morning activities",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      &createdAreas[0].ID, // Main Field
+			Name:        "South Activity Zone",
+			Description: "Southern portion of the main field for various outdoor activities",
+			Capacity:    40,
+			Equipment:   []string{"Frisbees", "Cones", "Portable bleachers"},
+			Notes:       "Slightly sloped, good drainage",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      &createdAreas[1].ID, // Arts & Crafts Cabin
+			Name:        "Painting Studio",
+			Description: "Dedicated space for painting and drawing activities",
+			Capacity:    15,
+			Equipment:   []string{"Easels", "Paint supplies", "Brushes", "Canvas"},
+			Notes:       "Natural lighting from north-facing windows",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      &createdAreas[1].ID, // Arts & Crafts Cabin
+			Name:        "Crafts Workshop",
+			Description: "Workshop area for hands-on craft projects",
+			Capacity:    15,
+			Equipment:   []string{"Tables", "Chairs", "Clay", "Craft supplies", "Drying racks"},
+			Notes:       "Sink available for cleanup",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      &createdAreas[2].ID, // Swimming Pool
+			Name:        "Deep End Section",
+			Description: "Deep water area with diving boards",
+			Capacity:    25,
+			Equipment:   []string{"Diving boards", "Lane dividers", "Depth markers"},
+			Notes:       "12-foot depth, advanced swimmers only",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      &createdAreas[2].ID, // Swimming Pool
+			Name:        "Shallow Pool Area",
+			Description: "Shallow water section for beginners",
+			Capacity:    50,
+			Equipment:   []string{"Life jackets", "Pool noodles", "Kickboards"},
+			Notes:       "3-4 foot depth, perfect for swim lessons",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      &createdAreas[3].ID, // Dining Hall
+			Name:        "Main Dining Area",
+			Description: "Primary seating area for meals",
+			Capacity:    150,
+			Equipment:   []string{"Tables", "Benches"},
+			Notes:       "Can accommodate full camp for meals",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      &createdAreas[3].ID, // Dining Hall
+			Name:        "Performance Stage",
+			Description: "Stage area at front of dining hall",
+			Capacity:    50,
+			Equipment:   []string{"Stage", "PA system", "Spotlights", "Microphones"},
+			Notes:       "Used for evening programs and talent shows",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      &createdAreas[4].ID, // Nature Trail
+			Name:        "Trailhead",
+			Description: "Starting point of the nature trail with information kiosk",
+			Capacity:    20,
+			Equipment:   []string{"Trail maps", "Information boards", "First aid kit"},
+			Notes:       "Check in required before trail hikes",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      &createdAreas[4].ID, // Nature Trail
+			Name:        "Observation Point",
+			Description: "Scenic overlook midway through the trail",
+			Capacity:    15,
+			Equipment:   []string{"Benches", "Binoculars", "Nature guides"},
+			Notes:       "Great spot for bird watching and nature education",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      nil, // No specific area - standalone location
+			Name:        "Central Pavilion",
+			Description: "Covered outdoor pavilion near camp center",
+			Capacity:    75,
+			Equipment:   []string{"Picnic tables", "Grills", "Trash bins"},
+			Notes:       "Available for group gatherings and outdoor meals",
+		},
+	}
+
+	for _, location := range locations {
+		if err := d.DB.Create(&location).Error; err != nil {
+			return fmt.Errorf("failed to create seed location: %w", err)
+		}
+	}
+
+	// Create some default locations for the second tenant/camp
+	locations2 := []domain.Location{
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      &createdAreas2[0].ID, // Rock Climbing Wall
+			Name:        "Beginner Routes Section",
+			Description: "Lower section of the climbing wall with easier routes",
+			Capacity:    8,
+			Equipment:   []string{"Harnesses (S-M)", "Helmets", "Belay devices", "Crash pads"},
+			Notes:       "Routes rated 5.4 to 5.7",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      &createdAreas2[0].ID, // Rock Climbing Wall
+			Name:        "Advanced Routes Section",
+			Description: "Upper section with challenging routes for experienced climbers",
+			Capacity:    6,
+			Equipment:   []string{"Harnesses (M-L)", "Helmets", "Belay devices", "Quickdraws"},
+			Notes:       "Routes rated 5.8 to 5.12, certified instructors required",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      &createdAreas2[1].ID, // Archery Range
+			Name:        "Target Range Left",
+			Description: "Left side of archery range with 5 targets",
+			Capacity:    12,
+			Equipment:   []string{"Bows (youth)", "Arrows", "Targets", "Arm guards"},
+			Notes:       "20-yard distance, suitable for beginners",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      &createdAreas2[1].ID, // Archery Range
+			Name:        "Target Range Right",
+			Description: "Right side of archery range with 5 targets",
+			Capacity:    12,
+			Equipment:   []string{"Bows (adult)", "Arrows", "Targets", "Quivers"},
+			Notes:       "30-yard distance, for intermediate to advanced archers",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      &createdAreas2[2].ID, // Lakefront Beach
+			Name:        "Swimming Beach",
+			Description: "Designated swimming area with roped boundaries",
+			Capacity:    40,
+			Equipment:   []string{"Life vests", "Beach chairs", "Rescue equipment"},
+			Notes:       "Lifeguard on duty required, water tested daily",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      &createdAreas2[2].ID, // Lakefront Beach
+			Name:        "Kayak Launch",
+			Description: "Boat launch area for kayaking activities",
+			Capacity:    20,
+			Equipment:   []string{"Kayaks", "Paddles", "Life vests", "Safety whistles"},
+			Notes:       "Check weather conditions before launch, buddy system required",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      nil, // No specific area - standalone location
+			Name:        "Base Camp",
+			Description: "Central meeting point and equipment storage",
+			Capacity:    60,
+			Equipment:   []string{"Benches", "Bulletin board", "First aid station", "Equipment lockers"},
+			Notes:       "Daily briefings held here at 8 AM and 6 PM",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      nil, // No specific area - standalone location
+			Name:        "Campfire Circle",
+			Description: "Outdoor amphitheater with stone fire pit",
+			Capacity:    50,
+			Equipment:   []string{"Log benches", "Fire pit", "Guitar", "S'mores supplies"},
+			Notes:       "Evening programs most nights, weather permitting",
+		},
+	}
+
+	for _, location := range locations2 {
+		if err := d.DB.Create(&location).Error; err != nil {
+			return fmt.Errorf("failed to create second tenant seed location: %w", err)
 		}
 	}
 
