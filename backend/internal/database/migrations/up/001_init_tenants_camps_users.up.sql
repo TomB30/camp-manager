@@ -224,6 +224,27 @@ CREATE INDEX IF NOT EXISTS idx_sessions_start_date ON sessions(start_date);
 CREATE INDEX IF NOT EXISTS idx_sessions_end_date ON sessions(end_date);
 
 -- ============================================================================
+-- ROLES TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS roles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+-- Indexes for roles
+CREATE INDEX IF NOT EXISTS idx_roles_tenant_id ON roles(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_roles_camp_id ON roles(camp_id);
+CREATE INDEX IF NOT EXISTS idx_roles_tenant_id_camp_id ON roles(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_roles_deleted_at ON roles(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_roles_name ON roles(name);
+
+-- ============================================================================
 -- TRIGGERS FOR UPDATED_AT
 -- ============================================================================
 
@@ -285,6 +306,13 @@ CREATE TRIGGER update_sessions_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+-- Trigger for roles
+DROP TRIGGER IF EXISTS update_roles_updated_at ON roles;
+CREATE TRIGGER update_roles_updated_at
+    BEFORE UPDATE ON roles
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================================================
 -- COMMENTS FOR DOCUMENTATION
 -- ============================================================================
@@ -298,6 +326,7 @@ COMMENT ON TABLE colors IS 'Colors used for events and visual organization withi
 COMMENT ON TABLE areas IS 'Physical areas within a camp such as fields, cabins, dining halls, etc.';
 COMMENT ON TABLE certifications IS 'Certifications of staff members';
 COMMENT ON TABLE sessions IS 'Camp sessions representing specific time periods within a camp';
+COMMENT ON TABLE roles IS 'Staff roles within a camp';
 
 COMMENT ON COLUMN tenants.slug IS 'URL-safe identifier for subdomain routing';
 COMMENT ON COLUMN tenants.subscription_tier IS 'Subscription level: free, basic, premium, enterprise';
@@ -324,3 +353,5 @@ COMMENT ON COLUMN certifications.description IS 'Description of the certificatio
 
 COMMENT ON COLUMN sessions.start_date IS 'Start date of the session';
 COMMENT ON COLUMN sessions.end_date IS 'End date of the session';
+
+COMMENT ON COLUMN roles.description IS 'Description of the role';

@@ -109,11 +109,11 @@ type ProgramsRepository interface {
 
 // RolesRepository defines the data access interface for roles
 type RolesRepository interface {
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Role, int, error)
-	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Role, error)
-	Create(ctx context.Context, role *api.Role) error
-	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, role *api.Role) error
-	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Role, int64, error)
+	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Role, error)
+	Create(ctx context.Context, role *domain.Role) error
+	Update(ctx context.Context, tenantID, campID uuid.UUID, role *domain.Role) error
+	Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error
 }
 
 // SessionsRepository defines the data access interface for sessions

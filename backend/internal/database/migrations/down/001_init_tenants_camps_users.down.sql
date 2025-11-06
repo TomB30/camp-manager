@@ -3,6 +3,7 @@
 -- Created: 2025-11-06
 
 -- Drop tables in reverse order of dependencies
+DROP TABLE IF EXISTS roles CASCADE;
 DROP TABLE IF EXISTS sessions CASCADE;
 DROP TABLE IF EXISTS certifications CASCADE;
 DROP TABLE IF EXISTS areas CASCADE;

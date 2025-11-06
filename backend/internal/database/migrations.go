@@ -179,6 +179,7 @@ func (d *Database) createMigrationsTable() error {
 // DropAllTables drops all tables (use with caution - for testing only)
 func (d *Database) DropAllTables() error {
 	tables := []string{
+		"roles",
 		"sessions",
 		"areas",
 		"certifications",
@@ -603,6 +604,64 @@ func (d *Database) SeedData() error {
 		}
 	}
 
+	// Create some default roles for the first tenant/camp
+	roles := []domain.Role{
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Camp Director",
+			Description: "Overall leadership and management of the camp",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Program Director",
+			Description: "Oversees all camp programs and activities",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Counselor",
+			Description: "Direct supervision and guidance of campers",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Lifeguard",
+			Description: "Ensures safety at all water-based activities",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Activity Specialist",
+			Description: "Leads specialized activities like arts, sports, or outdoor education",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Kitchen Staff",
+			Description: "Prepares and serves meals",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Maintenance",
+			Description: "Maintains facilities and equipment",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Health Director",
+			Description: "Provides medical care and manages health services",
+		},
+	}
+
+	for _, role := range roles {
+		if err := d.DB.Create(&role).Error; err != nil {
+			return fmt.Errorf("failed to create seed role: %w", err)
+		}
+	}
+
 	// Create some default sessions for the second tenant/camp
 	sessionStartDate5, _ := time.Parse("2006-01-02", "2025-07-01")
 	sessionEndDate5, _ := time.Parse("2006-01-02", "2025-07-15")
@@ -631,6 +690,46 @@ func (d *Database) SeedData() error {
 	for _, session := range sessions2 {
 		if err := d.DB.Create(&session).Error; err != nil {
 			return fmt.Errorf("failed to create second tenant seed session: %w", err)
+		}
+	}
+
+	// Create some default roles for the second tenant/camp
+	roles2 := []domain.Role{
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Adventure Director",
+			Description: "Leads all adventure-based programming",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Climbing Instructor",
+			Description: "Certified climbing instructor for rock wall activities",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Wilderness Guide",
+			Description: "Leads backcountry trips and outdoor expeditions",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Waterfront Director",
+			Description: "Oversees all waterfront activities and safety",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Challenge Course Facilitator",
+			Description: "Facilitates high and low ropes course activities",
+		},
+	}
+
+	for _, role := range roles2 {
+		if err := d.DB.Create(&role).Error; err != nil {
+			return fmt.Errorf("failed to create second tenant seed role: %w", err)
 		}
 	}
 
