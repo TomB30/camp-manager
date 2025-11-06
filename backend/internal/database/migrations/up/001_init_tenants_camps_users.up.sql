@@ -1,5 +1,5 @@
 -- Migration: 001_init_tenants_camps_users
--- Description: Creates initial tables for tenants, camps, users, access rules, and refresh tokens
+-- Description: Creates initial tables for tenants, camps, users, access rules, refresh tokens, and colors
 -- Created: 2025-11-04
 
 -- Enable UUID extension if not already enabled
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS users (
     last_login_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP,
+    deleted_at TIMESTAMP
 );
 
 -- Indexes for users
@@ -98,7 +98,8 @@ CREATE TABLE IF NOT EXISTS access_rules (
     scope_id UUID,
     
     CONSTRAINT check_access_rule_role CHECK (role IN ('admin', 'program-admin', 'viewer')),
-    CONSTRAINT check_access_rule_scope_type CHECK (scope_type IN ('system', 'tenant', 'camp'))
+    CONSTRAINT check_access_rule_scope_type CHECK (scope_type IN ('system', 'tenant', 'camp')),
+    CONSTRAINT check_scope_id_consistency CHECK ((scope_type = 'system' AND scope_id IS NULL) OR (scope_type IN ('tenant', 'camp') AND scope_id IS NOT NULL))
 );
 
 -- Indexes for access_rules
@@ -124,6 +125,31 @@ CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id)
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token_hash ON refresh_tokens(token_hash);
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_active ON refresh_tokens(revoked);
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id_revoked_expires ON refresh_tokens(user_id, revoked, expires_at);
+
+-- ============================================================================
+-- COLORS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS colors (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    hex_value VARCHAR(7) NOT NULL,
+    "default" BOOLEAN DEFAULT false,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP,
+    
+    CONSTRAINT check_hex_value CHECK (hex_value ~ '^#[0-9A-Fa-f]{6}$')
+);
+
+-- Indexes for colors
+CREATE INDEX IF NOT EXISTS idx_colors_tenant_id ON colors(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_colors_camp_id ON colors(camp_id);
+CREATE INDEX IF NOT EXISTS idx_colors_tenant_id_camp_id ON colors(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_colors_deleted_at ON colors(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_colors_name ON colors(name);
 
 -- ============================================================================
 -- TRIGGERS FOR UPDATED_AT
@@ -159,6 +185,13 @@ CREATE TRIGGER update_users_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+-- Trigger for colors
+DROP TRIGGER IF EXISTS update_colors_updated_at ON colors;
+CREATE TRIGGER update_colors_updated_at
+    BEFORE UPDATE ON colors
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================================================
 -- COMMENTS FOR DOCUMENTATION
 -- ============================================================================
@@ -168,6 +201,7 @@ COMMENT ON TABLE camps IS 'Individual camps within a tenant organization';
 COMMENT ON TABLE users IS 'User accounts with authentication credentials';
 COMMENT ON TABLE access_rules IS 'User access permissions at different scope levels (system, tenant, camp)';
 COMMENT ON TABLE refresh_tokens IS 'JWT refresh tokens for maintaining user sessions';
+COMMENT ON TABLE colors IS 'Colors used for events and visual organization within camps';
 
 COMMENT ON COLUMN tenants.slug IS 'URL-safe identifier for subdomain routing';
 COMMENT ON COLUMN tenants.subscription_tier IS 'Subscription level: free, basic, premium, enterprise';
@@ -182,4 +216,7 @@ COMMENT ON COLUMN users.password_hash IS 'Bcrypt hashed password';
 COMMENT ON COLUMN access_rules.scope_type IS 'Scope level: system (platform admin), tenant (org admin), camp (camp admin)';
 COMMENT ON COLUMN access_rules.scope_id IS 'ID of the tenant or camp (null for system scope)';
 COMMENT ON COLUMN access_rules.role IS 'Role at this scope: admin, program-admin, viewer';
+
+COMMENT ON COLUMN colors.hex_value IS 'Hex color value in format #RRGGBB';
+COMMENT ON COLUMN colors."default" IS 'Whether this is the default color for events';
 

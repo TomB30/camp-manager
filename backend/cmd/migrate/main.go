@@ -17,7 +17,7 @@ func main() {
 	_ = godotenv.Load()
 
 	// Parse command-line flags
-	action := flag.String("action", "up", "Migration action: up, down, seed")
+	action := flag.String("action", "up", "Migration action: up, rollback, rollback-all, seed, reset")
 	flag.Parse()
 
 	// Load configuration
@@ -51,6 +51,30 @@ func main() {
 			os.Exit(1)
 		}
 		fmt.Println("✅ Migrations completed successfully")
+
+	case "rollback":
+		fmt.Println("Rolling back last migration...")
+		if err := db.RollbackMigration(); err != nil {
+			fmt.Fprintf(os.Stderr, "Rollback failed: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("✅ Migration rolled back successfully")
+
+	case "rollback-all":
+		fmt.Println("WARNING: This will rollback ALL migrations!")
+		fmt.Print("Are you sure? (yes/no): ")
+		var confirm string
+		fmt.Scanln(&confirm)
+		if confirm != "yes" {
+			fmt.Println("Rollback cancelled")
+			os.Exit(0)
+		}
+		fmt.Println("Rolling back all migrations...")
+		if err := db.RollbackAll(); err != nil {
+			fmt.Fprintf(os.Stderr, "Rollback failed: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("✅ All migrations rolled back successfully")
 
 	case "down":
 		fmt.Println("WARNING: This will drop all tables and data!")
@@ -114,8 +138,12 @@ func main() {
 
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown action: %s\n", *action)
-		fmt.Println("Available actions: up, down, seed, reset")
+		fmt.Println("Available actions:")
+		fmt.Println("  up           - Run pending migrations")
+		fmt.Println("  rollback     - Rollback last migration")
+		fmt.Println("  rollback-all - Rollback all migrations")
+		fmt.Println("  seed         - Run migrations and seed data")
+		fmt.Println("  reset        - Drop all, migrate, and seed")
 		os.Exit(1)
 	}
 }
-

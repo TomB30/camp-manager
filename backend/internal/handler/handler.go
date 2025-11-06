@@ -17,6 +17,7 @@ type Handler struct {
 	areas          *AreasHandler
 	auth           *AuthHandler
 	campers        *CampersHandler
+	camps          *CampsHandler
 	certifications *CertificationsHandler
 	colors         *ColorsHandler
 	events         *EventsHandler
@@ -27,6 +28,7 @@ type Handler struct {
 	roles          *RolesHandler
 	sessions       *SessionsHandler
 	staffMembers   *StaffMembersHandler
+	tenants        *TenantsHandler
 	health         *HealthHandler
 }
 
@@ -36,6 +38,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	activitiesRepo := repository.NewActivitiesRepository(db)
 	areasRepo := repository.NewAreasRepository(db)
 	campersRepo := repository.NewCampersRepository(db)
+	campsRepo := repository.NewCampsRepository(db)
 	certificationsRepo := repository.NewCertificationsRepository(db)
 	colorsRepo := repository.NewColorsRepository(db)
 	eventsRepo := repository.NewEventsRepository(db)
@@ -46,8 +49,8 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	rolesRepo := repository.NewRolesRepository(db)
 	sessionsRepo := repository.NewSessionsRepository(db)
 	staffMembersRepo := repository.NewStaffMembersRepository(db)
-	usersRepo := repository.NewUsersRepository(db)
 	tenantsRepo := repository.NewTenantsRepository(db)
+	usersRepo := repository.NewUsersRepository(db)
 
 	// Initialize JWT service
 	jwtService := domain.NewJWTService(cfg.JWT.SecretKey)
@@ -55,8 +58,9 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	// Initialize services
 	activitiesService := service.NewActivitiesService(activitiesRepo)
 	areasService := service.NewAreasService(areasRepo)
-	authService := service.NewAuthService(usersRepo, tenantsRepo, jwtService)
+	authService := service.NewAuthService(usersRepo, jwtService)
 	campersService := service.NewCampersService(campersRepo)
+	campsService := service.NewCampsService(campsRepo)
 	certificationsService := service.NewCertificationsService(certificationsRepo)
 	colorsService := service.NewColorsService(colorsRepo)
 	eventsService := service.NewEventsService(eventsRepo)
@@ -67,6 +71,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	rolesService := service.NewRolesService(rolesRepo)
 	sessionsService := service.NewSessionsService(sessionsRepo)
 	staffMembersService := service.NewStaffMembersService(staffMembersRepo)
+	tenantsService := service.NewTenantsService(tenantsRepo)
 
 	// Initialize handlers
 	return &Handler{
@@ -74,6 +79,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 		areas:          NewAreasHandler(areasService),
 		auth:           NewAuthHandler(authService),
 		campers:        NewCampersHandler(campersService),
+		camps:          NewCampsHandler(campsService),
 		certifications: NewCertificationsHandler(certificationsService),
 		colors:         NewColorsHandler(colorsService),
 		events:         NewEventsHandler(eventsService),
@@ -84,6 +90,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 		roles:          NewRolesHandler(rolesService),
 		sessions:       NewSessionsHandler(sessionsService),
 		staffMembers:   NewStaffMembersHandler(staffMembersService),
+		tenants:        NewTenantsHandler(tenantsService),
 		health:         NewHealthHandler(db),
 	}
 }
@@ -130,6 +137,28 @@ func (h *Handler) UpdateAreaById(w http.ResponseWriter, r *http.Request, campId 
 
 func (h *Handler) DeleteAreaById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	h.areas.DeleteAreaById(w, r, campId, id)
+}
+
+// Camp management handlers (tenant-level) - delegate to CampsHandler
+
+func (h *Handler) GetCamps(w http.ResponseWriter, r *http.Request) {
+	h.camps.GetCamps(w, r)
+}
+
+func (h *Handler) CreateCamp(w http.ResponseWriter, r *http.Request) {
+	h.camps.CreateCamp(w, r)
+}
+
+func (h *Handler) GetCampById(w http.ResponseWriter, r *http.Request, id api.Id) {
+	h.camps.GetCampById(w, r, id)
+}
+
+func (h *Handler) UpdateCampById(w http.ResponseWriter, r *http.Request, id api.Id) {
+	h.camps.UpdateCampById(w, r, id)
+}
+
+func (h *Handler) DeleteCampById(w http.ResponseWriter, r *http.Request, id api.Id) {
+	h.camps.DeleteCampById(w, r, id)
 }
 
 // Campers handlers - delegate to CampersHandler
@@ -390,4 +419,14 @@ func (h *Handler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	h.auth.Logout(w, r)
+}
+
+// Tenant management handlers - delegate to TenantsHandler
+
+func (h *Handler) GetTenants(w http.ResponseWriter, r *http.Request) {
+	h.tenants.GetTenants(w, r)
+}
+
+func (h *Handler) GetTenantById(w http.ResponseWriter, r *http.Request, id api.Id) {
+	h.tenants.GetTenantById(w, r, id)
 }

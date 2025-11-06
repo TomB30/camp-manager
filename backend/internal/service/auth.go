@@ -27,17 +27,15 @@ type AuthService interface {
 
 // authService implements AuthService
 type authService struct {
-	usersRepo   UsersRepository
-	tenantsRepo TenantsRepository
-	jwtService  *domain.JWTService
+	usersRepo  UsersRepository
+	jwtService *domain.JWTService
 }
 
 // NewAuthService creates a new auth service
-func NewAuthService(usersRepo UsersRepository, tenantsRepo TenantsRepository, jwtService *domain.JWTService) AuthService {
+func NewAuthService(usersRepo UsersRepository, jwtService *domain.JWTService) AuthService {
 	return &authService{
-		usersRepo:   usersRepo,
-		tenantsRepo: tenantsRepo,
-		jwtService:  jwtService,
+		usersRepo:  usersRepo,
+		jwtService: jwtService,
 	}
 }
 

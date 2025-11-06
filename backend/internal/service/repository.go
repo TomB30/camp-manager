@@ -44,13 +44,22 @@ type CertificationsRepository interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
+// CampsRepository defines the data access interface for camps
+type CampsRepository interface {
+	List(ctx context.Context, tenantID uuid.UUID, limit, offset int, search *string) ([]domain.Camp, int64, error)
+	GetByID(ctx context.Context, tenantID, campID uuid.UUID) (*domain.Camp, error)
+	Create(ctx context.Context, camp *domain.Camp) error
+	Update(ctx context.Context, camp *domain.Camp) error
+	Delete(ctx context.Context, tenantID, campID uuid.UUID) error
+}
+
 // ColorsRepository defines the data access interface for colors
 type ColorsRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.Color, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Color, error)
-	Create(ctx context.Context, color *api.Color) error
-	Update(ctx context.Context, id uuid.UUID, color *api.Color) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Color, int64, error)
+	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Color, error)
+	Create(ctx context.Context, color *domain.Color) error
+	Update(ctx context.Context, tenantID, campID uuid.UUID, color *domain.Color) error
+	Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error
 }
 
 // EventsRepository defines the data access interface for events
@@ -136,12 +145,11 @@ type UsersRepository interface {
 	UpdateLastLogin(ctx context.Context, userID uuid.UUID) error
 }
 
-// TenantsRepository defines the data access interface for tenants
+// TenantsRepository defines the data access interface for tenants (used by auth service)
 type TenantsRepository interface {
-	FindByID(ctx context.Context, id string) (*api.Tenant, error)
-	List(ctx context.Context) ([]api.Tenant, error)
-	Create(ctx context.Context, tenant *api.Tenant) error
-	Update(ctx context.Context, id string, tenant *api.Tenant) error
-	Delete(ctx context.Context, id string) error
-	Exists(ctx context.Context, id string) (bool, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*domain.Tenant, error)
+	GetBySlug(ctx context.Context, slug string) (*domain.Tenant, error)
+	Create(ctx context.Context, tenant *domain.Tenant) error
+	Update(ctx context.Context, tenant *domain.Tenant) error
+	Delete(ctx context.Context, tenantID uuid.UUID) error
 }

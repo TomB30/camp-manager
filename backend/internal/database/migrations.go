@@ -1,117 +1,200 @@
 package database
 
 import (
+	"embed"
 	"fmt"
+	"path/filepath"
+	"sort"
+	"strings"
+	"time"
 
 	"github.com/tbechar/camp-manager-backend/internal/domain"
 )
 
-// RunMigrations executes all database migrations
+//go:embed migrations/up/*.sql
+//go:embed migrations/down/*.sql
+var migrationFiles embed.FS
+
+// RunMigrations executes all pending "up" migrations
 func (d *Database) RunMigrations() error {
-	// AutoMigrate will create tables, missing columns and missing indexes
-	// It will NOT change existing column types or delete unused columns
-	err := d.DB.AutoMigrate(
-		&domain.Tenant{},
-		&domain.Camp{},
-		&domain.User{},
-		&domain.AccessRule{},
-		&domain.RefreshToken{},
-	)
+	// Create migrations tracking table if it doesn't exist
+	if err := d.createMigrationsTable(); err != nil {
+		return fmt.Errorf("failed to create migrations table: %w", err)
+	}
+
+	// Read all up migration files
+	entries, err := migrationFiles.ReadDir("migrations/up")
 	if err != nil {
-		return fmt.Errorf("failed to run auto migrations: %w", err)
+		return fmt.Errorf("failed to read migration files: %w", err)
 	}
 
-	// Run custom migrations for indexes and constraints
-	if err := d.createIndexes(); err != nil {
-		return fmt.Errorf("failed to create indexes: %w", err)
+	// Collect up migrations and extract base names
+	type migration struct {
+		baseName string
+		upFile   string
+		downFile string
 	}
 
-	// Run custom migrations for constraints
-	if err := d.createConstraints(); err != nil {
-		return fmt.Errorf("failed to create constraints: %w", err)
+	var migrations []*migration
+
+	for _, entry := range entries {
+		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".up.sql") {
+			continue
+		}
+
+		upFileName := entry.Name()
+		baseName := strings.TrimSuffix(upFileName, ".up.sql")
+		downFileName := baseName + ".down.sql"
+
+		// Verify corresponding down migration exists
+		downPath := filepath.Join("migrations", "down", downFileName)
+		if _, err := migrationFiles.ReadFile(downPath); err != nil {
+			return fmt.Errorf("missing down migration for %s (expected %s)", upFileName, downFileName)
+		}
+
+		migrations = append(migrations, &migration{
+			baseName: baseName,
+			upFile:   upFileName,
+			downFile: downFileName,
+		})
+	}
+
+	// Sort migrations by base name
+	sort.Slice(migrations, func(i, j int) bool {
+		return migrations[i].baseName < migrations[j].baseName
+	})
+
+	// Execute each migration that hasn't been run yet
+	for _, mig := range migrations {
+		// Check if migration has already been run
+		var count int64
+		d.DB.Raw("SELECT COUNT(*) FROM schema_migrations WHERE version = ?", mig.baseName).Scan(&count)
+		if count > 0 {
+			fmt.Printf("Migration %s already applied, skipping\n", mig.baseName)
+			continue
+		}
+
+		// Read up migration file
+		content, err := migrationFiles.ReadFile(filepath.Join("migrations", "up", mig.upFile))
+		if err != nil {
+			return fmt.Errorf("failed to read migration %s: %w", mig.upFile, err)
+		}
+
+		fmt.Printf("Running migration: %s\n", mig.baseName)
+
+		// Execute migration in a transaction
+		tx := d.DB.Begin()
+		if err := tx.Exec(string(content)).Error; err != nil {
+			tx.Rollback()
+			return fmt.Errorf("failed to execute migration %s: %w", mig.baseName, err)
+		}
+
+		// Record migration (store base name)
+		if err := tx.Exec("INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)", mig.baseName, time.Now()).Error; err != nil {
+			tx.Rollback()
+			return fmt.Errorf("failed to record migration %s: %w", mig.baseName, err)
+		}
+
+		if err := tx.Commit().Error; err != nil {
+			return fmt.Errorf("failed to commit migration %s: %w", mig.baseName, err)
+		}
+
+		fmt.Printf("Successfully applied migration: %s\n", mig.baseName)
 	}
 
 	return nil
 }
 
-// createIndexes creates additional indexes not handled by GORM tags
-func (d *Database) createIndexes() error {
-	// Composite indexes for multi-tenant isolation
-	indexes := []string{
-		// Tenants - name search
-		"CREATE INDEX IF NOT EXISTS idx_tenants_name ON tenants(name)",
-		
-		// Camps - tenant isolation and listing
-		"CREATE INDEX IF NOT EXISTS idx_camps_tenant_id_created_at ON camps(tenant_id, created_at DESC)",
-		"CREATE INDEX IF NOT EXISTS idx_camps_tenant_id_name ON camps(tenant_id, name)",
-		
-		// Users - tenant isolation
-		"CREATE INDEX IF NOT EXISTS idx_users_tenant_id_email ON users(tenant_id, email)",
-		"CREATE INDEX IF NOT EXISTS idx_users_email ON users(email) WHERE deleted_at IS NULL",
-		
-		// Access Rules - user and scope lookups
-		"CREATE INDEX IF NOT EXISTS idx_access_rules_user_id_scope_type ON access_rules(user_id, scope_type)",
-		"CREATE INDEX IF NOT EXISTS idx_access_rules_scope_type_scope_id ON access_rules(scope_type, scope_id) WHERE scope_id IS NOT NULL",
-		
-		// Refresh Tokens - active token lookups
-		"CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id_revoked_expires ON refresh_tokens(user_id, revoked, expires_at)",
+// RollbackMigration rolls back the last applied migration
+func (d *Database) RollbackMigration() error {
+	// Get the last applied migration (base name)
+	var lastMigration string
+	err := d.DB.Raw("SELECT version FROM schema_migrations ORDER BY applied_at DESC LIMIT 1").Scan(&lastMigration).Error
+	if err != nil {
+		return fmt.Errorf("failed to get last migration: %w", err)
 	}
 
-	for _, idx := range indexes {
-		if err := d.DB.Exec(idx).Error; err != nil {
-			return fmt.Errorf("failed to create index: %w", err)
-		}
+	if lastMigration == "" {
+		fmt.Println("No migrations to rollback")
+		return nil
 	}
 
+	// Construct down migration filename
+	downFileName := lastMigration + ".down.sql"
+	downPath := filepath.Join("migrations", "down", downFileName)
+	content, err := migrationFiles.ReadFile(downPath)
+	if err != nil {
+		return fmt.Errorf("failed to read down migration %s: %w", downFileName, err)
+	}
+
+	fmt.Printf("Rolling back migration: %s\n", lastMigration)
+
+	// Execute rollback in a transaction
+	tx := d.DB.Begin()
+	if err := tx.Exec(string(content)).Error; err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to execute down migration %s: %w", lastMigration, err)
+	}
+
+	// Remove migration record
+	if err := tx.Exec("DELETE FROM schema_migrations WHERE version = ?", lastMigration).Error; err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to remove migration record %s: %w", lastMigration, err)
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return fmt.Errorf("failed to commit rollback %s: %w", lastMigration, err)
+	}
+
+	fmt.Printf("Successfully rolled back migration: %s\n", lastMigration)
 	return nil
 }
 
-// createConstraints creates additional constraints not handled by GORM tags
-func (d *Database) createConstraints() error {
-	constraints := []string{
-		// Ensure subscription tier is valid
-		"ALTER TABLE tenants DROP CONSTRAINT IF EXISTS check_subscription_tier",
-		"ALTER TABLE tenants ADD CONSTRAINT check_subscription_tier CHECK (subscription_tier IN ('free', 'basic', 'premium', 'enterprise'))",
-		
-		// Ensure access rule role is valid
-		"ALTER TABLE access_rules DROP CONSTRAINT IF EXISTS check_access_rule_role",
-		"ALTER TABLE access_rules ADD CONSTRAINT check_access_rule_role CHECK (role IN ('admin', 'program-admin', 'viewer'))",
-		
-		// Ensure access rule scope type is valid
-		"ALTER TABLE access_rules DROP CONSTRAINT IF EXISTS check_access_rule_scope_type",
-		"ALTER TABLE access_rules ADD CONSTRAINT check_access_rule_scope_type CHECK (scope_type IN ('system', 'tenant', 'camp'))",
-		
-		// Ensure camp dates are valid
-		"ALTER TABLE camps DROP CONSTRAINT IF EXISTS check_camp_dates",
-		"ALTER TABLE camps ADD CONSTRAINT check_camp_dates CHECK (end_date >= start_date)",
-		
-		// Ensure daily times are in HH:MM format
-		"ALTER TABLE camps DROP CONSTRAINT IF EXISTS check_daily_start_time",
-		"ALTER TABLE camps ADD CONSTRAINT check_daily_start_time CHECK (daily_start_time ~ '^([0-1][0-9]|2[0-3]):[0-5][0-9]$')",
-		
-		"ALTER TABLE camps DROP CONSTRAINT IF EXISTS check_daily_end_time",
-		"ALTER TABLE camps ADD CONSTRAINT check_daily_end_time CHECK (daily_end_time ~ '^([0-1][0-9]|2[0-3]):[0-5][0-9]$')",
-	}
+// RollbackAll rolls back all applied migrations
+func (d *Database) RollbackAll() error {
+	for {
+		var count int64
+		d.DB.Raw("SELECT COUNT(*) FROM schema_migrations").Scan(&count)
+		if count == 0 {
+			fmt.Println("All migrations rolled back")
+			return nil
+		}
 
-	for _, constraint := range constraints {
-		if err := d.DB.Exec(constraint).Error; err != nil {
-			// Log but don't fail on constraint errors (they might already exist)
-			fmt.Printf("Warning: failed to create constraint: %v\n", err)
+		if err := d.RollbackMigration(); err != nil {
+			return err
 		}
 	}
+}
 
-	return nil
+// createMigrationsTable creates a table to track which migrations have been run
+func (d *Database) createMigrationsTable() error {
+	return d.DB.Exec(`
+		CREATE TABLE IF NOT EXISTS schema_migrations (
+			version VARCHAR(255) PRIMARY KEY,
+			applied_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+		)
+	`).Error
 }
 
 // DropAllTables drops all tables (use with caution - for testing only)
 func (d *Database) DropAllTables() error {
-	return d.DB.Migrator().DropTable(
-		&domain.RefreshToken{},
-		&domain.AccessRule{},
-		&domain.User{},
-		&domain.Camp{},
-		&domain.Tenant{},
-	)
+	tables := []string{
+		"colors",
+		"refresh_tokens",
+		"access_rules",
+		"users",
+		"camps",
+		"tenants",
+		"schema_migrations",
+	}
+
+	for _, table := range tables {
+		if err := d.DB.Exec(fmt.Sprintf("DROP TABLE IF EXISTS %s CASCADE", table)).Error; err != nil {
+			return fmt.Errorf("failed to drop table %s: %w", table, err)
+		}
+	}
+
+	return nil
 }
 
 // SeedData populates the database with initial data for development
@@ -134,6 +217,25 @@ func (d *Database) SeedData() error {
 
 	if err := d.DB.Create(tenant).Error; err != nil {
 		return fmt.Errorf("failed to create seed tenant: %w", err)
+	}
+
+	// Create a default camp
+	startDate, _ := time.Parse("2006-01-02", "2025-06-15")
+	endDate, _ := time.Parse("2006-01-02", "2025-08-15")
+
+	camp := &domain.Camp{
+		TenantID:       tenant.ID,
+		Name:           "Summer Camp 2025",
+		Description:    "Demo summer camp for testing",
+		StartDate:      startDate,
+		EndDate:        endDate,
+		DailyStartTime: "08:00",
+		DailyEndTime:   "17:00",
+		Timezone:       "America/New_York",
+	}
+
+	if err := d.DB.Create(camp).Error; err != nil {
+		return fmt.Errorf("failed to create seed camp: %w", err)
 	}
 
 	// Create a default user (password: "password123")
@@ -168,6 +270,148 @@ func (d *Database) SeedData() error {
 		return fmt.Errorf("failed to create seed access rule: %w", err)
 	}
 
+	// Create some default colors for testing
+	colors := []domain.Color{
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Red",
+			Description: "Bright red color for high-energy activities",
+			HexValue:    "#FF0000",
+			Default:     true,
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Blue",
+			Description: "Calming blue for water activities",
+			HexValue:    "#0000FF",
+			Default:     false,
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Green",
+			Description: "Nature green for outdoor activities",
+			HexValue:    "#00FF00",
+			Default:     false,
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Yellow",
+			Description: "Sunny yellow for morning activities",
+			HexValue:    "#FFFF00",
+			Default:     false,
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Purple",
+			Description: "Creative purple for arts and crafts",
+			HexValue:    "#800080",
+			Default:     false,
+		},
+	}
+
+	for _, color := range colors {
+		if err := d.DB.Create(&color).Error; err != nil {
+			return fmt.Errorf("failed to create seed color: %w", err)
+		}
+	}
+
+	// Create a second tenant for testing multi-tenancy
+	tenant2 := &domain.Tenant{
+		Name:             "Adventure Camps Inc",
+		Description:      "An adventure camp organization for testing multi-tenancy",
+		Slug:             "adventure-camps",
+		SubscriptionTier: "basic",
+		MaxCamps:         5,
+	}
+
+	if err := d.DB.Create(tenant2).Error; err != nil {
+		return fmt.Errorf("failed to create second seed tenant: %w", err)
+	}
+
+	// Create a camp for the second tenant
+	startDate2, _ := time.Parse("2006-01-02", "2025-07-01")
+	endDate2, _ := time.Parse("2006-01-02", "2025-07-31")
+
+	camp2 := &domain.Camp{
+		TenantID:       tenant2.ID,
+		Name:           "Adventure Camp July 2025",
+		Description:    "Outdoor adventure camp for testing",
+		StartDate:      startDate2,
+		EndDate:        endDate2,
+		DailyStartTime: "07:00",
+		DailyEndTime:   "18:00",
+		Timezone:       "America/Los_Angeles",
+	}
+
+	if err := d.DB.Create(camp2).Error; err != nil {
+		return fmt.Errorf("failed to create second seed camp: %w", err)
+	}
+
+	// Create a user for the second tenant (password: "password123")
+	user2 := &domain.User{
+		TenantID:      tenant2.ID,
+		Email:         "admin@adventurecamps.com",
+		PasswordHash:  passwordHash, // Reuse the same hash
+		FirstName:     "Adventure",
+		LastName:      "Admin",
+		IsActive:      true,
+		EmailVerified: true,
+	}
+
+	if err := d.DB.Create(user2).Error; err != nil {
+		return fmt.Errorf("failed to create second seed user: %w", err)
+	}
+
+	// Create tenant-level access rule for second admin
+	accessRule2 := &domain.AccessRule{
+		UserID:    user2.ID,
+		Role:      "admin",
+		ScopeType: "tenant",
+		ScopeID:   &tenant2.ID,
+	}
+
+	if err := d.DB.Create(accessRule2).Error; err != nil {
+		return fmt.Errorf("failed to create second seed access rule: %w", err)
+	}
+
+	// Create some colors for the second tenant/camp
+	colors2 := []domain.Color{
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Orange",
+			Description: "Energetic orange for adventure activities",
+			HexValue:    "#FFA500",
+			Default:     true,
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Teal",
+			Description: "Cool teal for water sports",
+			HexValue:    "#008080",
+			Default:     false,
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Brown",
+			Description: "Earthy brown for hiking activities",
+			HexValue:    "#8B4513",
+			Default:     false,
+		},
+	}
+
+	for _, color := range colors2 {
+		if err := d.DB.Create(&color).Error; err != nil {
+			return fmt.Errorf("failed to create second tenant seed color: %w", err)
+		}
+	}
+
 	return nil
 }
-

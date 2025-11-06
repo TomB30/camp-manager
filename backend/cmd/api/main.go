@@ -14,6 +14,7 @@ import (
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 
+	"github.com/tbechar/camp-manager-backend/internal/api"
 	"github.com/tbechar/camp-manager-backend/internal/config"
 	"github.com/tbechar/camp-manager-backend/internal/database"
 	"github.com/tbechar/camp-manager-backend/internal/domain"
@@ -85,19 +86,16 @@ func main() {
 	// Public routes
 	r.Get("/health", healthHandler.Handle)
 
-	// Auth routes
-	r.Route("/api/v1/auth", func(r chi.Router) {
-		// Public auth routes (no authentication required)
-		r.Post("/login", h.Login)
-		r.Post("/signup", h.Signup)
+	// Protected API routes (require authentication)
+	r.Group(func(r chi.Router) {
+		r.Use(authMiddleware.Authenticate)
 
-		// Protected auth routes (authentication required)
-		r.Group(func(r chi.Router) {
-			r.Use(authMiddleware.Authenticate)
-			r.Get("/me", h.GetCurrentUser)
-			r.Post("/logout", h.Logout)
-		})
+		// Register all OpenAPI-generated routes
+		api.HandlerFromMux(h, r)
 	})
+	// Auth routes (public - no authentication)
+	r.Post("/api/v1/auth/login", h.Login)
+	r.Post("/api/v1/auth/signup", h.Signup)
 
 	// Create HTTP server
 	srv := &http.Server{
