@@ -118,10 +118,10 @@ type RolesRepository interface {
 
 // SessionsRepository defines the data access interface for sessions
 type SessionsRepository interface {
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Session, int, error)
-	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Session, error)
-	Create(ctx context.Context, session *api.Session) error
-	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, session *api.Session) error
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]domain.Session, int64, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*domain.Session, error)
+	Create(ctx context.Context, session *domain.Session) error
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, session *domain.Session) error
 	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
 }
 

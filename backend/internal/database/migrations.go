@@ -179,6 +179,7 @@ func (d *Database) createMigrationsTable() error {
 // DropAllTables drops all tables (use with caution - for testing only)
 func (d *Database) DropAllTables() error {
 	tables := []string{
+		"sessions",
 		"areas",
 		"certifications",
 		"colors",
@@ -548,6 +549,88 @@ func (d *Database) SeedData() error {
 	for _, certification := range certifications2 {
 		if err := d.DB.Create(&certification).Error; err != nil {
 			return fmt.Errorf("failed to create second tenant seed certification: %w", err)
+		}
+	}
+
+	// Create some default sessions for the first tenant/camp
+	sessionStartDate1, _ := time.Parse("2006-01-02", "2025-06-15")
+	sessionEndDate1, _ := time.Parse("2006-01-02", "2025-06-28")
+	sessionStartDate2, _ := time.Parse("2006-01-02", "2025-07-01")
+	sessionEndDate2, _ := time.Parse("2006-01-02", "2025-07-14")
+	sessionStartDate3, _ := time.Parse("2006-01-02", "2025-07-15")
+	sessionEndDate3, _ := time.Parse("2006-01-02", "2025-07-28")
+	sessionStartDate4, _ := time.Parse("2006-01-02", "2025-08-01")
+	sessionEndDate4, _ := time.Parse("2006-01-02", "2025-08-15")
+
+	sessions := []domain.Session{
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Session 1 - Early Summer",
+			Description: "First session of the summer for ages 8-12",
+			StartDate:   sessionStartDate1,
+			EndDate:     sessionEndDate1,
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Session 2 - Mid Summer",
+			Description: "Second session focusing on water activities",
+			StartDate:   sessionStartDate2,
+			EndDate:     sessionEndDate2,
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Session 3 - Late Summer",
+			Description: "Third session with outdoor adventures",
+			StartDate:   sessionStartDate3,
+			EndDate:     sessionEndDate3,
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Session 4 - End of Summer",
+			Description: "Final session with special events and performances",
+			StartDate:   sessionStartDate4,
+			EndDate:     sessionEndDate4,
+		},
+	}
+
+	for _, session := range sessions {
+		if err := d.DB.Create(&session).Error; err != nil {
+			return fmt.Errorf("failed to create seed session: %w", err)
+		}
+	}
+
+	// Create some default sessions for the second tenant/camp
+	sessionStartDate5, _ := time.Parse("2006-01-02", "2025-07-01")
+	sessionEndDate5, _ := time.Parse("2006-01-02", "2025-07-15")
+	sessionStartDate6, _ := time.Parse("2006-01-02", "2025-07-16")
+	sessionEndDate6, _ := time.Parse("2006-01-02", "2025-07-31")
+
+	sessions2 := []domain.Session{
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Adventure Session 1",
+			Description: "First two-week adventure session with rock climbing focus",
+			StartDate:   sessionStartDate5,
+			EndDate:     sessionEndDate5,
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Adventure Session 2",
+			Description: "Second two-week adventure session with water sports focus",
+			StartDate:   sessionStartDate6,
+			EndDate:     sessionEndDate6,
+		},
+	}
+
+	for _, session := range sessions2 {
+		if err := d.DB.Create(&session).Error; err != nil {
+			return fmt.Errorf("failed to create second tenant seed session: %w", err)
 		}
 	}
 

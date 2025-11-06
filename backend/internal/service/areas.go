@@ -15,19 +15,19 @@ import (
 // AreasService defines the interface for area business logic
 type AreasService interface {
 	// List retrieves areas with pagination and optional search
-	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) (*api.AreasListResponse, error)
+	List(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, limit, offset int, search *string) (*api.AreasListResponse, error)
 
 	// GetByID retrieves a single area by ID
-	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*api.Area, error)
+	GetByID(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID) (*api.Area, error)
 
 	// Create creates a new area
-	Create(ctx context.Context, tenantID, campID uuid.UUID, req *api.AreaCreationRequest) (*api.Area, error)
+	Create(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, req *api.AreaCreationRequest) (*api.Area, error)
 
 	// Update updates an existing area
-	Update(ctx context.Context, tenantID, campID, id uuid.UUID, req *api.AreaUpdateRequest) (*api.Area, error)
+	Update(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID, req *api.AreaUpdateRequest) (*api.Area, error)
 
 	// Delete deletes an area by ID
-	Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error
+	Delete(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID) error
 }
 
 // areasService implements AreasService
@@ -78,7 +78,7 @@ func (s *areasService) GetByID(ctx context.Context, tenantID, campID, id uuid.UU
 }
 
 // Create creates a new area
-func (s *areasService) Create(ctx context.Context, tenantID, campID uuid.UUID, req *api.AreaCreationRequest) (*api.Area, error) {
+func (s *areasService) Create(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, req *api.AreaCreationRequest) (*api.Area, error) {
 	// Create domain area from request
 	equipment := []string{}
 	if req.Spec.Equipment != nil {

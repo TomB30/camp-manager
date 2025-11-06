@@ -197,6 +197,33 @@ CREATE INDEX IF NOT EXISTS idx_certifications_deleted_at ON certifications(delet
 CREATE INDEX IF NOT EXISTS idx_certifications_name ON certifications(name);
 
 -- ============================================================================
+-- SESSIONS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP,
+    
+    CONSTRAINT check_session_dates CHECK (end_date >= start_date)
+);
+
+-- Indexes for sessions
+CREATE INDEX IF NOT EXISTS idx_sessions_tenant_id ON sessions(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_camp_id ON sessions(camp_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_tenant_id_camp_id ON sessions(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_deleted_at ON sessions(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_sessions_name ON sessions(name);
+CREATE INDEX IF NOT EXISTS idx_sessions_start_date ON sessions(start_date);
+CREATE INDEX IF NOT EXISTS idx_sessions_end_date ON sessions(end_date);
+
+-- ============================================================================
 -- TRIGGERS FOR UPDATED_AT
 -- ============================================================================
 
@@ -251,6 +278,13 @@ CREATE TRIGGER update_certifications_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+-- Trigger for sessions
+DROP TRIGGER IF EXISTS update_sessions_updated_at ON sessions;
+CREATE TRIGGER update_sessions_updated_at
+    BEFORE UPDATE ON sessions
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================================================
 -- COMMENTS FOR DOCUMENTATION
 -- ============================================================================
@@ -263,6 +297,7 @@ COMMENT ON TABLE refresh_tokens IS 'JWT refresh tokens for maintaining user sess
 COMMENT ON TABLE colors IS 'Colors used for events and visual organization within camps';
 COMMENT ON TABLE areas IS 'Physical areas within a camp such as fields, cabins, dining halls, etc.';
 COMMENT ON TABLE certifications IS 'Certifications of staff members';
+COMMENT ON TABLE sessions IS 'Camp sessions representing specific time periods within a camp';
 
 COMMENT ON COLUMN tenants.slug IS 'URL-safe identifier for subdomain routing';
 COMMENT ON COLUMN tenants.subscription_tier IS 'Subscription level: free, basic, premium, enterprise';
@@ -286,3 +321,6 @@ COMMENT ON COLUMN areas.equipment IS 'JSON array of equipment available in this 
 COMMENT ON COLUMN areas.notes IS 'Additional notes or details about the area';
 
 COMMENT ON COLUMN certifications.description IS 'Description of the certification';
+
+COMMENT ON COLUMN sessions.start_date IS 'Start date of the session';
+COMMENT ON COLUMN sessions.end_date IS 'End date of the session';
