@@ -1,8 +1,9 @@
 -- Migration: 001_init_tenants_camps_users (DOWN)
--- Description: Rolls back initial tables for tenants, camps, users, access rules, refresh tokens, colors, areas, certifications, sessions, roles, and locations
+-- Description: Rolls back initial tables for tenants, camps, users, access rules, refresh tokens, colors, areas, certifications, sessions, roles, locations, and housing_rooms
 -- Created: 2025-11-06
 
 -- Drop tables in reverse order of dependencies
+DROP TABLE IF EXISTS housing_rooms CASCADE;
 DROP TABLE IF EXISTS locations CASCADE;
 DROP TABLE IF EXISTS roles CASCADE;
 DROP TABLE IF EXISTS sessions CASCADE;

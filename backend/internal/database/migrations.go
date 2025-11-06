@@ -179,6 +179,7 @@ func (d *Database) createMigrationsTable() error {
 // DropAllTables drops all tables (use with caution - for testing only)
 func (d *Database) DropAllTables() error {
 	tables := []string{
+		"housing_rooms",
 		"locations",
 		"roles",
 		"sessions",
@@ -948,6 +949,126 @@ func (d *Database) SeedData() error {
 	for _, location := range locations2 {
 		if err := d.DB.Create(&location).Error; err != nil {
 			return fmt.Errorf("failed to create second tenant seed location: %w", err)
+		}
+	}
+
+	// Create some default housing rooms for the first tenant/camp
+	// Using valid area IDs from the createdAreas slice
+	housingRooms := []domain.HousingRoom{
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      nil, // Standalone cabin
+			Name:        "Cabin 1 - Pines",
+			Description: "Cozy cabin in the pine grove, perfect for younger campers",
+			Beds:        8,
+			Bathroom:    "shared",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      nil, // Standalone cabin
+			Name:        "Cabin 2 - Oaks",
+			Description: "Spacious cabin near the oak trees",
+			Beds:        10,
+			Bathroom:    "shared",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      nil, // Standalone cabin
+			Name:        "Cabin 3 - Maples",
+			Description: "Modern cabin with attached facilities",
+			Beds:        8,
+			Bathroom:    "private",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      nil, // Standalone cabin
+			Name:        "Staff Lodge A",
+			Description: "Staff housing with private rooms",
+			Beds:        4,
+			Bathroom:    "private",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      nil, // Standalone cabin
+			Name:        "Staff Lodge B",
+			Description: "Additional staff housing",
+			Beds:        6,
+			Bathroom:    "shared",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			AreaID:      &createdAreas[3].ID, // Dining Hall area - staff quarters
+			Name:        "Kitchen Staff Quarters",
+			Description: "Housing for kitchen and dining staff",
+			Beds:        4,
+			Bathroom:    "private",
+		},
+	}
+
+	for _, room := range housingRooms {
+		if err := d.DB.Create(&room).Error; err != nil {
+			return fmt.Errorf("failed to create seed housing room: %w", err)
+		}
+	}
+
+	// Create some default housing rooms for the second tenant/camp
+	housingRooms2 := []domain.HousingRoom{
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      nil, // Standalone cabin
+			Name:        "Bunkhouse Alpha",
+			Description: "Large bunkhouse for adventure camp participants",
+			Beds:        12,
+			Bathroom:    "shared",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      nil, // Standalone cabin
+			Name:        "Bunkhouse Beta",
+			Description: "Second large bunkhouse",
+			Beds:        12,
+			Bathroom:    "shared",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      nil, // Standalone cabin
+			Name:        "Instructor Cabin",
+			Description: "Private cabin for senior instructors",
+			Beds:        2,
+			Bathroom:    "private",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      &createdAreas2[2].ID, // Lakefront Beach area
+			Name:        "Waterfront Staff Cabin",
+			Description: "Housing for waterfront staff near the beach",
+			Beds:        4,
+			Bathroom:    "shared",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			AreaID:      &createdAreas2[0].ID, // Rock Climbing Wall area
+			Name:        "Climbing Crew Quarters",
+			Description: "Housing for rock climbing instructors",
+			Beds:        3,
+			Bathroom:    "private",
+		},
+	}
+
+	for _, room := range housingRooms2 {
+		if err := d.DB.Create(&room).Error; err != nil {
+			return fmt.Errorf("failed to create second tenant seed housing room: %w", err)
 		}
 	}
 

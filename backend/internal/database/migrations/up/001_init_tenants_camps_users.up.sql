@@ -271,6 +271,34 @@ CREATE INDEX IF NOT EXISTS idx_locations_deleted_at ON locations(deleted_at);
 CREATE INDEX IF NOT EXISTS idx_locations_name ON locations(name);
 
 -- ============================================================================
+-- HOUSING ROOMS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS housing_rooms (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    area_id UUID REFERENCES areas(id) ON DELETE SET NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    beds INTEGER NOT NULL,
+    bathroom VARCHAR(20),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP,
+    
+    CONSTRAINT check_beds_positive CHECK (beds > 0),
+    CONSTRAINT check_bathroom_type CHECK (bathroom IN ('private', 'shared', ''))
+);
+
+-- Indexes for housing_rooms
+CREATE INDEX IF NOT EXISTS idx_housing_rooms_tenant_id ON housing_rooms(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_housing_rooms_camp_id ON housing_rooms(camp_id);
+CREATE INDEX IF NOT EXISTS idx_housing_rooms_area_id ON housing_rooms(area_id);
+CREATE INDEX IF NOT EXISTS idx_housing_rooms_tenant_id_camp_id ON housing_rooms(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_housing_rooms_deleted_at ON housing_rooms(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_housing_rooms_name ON housing_rooms(name);
+
+-- ============================================================================
 -- TRIGGERS FOR UPDATED_AT
 -- ============================================================================
 
@@ -346,6 +374,13 @@ CREATE TRIGGER update_locations_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+-- Trigger for housing_rooms
+DROP TRIGGER IF EXISTS update_housing_rooms_updated_at ON housing_rooms;
+CREATE TRIGGER update_housing_rooms_updated_at
+    BEFORE UPDATE ON housing_rooms
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================================================
 -- COMMENTS FOR DOCUMENTATION
 -- ============================================================================
@@ -361,6 +396,7 @@ COMMENT ON TABLE certifications IS 'Certifications of staff members';
 COMMENT ON TABLE sessions IS 'Camp sessions representing specific time periods within a camp';
 COMMENT ON TABLE roles IS 'Staff roles within a camp';
 COMMENT ON TABLE locations IS 'Specific locations within a camp, optionally associated with an area';
+COMMENT ON TABLE housing_rooms IS 'Housing rooms or cabins for staff and campers, optionally associated with an area';
 
 COMMENT ON COLUMN tenants.slug IS 'URL-safe identifier for subdomain routing';
 COMMENT ON COLUMN tenants.subscription_tier IS 'Subscription level: free, basic, premium, enterprise';
@@ -394,3 +430,7 @@ COMMENT ON COLUMN locations.area_id IS 'Optional reference to the area where thi
 COMMENT ON COLUMN locations.capacity IS 'Maximum capacity of the location (number of people)';
 COMMENT ON COLUMN locations.equipment IS 'JSON array of equipment available at this location';
 COMMENT ON COLUMN locations.notes IS 'Additional notes or details about the location';
+
+COMMENT ON COLUMN housing_rooms.area_id IS 'Optional reference to the area where this housing room is located';
+COMMENT ON COLUMN housing_rooms.beds IS 'Number of beds in the housing room';
+COMMENT ON COLUMN housing_rooms.bathroom IS 'Type of bathroom: private, shared, or empty string for none specified';

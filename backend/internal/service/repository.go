@@ -82,11 +82,11 @@ type GroupsRepository interface {
 
 // HousingRoomsRepository defines the data access interface for housing rooms
 type HousingRoomsRepository interface {
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.HousingRoom, int, error)
-	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.HousingRoom, error)
-	Create(ctx context.Context, room *api.HousingRoom) error
-	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, room *api.HousingRoom) error
-	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.HousingRoom, int64, error)
+	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.HousingRoom, error)
+	Create(ctx context.Context, room *domain.HousingRoom) error
+	Update(ctx context.Context, tenantID, campID uuid.UUID, room *domain.HousingRoom) error
+	Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error
 }
 
 // LocationsRepository defines the data access interface for locations
