@@ -179,6 +179,7 @@ func (d *Database) createMigrationsTable() error {
 // DropAllTables drops all tables (use with caution - for testing only)
 func (d *Database) DropAllTables() error {
 	tables := []string{
+		"areas",
 		"colors",
 		"refresh_tokens",
 		"access_rules",
@@ -320,6 +321,61 @@ func (d *Database) SeedData() error {
 		}
 	}
 
+	// Create some default areas for testing
+	areas := []domain.Area{
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Main Field",
+			Description: "Large open field for sports and outdoor activities",
+			Capacity:    100,
+			Equipment:   []string{"Soccer goals", "Frisbees", "Cones", "Portable bleachers"},
+			Notes:       "Check for drainage after heavy rain",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Arts & Crafts Cabin",
+			Description: "Indoor space dedicated to creative activities",
+			Capacity:    30,
+			Equipment:   []string{"Tables", "Chairs", "Paint supplies", "Clay", "Easels"},
+			Notes:       "Air conditioning available",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Swimming Pool",
+			Description: "Olympic-size outdoor pool with diving boards",
+			Capacity:    75,
+			Equipment:   []string{"Life jackets", "Pool noodles", "Diving boards", "Lane dividers"},
+			Notes:       "Lifeguard on duty required. Chlorine levels checked daily",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Dining Hall",
+			Description: "Main dining facility with industrial kitchen",
+			Capacity:    200,
+			Equipment:   []string{"Tables", "Benches", "Stage", "PA system", "Kitchen equipment"},
+			Notes:       "Can also be used for assemblies and evening programs",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Nature Trail",
+			Description: "1.5 mile hiking trail through the woods",
+			Capacity:    40,
+			Equipment:   []string{"Trail markers", "Benches", "Nature identification guides"},
+			Notes:       "Check for fallen trees after storms. Bug spray recommended",
+		},
+	}
+
+	for _, area := range areas {
+		if err := d.DB.Create(&area).Error; err != nil {
+			return fmt.Errorf("failed to create seed area: %w", err)
+		}
+	}
+
 	// Create a second tenant for testing multi-tenancy
 	tenant2 := &domain.Tenant{
 		Name:             "Adventure Camps Inc",
@@ -410,6 +466,43 @@ func (d *Database) SeedData() error {
 	for _, color := range colors2 {
 		if err := d.DB.Create(&color).Error; err != nil {
 			return fmt.Errorf("failed to create second tenant seed color: %w", err)
+		}
+	}
+
+	// Create some areas for the second tenant/camp
+	areas2 := []domain.Area{
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Rock Climbing Wall",
+			Description: "45-foot outdoor climbing wall with multiple routes",
+			Capacity:    20,
+			Equipment:   []string{"Harnesses", "Helmets", "Ropes", "Belay devices", "Crash pads"},
+			Notes:       "Certified instructors required. Weather dependent",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Archery Range",
+			Description: "Outdoor archery range with 10 targets",
+			Capacity:    25,
+			Equipment:   []string{"Bows", "Arrows", "Targets", "Arm guards", "Quivers"},
+			Notes:       "Safety briefing mandatory. Check wind conditions",
+		},
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "Lakefront Beach",
+			Description: "Sandy beach area with dock for swimming and kayaking",
+			Capacity:    60,
+			Equipment:   []string{"Kayaks", "Paddles", "Life vests", "Beach chairs", "First aid kit"},
+			Notes:       "Water quality tested weekly. Buddy system required",
+		},
+	}
+
+	for _, area := range areas2 {
+		if err := d.DB.Create(&area).Error; err != nil {
+			return fmt.Errorf("failed to create second tenant seed area: %w", err)
 		}
 	}
 

@@ -152,6 +152,30 @@ CREATE INDEX IF NOT EXISTS idx_colors_deleted_at ON colors(deleted_at);
 CREATE INDEX IF NOT EXISTS idx_colors_name ON colors(name);
 
 -- ============================================================================
+-- AREAS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS areas (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    capacity INTEGER,
+    equipment JSONB,
+    notes TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+-- Indexes for areas
+CREATE INDEX IF NOT EXISTS idx_areas_tenant_id ON areas(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_areas_camp_id ON areas(camp_id);
+CREATE INDEX IF NOT EXISTS idx_areas_tenant_id_camp_id ON areas(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_areas_deleted_at ON areas(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_areas_name ON areas(name);
+
+-- ============================================================================
 -- TRIGGERS FOR UPDATED_AT
 -- ============================================================================
 
@@ -192,6 +216,13 @@ CREATE TRIGGER update_colors_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+-- Trigger for areas
+DROP TRIGGER IF EXISTS update_areas_updated_at ON areas;
+CREATE TRIGGER update_areas_updated_at
+    BEFORE UPDATE ON areas
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================================================
 -- COMMENTS FOR DOCUMENTATION
 -- ============================================================================
@@ -202,6 +233,7 @@ COMMENT ON TABLE users IS 'User accounts with authentication credentials';
 COMMENT ON TABLE access_rules IS 'User access permissions at different scope levels (system, tenant, camp)';
 COMMENT ON TABLE refresh_tokens IS 'JWT refresh tokens for maintaining user sessions';
 COMMENT ON TABLE colors IS 'Colors used for events and visual organization within camps';
+COMMENT ON TABLE areas IS 'Physical areas within a camp such as fields, cabins, dining halls, etc.';
 
 COMMENT ON COLUMN tenants.slug IS 'URL-safe identifier for subdomain routing';
 COMMENT ON COLUMN tenants.subscription_tier IS 'Subscription level: free, basic, premium, enterprise';
@@ -219,4 +251,8 @@ COMMENT ON COLUMN access_rules.role IS 'Role at this scope: admin, program-admin
 
 COMMENT ON COLUMN colors.hex_value IS 'Hex color value in format #RRGGBB';
 COMMENT ON COLUMN colors."default" IS 'Whether this is the default color for events';
+
+COMMENT ON COLUMN areas.capacity IS 'Maximum capacity of the area (number of people)';
+COMMENT ON COLUMN areas.equipment IS 'JSON array of equipment available in this area';
+COMMENT ON COLUMN areas.notes IS 'Additional notes or details about the area';
 

@@ -19,11 +19,11 @@ type ActivitiesRepository interface {
 
 // AreasRepository defines the data access interface for areas
 type AreasRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.Area, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Area, error)
-	Create(ctx context.Context, area *api.Area) error
-	Update(ctx context.Context, id uuid.UUID, area *api.Area) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Area, int64, error)
+	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Area, error)
+	Create(ctx context.Context, area *domain.Area) error
+	Update(ctx context.Context, tenantID, campID uuid.UUID, area *domain.Area) error
+	Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error
 }
 
 // CampersRepository defines the data access interface for campers
