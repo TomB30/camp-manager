@@ -17,7 +17,6 @@ import {
 const defaultProps = {
   activity: null,
   programId: programsFixture[0].meta.id,
-  programIds: programsFixture.map((program) => program.meta.id),
 };
 
 describe("ActivityFormModal", () => {
@@ -49,14 +48,14 @@ describe("ActivityFormModal", () => {
       expect(wrapper.text()).toContain("Create New Activity");
     });
 
-    it("contains form through ActivityForm component", () => {
+    it("contains form fields", () => {
       const wrapper = createWrapper(ActivityFormModal, {
         props: defaultProps,
         pinia,
       });
 
-      // ActivityFormModal uses ActivityForm component
-      expect(wrapper.findComponent({ name: "ActivityForm" }).exists()).toBe(
+      // ActivityFormModal now contains the form directly
+      expect(wrapper.find('input[placeholder="e.g., Wakeboarding, Pottery"]').exists()).toBe(
         true,
       );
     });
@@ -92,15 +91,13 @@ describe("ActivityFormModal", () => {
   });
 
   describe("Form Integration", () => {
-    it("has ActivityForm component", () => {
+    it("has form section element", () => {
       const wrapper = createWrapper(ActivityFormModal, {
         props: defaultProps,
         pinia,
       });
 
-      expect(wrapper.findComponent({ name: "ActivityForm" }).exists()).toBe(
-        true,
-      );
+      expect(wrapper.find('section').exists()).toBe(true);
     });
   });
 

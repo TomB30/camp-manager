@@ -68,40 +68,23 @@ async function updateProgram(
 }
 
 async function deleteProgram(id: string): Promise<void> {
-  // Remove program ID from all activities' programIds arrays
+  // Delete all activities that belong to this program
   const activities = await storageService.getAll<Activity>(
     STORAGE_KEYS.ACTIVITIES,
   );
 
-  const updatedActivities: Activity[] = [];
   const activitiesToDelete: Activity[] = [];
 
-  // Categorize activities in a single pass
+  // Find all activities that belong to this program
   for (const activity of activities) {
-    if (activity.spec.programIds.includes(id)) {
-      if (activity.spec.programIds.length === 1) {
-        // Activity only belongs to this program - delete it
-        activitiesToDelete.push(activity);
-      } else {
-        // Activity belongs to other programs - update it
-        updatedActivities.push({
-          ...activity,
-          spec: {
-            ...activity.spec,
-            programIds: activity.spec.programIds.filter((pid) => pid !== id),
-          },
-        });
-      }
+    if (activity.spec.programId === id) {
+      activitiesToDelete.push(activity);
     }
   }
 
-  // Parallelize all save, delete, and program deletion operations
+  // Parallelize all delete and program deletion operations
   await Promise.all([
-    // Save updated activities in parallel
-    ...updatedActivities.map((activity) =>
-      storageService.save(STORAGE_KEYS.ACTIVITIES, activity),
-    ),
-    // Delete activities with no remaining programs in parallel
+    // Delete activities that belong to this program
     ...activitiesToDelete.map((activity) =>
       storageService.delete(STORAGE_KEYS.ACTIVITIES, activity.meta.id),
     ),

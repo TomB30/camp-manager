@@ -92,8 +92,8 @@ type ActivitySpec struct {
 	// MinStaff Minimum number of staff required
 	MinStaff *int `json:"minStaff,omitempty"`
 
-	// ProgramIds IDs of programs this activity belongs to
-	ProgramIds []openapi_types.UUID `json:"programIds"`
+	// ProgramId ID of the program this activity belongs to
+	ProgramId *openapi_types.UUID `json:"programId,omitempty"`
 
 	// RequiredCertificationIds IDs of required staff certifications
 	RequiredCertificationIds *[]string `json:"requiredCertificationIds,omitempty"`

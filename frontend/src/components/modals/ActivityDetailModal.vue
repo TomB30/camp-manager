@@ -70,14 +70,10 @@
         </div>
 
         <div class="detail-section">
-          <h4>Programs</h4>
+          <h4>Program</h4>
           <div class="programs-list">
-            <span
-              v-for="programId in activity.spec.programIds"
-              :key="programId"
-              class="program-badge"
-            >
-              {{ getProgramName(programId) }}
+            <span class="program-badge">
+              {{ getProgramName(activity.spec.programId) }}
             </span>
           </div>
         </div>

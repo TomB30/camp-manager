@@ -72,7 +72,7 @@ export const buildActivity = (overrides: Partial<Activity> = {}): Activity => ({
     updatedAt: new Date().toISOString(),
   },
   spec: {
-    programIds: ["program-1"],
+    programId: "program-1",
     duration: 60,
     requiredCertificationIds: [],
     defaultCapacity: 20,

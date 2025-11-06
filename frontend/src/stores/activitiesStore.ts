@@ -24,7 +24,7 @@ export const useActivitiesStore = defineStore("activities", {
     getActivitiesInProgram(state): (programId: string) => Activity[] {
       return (programId: string): Activity[] => {
         return state.activities.filter((a) =>
-          a.spec.programIds.includes(programId),
+          a.spec.programId === programId,
         );
       };
     },
@@ -46,24 +46,23 @@ export const useActivitiesStore = defineStore("activities", {
       const activity = await activitiesService.createActivity(activityRequest);
       this.activities.push(activity);
 
-      // Add activity ID to all parent programs
+      // Add activity ID to the parent program
       const programsStore = useProgramsStore();
-      for (const programId of activity.spec.programIds) {
-        const program = programsStore.programs.find(
-          (p) => p.meta.id === programId,
-        );
-        if (program && !program.spec.activityIds?.includes(activity.meta.id)) {
-          const updatedActivityIds = program.spec.activityIds
-            ? [...program.spec.activityIds, activity.meta.id]
-            : [activity.meta.id];
-          await programsStore.updateProgram(program.meta.id, {
-            meta: program.meta,
-            spec: {
-              ...program.spec,
-              activityIds: updatedActivityIds,
-            },
-          });
-        }
+      const programId = activity.spec.programId;
+      const program = programsStore.programs.find(
+        (p) => p.meta.id === programId,
+      );
+      if (program && !program.spec.activityIds?.includes(activity.meta.id)) {
+        const updatedActivityIds = program.spec.activityIds
+          ? [...program.spec.activityIds, activity.meta.id]
+          : [activity.meta.id];
+        await programsStore.updateProgram(program.meta.id, {
+          meta: program.meta,
+          spec: {
+            ...program.spec,
+            activityIds: updatedActivityIds,
+          },
+        });
       }
 
       return activity;
@@ -86,53 +85,47 @@ export const useActivitiesStore = defineStore("activities", {
 
       // Update program associations if they changed
       if (oldActivity) {
-        const oldProgramIds = new Set(oldActivity.spec.programIds);
-        const newProgramIds = new Set(activity.spec.programIds);
+        const oldProgramId = oldActivity.spec.programId;
+        const newProgramId = activity.spec.programId;
 
         const programsStore = useProgramsStore();
 
-        // Remove from programs that are no longer associated
-        for (const programId of oldProgramIds) {
-          if (!newProgramIds.has(programId)) {
-            const program = programsStore.programs.find(
-              (p) => p.meta.id === programId,
+        // Remove from old program if changed
+        if (oldProgramId !== newProgramId) {
+          const oldProgram = programsStore.programs.find(
+            (p) => p.meta.id === oldProgramId,
+          );
+          if (oldProgram) {
+            const updatedActivityIds = oldProgram.spec.activityIds?.filter(
+              (aid) => aid !== activity.meta.id,
             );
-            if (program) {
-              const updatedActivityIds = program.spec.activityIds?.filter(
-                (aid) => aid !== activity.meta.id,
-              );
-              await programsStore.updateProgram(program.meta.id, {
-                meta: program.meta,
-                spec: {
-                  ...program.spec,
-                  activityIds: updatedActivityIds,
-                },
-              });
-            }
+            await programsStore.updateProgram(oldProgram.meta.id, {
+              meta: oldProgram.meta,
+              spec: {
+                ...oldProgram.spec,
+                activityIds: updatedActivityIds,
+              },
+            });
           }
-        }
 
-        // Add to new programs
-        for (const programId of newProgramIds) {
-          if (!oldProgramIds.has(programId)) {
-            const program = programsStore.programs.find(
-              (p) => p.meta.id === programId,
-            );
-            if (
-              program &&
-              !program.spec.activityIds?.includes(activity.meta.id)
-            ) {
-              const updatedActivityIds = program.spec.activityIds
-                ? [...program.spec.activityIds, activity.meta.id]
-                : [activity.meta.id];
-              await programsStore.updateProgram(program.meta.id, {
-                meta: program.meta,
-                spec: {
-                  ...program.spec,
-                  activityIds: updatedActivityIds,
-                },
-              });
-            }
+          // Add to new program
+          const newProgram = programsStore.programs.find(
+            (p) => p.meta.id === newProgramId,
+          );
+          if (
+            newProgram &&
+            !newProgram.spec.activityIds?.includes(activity.meta.id)
+          ) {
+            const updatedActivityIds = newProgram.spec.activityIds
+              ? [...newProgram.spec.activityIds, activity.meta.id]
+              : [activity.meta.id];
+            await programsStore.updateProgram(newProgram.meta.id, {
+              meta: newProgram.meta,
+              spec: {
+                ...newProgram.spec,
+                activityIds: updatedActivityIds,
+              },
+            });
           }
         }
       }
@@ -141,85 +134,26 @@ export const useActivitiesStore = defineStore("activities", {
     async deleteActivity(id: string): Promise<void> {
       const activity = this.activities.find((a) => a.meta.id === id);
       if (!activity) return;
-      // Remove from all programs' activityIds
+      // Remove from the program's activityIds
       const programsStore = useProgramsStore();
-      const updateGroupPrms: Promise<void>[] = [];
-      for (const programId of activity.spec.programIds) {
-        const program = programsStore.programs.find(
-          (p) => p.meta.id === programId,
-        );
-        if (!program) continue;
-        updateGroupPrms.push(
-          programsStore.updateProgram(program.meta.id, {
-            meta: program.meta,
-            spec: {
-              ...program.spec,
-              activityIds: program.spec.activityIds?.filter(
-                (aid) => aid !== id,
-              ),
-            },
-          }),
-        );
-      }
-      await Promise.all([
-        ...updateGroupPrms,
-        activitiesService.deleteActivity(id),
-      ]);
-      this.activities = this.activities.filter((a) => a.meta.id !== id);
-    },
-
-    async addActivityToProgram(
-      activityId: string,
-      programId: string,
-    ): Promise<void> {
-      await activitiesService.addActivityToProgram(activityId, programId);
-
-      // Update state
-      const activity = this.activities.find(
-        (a: Activity) => a.meta.id === activityId,
-      );
-      const programsStore = useProgramsStore();
-      const program = programsStore.programs.find(
-        (p: Program) => p.meta.id === programId,
-      );
-
-      if (activity && !activity.spec.programIds.includes(programId)) {
-        activity.spec.programIds = activity.spec.programIds
-          ? [...activity.spec.programIds, programId]
-          : [programId];
-      }
-
-      if (program && !program.spec.activityIds?.includes(activityId)) {
-        program.spec.activityIds = program.spec.activityIds
-          ? [...program.spec.activityIds, activityId]
-          : [activityId];
-      }
-    },
-
-    async removeActivityFromProgram(
-      activityId: string,
-      programId: string,
-    ): Promise<void> {
-      await activitiesService.removeActivityFromProgram(activityId, programId);
-
-      // Update state
-      const activity = this.activities.find((a) => a.meta.id === activityId);
-      const programsStore = useProgramsStore();
+      const programId = activity.spec.programId;
       const program = programsStore.programs.find(
         (p) => p.meta.id === programId,
       );
-
-      if (activity) {
-        activity.spec.programIds = activity.spec.programIds?.filter(
-          (id) => id !== programId,
-        );
-      }
-
       if (program) {
-        program.spec.activityIds = program.spec.activityIds?.filter(
-          (id) => id !== activityId,
-        );
+        await programsStore.updateProgram(program.meta.id, {
+          meta: program.meta,
+          spec: {
+            ...program.spec,
+            activityIds: program.spec.activityIds?.filter(
+              (aid) => aid !== id,
+            ),
+          },
+        });
       }
+      await activitiesService.deleteActivity(id);
+      this.activities = this.activities.filter((a) => a.meta.id !== id);
     },
+
   },
 });

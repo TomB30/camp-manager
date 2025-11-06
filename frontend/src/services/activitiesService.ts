@@ -16,8 +16,6 @@ export const activitiesService = {
   deleteActivity,
   getActivityById,
   getActivitiesInProgram,
-  addActivityToProgram,
-  removeActivityFromProgram,
 };
 
 async function listActivities(): Promise<Activity[]> {
@@ -114,78 +112,6 @@ async function getActivityById(id: string): Promise<Activity | null> {
 
 async function getActivitiesInProgram(programId: string): Promise<Activity[]> {
   const activities = await listActivities();
-  return activities.filter((a) => a.spec.programIds.includes(programId));
+  return activities.filter((a) => a.spec.programId === programId);
 }
 
-async function addActivityToProgram(
-  activityId: string,
-  programId: string,
-): Promise<void> {
-  const activity = await getActivityById(activityId);
-  const program = await storageService.getById<Program>(
-    STORAGE_KEYS.PROGRAMS,
-    programId,
-  );
-
-  if (!activity || !program) {
-    throw new Error("Activity or Program not found");
-  }
-
-  if (activity.spec.programIds.includes(programId)) {
-    throw new Error("Activity is already in this program");
-  }
-
-  // Update activity
-  const updatedActivity = {
-    ...activity,
-    spec: {
-      ...activity.spec,
-      programIds: [...activity.spec.programIds, programId],
-    },
-    updatedAt: new Date().toISOString(),
-  };
-  await storageService.save(STORAGE_KEYS.ACTIVITIES, updatedActivity);
-
-  // Update program
-  if (
-    !program.spec.activityIds ||
-    !program.spec.activityIds.includes(activityId)
-  ) {
-    program.spec.activityIds = program.spec.activityIds
-      ? [...program.spec.activityIds, activityId]
-      : [activityId];
-    await storageService.save(STORAGE_KEYS.PROGRAMS, program);
-  }
-}
-
-async function removeActivityFromProgram(
-  activityId: string,
-  programId: string,
-): Promise<void> {
-  const activity = await getActivityById(activityId);
-  const program = await storageService.getById<Program>(
-    STORAGE_KEYS.PROGRAMS,
-    programId,
-  );
-
-  if (!activity || !program) {
-    throw new Error("Activity or Program not found");
-  }
-
-  // Update activity
-  const updatedActivity = {
-    ...activity,
-    spec: {
-      ...activity.spec,
-      programIds:
-        activity.spec.programIds?.filter((id) => id !== programId) || [],
-      updatedAt: new Date().toISOString(),
-    },
-  };
-  await storageService.save(STORAGE_KEYS.ACTIVITIES, updatedActivity);
-
-  // Update program
-  program.spec.activityIds =
-    program.spec.activityIds?.filter((id) => id !== activityId) || [];
-  await storageService.save(STORAGE_KEYS.PROGRAMS, program);
-}

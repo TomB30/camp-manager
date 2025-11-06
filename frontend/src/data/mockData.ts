@@ -1595,7 +1595,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[0].meta.id],
+      programId: programs[0].meta.id,
       duration: 90,
       defaultLocationId: locations[8].meta.id,
       requiredCertificationIds: [certifications[2].meta.id],
@@ -1614,7 +1614,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[0].meta.id],
+      programId: programs[0].meta.id,
       duration: 60,
       defaultLocationId: locations[9].meta.id,
       requiredCertificationIds: [certifications[2].meta.id],
@@ -1633,7 +1633,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[0].meta.id],
+      programId: programs[0].meta.id,
       duration: 60,
       defaultLocationId: locations[10].meta.id,
       requiredCertificationIds: [certifications[2].meta.id],
@@ -1652,7 +1652,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[0].meta.id],
+      programId: programs[0].meta.id,
       duration: 120,
       defaultLocationId: locations[8].meta.id,
       requiredCertificationIds: [certifications[2].meta.id],
@@ -1673,7 +1673,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[1].meta.id],
+      programId: programs[1].meta.id,
       duration: 60,
       defaultLocationId: locations[5].meta.id,
       requiredCertificationIds: [certifications[1].meta.id],
@@ -1692,7 +1692,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[1].meta.id],
+      programId: programs[1].meta.id,
       duration: 90,
       defaultLocationId: locations[6].meta.id,
       requiredCertificationIds: [certifications[1].meta.id],
@@ -1711,7 +1711,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[1].meta.id],
+      programId: programs[1].meta.id,
       duration: 60,
       defaultLocationId: locations[7].meta.id,
       requiredCertificationIds: [certifications[1].meta.id],
@@ -1731,7 +1731,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[2].meta.id],
+      programId: programs[2].meta.id,
       duration: 90,
       defaultLocationId: locations[2].meta.id,
       requiredCertificationIds: [certifications[4].meta.id],
@@ -1750,7 +1750,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[2].meta.id],
+      programId: programs[2].meta.id,
       duration: 60,
       defaultLocationId: locations[14].meta.id,
       requiredCertificationIds: [certifications[4].meta.id],
@@ -1769,7 +1769,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[2].meta.id],
+      programId: programs[2].meta.id,
       duration: 60,
       defaultLocationId: locations[15].meta.id,
       requiredCertificationIds: [certifications[4].meta.id],
@@ -1788,7 +1788,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[2].meta.id],
+      programId: programs[2].meta.id,
       duration: 90,
       defaultLocationId: locations[12].meta.id,
       requiredCertificationIds: [certifications[4].meta.id],
@@ -1808,7 +1808,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[3].meta.id],
+      programId: programs[3].meta.id,
       duration: 60,
       defaultLocationId: locations[3].meta.id,
       requiredCertificationIds: [certifications[4].meta.id],
@@ -1827,7 +1827,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[3].meta.id],
+      programId: programs[3].meta.id,
       duration: 60,
       defaultLocationId: locations[4].meta.id,
       minStaff: 1,
@@ -1845,7 +1845,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[3].meta.id],
+      programId: programs[3].meta.id,
       duration: 90,
       defaultLocationId: locations[13].meta.id,
       requiredCertificationIds: [certifications[4].meta.id],
@@ -1864,7 +1864,7 @@ export const activities: Activity[] = [
       updatedAt: octoberDate(1),
     },
     spec: {
-      programIds: [programs[3].meta.id],
+      programId: programs[3].meta.id,
       duration: 60,
       defaultLocationId: locations[4].meta.id,
       requiredCertificationIds: [certifications[4].meta.id],
@@ -1970,7 +1970,7 @@ const createDailyEvents = (day: number, sessionIndex: number) => {
         excludeCamperIds: [],
         requiredCertificationIds: activity.spec.requiredCertificationIds || [],
         colorId: eventColorId,
-        programId: activity.spec.programIds[0],
+        programId: activity.spec.programId,
         activityId: activity.meta.id,
       },
     });

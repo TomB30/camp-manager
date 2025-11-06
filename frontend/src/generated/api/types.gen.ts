@@ -572,9 +572,9 @@ export type ProgramSpec = {
 
 export type ActivitySpec = {
     /**
-     * IDs of programs this activity belongs to
+     * ID of the program this activity belongs to
      */
-    programIds: Array<string>;
+    programId?: string;
     /**
      * Default duration in minutes
      */

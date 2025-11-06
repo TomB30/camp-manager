@@ -14,7 +14,7 @@ export const activitiesFixture: Activity[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      programIds: [programsFixture[0].meta.id], // Arts & Crafts
+      programId: programsFixture[0].meta.id, // Arts & Crafts
       duration: 90,
       requiredCertificationIds: [],
       minStaff: 5,
@@ -32,7 +32,7 @@ export const activitiesFixture: Activity[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      programIds: [programsFixture[0].meta.id],
+      programId: programsFixture[0].meta.id,
       duration: 120,
       requiredCertificationIds: [],
       minStaff: 4,
@@ -50,7 +50,7 @@ export const activitiesFixture: Activity[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      programIds: [programsFixture[1].meta.id], // Water Sports
+      programId: programsFixture[1].meta.id, // Water Sports
       duration: 60,
       requiredCertificationIds: [certificationsFixture[2].meta.id], // Lifeguard
       minStaff: 6,
@@ -68,7 +68,7 @@ export const activitiesFixture: Activity[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      programIds: [programsFixture[1].meta.id],
+      programId: programsFixture[1].meta.id,
       duration: 90,
       requiredCertificationIds: [certificationsFixture[2].meta.id],
       minStaff: 4,
@@ -86,7 +86,7 @@ export const activitiesFixture: Activity[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      programIds: [programsFixture[2].meta.id], // Outdoor Adventure
+      programId: programsFixture[2].meta.id, // Outdoor Adventure
       duration: 120,
       requiredCertificationIds: [certificationsFixture[1].meta.id], // First Aid
       minStaff: 8,
@@ -104,7 +104,7 @@ export const activitiesFixture: Activity[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      programIds: [programsFixture[2].meta.id],
+      programId: programsFixture[2].meta.id,
       duration: 75,
       requiredCertificationIds: [certificationsFixture[4].meta.id], // Climbing Instructor
       minStaff: 4,
@@ -122,7 +122,7 @@ export const activitiesFixture: Activity[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      programIds: [programsFixture[2].meta.id],
+      programId: programsFixture[2].meta.id,
       duration: 60,
       requiredCertificationIds: [certificationsFixture[3].meta.id], // Archery Instructor
       minStaff: 5,
@@ -140,7 +140,7 @@ export const activitiesFixture: Activity[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      programIds: [programsFixture[0].meta.id],
+      programId: programsFixture[0].meta.id,
       duration: 60,
       requiredCertificationIds: [],
       minStaff: 6,
@@ -158,7 +158,7 @@ export const activitiesFixture: Activity[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      programIds: [programsFixture[1].meta.id],
+      programId: programsFixture[1].meta.id,
       duration: 120,
       requiredCertificationIds: [certificationsFixture[2].meta.id],
       minStaff: 6,
@@ -176,7 +176,7 @@ export const activitiesFixture: Activity[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      programIds: [programsFixture[2].meta.id],
+      programId: programsFixture[2].meta.id,
       duration: 180,
       requiredCertificationIds: [certificationsFixture[1].meta.id],
       minStaff: 8,

@@ -901,10 +901,10 @@ export default defineComponent({
         this.formData.spec.capacity = activity.spec.defaultCapacity;
       }
 
-      // Inherit color from the program (use first program)
-      if (activity.spec.programIds && activity.spec.programIds.length > 0) {
+      // Inherit color from the program
+      if (activity.spec.programId) {
         const program = this.programsStore.getProgramById(
-          activity.spec.programIds[0],
+          activity.spec.programId,
         );
         if (program && program.spec.colorId) {
           this.formData.spec.colorId = program.spec.colorId;
@@ -922,8 +922,7 @@ export default defineComponent({
       }
 
       // Set program and activity IDs for reference
-      // Use the first program if activity belongs to multiple programs
-      this.formData.spec.programId = activity.spec.programIds[0];
+      this.formData.spec.programId = activity.spec.programId;
       this.formData.spec.activityId = activity.meta.id;
     },
     getCamperLabel(camper: Camper): string {

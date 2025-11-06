@@ -181,7 +181,7 @@
               outline
               icon="add"
               label="Activity"
-              @click="showActivitySelector = true"
+              @click="showActivityModal = true"
             />
           </div>
 
@@ -339,22 +339,11 @@
       @close="closeProgramModal"
     />
 
-    <ActivitySelectorModal
-      v-if="showActivitySelector"
-      :program-id="selectedProgramId || ''"
-      @close="showActivitySelector = false"
-      @create-new="handleCreateNewActivity"
-      @add-existing="handleAddExistingActivity"
-    />
-
     <ActivityFormModal
       v-if="showActivityModal"
-      :activity="editingActivity"
-      :activity-id="selectedActivityId || undefined"
+      :activity-id="editingActivity?.meta.id || undefined"
       :program-id="selectedProgramId || ''"
-      :program-ids="selectedProgram?.meta.id ? [selectedProgram.meta.id] : []"
       @close="closeActivityModal"
-      @save="saveActivity"
     />
 
     <ActivityDetailModal
@@ -468,7 +457,6 @@ import InfoTooltip from "@/components/InfoTooltip.vue";
 import ProgramFormModal from "@/components/modals/ProgramFormModal.vue";
 import ActivityFormModal from "@/components/modals/ActivityFormModal.vue";
 import ActivityDetailModal from "@/components/modals/ActivityDetailModal.vue";
-import ActivitySelectorModal from "@/components/modals/ActivitySelectorModal.vue";
 import type { AutocompleteOption } from "@/components/Autocomplete.vue";
 import DurationDisplay from "@/components/DurationDisplay.vue";
 import ActivityDeleteModal from "@/components/ActivityDeleteModal.vue";
@@ -494,7 +482,6 @@ export default defineComponent({
     ProgramFormModal,
     ActivityFormModal,
     ActivityDetailModal,
-    ActivitySelectorModal,
     DurationDisplay,
     ActivityDeleteModal,
     SelectionList,
@@ -509,7 +496,6 @@ export default defineComponent({
       selectedActivityId: null as string | null,
       showProgramModal: false,
       showActivityModal: false,
-      showActivitySelector: false,
       showStaffSelector: false,
       showLocationSelector: false,
       showDeleteConfirm: false,
@@ -760,44 +746,6 @@ export default defineComponent({
       this.editingActivity = activity;
       this.showActivityModal = true;
       this.selectedActivityId = activity.meta.id;
-    },
-    async handleCreateNewActivity(activity: Activity) {
-      try {
-        await this.activitiesStore.addActivity(activity);
-        this.toast.success("Activity created successfully");
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to create activity");
-      }
-    },
-    async handleAddExistingActivity(activityId: string) {
-      if (!this.selectedProgramId) return;
-
-      try {
-        await this.activitiesStore.addActivityToProgram(
-          activityId,
-          this.selectedProgramId,
-        );
-        this.toast.success("Activity added to program successfully");
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to add activity to program");
-      }
-    },
-    async saveActivity(activity: Activity) {
-      try {
-        if (this.editingActivity) {
-          await this.activitiesStore.updateActivity(
-            this.editingActivity.meta.id,
-            activity,
-          );
-          this.toast.success("Activity updated successfully");
-        } else {
-          await this.activitiesStore.addActivity(activity);
-          this.toast.success("Activity created successfully");
-        }
-        this.closeActivityModal();
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to save activity");
-      }
     },
     confirmRemoveStaff(staffId: string) {
       this.deleteTarget = { type: "staff", id: staffId };
