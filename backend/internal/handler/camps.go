@@ -1,26 +1,24 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
+	"github.com/tbechar/camp-manager-backend/internal/service"
 	pkgcontext "github.com/tbechar/camp-manager-backend/pkg/context"
 	"github.com/tbechar/camp-manager-backend/pkg/errors"
 )
 
-// CampsService defines the interface for camp business logic
-type CampsService interface {
-	// TODO: Define service interface methods once API types are confirmed
-}
-
 // CampsHandler handles camp-related HTTP requests
 type CampsHandler struct {
-	service CampsService
+	service service.CampsService
 }
 
 // NewCampsHandler creates a new camps handler
-func NewCampsHandler(service CampsService) *CampsHandler {
+func NewCampsHandler(service service.CampsService) *CampsHandler {
 	return &CampsHandler{
 		service: service,
 	}
@@ -41,12 +39,42 @@ func (h *CampsHandler) GetCamps(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Extract query parameters (limit, offset, search)
-	// TODO: Call service
-	// TODO: Write response
+	// Extract query parameters with defaults
+	limit := 50
+	offset := 0
+	var search *string
 
-	_ = tenantID
-	errors.WriteError(w, errors.InternalServerError("Not implemented", nil))
+	// Parse limit
+	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
+		if parsedLimit, err := strconv.Atoi(limitStr); err == nil && parsedLimit > 0 {
+			limit = parsedLimit
+		}
+	}
+
+	// Parse offset
+	if offsetStr := r.URL.Query().Get("offset"); offsetStr != "" {
+		if parsedOffset, err := strconv.Atoi(offsetStr); err == nil && parsedOffset >= 0 {
+			offset = parsedOffset
+		}
+	}
+
+	// Parse search
+	if searchStr := r.URL.Query().Get("search"); searchStr != "" {
+		search = &searchStr
+	}
+
+	// Call service
+	response, err := h.service.List(r.Context(), tenantID, limit, offset, search)
+	if err != nil {
+		errors.WriteError(w, err)
+		return
+	}
+
+	// Write response
+	if err := errors.WriteJSON(w, http.StatusOK, response); err != nil {
+		errors.WriteError(w, errors.InternalServerError("Failed to write response", err))
+		return
+	}
 }
 
 // CreateCamp handles POST /api/v1/camps
@@ -65,17 +93,24 @@ func (h *CampsHandler) CreateCamp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse request body
-	// var req api.CampCreationRequest
-	// if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-	// 	errors.WriteError(w, errors.BadRequest("Invalid request body", err))
-	// 	return
-	// }
+	var req api.CampCreationRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid request body", err))
+		return
+	}
 
-	// TODO: Call service
-	// TODO: Write response
+	// Call service
+	camp, err := h.service.Create(r.Context(), tenantID, &req)
+	if err != nil {
+		errors.WriteError(w, err)
+		return
+	}
 
-	_ = tenantID
-	errors.WriteError(w, errors.InternalServerError("Not implemented", nil))
+	// Write response
+	if err := errors.WriteJSON(w, http.StatusCreated, camp); err != nil {
+		errors.WriteError(w, errors.InternalServerError("Failed to write response", err))
+		return
+	}
 }
 
 // GetCampById handles GET /api/v1/camps/{id}
@@ -99,12 +134,18 @@ func (h *CampsHandler) GetCampById(w http.ResponseWriter, r *http.Request, id ap
 		return
 	}
 
-	// TODO: Call service
-	// TODO: Write response
+	// Call service
+	camp, err := h.service.GetByID(r.Context(), tenantID, campID)
+	if err != nil {
+		errors.WriteError(w, err)
+		return
+	}
 
-	_ = tenantID
-	_ = campID
-	errors.WriteError(w, errors.InternalServerError("Not implemented", nil))
+	// Write response
+	if err := errors.WriteJSON(w, http.StatusOK, camp); err != nil {
+		errors.WriteError(w, errors.InternalServerError("Failed to write response", err))
+		return
+	}
 }
 
 // UpdateCampById handles PUT /api/v1/camps/{id}
@@ -129,18 +170,24 @@ func (h *CampsHandler) UpdateCampById(w http.ResponseWriter, r *http.Request, id
 	}
 
 	// Parse request body
-	// var req api.CampUpdateRequest
-	// if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-	// 	errors.WriteError(w, errors.BadRequest("Invalid request body", err))
-	// 	return
-	// }
+	var req api.CampUpdateRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid request body", err))
+		return
+	}
 
-	// TODO: Call service
-	// TODO: Write response
+	// Call service
+	camp, err := h.service.Update(r.Context(), tenantID, campID, &req)
+	if err != nil {
+		errors.WriteError(w, err)
+		return
+	}
 
-	_ = tenantID
-	_ = campID
-	errors.WriteError(w, errors.InternalServerError("Not implemented", nil))
+	// Write response
+	if err := errors.WriteJSON(w, http.StatusOK, camp); err != nil {
+		errors.WriteError(w, errors.InternalServerError("Failed to write response", err))
+		return
+	}
 }
 
 // DeleteCampById handles DELETE /api/v1/camps/{id}
@@ -164,11 +211,13 @@ func (h *CampsHandler) DeleteCampById(w http.ResponseWriter, r *http.Request, id
 		return
 	}
 
-	// TODO: Call service
-	// TODO: Write no content response
+	// Call service
+	if err := h.service.Delete(r.Context(), tenantID, campID); err != nil {
+		errors.WriteError(w, err)
+		return
+	}
 
-	_ = tenantID
-	_ = campID
-	errors.WriteError(w, errors.InternalServerError("Not implemented", nil))
+	// Write no content response
+	w.WriteHeader(http.StatusNoContent)
 }
 

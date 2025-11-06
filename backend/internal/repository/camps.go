@@ -22,30 +22,60 @@ func NewCampsRepository(db *database.Database) *CampsRepository {
 
 // List returns a paginated list of camps for a tenant
 func (r *CampsRepository) List(ctx context.Context, tenantID uuid.UUID, limit, offset int, search *string) ([]domain.Camp, int64, error) {
-	// TODO: Implement
-	return nil, 0, nil
+	var camps []domain.Camp
+	var total int64
+
+	// Build base query
+	query := r.db.DB.WithContext(ctx).Model(&domain.Camp{}).Where("tenant_id = ?", tenantID)
+
+	// Apply search filter if provided
+	if search != nil && *search != "" {
+		searchPattern := "%" + *search + "%"
+		query = query.Where("name ILIKE ? OR description ILIKE ?", searchPattern, searchPattern)
+	}
+
+	// Get total count
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// Get paginated results
+	if err := query.Order("created_at DESC").Limit(limit).Offset(offset).Find(&camps).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return camps, total, nil
 }
 
 // GetByID returns a single camp by ID
 func (r *CampsRepository) GetByID(ctx context.Context, tenantID, campID uuid.UUID) (*domain.Camp, error) {
-	// TODO: Implement
-	return nil, nil
+	var camp domain.Camp
+	
+	if err := r.db.DB.WithContext(ctx).
+		Where("id = ? AND tenant_id = ?", campID, tenantID).
+		First(&camp).Error; err != nil {
+		return nil, err
+	}
+	
+	return &camp, nil
 }
 
 // Create creates a new camp
 func (r *CampsRepository) Create(ctx context.Context, camp *domain.Camp) error {
-	// TODO: Implement
-	return nil
+	return r.db.DB.WithContext(ctx).Create(camp).Error
 }
 
 // Update updates an existing camp
 func (r *CampsRepository) Update(ctx context.Context, camp *domain.Camp) error {
-	// TODO: Implement
-	return nil
+	return r.db.DB.WithContext(ctx).
+		Model(&domain.Camp{}).
+		Where("id = ? AND tenant_id = ?", camp.ID, camp.TenantID).
+		Updates(camp).Error
 }
 
 // Delete soft deletes a camp
 func (r *CampsRepository) Delete(ctx context.Context, tenantID, campID uuid.UUID) error {
-	// TODO: Implement
-	return nil
+	return r.db.DB.WithContext(ctx).
+		Where("id = ? AND tenant_id = ?", campID, tenantID).
+		Delete(&domain.Camp{}).Error
 }
