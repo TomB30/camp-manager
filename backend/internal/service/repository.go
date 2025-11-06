@@ -10,11 +10,11 @@ import (
 
 // ActivitiesRepository defines the data access interface for activities
 type ActivitiesRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.Activity, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Activity, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Activity, int, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Activity, error)
 	Create(ctx context.Context, activity *api.Activity) error
-	Update(ctx context.Context, id uuid.UUID, activity *api.Activity) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, activity *api.Activity) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
 }
 
 // AreasRepository defines the data access interface for areas
@@ -28,20 +28,20 @@ type AreasRepository interface {
 
 // CampersRepository defines the data access interface for campers
 type CampersRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.Camper, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Camper, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Camper, int, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Camper, error)
 	Create(ctx context.Context, camper *api.Camper) error
-	Update(ctx context.Context, id uuid.UUID, camper *api.Camper) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, camper *api.Camper) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
 }
 
 // CertificationsRepository defines the data access interface for certifications
 type CertificationsRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.Certification, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Certification, error)
-	Create(ctx context.Context, certification *api.Certification) error
-	Update(ctx context.Context, id uuid.UUID, certification *api.Certification) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Certification, int64, error)
+	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Certification, error)
+	Create(ctx context.Context, certification *domain.Certification) error
+	Update(ctx context.Context, tenantID, campID uuid.UUID, certification *domain.Certification) error
+	Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error
 }
 
 // CampsRepository defines the data access interface for camps
@@ -64,74 +64,74 @@ type ColorsRepository interface {
 
 // EventsRepository defines the data access interface for events
 type EventsRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.Event, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Event, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Event, int, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Event, error)
 	Create(ctx context.Context, event *api.Event) error
-	Update(ctx context.Context, id uuid.UUID, event *api.Event) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, event *api.Event) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
 }
 
 // GroupsRepository defines the data access interface for groups
 type GroupsRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.Group, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Group, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Group, int, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Group, error)
 	Create(ctx context.Context, group *api.Group) error
-	Update(ctx context.Context, id uuid.UUID, group *api.Group) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, group *api.Group) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
 }
 
 // HousingRoomsRepository defines the data access interface for housing rooms
 type HousingRoomsRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.HousingRoom, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.HousingRoom, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.HousingRoom, int, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.HousingRoom, error)
 	Create(ctx context.Context, room *api.HousingRoom) error
-	Update(ctx context.Context, id uuid.UUID, room *api.HousingRoom) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, room *api.HousingRoom) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
 }
 
 // LocationsRepository defines the data access interface for locations
 type LocationsRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.Location, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Location, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Location, int, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Location, error)
 	Create(ctx context.Context, location *api.Location) error
-	Update(ctx context.Context, id uuid.UUID, location *api.Location) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, location *api.Location) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
 }
 
 // ProgramsRepository defines the data access interface for programs
 type ProgramsRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.Program, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Program, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Program, int, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Program, error)
 	Create(ctx context.Context, program *api.Program) error
-	Update(ctx context.Context, id uuid.UUID, program *api.Program) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, program *api.Program) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
 }
 
 // RolesRepository defines the data access interface for roles
 type RolesRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.Role, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Role, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Role, int, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Role, error)
 	Create(ctx context.Context, role *api.Role) error
-	Update(ctx context.Context, id uuid.UUID, role *api.Role) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, role *api.Role) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
 }
 
 // SessionsRepository defines the data access interface for sessions
 type SessionsRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.Session, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Session, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Session, int, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Session, error)
 	Create(ctx context.Context, session *api.Session) error
-	Update(ctx context.Context, id uuid.UUID, session *api.Session) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, session *api.Session) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
 }
 
 // StaffMembersRepository defines the data access interface for staff members
 type StaffMembersRepository interface {
-	List(ctx context.Context, limit, offset int, search *string) ([]api.StaffMember, int, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*api.StaffMember, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.StaffMember, int, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.StaffMember, error)
 	Create(ctx context.Context, staffMember *api.StaffMember) error
-	Update(ctx context.Context, id uuid.UUID, staffMember *api.StaffMember) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, staffMember *api.StaffMember) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
 }
 
 // UsersRepository defines the data access interface for users

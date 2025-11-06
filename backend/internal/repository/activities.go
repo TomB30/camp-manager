@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
@@ -20,14 +19,14 @@ func NewActivitiesRepository(db *database.Database) *ActivitiesRepository {
 }
 
 // List retrieves a paginated list of activities
-func (r *ActivitiesRepository) List(ctx context.Context, limit, offset int, search *string) ([]api.Activity, int, error) {
+func (r *ActivitiesRepository) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) ([]api.Activity, int, error) {
 	// TODO: Implement query with pagination and search
 	// Query should support full-text search on name and description
 	return nil, 0, nil
 }
 
 // GetByID retrieves a single activity by ID
-func (r *ActivitiesRepository) GetByID(ctx context.Context, id uuid.UUID) (*api.Activity, error) {
+func (r *ActivitiesRepository) GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Activity, error) {
 	// TODO: Implement single row query
 	// Handle sql.ErrNoRows appropriately
 	return nil, nil
@@ -42,7 +41,7 @@ func (r *ActivitiesRepository) Create(ctx context.Context, activity *api.Activit
 }
 
 // Update updates an existing activity
-func (r *ActivitiesRepository) Update(ctx context.Context, id uuid.UUID, activity *api.Activity) error {
+func (r *ActivitiesRepository) Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, activity *api.Activity) error {
 	// TODO: Implement UPDATE query
 	// Update updatedAt timestamp
 	// Check if rows were affected
@@ -50,24 +49,8 @@ func (r *ActivitiesRepository) Update(ctx context.Context, id uuid.UUID, activit
 }
 
 // Delete removes an activity by ID
-func (r *ActivitiesRepository) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *ActivitiesRepository) Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error {
 	// TODO: Implement DELETE query
 	// Check if rows were affected (return error if not found)
 	return nil
-}
-
-// Helper methods
-
-// scanActivity scans a database row into an Activity struct
-func (r *ActivitiesRepository) scanActivity(row *sql.Row) (*api.Activity, error) {
-	// TODO: Implement row scanning
-	// Handle JSONB arrays and nullable fields
-	return nil, nil
-}
-
-// scanActivities scans multiple database rows into Activity structs
-func (r *ActivitiesRepository) scanActivities(rows *sql.Rows) ([]api.Activity, error) {
-	// TODO: Implement rows scanning
-	// Handle JSONB arrays and nullable fields
-	return nil, nil
 }

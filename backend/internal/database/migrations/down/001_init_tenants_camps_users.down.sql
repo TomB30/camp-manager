@@ -3,6 +3,7 @@
 -- Created: 2025-11-06
 
 -- Drop tables in reverse order of dependencies
+DROP TABLE IF EXISTS certifications CASCADE;
 DROP TABLE IF EXISTS areas CASCADE;
 DROP TABLE IF EXISTS colors CASCADE;
 DROP TABLE IF EXISTS refresh_tokens CASCADE;

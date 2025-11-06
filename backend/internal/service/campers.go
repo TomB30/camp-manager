@@ -10,19 +10,19 @@ import (
 // CampersService defines the interface for camper business logic
 type CampersService interface {
 	// List retrieves campers with pagination and optional search
-	List(ctx context.Context, limit, offset int, search *string) (*api.CampersListResponse, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.CampersListResponse, error)
 
 	// GetByID retrieves a single camper by ID
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Camper, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Camper, error)
 
 	// Create creates a new camper
 	Create(ctx context.Context, req *api.CamperCreationRequest) (*api.Camper, error)
 
 	// Update updates an existing camper
-	Update(ctx context.Context, id uuid.UUID, req *api.CamperUpdateRequest) (*api.Camper, error)
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.CamperUpdateRequest) (*api.Camper, error)
 
 	// Delete deletes a camper by ID
-	Delete(ctx context.Context, id uuid.UUID) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error
 }
 
 // campersService implements CampersService
@@ -38,13 +38,13 @@ func NewCampersService(repo CampersRepository) CampersService {
 }
 
 // List retrieves campers with pagination and optional search
-func (s *campersService) List(ctx context.Context, limit, offset int, search *string) (*api.CampersListResponse, error) {
+func (s *campersService) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.CampersListResponse, error) {
 	// TODO: Implement list logic
 	return nil, nil
 }
 
 // GetByID retrieves a single camper by ID
-func (s *campersService) GetByID(ctx context.Context, id uuid.UUID) (*api.Camper, error) {
+func (s *campersService) GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Camper, error) {
 	// TODO: Implement get by ID logic
 	return nil, nil
 }
@@ -56,13 +56,13 @@ func (s *campersService) Create(ctx context.Context, req *api.CamperCreationRequ
 }
 
 // Update updates an existing camper
-func (s *campersService) Update(ctx context.Context, id uuid.UUID, req *api.CamperUpdateRequest) (*api.Camper, error) {
+func (s *campersService) Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.CamperUpdateRequest) (*api.Camper, error) {
 	// TODO: Implement update logic
 	return nil, nil
 }
 
 // Delete deletes a camper by ID
-func (s *campersService) Delete(ctx context.Context, id uuid.UUID) error {
+func (s *campersService) Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error {
 	// TODO: Implement delete logic
 	return nil
 }

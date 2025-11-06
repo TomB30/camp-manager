@@ -10,19 +10,19 @@ import (
 // ActivitiesService defines the interface for activity business logic
 type ActivitiesService interface {
 	// List retrieves activities with pagination and optional search
-	List(ctx context.Context, limit, offset int, search *string) (*api.ActivitiesListResponse, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.ActivitiesListResponse, error)
 
 	// GetByID retrieves a single activity by ID
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Activity, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Activity, error)
 
 	// Create creates a new activity
 	Create(ctx context.Context, req *api.ActivityCreationRequest) (*api.Activity, error)
 
 	// Update updates an existing activity
-	Update(ctx context.Context, id uuid.UUID, req *api.ActivityUpdateRequest) (*api.Activity, error)
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.ActivityUpdateRequest) (*api.Activity, error)
 
 	// Delete deletes an activity by ID
-	Delete(ctx context.Context, id uuid.UUID) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error
 }
 
 // activitiesService implements ActivitiesService
@@ -38,13 +38,13 @@ func NewActivitiesService(repo ActivitiesRepository) ActivitiesService {
 }
 
 // List retrieves activities with pagination and optional search
-func (s *activitiesService) List(ctx context.Context, limit, offset int, search *string) (*api.ActivitiesListResponse, error) {
+func (s *activitiesService) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.ActivitiesListResponse, error) {
 	// TODO: Implement list logic
 	return nil, nil
 }
 
 // GetByID retrieves a single activity by ID
-func (s *activitiesService) GetByID(ctx context.Context, id uuid.UUID) (*api.Activity, error) {
+func (s *activitiesService) GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Activity, error) {
 	// TODO: Implement get by ID logic
 	return nil, nil
 }
@@ -56,13 +56,13 @@ func (s *activitiesService) Create(ctx context.Context, req *api.ActivityCreatio
 }
 
 // Update updates an existing activity
-func (s *activitiesService) Update(ctx context.Context, id uuid.UUID, req *api.ActivityUpdateRequest) (*api.Activity, error) {
+func (s *activitiesService) Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.ActivityUpdateRequest) (*api.Activity, error) {
 	// TODO: Implement update logic
 	return nil, nil
 }
 
 // Delete deletes an activity by ID
-func (s *activitiesService) Delete(ctx context.Context, id uuid.UUID) error {
+func (s *activitiesService) Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error {
 	// TODO: Implement delete logic
 	return nil
 }

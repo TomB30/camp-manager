@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
@@ -20,13 +19,13 @@ func NewStaffMembersRepository(db *database.Database) *StaffMembersRepository {
 }
 
 // List retrieves a paginated list of staff members
-func (r *StaffMembersRepository) List(ctx context.Context, limit, offset int, search *string) ([]api.StaffMember, int, error) {
+func (r *StaffMembersRepository) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) ([]api.StaffMember, int, error) {
 	// TODO: Implement query with pagination and search
 	return nil, 0, nil
 }
 
 // GetByID retrieves a single staff member by ID
-func (r *StaffMembersRepository) GetByID(ctx context.Context, id uuid.UUID) (*api.StaffMember, error) {
+func (r *StaffMembersRepository) GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.StaffMember, error) {
 	// TODO: Implement single row query
 	return nil, nil
 }
@@ -38,26 +37,13 @@ func (r *StaffMembersRepository) Create(ctx context.Context, staffMember *api.St
 }
 
 // Update updates an existing staff member
-func (r *StaffMembersRepository) Update(ctx context.Context, id uuid.UUID, staffMember *api.StaffMember) error {
+func (r *StaffMembersRepository) Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, staffMember *api.StaffMember) error {
 	// TODO: Implement UPDATE query
 	return nil
 }
 
 // Delete removes a staff member by ID
-func (r *StaffMembersRepository) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *StaffMembersRepository) Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error {
 	// TODO: Implement DELETE query
 	return nil
 }
-
-// Helper methods
-
-func (r *StaffMembersRepository) scanStaffMember(row *sql.Row) (*api.StaffMember, error) {
-	// TODO: Implement row scanning
-	return nil, nil
-}
-
-func (r *StaffMembersRepository) scanStaffMembers(rows *sql.Rows) ([]api.StaffMember, error) {
-	// TODO: Implement rows scanning
-	return nil, nil
-}
-

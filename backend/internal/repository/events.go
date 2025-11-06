@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
@@ -20,14 +19,14 @@ func NewEventsRepository(db *database.Database) *EventsRepository {
 }
 
 // List retrieves a paginated list of events
-func (r *EventsRepository) List(ctx context.Context, limit, offset int, search *string) ([]api.Event, int, error) {
+func (r *EventsRepository) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) ([]api.Event, int, error) {
 	// TODO: Implement query with pagination and search
 	// Consider filtering by date range
 	return nil, 0, nil
 }
 
 // GetByID retrieves a single event by ID
-func (r *EventsRepository) GetByID(ctx context.Context, id uuid.UUID) (*api.Event, error) {
+func (r *EventsRepository) GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Event, error) {
 	// TODO: Implement single row query
 	return nil, nil
 }
@@ -40,27 +39,13 @@ func (r *EventsRepository) Create(ctx context.Context, event *api.Event) error {
 }
 
 // Update updates an existing event
-func (r *EventsRepository) Update(ctx context.Context, id uuid.UUID, event *api.Event) error {
+func (r *EventsRepository) Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, event *api.Event) error {
 	// TODO: Implement UPDATE query
 	return nil
 }
 
 // Delete removes an event by ID
-func (r *EventsRepository) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *EventsRepository) Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error {
 	// TODO: Implement DELETE query
 	return nil
 }
-
-// Helper methods
-
-func (r *EventsRepository) scanEvent(row *sql.Row) (*api.Event, error) {
-	// TODO: Implement row scanning
-	// Handle complex JSONB fields
-	return nil, nil
-}
-
-func (r *EventsRepository) scanEvents(rows *sql.Rows) ([]api.Event, error) {
-	// TODO: Implement rows scanning
-	return nil, nil
-}
-

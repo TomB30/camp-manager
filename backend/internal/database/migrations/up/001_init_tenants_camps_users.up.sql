@@ -176,6 +176,27 @@ CREATE INDEX IF NOT EXISTS idx_areas_deleted_at ON areas(deleted_at);
 CREATE INDEX IF NOT EXISTS idx_areas_name ON areas(name);
 
 -- ============================================================================
+-- CERTIFICATIONS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS certifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+-- Indexes for certifications
+CREATE INDEX IF NOT EXISTS idx_certifications_tenant_id ON certifications(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_certifications_camp_id ON certifications(camp_id);
+CREATE INDEX IF NOT EXISTS idx_certifications_tenant_id_camp_id ON certifications(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_certifications_deleted_at ON certifications(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_certifications_name ON certifications(name);
+
+-- ============================================================================
 -- TRIGGERS FOR UPDATED_AT
 -- ============================================================================
 
@@ -223,6 +244,13 @@ CREATE TRIGGER update_areas_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+-- Trigger for certifications
+DROP TRIGGER IF EXISTS update_certifications_updated_at ON certifications;
+CREATE TRIGGER update_certifications_updated_at
+    BEFORE UPDATE ON certifications
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================================================
 -- COMMENTS FOR DOCUMENTATION
 -- ============================================================================
@@ -234,6 +262,7 @@ COMMENT ON TABLE access_rules IS 'User access permissions at different scope lev
 COMMENT ON TABLE refresh_tokens IS 'JWT refresh tokens for maintaining user sessions';
 COMMENT ON TABLE colors IS 'Colors used for events and visual organization within camps';
 COMMENT ON TABLE areas IS 'Physical areas within a camp such as fields, cabins, dining halls, etc.';
+COMMENT ON TABLE certifications IS 'Certifications of staff members';
 
 COMMENT ON COLUMN tenants.slug IS 'URL-safe identifier for subdomain routing';
 COMMENT ON COLUMN tenants.subscription_tier IS 'Subscription level: free, basic, premium, enterprise';
@@ -256,3 +285,4 @@ COMMENT ON COLUMN areas.capacity IS 'Maximum capacity of the area (number of peo
 COMMENT ON COLUMN areas.equipment IS 'JSON array of equipment available in this area';
 COMMENT ON COLUMN areas.notes IS 'Additional notes or details about the area';
 
+COMMENT ON COLUMN certifications.description IS 'Description of the certification';

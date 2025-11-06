@@ -10,19 +10,19 @@ import (
 // SessionsService defines the interface for session business logic
 type SessionsService interface {
 	// List retrieves sessions with pagination and optional search
-	List(ctx context.Context, limit, offset int, search *string) (*api.SessionsListResponse, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.SessionsListResponse, error)
 
 	// GetByID retrieves a single session by ID
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Session, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Session, error)
 
 	// Create creates a new session
 	Create(ctx context.Context, req *api.SessionCreationRequest) (*api.Session, error)
 
 	// Update updates an existing session
-	Update(ctx context.Context, id uuid.UUID, req *api.SessionUpdateRequest) (*api.Session, error)
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.SessionUpdateRequest) (*api.Session, error)
 
 	// Delete deletes a session by ID
-	Delete(ctx context.Context, id uuid.UUID) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error
 }
 
 // sessionsService implements SessionsService
@@ -38,13 +38,13 @@ func NewSessionsService(repo SessionsRepository) SessionsService {
 }
 
 // List retrieves sessions with pagination and optional search
-func (s *sessionsService) List(ctx context.Context, limit, offset int, search *string) (*api.SessionsListResponse, error) {
+func (s *sessionsService) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.SessionsListResponse, error) {
 	// TODO: Implement list logic
 	return nil, nil
 }
 
 // GetByID retrieves a single session by ID
-func (s *sessionsService) GetByID(ctx context.Context, id uuid.UUID) (*api.Session, error) {
+func (s *sessionsService) GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Session, error) {
 	// TODO: Implement get by ID logic
 	return nil, nil
 }
@@ -56,14 +56,13 @@ func (s *sessionsService) Create(ctx context.Context, req *api.SessionCreationRe
 }
 
 // Update updates an existing session
-func (s *sessionsService) Update(ctx context.Context, id uuid.UUID, req *api.SessionUpdateRequest) (*api.Session, error) {
+func (s *sessionsService) Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.SessionUpdateRequest) (*api.Session, error) {
 	// TODO: Implement update logic
 	return nil, nil
 }
 
 // Delete deletes a session by ID
-func (s *sessionsService) Delete(ctx context.Context, id uuid.UUID) error {
+func (s *sessionsService) Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error {
 	// TODO: Implement delete logic
 	return nil
 }
-

@@ -10,19 +10,19 @@ import (
 // LocationsService defines the interface for location business logic
 type LocationsService interface {
 	// List retrieves locations with pagination and optional search
-	List(ctx context.Context, limit, offset int, search *string) (*api.LocationsListResponse, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.LocationsListResponse, error)
 
 	// GetByID retrieves a single location by ID
-	GetByID(ctx context.Context, id uuid.UUID) (*api.Location, error)
+	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Location, error)
 
 	// Create creates a new location
 	Create(ctx context.Context, req *api.LocationCreationRequest) (*api.Location, error)
 
 	// Update updates an existing location
-	Update(ctx context.Context, id uuid.UUID, req *api.LocationUpdateRequest) (*api.Location, error)
+	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.LocationUpdateRequest) (*api.Location, error)
 
 	// Delete deletes a location by ID
-	Delete(ctx context.Context, id uuid.UUID) error
+	Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error
 }
 
 // locationsService implements LocationsService
@@ -38,13 +38,13 @@ func NewLocationsService(repo LocationsRepository) LocationsService {
 }
 
 // List retrieves locations with pagination and optional search
-func (s *locationsService) List(ctx context.Context, limit, offset int, search *string) (*api.LocationsListResponse, error) {
+func (s *locationsService) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.LocationsListResponse, error) {
 	// TODO: Implement list logic
 	return nil, nil
 }
 
 // GetByID retrieves a single location by ID
-func (s *locationsService) GetByID(ctx context.Context, id uuid.UUID) (*api.Location, error) {
+func (s *locationsService) GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Location, error) {
 	// TODO: Implement get by ID logic
 	return nil, nil
 }
@@ -56,14 +56,13 @@ func (s *locationsService) Create(ctx context.Context, req *api.LocationCreation
 }
 
 // Update updates an existing location
-func (s *locationsService) Update(ctx context.Context, id uuid.UUID, req *api.LocationUpdateRequest) (*api.Location, error) {
+func (s *locationsService) Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.LocationUpdateRequest) (*api.Location, error) {
 	// TODO: Implement update logic
 	return nil, nil
 }
 
 // Delete deletes a location by ID
-func (s *locationsService) Delete(ctx context.Context, id uuid.UUID) error {
+func (s *locationsService) Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error {
 	// TODO: Implement delete logic
 	return nil
 }
-

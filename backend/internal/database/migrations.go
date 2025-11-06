@@ -180,6 +180,7 @@ func (d *Database) createMigrationsTable() error {
 func (d *Database) DropAllTables() error {
 	tables := []string{
 		"areas",
+		"certifications",
 		"colors",
 		"refresh_tokens",
 		"access_rules",
@@ -376,6 +377,34 @@ func (d *Database) SeedData() error {
 		}
 	}
 
+	// Create some default certifications for testing
+	certifications := []domain.Certification{
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "First Aid",
+			Description: "Certification in first aid",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "CPR",
+			Description: "Certification in CPR",
+		},
+		{
+			TenantID:    tenant.ID,
+			CampID:      camp.ID,
+			Name:        "Wilderness First Aid",
+			Description: "Certification in wilderness first aid",
+		},
+	}
+
+	for _, certification := range certifications {
+		if err := d.DB.Create(&certification).Error; err != nil {
+			return fmt.Errorf("failed to create seed certification: %w", err)
+		}
+	}
+
 	// Create a second tenant for testing multi-tenancy
 	tenant2 := &domain.Tenant{
 		Name:             "Adventure Camps Inc",
@@ -503,6 +532,22 @@ func (d *Database) SeedData() error {
 	for _, area := range areas2 {
 		if err := d.DB.Create(&area).Error; err != nil {
 			return fmt.Errorf("failed to create second tenant seed area: %w", err)
+		}
+	}
+
+	// Create some default certifications for the second tenant/camp
+	certifications2 := []domain.Certification{
+		{
+			TenantID:    tenant2.ID,
+			CampID:      camp2.ID,
+			Name:        "First Aid",
+			Description: "Certification in first aid",
+		},
+	}
+
+	for _, certification := range certifications2 {
+		if err := d.DB.Create(&certification).Error; err != nil {
+			return fmt.Errorf("failed to create second tenant seed certification: %w", err)
 		}
 	}
 
