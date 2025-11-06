@@ -242,19 +242,6 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Program (Optional)</label>
-          <Autocomplete
-            v-model="formData.spec.programId"
-            :options="programOptions"
-            @update:modelValue="onProgramSelected"
-          />
-          <p class="form-help-text">
-            Selecting a program helps auto-suggest staff members from that
-            program
-          </p>
-        </div>
-
-        <div class="form-group">
           <label class="form-label">Required Certifications (Optional)</label>
           <SelectionList
             v-model="selectedCertificationIds"
