@@ -4,7 +4,7 @@
       <h3>{{ title }}</h3>
     </template>
     <template #body>
-      <p>{{ message }}</p>
+      <p v-html="message"></p>
       <p v-if="details" class="details">{{ details }}</p>
     </template>
     <template #footer>

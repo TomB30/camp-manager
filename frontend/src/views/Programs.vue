@@ -47,9 +47,6 @@
             v-for="program in filteredPrograms"
             :key="program.meta.id"
             :program="program"
-            :activities-count="getActivitiesCount(program.meta.id)"
-            :staff-groups-count="getStaffGroupsCount(program.meta.id)"
-            :locations-count="getLocationsCount(program.meta.id)"
             @click="selectProgram(program.meta.id)"
           />
 
@@ -130,188 +127,16 @@
         </DataTable>
       </div>
 
-      <!-- Program Detail View -->
-      <div v-if="selectedProgramId && selectedProgram" class="program-detail">
-        <div class="detail-header">
-          <div class="detail-header-content">
-            <div class="flex">
-              <div
-                class="detail-color-bar"
-                :style="{ background: getProgramColor(selectedProgram) }"
-              ></div>
-              <div class="detail-header-info">
-                <h2>{{ selectedProgram.meta.name }}</h2>
-                <p
-                  v-if="selectedProgram.meta.description"
-                  class="detail-description"
-                >
-                  {{ selectedProgram.meta.description }}
-                </p>
-              </div>
-            </div>
-            <div class="detail-header-actions">
-              <BaseButton
-                color="grey-8"
-                outline
-                icon="edit"
-                label="Edit"
-                @click="editProgram(selectedProgram)"
-              />
-              <BaseButton
-                color="negative"
-                outline
-                icon="delete"
-                label="Delete"
-                @click="deleteProgramConfirm(selectedProgram)"
-              />
-            </div>
-          </div>
-          <div class=""></div>
-        </div>
-
-        <!-- Activities Section -->
-        <div class="detail-section">
-          <div class="section-header">
-            <h3>
-              <ListChecks :size="20" />
-              Activities
-            </h3>
-            <BaseButton
-              color="grey-8"
-              outline
-              icon="add"
-              label="Activity"
-              @click="showActivityModal = true"
-            />
-          </div>
-
-          <div v-if="programActivities.length > 0" class="activities-list">
-            <div
-              v-for="activity in programActivities"
-              :key="activity.meta.id"
-              class="activity-item card row justify-between"
-              @click="viewActivity(activity)"
-            >
-              <div>
-                <div class="activity-info">
-                  <h4>{{ activity.meta.name }}</h4>
-                  <p v-if="activity.meta.description" class="text-caption">
-                    {{ activity.meta.description }}
-                  </p>
-                </div>
-                <div class="activity-meta">
-                  <span class="meta-item">
-                    <Clock :size="14" />
-                    <DurationDisplay :minutes="activity.spec.duration || 0" />
-                  </span>
-                  <span
-                    v-if="activity.spec.defaultLocationId"
-                    class="meta-item"
-                  >
-                    <Home :size="14" />
-                    {{ getLocationName(activity.spec.defaultLocationId) }}
-                  </span>
-                  <span v-if="activity.spec.defaultCapacity" class="meta-item">
-                    <Users :size="14" />
-                    {{ activity.spec.defaultCapacity }} max
-                  </span>
-                </div>
-              </div>
-              <div class="activity-actions">
-                <BaseButton
-                  color="negative"
-                  outline
-                  size="sm"
-                  label="Remove"
-                  @click="showDeleteActivityModal(activity)"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div v-else class="empty-section">
-            <p>No activities yet. Add activities to create event templates.</p>
-          </div>
-        </div>
-
-        <!-- Staff Section -->
-        <div class="detail-section">
-          <div class="section-header">
-            <h3>
-              <UsersRound :size="20" />
-              Staff Groups
-            </h3>
-            <BaseButton
-              color="grey-8"
-              outline
-              icon="add"
-              label="Staff Group"
-              @click="showStaffSelector = true"
-            />
-          </div>
-
-          <div v-if="programStaffGroups.length > 0" class="staff-list">
-            <EntityListItem
-              v-for="group in programStaffGroups"
-              :key="group.meta.id"
-              :title="`${group.meta.name}`"
-              :removable="true"
-              @remove="confirmRemoveStaffGroup(group.meta.id)"
-            />
-          </div>
-
-          <div v-else class="empty-section">
-            <p>No staff groups assigned. Add staff groups to this program.</p>
-          </div>
-        </div>
-
-        <!-- Locations Section -->
-        <div class="detail-section">
-          <div class="section-header">
-            <h3>
-              <Home :size="20" />
-              Locations
-            </h3>
-            <BaseButton
-              color="grey-8"
-              outline
-              icon="add"
-              label="Location"
-              @click="showLocationSelector = true"
-            />
-          </div>
-
-          <div v-if="programLocations.length > 0" class="locations-list">
-            <EntityListItem
-              v-for="location in programLocations"
-              :key="location.meta.id"
-              :title="location.meta.name"
-              :removable="true"
-              @remove="confirmRemoveLocation(location.meta.id)"
-            >
-              <template #avatar>
-                <div class="location-icon">
-                  <Home :size="24" />
-                </div>
-              </template>
-              <template #metadata>
-                <div class="location-meta">
-                  <span v-if="location.spec.capacity"
-                    >Capacity: {{ location.spec.capacity }}</span
-                  >
-                  <span v-if="location.spec.areaId">
-                    • {{ getAreaName(location.spec.areaId) }}</span
-                  >
-                </div>
-              </template>
-            </EntityListItem>
-          </div>
-
-          <div v-else class="empty-section">
-            <p>No locations assigned. Add locations to this program.</p>
-          </div>
-        </div>
-      </div>
+      <ProgramDetails
+        v-if="selectedProgram"
+        :program="selectedProgram"
+        @close="selectedProgramId = null"
+        @edit="editProgram"
+        @delete="deleteProgramConfirm"
+        @add-activity="showActivityFormModal = true"
+        @add-staff-group="showStaffSelector = true"
+        @add-location="showLocationSelector = true"
+      />
     </div>
 
     <!-- Modals -->
@@ -319,27 +144,6 @@
       v-if="showProgramModal"
       :program-id="selectedProgramId || undefined"
       @close="closeProgramModal"
-    />
-
-    <ActivityFormModal
-      v-if="showActivityModal"
-      :activity-id="editingActivity?.meta.id || undefined"
-      :program-id="selectedProgramId || ''"
-      @close="closeActivityModal"
-    />
-
-    <ActivityDetailModal
-      v-if="!!selectedActivityId"
-      :activity="selectedActivity"
-      @close="selectedActivityId = null"
-      @edit="editActivity"
-    />
-
-    <ActivityDeleteModal
-      v-if="showActivityDeleteModal && activityToDelete"
-      :activity="activityToDelete"
-      :program-id="selectedProgramId || ''"
-      @close="closeActivityDeleteModal"
     />
 
     <!-- Staff Selector Modal -->
@@ -392,6 +196,13 @@
       </template>
     </BaseModal>
 
+    <!-- Activity Form Modal -->
+    <ActivityFormModal
+      v-if="showActivityFormModal && selectedProgramId"
+      :program-id="selectedProgramId"
+      @close="showActivityFormModal = false"
+    />
+
     <!-- Confirm Delete Modal -->
     <ConfirmModal
       v-if="showDeleteConfirm"
@@ -410,65 +221,40 @@ import { defineComponent } from "vue";
 import {
   useProgramsStore,
   useActivitiesStore,
-  useStaffMembersStore,
   useLocationsStore,
-  useAreasStore,
-  useCertificationsStore,
   useColorsStore,
-  useRolesStore,
   useGroupsStore,
 } from "@/stores";
 import { useToast } from "@/composables/useToast";
-import type {
-  Program,
-  Activity,
-  StaffMember,
-  Location,
-  ProgramUpdateRequest,
-  Group,
-} from "@/generated/api";
-import { Users, UsersRound, Home, Clock, ListChecks } from "lucide-vue-next";
+import type { Program, ProgramUpdateRequest, Group } from "@/generated/api";
 import ViewHeader from "@/components/ViewHeader.vue";
 import EmptyState from "@/components/EmptyState.vue";
-import EntityListItem from "@/components/EntityListItem.vue";
 import ProgramCard from "@/components/cards/ProgramCard.vue";
 import BaseModal from "@/components/BaseModal.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar from "@/components/FilterBar.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import DataTable from "@/components/DataTable.vue";
-import InfoTooltip from "@/components/InfoTooltip.vue";
 import ProgramFormModal from "@/components/modals/ProgramFormModal.vue";
-import ActivityFormModal from "@/components/modals/ActivityFormModal.vue";
-import ActivityDetailModal from "@/components/modals/ActivityDetailModal.vue";
 import type { AutocompleteOption } from "@/components/Autocomplete.vue";
-import DurationDisplay from "@/components/DurationDisplay.vue";
-import ActivityDeleteModal from "@/components/ActivityDeleteModal.vue";
 import SelectionList from "@/components/SelectionList.vue";
+import ProgramDetails from "@/components/ProgramDetails.vue";
+import ActivityFormModal from "@/components/modals/ActivityFormModal.vue";
 export default defineComponent({
   name: "Programs",
   components: {
     ViewHeader,
     EmptyState,
-    EntityListItem,
     ProgramCard,
-    Users,
-    UsersRound,
-    Home,
-    Clock,
-    ListChecks,
     BaseModal,
     ConfirmModal,
     FilterBar,
     ViewToggle,
     DataTable,
-    InfoTooltip,
     ProgramFormModal,
-    ActivityFormModal,
-    ActivityDetailModal,
-    DurationDisplay,
-    ActivityDeleteModal,
     SelectionList,
+    ProgramDetails,
+    ActivityFormModal,
   },
   data() {
     return {
@@ -477,18 +263,13 @@ export default defineComponent({
       currentPage: 1,
       pageSize: 10,
       selectedProgramId: null as string | null,
-      selectedActivityId: null as string | null,
       showProgramModal: false,
-      showActivityModal: false,
       showStaffSelector: false,
       showLocationSelector: false,
       showDeleteConfirm: false,
-      showActivityDeleteModal: false,
-      activityToDelete: null as Activity | null,
-      editingProgram: null as Program | null,
-      editingActivity: null as Activity | null,
+      showActivityFormModal: false,
       deleteTarget: null as {
-        type: "program" | "activity" | "staffGroup" | "location";
+        type: "program";
         id: string;
       } | null,
       programColumns: [
@@ -508,23 +289,11 @@ export default defineComponent({
     activitiesStore() {
       return useActivitiesStore();
     },
-    staffMembersStore() {
-      return useStaffMembersStore();
-    },
     locationsStore() {
       return useLocationsStore();
     },
-    areasStore() {
-      return useAreasStore();
-    },
-    certificationsStore() {
-      return useCertificationsStore();
-    },
     colorsStore() {
       return useColorsStore();
-    },
-    rolesStore() {
-      return useRolesStore();
     },
     groupsStore() {
       return useGroupsStore();
@@ -558,37 +327,10 @@ export default defineComponent({
             program.meta.description.toLowerCase().includes(query)),
       );
     },
-    selectedProgram() {
+    selectedProgram(): Program | null {
       return this.selectedProgramId
-        ? this.programsStore.getProgramById(this.selectedProgramId)
+        ? this.programsStore.getProgramById(this.selectedProgramId) || null
         : null;
-    },
-    selectedActivity() {
-      return this.selectedActivityId
-        ? this.activitiesStore.getActivityById(this.selectedActivityId)
-        : null;
-    },
-    programActivities() {
-      return this.selectedProgramId
-        ? this.activitiesStore.getActivitiesInProgram(this.selectedProgramId)
-        : [];
-    },
-    programStaffGroups(): Group[] {
-      if (!this.selectedProgram) return [];
-      return (
-        this.selectedProgram.spec.staffGroupIds
-          ?.map((id: string) => this.groupsStore.getGroupById(id))
-          .filter((group: Group | undefined) => group !== undefined) || []
-      );
-    },
-    programLocations(): Location[] {
-      if (!this.selectedProgram) return [];
-      return (
-        this.selectedProgram.spec.locationIds
-          ?.map((id: string) => this.locationsStore.getLocationById(id))
-          .filter((location: Location | undefined) => location !== undefined) ||
-        []
-      );
     },
     programStaffGroupIds: {
       get(): string[] {
@@ -615,12 +357,6 @@ export default defineComponent({
       switch (this.deleteTarget.type) {
         case "program":
           return "Delete Program?";
-        case "activity":
-          return "Delete Activity?";
-        case "staffGroup":
-          return "Remove Staff Group?";
-        case "location":
-          return "Remove Location?";
         default:
           return "";
       }
@@ -630,19 +366,6 @@ export default defineComponent({
       if (this.deleteTarget.type === "program") {
         const program = this.programsStore.getProgramById(this.deleteTarget.id);
         return `Are you sure you want to delete "${program?.meta.name}"? This will also delete all activities in this program. This action cannot be undone.`;
-      } else if (this.deleteTarget.type === "activity") {
-        const activity = this.activitiesStore.getActivityById(
-          this.deleteTarget.id,
-        );
-        return `Are you sure you want to delete "${activity?.meta.name}"? This action cannot be undone.`;
-      } else if (this.deleteTarget.type === "staffGroup") {
-        const group = this.groupsStore.getGroupById(this.deleteTarget.id);
-        return `Are you sure you want to remove "${group?.meta.name}" from this program?`;
-      } else if (this.deleteTarget.type === "location") {
-        const location = this.locationsStore.getLocationById(
-          this.deleteTarget.id,
-        );
-        return `Are you sure you want to remove "${location?.meta.name}" from this program?`;
       }
       return "";
     },
@@ -672,116 +395,16 @@ export default defineComponent({
       const program = this.programsStore.getProgramById(programId);
       return program?.spec.locationIds?.length || 0;
     },
-    getLocationName(locationId: string) {
-      const location = this.locationsStore.getLocationById(locationId);
-      return location?.meta.name || "Unknown";
-    },
-    getAreaName(areaId: string) {
-      const area = this.areasStore.getAreaById(areaId);
-      return area?.meta.name || "Unknown";
-    },
-    formatRole(roleId: string) {
-      const role = this.rolesStore.getRoleById(roleId);
-      return role
-        ? role.meta.name.charAt(0).toUpperCase() + role.meta.name.slice(1)
-        : "Unknown Role";
-    },
-    getStaffCertificationNames(staff: StaffMember): string[] {
-      if (!staff.spec.certificationIds) return [];
-      return (
-        staff.spec.certificationIds?.map((id: string) => {
-          const cert = this.certificationsStore.getCertificationById(id);
-          return cert ? cert.meta.name : "";
-        }) || []
-      ).filter((name: string) => name.length > 0);
-    },
     closeProgramModal() {
       this.showProgramModal = false;
-      this.editingProgram = null;
-    },
-    closeActivityModal() {
-      this.showActivityModal = false;
-      this.editingActivity = null;
     },
     editProgram(program: Program) {
-      this.editingProgram = program;
+      this.selectedProgramId = program.meta.id;
       this.showProgramModal = true;
     },
     deleteProgramConfirm(program: Program) {
       this.deleteTarget = { type: "program", id: program.meta.id };
       this.showDeleteConfirm = true;
-    },
-    viewActivity(activity: Activity) {
-      this.selectedActivityId = activity.meta.id;
-    },
-    editActivity(activity: Activity) {
-      this.editingActivity = activity;
-      this.showActivityModal = true;
-      this.selectedActivityId = activity.meta.id;
-    },
-    confirmRemoveStaffGroup(groupId: string) {
-      this.deleteTarget = { type: "staffGroup", id: groupId };
-      this.showDeleteConfirm = true;
-    },
-    confirmRemoveLocation(locationId: string) {
-      this.deleteTarget = { type: "location", id: locationId };
-      this.showDeleteConfirm = true;
-    },
-    showDeleteActivityModal(activity: Activity) {
-      console.log("showDeleteActivityModal", activity);
-      this.activityToDelete = activity;
-      this.showActivityDeleteModal = true;
-    },
-    closeActivityDeleteModal(): void {
-      this.selectedActivityId = null;
-      this.showActivityDeleteModal = false;
-      this.showActivityModal = false;
-    },
-    async removeStaffGroupFromProgram(groupId: string) {
-      if (!this.selectedProgram) return;
-
-      const updatedProgram: ProgramUpdateRequest = {
-        meta: this.selectedProgram.meta,
-        spec: {
-          ...this.selectedProgram.spec,
-          staffGroupIds: this.selectedProgram.spec.staffGroupIds?.filter(
-            (id: string) => id !== groupId,
-          ),
-        },
-      };
-
-      try {
-        await this.programsStore.updateProgram(
-          this.selectedProgram.meta.id,
-          updatedProgram,
-        );
-        this.toast.success("Staff group removed from program");
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to remove staff group");
-      }
-    },
-    async removeLocationFromProgram(locationId: string) {
-      if (!this.selectedProgram) return;
-
-      const updatedProgram: ProgramUpdateRequest = {
-        meta: this.selectedProgram.meta,
-        spec: {
-          ...this.selectedProgram.spec,
-          locationIds: this.selectedProgram.spec.locationIds?.filter(
-            (id: string) => id !== locationId,
-          ),
-        },
-      };
-
-      try {
-        await this.programsStore.updateProgram(
-          this.selectedProgram.meta.id,
-          updatedProgram,
-        );
-        this.toast.success("Location removed from program");
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to remove location");
-      }
     },
     async confirmDelete() {
       if (!this.deleteTarget) return;
@@ -791,14 +414,6 @@ export default defineComponent({
           await this.programsStore.deleteProgram(this.deleteTarget.id);
           this.toast.success("Program deleted successfully");
           this.selectedProgramId = null;
-        } else if (this.deleteTarget.type === "activity") {
-          await this.activitiesStore.deleteActivity(this.deleteTarget.id);
-          this.toast.success("Activity deleted successfully");
-        } else if (this.deleteTarget.type === "staffGroup") {
-          await this.removeStaffGroupFromProgram(this.deleteTarget.id);
-          this.toast.success("Staff group removed from program");
-        } else if (this.deleteTarget.type === "location") {
-          await this.removeLocationFromProgram(this.deleteTarget.id);
         }
       } catch (error: any) {
         this.toast.error(error.message || "Failed to delete");
@@ -809,40 +424,6 @@ export default defineComponent({
     cancelDelete() {
       this.showDeleteConfirm = false;
       this.deleteTarget = null;
-    },
-    // Staff helper methods
-    getStaffLabel(staff: StaffMember): string {
-      return `${staff.meta.name}`;
-    },
-    getStaffInitials(staff: StaffMember): string {
-      const parts = staff.meta.name.split(" ");
-      if (parts.length >= 2) {
-        return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`;
-      }
-      return staff.meta.name.charAt(0).toUpperCase();
-    },
-    getStaffOption(staff: StaffMember): AutocompleteOption {
-      return {
-        label: `${staff.meta.name} (${this.formatRole(staff.spec.roleId)})`,
-        value: staff.meta.id,
-      };
-    },
-    // Location helper methods
-    getLocationLabel(location: Location): string {
-      return `${location.meta.name}`;
-    },
-    getLocationInitials(location: Location): string {
-      const words = location.meta.name.split(" ");
-      if (words.length >= 2) {
-        return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
-      }
-      return location.meta.name.substring(0, 2).toUpperCase();
-    },
-    getLocationOption(location: Location): AutocompleteOption {
-      return {
-        label: `${location.meta.name} ${location.spec.capacity ? `(Capacity: ${location.spec.capacity})` : ""}`,
-        value: location.meta.id,
-      };
     },
     // Update methods for SelectionList v-model binding
     async updateProgramStaffGroups(staffGroupIds: string[]) {
@@ -960,217 +541,5 @@ export default defineComponent({
 
 .programs-grid .empty-state {
   grid-column: 1 / -1;
-}
-
-/* Program Detail View */
-.program-detail {
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.detail-header {
-  background: var(--surface);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow);
-}
-
-.detail-header-content {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.5rem;
-}
-
-.detail-color-bar {
-  width: 6px;
-  border-radius: 3px;
-  align-self: stretch;
-  margin-right: 1.5rem;
-}
-
-.detail-header-info h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem 0;
-  color: var(--text-primary);
-}
-
-.detail-description {
-  color: var(--text-secondary);
-  margin: 0;
-  line-height: 1.6;
-}
-
-.detail-header-actions {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-}
-
-/* Detail Sections */
-.detail-section {
-  background: var(--surface);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow);
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-light);
-}
-
-.section-header h3 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-  color: var(--text-primary);
-}
-
-/* Activities List */
-.activities-list {
-  display: grid;
-  gap: 1rem;
-}
-
-.activity-item {
-  padding: 1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.activity-item:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateX(4px);
-}
-
-.activity-info h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem 0;
-  color: var(--text-primary);
-}
-
-.activity-info p {
-  margin: 0;
-  font-size: 0.875rem;
-}
-
-.activity-meta {
-  display: flex;
-  gap: 1rem;
-  margin-top: 0.75rem;
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-/* Staff List */
-.staff-list {
-  display: grid;
-  gap: 1rem;
-}
-
-.staff-certifications {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-}
-
-.certification-badge {
-  display: inline-block;
-  padding: 0.125rem 0.5rem;
-  background: white;
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-/* Locations List */
-.locations-list {
-  display: grid;
-  gap: 1rem;
-}
-
-.location-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--surface-secondary);
-  color: var(--accent-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.location-meta {
-  font-size: 0.875rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-/* Empty States */
-.empty-section {
-  padding: 2rem;
-  text-align: center;
-  color: var(--text-secondary);
-}
-
-.empty-section p {
-  margin: 0;
-}
-
-@media (max-width: 768px) {
-  .programs-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .detail-header {
-    padding: 1.5rem;
-  }
-
-  .detail-header-content {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .detail-header-actions {
-    flex-direction: column;
-  }
-
-  .detail-header-actions .btn {
-    width: 100%;
-  }
 }
 </style>
