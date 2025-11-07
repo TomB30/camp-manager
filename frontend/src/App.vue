@@ -204,7 +204,7 @@ export default defineComponent({
 
   .main-content {
     margin-left: 0;
-    padding: 1rem;
+    padding: 0.5rem;
   }
 }
 </style>

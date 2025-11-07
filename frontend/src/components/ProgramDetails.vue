@@ -8,7 +8,7 @@
             :style="{ background: programColor }"
           ></div>
           <div class="detail-header-info">
-            <h2>{{ program.meta.name }}</h2>
+            <h3>{{ program.meta.name }}</h3>
             <p v-if="program.meta.description" class="detail-description">
               {{ program.meta.description }}
             </p>
@@ -34,7 +34,7 @@
     </div>
 
     <div class="detail-section">
-      <q-splitter v-model="splitterValue" style="height: 100%">
+      <q-splitter v-model="splitterValue">
         <template v-slot:before>
           <q-tabs v-model="activeTab" class="detail-tabs" vertical no-caps>
             <q-tab name="activities">
@@ -43,7 +43,7 @@
                   class="row justify-start items-center q-gutter-x-md q-pa-sm"
                 >
                   <Icon name="ListChecks" :size="20" />
-                  <span>Activities</span>
+                  <span class="tab-title">Activities</span>
                 </div>
               </template>
             </q-tab>
@@ -53,7 +53,7 @@
                   class="row justify-start items-center q-gutter-x-md q-pa-sm"
                 >
                   <Icon name="UsersRound" :size="20" />
-                  <span>Staff Groups</span>
+                  <span class="tab-title">Staff Groups</span>
                 </div>
               </template>
             </q-tab>
@@ -63,7 +63,7 @@
                   class="row justify-start items-center q-gutter-x-md q-pa-sm"
                 >
                   <Icon name="Home" :size="20" />
-                  <span>Locations</span>
+                  <span class="tab-title">Locations</span>
                 </div>
               </template>
             </q-tab>
@@ -92,7 +92,11 @@
                 />
               </div>
 
-              <div v-if="programActivities.length > 0" class="activities-list">
+              <div
+                v-if="programActivities.length > 0"
+                class="activities-list q-pr-xs"
+                :style="{ maxHeight: 'calc(100vh - 290px)', overflowY: 'auto' }"
+              >
                 <ProgramActivityCard
                   v-for="activity in programActivities"
                   :key="activity.meta.id"
@@ -469,7 +473,7 @@ export default defineComponent({
   background: var(--surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  padding: 1.5rem;
+  padding: 1rem;
   margin-bottom: 1rem;
   box-shadow: var(--shadow);
 }
@@ -513,7 +517,6 @@ export default defineComponent({
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   padding-top: 0;
-  margin-bottom: 1.5rem;
   box-shadow: var(--shadow);
 }
 
@@ -534,6 +537,9 @@ export default defineComponent({
   font-weight: 600;
   margin: 0;
   color: var(--text-primary);
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 }
 
 /* Activities List */
