@@ -10,9 +10,6 @@ properties:
     type: string
     format: uuid
     description: ID of the role this staff member has
-  email:
-    type: string
-    format: email
   phone:
     type: string
   certificationIds:
@@ -21,8 +18,6 @@ properties:
       type: string
       format: uuid
     description: IDs of certifications this staff member holds
-  photoUrl:
-    type: string
   managerId:
     type: string
     format: uuid

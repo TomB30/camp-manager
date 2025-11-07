@@ -51,11 +51,9 @@ export const buildStaffMember = (
     updatedAt: new Date().toISOString(),
   },
   spec: {
-    email: "test.staff@camp.com",
     phone: "555-0000",
     roleId: "role-1",
     certificationIds: [],
-    photoUrl: "https://example.com/photo.jpg",
     managerId: "manager-1",
   },
   ...overrides,
@@ -179,7 +177,6 @@ export const buildStaffWithCertifications = (
     },
     spec: {
       roleId: "role-1",
-      email: "test.staff@camp.com",
       phone: "555-0000",
       certificationIds,
     },

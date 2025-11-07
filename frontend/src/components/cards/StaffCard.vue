@@ -13,8 +13,12 @@
       <div class="member-role">
         <span class="badge badge-primary">{{ formattedRole }}</span>
       </div>
-      <div v-if="member.spec.email" class="member-contact text-caption mt-1">
-        {{ member.spec.email }}
+      <div
+        v-if="member.spec.phone"
+        class="member-contact text-caption mt-1 row items-center gap-1"
+      >
+        <Icon name="Phone" :size="14" color="var(--text-secondary)" />
+        {{ member.spec.phone }}
       </div>
       <div v-if="certificationCount > 0" class="member-certs text-xs mt-2">
         {{ certificationCount }} Certification(s)
@@ -27,11 +31,13 @@
 import { defineComponent, type PropType } from "vue";
 import type { StaffMember } from "@/generated/api";
 import AvatarInitials from "@/components/AvatarInitials.vue";
+import Icon from "@/components/Icon.vue";
 
 export default defineComponent({
   name: "StaffCard",
   components: {
     AvatarInitials,
+    Icon,
   },
   props: {
     member: {

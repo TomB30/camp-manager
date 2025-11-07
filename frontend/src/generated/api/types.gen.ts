@@ -525,13 +525,11 @@ export type StaffMemberSpec = {
      * ID of the role this staff member has
      */
     roleId: string;
-    email?: string;
     phone?: string;
     /**
      * IDs of certifications this staff member holds
      */
     certificationIds?: Array<string>;
-    photoUrl?: string;
     /**
      * ID of the staff member who manages this person
      */

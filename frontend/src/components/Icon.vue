@@ -56,6 +56,7 @@ import {
   Timer,
   LogOut,
   ListChecks,
+  Phone,
 } from "lucide-vue-next";
 
 export type IconName = keyof typeof icons;
@@ -106,6 +107,7 @@ const icons: Record<string, Component> = {
   Timer,
   LogOut,
   ListChecks,
+  Phone,
 } as const;
 
 export default defineComponent({

@@ -27,11 +27,6 @@
           </slot>
         </div>
 
-        <div v-if="member.spec.email" class="detail-section">
-          <div class="detail-label">Email</div>
-          <div>{{ member.spec.email }}</div>
-        </div>
-
         <div v-if="member.spec.phone" class="detail-section">
           <div class="detail-label">Phone</div>
           <div>{{ member.spec.phone }}</div>

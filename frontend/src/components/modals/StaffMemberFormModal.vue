@@ -43,15 +43,6 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Email</label>
-          <BaseInput
-            v-model="emailModel"
-            type="email"
-            placeholder="Enter email"
-          />
-        </div>
-
-        <div class="form-group">
           <label class="form-label">Phone</label>
           <BaseInput
             v-model="phoneModel"
@@ -154,7 +145,6 @@ export default defineComponent({
         },
         spec: {
           roleId: "",
-          email: "",
           certificationIds: [],
           managerId: "",
           birthday: "",
@@ -182,7 +172,7 @@ export default defineComponent({
       },
       spec: {
         roleId: staffMember.spec.roleId,
-        email: staffMember.spec.email || "",
+        phone: staffMember.spec.phone || "",
         certificationIds: staffMember.spec.certificationIds || [],
         managerId: staffMember.spec.managerId || "",
         birthday: staffMember.spec.birthday || "",
@@ -210,20 +200,12 @@ export default defineComponent({
         value: role.meta.id,
       }));
     },
-    emailModel: {
-      get(): string {
-        return this.localFormData.spec.email || "";
-      },
-      set(value: string) {
-        this.localFormData.spec.email = value || "";
-      },
-    },
     phoneModel: {
       get(): string {
-        return this.localFormData.spec.email || "";
+        return this.localFormData.spec.phone || "";
       },
       set(value: string) {
-        this.localFormData.spec.email = value || "";
+        this.localFormData.spec.phone = value || "";
       },
     },
     certificationIdsModel: {

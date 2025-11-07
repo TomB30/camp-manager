@@ -308,8 +308,8 @@ export default defineComponent({
         members = members.filter(
           (member: StaffMember) =>
             member.meta.name.toLowerCase().includes(query) ||
-            (member.spec.email &&
-              member.spec.email.toLowerCase().includes(query)),
+            (member.spec.phone &&
+              member.spec.phone.toLowerCase().includes(query)),
         );
       }
 

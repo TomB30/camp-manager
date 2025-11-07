@@ -40,24 +40,6 @@ describe("StaffCard", () => {
       expect(wrapper.text()).toContain("Counselor");
     });
 
-    it("renders email when provided", () => {
-      const member: StaffMember = {
-        ...staffMembersFixture[0],
-        spec: {
-          ...staffMembersFixture[0].spec,
-          email: "john.doe@camp.com",
-        },
-      };
-      const wrapper = createWrapper(StaffCard, {
-        props: {
-          member,
-          formattedRole: "Counselor",
-        },
-      });
-
-      expect(wrapper.text()).toContain(member.spec.email);
-    });
-
     it("renders certification count when certifications exist", () => {
       // Create member with certificationIds property (StaffCard uses certificationIds not certifications)
       const member: StaffMember = {

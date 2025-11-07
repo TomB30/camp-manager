@@ -838,12 +838,10 @@ type StaffMemberSpec struct {
 
 	// CertificationIds IDs of certifications this staff member holds
 	CertificationIds *[]openapi_types.UUID `json:"certificationIds,omitempty"`
-	Email            *openapi_types.Email  `json:"email,omitempty"`
 
 	// ManagerId ID of the staff member who manages this person
 	ManagerId *openapi_types.UUID `json:"managerId,omitempty"`
 	Phone     *string             `json:"phone,omitempty"`
-	PhotoUrl  *string             `json:"photoUrl,omitempty"`
 
 	// RoleId ID of the role this staff member has
 	RoleId openapi_types.UUID `json:"roleId"`

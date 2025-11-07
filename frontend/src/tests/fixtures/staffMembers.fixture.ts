@@ -13,9 +13,6 @@ export const staffMembersFixture: StaffMember[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      // firstName: "Sarah",
-      // lastName: "Johnson",
-      email: "sarah.johnson@camp.com",
       phone: "555-1001",
       roleId: rolesFixture[0].meta.id, // Counselor
       certificationIds: [
@@ -34,9 +31,6 @@ export const staffMembersFixture: StaffMember[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      // firstName: "Michael",
-      // lastName: "Chen",
-      email: "michael.chen@camp.com",
       phone: "555-1002",
       roleId: rolesFixture[1].meta.id, // Activity Leader
       certificationIds: [
@@ -55,9 +49,6 @@ export const staffMembersFixture: StaffMember[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      // firstName: "Emily",
-      // lastName: "Rodriguez",
-      email: "emily.rodriguez@camp.com",
       phone: "555-1003",
       roleId: rolesFixture[2].meta.id, // Lifeguard
       certificationIds: [
@@ -77,9 +68,6 @@ export const staffMembersFixture: StaffMember[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      // firstName: "David",
-      // lastName: "Kim",
-      email: "david.kim@camp.com",
       phone: "555-1004",
       roleId: rolesFixture[0].meta.id,
       certificationIds: [
@@ -97,9 +85,6 @@ export const staffMembersFixture: StaffMember[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      // firstName: "Jessica",
-      // lastName: "Lee",
-      email: "jessica.lee@camp.com",
       phone: "555-1005",
       roleId: rolesFixture[3].meta.id, // Nurse
       certificationIds: [
@@ -118,9 +103,6 @@ export const staffMembersFixture: StaffMember[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      // firstName: "Robert",
-      // lastName: "Taylor",
-      email: "robert.taylor@camp.com",
       phone: "555-1006",
       roleId: rolesFixture[4].meta.id, // Camp Director
       certificationIds: [
@@ -138,9 +120,6 @@ export const staffMembersFixture: StaffMember[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      // firstName: "Amanda",
-      // lastName: "White",
-      email: "amanda.white@camp.com",
       phone: "555-1007",
       roleId: rolesFixture[1].meta.id,
       certificationIds: [
@@ -159,9 +138,6 @@ export const staffMembersFixture: StaffMember[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      // firstName: "Christopher",
-      // lastName: "Martin",
-      email: "christopher.martin@camp.com",
       phone: "555-1008",
       roleId: rolesFixture[0].meta.id,
       certificationIds: [],
@@ -177,9 +153,6 @@ export const staffMembersFixture: StaffMember[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      // firstName: "Jennifer",
-      // lastName: "Thompson",
-      email: "jennifer.thompson@camp.com",
       phone: "555-1009",
       roleId: rolesFixture[1].meta.id,
       certificationIds: [
@@ -199,9 +172,6 @@ export const staffMembersFixture: StaffMember[] = [
       updatedAt: "2025-10-01T09:00:00.000Z",
     },
     spec: {
-      // firstName: "Daniel",
-      // lastName: "Garcia",
-      email: "daniel.garcia@camp.com",
       phone: "555-1010",
       roleId: rolesFixture[2].meta.id,
       certificationIds: [
