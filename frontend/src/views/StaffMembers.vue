@@ -17,7 +17,6 @@
         v-model:searchQuery="searchQuery"
         v-model:filter-role="filterRole"
         v-model:filter-certification="filterCertification"
-        v-model:filter-program="filterProgram"
         :filters="staffFilters"
         :filtered-count="filteredMembers.length"
         :total-count="staffMembersStore.staffMembers.length"
@@ -124,7 +123,7 @@
 
       <!-- Member Detail Modal -->
       <StaffMemberDetailModal
-        v-if="!!selectedMemberId"
+        v-if="!!selectedMemberId && selectedMember"
         :member="selectedMember"
         @close="selectedMemberId = null"
         @edit="editMember"
@@ -242,7 +241,6 @@ export default defineComponent({
       searchQuery: "",
       filterRole: "",
       filterCertification: "",
-      filterProgram: "",
       memberColumns: [
         { key: "name", label: "Name", width: "200px" },
         { key: "role", label: "Role", width: "140px" },
@@ -293,15 +291,6 @@ export default defineComponent({
             value: cert.meta.name,
           })),
         },
-        {
-          model: "filterProgram",
-          value: this.filterProgram,
-          placeholder: "Filter by Program",
-          options: this.programsStore.programs.map((program) => ({
-            label: program.meta.name,
-            value: program.meta.id,
-          })),
-        },
       ];
     },
     selectedMember(): StaffMember | null {
@@ -342,18 +331,6 @@ export default defineComponent({
         });
       }
 
-      // Program filter
-      if (this.filterProgram) {
-        members = members.filter((member: StaffMember) => {
-          const program = this.programsStore.getProgramById(this.filterProgram);
-          return (
-            (program &&
-              program.spec.staffMemberIds?.includes(member.meta.id)) ||
-            false
-          );
-        });
-      }
-
       return members;
     },
   },
@@ -376,7 +353,6 @@ export default defineComponent({
       this.searchQuery = "";
       this.filterRole = "";
       this.filterCertification = "";
-      this.filterProgram = "";
     },
     getDirectReports(managerId: string): StaffMember[] {
       return this.filteredMembers.filter(

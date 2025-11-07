@@ -82,7 +82,7 @@ export default defineComponent({
         },
         spec: {
           activityIds: [],
-          staffMemberIds: [],
+          staffGroupIds: [],
           locationIds: [],
         },
       } as ProgramCreationRequest,
@@ -107,7 +107,7 @@ export default defineComponent({
         spec: {
           colorId: program.spec.colorId || undefined,
           activityIds: program.spec.activityIds || [],
-          staffMemberIds: program.spec.staffMemberIds || [],
+          staffGroupIds: program.spec.staffGroupIds || [],
           locationIds: program.spec.locationIds || [],
         },
       };

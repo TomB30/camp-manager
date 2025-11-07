@@ -48,7 +48,7 @@
             :key="program.meta.id"
             :program="program"
             :activities-count="getActivitiesCount(program.meta.id)"
-            :staff-count="getStaffCount(program.meta.id)"
+            :staff-groups-count="getStaffGroupsCount(program.meta.id)"
             :locations-count="getLocationsCount(program.meta.id)"
             @click="selectProgram(program.meta.id)"
           />
@@ -111,7 +111,7 @@
           </template>
 
           <template #cell-staff="{ item }">
-            <span>{{ getStaffCount(item.meta.id) }} staff</span>
+            <span>{{ getStaffGroupsCount(item.meta.id) }} staff groups</span>
           </template>
 
           <template #cell-locations="{ item }">
@@ -239,47 +239,29 @@
           <div class="section-header">
             <h3>
               <UsersRound :size="20" />
-              Staff Members
+              Staff Groups
             </h3>
             <BaseButton
               color="grey-8"
               outline
               icon="add"
-              label="Staff Member"
+              label="Staff Group"
               @click="showStaffSelector = true"
             />
           </div>
 
-          <div v-if="programStaff.length > 0" class="staff-list">
+          <div v-if="programStaffGroups.length > 0" class="staff-list">
             <EntityListItem
-              v-for="staff in programStaff"
-              :key="staff.meta.id"
-              :first-name="staff.meta.name.split(' ')[0]"
-              :last-name="staff.meta.name.split(' ').slice(1).join(' ')"
-              :title="`${staff.meta.name}`"
-              :subtitle="formatRole(staff.spec.roleId)"
+              v-for="group in programStaffGroups"
+              :key="group.meta.id"
+              :title="`${group.meta.name}`"
               :removable="true"
-              @remove="confirmRemoveStaff(staff.meta.id)"
-            >
-              <template
-                v-if="getStaffCertificationNames(staff).length > 0"
-                #metadata
-              >
-                <div class="staff-certifications">
-                  <span
-                    v-for="cert in getStaffCertificationNames(staff)"
-                    :key="cert"
-                    class="certification-badge"
-                  >
-                    {{ cert }}
-                  </span>
-                </div>
-              </template>
-            </EntityListItem>
+              @remove="confirmRemoveStaffGroup(group.meta.id)"
+            />
           </div>
 
           <div v-else class="empty-section">
-            <p>No staff members assigned. Add staff to this program.</p>
+            <p>No staff groups assigned. Add staff groups to this program.</p>
           </div>
         </div>
 
@@ -363,15 +345,15 @@
     <!-- Staff Selector Modal -->
     <BaseModal
       v-if="showStaffSelector"
-      title="Assign Staff to Program"
+      title="Assign Staff Groups to Program"
       @close="showStaffSelector = false"
     >
       <template #body>
         <SelectionList
-          v-model="programStaffIds"
-          :options="staffMembersOptions"
+          v-model="programStaffGroupIds"
+          :options="staffGroupsOptions"
           multiple
-          label="Select Staff Members"
+          label="Select Staff Groups"
           flat
         />
       </template>
@@ -434,6 +416,7 @@ import {
   useCertificationsStore,
   useColorsStore,
   useRolesStore,
+  useGroupsStore,
 } from "@/stores";
 import { useToast } from "@/composables/useToast";
 import type {
@@ -442,6 +425,7 @@ import type {
   StaffMember,
   Location,
   ProgramUpdateRequest,
+  Group,
 } from "@/generated/api";
 import { Users, UsersRound, Home, Clock, ListChecks } from "lucide-vue-next";
 import ViewHeader from "@/components/ViewHeader.vue";
@@ -504,7 +488,7 @@ export default defineComponent({
       editingProgram: null as Program | null,
       editingActivity: null as Activity | null,
       deleteTarget: null as {
-        type: "program" | "activity" | "staff" | "location";
+        type: "program" | "activity" | "staffGroup" | "location";
         id: string;
       } | null,
       programColumns: [
@@ -542,14 +526,20 @@ export default defineComponent({
     rolesStore() {
       return useRolesStore();
     },
+    groupsStore() {
+      return useGroupsStore();
+    },
     toast() {
       return useToast();
     },
-    staffMembersOptions(): AutocompleteOption[] {
-      return this.staffMembersStore.staffMembers.map((staff) => ({
-        label: `${staff.meta.name} (${this.formatRole(staff.spec.roleId)})`,
-        value: staff.meta.id,
-      }));
+    staffGroupsOptions(): AutocompleteOption[] {
+      return this.groupsStore.groups
+        .filter((group: Group) => (group.spec.staffIds?.length || 0) > 0)
+        .filter((group: Group) => (group.spec.camperIds?.length || 0) === 0)
+        .map((group) => ({
+          label: `${group.meta.name}`,
+          value: group.meta.id,
+        }));
     },
     locationsOptions(): AutocompleteOption[] {
       return this.locationsStore.locations.map((location) => ({
@@ -583,12 +573,12 @@ export default defineComponent({
         ? this.activitiesStore.getActivitiesInProgram(this.selectedProgramId)
         : [];
     },
-    programStaff(): StaffMember[] {
+    programStaffGroups(): Group[] {
       if (!this.selectedProgram) return [];
       return (
-        this.selectedProgram.spec.staffMemberIds
-          ?.map((id: string) => this.staffMembersStore.getStaffMemberById(id))
-          .filter((staff: StaffMember | undefined) => staff !== undefined) || []
+        this.selectedProgram.spec.staffGroupIds
+          ?.map((id: string) => this.groupsStore.getGroupById(id))
+          .filter((group: Group | undefined) => group !== undefined) || []
       );
     },
     programLocations(): Location[] {
@@ -600,29 +590,13 @@ export default defineComponent({
         []
       );
     },
-    availableStaff(): StaffMember[] {
-      if (!this.selectedProgram) return [];
-      return this.staffMembersStore.staffMembers.filter(
-        (staff) =>
-          !this.selectedProgram!.spec.staffMemberIds?.includes(staff.meta.id) ||
-          false,
-      );
-    },
-    availableLocations(): Location[] {
-      if (!this.selectedProgram) return [];
-      return this.locationsStore.locations.filter(
-        (location) =>
-          !this.selectedProgram!.spec.locationIds?.includes(location.meta.id) ||
-          false,
-      );
-    },
-    programStaffIds: {
+    programStaffGroupIds: {
       get(): string[] {
-        return this.selectedProgram?.spec.staffMemberIds || ([] as string[]);
+        return this.selectedProgram?.spec.staffGroupIds || ([] as string[]);
       },
       set(value: string[]) {
         if (this.selectedProgram) {
-          this.updateProgramStaff(value);
+          this.updateProgramStaffGroups(value);
         }
       },
     },
@@ -643,8 +617,8 @@ export default defineComponent({
           return "Delete Program?";
         case "activity":
           return "Delete Activity?";
-        case "staff":
-          return "Remove Staff Member?";
+        case "staffGroup":
+          return "Remove Staff Group?";
         case "location":
           return "Remove Location?";
         default:
@@ -661,11 +635,9 @@ export default defineComponent({
           this.deleteTarget.id,
         );
         return `Are you sure you want to delete "${activity?.meta.name}"? This action cannot be undone.`;
-      } else if (this.deleteTarget.type === "staff") {
-        const staff = this.staffMembersStore.getStaffMemberById(
-          this.deleteTarget.id,
-        );
-        return `Are you sure you want to remove "${staff?.meta.name}" from this program?`;
+      } else if (this.deleteTarget.type === "staffGroup") {
+        const group = this.groupsStore.getGroupById(this.deleteTarget.id);
+        return `Are you sure you want to remove "${group?.meta.name}" from this program?`;
       } else if (this.deleteTarget.type === "location") {
         const location = this.locationsStore.getLocationById(
           this.deleteTarget.id,
@@ -692,9 +664,9 @@ export default defineComponent({
     getActivitiesCount(programId: string) {
       return this.activitiesStore.getActivitiesInProgram(programId).length;
     },
-    getStaffCount(programId: string) {
+    getStaffGroupsCount(programId: string) {
       const program = this.programsStore.getProgramById(programId);
-      return program?.spec.staffMemberIds?.length || 0;
+      return program?.spec.staffGroupIds?.length || 0;
     },
     getLocationsCount(programId: string) {
       const program = this.programsStore.getProgramById(programId);
@@ -747,8 +719,8 @@ export default defineComponent({
       this.showActivityModal = true;
       this.selectedActivityId = activity.meta.id;
     },
-    confirmRemoveStaff(staffId: string) {
-      this.deleteTarget = { type: "staff", id: staffId };
+    confirmRemoveStaffGroup(groupId: string) {
+      this.deleteTarget = { type: "staffGroup", id: groupId };
       this.showDeleteConfirm = true;
     },
     confirmRemoveLocation(locationId: string) {
@@ -765,15 +737,15 @@ export default defineComponent({
       this.showActivityDeleteModal = false;
       this.showActivityModal = false;
     },
-    async removeStaffFromProgram(staffId: string) {
+    async removeStaffGroupFromProgram(groupId: string) {
       if (!this.selectedProgram) return;
 
       const updatedProgram: ProgramUpdateRequest = {
         meta: this.selectedProgram.meta,
         spec: {
           ...this.selectedProgram.spec,
-          staffMemberIds: this.selectedProgram.spec.staffMemberIds?.filter(
-            (id: string) => id !== staffId,
+          staffGroupIds: this.selectedProgram.spec.staffGroupIds?.filter(
+            (id: string) => id !== groupId,
           ),
         },
       };
@@ -783,9 +755,9 @@ export default defineComponent({
           this.selectedProgram.meta.id,
           updatedProgram,
         );
-        this.toast.success("Staff member removed from program");
+        this.toast.success("Staff group removed from program");
       } catch (error: any) {
-        this.toast.error(error.message || "Failed to remove staff member");
+        this.toast.error(error.message || "Failed to remove staff group");
       }
     },
     async removeLocationFromProgram(locationId: string) {
@@ -822,8 +794,9 @@ export default defineComponent({
         } else if (this.deleteTarget.type === "activity") {
           await this.activitiesStore.deleteActivity(this.deleteTarget.id);
           this.toast.success("Activity deleted successfully");
-        } else if (this.deleteTarget.type === "staff") {
-          await this.removeStaffFromProgram(this.deleteTarget.id);
+        } else if (this.deleteTarget.type === "staffGroup") {
+          await this.removeStaffGroupFromProgram(this.deleteTarget.id);
+          this.toast.success("Staff group removed from program");
         } else if (this.deleteTarget.type === "location") {
           await this.removeLocationFromProgram(this.deleteTarget.id);
         }
@@ -872,14 +845,14 @@ export default defineComponent({
       };
     },
     // Update methods for SelectionList v-model binding
-    async updateProgramStaff(staffIds: string[]) {
+    async updateProgramStaffGroups(staffGroupIds: string[]) {
       if (!this.selectedProgram) return;
 
       const updatedProgram: ProgramUpdateRequest = {
         meta: this.selectedProgram.meta,
         spec: {
           ...this.selectedProgram.spec,
-          staffMemberIds: staffIds,
+          staffGroupIds: staffGroupIds,
         },
       };
 

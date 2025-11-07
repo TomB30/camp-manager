@@ -51,21 +51,17 @@
         </div>
 
         <div class="detail-section">
-          <div class="detail-label">Programs</div>
-          <div v-if="memberPrograms.length > 0" class="flex gap-1 flex-wrap">
+          <div class="detail-label">Groups</div>
+          <div v-if="memberGroups.length > 0" class="flex gap-1 flex-wrap">
             <span
-              v-for="program in memberPrograms"
-              :key="program.meta.id"
-              class="badge badge-program"
-              :style="{
-                backgroundColor: getProgramColor(program),
-                color: 'white',
-              }"
+              v-for="group in memberGroups"
+              :key="group.meta.id"
+              class="badge badge-primary"
             >
-              {{ program.meta.name }}
+              {{ group.meta.name }}
             </span>
           </div>
-          <div v-else class="text-grey-7">Not assigned to any programs</div>
+          <div v-else class="text-grey-7">Not assigned to any groups</div>
         </div>
 
         <div class="detail-section">
@@ -97,8 +93,9 @@ import {
   useColorsStore,
   useCertificationsStore,
   useRolesStore,
+  useGroupsStore,
 } from "@/stores";
-import type { Program, StaffMember } from "@/generated/api";
+import type { Group, StaffMember } from "@/generated/api";
 
 export default defineComponent({
   name: "StaffMemberDetailModal",
@@ -107,8 +104,8 @@ export default defineComponent({
   },
   props: {
     member: {
-      type: Object as PropType<StaffMember | null>,
-      default: null,
+      type: Object as PropType<StaffMember>,
+      required: true,
     },
   },
   emits: ["close", "edit", "delete"],
@@ -117,7 +114,14 @@ export default defineComponent({
     const colorsStore = useColorsStore();
     const certificationsStore = useCertificationsStore();
     const rolesStore = useRolesStore();
-    return { programsStore, colorsStore, certificationsStore, rolesStore };
+    const groupsStore = useGroupsStore();
+    return {
+      programsStore,
+      colorsStore,
+      certificationsStore,
+      rolesStore,
+      groupsStore,
+    };
   },
   computed: {
     certificationNames(): string[] {
@@ -130,19 +134,15 @@ export default defineComponent({
         })
         .filter((name) => name.length > 0);
     },
-    memberPrograms() {
+    memberGroups(): Group[] {
       if (!this.member) return [];
-      return this.programsStore.getProgramsForStaffMember(this.member.meta.id);
+      return this.groupsStore.groups.filter(
+        (group: Group) =>
+          group.spec.staffIds?.includes(this.member.meta.id) || false,
+      );
     },
   },
   methods: {
-    getProgramColor(program: Program): string {
-      if (program.spec.colorId) {
-        const color = this.colorsStore.getColorById(program.spec.colorId);
-        return color?.spec.hexValue || "#6366F1";
-      }
-      return "#6366F1";
-    },
     formatRole(roleId: string): string {
       const role = this.rolesStore.getRoleById(roleId);
       return role

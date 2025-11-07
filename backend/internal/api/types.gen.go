@@ -698,8 +698,8 @@ type ProgramSpec struct {
 	// LocationIds Locations associated with this program
 	LocationIds *[]openapi_types.UUID `json:"locationIds,omitempty"`
 
-	// StaffMemberIds Staff members associated with this program
-	StaffMemberIds *[]openapi_types.UUID `json:"staffMemberIds,omitempty"`
+	// StaffGroupIds Staff groups associated with this program
+	StaffGroupIds *[]openapi_types.UUID `json:"staffGroupIds,omitempty"`
 }
 
 // ProgramUpdateRequest defines model for ProgramUpdateRequest.

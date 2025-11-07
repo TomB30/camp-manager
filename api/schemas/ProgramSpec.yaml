@@ -9,12 +9,12 @@ properties:
       type: string
       format: uuid
     description: Activities belonging to this program
-  staffMemberIds:
+  staffGroupIds:
     type: array
     items:
       type: string
       format: uuid
-    description: Staff members associated with this program
+    description: Staff groups associated with this program
   locationIds:
     type: array
     items:

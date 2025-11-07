@@ -1331,6 +1331,34 @@ export const groups: Group[] = [
       labelIds: [],
     },
   },
+  {
+    meta: {
+      id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
+      name: "Water sports staff group",
+      description: "Staff group for water sports program",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      staffIds: [staffMembers[2].meta.id, staffMembers[3].meta.id],
+    },
+  },
+  {
+    meta: {
+      id: generateId(),
+      tenantId: TENANT_ID,
+      campId: CAMP_ID,
+      name: "Outdoor adventures staff group",
+      description: "Staff group for outdoor adventures program",
+      createdAt: octoberDate(1),
+      updatedAt: octoberDate(1),
+    },
+    spec: {
+      staffIds: [staffMembers[6].meta.id, staffMembers[7].meta.id],
+    },
+  },
 ];
 
 // Campers (50 campers, distributed across groups)
@@ -1500,11 +1528,7 @@ export const programs: Program[] = [
     spec: {
       colorId: colors[2].meta.id,
       activityIds: [], // Will be filled after activities are created
-      staffMemberIds: [
-        staffMembers[5].meta.id,
-        staffMembers[6].meta.id,
-        staffMembers[9].meta.id,
-      ],
+      staffGroupIds: [groups[7].meta.id],
       locationIds: [
         locations[8].meta.id,
         locations[9].meta.id,
@@ -1525,7 +1549,7 @@ export const programs: Program[] = [
     spec: {
       colorId: colors[0].meta.id,
       activityIds: [],
-      staffMemberIds: [staffMembers[3].meta.id, staffMembers[8].meta.id],
+      staffGroupIds: [groups[6].meta.id],
       locationIds: [
         locations[5].meta.id,
         locations[6].meta.id,
@@ -1546,7 +1570,7 @@ export const programs: Program[] = [
     spec: {
       colorId: colors[4].meta.id,
       activityIds: [],
-      staffMemberIds: [staffMembers[2].meta.id, staffMembers[7].meta.id],
+      staffGroupIds: [],
       locationIds: [
         locations[2].meta.id,
         locations[14].meta.id,
@@ -1567,11 +1591,7 @@ export const programs: Program[] = [
     spec: {
       colorId: colors[1].meta.id,
       activityIds: [],
-      staffMemberIds: [
-        staffMembers[3].meta.id,
-        staffMembers[5].meta.id,
-        staffMembers[9].meta.id,
-      ],
+      staffGroupIds: [],
       locationIds: [
         locations[3].meta.id,
         locations[4].meta.id,

@@ -3,6 +3,7 @@ import type {
   ProgramCreationRequest,
   ProgramUpdateRequest,
   Activity,
+  Group,
 } from "@/generated/api";
 import { storageService } from "./storage";
 import { getCurrentTenantId, getCurrentCampId } from "@/utils/tenantContext";
@@ -99,8 +100,14 @@ async function getProgramById(id: string): Promise<Program | null> {
 
 async function getProgramsForStaffMember(staffId: string): Promise<Program[]> {
   const programs = await listPrograms();
+  const groupsOfStaff = await storageService.getAll<Group>(STORAGE_KEYS.GROUPS);
   return programs.filter(
-    (p) => p.spec.staffMemberIds?.includes(staffId) || false,
+    (p) =>
+      p.spec.staffGroupIds?.some((groupId) =>
+        groupsOfStaff
+          .find((g) => g.meta.id === groupId)
+          ?.spec.staffIds?.includes(staffId),
+      ) || false,
   );
 }
 

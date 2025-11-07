@@ -15,7 +15,7 @@ export const programsFixture: Program[] = [
     spec: {
       colorId: colorsFixture[0].meta.id,
       activityIds: [],
-      staffMemberIds: [],
+      staffGroupIds: [],
       locationIds: [],
     },
   },
@@ -32,7 +32,7 @@ export const programsFixture: Program[] = [
     spec: {
       colorId: colorsFixture[1].meta.id,
       activityIds: [],
-      staffMemberIds: [],
+      staffGroupIds: [],
       locationIds: [],
     },
   },
@@ -49,7 +49,7 @@ export const programsFixture: Program[] = [
     spec: {
       colorId: colorsFixture[2].meta.id,
       activityIds: [],
-      staffMemberIds: [],
+      staffGroupIds: [],
       locationIds: [],
     },
   },

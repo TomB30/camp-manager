@@ -986,9 +986,14 @@ export default defineComponent({
       const program = this.programsStore.getProgramById(
         this.formData.spec.programId,
       );
-      return program
-        ? program.spec.staffMemberIds?.includes(staff.meta.id) || false
-        : false;
+
+      const groups: Group[] | undefined = program?.spec.staffGroupIds
+        ?.map((groupId) => this.groupsStore.getGroupById(groupId))
+        ?.filter((group): group is Group => group !== undefined);
+      if (!groups) return false;
+      return groups.some((group: Group) =>
+        group.spec.staffIds?.includes(staff.meta.id),
+      );
     },
     staffHasRequiredCertifications(staff: StaffMember): boolean {
       if (this.selectedCertificationIds.length === 0) return true;

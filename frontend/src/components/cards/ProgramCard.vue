@@ -20,7 +20,7 @@
     <div class="card-stats">
       <span class="card-stat-item">
         <Icon name="Users" :size="16" />
-        {{ staffCount }} staff
+        {{ staffGroupsCount }} staff groups
       </span>
       <span class="card-stat-item">
         <Icon name="Home" :size="16" />
@@ -50,7 +50,7 @@ export default defineComponent({
       type: Number,
       default: 0,
     },
-    staffCount: {
+    staffGroupsCount: {
       type: Number,
       default: 0,
     },

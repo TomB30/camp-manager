@@ -89,18 +89,18 @@ describe("ProgramCard", () => {
         ...programsFixture[0],
         spec: {
           ...programsFixture[0].spec,
-          staffMemberIds: ["staff-1", "staff-2", "staff-3"],
+          staffGroupIds: ["staff-group-1", "staff-group-2", "staff-group-3"],
         },
       };
       const wrapper = createWrapper(ProgramCard, {
         props: {
           program,
-          staffCount: 3,
+          staffGroupsCount: 3,
         },
         pinia,
       });
 
-      expect(wrapper.text()).toContain("3 staff");
+      expect(wrapper.text()).toContain("3 staff groups");
     });
 
     it("displays locations count", () => {
@@ -128,7 +128,7 @@ describe("ProgramCard", () => {
         spec: {
           ...programsFixture[0].spec,
           activityIds: [],
-          staffMemberIds: [],
+          staffGroupIds: [],
           locationIds: [],
         },
       };
@@ -140,7 +140,7 @@ describe("ProgramCard", () => {
       });
 
       expect(wrapper.text()).toContain("0 activities");
-      expect(wrapper.text()).toContain("0 staff");
+      expect(wrapper.text()).toContain("0 staff groups");
       expect(wrapper.text()).toContain("0 locations");
     });
   });
@@ -243,7 +243,7 @@ describe("ProgramCard", () => {
             "activity-9",
             "activity-10",
           ],
-          staffMemberIds: [
+          staffGroupIds: [
             "staff-1",
             "staff-2",
             "staff-3",
@@ -272,7 +272,7 @@ describe("ProgramCard", () => {
       const wrapper = createWrapper(ProgramCard, {
         props: {
           program,
-          staffCount: 10,
+          staffGroupsCount: 10,
           locationsCount: 10,
           activitiesCount: 10,
         },
@@ -280,7 +280,7 @@ describe("ProgramCard", () => {
       });
 
       expect(wrapper.text()).toContain("10 activities");
-      expect(wrapper.text()).toContain("10 staff");
+      expect(wrapper.text()).toContain("10 staff groups");
       expect(wrapper.text()).toContain("10 locations");
     });
   });

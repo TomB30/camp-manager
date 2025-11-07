@@ -75,8 +75,8 @@ describe("ProgramFormModal", () => {
       expect(vm.localFormData.spec.activityIds).toEqual(
         program.spec.activityIds,
       );
-      expect(vm.localFormData.spec.staffMemberIds).toEqual(
-        program.spec.staffMemberIds,
+      expect(vm.localFormData.spec.staffGroupIds).toEqual(
+        program.spec.staffGroupIds,
       );
       expect(vm.localFormData.spec.locationIds).toEqual(
         program.spec.locationIds,

@@ -1,13 +1,12 @@
 import { defineStore } from "pinia";
 import type {
   Program,
-  StaffMember,
   ProgramCreationRequest,
   ProgramUpdateRequest,
+  Group,
 } from "@/generated/api";
-import { programsService } from "@/services";
+import { programsService, STORAGE_KEYS, storageService } from "@/services";
 import { useActivitiesStore } from "./activitiesStore";
-import { useStaffMembersStore } from "./staffMembersStore";
 
 export const useProgramsStore = defineStore("programs", {
   state: () => ({
@@ -22,22 +21,18 @@ export const useProgramsStore = defineStore("programs", {
       };
     },
 
-    getProgramsForStaffMember(state): (staffId: string) => Program[] {
+    async getProgramsForStaffMember(
+      state,
+    ): Promise<(staffId: string) => Program[]> {
+      const groups = await storageService.getAll<Group>(STORAGE_KEYS.GROUPS);
       return (staffId: string): Program[] => {
         return state.programs.filter(
-          (p) => p.spec.staffMemberIds?.includes(staffId) || false,
-        );
-      };
-    },
-
-    getStaffMembersInProgram(): (programId: string) => StaffMember[] {
-      return (programId: string): StaffMember[] => {
-        const program = this.programs.find((p) => p.meta.id === programId);
-        if (!program) return [];
-
-        const staffStore = useStaffMembersStore();
-        return staffStore.staffMembers.filter(
-          (s) => program.spec.staffMemberIds?.includes(s.meta.id) || false,
+          (p) =>
+            p.spec.staffGroupIds?.some((groupId) =>
+              groups
+                .find((g) => g.meta.id === groupId)
+                ?.spec.staffIds?.includes(staffId),
+            ) || false,
         );
       };
     },

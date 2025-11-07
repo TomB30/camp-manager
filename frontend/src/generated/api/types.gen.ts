@@ -561,9 +561,9 @@ export type ProgramSpec = {
      */
     activityIds?: Array<string>;
     /**
-     * Staff members associated with this program
+     * Staff groups associated with this program
      */
-    staffMemberIds?: Array<string>;
+    staffGroupIds?: Array<string>;
     /**
      * Locations associated with this program
      */
