@@ -18,6 +18,6 @@ export const STORAGE_KEYS = {
   SESSIONS: "camp_sessions",
   LABELS: "camp_labels",
   ROLES: "camp_roles",
-  CAMP: "camp_settings",
+  camp: "camp_settings",
   DURATION_PRESETS: "camp_duration_presets",
 } as const;

@@ -12,7 +12,7 @@ export const campService = {
  * Get the camp (singleton). If no camp exists, initialize a default one.
  */
 async function getCamp(): Promise<Camp> {
-  const camps = await storageService.getAll<Camp>(STORAGE_KEYS.CAMP);
+  const camps = await storageService.getAll<Camp>(STORAGE_KEYS.camp);
 
   if (camps.length === 0) {
     return await initializeDefaultCamp();
@@ -42,7 +42,7 @@ async function updateCamp(campUpdate: CampUpdateRequest): Promise<Camp> {
     },
   };
 
-  return storageService.save<Camp>(STORAGE_KEYS.CAMP, updatedCamp);
+  return storageService.save<Camp>(STORAGE_KEYS.camp, updatedCamp);
 }
 
 /**
@@ -68,5 +68,5 @@ async function initializeDefaultCamp(): Promise<Camp> {
     },
   };
 
-  return storageService.save<Camp>(STORAGE_KEYS.CAMP, defaultCamp);
+  return storageService.save<Camp>(STORAGE_KEYS.camp, defaultCamp);
 }

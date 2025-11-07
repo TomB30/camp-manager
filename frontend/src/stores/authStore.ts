@@ -13,8 +13,8 @@ const MOCK_USERS: Array<User & { password: string }> = [
     tenantId: "tenant-1",
     accessRules: [
       {
-        roleId: "role-system-admin",
-        scopeType: "SYSTEM",
+        role: "admin",
+        scopeType: "system",
         scopeId: null,
       },
     ],
@@ -26,8 +26,8 @@ const MOCK_USERS: Array<User & { password: string }> = [
     tenantId: "tenant-1",
     accessRules: [
       {
-        roleId: "role-tenant-admin",
-        scopeType: "TENANT",
+        role: "admin",
+        scopeType: "tenant",
         scopeId: "tenant-1",
       },
     ],
@@ -39,8 +39,8 @@ const MOCK_USERS: Array<User & { password: string }> = [
     tenantId: "tenant-1",
     accessRules: [
       {
-        roleId: "role-camp-admin",
-        scopeType: "CAMP",
+        role: "admin",
+        scopeType: "camp",
         scopeId: "camp-1",
       },
     ],
@@ -52,13 +52,13 @@ const MOCK_USERS: Array<User & { password: string }> = [
     tenantId: "tenant-1",
     accessRules: [
       {
-        roleId: "role-camp-admin",
-        scopeType: "CAMP",
+        role: "admin",
+        scopeType: "camp",
         scopeId: "camp-1",
       },
       {
-        roleId: "role-viewer",
-        scopeType: "CAMP",
+        role: "viewer",
+        scopeType: "camp",
         scopeId: "camp-2",
       },
     ],
@@ -70,8 +70,8 @@ const MOCK_USERS: Array<User & { password: string }> = [
     tenantId: "tenant-1",
     accessRules: [
       {
-        roleId: "role-viewer",
-        scopeType: "CAMP",
+        role: "viewer",
+        scopeType: "camp",
         scopeId: "camp-1",
       },
     ],
@@ -95,9 +95,9 @@ export const useAuthStore = defineStore("auth", {
       const campIds = new Set<string>();
 
       for (const rule of state.currentUser.accessRules) {
-        if (rule.scopeType === "CAMP" && rule.scopeId) {
+        if (rule.scopeType === "camp" && rule.scopeId) {
           campIds.add(rule.scopeId);
-        } else if (rule.scopeType === "TENANT" || rule.scopeType === "SYSTEM") {
+        } else if (rule.scopeType === "tenant" || rule.scopeType === "system") {
           // Tenant and system admins have access to all camps
           // We'll need to get this from the camps store in the future
           // For now, return empty to indicate "all camps"
@@ -114,29 +114,29 @@ export const useAuthStore = defineStore("auth", {
       // Check for direct camp access
       const campRule = state.currentUser.accessRules.find(
         (rule) =>
-          rule.scopeType === "CAMP" && rule.scopeId === state.selectedCampId,
+          rule.scopeType === "camp" && rule.scopeId === state.selectedCampId,
       );
 
       if (campRule) {
-        return campRule.roleId;
+        return campRule.role;
       }
 
       // Check for tenant-level access
       const tenantRule = state.currentUser.accessRules.find(
-        (rule) => rule.scopeType === "TENANT",
+        (rule) => rule.scopeType === "tenant",
       );
 
       if (tenantRule) {
-        return tenantRule.roleId;
+        return tenantRule.role;
       }
 
       // Check for system-level access
       const systemRule = state.currentUser.accessRules.find(
-        (rule) => rule.scopeType === "SYSTEM",
+        (rule) => rule.scopeType === "system",
       );
 
       if (systemRule) {
-        return systemRule.roleId;
+        return systemRule.role;
       }
 
       return null;
@@ -145,14 +145,14 @@ export const useAuthStore = defineStore("auth", {
     hasSystemAccess(state): boolean {
       if (!state.currentUser) return false;
       return state.currentUser.accessRules.some(
-        (rule) => rule.scopeType === "SYSTEM",
+        (rule) => rule.scopeType === "system",
       );
     },
 
     hasTenantAccess(state): boolean {
       if (!state.currentUser) return false;
       return state.currentUser.accessRules.some(
-        (rule) => rule.scopeType === "TENANT" || rule.scopeType === "SYSTEM",
+        (rule) => rule.scopeType === "tenant" || rule.scopeType === "system",
       );
     },
   },
@@ -201,8 +201,8 @@ export const useAuthStore = defineStore("auth", {
         tenantId,
         accessRules: [
           {
-            roleId: "role-viewer",
-            scopeType: "TENANT",
+            role: "viewer",
+            scopeType: "tenant",
             scopeId: tenantId,
           },
         ],
@@ -258,7 +258,7 @@ export const useAuthStore = defineStore("auth", {
 
     hasPermission(
       action: "create" | "read" | "update" | "delete",
-      scopeType: "SYSTEM" | "TENANT" | "CAMP",
+      scopeType: "system" | "tenant" | "camp",
       scopeId?: string,
     ): boolean {
       // Stub for future implementation
@@ -270,20 +270,20 @@ export const useAuthStore = defineStore("auth", {
       // Tenant admins have all permissions within their tenant
       if (
         this.hasTenantAccess &&
-        (scopeType === "TENANT" || scopeType === "CAMP")
+        (scopeType === "tenant" || scopeType === "camp")
       ) {
         return true;
       }
 
       // Check specific camp access
-      if (scopeType === "CAMP" && scopeId) {
+      if (scopeType === "camp" && scopeId) {
         const campRule = this.currentUser.accessRules.find(
-          (rule) => rule.scopeType === "CAMP" && rule.scopeId === scopeId,
+          (rule) => rule.scopeType === "camp" && rule.scopeId === scopeId,
         );
 
         if (campRule) {
           // Viewers can only read
-          if (campRule.roleId === "role-viewer") {
+          if (campRule.role === "viewer") {
             return action === "read";
           }
           // Camp admins have all permissions for their camp
@@ -298,17 +298,17 @@ export const useAuthStore = defineStore("auth", {
       if (!this.currentUser) return null;
 
       // Check for system access
-      if (this.hasSystemAccess) return "role-system-admin";
+      if (this.hasSystemAccess) return "admin";
 
       // Check for tenant access
-      if (this.hasTenantAccess) return "role-tenant-admin";
+      if (this.hasTenantAccess) return "admin";
 
       // Check for specific camp access
       const campRule = this.currentUser.accessRules.find(
-        (rule) => rule.scopeType === "CAMP" && rule.scopeId === campId,
+        (rule) => rule.scopeType === "camp" && rule.scopeId === campId,
       );
 
-      return campRule ? campRule.roleId : null;
+      return campRule ? campRule.role : null;
     },
   },
 });

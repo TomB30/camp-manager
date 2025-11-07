@@ -65,7 +65,7 @@ export const camp: Camp = {
       country: "USA",
     },
     contactInfo: {
-      phone: "555-CAMP-FUN",
+      phone: "555-camp-FUN",
       email: "info@sunsetlakecamp.com",
       website: "https://www.sunsetlakecamp.com",
     },

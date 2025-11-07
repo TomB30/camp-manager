@@ -73,7 +73,7 @@
           <h4>Program</h4>
           <div class="programs-list">
             <span class="program-badge">
-              {{ getProgramName(activity.spec.programId) }}
+              {{ getProgramName(activity.spec.programId || "") }}
             </span>
           </div>
         </div>

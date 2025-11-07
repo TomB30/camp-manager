@@ -19,22 +19,22 @@ export function usePermissions() {
   const canCreate = (_: string, scopeId?: string): boolean => {
     // For now, determine scope type from entity
     // In the future, this could be more sophisticated
-    const scopeType: ScopeType = "CAMP"; // Most entities are camp-scoped
+    const scopeType: ScopeType = "camp"; // Most entities are camp-scoped
     return hasPermission("create", scopeType, scopeId);
   };
 
   const canEdit = (_: string, id: string): boolean => {
-    const scopeType: ScopeType = "CAMP";
+    const scopeType: ScopeType = "camp";
     return hasPermission("update", scopeType, id);
   };
 
   const canDelete = (_: string, id: string): boolean => {
-    const scopeType: ScopeType = "CAMP";
+    const scopeType: ScopeType = "camp";
     return hasPermission("delete", scopeType, id);
   };
 
   const canView = (_: string, id?: string): boolean => {
-    const scopeType: ScopeType = "CAMP";
+    const scopeType: ScopeType = "camp";
     return hasPermission("read", scopeType, id);
   };
 

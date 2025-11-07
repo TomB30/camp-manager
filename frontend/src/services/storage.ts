@@ -145,7 +145,7 @@ class StorageService {
     await delay();
 
     if (data.camp) {
-      localStorage.setItem(STORAGE_KEYS.CAMP, JSON.stringify([data.camp]));
+      localStorage.setItem(STORAGE_KEYS.camp, JSON.stringify([data.camp]));
     }
     if (data.durationPresets) {
       localStorage.setItem(

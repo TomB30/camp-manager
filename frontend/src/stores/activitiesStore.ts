@@ -3,7 +3,6 @@ import type {
   Activity,
   ActivityCreationRequest,
   ActivityUpdateRequest,
-  Program,
 } from "@/generated/api";
 import { activitiesService } from "@/services";
 import { useProgramsStore } from "./programsStore";
@@ -23,9 +22,7 @@ export const useActivitiesStore = defineStore("activities", {
 
     getActivitiesInProgram(state): (programId: string) => Activity[] {
       return (programId: string): Activity[] => {
-        return state.activities.filter((a) =>
-          a.spec.programId === programId,
-        );
+        return state.activities.filter((a) => a.spec.programId === programId);
       };
     },
   },
@@ -145,15 +142,12 @@ export const useActivitiesStore = defineStore("activities", {
           meta: program.meta,
           spec: {
             ...program.spec,
-            activityIds: program.spec.activityIds?.filter(
-              (aid) => aid !== id,
-            ),
+            activityIds: program.spec.activityIds?.filter((aid) => aid !== id),
           },
         });
       }
       await activitiesService.deleteActivity(id);
       this.activities = this.activities.filter((a) => a.meta.id !== id);
     },
-
   },
 });

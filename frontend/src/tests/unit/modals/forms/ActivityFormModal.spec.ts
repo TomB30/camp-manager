@@ -55,9 +55,11 @@ describe("ActivityFormModal", () => {
       });
 
       // ActivityFormModal now contains the form directly
-      expect(wrapper.find('input[placeholder="e.g., Wakeboarding, Pottery"]').exists()).toBe(
-        true,
-      );
+      expect(
+        wrapper
+          .find('input[placeholder="e.g., Wakeboarding, Pottery"]')
+          .exists(),
+      ).toBe(true);
     });
   });
 
@@ -97,7 +99,7 @@ describe("ActivityFormModal", () => {
         pinia,
       });
 
-      expect(wrapper.find('section').exists()).toBe(true);
+      expect(wrapper.find("section").exists()).toBe(true);
     });
   });
 

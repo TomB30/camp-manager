@@ -114,4 +114,3 @@ async function getActivitiesInProgram(programId: string): Promise<Activity[]> {
   const activities = await listActivities();
   return activities.filter((a) => a.spec.programId === programId);
 }
-
