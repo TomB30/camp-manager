@@ -2,7 +2,7 @@
   <BaseModal :title="location?.meta.name || ''" @close="$emit('close')">
     <template #body>
       <div v-if="location">
-        <div class="detail-section">
+        <div v-if="location.spec.capacity" class="detail-section">
           <div class="detail-label">Capacity</div>
           <div>{{ location.spec.capacity }} people</div>
         </div>
