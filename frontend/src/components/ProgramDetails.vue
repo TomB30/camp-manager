@@ -33,97 +33,143 @@
       </div>
     </div>
 
-    <!-- Activities Section -->
     <div class="detail-section">
-      <div class="section-header">
-        <h3>
-          <Icon name="ListChecks" :size="20" />
-          Activities
-        </h3>
-        <BaseButton
-          color="grey-8"
-          outline
-          icon="add"
-          label="Activity"
-          @click="$emit('add-activity', program)"
-        />
-      </div>
+      <q-splitter v-model="splitterValue" style="height: 100%">
+        <template v-slot:before>
+          <q-tabs v-model="activeTab" class="detail-tabs" vertical no-caps>
+            <q-tab name="activities">
+              <template #default>
+                <div
+                  class="row justify-start items-center q-gutter-x-md q-pa-sm"
+                >
+                  <Icon name="ListChecks" :size="20" />
+                  <span>Activities</span>
+                </div>
+              </template>
+            </q-tab>
+            <q-tab name="staff-groups">
+              <template #default>
+                <div
+                  class="row justify-start items-center q-gutter-x-md q-pa-sm"
+                >
+                  <Icon name="UsersRound" :size="20" />
+                  <span>Staff Groups</span>
+                </div>
+              </template>
+            </q-tab>
+            <q-tab name="locations">
+              <template #default>
+                <div
+                  class="row justify-start items-center q-gutter-x-md q-pa-sm"
+                >
+                  <Icon name="Home" :size="20" />
+                  <span>Locations</span>
+                </div>
+              </template>
+            </q-tab>
+          </q-tabs>
+        </template>
 
-      <div v-if="programActivities.length > 0" class="activities-list">
-        <ProgramActivityCard
-          v-for="activity in programActivities"
-          :key="activity.meta.id"
-          :activity="activity"
-          @remove="confirmRemoveActivity(activity.meta.id)"
-          @click="viewActivity(activity)"
-        />
-      </div>
+        <template v-slot:after>
+          <q-tab-panels
+            v-model="activeTab"
+            animated
+            vertical
+            :style="{ borderRadius: '8px' }"
+          >
+            <q-tab-panel name="activities">
+              <div class="section-header">
+                <h3>
+                  <Icon name="ListChecks" :size="20" />
+                  Activities
+                </h3>
+                <BaseButton
+                  color="grey-8"
+                  outline
+                  icon="add"
+                  label="Activity"
+                  @click="$emit('add-activity', program)"
+                />
+              </div>
 
-      <div v-else class="empty-section">
-        <p>No activities yet. Add activities to create event templates.</p>
-      </div>
+              <div v-if="programActivities.length > 0" class="activities-list">
+                <ProgramActivityCard
+                  v-for="activity in programActivities"
+                  :key="activity.meta.id"
+                  :activity="activity"
+                  @remove="confirmRemoveActivity(activity.meta.id)"
+                  @click="viewActivity(activity)"
+                />
+              </div>
+
+              <div v-else class="empty-section">
+                <p>
+                  No activities yet. Add activities to create event templates.
+                </p>
+              </div>
+            </q-tab-panel>
+            <q-tab-panel name="staff-groups">
+              <div class="section-header">
+                <h3>
+                  <Icon name="UsersRound" :size="20" />
+                  Staff Groups
+                </h3>
+                <BaseButton
+                  color="grey-8"
+                  outline
+                  icon="add"
+                  label="Staff Group"
+                  @click="$emit('add-staff-group', program)"
+                />
+              </div>
+
+              <div v-if="programStaffGroups.length > 0" class="staff-list">
+                <ProgramStaffGroupCard
+                  v-for="group in programStaffGroups"
+                  :key="group.meta.id"
+                  :staff-group="group"
+                  @remove="confirmRemoveStaffGroup(group.meta.id)"
+                />
+              </div>
+
+              <div v-else class="empty-section">
+                <p>
+                  No staff groups assigned. Add staff groups to this program.
+                </p>
+              </div>
+            </q-tab-panel>
+            <q-tab-panel name="locations">
+              <div class="section-header">
+                <h3>
+                  <Icon name="Home" :size="20" />
+                  Locations
+                </h3>
+                <BaseButton
+                  color="grey-8"
+                  outline
+                  icon="add"
+                  label="Location"
+                  @click="$emit('add-location', program)"
+                />
+              </div>
+
+              <div v-if="programLocations.length > 0" class="locations-list">
+                <ProgramLocationCard
+                  v-for="location in programLocations"
+                  :key="location.meta.id"
+                  :location="location"
+                  @remove="confirmRemoveLocation(location.meta.id)"
+                />
+              </div>
+
+              <div v-else class="empty-section">
+                <p>No locations assigned. Add locations to this program.</p>
+              </div>
+            </q-tab-panel>
+          </q-tab-panels>
+        </template>
+      </q-splitter>
     </div>
-
-    <!-- Staff Section -->
-    <div class="detail-section">
-      <div class="section-header">
-        <h3>
-          <Icon name="UsersRound" :size="20" />
-          Staff Groups
-        </h3>
-        <BaseButton
-          color="grey-8"
-          outline
-          icon="add"
-          label="Staff Group"
-          @click="$emit('add-staff-group', program)"
-        />
-      </div>
-
-      <div v-if="programStaffGroups.length > 0" class="staff-list">
-        <ProgramStaffGroupCard
-          v-for="group in programStaffGroups"
-          :key="group.meta.id"
-          :staff-group="group"
-          @remove="confirmRemoveStaffGroup(group.meta.id)"
-        />
-      </div>
-
-      <div v-else class="empty-section">
-        <p>No staff groups assigned. Add staff groups to this program.</p>
-      </div>
-    </div>
-
-    <!-- Locations Section -->
-    <div class="detail-section">
-      <div class="section-header">
-        <h3>
-          <Icon name="Home" :size="20" />
-          Locations
-        </h3>
-        <BaseButton
-          color="grey-8"
-          outline
-          icon="add"
-          label="Location"
-          @click="$emit('add-location', program)"
-        />
-      </div>
-
-      <div v-if="programLocations.length > 0" class="locations-list">
-        <ProgramLocationCard
-          v-for="location in programLocations"
-          :key="location.meta.id"
-          :location="location"
-          @remove="confirmRemoveLocation(location.meta.id)"
-        />
-      </div>
-
-      <div v-else class="empty-section">
-        <p>No locations assigned. Add locations to this program.</p>
-      </div>
-    </div>
-
     <ActivityFormModal
       v-if="showActivityModal"
       :activity-id="editingActivity?.meta.id || undefined"
@@ -230,6 +276,8 @@ export default defineComponent({
       showActivityModal: false,
       editingActivity: null as Activity | null,
       selectedActivity: null as Activity | null,
+      activeTab: "activities" as "activities" | "staff-groups" | "locations",
+      splitterValue: 20,
     };
   },
   computed: {
@@ -402,6 +450,10 @@ export default defineComponent({
   animation: fadeIn 0.3s ease;
 }
 
+.q-tabs--vertical .q-tab {
+  justify-content: flex-start;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -418,7 +470,7 @@ export default defineComponent({
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   box-shadow: var(--shadow);
 }
 
@@ -460,7 +512,7 @@ export default defineComponent({
   background: var(--surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  padding: 1.5rem;
+  padding-top: 0;
   margin-bottom: 1.5rem;
   box-shadow: var(--shadow);
 }
@@ -469,7 +521,7 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--border-light);
 }
