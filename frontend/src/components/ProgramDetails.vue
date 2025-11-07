@@ -617,7 +617,6 @@ export default defineComponent({
   }
 
   .detail-header-content {
-    flex-direction: column;
     gap: 1rem;
   }
 
