@@ -434,3 +434,210 @@ COMMENT ON COLUMN locations.notes IS 'Additional notes or details about the loca
 COMMENT ON COLUMN housing_rooms.area_id IS 'Optional reference to the area where this housing room is located';
 COMMENT ON COLUMN housing_rooms.beds IS 'Number of beds in the housing room';
 COMMENT ON COLUMN housing_rooms.bathroom IS 'Type of bathroom: private, shared, or empty string for none specified';
+
+
+-- ============================================================================
+-- GROUPS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS groups (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    
+    -- Spec fields
+    session_id UUID REFERENCES sessions(id) ON DELETE SET NULL,
+    housing_room_id UUID REFERENCES housing_rooms(id) ON DELETE SET NULL,
+    
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+-- Indexes for groups
+CREATE INDEX IF NOT EXISTS idx_groups_tenant_id ON groups(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_groups_camp_id ON groups(camp_id);
+CREATE INDEX IF NOT EXISTS idx_groups_session_id ON groups(session_id);
+CREATE INDEX IF NOT EXISTS idx_groups_housing_room_id ON groups(housing_room_id);
+CREATE INDEX IF NOT EXISTS idx_groups_tenant_id_camp_id ON groups(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_groups_deleted_at ON groups(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_groups_name ON groups(name);
+
+
+-- ============================================================================
+-- CAMPERS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS campers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    
+    -- Spec fields
+    birthday DATE NOT NULL,
+    gender VARCHAR(50) NOT NULL,
+    session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+    housing_group_id UUID REFERENCES groups(id) ON DELETE SET NULL,
+    
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP,
+    
+    CONSTRAINT check_camper_gender CHECK (gender IN ('male', 'female'))
+);
+
+-- Indexes for campers
+CREATE INDEX IF NOT EXISTS idx_campers_tenant_id ON campers(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_campers_camp_id ON campers(camp_id);
+CREATE INDEX IF NOT EXISTS idx_campers_session_id ON campers(session_id);
+CREATE INDEX IF NOT EXISTS idx_campers_housing_group_id ON campers(housing_group_id);
+CREATE INDEX IF NOT EXISTS idx_campers_tenant_id_camp_id ON campers(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_campers_deleted_at ON campers(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_campers_name ON campers(name);
+
+-- ============================================================================
+-- STAFF MEMBERS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS staff_members (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    
+    -- Spec fields
+    birthday DATE NOT NULL,
+    gender VARCHAR(50) NOT NULL,
+    role_id UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+    phone VARCHAR(50),
+    housing_group_id UUID REFERENCES groups(id) ON DELETE SET NULL,
+    
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP,
+    
+    CONSTRAINT check_staff_gender CHECK (gender IN ('male', 'female'))
+);
+
+-- Indexes for staff_members
+CREATE INDEX IF NOT EXISTS idx_staff_members_tenant_id ON staff_members(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_staff_members_camp_id ON staff_members(camp_id);
+CREATE INDEX IF NOT EXISTS idx_staff_members_role_id ON staff_members(role_id);
+CREATE INDEX IF NOT EXISTS idx_staff_members_housing_group_id ON staff_members(housing_group_id);
+CREATE INDEX IF NOT EXISTS idx_staff_members_tenant_id_camp_id ON staff_members(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_staff_members_deleted_at ON staff_members(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_staff_members_name ON staff_members(name);
+
+-- ============================================================================
+-- GROUP_CAMPERS JUNCTION TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS group_campers (
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    camper_id UUID NOT NULL REFERENCES campers(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    PRIMARY KEY (group_id, camper_id)
+);
+
+-- Indexes for group_campers
+CREATE INDEX IF NOT EXISTS idx_group_campers_group_id ON group_campers(group_id);
+CREATE INDEX IF NOT EXISTS idx_group_campers_camper_id ON group_campers(camper_id);
+
+-- ============================================================================
+-- GROUP_STAFF_MEMBERS JUNCTION TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS group_staff_members (
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    staff_member_id UUID NOT NULL REFERENCES staff_members(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    PRIMARY KEY (group_id, staff_member_id)
+);
+
+-- Indexes for group_staff_members
+CREATE INDEX IF NOT EXISTS idx_group_staff_members_group_id ON group_staff_members(group_id);
+CREATE INDEX IF NOT EXISTS idx_group_staff_members_staff_member_id ON group_staff_members(staff_member_id);
+
+-- ============================================================================
+-- GROUP_GROUPS JUNCTION TABLE (Nested Groups)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS group_groups (
+    parent_group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    child_group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    PRIMARY KEY (parent_group_id, child_group_id),
+    CONSTRAINT check_no_self_reference CHECK (parent_group_id != child_group_id)
+);
+
+-- Indexes for group_groups
+CREATE INDEX IF NOT EXISTS idx_group_groups_parent_group_id ON group_groups(parent_group_id);
+CREATE INDEX IF NOT EXISTS idx_group_groups_child_group_id ON group_groups(child_group_id);
+
+-- ============================================================================
+-- STAFF_MEMBER_CERTIFICATIONS JUNCTION TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS staff_member_certifications (
+    staff_member_id UUID NOT NULL REFERENCES staff_members(id) ON DELETE CASCADE,
+    certification_id UUID NOT NULL REFERENCES certifications(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    PRIMARY KEY (staff_member_id, certification_id)
+);
+
+-- Indexes for staff_member_certifications
+CREATE INDEX IF NOT EXISTS idx_staff_member_certifications_staff_member_id ON staff_member_certifications(staff_member_id);
+CREATE INDEX IF NOT EXISTS idx_staff_member_certifications_certification_id ON staff_member_certifications(certification_id);
+
+-- ============================================================================
+-- TRIGGERS FOR UPDATED_AT (CAMPERS, STAFF_MEMBERS, GROUPS)
+-- ============================================================================
+
+-- Trigger for campers
+DROP TRIGGER IF EXISTS update_campers_updated_at ON campers;
+CREATE TRIGGER update_campers_updated_at
+    BEFORE UPDATE ON campers
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- Trigger for staff_members
+DROP TRIGGER IF EXISTS update_staff_members_updated_at ON staff_members;
+CREATE TRIGGER update_staff_members_updated_at
+    BEFORE UPDATE ON staff_members
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- Trigger for groups
+DROP TRIGGER IF EXISTS update_groups_updated_at ON groups;
+CREATE TRIGGER update_groups_updated_at
+    BEFORE UPDATE ON groups
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- COMMENTS FOR DOCUMENTATION (CAMPERS, STAFF_MEMBERS, GROUPS)
+-- ============================================================================
+
+COMMENT ON TABLE campers IS 'Campers registered for camp sessions';
+COMMENT ON TABLE staff_members IS 'Staff members working at the camp';
+COMMENT ON TABLE groups IS 'Groups of campers and/or staff members, or nested groups';
+COMMENT ON TABLE group_campers IS 'Junction table linking groups to campers (many-to-many)';
+COMMENT ON TABLE group_staff_members IS 'Junction table linking groups to staff members (many-to-many)';
+COMMENT ON TABLE group_groups IS 'Junction table for nested groups (parent-child relationships)';
+COMMENT ON TABLE staff_member_certifications IS 'Junction table linking staff members to their certifications (many-to-many)';
+
+COMMENT ON COLUMN campers.birthday IS 'Date of birth of the camper';
+COMMENT ON COLUMN campers.gender IS 'Gender of the camper: male, female, other, prefer-not-to-say';
+COMMENT ON COLUMN campers.session_id IS 'Session this camper is registered for';
+COMMENT ON COLUMN campers.housing_group_id IS 'Optional housing room assignment';
+
+COMMENT ON COLUMN staff_members.birthday IS 'Date of birth of the staff member';
+COMMENT ON COLUMN staff_members.gender IS 'Gender of the staff member: male, female, other, prefer-not-to-say';
+COMMENT ON COLUMN staff_members.role_id IS 'Role of the staff member';
+COMMENT ON COLUMN staff_members.phone IS 'Contact phone number';
+COMMENT ON COLUMN staff_members.housing_group_id IS 'Optional housing room assignment';
+
+COMMENT ON COLUMN groups.session_id IS 'Optional session this group belongs to';
+COMMENT ON COLUMN groups.housing_room_id IS 'Optional housing room assignment for this group';

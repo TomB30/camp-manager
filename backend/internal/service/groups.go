@@ -2,9 +2,14 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
+	"github.com/tbechar/camp-manager-backend/internal/domain"
+	pkgerrors "github.com/tbechar/camp-manager-backend/pkg/errors"
+	"github.com/tbechar/camp-manager-backend/pkg/utils"
+	"gorm.io/gorm"
 )
 
 // GroupsService defines the interface for group business logic
@@ -16,7 +21,7 @@ type GroupsService interface {
 	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Group, error)
 
 	// Create creates a new group
-	Create(ctx context.Context, req *api.GroupCreationRequest) (*api.Group, error)
+	Create(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, req *api.GroupCreationRequest) (*api.Group, error)
 
 	// Update updates an existing group
 	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.GroupUpdateRequest) (*api.Group, error)
@@ -39,30 +44,135 @@ func NewGroupsService(repo GroupsRepository) GroupsService {
 
 // List retrieves groups with pagination and optional search
 func (s *groupsService) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.GroupsListResponse, error) {
-	// TODO: Implement list logic
-	return nil, nil
+	groups, total, err := s.repo.List(ctx, tenantId, campId, limit, offset, search)
+	if err != nil {
+		return nil, pkgerrors.InternalServerError("Failed to list groups", err)
+	}
+
+	// Convert domain groups to API groups
+	apiGroups := make([]api.Group, len(groups))
+	for i, group := range groups {
+		apiGroups[i] = group.ToAPI()
+	}
+
+	return &api.GroupsListResponse{
+		Items:  apiGroups,
+		Limit:  limit,
+		Offset: offset,
+		Total:  int(total),
+	}, nil
 }
 
 // GetByID retrieves a single group by ID
 func (s *groupsService) GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Group, error) {
-	// TODO: Implement get by ID logic
-	return nil, nil
+	group, err := s.repo.GetByID(ctx, tenantId, campId, id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, pkgerrors.NotFound("Group not found", err)
+		}
+		return nil, pkgerrors.InternalServerError("Failed to get group", err)
+	}
+
+	apiGroup := group.ToAPI()
+	return &apiGroup, nil
 }
 
 // Create creates a new group
-func (s *groupsService) Create(ctx context.Context, req *api.GroupCreationRequest) (*api.Group, error) {
-	// TODO: Implement create logic
-	return nil, nil
+func (s *groupsService) Create(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, req *api.GroupCreationRequest) (*api.Group, error) {
+	// Create domain group from request
+	domainGroup := domain.Group{
+		TenantID:      tenantId,
+		CampID:        campId,
+		Name:          req.Meta.Name,
+		Description:   utils.PtrToString(req.Meta.Description),
+		SessionID:     req.Spec.SessionId,
+		HousingRoomID: req.Spec.HousingRoomId,
+	}
+	domainGroup.GroupCampers = []domain.GroupCamper{}
+	if req.Spec.CamperIds != nil {
+		for _, camperId := range *req.Spec.CamperIds {
+			domainGroup.GroupCampers = append(domainGroup.GroupCampers, domain.GroupCamper{CamperID: camperId, GroupID: domainGroup.ID})
+		}
+	}
+	domainGroup.GroupStaffMembers = []domain.GroupStaffMember{}
+	if req.Spec.StaffIds != nil {
+		for _, staffMemberId := range *req.Spec.StaffIds {
+			domainGroup.GroupStaffMembers = append(domainGroup.GroupStaffMembers, domain.GroupStaffMember{StaffMemberID: staffMemberId, GroupID: domainGroup.ID})
+		}
+	}
+	domainGroup.ChildGroups = []domain.GroupGroup{}
+	if req.Spec.GroupIds != nil {
+		for _, groupId := range *req.Spec.GroupIds {
+			domainGroup.ChildGroups = append(domainGroup.ChildGroups, domain.GroupGroup{ChildGroupID: groupId, ParentGroupID: domainGroup.ID})
+		}
+	}
+
+	// Save to database
+	if err := s.repo.Create(ctx, &domainGroup); err != nil {
+		return nil, pkgerrors.InternalServerError("Failed to create group", err)
+	}
+
+	apiGroup := domainGroup.ToAPI()
+	return &apiGroup, nil
 }
 
 // Update updates an existing group
 func (s *groupsService) Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.GroupUpdateRequest) (*api.Group, error) {
-	// TODO: Implement update logic
-	return nil, nil
+	// Check if group exists and belongs to tenant/camp
+	existingGroup, err := s.repo.GetByID(ctx, tenantId, campId, id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, pkgerrors.NotFound("Group not found", err)
+		}
+		return nil, pkgerrors.InternalServerError("Failed to get group", err)
+	}
+
+	// Update fields
+	existingGroup.Name = req.Meta.Name
+	existingGroup.Description = utils.PtrToString(req.Meta.Description)
+	existingGroup.SessionID = req.Spec.SessionId
+	existingGroup.HousingRoomID = req.Spec.HousingRoomId
+	existingGroup.GroupCampers = []domain.GroupCamper{}
+	if req.Spec.CamperIds != nil {
+		for _, camperId := range *req.Spec.CamperIds {
+			existingGroup.GroupCampers = append(existingGroup.GroupCampers, domain.GroupCamper{CamperID: camperId, GroupID: existingGroup.ID})
+		}
+	}
+	existingGroup.GroupStaffMembers = []domain.GroupStaffMember{}
+	if req.Spec.StaffIds != nil {
+		for _, staffMemberId := range *req.Spec.StaffIds {
+			existingGroup.GroupStaffMembers = append(existingGroup.GroupStaffMembers, domain.GroupStaffMember{StaffMemberID: staffMemberId, GroupID: existingGroup.ID})
+		}
+	}
+	existingGroup.ChildGroups = []domain.GroupGroup{}
+	if req.Spec.GroupIds != nil {
+		for _, groupId := range *req.Spec.GroupIds {
+			existingGroup.ChildGroups = append(existingGroup.ChildGroups, domain.GroupGroup{ChildGroupID: groupId, ParentGroupID: existingGroup.ID})
+		}
+	}
+	// Save updates
+	if err := s.repo.Update(ctx, tenantId, campId, id, existingGroup); err != nil {
+		return nil, pkgerrors.InternalServerError("Failed to update group", err)
+	}
+
+	apiGroup := existingGroup.ToAPI()
+	return &apiGroup, nil
 }
 
 // Delete deletes a group by ID
 func (s *groupsService) Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error {
-	// TODO: Implement delete logic
+	// Check if group exists and belongs to tenant/camp
+	_, err := s.repo.GetByID(ctx, tenantId, campId, id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return pkgerrors.NotFound("Group not found", err)
+		}
+		return pkgerrors.InternalServerError("Failed to get group", err)
+	}
+
+	if err := s.repo.Delete(ctx, tenantId, campId, id); err != nil {
+		return pkgerrors.InternalServerError("Failed to delete group", err)
+	}
+
 	return nil
 }

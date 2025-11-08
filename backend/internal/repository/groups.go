@@ -2,10 +2,13 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"log"
 
 	"github.com/google/uuid"
-	"github.com/tbechar/camp-manager-backend/internal/api"
 	"github.com/tbechar/camp-manager-backend/internal/database"
+	"github.com/tbechar/camp-manager-backend/internal/domain"
+	"gorm.io/gorm"
 )
 
 // GroupsRepository handles database operations for groups
@@ -19,31 +22,236 @@ func NewGroupsRepository(db *database.Database) *GroupsRepository {
 }
 
 // List retrieves a paginated list of groups
-func (r *GroupsRepository) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) ([]api.Group, int, error) {
-	// TODO: Implement query with pagination and search
-	return nil, 0, nil
+func (r *GroupsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Group, int64, error) {
+	var groups []domain.Group
+	var total int64
+
+	// Build the base query with tenant and camp filtering
+	query := ScopedQuery(r.db, ctx, tenantID, campID)
+
+	// Add search filter if provided
+	if search != nil && *search != "" {
+		searchPattern := fmt.Sprintf("%%%s%%", *search)
+		query = query.Where("name ILIKE ?", searchPattern)
+	}
+
+	// Get total count
+	if err := query.Model(&domain.Group{}).Count(&total).Error; err != nil {
+		return nil, 0, fmt.Errorf("failed to count groups: %w", err)
+	}
+
+	// Get paginated results with preloaded relationships
+	if err := query.
+		Preload("GroupCampers").
+		Preload("GroupStaffMembers").
+		Preload("ChildGroups").
+		Limit(limit).
+		Offset(offset).
+		Order("created_at DESC").
+		Find(&groups).Error; err != nil {
+		return nil, 0, fmt.Errorf("failed to list groups: %w", err)
+	}
+
+	return groups, total, nil
 }
 
 // GetByID retrieves a single group by ID
-func (r *GroupsRepository) GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Group, error) {
-	// TODO: Implement single row query
-	return nil, nil
+func (r *GroupsRepository) GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Group, error) {
+	var group domain.Group
+
+	err := ScopedQuery(r.db, ctx, tenantID, campID).
+		Preload("GroupCampers").
+		Preload("GroupStaffMembers").
+		Preload("ChildGroups").
+		Where("id = ?", id).
+		First(&group).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("group not found")
+		}
+		return nil, fmt.Errorf("failed to get group: %w", err)
+	}
+
+	return &group, nil
 }
 
 // Create inserts a new group
-func (r *GroupsRepository) Create(ctx context.Context, group *api.Group) error {
-	// TODO: Implement INSERT query
-	return nil
+func (r *GroupsRepository) Create(ctx context.Context, group *domain.Group) error {
+	// Validate mutual exclusivity
+	if err := validateGroupType(group); err != nil {
+		return err
+	}
+
+	// Start a transaction
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		domainGroup := domain.Group{
+			TenantID:      group.TenantID,
+			CampID:        group.CampID,
+			Name:          group.Name,
+			Description:   "",
+			SessionID:     group.SessionID,
+			HousingRoomID: group.HousingRoomID,
+		}
+
+		if group.Description != "" {
+			domainGroup.Description = group.Description
+		}
+
+		// Insert the group
+		if err := tx.Create(&domainGroup).Error; err != nil {
+			log.Println("failed to create group: %w", err)
+			return fmt.Errorf("failed to create group: %w", err)
+		}
+
+		// Sync relationships based on group type
+		if err := syncGroupRelationships(tx, domainGroup.ID, group); err != nil {
+			return err
+		}
+
+		group.ID = domainGroup.ID
+		group.CreatedAt = domainGroup.CreatedAt
+		group.UpdatedAt = domainGroup.UpdatedAt
+
+		return nil
+	})
 }
 
 // Update updates an existing group
-func (r *GroupsRepository) Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, group *api.Group) error {
-	// TODO: Implement UPDATE query
+func (r *GroupsRepository) Update(ctx context.Context, tenantID, campID, id uuid.UUID, group *domain.Group) error {
+	// Validate mutual exclusivity
+	if err := validateGroupType(group); err != nil {
+		return err
+	}
+
+	// Start a transaction
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// Check if group exists and belongs to tenant/camp
+		var existing domain.Group
+		if err := tx.Where("id = ? AND tenant_id = ? AND camp_id = ?", id, tenantID, campID).
+			First(&existing).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				return fmt.Errorf("group not found or unauthorized")
+			}
+			return fmt.Errorf("failed to find group: %w", err)
+		}
+
+		// Update the group fields
+		updates := map[string]interface{}{
+			"name":            group.Name,
+			"session_id":      group.SessionID,
+			"housing_room_id": group.HousingRoomID,
+		}
+
+		if group.Description != "" {
+			updates["description"] = group.Description
+		} else {
+			updates["description"] = ""
+		}
+
+		result := tx.Model(&domain.Group{}).
+			Where("id = ? AND tenant_id = ? AND camp_id = ?", id, tenantID, campID).
+			Updates(updates)
+
+		if result.Error != nil {
+			return fmt.Errorf("failed to update group: %w", result.Error)
+		}
+
+		if result.RowsAffected == 0 {
+			return fmt.Errorf("group not found or unauthorized")
+		}
+
+		// Sync relationships based on group type using delete-all-and-recreate strategy
+		if err := syncGroupRelationships(tx, id, group); err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+// Delete soft deletes a group by ID
+func (r *GroupsRepository) Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error {
+	result := ScopedQuery(r.db, ctx, tenantID, campID).
+		Where("id = ?", id).
+		Delete(&domain.Group{})
+
+	if result.Error != nil {
+		return fmt.Errorf("failed to delete group: %w", result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("group not found or unauthorized")
+	}
+
+	// Junction table cleanup is handled automatically by ON DELETE CASCADE
+
 	return nil
 }
 
-// Delete removes a group by ID
-func (r *GroupsRepository) Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error {
-	// TODO: Implement DELETE query
+// validateGroupType ensures mutual exclusivity between nested groups and manual member selection
+func validateGroupType(group *domain.Group) error {
+	hasNestedGroups := len(group.ChildGroups) > 0
+	hasManualMembers := len(group.GroupCampers) > 0 || len(group.GroupStaffMembers) > 0
+
+	if hasNestedGroups && hasManualMembers {
+		return fmt.Errorf("group cannot have both nested groups (groupIds) and manual member selection (camperIds/staffIds)")
+	}
+
+	return nil
+}
+
+// syncGroupRelationships syncs all group relationships using delete-all-and-recreate strategy
+func syncGroupRelationships(tx *gorm.DB, groupID uuid.UUID, group *domain.Group) error {
+	// Delete all existing relationships
+	if err := tx.Where("group_id = ?", groupID).Delete(&domain.GroupCamper{}).Error; err != nil {
+		return fmt.Errorf("failed to delete existing camper associations: %w", err)
+	}
+	if err := tx.Where("group_id = ?", groupID).Delete(&domain.GroupStaffMember{}).Error; err != nil {
+		return fmt.Errorf("failed to delete existing staff associations: %w", err)
+	}
+	if err := tx.Where("parent_group_id = ?", groupID).Delete(&domain.GroupGroup{}).Error; err != nil {
+		return fmt.Errorf("failed to delete existing nested group associations: %w", err)
+	}
+
+	// Insert new camper associations if provided
+	if len(group.GroupCampers) > 0 {
+		for _, groupCamper := range group.GroupCampers {
+			groupCamper := domain.GroupCamper{
+				GroupID:  groupID,
+				CamperID: groupCamper.CamperID,
+			}
+			if err := tx.Create(&groupCamper).Error; err != nil {
+				return fmt.Errorf("failed to create camper association: %w", err)
+			}
+		}
+	}
+
+	// Insert new staff associations if provided
+	if len(group.GroupStaffMembers) > 0 {
+		for _, groupStaffMember := range group.GroupStaffMembers {
+			groupStaff := domain.GroupStaffMember{
+				GroupID:       groupID,
+				StaffMemberID: groupStaffMember.StaffMemberID,
+			}
+			if err := tx.Create(&groupStaff).Error; err != nil {
+				return fmt.Errorf("failed to create staff association: %w", err)
+			}
+		}
+	}
+
+	// Insert new nested group associations if provided
+	if len(group.ChildGroups) > 0 {
+		for _, groupGroup := range group.ChildGroups {
+			groupGroup := domain.GroupGroup{
+				ParentGroupID: groupID,
+				ChildGroupID:  groupGroup.ChildGroupID,
+			}
+			if err := tx.Create(&groupGroup).Error; err != nil {
+				return fmt.Errorf("failed to create nested group association: %w", err)
+			}
+		}
+	}
+
 	return nil
 }

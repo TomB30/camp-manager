@@ -1,10 +1,14 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
 	"github.com/tbechar/camp-manager-backend/internal/service"
+	pkgcontext "github.com/tbechar/camp-manager-backend/pkg/context"
+	"github.com/tbechar/camp-manager-backend/pkg/errors"
 )
 
 // CampersHandler handles camper-related HTTP requests
@@ -21,31 +25,189 @@ func NewCampersHandler(service service.CampersService) *CampersHandler {
 
 // ListCampers handles GET /api/v1/camps/{camp_id}/campers
 func (h *CampersHandler) ListCampers(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListCampersParams) {
-	// TODO: Implement listing campers with pagination and search
-	// Use campId to filter campers for the specific camp
+	// Extract tenant ID from context
+	tenantIDStr, err := pkgcontext.ExtractTenantID(r.Context())
+	if err != nil {
+		errors.WriteError(w, errors.Unauthorized("Tenant ID not found in context", err))
+		return
+	}
+
+	tenantID, err := uuid.Parse(tenantIDStr)
+	if err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid tenant ID", err))
+		return
+	}
+
+	campUUID := uuid.UUID(campId)
+
+	// Set default pagination values
+	limit := 50
+	offset := 0
+
+	if params.Limit != nil {
+		limit = *params.Limit
+	}
+	if params.Offset != nil {
+		offset = *params.Offset
+	}
+
+	// Call service
+	response, err := h.service.List(r.Context(), tenantID, campUUID, limit, offset, params.Search)
+	if err != nil {
+		errors.WriteError(w, err)
+		return
+	}
+
+	// Write response
+	if err := errors.WriteJSON(w, http.StatusOK, response); err != nil {
+		errors.WriteError(w, errors.InternalServerError("Failed to write response", err))
+		return
+	}
 }
 
 // CreateCamper handles POST /api/v1/camps/{camp_id}/campers
 func (h *CampersHandler) CreateCamper(w http.ResponseWriter, r *http.Request, campId api.CampId) {
-	// TODO: Implement camper creation
-	// Use campId to associate camper with the specific camp
+	// Extract tenant ID from context
+	tenantIDStr, err := pkgcontext.ExtractTenantID(r.Context())
+	if err != nil {
+		errors.WriteError(w, errors.Unauthorized("Tenant ID not found in context", err))
+		return
+	}
+
+	tenantID, err := uuid.Parse(tenantIDStr)
+	if err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid tenant ID", err))
+		return
+	}
+
+	campUUID := uuid.UUID(campId)
+
+	// Parse request body
+	var req api.CamperCreationRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid request body", err))
+		return
+	}
+
+	// Call service
+	camper, err := h.service.Create(r.Context(), tenantID, campUUID, &req)
+	if err != nil {
+		errors.WriteError(w, err)
+		return
+	}
+
+	// Write response
+	if err := errors.WriteJSON(w, http.StatusCreated, camper); err != nil {
+		errors.WriteError(w, errors.InternalServerError("Failed to write response", err))
+		return
+	}
 }
 
 // GetCamperById handles GET /api/v1/camps/{camp_id}/campers/{id}
 func (h *CampersHandler) GetCamperById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
-	// TODO: Implement get camper by ID
+	// Extract tenant ID from context
+	tenantIDStr, err := pkgcontext.ExtractTenantID(r.Context())
+	if err != nil {
+		errors.WriteError(w, errors.Unauthorized("Tenant ID not found in context", err))
+		return
+	}
+
+	tenantID, err := uuid.Parse(tenantIDStr)
+	if err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid tenant ID", err))
+		return
+	}
+
+	campUUID := uuid.UUID(campId)
 	// Use campId to ensure camper belongs to the specified camp
+	camperID, err := uuid.Parse(id)
+	if err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid camper ID", err))
+		return
+	}
+
+	camper, err := h.service.GetByID(r.Context(), tenantID, campUUID, camperID)
+	if err != nil {
+		errors.WriteError(w, err)
+		return
+	}
+
+	// Write response
+	if err := errors.WriteJSON(w, http.StatusOK, camper); err != nil {
+		errors.WriteError(w, errors.InternalServerError("Failed to write response", err))
+		return
+	}
 }
 
 // UpdateCamperById handles PUT /api/v1/camps/{camp_id}/campers/{id}
 func (h *CampersHandler) UpdateCamperById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
-	// TODO: Implement camper update
-	// Use campId to ensure camper belongs to the specified camp
+	// Extract tenant ID from context
+	tenantIDStr, err := pkgcontext.ExtractTenantID(r.Context())
+	if err != nil {
+		errors.WriteError(w, errors.Unauthorized("Tenant ID not found in context", err))
+		return
+	}
+
+	tenantID, err := uuid.Parse(tenantIDStr)
+	if err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid tenant ID", err))
+		return
+	}
+
+	campUUID := uuid.UUID(campId)
+	camperID, err := uuid.Parse(id)
+	if err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid camper ID", err))
+		return
+	}
+
+	var req api.CamperUpdateRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid request body", err))
+		return
+	}
+
+	camper, err := h.service.Update(r.Context(), tenantID, campUUID, camperID, &req)
+	if err != nil {
+		errors.WriteError(w, err)
+		return
+	}
+
+	// Write response
+	if err := errors.WriteJSON(w, http.StatusOK, camper); err != nil {
+		errors.WriteError(w, errors.InternalServerError("Failed to write response", err))
+		return
+	}
 }
 
 // DeleteCamperById handles DELETE /api/v1/camps/{camp_id}/campers/{id}
 func (h *CampersHandler) DeleteCamperById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
-	// TODO: Implement camper deletion
-	// Use campId to ensure camper belongs to the specified camp
-}
+	// Extract tenant ID from context
+	tenantIDStr, err := pkgcontext.ExtractTenantID(r.Context())
+	if err != nil {
+		errors.WriteError(w, errors.Unauthorized("Tenant ID not found in context", err))
+		return
+	}
 
+	tenantID, err := uuid.Parse(tenantIDStr)
+	if err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid tenant ID", err))
+		return
+	}
+
+	campUUID := uuid.UUID(campId)
+	camperID, err := uuid.Parse(id)
+	if err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid camper ID", err))
+		return
+	}
+
+	// Call service
+	if err := h.service.Delete(r.Context(), tenantID, campUUID, camperID); err != nil {
+		errors.WriteError(w, err)
+		return
+	}
+
+	// Write no content response
+	w.WriteHeader(http.StatusNoContent)
+}
