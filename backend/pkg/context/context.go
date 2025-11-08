@@ -3,6 +3,8 @@ package context
 import (
 	"context"
 	"fmt"
+
+	"github.com/tbechar/camp-manager-backend/internal/domain"
 )
 
 // ContextKey is a type for context keys to avoid collisions
@@ -15,6 +17,8 @@ const (
 	TenantIDKey ContextKey = "tenantID"
 	// EmailKey is the context key for the user email
 	EmailKey ContextKey = "email"
+	// AccessRulesKey is the context key for the user's access rules
+	AccessRulesKey ContextKey = "accessRules"
 )
 
 // ExtractUserID extracts the user ID from the context
@@ -62,10 +66,26 @@ func WithEmail(ctx context.Context, email string) context.Context {
 	return context.WithValue(ctx, EmailKey, email)
 }
 
-// WithUserContext adds user ID, tenant ID, and email to the context
-func WithUserContext(ctx context.Context, userID, tenantID, email string) context.Context {
+// WithUserContext adds user ID, tenant ID, email, and access rules to the context
+func WithUserContext(ctx context.Context, userID, tenantID, email string, accessRules []domain.AccessRule) context.Context {
 	ctx = WithUserID(ctx, userID)
 	ctx = WithTenantID(ctx, tenantID)
 	ctx = WithEmail(ctx, email)
+	ctx = WithAccessRules(ctx, accessRules)
 	return ctx
+}
+
+// ExtractAccessRules extracts the access rules from the context
+// Returns an error if the access rules are not found
+func ExtractAccessRules(ctx context.Context) ([]domain.AccessRule, error) {
+	accessRules, ok := ctx.Value(AccessRulesKey).([]domain.AccessRule)
+	if !ok {
+		return nil, fmt.Errorf("access rules not found in context")
+	}
+	return accessRules, nil
+}
+
+// WithAccessRules adds access rules to the context
+func WithAccessRules(ctx context.Context, accessRules []domain.AccessRule) context.Context {
+	return context.WithValue(ctx, AccessRulesKey, accessRules)
 }

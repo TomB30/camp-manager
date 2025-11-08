@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
 	"github.com/tbechar/camp-manager-backend/internal/domain"
 	"github.com/tbechar/camp-manager-backend/pkg/errors"
@@ -63,30 +64,48 @@ func (s *authService) Login(ctx context.Context, req *api.LoginRequest) (*api.Lo
 		return nil, errors.Unauthorized("Account is inactive", nil)
 	}
 
-	// 4. Generate JWT token
+	// 4. Get user with access rules for JWT and response
+	apiUser, err := s.usersRepo.GetUserWithAccessRules(ctx, user.ID.String())
+	if err != nil {
+		return nil, errors.InternalServerError("Failed to retrieve user details", err)
+	}
+
+	// 5. Convert API access rules to domain access rules for JWT
+	accessRules := make([]domain.AccessRule, len(apiUser.AccessRules))
+	for i, ar := range apiUser.AccessRules {
+		accessRules[i] = domain.AccessRule{
+			Role:      string(ar.Role),
+			ScopeType: string(ar.ScopeType),
+		}
+		if ar.ScopeId != nil {
+			scopeIDPtr := new(uuid.UUID)
+			parsed, err := uuid.Parse(*ar.ScopeId)
+			if err == nil {
+				*scopeIDPtr = parsed
+				accessRules[i].ScopeID = scopeIDPtr
+			}
+		}
+	}
+
+	// 6. Generate JWT token with access rules
 	token, err := s.jwtService.GenerateToken(
 		user.ID.String(),
 		user.TenantID.String(),
 		user.Email,
+		accessRules,
 	)
 	if err != nil {
 		return nil, errors.InternalServerError("Failed to generate token", err)
 	}
 
-	// 5. Update last login timestamp
+	// 7. Update last login timestamp
 	if err := s.usersRepo.UpdateLastLogin(ctx, user.ID); err != nil {
 		// Log the error but don't fail the login
 		// This is a non-critical operation
 		// TODO: Add proper logging here
 	}
 
-	// 6. Get user with access rules for response
-	apiUser, err := s.usersRepo.GetUserWithAccessRules(ctx, user.ID.String())
-	if err != nil {
-		return nil, errors.InternalServerError("Failed to retrieve user details", err)
-	}
-
-	// 7. Return user and token
+	// 8. Return user and token
 	return &api.LoginResponse{
 		Token: token,
 		User:  *apiUser,

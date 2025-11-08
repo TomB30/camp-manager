@@ -1,6 +1,7 @@
 get:
   summary: List all housing rooms
   operationId: listHousingRooms
+  x-required-roles: [admin, program-admin, viewer]
   parameters:
     - $ref: "../parameters/camp_id.yaml"
     - $ref: "../parameters/limit.yaml"
@@ -16,6 +17,7 @@ get:
 post:
   summary: Create a new housing room
   operationId: createHousingRoom
+  x-required-roles: [admin]
   parameters:
     - $ref: "../parameters/camp_id.yaml"
   requestBody:

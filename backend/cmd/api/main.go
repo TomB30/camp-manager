@@ -72,6 +72,7 @@ func main() {
 	// Initialize JWT middleware
 	jwtService := domain.NewJWTService(cfg.JWT.SecretKey)
 	authMiddleware := middleware.NewAuthMiddleware(jwtService)
+	authorizationMiddleware := middleware.NewAuthorizationMiddleware()
 
 	// Setup router
 	r := chi.NewRouter()
@@ -86,9 +87,10 @@ func main() {
 	// Public routes
 	r.Get("/health", healthHandler.Handle)
 
-	// Protected API routes (require authentication)
+	// Protected API routes (require authentication and authorization)
 	r.Group(func(r chi.Router) {
 		r.Use(authMiddleware.Authenticate)
+		r.Use(authorizationMiddleware.Authorize)
 
 		// Register all OpenAPI-generated routes
 		api.HandlerFromMux(h, r)

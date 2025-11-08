@@ -4,6 +4,7 @@ parameters:
 get:
   summary: Get group by ID
   operationId: getGroupById
+  x-required-roles: [admin, program-admin, viewer]
   responses:
     "200":
       description: Success
@@ -14,6 +15,7 @@ get:
 put:
   summary: Update group by ID
   operationId: updateGroupById
+  x-required-roles: [admin]
   requestBody:
     required: true
     content:
@@ -30,6 +32,7 @@ put:
 delete:
   summary: Delete group by ID
   operationId: deleteGroupById
+  x-required-roles: [admin]
   responses:
     "204":
       description: Deleted

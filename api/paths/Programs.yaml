@@ -1,6 +1,7 @@
 get:
   summary: List all programs
   operationId: listPrograms
+  x-required-roles: [admin, program-admin, viewer]
   parameters:
     - $ref: "../parameters/camp_id.yaml"
     - $ref: "../parameters/limit.yaml"
@@ -16,6 +17,7 @@ get:
 post:
   summary: Create a new program
   operationId: createProgram
+  x-required-roles: [admin, program-admin]
   parameters:
     - $ref: "../parameters/camp_id.yaml"
   requestBody:

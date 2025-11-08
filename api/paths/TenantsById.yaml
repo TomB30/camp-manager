@@ -3,6 +3,7 @@ parameters:
 get:
   summary: Get tenant by ID
   operationId: getTenantById
+  x-required-roles: [admin]
   responses:
     "200":
       description: Success

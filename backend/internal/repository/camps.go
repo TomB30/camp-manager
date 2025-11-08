@@ -20,13 +20,24 @@ func NewCampsRepository(db *database.Database) *CampsRepository {
 	}
 }
 
-// List returns a paginated list of camps for a tenant
-func (r *CampsRepository) List(ctx context.Context, tenantID uuid.UUID, limit, offset int, search *string) ([]domain.Camp, int64, error) {
+// List returns a paginated list of camps for a tenant, filtered by accessible camp IDs
+// If campIDs is nil, returns all camps in the tenant (for system/tenant-scope users)
+// If campIDs is not nil, returns only the specified camps (for camp-scope users)
+func (r *CampsRepository) List(ctx context.Context, tenantID uuid.UUID, campIDs []uuid.UUID, limit, offset int, search *string) ([]domain.Camp, int64, error) {
 	var camps []domain.Camp
 	var total int64
 
 	// Build base query
 	query := r.db.DB.WithContext(ctx).Model(&domain.Camp{}).Where("tenant_id = ?", tenantID)
+
+	// Apply camp ID filter for camp-scoped users
+	if campIDs != nil {
+		if len(campIDs) == 0 {
+			// User has no camp access - return empty result
+			return []domain.Camp{}, 0, nil
+		}
+		query = query.Where("id IN ?", campIDs)
+	}
 
 	// Apply search filter if provided
 	if search != nil && *search != "" {

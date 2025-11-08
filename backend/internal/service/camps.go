@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
 	"github.com/tbechar/camp-manager-backend/internal/domain"
+	pkgcontext "github.com/tbechar/camp-manager-backend/pkg/context"
 	pkgerrors "github.com/tbechar/camp-manager-backend/pkg/errors"
 	"github.com/tbechar/camp-manager-backend/pkg/utils"
 	"gorm.io/gorm"
@@ -42,9 +43,19 @@ func NewCampsService(repo CampsRepository) CampsService {
 	}
 }
 
-// List returns a paginated list of camps for a tenant
+// List returns a paginated list of camps for a tenant, filtered by user access
 func (s *campsService) List(ctx context.Context, tenantID uuid.UUID, limit, offset int, search *string) (*api.CampsListResponse, error) {
-	camps, total, err := s.repo.List(ctx, tenantID, limit, offset, search)
+	// Extract user's access rules from context to filter camps
+	accessRules, err := pkgcontext.ExtractAccessRules(ctx)
+	if err != nil {
+		return nil, pkgerrors.Unauthorized("Authentication required", err)
+	}
+
+	// Determine which camp IDs the user has access to
+	campIDs := extractAccessibleCampIDs(accessRules, tenantID)
+
+	// Fetch camps with access filtering
+	camps, total, err := s.repo.List(ctx, tenantID, campIDs, limit, offset, search)
 	if err != nil {
 		return nil, pkgerrors.InternalServerError("Failed to list camps", err)
 	}
@@ -71,8 +82,19 @@ func (s *campsService) List(ctx context.Context, tenantID uuid.UUID, limit, offs
 	}, nil
 }
 
-// GetByID returns a single camp by ID
+// GetByID returns a single camp by ID, checking user access
 func (s *campsService) GetByID(ctx context.Context, tenantID, campID uuid.UUID) (*api.Camp, error) {
+	// Extract user's access rules from context to verify access
+	accessRules, err := pkgcontext.ExtractAccessRules(ctx)
+	if err != nil {
+		return nil, pkgerrors.Unauthorized("Authentication required", err)
+	}
+
+	// Check if user has access to this specific camp
+	if !hasAccessToCamp(accessRules, tenantID, campID) {
+		return nil, pkgerrors.Forbidden("No access to this camp", nil)
+	}
+
 	camp, err := s.repo.GetByID(ctx, tenantID, campID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -140,6 +162,17 @@ func (s *campsService) Create(ctx context.Context, tenantID uuid.UUID, req *api.
 
 // Update updates an existing camp
 func (s *campsService) Update(ctx context.Context, tenantID, campID uuid.UUID, req *api.CampUpdateRequest) (*api.Camp, error) {
+	// Extract user's access rules from context to verify access
+	accessRules, err := pkgcontext.ExtractAccessRules(ctx)
+	if err != nil {
+		return nil, pkgerrors.Unauthorized("Authentication required", err)
+	}
+
+	// Check if user has access to this specific camp
+	if !hasAccessToCamp(accessRules, tenantID, campID) {
+		return nil, pkgerrors.Forbidden("No access to this camp", nil)
+	}
+
 	// First, check if camp exists
 	existingCamp, err := s.repo.GetByID(ctx, tenantID, campID)
 	if err != nil {
@@ -217,4 +250,52 @@ func (s *campsService) Delete(ctx context.Context, tenantID, campID uuid.UUID) e
 	}
 
 	return nil
+}
+
+// extractAccessibleCampIDs extracts the camp IDs that a user has access to based on their access rules
+// Returns nil for system and tenant-scope users (meaning all camps in the tenant)
+// Returns specific camp IDs for camp-scope users
+func extractAccessibleCampIDs(accessRules []domain.AccessRule, tenantID uuid.UUID) []uuid.UUID {
+	var campIDs []uuid.UUID
+
+	for _, rule := range accessRules {
+		// System scope - has access to all camps
+		if rule.IsSystemScope() {
+			return nil // nil means "all camps"
+		}
+
+		// Tenant scope - has access to all camps in this tenant
+		if rule.IsTenantScope() && rule.ScopeID != nil && *rule.ScopeID == tenantID {
+			return nil // nil means "all camps in this tenant"
+		}
+
+		// Camp scope - collect specific camp IDs
+		if rule.IsCampScope() && rule.ScopeID != nil {
+			campIDs = append(campIDs, *rule.ScopeID)
+		}
+	}
+
+	return campIDs
+}
+
+// hasAccessToCamp checks if a user has access to a specific camp
+func hasAccessToCamp(accessRules []domain.AccessRule, tenantID, campID uuid.UUID) bool {
+	for _, rule := range accessRules {
+		// System scope - has access to everything
+		if rule.IsSystemScope() {
+			return true
+		}
+
+		// Tenant scope - has access to all camps in this tenant
+		if rule.IsTenantScope() && rule.ScopeID != nil && *rule.ScopeID == tenantID {
+			return true
+		}
+
+		// Camp scope - check if it matches this specific camp
+		if rule.IsCampScope() && rule.ScopeID != nil && *rule.ScopeID == campID {
+			return true
+		}
+	}
+
+	return false
 }

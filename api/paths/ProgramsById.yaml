@@ -4,6 +4,7 @@ parameters:
 get:
   summary: Get program by ID
   operationId: getProgramById
+  x-required-roles: [admin, program-admin, viewer]
   responses:
     "200":
       description: Success
@@ -14,6 +15,7 @@ get:
 put:
   summary: Update program by ID
   operationId: updateProgramById
+  x-required-roles: [admin, program-admin]
   requestBody:
     required: true
     content:
@@ -30,6 +32,7 @@ put:
 delete:
   summary: Delete program by ID
   operationId: deleteProgramById
+  x-required-roles: [admin, program-admin]
   responses:
     "204":
       description: Deleted

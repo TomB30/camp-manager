@@ -1,6 +1,7 @@
 get:
   summary: Get all tenants
   operationId: getTenants
+  x-required-roles: [admin]
   responses:
     "200":
       description: Success

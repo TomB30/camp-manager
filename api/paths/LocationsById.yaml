@@ -4,6 +4,7 @@ parameters:
 get:
   summary: Get location by ID
   operationId: getLocationById
+  x-required-roles: [admin, program-admin, viewer]
   responses:
     "200":
       description: Success
@@ -14,6 +15,7 @@ get:
 put:
   summary: Update location by ID
   operationId: updateLocationById
+  x-required-roles: [admin]
   requestBody:
     required: true
     content:
@@ -30,6 +32,7 @@ put:
 delete:
   summary: Delete location by ID
   operationId: deleteLocationById
+  x-required-roles: [admin]
   responses:
     "204":
       description: Deleted

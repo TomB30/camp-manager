@@ -46,7 +46,7 @@ type CertificationsRepository interface {
 
 // CampsRepository defines the data access interface for camps
 type CampsRepository interface {
-	List(ctx context.Context, tenantID uuid.UUID, limit, offset int, search *string) ([]domain.Camp, int64, error)
+	List(ctx context.Context, tenantID uuid.UUID, campIDs []uuid.UUID, limit, offset int, search *string) ([]domain.Camp, int64, error)
 	GetByID(ctx context.Context, tenantID, campID uuid.UUID) (*domain.Camp, error)
 	Create(ctx context.Context, camp *domain.Camp) error
 	Update(ctx context.Context, camp *domain.Camp) error

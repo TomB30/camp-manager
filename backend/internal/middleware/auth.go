@@ -49,7 +49,7 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 
 		// Add user information to the request context
 		ctx := r.Context()
-		ctx = pkgcontext.WithUserContext(ctx, claims.UserID, claims.TenantID, claims.Email)
+		ctx = pkgcontext.WithUserContext(ctx, claims.UserID, claims.TenantID, claims.Email, claims.AccessRules)
 
 		// Call the next handler with the updated context
 		next.ServeHTTP(w, r.WithContext(ctx))

@@ -1072,5 +1072,236 @@ func (d *Database) SeedData() error {
 		}
 	}
 
+	// Create additional test users with various access rules for authorization testing
+	
+	// User 3: Camp-scoped admin for Demo Camp (first camp)
+	user3 := &domain.User{
+		TenantID:      tenant.ID,
+		Email:         "camp1admin@democamp.com",
+		PasswordHash:  passwordHash,
+		FirstName:     "Camp1",
+		LastName:      "Admin",
+		IsActive:      true,
+		EmailVerified: true,
+	}
+	if err := d.DB.Create(user3).Error; err != nil {
+		return fmt.Errorf("failed to create user3: %w", err)
+	}
+	accessRule3 := &domain.AccessRule{
+		UserID:    user3.ID,
+		Role:      "admin",
+		ScopeType: "camp",
+		ScopeID:   &camp.ID,
+	}
+	if err := d.DB.Create(accessRule3).Error; err != nil {
+		return fmt.Errorf("failed to create accessRule3: %w", err)
+	}
+
+	// User 4: Tenant-scoped program-admin for Demo Camp Organization
+	user4 := &domain.User{
+		TenantID:      tenant.ID,
+		Email:         "programadmin@democamp.com",
+		PasswordHash:  passwordHash,
+		FirstName:     "Program",
+		LastName:      "Admin",
+		IsActive:      true,
+		EmailVerified: true,
+	}
+	if err := d.DB.Create(user4).Error; err != nil {
+		return fmt.Errorf("failed to create user4: %w", err)
+	}
+	accessRule4 := &domain.AccessRule{
+		UserID:    user4.ID,
+		Role:      "program-admin",
+		ScopeType: "tenant",
+		ScopeID:   &tenant.ID,
+	}
+	if err := d.DB.Create(accessRule4).Error; err != nil {
+		return fmt.Errorf("failed to create accessRule4: %w", err)
+	}
+
+	// User 5: Camp-scoped program-admin for first camp only
+	user5 := &domain.User{
+		TenantID:      tenant.ID,
+		Email:         "programadmin.camp1@democamp.com",
+		PasswordHash:  passwordHash,
+		FirstName:     "Camp1Program",
+		LastName:      "Admin",
+		IsActive:      true,
+		EmailVerified: true,
+	}
+	if err := d.DB.Create(user5).Error; err != nil {
+		return fmt.Errorf("failed to create user5: %w", err)
+	}
+	accessRule5 := &domain.AccessRule{
+		UserID:    user5.ID,
+		Role:      "program-admin",
+		ScopeType: "camp",
+		ScopeID:   &camp.ID,
+	}
+	if err := d.DB.Create(accessRule5).Error; err != nil {
+		return fmt.Errorf("failed to create accessRule5: %w", err)
+	}
+
+	// User 6: Tenant-scoped viewer for Demo Camp Organization
+	user6 := &domain.User{
+		TenantID:      tenant.ID,
+		Email:         "viewer@democamp.com",
+		PasswordHash:  passwordHash,
+		FirstName:     "Viewer",
+		LastName:      "User",
+		IsActive:      true,
+		EmailVerified: true,
+	}
+	if err := d.DB.Create(user6).Error; err != nil {
+		return fmt.Errorf("failed to create user6: %w", err)
+	}
+	accessRule6 := &domain.AccessRule{
+		UserID:    user6.ID,
+		Role:      "viewer",
+		ScopeType: "tenant",
+		ScopeID:   &tenant.ID,
+	}
+	if err := d.DB.Create(accessRule6).Error; err != nil {
+		return fmt.Errorf("failed to create accessRule6: %w", err)
+	}
+
+	// User 7: Camp-scoped viewer for first camp only
+	user7 := &domain.User{
+		TenantID:      tenant.ID,
+		Email:         "viewer.camp1@democamp.com",
+		PasswordHash:  passwordHash,
+		FirstName:     "Camp1Viewer",
+		LastName:      "User",
+		IsActive:      true,
+		EmailVerified: true,
+	}
+	if err := d.DB.Create(user7).Error; err != nil {
+		return fmt.Errorf("failed to create user7: %w", err)
+	}
+	accessRule7 := &domain.AccessRule{
+		UserID:    user7.ID,
+		Role:      "viewer",
+		ScopeType: "camp",
+		ScopeID:   &camp.ID,
+	}
+	if err := d.DB.Create(accessRule7).Error; err != nil {
+		return fmt.Errorf("failed to create accessRule7: %w", err)
+	}
+
+	// User 8: Camp-scoped admin for second tenant's camp
+	user8 := &domain.User{
+		TenantID:      tenant2.ID,
+		Email:         "campadmin@adventurecamps.com",
+		PasswordHash:  passwordHash,
+		FirstName:     "Adventure",
+		LastName:      "CampAdmin",
+		IsActive:      true,
+		EmailVerified: true,
+	}
+	if err := d.DB.Create(user8).Error; err != nil {
+		return fmt.Errorf("failed to create user8: %w", err)
+	}
+	accessRule8 := &domain.AccessRule{
+		UserID:    user8.ID,
+		Role:      "admin",
+		ScopeType: "camp",
+		ScopeID:   &camp2.ID,
+	}
+	if err := d.DB.Create(accessRule8).Error; err != nil {
+		return fmt.Errorf("failed to create accessRule8: %w", err)
+	}
+
+	// User 9: Program-admin with camp scope for second tenant
+	user9 := &domain.User{
+		TenantID:      tenant2.ID,
+		Email:         "programadmin@adventurecamps.com",
+		PasswordHash:  passwordHash,
+		FirstName:     "Adventure",
+		LastName:      "ProgramAdmin",
+		IsActive:      true,
+		EmailVerified: true,
+	}
+	if err := d.DB.Create(user9).Error; err != nil {
+		return fmt.Errorf("failed to create user9: %w", err)
+	}
+	accessRule9 := &domain.AccessRule{
+		UserID:    user9.ID,
+		Role:      "program-admin",
+		ScopeType: "camp",
+		ScopeID:   &camp2.ID,
+	}
+	if err := d.DB.Create(accessRule9).Error; err != nil {
+		return fmt.Errorf("failed to create accessRule9: %w", err)
+	}
+
+	// User 10: Viewer with tenant scope for second tenant
+	user10 := &domain.User{
+		TenantID:      tenant2.ID,
+		Email:         "viewer@adventurecamps.com",
+		PasswordHash:  passwordHash,
+		FirstName:     "Adventure",
+		LastName:      "Viewer",
+		IsActive:      true,
+		EmailVerified: true,
+	}
+	if err := d.DB.Create(user10).Error; err != nil {
+		return fmt.Errorf("failed to create user10: %w", err)
+	}
+	accessRule10 := &domain.AccessRule{
+		UserID:    user10.ID,
+		Role:      "viewer",
+		ScopeType: "tenant",
+		ScopeID:   &tenant2.ID,
+	}
+	if err := d.DB.Create(accessRule10).Error; err != nil {
+		return fmt.Errorf("failed to create accessRule10: %w", err)
+	}
+
+	// User 11: User with multiple access rules (admin in one camp, viewer in another)
+	// This tests users with access to multiple camps
+	user11 := &domain.User{
+		TenantID:      tenant.ID,
+		Email:         "multicamp@democamp.com",
+		PasswordHash:  passwordHash,
+		FirstName:     "MultiCamp",
+		LastName:      "User",
+		IsActive:      true,
+		EmailVerified: true,
+	}
+	if err := d.DB.Create(user11).Error; err != nil {
+		return fmt.Errorf("failed to create user11: %w", err)
+	}
+	// Admin access to first camp
+	accessRule11a := &domain.AccessRule{
+		UserID:    user11.ID,
+		Role:      "admin",
+		ScopeType: "camp",
+		ScopeID:   &camp.ID,
+	}
+	if err := d.DB.Create(accessRule11a).Error; err != nil {
+		return fmt.Errorf("failed to create accessRule11a: %w", err)
+	}
+
+	fmt.Println("\n=== Test Users Created ===")
+	fmt.Println("System Admin:")
+	fmt.Println("  Email: admin@democamp.com | Password: password123 | Scope: system | Role: admin")
+	fmt.Println("\nTenant Admins:")
+	fmt.Println("  Email: admin@adventurecamps.com | Password: password123 | Scope: tenant (Adventure Camps) | Role: admin")
+	fmt.Println("\nCamp Admins:")
+	fmt.Println("  Email: camp1admin@democamp.com | Password: password123 | Scope: camp (Summer Camp 2025) | Role: admin")
+	fmt.Println("  Email: campadmin@adventurecamps.com | Password: password123 | Scope: camp (Adventure Camp) | Role: admin")
+	fmt.Println("\nProgram Admins:")
+	fmt.Println("  Email: programadmin@democamp.com | Password: password123 | Scope: tenant (Demo Camp Org) | Role: program-admin")
+	fmt.Println("  Email: programadmin.camp1@democamp.com | Password: password123 | Scope: camp (Summer Camp 2025) | Role: program-admin")
+	fmt.Println("  Email: programadmin@adventurecamps.com | Password: password123 | Scope: camp (Adventure Camp) | Role: program-admin")
+	fmt.Println("\nViewers:")
+	fmt.Println("  Email: viewer@democamp.com | Password: password123 | Scope: tenant (Demo Camp Org) | Role: viewer")
+	fmt.Println("  Email: viewer.camp1@democamp.com | Password: password123 | Scope: camp (Summer Camp 2025) | Role: viewer")
+	fmt.Println("  Email: viewer@adventurecamps.com | Password: password123 | Scope: tenant (Adventure Camps) | Role: viewer")
+	fmt.Println("\nMulti-Access:")
+	fmt.Println("  Email: multicamp@democamp.com | Password: password123 | Scope: camp (Summer Camp 2025) | Role: admin")
+	fmt.Println("==========================\n")
+
 	return nil
 }

@@ -17,9 +17,10 @@ const (
 
 // JWTClaims represents the custom claims in a JWT token
 type JWTClaims struct {
-	UserID   string `json:"userId"`
-	TenantID string `json:"tenantId"`
-	Email    string `json:"email"`
+	UserID      string       `json:"userId"`
+	TenantID    string       `json:"tenantId"`
+	Email       string       `json:"email"`
+	AccessRules []AccessRule `json:"accessRules"`
 	jwt.RegisteredClaims
 }
 
@@ -36,12 +37,13 @@ func NewJWTService(secretKey string) *JWTService {
 }
 
 // GenerateToken creates a new JWT token for a user
-func (s *JWTService) GenerateToken(userID, tenantID, email string) (string, error) {
+func (s *JWTService) GenerateToken(userID, tenantID, email string, accessRules []AccessRule) (string, error) {
 	now := time.Now()
 	claims := &JWTClaims{
-		UserID:   userID,
-		TenantID: tenantID,
-		Email:    email,
+		UserID:      userID,
+		TenantID:    tenantID,
+		Email:       email,
+		AccessRules: accessRules,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(now.Add(TokenExpiration)),
 			IssuedAt:  jwt.NewNumericDate(now),
@@ -102,4 +104,3 @@ func (s *JWTService) GenerateRefreshToken(userID, tenantID string) (string, erro
 
 	return tokenString, nil
 }
-
