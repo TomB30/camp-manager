@@ -494,33 +494,36 @@ export type SessionSpec = {
     endDate: string;
 };
 
+/**
+ * Date of birth of the camper or staff member
+ */
+export type Birthday = string;
+
+/**
+ * Gender of the camper or staff member
+ */
+export type Gender = 'male' | 'female';
+
 export type CamperSpec = {
-    /**
-     * Date of birth of the camper
-     */
-    birthday: string;
-    gender: 'male' | 'female';
+    birthday: Birthday;
+    gender: Gender;
     /**
      * ID of the camp session this camper is registered in
      */
     sessionId: string;
-    photoUrl?: string;
-    registrationDate?: string;
     /**
-     * ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
+     * ID of the housing group this camper belongs to
      */
-    housingRoomId?: string;
+    housingGroupId?: string;
     /**
-     * ID of the family group this camper belongs to
+     * IDs of the groups this camper belongs to
      */
-    familyGroupId?: string;
+    groupIds?: Array<string>;
 };
 
 export type StaffMemberSpec = {
-    /**
-     * Date of birth of the staff member
-     */
-    birthday?: string;
+    birthday: Birthday;
+    gender: Gender;
     /**
      * ID of the role this staff member has
      */
@@ -531,9 +534,13 @@ export type StaffMemberSpec = {
      */
     certificationIds?: Array<string>;
     /**
-     * ID of the staff member who manages this person
+     * ID of the housing group this staff member belongs to
      */
-    managerId?: string;
+    housingGroupId?: string;
+    /**
+     * IDs of the groups this staff member belongs to
+     */
+    groupIds?: Array<string>;
 };
 
 export type AreaSpec = {
@@ -650,10 +657,6 @@ export type GroupSpec = {
      * Child group IDs for creating nested groups (cannot be used with camperIds or staffIds)
      */
     groupIds?: Array<string>;
-    /**
-     * IDs of labels assigned to this group
-     */
-    labelIds?: Array<string>;
 };
 
 export type EventSpec = {

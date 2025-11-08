@@ -240,22 +240,6 @@
         </div>
 
         <div class="card">
-          <h4 class="mb-2">Recent Enrollments</h4>
-          <div class="recent-list">
-            <div
-              v-for="camper in recentCampers"
-              :key="camper.meta.id"
-              class="recent-item"
-            >
-              <span class="font-medium">{{ camper.meta.name }}</span>
-              <span class="text-xs"
-                >Age {{ calculateAge(camper.spec.birthday) }}</span
-              >
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
           <h4 class="mb-2">Room Capacity</h4>
           <div class="capacity-list">
             <div
@@ -301,7 +285,7 @@ import {
 import { format } from "date-fns";
 import Icon from "@/components/Icon.vue";
 import ViewHeader from "@/components/ViewHeader.vue";
-import type { Event, Camper } from "@/generated/api";
+import type { Event } from "@/generated/api";
 import { dateUtils } from "@/utils/dateUtils";
 
 interface BirthdayPerson {
@@ -353,19 +337,6 @@ export default defineComponent({
           new Date(a.spec.startDate).getTime() -
           new Date(b.spec.startDate).getTime(),
       );
-    },
-    recentCampers(): Camper[] {
-      return [...this.campersStore.campers]
-        .sort((a, b) => {
-          const dateA = a.spec.registrationDate
-            ? new Date(a.spec.registrationDate).getTime()
-            : 0;
-          const dateB = b.spec.registrationDate
-            ? new Date(b.spec.registrationDate).getTime()
-            : 0;
-          return dateB - dateA;
-        })
-        .slice(0, 5);
     },
     upcomingBirthdays(): BirthdayPerson[] {
       const today = new Date(

@@ -19,7 +19,6 @@
         v-model:searchQuery="searchQuery"
         v-model:filter-type="filterType"
         v-model:filter-session="filterSession"
-        v-model:filter-label="filterLabel"
         :filters="groupsFilters"
         :filtered-count="filteredGroups.length"
         :total-count="groupsStore.groups.length"
@@ -161,7 +160,6 @@
         :campers="campersStore.campers"
         :staff-members="staffMembersStore.staffMembers"
         :groups="groupsStore.groups"
-        :labels="labelsStore.labels"
         :sessions="sessionsStore.sessions"
         :housing-rooms="housingRoomsStore.housingRooms"
         :certifications="certificationsStore.certifications"
@@ -190,13 +188,11 @@ import {
   useGroupsStore,
   useCampersStore,
   useStaffMembersStore,
-  useLabelsStore,
   useSessionsStore,
   useHousingRoomsStore,
   useCertificationsStore,
 } from "@/stores";
 import type { Group, Camper, StaffMember, Session } from "@/generated/api";
-import type { Label } from "@/types";
 import ViewHeader from "@/components/ViewHeader.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import GroupCard from "@/components/cards/GroupCard.vue";
@@ -231,7 +227,6 @@ export default defineComponent({
       searchQuery: "",
       filterType: "",
       filterSession: "",
-      filterLabel: "",
       viewMode: "grid" as "grid" | "table",
       currentPage: 1,
       pageSize: 10,
@@ -243,7 +238,6 @@ export default defineComponent({
         groupIds: [] as string[],
         camperIds: [] as string[],
         staffIds: [] as string[],
-        labelIds: [] as string[],
       },
       groupColumns: [
         { key: "name", label: "Group Name", width: "200px" },
@@ -268,9 +262,6 @@ export default defineComponent({
     },
     staffMembersStore() {
       return useStaffMembersStore();
-    },
-    labelsStore() {
-      return useLabelsStore();
     },
     sessionsStore() {
       return useSessionsStore();
@@ -301,15 +292,6 @@ export default defineComponent({
           options: this.sessionsStore.sessions.map((session: Session) => ({
             label: session.meta.name,
             value: session.meta.id,
-          })),
-        },
-        {
-          model: "filterLabel",
-          value: this.filterLabel,
-          placeholder: "Filter by Label",
-          options: this.labelsStore.labels.map((label: Label) => ({
-            label: label.meta.name,
-            value: label.meta.id,
           })),
         },
       ];
@@ -367,15 +349,6 @@ export default defineComponent({
         );
       }
 
-      // Label filter
-      if (this.filterLabel) {
-        groups = groups.filter(
-          (group: Group) =>
-            group.spec.labelIds &&
-            group.spec.labelIds.includes(this.filterLabel),
-        );
-      }
-
       return groups;
     },
   },
@@ -385,7 +358,6 @@ export default defineComponent({
       this.searchQuery = "";
       this.filterType = "";
       this.filterSession = "";
-      this.filterLabel = "";
     },
     getCampersCount(groupId: string): number {
       return this.groupsStore.getCampersInGroup(groupId).length;
@@ -425,7 +397,6 @@ export default defineComponent({
         groupIds: this.selectedGroup.spec.groupIds || [],
         camperIds: this.selectedGroup.spec.camperIds || [],
         staffIds: this.selectedGroup.spec.staffIds || [],
-        labelIds: this.selectedGroup.spec.labelIds || [],
       };
 
       this.selectedGroupId = null;
@@ -457,10 +428,6 @@ export default defineComponent({
             formData.camperIds.length > 0 ? formData.camperIds : undefined,
           staffIds:
             formData.staffIds.length > 0 ? formData.staffIds : undefined,
-          labelIds:
-            formData.labelIds && formData.labelIds.length > 0
-              ? formData.labelIds
-              : undefined,
         },
       };
 
@@ -518,7 +485,6 @@ export default defineComponent({
         groupIds: [],
         camperIds: [],
         staffIds: [],
-        labelIds: [],
       };
     },
   },

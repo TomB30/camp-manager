@@ -33,7 +33,6 @@ export const buildCamper = (overrides: Partial<Camper> = {}): Camper => ({
     birthday: "2013-05-15", // Age 12 (as of 2025)
     gender: "male",
     sessionId: "session-2",
-    registrationDate: new Date().toISOString(),
   },
   ...overrides,
 });
@@ -54,7 +53,8 @@ export const buildStaffMember = (
     phone: "555-0000",
     roleId: "role-1",
     certificationIds: [],
-    managerId: "manager-1",
+    birthday: "2000-01-01",
+    gender: "male",
   },
   ...overrides,
 });
@@ -177,6 +177,8 @@ export const buildStaffWithCertifications = (
     },
     spec: {
       roleId: "role-1",
+      birthday: "2000-01-01",
+      gender: "male",
       phone: "555-0000",
       certificationIds,
     },

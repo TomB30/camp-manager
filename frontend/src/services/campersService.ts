@@ -99,10 +99,10 @@ async function getCamperById(id: string): Promise<Camper | null> {
 }
 
 async function getCampersByFamilyGroup(
-  familyGroupId: string,
+  housingGroupId: string,
 ): Promise<Camper[]> {
   const campers = await listCampers();
-  return campers.filter((c) => c.spec.familyGroupId === familyGroupId);
+  return campers.filter((c) => c.spec.housingGroupId === housingGroupId);
 }
 
 async function getCampersBySession(sessionId: string): Promise<Camper[]> {

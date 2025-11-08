@@ -70,7 +70,7 @@ describe("CamperCard", () => {
     it("emits click event with camper when card is clicked", async () => {
       const camper: Camper = {
         ...campersFixture[0],
-        spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" },
+        spec: { ...campersFixture[0].spec, housingGroupId: "housing-group-1" },
       };
       const wrapper = createWrapper(CamperCard, {
         props: { camper },
@@ -87,7 +87,7 @@ describe("CamperCard", () => {
     it("has card-clickable class for hover effect", () => {
       const camper: Camper = {
         ...campersFixture[0],
-        spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" },
+        spec: { ...campersFixture[0].spec, housingGroupId: "housing-group-1" },
       };
       const wrapper = createWrapper(CamperCard, {
         props: { camper },
@@ -99,7 +99,7 @@ describe("CamperCard", () => {
     it("has card-horizontal class for layout", () => {
       const camper: Camper = {
         ...campersFixture[0],
-        spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" },
+        spec: { ...campersFixture[0].spec, housingGroupId: "housing-group-1" },
       };
       const wrapper = createWrapper(CamperCard, {
         props: { camper },
@@ -125,7 +125,7 @@ describe("CamperCard", () => {
           birthday: "2015-05-15", // Age 10 as of 2025
           gender: "male" as const,
           sessionId: "session-1",
-          familyGroupId: "family-group-1",
+          housingGroupId: "housing-group-1",
         },
       };
 
@@ -140,7 +140,7 @@ describe("CamperCard", () => {
     it("handles empty allergy array", () => {
       const camper: Camper = {
         ...campersFixture[0],
-        spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" },
+        spec: { ...campersFixture[0].spec, housingGroupId: "housing-group-1" },
       };
       const wrapper = createWrapper(CamperCard, {
         props: { camper },
@@ -152,7 +152,7 @@ describe("CamperCard", () => {
     it("renders without optional props", () => {
       const camper: Camper = {
         ...campersFixture[0],
-        spec: { ...campersFixture[0].spec, familyGroupId: "family-group-1" },
+        spec: { ...campersFixture[0].spec, housingGroupId: "housing-group-1" },
       };
       const wrapper = createWrapper(CamperCard, {
         props: { camper },

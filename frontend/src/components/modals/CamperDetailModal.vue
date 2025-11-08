@@ -16,11 +16,6 @@
           </div>
         </div>
 
-        <div v-if="camper.spec.registrationDate" class="detail-section">
-          <div class="detail-label">Registration Date</div>
-          <div>{{ formatDate(camper.spec.registrationDate) }}</div>
-        </div>
-
         <div class="detail-section">
           <div class="detail-label">Session</div>
           <div v-if="camper.spec.sessionId">
@@ -35,34 +30,34 @@
         </div>
 
         <div class="detail-section">
-          <div class="detail-label">Family Group</div>
+          <div class="detail-label">Housing Group</div>
           <div
             v-if="
-              camper.spec.familyGroupId &&
-              getGroupById(camper.spec.familyGroupId)
+              camper.spec.housingGroupId &&
+              getGroupById(camper.spec.housingGroupId)
             "
           >
             <div class="family-group-info">
               <span class="badge">
-                {{ getGroupById(camper.spec.familyGroupId)!.meta.name }}
+                {{ getGroupById(camper.spec.housingGroupId)!.meta.name }}
               </span>
               <div
                 v-if="
-                  getGroupById(camper.spec.familyGroupId)?.spec.housingRoomId
+                  getGroupById(camper.spec.housingGroupId)?.spec.housingRoomId
                 "
                 class="text-xs text-caption mt-1"
               >
                 Room:
                 {{
                   getSleepingRoomName(
-                    getGroupById(camper.spec.familyGroupId)?.spec
+                    getGroupById(camper.spec.housingGroupId)?.spec
                       .housingRoomId || "",
                   )
                 }}
               </div>
             </div>
           </div>
-          <div v-else class="text-caption">Not assigned to a family group</div>
+          <div v-else class="text-caption">Not assigned to a housing group</div>
         </div>
 
         <div class="detail-section">

@@ -27,12 +27,6 @@ export const useStaffMembersStore = defineStore("staffMembers", {
         );
       };
     },
-
-    getStaffMembersByManager(state): (managerId: string) => StaffMember[] {
-      return (managerId: string): StaffMember[] => {
-        return state.staffMembers.filter((s) => s.spec.managerId === managerId);
-      };
-    },
   },
   actions: {
     async loadStaffMembers(): Promise<void> {

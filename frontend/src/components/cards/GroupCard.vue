@@ -28,20 +28,6 @@
       {{ group.meta.description }}
     </p>
 
-    <!-- Labels -->
-    <div
-      v-if="group.spec.labelIds && group.spec.labelIds.length > 0"
-      class="card-labels"
-    >
-      <span
-        v-for="labelId in group.spec.labelIds"
-        :key="labelId"
-        class="label-badge"
-      >
-        {{ getLabelName(labelId) }}
-      </span>
-    </div>
-
     <!-- Group type info -->
     <div class="group-info">
       <!-- Nested groups -->

@@ -26,19 +26,19 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Manager</label>
-          <Autocomplete
-            v-model="localFormData.spec.managerId"
-            :options="managerOptions"
-          />
-        </div>
-
-        <div class="form-group">
           <label class="form-label">Birthday</label>
           <BaseInput
             v-model="localFormData.spec.birthday"
             type="date"
             placeholder="Select birthday"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <Autocomplete
+            v-model="localFormData.spec.gender"
+            :options="genderOptions"
           />
         </div>
 
@@ -146,8 +146,8 @@ export default defineComponent({
         spec: {
           roleId: "",
           certificationIds: [],
-          managerId: "",
           birthday: "",
+          gender: "male",
         },
       } as StaffMemberCreationRequest,
       formRef: null as any,
@@ -174,8 +174,8 @@ export default defineComponent({
         roleId: staffMember.spec.roleId,
         phone: staffMember.spec.phone || "",
         certificationIds: staffMember.spec.certificationIds || [],
-        managerId: staffMember.spec.managerId || "",
         birthday: staffMember.spec.birthday || "",
+        gender: staffMember.spec.gender,
       },
     };
   },
@@ -216,18 +216,11 @@ export default defineComponent({
         this.localFormData.spec.certificationIds = value || [];
       },
     },
-    managerOptions(): AutocompleteOption[] {
-      // Filter out the current member to prevent self-assignment
-      return this.staffMembers
-        .filter((m) => m.meta.id !== this.staffMemberId)
-        .map((member) => {
-          const role = this.rolesStore.getRoleById(member.spec.roleId);
-          const roleName = role ? role.meta.name : "Unknown Role";
-          return {
-            label: `${member.meta.name} (${roleName})`,
-            value: member.meta.id,
-          };
-        });
+    genderOptions(): AutocompleteOption[] {
+      return [
+        { label: "Male", value: "male" },
+        { label: "Female", value: "female" },
+      ];
     },
   },
   methods: {

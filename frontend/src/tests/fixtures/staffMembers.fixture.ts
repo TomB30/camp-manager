@@ -15,6 +15,8 @@ export const staffMembersFixture: StaffMember[] = [
     spec: {
       phone: "555-1001",
       roleId: rolesFixture[0].meta.id, // Counselor
+      birthday: "2000-01-01",
+      gender: "female",
       certificationIds: [
         certificationsFixture[0].meta.id, // CPR
         certificationsFixture[1].meta.id, // First Aid
@@ -33,6 +35,8 @@ export const staffMembersFixture: StaffMember[] = [
     spec: {
       phone: "555-1002",
       roleId: rolesFixture[1].meta.id, // Activity Leader
+      birthday: "2000-01-01",
+      gender: "male",
       certificationIds: [
         certificationsFixture[0].meta.id, // CPR
         certificationsFixture[3].meta.id, // Archery
@@ -51,6 +55,8 @@ export const staffMembersFixture: StaffMember[] = [
     spec: {
       phone: "555-1003",
       roleId: rolesFixture[2].meta.id, // Lifeguard
+      birthday: "2000-01-01",
+      gender: "female",
       certificationIds: [
         certificationsFixture[0].meta.id, // CPR
         certificationsFixture[1].meta.id, // First Aid
@@ -70,6 +76,8 @@ export const staffMembersFixture: StaffMember[] = [
     spec: {
       phone: "555-1004",
       roleId: rolesFixture[0].meta.id,
+      birthday: "2000-01-01",
+      gender: "male",
       certificationIds: [
         certificationsFixture[0].meta.id, // CPR
       ],
@@ -87,6 +95,8 @@ export const staffMembersFixture: StaffMember[] = [
     spec: {
       phone: "555-1005",
       roleId: rolesFixture[3].meta.id, // Nurse
+      birthday: "2000-01-01",
+      gender: "female",
       certificationIds: [
         certificationsFixture[0].meta.id, // CPR
         certificationsFixture[1].meta.id, // First Aid
@@ -105,6 +115,8 @@ export const staffMembersFixture: StaffMember[] = [
     spec: {
       phone: "555-1006",
       roleId: rolesFixture[4].meta.id, // Camp Director
+      birthday: "2000-01-01",
+      gender: "male",
       certificationIds: [
         certificationsFixture[0].meta.id, // CPR
       ],
@@ -122,6 +134,8 @@ export const staffMembersFixture: StaffMember[] = [
     spec: {
       phone: "555-1007",
       roleId: rolesFixture[1].meta.id,
+      birthday: "2000-01-01",
+      gender: "female",
       certificationIds: [
         certificationsFixture[0].meta.id, // CPR
         certificationsFixture[4].meta.id, // Climbing
@@ -140,6 +154,8 @@ export const staffMembersFixture: StaffMember[] = [
     spec: {
       phone: "555-1008",
       roleId: rolesFixture[0].meta.id,
+      birthday: "2000-01-01",
+      gender: "male",
       certificationIds: [],
     },
   },
@@ -155,6 +171,8 @@ export const staffMembersFixture: StaffMember[] = [
     spec: {
       phone: "555-1009",
       roleId: rolesFixture[1].meta.id,
+      birthday: "2000-01-01",
+      gender: "female",
       certificationIds: [
         certificationsFixture[0].meta.id, // CPR
         certificationsFixture[1].meta.id, // First Aid
@@ -174,6 +192,8 @@ export const staffMembersFixture: StaffMember[] = [
     spec: {
       phone: "555-1010",
       roleId: rolesFixture[2].meta.id,
+      birthday: "2000-01-01",
+      gender: "female",
       certificationIds: [
         certificationsFixture[2].meta.id, // Lifeguard
       ],

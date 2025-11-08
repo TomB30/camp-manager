@@ -53,23 +53,6 @@
           </div>
         </div>
 
-        <!-- Labels -->
-        <div
-          v-if="group.spec.labelIds && group.spec.labelIds.length > 0"
-          class="detail-section"
-        >
-          <div class="detail-label">Labels</div>
-          <div class="labels-list">
-            <span
-              v-for="labelId in group.spec.labelIds"
-              :key="labelId"
-              class="label-badge"
-            >
-              {{ getLabelName(labelId) }}
-            </span>
-          </div>
-        </div>
-
         <!-- Nested Groups -->
         <div v-if="isNestedGroup" class="detail-section">
           <div class="detail-label">

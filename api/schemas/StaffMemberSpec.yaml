@@ -1,11 +1,13 @@
 type: object
 required:
+  - birthday
+  - gender
   - roleId
 properties:
   birthday:
-    type: string
-    format: date
-    description: Date of birth of the staff member
+    $ref: "../fields/Birthday.yaml"
+  gender:
+    $ref: "../fields/Gender.yaml"
   roleId:
     type: string
     format: uuid
@@ -18,7 +20,13 @@ properties:
       type: string
       format: uuid
     description: IDs of certifications this staff member holds
-  managerId:
+  housingGroupId:
     type: string
     format: uuid
-    description: ID of the staff member who manages this person
+    description: ID of the housing group this staff member belongs to
+  groupIds:
+    type: array
+    items:
+      type: string
+      format: uuid
+    description: IDs of the groups this staff member belongs to

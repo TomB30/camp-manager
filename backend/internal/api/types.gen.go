@@ -16,10 +16,10 @@ const (
 	AccessRuleRoleViewer       AccessRuleRole = "viewer"
 )
 
-// Defines values for CamperSpecGender.
+// Defines values for Gender.
 const (
-	CamperSpecGenderFemale CamperSpecGender = "female"
-	CamperSpecGenderMale   CamperSpecGender = "male"
+	GenderFemale Gender = "female"
+	GenderMale   Gender = "male"
 )
 
 // Defines values for HousingRoomSpecBathroom.
@@ -152,6 +152,9 @@ type AuthMe struct {
 	User User `json:"user"`
 }
 
+// Birthday Date of birth of the camper or staff member
+type Birthday = openapi_types.Date
+
 // Camp defines model for Camp.
 type Camp struct {
 	Meta struct {
@@ -231,24 +234,21 @@ type CamperCreationRequest struct {
 
 // CamperSpec defines model for CamperSpec.
 type CamperSpec struct {
-	// Birthday Date of birth of the camper
-	Birthday openapi_types.Date `json:"birthday"`
+	// Birthday Date of birth of the camper or staff member
+	Birthday Birthday `json:"birthday"`
 
-	// FamilyGroupId ID of the family group this camper belongs to
-	FamilyGroupId *openapi_types.UUID `json:"familyGroupId,omitempty"`
-	Gender        CamperSpecGender    `json:"gender"`
+	// Gender Gender of the camper or staff member
+	Gender Gender `json:"gender"`
 
-	// HousingRoomId ID of the housing room assigned to this camper (deprecated - use familyGroupId instead)
-	HousingRoomId    *openapi_types.UUID `json:"housingRoomId,omitempty"`
-	PhotoUrl         *string             `json:"photoUrl,omitempty"`
-	RegistrationDate *time.Time          `json:"registrationDate,omitempty"`
+	// GroupIds IDs of the groups this camper belongs to
+	GroupIds *[]openapi_types.UUID `json:"groupIds,omitempty"`
+
+	// HousingGroupId ID of the housing group this camper belongs to
+	HousingGroupId *openapi_types.UUID `json:"housingGroupId,omitempty"`
 
 	// SessionId ID of the camp session this camper is registered in
 	SessionId openapi_types.UUID `json:"sessionId"`
 }
-
-// CamperSpecGender defines model for CamperSpec.Gender.
-type CamperSpecGender string
 
 // CamperUpdateRequest defines model for CamperUpdateRequest.
 type CamperUpdateRequest struct {
@@ -496,6 +496,9 @@ type EventsListResponse struct {
 	Total int `json:"total"`
 }
 
+// Gender Gender of the camper or staff member
+type Gender string
+
 // Group defines model for Group.
 type Group struct {
 	Meta EntityMeta `json:"meta"`
@@ -518,9 +521,6 @@ type GroupSpec struct {
 
 	// HousingRoomId Optional housing room assignment for this group
 	HousingRoomId *openapi_types.UUID `json:"housingRoomId,omitempty"`
-
-	// LabelIds IDs of labels assigned to this group
-	LabelIds *[]openapi_types.UUID `json:"labelIds,omitempty"`
 
 	// SessionId Optional session this group belongs to
 	SessionId *openapi_types.UUID `json:"sessionId,omitempty"`
@@ -833,15 +833,21 @@ type StaffMemberCreationRequest struct {
 
 // StaffMemberSpec defines model for StaffMemberSpec.
 type StaffMemberSpec struct {
-	// Birthday Date of birth of the staff member
-	Birthday *openapi_types.Date `json:"birthday,omitempty"`
+	// Birthday Date of birth of the camper or staff member
+	Birthday Birthday `json:"birthday"`
 
 	// CertificationIds IDs of certifications this staff member holds
 	CertificationIds *[]openapi_types.UUID `json:"certificationIds,omitempty"`
 
-	// ManagerId ID of the staff member who manages this person
-	ManagerId *openapi_types.UUID `json:"managerId,omitempty"`
-	Phone     *string             `json:"phone,omitempty"`
+	// Gender Gender of the camper or staff member
+	Gender Gender `json:"gender"`
+
+	// GroupIds IDs of the groups this staff member belongs to
+	GroupIds *[]openapi_types.UUID `json:"groupIds,omitempty"`
+
+	// HousingGroupId ID of the housing group this staff member belongs to
+	HousingGroupId *openapi_types.UUID `json:"housingGroupId,omitempty"`
+	Phone          *string             `json:"phone,omitempty"`
 
 	// RoleId ID of the role this staff member has
 	RoleId openapi_types.UUID `json:"roleId"`

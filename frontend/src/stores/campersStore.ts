@@ -20,10 +20,10 @@ export const useCampersStore = defineStore("campers", {
       };
     },
 
-    getCampersInFamilyGroup(state): (familyGroupId: string) => Camper[] {
-      return (familyGroupId: string): Camper[] => {
+    getCampersInHousingGroup(state): (housingGroupId: string) => Camper[] {
+      return (housingGroupId: string): Camper[] => {
         return state.campers.filter(
-          (c) => c.spec.familyGroupId === familyGroupId,
+          (c) => c.spec.housingGroupId === housingGroupId,
         );
       };
     },
@@ -47,9 +47,9 @@ export const useCampersStore = defineStore("campers", {
     async createCamper(camperRequest: CamperCreationRequest): Promise<Camper> {
       const camper = await campersService.createCamper(camperRequest);
       this.campers.push(camper);
-      if (camper.spec.familyGroupId) {
+      if (camper.spec.housingGroupId) {
         await useGroupsStore().addCamperToGroup(
-          camper.spec.familyGroupId,
+          camper.spec.housingGroupId,
           camper.meta.id,
         );
       }
@@ -61,12 +61,12 @@ export const useCampersStore = defineStore("campers", {
     ): Promise<void> {
       const originalFamilyGroupId = this.campers.find(
         (c) => c.meta.id === camperId,
-      )?.spec.familyGroupId;
+      )?.spec.housingGroupId;
       const camper = await campersService.updateCamper(camperId, camperUpdate);
       this.campers = this.campers.map((c) =>
         c.meta.id === camperId ? camper : c,
       );
-      if (originalFamilyGroupId !== camperUpdate.spec.familyGroupId) {
+      if (originalFamilyGroupId !== camperUpdate.spec.housingGroupId) {
         const prms: Promise<void>[] = [];
         if (originalFamilyGroupId) {
           prms.push(
@@ -76,10 +76,10 @@ export const useCampersStore = defineStore("campers", {
             ),
           );
         }
-        if (camperUpdate.spec.familyGroupId) {
+        if (camperUpdate.spec.housingGroupId) {
           prms.push(
             useGroupsStore().addCamperToGroup(
-              camperUpdate.spec.familyGroupId,
+              camperUpdate.spec.housingGroupId,
               camperId,
             ),
           );
@@ -90,7 +90,7 @@ export const useCampersStore = defineStore("campers", {
     async deleteCamper(camperId: string): Promise<void> {
       const originalFamilyGroupId = this.campers.find(
         (c) => c.meta.id === camperId,
-      )?.spec.familyGroupId;
+      )?.spec.housingGroupId;
       await campersService.deleteCamper(camperId);
       this.campers = this.campers.filter((c) => c.meta.id !== camperId);
       if (originalFamilyGroupId) {

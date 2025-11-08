@@ -59,7 +59,7 @@
           <label class="form-label">Family Group</label>
           <Autocomplete
             class="family-group-autocomplete"
-            v-model="formData.spec.familyGroupId"
+            v-model="formData.spec.housingGroupId"
             :options="availableGroupOptions"
             :disabled="!formData.spec.sessionId"
             no-option-text="No family groups available for this session"
@@ -128,7 +128,7 @@ export default defineComponent({
           birthday: "",
           gender: "male",
           sessionId: "",
-          photoUrl: "",
+          housingGroupId: "",
         },
       } as CamperCreationRequest,
       genderOptions: [
@@ -158,8 +158,7 @@ export default defineComponent({
         birthday: camper.spec.birthday || "",
         gender: camper.spec.gender,
         sessionId: camper.spec.sessionId || "",
-        familyGroupId: camper.spec.familyGroupId || "",
-        photoUrl: camper.spec.photoUrl || "",
+        housingGroupId: camper.spec.housingGroupId || "",
       },
     };
   },

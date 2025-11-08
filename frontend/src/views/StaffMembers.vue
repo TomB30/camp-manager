@@ -129,33 +129,6 @@
         @edit="editMember"
         @delete="deleteMemberConfirm"
       >
-        <template #manager-info>
-          <div>
-            <span class="badge badge-success">{{
-              selectedMember
-                ? getManagerName(selectedMember.spec.managerId)
-                : ""
-            }}</span>
-          </div>
-        </template>
-        <template #direct-reports>
-          <div
-            v-if="
-              selectedMember &&
-              getDirectReports(selectedMember.meta.id).length > 0
-            "
-            class="flex gap-1 flex-wrap"
-          >
-            <span
-              v-for="report in getDirectReports(selectedMember.meta.id)"
-              :key="report.meta.id"
-              class="badge badge-primary"
-            >
-              {{ report.meta.name }}
-            </span>
-          </div>
-          <div v-else class="text-caption">No direct reports</div>
-        </template>
         <template #events-list>
           <EventsByDate
             :events="
@@ -353,16 +326,6 @@ export default defineComponent({
       this.searchQuery = "";
       this.filterRole = "";
       this.filterCertification = "";
-    },
-    getDirectReports(managerId: string): StaffMember[] {
-      return this.filteredMembers.filter(
-        (member) => member.spec.managerId === managerId,
-      );
-    },
-    getManagerName(managerId: string | undefined): string {
-      if (!managerId) return "None";
-      const manager = this.staffMembersStore.getStaffMemberById(managerId);
-      return manager ? manager.meta.name : "Unknown";
     },
     formatRole(roleId: string): string {
       const role = this.rolesStore.getRoleById(roleId);

@@ -29,9 +29,3 @@ properties:
       type: string
       format: uuid
     description: Child group IDs for creating nested groups (cannot be used with camperIds or staffIds)
-  labelIds:
-    type: array
-    items:
-      type: string
-      format: uuid
-    description: IDs of labels assigned to this group

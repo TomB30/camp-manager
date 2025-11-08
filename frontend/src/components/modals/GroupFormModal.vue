@@ -25,19 +25,6 @@
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Labels (Optional)</label>
-          <p class="form-help-text">
-            Tag this group with labels for easy filtering and organization
-          </p>
-          <SelectionList
-            v-model="localFormData.labelIds"
-            :options="labelOptions"
-            multiple
-            label="Select Labels"
-          />
-        </div>
-
         <!-- Optional Session and Housing -->
         <div class="form-divider">
           <span>Session & Housing (Optional)</span>
@@ -164,7 +151,6 @@
 import { defineComponent, type PropType } from "vue";
 import BaseModal from "@/components/BaseModal.vue";
 import SelectionList, { ISelectOption } from "@/components/SelectionList.vue";
-import type { Label } from "@/types";
 import type {
   Camper,
   StaffMember,
@@ -189,7 +175,6 @@ interface GroupFormData {
   groupIds: string[];
   camperIds: string[];
   staffIds: string[];
-  labelIds: string[];
 }
 
 export default defineComponent({
@@ -214,10 +199,6 @@ export default defineComponent({
     staffMembers: {
       type: Array as PropType<StaffMember[]>,
       required: true,
-    },
-    labels: {
-      type: Array as PropType<Label[]>,
-      default: () => [],
     },
     editingGroupId: {
       type: String as PropType<string | null>,
@@ -316,12 +297,6 @@ export default defineComponent({
     },
     colorsStore() {
       return useColorsStore();
-    },
-    labelOptions(): ISelectOption[] {
-      return this.labels.map((label) => ({
-        label: label.meta.name,
-        value: label.meta.id,
-      }));
     },
     descriptionModel: {
       get(): string {

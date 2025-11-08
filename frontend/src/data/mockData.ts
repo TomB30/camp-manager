@@ -1041,6 +1041,7 @@ export const staffMembers: StaffMember[] = [
       birthday: "2006-12-01",
       roleId: roles[0].meta.id, // Camp Director
       phone: "555-0101",
+      gender: "female",
       certificationIds: [certifications[0].meta.id, certifications[2].meta.id],
     },
   },
@@ -1057,6 +1058,7 @@ export const staffMembers: StaffMember[] = [
       birthday: "2002-11-02",
       roleId: roles[1].meta.id, // Program Supervisor
       phone: "555-0102",
+      gender: "male",
       certificationIds: [certifications[0].meta.id, certifications[1].meta.id],
     },
   },
@@ -1073,6 +1075,7 @@ export const staffMembers: StaffMember[] = [
       birthday: "2005-01-03",
       roleId: roles[2].meta.id, // Camp Counselor
       phone: "555-0103",
+      gender: "female",
       certificationIds: [certifications[0].meta.id, certifications[4].meta.id],
     },
   },
@@ -1089,6 +1092,7 @@ export const staffMembers: StaffMember[] = [
       birthday: "2009-11-07",
       roleId: roles[2].meta.id, // Camp Counselor
       phone: "555-0104",
+      gender: "male",
       certificationIds: [certifications[0].meta.id, certifications[1].meta.id],
     },
   },
@@ -1105,6 +1109,7 @@ export const staffMembers: StaffMember[] = [
       birthday: "2007-10-05",
       roleId: roles[3].meta.id, // Camp Nurse
       phone: "555-0105",
+      gender: "female",
       certificationIds: [certifications[0].meta.id],
     },
   },
@@ -1121,6 +1126,7 @@ export const staffMembers: StaffMember[] = [
       birthday: "2008-03-06",
       roleId: roles[4].meta.id, // Activity Instructor
       phone: "555-0106",
+      gender: "male",
       certificationIds: [certifications[0].meta.id, certifications[7].meta.id],
     },
   },
@@ -1137,6 +1143,7 @@ export const staffMembers: StaffMember[] = [
       birthday: "2008-04-07",
       roleId: roles[2].meta.id, // Camp Counselor
       phone: "555-0107",
+      gender: "female",
       certificationIds: [certifications[0].meta.id],
     },
   },
@@ -1153,6 +1160,7 @@ export const staffMembers: StaffMember[] = [
       birthday: "2018-11-08",
       roleId: roles[2].meta.id, // Camp Counselor
       phone: "555-0108",
+      gender: "male",
       certificationIds: [certifications[0].meta.id],
     },
   },
@@ -1169,6 +1177,7 @@ export const staffMembers: StaffMember[] = [
       birthday: "2018-11-09",
       roleId: roles[1].meta.id, // Program Supervisor
       phone: "555-0109",
+      gender: "female",
       certificationIds: [certifications[0].meta.id, certifications[5].meta.id],
     },
   },
@@ -1185,21 +1194,11 @@ export const staffMembers: StaffMember[] = [
       birthday: "2019-11-10",
       roleId: roles[4].meta.id, // Activity Instructor
       phone: "555-0110",
+      gender: "male",
       certificationIds: [certifications[0].meta.id, certifications[7].meta.id],
     },
   },
 ];
-
-// Set manager IDs after array creation
-staffMembers[1].spec.managerId = staffMembers[0].meta.id; // Michael reports to Sarah
-staffMembers[2].spec.managerId = staffMembers[1].meta.id; // Emily reports to Michael
-staffMembers[3].spec.managerId = staffMembers[1].meta.id; // David reports to Michael
-staffMembers[4].spec.managerId = staffMembers[0].meta.id; // Jessica reports to Sarah
-staffMembers[5].spec.managerId = staffMembers[1].meta.id; // Ryan reports to Michael
-staffMembers[6].spec.managerId = staffMembers[1].meta.id; // Amanda reports to Michael
-staffMembers[7].spec.managerId = staffMembers[1].meta.id; // Christopher reports to Michael
-staffMembers[8].spec.managerId = staffMembers[1].meta.id; // Rachel reports to Michael
-staffMembers[9].spec.managerId = staffMembers[1].meta.id; // Daniel reports to Michael
 
 // Groups (6 groups with housing rooms)
 export const groups: Group[] = [
@@ -1218,7 +1217,6 @@ export const groups: Group[] = [
       staffIds: [staffMembers[2].meta.id, staffMembers[3].meta.id],
       sessionId: sessions[0].meta.id,
       camperIds: [], // Will be populated after campers are created
-      labelIds: [],
     },
   },
   {
@@ -1236,7 +1234,6 @@ export const groups: Group[] = [
       staffIds: [staffMembers[6].meta.id, staffMembers[7].meta.id],
       sessionId: sessions[1].meta.id,
       camperIds: [],
-      labelIds: [],
     },
   },
   {
@@ -1254,7 +1251,6 @@ export const groups: Group[] = [
       staffIds: [staffMembers[8].meta.id],
       sessionId: sessions[2].meta.id,
       camperIds: [],
-      labelIds: [],
     },
   },
   {
@@ -1272,7 +1268,6 @@ export const groups: Group[] = [
       staffIds: [staffMembers[9].meta.id],
       sessionId: sessions[3].meta.id,
       camperIds: [],
-      labelIds: [],
     },
   },
   {
@@ -1290,7 +1285,6 @@ export const groups: Group[] = [
       staffIds: [staffMembers[2].meta.id],
       sessionId: sessions[4].meta.id,
       camperIds: [],
-      labelIds: [],
     },
   },
   {
@@ -1308,7 +1302,6 @@ export const groups: Group[] = [
       staffIds: [staffMembers[6].meta.id],
       sessionId: sessions[5].meta.id,
       camperIds: [],
-      labelIds: [],
     },
   },
   {
@@ -1477,11 +1470,9 @@ groups.forEach((group, groupIndex) => {
       spec: {
         birthday,
         gender,
-        photoUrl: `https://i.pravatar.cc/150?u=camper${camperIndex}`,
-        registrationDate: octoberDate(1, 10, camperIndex),
         sessionId: group.spec.sessionId || "",
-        housingRoomId: group.spec.housingRoomId,
-        familyGroupId: group.meta.id,
+        housingGroupId: group.spec.housingRoomId,
+        groupIds: [group.meta.id],
       },
     };
     campers.push(camper);

@@ -14,7 +14,6 @@ export const staffMembersService = {
   deleteStaffMember,
   getStaffMemberById,
   getStaffMembersByCertification,
-  getStaffMembersByManager,
 };
 
 async function listStaffMembers(): Promise<StaffMember[]> {
@@ -103,11 +102,4 @@ async function getStaffMembersByCertification(
   return staffMembers.filter((s) =>
     s.spec.certificationIds?.includes(certificationId),
   );
-}
-
-async function getStaffMembersByManager(
-  managerId: string,
-): Promise<StaffMember[]> {
-  const staffMembers = await listStaffMembers();
-  return staffMembers.filter((s) => s.spec.managerId === managerId);
 }
