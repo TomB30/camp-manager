@@ -87,6 +87,24 @@ func (r *GroupsRepository) GetByID(ctx context.Context, tenantID, campID, id uui
 	return &group, nil
 }
 
+// FindByHousingRoomAndSession retrieves a group by housing room and session
+func (r *GroupsRepository) FindByHousingRoomAndSession(ctx context.Context, tenantID, campID, housingRoomID, sessionID uuid.UUID) (*domain.Group, error) {
+	var group domain.Group
+
+	err := ScopedQuery(r.db, ctx, tenantID, campID).
+		Where("housing_room_id = ? AND session_id = ?", housingRoomID, sessionID).
+		First(&group).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, gorm.ErrRecordNotFound
+		}
+		return nil, fmt.Errorf("failed to find group by housing room and session: %w", err)
+	}
+
+	return &group, nil
+}
+
 // Create inserts a new group
 func (r *GroupsRepository) Create(ctx context.Context, group *domain.Group) error {
 	// Validate mutual exclusivity

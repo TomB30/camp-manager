@@ -75,6 +75,7 @@ type EventsRepository interface {
 type GroupsRepository interface {
 	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]domain.Group, int64, error)
 	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*domain.Group, error)
+	FindByHousingRoomAndSession(ctx context.Context, tenantId, campId, housingRoomId, sessionId uuid.UUID) (*domain.Group, error)
 	Create(ctx context.Context, group *domain.Group) error
 	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, group *domain.Group) error
 	Delete(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) error

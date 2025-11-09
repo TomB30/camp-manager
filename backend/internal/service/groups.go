@@ -84,7 +84,7 @@ func (s *groupsService) GetByID(ctx context.Context, tenantId uuid.UUID, campId 
 
 // Create creates a new group
 func (s *groupsService) Create(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, req *api.GroupCreationRequest) (*api.Group, error) {
-	err := s.validateGroupRequest(ctx, tenantId, campId, req.Spec.SessionId, req.Spec.HousingRoomId)
+	err := s.validateGroupRequest(ctx, tenantId, campId, req.Spec.SessionId, req.Spec.HousingRoomId, nil)
 	if err != nil {
 		return nil, pkgerrors.BadRequest(err.Error(), err)
 	}
@@ -128,7 +128,7 @@ func (s *groupsService) Create(ctx context.Context, tenantId uuid.UUID, campId u
 
 // Update updates an existing group
 func (s *groupsService) Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.GroupUpdateRequest) (*api.Group, error) {
-	err := s.validateGroupRequest(ctx, tenantId, campId, req.Spec.SessionId, req.Spec.HousingRoomId)
+	err := s.validateGroupRequest(ctx, tenantId, campId, req.Spec.SessionId, req.Spec.HousingRoomId, &id)
 	if err != nil {
 		return nil, pkgerrors.BadRequest(err.Error(), err)
 	}
@@ -191,7 +191,11 @@ func (s *groupsService) Delete(ctx context.Context, tenantId uuid.UUID, campId u
 	return nil
 }
 
-func (s *groupsService) validateGroupRequest(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, sessionId *uuid.UUID, housingRoomId *uuid.UUID) error {
+func (s *groupsService) validateGroupRequest(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, sessionId *uuid.UUID, housingRoomId *uuid.UUID, excludeGroupId *uuid.UUID) error {
+	if housingRoomId != nil && sessionId == nil {
+		return fmt.Errorf("group with housing room must have a session ID")
+	}
+
 	if sessionId != nil {
 		_, err := s.sessionsRepo.GetByID(ctx, tenantId, campId, *sessionId)
 		if err != nil {
@@ -209,6 +213,21 @@ func (s *groupsService) validateGroupRequest(ctx context.Context, tenantId uuid.
 				return fmt.Errorf("housing room with id '%s' not found", housingRoomId.String())
 			}
 			return fmt.Errorf("failed to check housing room existence: %w", err)
+		}
+
+		// Validation 2: Check housing room uniqueness per session
+		if sessionId != nil {
+			existingGroup, err := s.repo.FindByHousingRoomAndSession(ctx, tenantId, campId, *housingRoomId, *sessionId)
+			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+				return fmt.Errorf("failed to check housing room uniqueness: %w", err)
+			}
+
+			// If a group was found and it's not the one we're updating, return an error
+			if existingGroup != nil {
+				if excludeGroupId == nil || *excludeGroupId != existingGroup.ID {
+					return fmt.Errorf("housing room '%s' is already assigned to another group in session '%s'", housingRoomId.String(), sessionId.String())
+				}
+			}
 		}
 	}
 
