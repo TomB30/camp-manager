@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
@@ -32,13 +33,15 @@ type StaffMembersService interface {
 
 // staffMembersService implements StaffMembersService
 type staffMembersService struct {
-	repo StaffMembersRepository
+	repo       StaffMembersRepository
+	groupsRepo GroupsRepository
 }
 
 // NewStaffMembersService creates a new staff members service
-func NewStaffMembersService(repo StaffMembersRepository) StaffMembersService {
+func NewStaffMembersService(repo StaffMembersRepository, groupsRepo GroupsRepository) StaffMembersService {
 	return &staffMembersService{
-		repo: repo,
+		repo:       repo,
+		groupsRepo: groupsRepo,
 	}
 }
 
@@ -77,6 +80,12 @@ func (s *staffMembersService) GetByID(ctx context.Context, tenantId uuid.UUID, c
 
 // Create creates a new staff member
 func (s *staffMembersService) Create(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, req *api.StaffMemberCreationRequest) (*api.StaffMember, error) {
+	// Validate and extract housing group ID from groupIds
+	housingGroupId, err := s.validateAndExtractHousingGroup(ctx, tenantId, campId, req.Spec.GroupIds)
+	if err != nil {
+		return nil, pkgerrors.BadRequest(err.Error(), err)
+	}
+
 	domainStaffMember := domain.StaffMember{
 		TenantID:       tenantId,
 		CampID:         campId,
@@ -86,7 +95,7 @@ func (s *staffMembersService) Create(ctx context.Context, tenantId uuid.UUID, ca
 		Gender:         string(req.Spec.Gender),
 		RoleID:         req.Spec.RoleId,
 		Phone:          utils.PtrToString(req.Spec.Phone),
-		HousingGroupID: req.Spec.HousingGroupId,
+		HousingGroupID: housingGroupId,
 	}
 	domainStaffMember.GroupStaffMembers = []domain.GroupStaffMember{}
 	if req.Spec.GroupIds != nil {
@@ -114,15 +123,25 @@ func (s *staffMembersService) Create(ctx context.Context, tenantId uuid.UUID, ca
 func (s *staffMembersService) Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.StaffMemberUpdateRequest) (*api.StaffMember, error) {
 	domainStaffMember, err := s.repo.GetByID(ctx, tenantId, campId, id)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, pkgerrors.NotFound("Staff member not found", err)
+		}
 		return nil, pkgerrors.InternalServerError("Failed to get staff member", err)
 	}
+
+	// Validate and extract housing group ID from groupIds
+	housingGroupId, err := s.validateAndExtractHousingGroup(ctx, tenantId, campId, req.Spec.GroupIds)
+	if err != nil {
+		return nil, pkgerrors.BadRequest(err.Error(), err)
+	}
+
 	domainStaffMember.Name = req.Meta.Name
 	domainStaffMember.Description = utils.PtrToString(req.Meta.Description)
 	domainStaffMember.Birthday = req.Spec.Birthday.Time
 	domainStaffMember.Gender = string(req.Spec.Gender)
 	domainStaffMember.RoleID = req.Spec.RoleId
 	domainStaffMember.Phone = utils.PtrToString(req.Spec.Phone)
-	domainStaffMember.HousingGroupID = req.Spec.HousingGroupId
+	domainStaffMember.HousingGroupID = housingGroupId
 	domainStaffMember.GroupStaffMembers = []domain.GroupStaffMember{}
 	if req.Spec.GroupIds != nil {
 		for _, groupId := range *req.Spec.GroupIds {
@@ -158,4 +177,37 @@ func (s *staffMembersService) Delete(ctx context.Context, tenantId uuid.UUID, ca
 		return pkgerrors.InternalServerError("Failed to delete staff member", err)
 	}
 	return nil
+}
+
+// validateAndExtractHousingGroup validates that at most one housing group exists in groupIds
+// and returns the housing group ID if found
+func (s *staffMembersService) validateAndExtractHousingGroup(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, groupIds *[]uuid.UUID) (*uuid.UUID, error) {
+	if groupIds == nil || len(*groupIds) == 0 {
+		return nil, nil
+	}
+
+	var housingGroupId *uuid.UUID
+	housingGroupCount := 0
+
+	for _, groupId := range *groupIds {
+		group, err := s.groupsRepo.GetByID(ctx, tenantId, campId, groupId)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, fmt.Errorf("group with id '%s' not found", groupId.String())
+			}
+			return nil, fmt.Errorf("failed to check group existence: %w", err)
+		}
+
+		// Check if this group is a housing group
+		if group.HousingRoomID != nil {
+			housingGroupCount++
+			housingGroupId = &group.ID
+		}
+	}
+
+	if housingGroupCount > 1 {
+		return nil, fmt.Errorf("staff member can only belong to one housing group, found %d", housingGroupCount)
+	}
+
+	return housingGroupId, nil
 }

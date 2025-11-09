@@ -59,7 +59,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	activitiesService := service.NewActivitiesService(activitiesRepo)
 	areasService := service.NewAreasService(areasRepo)
 	authService := service.NewAuthService(usersRepo, jwtService)
-	campersService := service.NewCampersService(campersRepo)
+	campersService := service.NewCampersService(campersRepo, sessionsRepo, groupsRepo)
 	campsService := service.NewCampsService(campsRepo)
 	certificationsService := service.NewCertificationsService(certificationsRepo)
 	colorsService := service.NewColorsService(colorsRepo)
@@ -70,7 +70,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	programsService := service.NewProgramsService(programsRepo)
 	rolesService := service.NewRolesService(rolesRepo)
 	sessionsService := service.NewSessionsService(sessionsRepo)
-	staffMembersService := service.NewStaffMembersService(staffMembersRepo)
+	staffMembersService := service.NewStaffMembersService(staffMembersRepo, groupsRepo)
 	tenantsService := service.NewTenantsService(tenantsRepo)
 
 	// Initialize handlers

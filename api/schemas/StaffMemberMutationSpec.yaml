@@ -20,13 +20,10 @@ properties:
       type: string
       format: uuid
     description: IDs of certifications this staff member holds
-  housingGroupId:
-    type: string
-    format: uuid
-    description: ID of the housing group this staff member belongs to (auto-populated from groupIds)
   groupIds:
     type: array
     items:
       type: string
       format: uuid
-    description: IDs of the groups this staff member belongs to
+    description: IDs of the groups this staff member belongs to (max one housing group allowed)
+

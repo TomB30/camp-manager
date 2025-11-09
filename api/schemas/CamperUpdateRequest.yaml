@@ -6,4 +6,4 @@ properties:
   meta:
     $ref: "./EntityCreationRequestMeta.yaml"
   spec:
-    $ref: "./CamperSpec.yaml"
+    $ref: "./CamperMutationSpec.yaml"

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
@@ -32,13 +33,17 @@ type CampersService interface {
 
 // campersService implements CampersService
 type campersService struct {
-	repo CampersRepository
+	repo         CampersRepository
+	sessionsRepo SessionsRepository
+	groupsRepo   GroupsRepository
 }
 
 // NewCampersService creates a new campers service
-func NewCampersService(repo CampersRepository) CampersService {
+func NewCampersService(repo CampersRepository, sessionsRepo SessionsRepository, groupsRepo GroupsRepository) CampersService {
 	return &campersService{
-		repo: repo,
+		repo:         repo,
+		sessionsRepo: sessionsRepo,
+		groupsRepo:   groupsRepo,
 	}
 }
 
@@ -79,14 +84,27 @@ func (s *campersService) GetByID(ctx context.Context, tenantId uuid.UUID, campId
 
 // Create creates a new camper
 func (s *campersService) Create(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, req *api.CamperCreationRequest) (*api.Camper, error) {
+	// Validate and extract housing group ID from groupIds
+	housingGroupId, err := s.validateAndExtractHousingGroup(ctx, tenantId, campId, req.Spec.GroupIds)
+	if err != nil {
+		return nil, pkgerrors.BadRequest(err.Error(), err)
+	}
+
+	// Validate session
+	err = s.validateSession(ctx, tenantId, campId, req.Spec.SessionId)
+	if err != nil {
+		return nil, pkgerrors.BadRequest(err.Error(), err)
+	}
+
 	domainCamper := domain.Camper{
-		TenantID:    tenantId,
-		CampID:      campId,
-		Name:        req.Meta.Name,
-		Description: utils.PtrToString(req.Meta.Description),
-		Birthday:    req.Spec.Birthday.Time,
-		Gender:      string(req.Spec.Gender),
-		SessionID:   req.Spec.SessionId,
+		TenantID:       tenantId,
+		CampID:         campId,
+		Name:           req.Meta.Name,
+		Description:    utils.PtrToString(req.Meta.Description),
+		Birthday:       req.Spec.Birthday.Time,
+		Gender:         string(req.Spec.Gender),
+		SessionID:      req.Spec.SessionId,
+		HousingGroupID: housingGroupId,
 	}
 	domainCamper.GroupCampers = []domain.GroupCamper{}
 	if req.Spec.GroupIds != nil {
@@ -114,12 +132,25 @@ func (s *campersService) Update(ctx context.Context, tenantId uuid.UUID, campId 
 		}
 		return nil, pkgerrors.InternalServerError("Failed to get camper", err)
 	}
+
+	// Validate and extract housing group ID from groupIds
+	housingGroupId, err := s.validateAndExtractHousingGroup(ctx, tenantId, campId, req.Spec.GroupIds)
+	if err != nil {
+		return nil, pkgerrors.BadRequest(err.Error(), err)
+	}
+
+	// Validate session
+	err = s.validateSession(ctx, tenantId, campId, req.Spec.SessionId)
+	if err != nil {
+		return nil, pkgerrors.BadRequest(err.Error(), err)
+	}
+
 	existingCamper.Name = req.Meta.Name
 	existingCamper.Description = utils.PtrToString(req.Meta.Description)
 	existingCamper.Birthday = req.Spec.Birthday.Time
 	existingCamper.Gender = string(req.Spec.Gender)
 	existingCamper.SessionID = req.Spec.SessionId
-	existingCamper.HousingGroupID = req.Spec.HousingGroupId
+	existingCamper.HousingGroupID = housingGroupId
 	existingCamper.GroupCampers = []domain.GroupCamper{}
 	if req.Spec.GroupIds != nil {
 		for _, groupId := range *req.Spec.GroupIds {
@@ -152,5 +183,50 @@ func (s *campersService) Delete(ctx context.Context, tenantId uuid.UUID, campId 
 		return pkgerrors.InternalServerError("Failed to delete camper", err)
 	}
 
+	return nil
+}
+
+// validateAndExtractHousingGroup validates that at most one housing group exists in groupIds
+// and returns the housing group ID if found
+func (s *campersService) validateAndExtractHousingGroup(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, groupIds *[]uuid.UUID) (*uuid.UUID, error) {
+	if groupIds == nil || len(*groupIds) == 0 {
+		return nil, nil
+	}
+
+	var housingGroupId *uuid.UUID
+	housingGroupCount := 0
+
+	for _, groupId := range *groupIds {
+		group, err := s.groupsRepo.GetByID(ctx, tenantId, campId, groupId)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, fmt.Errorf("group with id '%s' not found", groupId.String())
+			}
+			return nil, fmt.Errorf("failed to check group existence: %w", err)
+		}
+
+		// Check if this group is a housing group
+		if group.HousingRoomID != nil {
+			housingGroupCount++
+			housingGroupId = &group.ID
+		}
+	}
+
+	if housingGroupCount > 1 {
+		return nil, fmt.Errorf("camper can only belong to one housing group, found %d", housingGroupCount)
+	}
+
+	return housingGroupId, nil
+}
+
+// validateSession validates that the session exists
+func (s *campersService) validateSession(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, sessionId uuid.UUID) error {
+	_, err := s.sessionsRepo.GetByID(ctx, tenantId, campId, sessionId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("session with id '%s' not found", sessionId.String())
+		}
+		return fmt.Errorf("failed to check session existence: %w", err)
+	}
 	return nil
 }

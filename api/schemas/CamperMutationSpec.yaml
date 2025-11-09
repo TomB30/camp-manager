@@ -12,13 +12,10 @@ properties:
     type: string
     format: uuid
     description: ID of the camp session this camper is registered in
-  housingGroupId:
-    type: string
-    format: uuid
-    description: ID of the housing group this camper belongs to (auto-populated from groupIds)
   groupIds:
     type: array
     items:
       type: string
       format: uuid
-    description: IDs of the groups this camper belongs to
+    description: IDs of the groups this camper belongs to (max one housing group allowed)
+

@@ -6,4 +6,4 @@ properties:
   meta:
     $ref: "./EntityCreationRequestMeta.yaml"
   spec:
-    $ref: "./StaffMemberSpec.yaml"
+    $ref: "./StaffMemberMutationSpec.yaml"

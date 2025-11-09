@@ -154,12 +154,12 @@ export type Camper = {
 
 export type CamperCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: CamperSpec;
+    spec: CamperMutationSpec;
 };
 
 export type CamperUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: CamperSpec;
+    spec: CamperMutationSpec;
 };
 
 export type CampersListResponse = ListResponseBase & {
@@ -173,12 +173,12 @@ export type StaffMember = {
 
 export type StaffMemberCreationRequest = {
     meta: EntityCreationRequestMeta;
-    spec: StaffMemberSpec;
+    spec: StaffMemberMutationSpec;
 };
 
 export type StaffMemberUpdateRequest = {
     meta: EntityCreationRequestMeta;
-    spec: StaffMemberSpec;
+    spec: StaffMemberMutationSpec;
 };
 
 export type StaffMembersListResponse = ListResponseBase & {
@@ -512,11 +512,24 @@ export type CamperSpec = {
      */
     sessionId: string;
     /**
-     * ID of the housing group this camper belongs to
+     * ID of the housing group this camper belongs to (auto-populated from groupIds)
      */
     housingGroupId?: string;
     /**
      * IDs of the groups this camper belongs to
+     */
+    groupIds?: Array<string>;
+};
+
+export type CamperMutationSpec = {
+    birthday: Birthday;
+    gender: Gender;
+    /**
+     * ID of the camp session this camper is registered in
+     */
+    sessionId: string;
+    /**
+     * IDs of the groups this camper belongs to (max one housing group allowed)
      */
     groupIds?: Array<string>;
 };
@@ -534,11 +547,29 @@ export type StaffMemberSpec = {
      */
     certificationIds?: Array<string>;
     /**
-     * ID of the housing group this staff member belongs to
+     * ID of the housing group this staff member belongs to (auto-populated from groupIds)
      */
     housingGroupId?: string;
     /**
      * IDs of the groups this staff member belongs to
+     */
+    groupIds?: Array<string>;
+};
+
+export type StaffMemberMutationSpec = {
+    birthday: Birthday;
+    gender: Gender;
+    /**
+     * ID of the role this staff member has
+     */
+    roleId: string;
+    phone?: string;
+    /**
+     * IDs of certifications this staff member holds
+     */
+    certificationIds?: Array<string>;
+    /**
+     * IDs of the groups this staff member belongs to (max one housing group allowed)
      */
     groupIds?: Array<string>;
 };

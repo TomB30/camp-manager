@@ -229,7 +229,22 @@ type Camper struct {
 // CamperCreationRequest defines model for CamperCreationRequest.
 type CamperCreationRequest struct {
 	Meta EntityCreationRequestMeta `json:"meta"`
-	Spec CamperSpec                `json:"spec"`
+	Spec CamperMutationSpec        `json:"spec"`
+}
+
+// CamperMutationSpec defines model for CamperMutationSpec.
+type CamperMutationSpec struct {
+	// Birthday Date of birth of the camper or staff member
+	Birthday Birthday `json:"birthday"`
+
+	// Gender Gender of the camper or staff member
+	Gender Gender `json:"gender"`
+
+	// GroupIds IDs of the groups this camper belongs to (max one housing group allowed)
+	GroupIds *[]openapi_types.UUID `json:"groupIds,omitempty"`
+
+	// SessionId ID of the camp session this camper is registered in
+	SessionId openapi_types.UUID `json:"sessionId"`
 }
 
 // CamperSpec defines model for CamperSpec.
@@ -243,7 +258,7 @@ type CamperSpec struct {
 	// GroupIds IDs of the groups this camper belongs to
 	GroupIds *[]openapi_types.UUID `json:"groupIds,omitempty"`
 
-	// HousingGroupId ID of the housing group this camper belongs to
+	// HousingGroupId ID of the housing group this camper belongs to (auto-populated from groupIds)
 	HousingGroupId *openapi_types.UUID `json:"housingGroupId,omitempty"`
 
 	// SessionId ID of the camp session this camper is registered in
@@ -253,7 +268,7 @@ type CamperSpec struct {
 // CamperUpdateRequest defines model for CamperUpdateRequest.
 type CamperUpdateRequest struct {
 	Meta EntityCreationRequestMeta `json:"meta"`
-	Spec CamperSpec                `json:"spec"`
+	Spec CamperMutationSpec        `json:"spec"`
 }
 
 // CampersListResponse defines model for CampersListResponse.
@@ -828,7 +843,26 @@ type StaffMember struct {
 // StaffMemberCreationRequest defines model for StaffMemberCreationRequest.
 type StaffMemberCreationRequest struct {
 	Meta EntityCreationRequestMeta `json:"meta"`
-	Spec StaffMemberSpec           `json:"spec"`
+	Spec StaffMemberMutationSpec   `json:"spec"`
+}
+
+// StaffMemberMutationSpec defines model for StaffMemberMutationSpec.
+type StaffMemberMutationSpec struct {
+	// Birthday Date of birth of the camper or staff member
+	Birthday Birthday `json:"birthday"`
+
+	// CertificationIds IDs of certifications this staff member holds
+	CertificationIds *[]openapi_types.UUID `json:"certificationIds,omitempty"`
+
+	// Gender Gender of the camper or staff member
+	Gender Gender `json:"gender"`
+
+	// GroupIds IDs of the groups this staff member belongs to (max one housing group allowed)
+	GroupIds *[]openapi_types.UUID `json:"groupIds,omitempty"`
+	Phone    *string               `json:"phone,omitempty"`
+
+	// RoleId ID of the role this staff member has
+	RoleId openapi_types.UUID `json:"roleId"`
 }
 
 // StaffMemberSpec defines model for StaffMemberSpec.
@@ -845,7 +879,7 @@ type StaffMemberSpec struct {
 	// GroupIds IDs of the groups this staff member belongs to
 	GroupIds *[]openapi_types.UUID `json:"groupIds,omitempty"`
 
-	// HousingGroupId ID of the housing group this staff member belongs to
+	// HousingGroupId ID of the housing group this staff member belongs to (auto-populated from groupIds)
 	HousingGroupId *openapi_types.UUID `json:"housingGroupId,omitempty"`
 	Phone          *string             `json:"phone,omitempty"`
 
@@ -856,7 +890,7 @@ type StaffMemberSpec struct {
 // StaffMemberUpdateRequest defines model for StaffMemberUpdateRequest.
 type StaffMemberUpdateRequest struct {
 	Meta EntityCreationRequestMeta `json:"meta"`
-	Spec StaffMemberSpec           `json:"spec"`
+	Spec StaffMemberMutationSpec   `json:"spec"`
 }
 
 // StaffMembersListResponse defines model for StaffMembersListResponse.
