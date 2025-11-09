@@ -142,21 +142,29 @@ func (r *CampersRepository) Update(ctx context.Context, tenantID, campID, id uui
 
 // Delete soft deletes a camper by ID
 func (r *CampersRepository) Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error {
-	result := ScopedQuery(r.db, ctx, tenantID, campID).
-		Where("id = ?", id).
-		Delete(&domain.Camper{})
+	// Start a transaction to handle soft delete and junction table cleanup
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// First, hard delete all junction table entries for this camper
+		// (junction tables don't use soft delete)
+		if err := tx.Where("camper_id = ?", id).Delete(&domain.GroupCamper{}).Error; err != nil {
+			return fmt.Errorf("failed to delete group associations: %w", err)
+		}
 
-	if result.Error != nil {
-		return fmt.Errorf("failed to delete camper: %w", result.Error)
-	}
+		// Then soft delete the camper using scoped query
+		result := ScopedTxQuery(tx, tenantID, campID).
+			Where("id = ?", id).
+			Delete(&domain.Camper{})
 
-	if result.RowsAffected == 0 {
-		return fmt.Errorf("camper not found or unauthorized")
-	}
+		if result.Error != nil {
+			return fmt.Errorf("failed to delete camper: %w", result.Error)
+		}
 
-	// Junction table cleanup is handled automatically by ON DELETE CASCADE
+		if result.RowsAffected == 0 {
+			return fmt.Errorf("camper not found or unauthorized")
+		}
 
-	return nil
+		return nil
+	})
 }
 
 // syncGroupCampers syncs the group_campers junction table using delete-all-and-recreate strategy

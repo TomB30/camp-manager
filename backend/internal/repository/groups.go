@@ -172,21 +172,42 @@ func (r *GroupsRepository) Update(ctx context.Context, tenantID, campID, id uuid
 
 // Delete soft deletes a group by ID
 func (r *GroupsRepository) Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error {
-	result := ScopedQuery(r.db, ctx, tenantID, campID).
-		Where("id = ?", id).
-		Delete(&domain.Group{})
+	// Start a transaction to handle soft delete and junction table cleanup
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// First, hard delete all junction table entries for this group
+		// (junction tables don't use soft delete)
+		if err := tx.Where("group_id = ?", id).Delete(&domain.GroupCamper{}).Error; err != nil {
+			return fmt.Errorf("failed to delete camper associations: %w", err)
+		}
 
-	if result.Error != nil {
-		return fmt.Errorf("failed to delete group: %w", result.Error)
-	}
+		if err := tx.Where("group_id = ?", id).Delete(&domain.GroupStaffMember{}).Error; err != nil {
+			return fmt.Errorf("failed to delete staff associations: %w", err)
+		}
 
-	if result.RowsAffected == 0 {
-		return fmt.Errorf("group not found or unauthorized")
-	}
+		// Delete both parent and child relationships for nested groups
+		if err := tx.Where("parent_group_id = ?", id).Delete(&domain.GroupGroup{}).Error; err != nil {
+			return fmt.Errorf("failed to delete parent group associations: %w", err)
+		}
 
-	// Junction table cleanup is handled automatically by ON DELETE CASCADE
+		if err := tx.Where("child_group_id = ?", id).Delete(&domain.GroupGroup{}).Error; err != nil {
+			return fmt.Errorf("failed to delete child group associations: %w", err)
+		}
 
-	return nil
+		// Then soft delete the group using scoped query
+		result := ScopedTxQuery(tx, tenantID, campID).
+			Where("id = ?", id).
+			Delete(&domain.Group{})
+
+		if result.Error != nil {
+			return fmt.Errorf("failed to delete group: %w", result.Error)
+		}
+
+		if result.RowsAffected == 0 {
+			return fmt.Errorf("group not found or unauthorized")
+		}
+
+		return nil
+	})
 }
 
 // validateGroupType ensures mutual exclusivity between nested groups and manual member selection

@@ -179,21 +179,33 @@ func (r *StaffMembersRepository) Update(ctx context.Context, tenantID, campID, i
 
 // Delete soft deletes a staff member by ID
 func (r *StaffMembersRepository) Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error {
-	result := ScopedQuery(r.db, ctx, tenantID, campID).
-		Where("id = ?", id).
-		Delete(&domain.StaffMember{})
+	// Start a transaction to handle soft delete and junction table cleanup
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// First, hard delete all junction table entries for this staff member
+		// (junction tables don't use soft delete)
+		if err := tx.Where("staff_member_id = ?", id).Delete(&domain.GroupStaffMember{}).Error; err != nil {
+			return fmt.Errorf("failed to delete group associations: %w", err)
+		}
 
-	if result.Error != nil {
-		return fmt.Errorf("failed to delete staff member: %w", result.Error)
-	}
+		if err := tx.Where("staff_member_id = ?", id).Delete(&domain.StaffCertification{}).Error; err != nil {
+			return fmt.Errorf("failed to delete certification associations: %w", err)
+		}
 
-	if result.RowsAffected == 0 {
-		return fmt.Errorf("staff member not found or unauthorized")
-	}
+		// Then soft delete the staff member using scoped query
+		result := ScopedTxQuery(tx, tenantID, campID).
+			Where("id = ?", id).
+			Delete(&domain.StaffMember{})
 
-	// Junction table cleanup is handled automatically by ON DELETE CASCADE
+		if result.Error != nil {
+			return fmt.Errorf("failed to delete staff member: %w", result.Error)
+		}
 
-	return nil
+		if result.RowsAffected == 0 {
+			return fmt.Errorf("staff member not found or unauthorized")
+		}
+
+		return nil
+	})
 }
 
 // syncGroupStaffMembers syncs the group_staff_members junction table using delete-all-and-recreate strategy

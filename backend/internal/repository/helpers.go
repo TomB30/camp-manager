@@ -19,3 +19,9 @@ func ScopedQuery(db *database.Database, ctx context.Context, tenantID, campID uu
 func ScopedQueryByTenant(db *database.Database, ctx context.Context, tenantID uuid.UUID) *gorm.DB {
 	return db.WithContext(ctx).Where("tenant_id = ?", tenantID)
 }
+
+// ScopedTxQuery returns a scoped query for use within a transaction.
+// This is the transaction-aware version of ScopedQuery.
+func ScopedTxQuery(tx *gorm.DB, tenantID, campID uuid.UUID) *gorm.DB {
+	return tx.Where("tenant_id = ? AND camp_id = ?", tenantID, campID)
+}
