@@ -40,10 +40,7 @@ func (r *CampsRepository) List(ctx context.Context, tenantID uuid.UUID, campIDs 
 	}
 
 	// Apply search filter if provided
-	if search != nil && *search != "" {
-		searchPattern := "%" + *search + "%"
-		query = query.Where("name ILIKE ? OR description ILIKE ?", searchPattern, searchPattern)
-	}
+	query = ApplySearchFilter(query, search, "name")
 
 	// Get total count
 	if err := query.Count(&total).Error; err != nil {
@@ -61,13 +58,13 @@ func (r *CampsRepository) List(ctx context.Context, tenantID uuid.UUID, campIDs 
 // GetByID returns a single camp by ID
 func (r *CampsRepository) GetByID(ctx context.Context, tenantID, campID uuid.UUID) (*domain.Camp, error) {
 	var camp domain.Camp
-	
+
 	if err := r.db.DB.WithContext(ctx).
 		Where("id = ? AND tenant_id = ?", campID, tenantID).
 		First(&camp).Error; err != nil {
 		return nil, err
 	}
-	
+
 	return &camp, nil
 }
 

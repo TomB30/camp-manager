@@ -28,10 +28,7 @@ func (r *RolesRepository) List(ctx context.Context, tenantID, campID uuid.UUID, 
 	query := ScopedQuery(r.db, ctx, tenantID, campID)
 
 	// Add search filter if provided
-	if search != nil && *search != "" {
-		searchPattern := fmt.Sprintf("%%%s%%", *search)
-		query = query.Where("name ILIKE ?", searchPattern)
-	}
+	query = ApplySearchFilter(query, search, "name")
 
 	// Get total count
 	if err := query.Model(&domain.Role{}).Count(&total).Error; err != nil {

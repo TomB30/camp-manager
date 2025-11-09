@@ -70,7 +70,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	programsService := service.NewProgramsService(programsRepo)
 	rolesService := service.NewRolesService(rolesRepo)
 	sessionsService := service.NewSessionsService(sessionsRepo)
-	staffMembersService := service.NewStaffMembersService(staffMembersRepo, groupsRepo)
+	staffMembersService := service.NewStaffMembersService(staffMembersRepo, groupsRepo, rolesRepo)
 	tenantsService := service.NewTenantsService(tenantsRepo)
 
 	// Initialize handlers

@@ -29,10 +29,7 @@ func (r *CertificationsRepository) List(ctx context.Context, tenantID, campID uu
 	query := ScopedQuery(r.db, ctx, tenantID, campID)
 
 	// Add search filter if provided
-	if search != nil && *search != "" {
-		searchPattern := fmt.Sprintf("%%%s%%", *search)
-		query = query.Where("name ILIKE ?", searchPattern)
-	}
+	query = ApplySearchFilter(query, search, "name")
 
 	// Get total count
 	if err := query.Model(&domain.Certification{}).Count(&total).Error; err != nil {
