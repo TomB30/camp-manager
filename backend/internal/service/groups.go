@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
@@ -32,13 +33,17 @@ type GroupsService interface {
 
 // groupsService implements GroupsService
 type groupsService struct {
-	repo GroupsRepository
+	repo             GroupsRepository
+	sessionsRepo     SessionsRepository
+	housingRoomsRepo HousingRoomsRepository
 }
 
 // NewGroupsService creates a new groups service
-func NewGroupsService(repo GroupsRepository) GroupsService {
+func NewGroupsService(repo GroupsRepository, sessionsRepo SessionsRepository, housingRoomsRepo HousingRoomsRepository) GroupsService {
 	return &groupsService{
-		repo: repo,
+		repo:             repo,
+		sessionsRepo:     sessionsRepo,
+		housingRoomsRepo: housingRoomsRepo,
 	}
 }
 
@@ -79,7 +84,11 @@ func (s *groupsService) GetByID(ctx context.Context, tenantId uuid.UUID, campId 
 
 // Create creates a new group
 func (s *groupsService) Create(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, req *api.GroupCreationRequest) (*api.Group, error) {
-	// Create domain group from request
+	err := s.validateGroupRequest(ctx, tenantId, campId, req.Spec.SessionId, req.Spec.HousingRoomId)
+	if err != nil {
+		return nil, pkgerrors.BadRequest(err.Error(), err)
+	}
+
 	domainGroup := domain.Group{
 		TenantID:      tenantId,
 		CampID:        campId,
@@ -88,6 +97,7 @@ func (s *groupsService) Create(ctx context.Context, tenantId uuid.UUID, campId u
 		SessionID:     req.Spec.SessionId,
 		HousingRoomID: req.Spec.HousingRoomId,
 	}
+
 	domainGroup.GroupCampers = []domain.GroupCamper{}
 	if req.Spec.CamperIds != nil {
 		for _, camperId := range *req.Spec.CamperIds {
@@ -109,7 +119,7 @@ func (s *groupsService) Create(ctx context.Context, tenantId uuid.UUID, campId u
 
 	// Save to database
 	if err := s.repo.Create(ctx, &domainGroup); err != nil {
-		return nil, pkgerrors.InternalServerError("Failed to create group", err)
+		return nil, pkgerrors.InternalServerError(fmt.Sprintf("Failed to create group: %s", err.Error()), err)
 	}
 
 	apiGroup := domainGroup.ToAPI()
@@ -118,7 +128,11 @@ func (s *groupsService) Create(ctx context.Context, tenantId uuid.UUID, campId u
 
 // Update updates an existing group
 func (s *groupsService) Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, req *api.GroupUpdateRequest) (*api.Group, error) {
-	// Check if group exists and belongs to tenant/camp
+	err := s.validateGroupRequest(ctx, tenantId, campId, req.Spec.SessionId, req.Spec.HousingRoomId)
+	if err != nil {
+		return nil, pkgerrors.BadRequest(err.Error(), err)
+	}
+
 	existingGroup, err := s.repo.GetByID(ctx, tenantId, campId, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -172,6 +186,30 @@ func (s *groupsService) Delete(ctx context.Context, tenantId uuid.UUID, campId u
 
 	if err := s.repo.Delete(ctx, tenantId, campId, id); err != nil {
 		return pkgerrors.InternalServerError("Failed to delete group", err)
+	}
+
+	return nil
+}
+
+func (s *groupsService) validateGroupRequest(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, sessionId *uuid.UUID, housingRoomId *uuid.UUID) error {
+	if sessionId != nil {
+		_, err := s.sessionsRepo.GetByID(ctx, tenantId, campId, *sessionId)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return fmt.Errorf("session with id '%s' not found", sessionId.String())
+			}
+			return fmt.Errorf("failed to check session existence: %w", err)
+		}
+	}
+
+	if housingRoomId != nil {
+		_, err := s.housingRoomsRepo.GetByID(ctx, tenantId, campId, *housingRoomId)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return fmt.Errorf("housing room with id '%s' not found", housingRoomId.String())
+			}
+			return fmt.Errorf("failed to check housing room existence: %w", err)
+		}
 	}
 
 	return nil

@@ -64,7 +64,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	certificationsService := service.NewCertificationsService(certificationsRepo)
 	colorsService := service.NewColorsService(colorsRepo)
 	eventsService := service.NewEventsService(eventsRepo)
-	groupsService := service.NewGroupsService(groupsRepo)
+	groupsService := service.NewGroupsService(groupsRepo, sessionsRepo, housingRoomsRepo)
 	housingRoomsService := service.NewHousingRoomsService(housingRoomsRepo, areasRepo)
 	locationsService := service.NewLocationsService(locationsRepo, areasRepo)
 	programsService := service.NewProgramsService(programsRepo)

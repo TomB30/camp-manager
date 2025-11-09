@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
-	"log"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/database"
@@ -15,6 +15,17 @@ import (
 type GroupsRepository struct {
 	db *database.Database
 }
+
+const (
+	InvalidCamperId              = `insert or update on table "group_campers" violates foreign key constraint "group_campers_camper_id_fkey"`
+	InvalidStaffMemberId         = `insert or update on table "group_staff_members" violates foreign key constraint "group_staff_members_staff_member_id_fkey"`
+	InvalidNestedGroupId         = `insert or update on table "group_groups" violates foreign key constraint "group_groups_child_group_id_fkey"`
+	InvalidParentGroupId         = `insert or update on table "group_groups" violates foreign key constraint "group_groups_parent_group_id_fkey"`
+	InvalidCamperIdErrorMsg      = "invalid camper id values"
+	InvalidStaffMemberIdErrorMsg = "invalid staff member id values"
+	InvalidNestedGroupIdErrorMsg = "invalid nested group id values"
+	InvalidParentGroupIdErrorMsg = "invalid parent group id values"
+)
 
 // NewGroupsRepository creates a new groups repository
 func NewGroupsRepository(db *database.Database) *GroupsRepository {
@@ -100,12 +111,15 @@ func (r *GroupsRepository) Create(ctx context.Context, group *domain.Group) erro
 
 		// Insert the group
 		if err := tx.Create(&domainGroup).Error; err != nil {
-			log.Println("failed to create group: %w", err)
 			return fmt.Errorf("failed to create group: %w", err)
 		}
 
 		// Sync relationships based on group type
 		if err := syncGroupRelationships(tx, domainGroup.ID, group); err != nil {
+			errMsg, found := handleForeignKeyViolation(err)
+			if found {
+				return fmt.Errorf("%s", errMsg)
+			}
 			return err
 		}
 
@@ -149,8 +163,9 @@ func (r *GroupsRepository) Update(ctx context.Context, tenantID, campID, id uuid
 			updates["description"] = ""
 		}
 
-		result := tx.Model(&domain.Group{}).
-			Where("id = ? AND tenant_id = ? AND camp_id = ?", id, tenantID, campID).
+		result := ScopedTxQuery(tx, tenantID, campID).
+			Model(&domain.Group{}).
+			Where("id = ?", id).
 			Updates(updates)
 
 		if result.Error != nil {
@@ -163,6 +178,10 @@ func (r *GroupsRepository) Update(ctx context.Context, tenantID, campID, id uuid
 
 		// Sync relationships based on group type using delete-all-and-recreate strategy
 		if err := syncGroupRelationships(tx, id, group); err != nil {
+			errMsg, found := handleForeignKeyViolation(err)
+			if found {
+				return fmt.Errorf("%s", errMsg)
+			}
 			return err
 		}
 
@@ -275,4 +294,15 @@ func syncGroupRelationships(tx *gorm.DB, groupID uuid.UUID, group *domain.Group)
 	}
 
 	return nil
+}
+
+func handleForeignKeyViolation(err error) (string, bool) {
+	invalidForeignKeys := []string{InvalidCamperId, InvalidStaffMemberId, InvalidNestedGroupId, InvalidParentGroupId}
+	invalidForeignKeysErrorMsgs := []string{InvalidCamperIdErrorMsg, InvalidStaffMemberIdErrorMsg, InvalidNestedGroupIdErrorMsg, InvalidParentGroupIdErrorMsg}
+	for index, invalidForeignKey := range invalidForeignKeys {
+		if strings.Contains(err.Error(), invalidForeignKey) {
+			return invalidForeignKeysErrorMsgs[index], true
+		}
+	}
+	return "", false
 }
