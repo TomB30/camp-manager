@@ -760,6 +760,26 @@ export type Offset = number;
  */
 export type Search = string;
 
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type LocationsFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type LocationsSortBy = 'name' | 'areaId' | 'createdAt';
+
+/**
+ * Sort direction
+ */
+export type SortOrder = 'asc' | 'desc';
+
 export type LoginData = {
     body: LoginRequest;
     path?: never;
@@ -1521,6 +1541,23 @@ export type ListLocationsData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name' | 'areaId' | 'createdAt';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/locations';
 };

@@ -93,7 +93,7 @@ type HousingRoomsRepository interface {
 
 // LocationsRepository defines the data access interface for locations
 type LocationsRepository interface {
-	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Location, int64, error)
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Location, int64, error)
 	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Location, error)
 	Create(ctx context.Context, location *domain.Location) error
 	Update(ctx context.Context, tenantID, campID uuid.UUID, location *domain.Location) error

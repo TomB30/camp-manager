@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/database"
+	"github.com/tbechar/camp-manager-backend/internal/domain"
 	"gorm.io/gorm"
 )
 
@@ -58,4 +60,121 @@ func ApplySearchFilter(query *gorm.DB, search *string, fields ...string) *gorm.D
 	}
 
 	return query.Where(whereClauses, args...)
+}
+
+// ParseFilterStrings parses an array of filter strings into Filter structs
+func ParseFilterStrings(filterStrings []string) ([]domain.Filter, error) {
+	if len(filterStrings) == 0 {
+		return []domain.Filter{}, nil
+	}
+
+	filters := make([]domain.Filter, 0, len(filterStrings))
+	for _, filterStr := range filterStrings {
+		filter, err := domain.ParseFilter(filterStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid filter '%s': %w", filterStr, err)
+		}
+		filters = append(filters, *filter)
+	}
+
+	return filters, nil
+}
+
+// ApplyFilters applies an array of filters to a GORM query with validation
+// allowedFields is a map of API field name to field type (text, number, date, uuid)
+// fieldToColumn is a map of API field name to database column name
+func ApplyFilters(query *gorm.DB, filters []domain.Filter, allowedFields map[string]domain.FieldType, fieldToColumn map[string]string) (*gorm.DB, error) {
+	if len(filters) == 0 {
+		return query, nil
+	}
+
+	for _, filter := range filters {
+		// Validate field name
+		fieldType, exists := allowedFields[filter.Field]
+		if !exists {
+			return nil, fmt.Errorf("invalid field '%s': field is not filterable", filter.Field)
+		}
+
+		// Get database column name
+		columnName, exists := fieldToColumn[filter.Field]
+		if !exists {
+			return nil, fmt.Errorf("invalid field '%s': no column mapping found", filter.Field)
+		}
+
+		// Validate operator compatibility with field type
+		if !domain.IsValidOperatorForFieldType(filter.Operator, fieldType) {
+			return nil, fmt.Errorf(
+				"operator '%s' is not valid for %s field '%s'. Use %s",
+				filter.Operator,
+				fieldType,
+				filter.Field,
+				domain.GetValidOperatorsForFieldType(fieldType),
+			)
+		}
+
+		// Apply the filter based on operator using the column name
+		switch filter.Operator {
+		case domain.OpEqual:
+			query = query.Where(columnName+" = ?", filter.Value)
+		case domain.OpNotEqual:
+			query = query.Where(columnName+" != ?", filter.Value)
+		case domain.OpLessThanEqual:
+			query = query.Where(columnName+" <= ?", filter.Value)
+		case domain.OpGreaterThanEqual:
+			query = query.Where(columnName+" >= ?", filter.Value)
+		case domain.OpContains:
+			query = query.Where(columnName+" ILIKE ?", "%"+filter.Value+"%")
+		case domain.OpNotContains:
+			query = query.Where(columnName+" NOT ILIKE ?", "%"+filter.Value+"%")
+		case domain.OpStartsWith:
+			query = query.Where(columnName+" ILIKE ?", filter.Value+"%")
+		case domain.OpEndsWith:
+			query = query.Where(columnName+" ILIKE ?", "%"+filter.Value)
+		default:
+			return nil, fmt.Errorf("unsupported operator: %s", filter.Operator)
+		}
+	}
+
+	return query, nil
+}
+
+// ApplySorting applies sorting to a GORM query with validation
+// allowedFields is a slice of API field names that are allowed for sorting
+// fieldToColumn is a map of API field name to database column name
+// sortOrder should be "asc" or "desc" (case-insensitive)
+// If sortBy is nil, no sorting is applied and the query is returned unchanged
+func ApplySorting(query *gorm.DB, sortBy *string, sortOrder string, allowedFields []string, fieldToColumn map[string]string) (*gorm.DB, error) {
+	// If no sort field specified, return query unchanged
+	if sortBy == nil || *sortBy == "" {
+		return query, nil
+	}
+
+	// Validate field name
+	fieldAllowed := false
+	for _, field := range allowedFields {
+		if field == *sortBy {
+			fieldAllowed = true
+			break
+		}
+	}
+	if !fieldAllowed {
+		return nil, fmt.Errorf("invalid sort field '%s': field is not sortable", *sortBy)
+	}
+
+	// Get database column name
+	columnName, exists := fieldToColumn[*sortBy]
+	if !exists {
+		return nil, fmt.Errorf("invalid sort field '%s': no column mapping found", *sortBy)
+	}
+
+	// Validate and normalize sort order
+	if err := domain.ValidateSortOrder(sortOrder); err != nil {
+		return nil, err
+	}
+	normalizedOrder := domain.NormalizeSortOrder(sortOrder)
+
+	// Apply sorting using column name
+	query = query.Order(columnName + " " + normalizedOrder)
+
+	return query, nil
 }

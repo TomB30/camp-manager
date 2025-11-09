@@ -19,8 +19,24 @@ func NewLocationsRepository(db *database.Database) *LocationsRepository {
 	return &LocationsRepository{db: db}
 }
 
+// locationFields defines the filterable fields and their types for locations (API field names)
+var locationFields = map[string]domain.FieldType{
+	"name":   domain.FieldTypeText,
+	"areaId": domain.FieldTypeUUID,
+}
+
+// locationFieldToColumn maps API field names to database column names
+var locationFieldToColumn = map[string]string{
+	"name":      "name",
+	"areaId":    "area_id",
+	"createdAt": "created_at",
+}
+
+// locationSortableFields defines the sortable fields for locations (API field names)
+var locationSortableFields = []string{"name", "areaId", "createdAt"}
+
 // List retrieves a paginated list of locations filtered by tenant and camp
-func (r *LocationsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Location, int64, error) {
+func (r *LocationsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Location, int64, error) {
 	var locations []domain.Location
 	var total int64
 
@@ -30,16 +46,37 @@ func (r *LocationsRepository) List(ctx context.Context, tenantID, campID uuid.UU
 	// Add search filter if provided
 	query = ApplySearchFilter(query, search, "name")
 
+	// Parse and apply filters
+	filters, err := ParseFilterStrings(filterStrings)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to parse filters: %w", err)
+	}
+
+	query, err = ApplyFilters(query, filters, locationFields, locationFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply filters: %w", err)
+	}
+
 	// Get total count
 	if err := query.Model(&domain.Location{}).Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to count locations: %w", err)
+	}
+
+	// Apply sorting
+	query, err = ApplySorting(query, sortBy, sortOrder, locationSortableFields, locationFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply sorting: %w", err)
+	}
+
+	// If no sorting was specified, use default
+	if sortBy == nil || *sortBy == "" {
+		query = query.Order("created_at DESC")
 	}
 
 	// Get paginated results
 	if err := query.
 		Limit(limit).
 		Offset(offset).
-		Order("created_at DESC").
 		Find(&locations).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to list locations: %w", err)
 	}

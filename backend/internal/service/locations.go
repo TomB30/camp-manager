@@ -15,8 +15,8 @@ import (
 
 // LocationsService defines the interface for location business logic
 type LocationsService interface {
-	// List retrieves locations with pagination and optional search
-	List(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, limit, offset int, search *string) (*api.LocationsListResponse, error)
+	// List retrieves locations with pagination, optional search, filters, and sorting
+	List(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.LocationsListResponse, error)
 
 	// GetByID retrieves a single location by ID
 	GetByID(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID) (*api.Location, error)
@@ -45,11 +45,11 @@ func NewLocationsService(repo LocationsRepository, areasRepo AreasRepository) Lo
 	}
 }
 
-// List retrieves locations with pagination and optional search
-func (s *locationsService) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) (*api.LocationsListResponse, error) {
-	locations, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search)
+// List retrieves locations with pagination, optional search, filters, and sorting
+func (s *locationsService) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.LocationsListResponse, error) {
+	locations, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search, filterStrings, sortBy, sortOrder)
 	if err != nil {
-		return nil, pkgerrors.InternalServerError("Failed to list locations", err)
+		return nil, pkgerrors.BadRequest("Failed to list locations", err)
 	}
 
 	// Convert domain locations to API locations

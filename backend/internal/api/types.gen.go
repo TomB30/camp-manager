@@ -35,6 +35,32 @@ const (
 	ScopeTypeTenant ScopeType = "tenant"
 )
 
+// Defines values for LocationsSortBy.
+const (
+	LocationsSortByAreaId    LocationsSortBy = "areaId"
+	LocationsSortByCreatedAt LocationsSortBy = "createdAt"
+	LocationsSortByName      LocationsSortBy = "name"
+)
+
+// Defines values for SortOrder.
+const (
+	SortOrderAsc  SortOrder = "asc"
+	SortOrderDesc SortOrder = "desc"
+)
+
+// Defines values for ListLocationsParamsSortBy.
+const (
+	ListLocationsParamsSortByAreaId    ListLocationsParamsSortBy = "areaId"
+	ListLocationsParamsSortByCreatedAt ListLocationsParamsSortBy = "createdAt"
+	ListLocationsParamsSortByName      ListLocationsParamsSortBy = "name"
+)
+
+// Defines values for ListLocationsParamsSortOrder.
+const (
+	ListLocationsParamsSortOrderAsc  ListLocationsParamsSortOrder = "asc"
+	ListLocationsParamsSortOrderDesc ListLocationsParamsSortOrder = "desc"
+)
+
 // AccessRule defines model for AccessRule.
 type AccessRule struct {
 	Role AccessRuleRole `json:"role"`
@@ -951,6 +977,12 @@ type User struct {
 	TenantId string `json:"tenantId"`
 }
 
+// LocationsFilterBy defines model for LocationsFilterBy.
+type LocationsFilterBy = []string
+
+// LocationsSortBy defines model for LocationsSortBy.
+type LocationsSortBy string
+
 // CampId defines model for camp_id.
 type CampId = openapi_types.UUID
 
@@ -965,6 +997,9 @@ type Offset = int
 
 // Search defines model for search.
 type Search = string
+
+// SortOrder defines model for sortOrder.
+type SortOrder string
 
 // ListActivitiesParams defines parameters for ListActivities.
 type ListActivitiesParams struct {
@@ -1072,7 +1107,26 @@ type ListLocationsParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *LocationsFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListLocationsParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListLocationsParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListLocationsParamsSortBy defines parameters for ListLocations.
+type ListLocationsParamsSortBy string
+
+// ListLocationsParamsSortOrder defines parameters for ListLocations.
+type ListLocationsParamsSortOrder string
 
 // ListProgramsParams defines parameters for ListPrograms.
 type ListProgramsParams struct {
