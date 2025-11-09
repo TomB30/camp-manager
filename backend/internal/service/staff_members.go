@@ -35,13 +35,15 @@ type StaffMembersService interface {
 type staffMembersService struct {
 	repo       StaffMembersRepository
 	groupsRepo GroupsRepository
+	rolesRepo  RolesRepository
 }
 
 // NewStaffMembersService creates a new staff members service
-func NewStaffMembersService(repo StaffMembersRepository, groupsRepo GroupsRepository) StaffMembersService {
+func NewStaffMembersService(repo StaffMembersRepository, groupsRepo GroupsRepository, rolesRepo RolesRepository) StaffMembersService {
 	return &staffMembersService{
 		repo:       repo,
 		groupsRepo: groupsRepo,
+		rolesRepo:  rolesRepo,
 	}
 }
 
@@ -82,6 +84,12 @@ func (s *staffMembersService) GetByID(ctx context.Context, tenantId uuid.UUID, c
 func (s *staffMembersService) Create(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, req *api.StaffMemberCreationRequest) (*api.StaffMember, error) {
 	// Validate and extract housing group ID from groupIds
 	housingGroupId, err := s.validateAndExtractHousingGroup(ctx, tenantId, campId, req.Spec.GroupIds)
+	if err != nil {
+		return nil, pkgerrors.BadRequest(err.Error(), err)
+	}
+
+	// Validate role
+	err = s.validateRole(ctx, tenantId, campId, req.Spec.RoleId)
 	if err != nil {
 		return nil, pkgerrors.BadRequest(err.Error(), err)
 	}
@@ -131,6 +139,12 @@ func (s *staffMembersService) Update(ctx context.Context, tenantId uuid.UUID, ca
 
 	// Validate and extract housing group ID from groupIds
 	housingGroupId, err := s.validateAndExtractHousingGroup(ctx, tenantId, campId, req.Spec.GroupIds)
+	if err != nil {
+		return nil, pkgerrors.BadRequest(err.Error(), err)
+	}
+
+	// Validate role
+	err = s.validateRole(ctx, tenantId, campId, req.Spec.RoleId)
 	if err != nil {
 		return nil, pkgerrors.BadRequest(err.Error(), err)
 	}
@@ -222,4 +236,15 @@ func (s *staffMembersService) validateAndExtractHousingGroup(ctx context.Context
 	}
 
 	return housingGroupId, nil
+}
+
+func (s *staffMembersService) validateRole(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, roleId uuid.UUID) error {
+	_, err := s.rolesRepo.GetByID(ctx, tenantId, campId, roleId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("role with id '%s' not found", roleId.String())
+		}
+		return fmt.Errorf("failed to check role existence: %w", err)
+	}
+	return nil
 }

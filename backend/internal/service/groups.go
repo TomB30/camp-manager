@@ -215,14 +215,12 @@ func (s *groupsService) validateGroupRequest(ctx context.Context, tenantId uuid.
 			return fmt.Errorf("failed to check housing room existence: %w", err)
 		}
 
-		// Validation 2: Check housing room uniqueness per session
 		if sessionId != nil {
 			existingGroup, err := s.repo.FindByHousingRoomAndSession(ctx, tenantId, campId, *housingRoomId, *sessionId)
 			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 				return fmt.Errorf("failed to check housing room uniqueness: %w", err)
 			}
 
-			// If a group was found and it's not the one we're updating, return an error
 			if existingGroup != nil {
 				if excludeGroupId == nil || *excludeGroupId != existingGroup.ID {
 					return fmt.Errorf("housing room '%s' is already assigned to another group in session '%s'", housingRoomId.String(), sessionId.String())
