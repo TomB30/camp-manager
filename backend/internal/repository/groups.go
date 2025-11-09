@@ -87,6 +87,25 @@ func (r *GroupsRepository) GetByID(ctx context.Context, tenantID, campID, id uui
 	return &group, nil
 }
 
+// GetByIDs retrieves multiple groups by their IDs
+func (r *GroupsRepository) GetByIDs(ctx context.Context, tenantID, campID uuid.UUID, ids []uuid.UUID) ([]domain.Group, error) {
+	if len(ids) == 0 {
+		return []domain.Group{}, nil
+	}
+
+	var groups []domain.Group
+
+	err := ScopedQuery(r.db, ctx, tenantID, campID).
+		Where("id IN ?", ids).
+		Find(&groups).Error
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get groups by IDs: %w", err)
+	}
+
+	return groups, nil
+}
+
 // FindByHousingRoomAndSession retrieves a group by housing room and session
 func (r *GroupsRepository) FindByHousingRoomAndSession(ctx context.Context, tenantID, campID, housingRoomID, sessionID uuid.UUID) (*domain.Group, error) {
 	var group domain.Group

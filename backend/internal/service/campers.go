@@ -193,19 +193,31 @@ func (s *campersService) validateAndExtractHousingGroup(ctx context.Context, ten
 		return nil, nil
 	}
 
+	// Fetch all groups in a single query
+	groups, err := s.groupsRepo.GetByIDs(ctx, tenantId, campId, *groupIds)
+	if err != nil {
+		return nil, fmt.Errorf("failed to check group existence: %w", err)
+	}
+
+	// Check if all requested groups were found
+	if len(groups) != len(*groupIds) {
+		// Find which group IDs are missing
+		foundIds := make(map[uuid.UUID]bool)
+		for _, group := range groups {
+			foundIds[group.ID] = true
+		}
+		for _, groupId := range *groupIds {
+			if !foundIds[groupId] {
+				return nil, fmt.Errorf("group with id '%s' not found", groupId.String())
+			}
+		}
+	}
+
+	// Check for housing groups
 	var housingGroupId *uuid.UUID
 	housingGroupCount := 0
 
-	for _, groupId := range *groupIds {
-		group, err := s.groupsRepo.GetByID(ctx, tenantId, campId, groupId)
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, fmt.Errorf("group with id '%s' not found", groupId.String())
-			}
-			return nil, fmt.Errorf("failed to check group existence: %w", err)
-		}
-
-		// Check if this group is a housing group
+	for _, group := range groups {
 		if group.HousingRoomID != nil {
 			housingGroupCount++
 			housingGroupId = &group.ID
