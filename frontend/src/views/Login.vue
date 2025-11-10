@@ -125,7 +125,7 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/authStore";
 import { useToastStore } from "@/stores/toastStore";
 import { useMainStore } from "@/stores";
-import { authService, campersService, campService, storageService } from "@/services";
+import { campersService, storageService } from "@/services";
 import Icon from "@/components/Icon.vue";
 
 export default defineComponent({
