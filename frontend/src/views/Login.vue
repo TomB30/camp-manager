@@ -196,7 +196,7 @@ export default defineComponent({
         }
       } catch (error) {
         toastStore.error(
-          error instanceof Error ? error.message : "Authentication failed"
+          error instanceof Error ? error.message : "Authentication failed",
         );
       } finally {
         loading.value = false;

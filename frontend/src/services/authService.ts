@@ -24,7 +24,6 @@ export const authService = {
   isAuthenticated,
 };
 
-
 /**
  * Authenticate a user with email and password
  * @param credentials - User's email and password
@@ -39,9 +38,10 @@ async function login(credentials: LoginRequest): Promise<LoginResponse> {
     });
 
     if (response.error) {
-      const errorMessage = typeof response.error === 'object' && 'message' in response.error
-        ? String(response.error.message)
-        : "Login failed";
+      const errorMessage =
+        typeof response.error === "object" && "message" in response.error
+          ? String(response.error.message)
+          : "Login failed";
       throw new Error(errorMessage);
     }
 
@@ -75,9 +75,10 @@ async function signup(signupData: SignupRequest): Promise<LoginResponse> {
     });
 
     if (response.error) {
-      const errorMessage = typeof response.error === 'object' && 'message' in response.error
-        ? String(response.error.message)
-        : "Signup failed";
+      const errorMessage =
+        typeof response.error === "object" && "message" in response.error
+          ? String(response.error.message)
+          : "Signup failed";
       throw new Error(errorMessage);
     }
 
@@ -134,9 +135,10 @@ async function getCurrentUser(): Promise<User> {
     });
 
     if (response.error) {
-      const errorMessage = typeof response.error === 'object' && 'message' in response.error
-        ? String(response.error.message)
-        : "Failed to get current user";
+      const errorMessage =
+        typeof response.error === "object" && "message" in response.error
+          ? String(response.error.message)
+          : "Failed to get current user";
       throw new Error(errorMessage);
     }
 
@@ -160,4 +162,3 @@ function isAuthenticated(): boolean {
   const token = localStorage.getItem("auth_token");
   return !!token;
 }
-

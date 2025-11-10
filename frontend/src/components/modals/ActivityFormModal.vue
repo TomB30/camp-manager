@@ -34,7 +34,7 @@
                 v-model="timeMode"
                 :options="[
                   { label: 'Duration-based', value: 'duration' },
-                  { label: 'Fixed time', value: 'fixed' }
+                  { label: 'Fixed time', value: 'fixed' },
                 ]"
                 color="primary"
                 class="time-mode-selector"
@@ -110,7 +110,9 @@
                       placeholder="HH:MM"
                       :rules="[
                         (val: string) => !!val || 'End time is required',
-                        (val: string) => validateEndTime(val) || 'End time must be after start time',
+                        (val: string) =>
+                          validateEndTime(val) ||
+                          'End time must be after start time',
                       ]"
                     />
                   </div>
@@ -130,7 +132,8 @@
                   :min="0"
                   placeholder="Min age"
                   :rules="[
-                    () => validateAgeRange() || 'Min age must be less than max age',
+                    () =>
+                      validateAgeRange() || 'Min age must be less than max age',
                   ]"
                 />
               </div>
@@ -142,7 +145,9 @@
                   :min="0"
                   placeholder="Max age"
                   :rules="[
-                    () => validateAgeRange() || 'Max age must be greater than min age',
+                    () =>
+                      validateAgeRange() ||
+                      'Max age must be greater than min age',
                   ]"
                 />
               </div>
@@ -297,7 +302,7 @@ export default defineComponent({
       const activity = this.activitiesStore.getActivityById(this.activityId);
       if (!activity) return;
       this.editingActivity = activity;
-      
+
       // Determine if activity has fixed time or duration
       if (activity.spec.fixedTime) {
         this.timeMode = "fixed";
@@ -309,7 +314,7 @@ export default defineComponent({
         this.timeMode = "duration";
         this.formData.spec.duration = activity.spec.duration || 60;
       }
-      
+
       this.formData = {
         meta: {
           name: activity.meta.name,
@@ -391,7 +396,9 @@ export default defineComponent({
         this.isCustomDuration = true;
         // Initialize custom duration from current duration
         if (this.formData.spec.duration) {
-          this.customDurationHours = Math.floor(this.formData.spec.duration / 60);
+          this.customDurationHours = Math.floor(
+            this.formData.spec.duration / 60,
+          );
           this.customDurationMinutes = this.formData.spec.duration % 60;
         }
       } else {
@@ -425,17 +432,17 @@ export default defineComponent({
     validateAgeRange(): boolean {
       const minAge = this.formData.spec.minAge;
       const maxAge = this.formData.spec.maxAge;
-      
+
       // If both are null or undefined, validation passes
       if (!minAge && !maxAge) {
         return true;
       }
-      
+
       // If only one is set, validation passes
       if (!minAge || !maxAge) {
         return true;
       }
-      
+
       // If both are set, min must be less than max
       return minAge < maxAge;
     },

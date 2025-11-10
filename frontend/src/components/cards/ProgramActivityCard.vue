@@ -12,7 +12,7 @@
         <span class="meta-item">
           <Icon name="Clock" :size="14" />
           <template v-if="activity.spec.fixedTime">
-            {{ formatTime(activity.spec.fixedTime.startTime) }} - 
+            {{ formatTime(activity.spec.fixedTime.startTime) }} -
             {{ formatTime(activity.spec.fixedTime.endTime) }}
           </template>
           <DurationDisplay v-else :minutes="activity.spec.duration || 0" />

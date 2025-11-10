@@ -16,10 +16,11 @@ async function getCampsApi(): Promise<Camp[]> {
     client: apiClient,
   });
   if (response.error) {
-    const errorMessage = typeof response.error === 'object' && 'message' in response.error
+    const errorMessage =
+      typeof response.error === "object" && "message" in response.error
         ? String(response.error.message)
         : "Failed to get camps";
-      throw new Error(errorMessage);
+    throw new Error(errorMessage);
   }
   return response.data?.items || [];
 }

@@ -28,7 +28,7 @@
             <div v-if="activity.spec.fixedTime" class="detail-item">
               <span class="detail-label">Fixed Time</span>
               <span class="detail-value">
-                {{ formatTime(activity.spec.fixedTime.startTime) }} - 
+                {{ formatTime(activity.spec.fixedTime.startTime) }} -
                 {{ formatTime(activity.spec.fixedTime.endTime) }}
               </span>
             </div>
@@ -56,7 +56,10 @@
               </span>
             </div>
 
-            <div v-if="activity.spec.minAge || activity.spec.maxAge" class="detail-item">
+            <div
+              v-if="activity.spec.minAge || activity.spec.maxAge"
+              class="detail-item"
+            >
               <span class="detail-label">Age Requirements</span>
               <span class="detail-value">
                 <template v-if="activity.spec.minAge && activity.spec.maxAge">

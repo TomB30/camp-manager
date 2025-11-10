@@ -13,7 +13,7 @@ const getApiBaseUrl = (): string => {
   // In development, use the env variable or default to localhost:8080
   // In production, use the env variable (should be set in .env.production)
   const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
-  
+
   // Remove trailing slash if present
   return baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
 };
@@ -30,9 +30,9 @@ const getAuthToken = (): string | null => {
  */
 export function initializeApiClient(): void {
   const baseUrl = getApiBaseUrl();
-  
+
   console.log(`[API Config] Initializing API client with base URL: ${baseUrl}`);
-  
+
   client.setConfig({
     baseUrl,
     // Add common headers or other configuration here
@@ -89,4 +89,3 @@ export function setAuthToken(token: string): void {
 export function clearAuthToken(): void {
   localStorage.removeItem("auth_token");
 }
-
