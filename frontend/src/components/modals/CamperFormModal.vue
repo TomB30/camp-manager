@@ -54,23 +54,6 @@
             :required="true"
           />
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Family Group</label>
-          <Autocomplete
-            class="family-group-autocomplete"
-            v-model="formData.spec.housingGroupId"
-            :options="availableGroupOptions"
-            :disabled="!formData.spec.sessionId"
-            no-option-text="No family groups available for this session"
-          />
-          <q-tooltip
-            v-if="!formData.spec.sessionId"
-            target=".family-group-autocomplete"
-          >
-            Select a session first to choose a family group
-          </q-tooltip>
-        </div>
       </q-form>
     </template>
 
@@ -128,7 +111,6 @@ export default defineComponent({
           birthday: "",
           gender: "male",
           sessionId: "",
-          housingGroupId: "",
         },
       } as CamperCreationRequest,
       genderOptions: [
@@ -158,7 +140,7 @@ export default defineComponent({
         birthday: camper.spec.birthday || "",
         gender: camper.spec.gender,
         sessionId: camper.spec.sessionId || "",
-        housingGroupId: camper.spec.housingGroupId || "",
+        groupIds: camper.spec.groupIds || [],
       },
     };
   },
@@ -191,21 +173,6 @@ export default defineComponent({
           value: session.meta.id,
         };
       });
-    },
-    availableGroupOptions(): AutocompleteOption[] {
-      // Only show family groups that match the selected session
-      if (!this.formData.spec.sessionId) {
-        return [];
-      }
-
-      const filteredGroups = this.groups.filter(
-        (group) => group.spec.sessionId === this.formData.spec.sessionId,
-      );
-
-      return filteredGroups.map((group) => ({
-        label: group.meta.name,
-        value: group.meta.id,
-      }));
     },
   },
   methods: {
