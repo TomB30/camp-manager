@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
@@ -25,7 +24,7 @@ func NewCampsHandler(service service.CampsService) *CampsHandler {
 }
 
 // GetCamps handles GET /api/v1/camps
-func (h *CampsHandler) GetCamps(w http.ResponseWriter, r *http.Request) {
+func (h *CampsHandler) GetCamps(w http.ResponseWriter, r *http.Request, params api.GetCampsParams) {
 	// Extract tenant ID from context
 	tenantIDStr, err := pkgcontext.ExtractTenantID(r.Context())
 	if err != nil {
@@ -39,32 +38,35 @@ func (h *CampsHandler) GetCamps(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract query parameters with defaults
+	// Set default pagination values
 	limit := 50
 	offset := 0
-	var search *string
 
-	// Parse limit
-	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
-		if parsedLimit, err := strconv.Atoi(limitStr); err == nil && parsedLimit > 0 {
-			limit = parsedLimit
-		}
+	if params.Limit != nil {
+		limit = *params.Limit
+	}
+	if params.Offset != nil {
+		offset = *params.Offset
 	}
 
-	// Parse offset
-	if offsetStr := r.URL.Query().Get("offset"); offsetStr != "" {
-		if parsedOffset, err := strconv.Atoi(offsetStr); err == nil && parsedOffset >= 0 {
-			offset = parsedOffset
-		}
+	// Extract filter and sort parameters
+	filterStrings := []string{}
+	if params.FilterBy != nil {
+		filterStrings = *params.FilterBy
 	}
 
-	// Parse search
-	if searchStr := r.URL.Query().Get("search"); searchStr != "" {
-		search = &searchStr
+	sortOrder := "asc"
+	if params.SortOrder != nil {
+		sortOrder = string(*params.SortOrder)
+	}
+
+	sortBy := ""
+	if params.SortBy != nil {
+		sortBy = string(*params.SortBy)
 	}
 
 	// Call service
-	response, err := h.service.List(r.Context(), tenantID, limit, offset, search)
+	response, err := h.service.List(r.Context(), tenantID, limit, offset, params.Search, filterStrings, &sortBy, sortOrder)
 	if err != nil {
 		errors.WriteError(w, err)
 		return
@@ -220,4 +222,3 @@ func (h *CampsHandler) DeleteCampById(w http.ResponseWriter, r *http.Request, id
 	// Write no content response
 	w.WriteHeader(http.StatusNoContent)
 }
-

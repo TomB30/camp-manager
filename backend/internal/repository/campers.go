@@ -20,8 +20,29 @@ func NewCampersRepository(db *database.Database) *CampersRepository {
 	return &CampersRepository{db: db}
 }
 
+// camperFields defines the filterable fields and their types for campers (API field names)
+var camperFields = map[string]domain.FieldType{
+	"name":           domain.FieldTypeText,
+	"birthday":       domain.FieldTypeDate,
+	"gender":         domain.FieldTypeText,
+	"sessionId":      domain.FieldTypeUUID,
+	"housingGroupId": domain.FieldTypeUUID,
+}
+
+// camperFieldToColumn maps API field names to database column names
+var camperFieldToColumn = map[string]string{
+	"name":           "name",
+	"birthday":       "birthday",
+	"gender":         "gender",
+	"sessionId":      "session_id",
+	"housingGroupId": "housing_group_id",
+}
+
+// camperSortableFields defines the sortable fields for campers (API field names)
+var camperSortableFields = []string{"name", "birthday", "gender", "sessionId", "housingGroupId"}
+
 // List retrieves a paginated list of campers
-func (r *CampersRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Camper, int64, error) {
+func (r *CampersRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Camper, int64, error) {
 	var campers []domain.Camper
 	var total int64
 
@@ -31,9 +52,31 @@ func (r *CampersRepository) List(ctx context.Context, tenantID, campID uuid.UUID
 	// Add search filter if provided
 	query = ApplySearchFilter(query, search, "name")
 
+	// Parse and apply filters
+	filters, err := ParseFilterStrings(filterStrings)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to parse filters: %w", err)
+	}
+
+	query, err = ApplyFilters(query, filters, camperFields, camperFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply filters: %w", err)
+	}
+
 	// Get total count
 	if err := query.Model(&domain.Camper{}).Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to count campers: %w", err)
+	}
+
+	// Apply sorting
+	query, err = ApplySorting(query, sortBy, sortOrder, camperSortableFields, camperFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply sorting: %w", err)
+	}
+
+	// If no sorting was specified, use default
+	if sortBy == nil || *sortBy == "" {
+		query = query.Order("created_at DESC")
 	}
 
 	// Get paginated results with preloaded relationships
@@ -41,7 +84,6 @@ func (r *CampersRepository) List(ctx context.Context, tenantID, campID uuid.UUID
 		Preload("GroupCampers").
 		Limit(limit).
 		Offset(offset).
-		Order("created_at DESC").
 		Find(&campers).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to list campers: %w", err)
 	}

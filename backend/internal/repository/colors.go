@@ -19,8 +19,23 @@ func NewColorsRepository(db *database.Database) *ColorsRepository {
 	return &ColorsRepository{db: db}
 }
 
+// colorFields defines the filterable fields and their types for colors (API field names)
+var colorFields = map[string]domain.FieldType{
+	"name":    domain.FieldTypeText,
+	"hexCode": domain.FieldTypeText,
+}
+
+// colorFieldToColumn maps API field names to database column names
+var colorFieldToColumn = map[string]string{
+	"name":    "name",
+	"hexCode": "hex_code",
+}
+
+// colorSortableFields defines the sortable fields for colors (API field names)
+var colorSortableFields = []string{"name", "hexCode"}
+
 // List retrieves a paginated list of colors filtered by tenant and camp
-func (r *ColorsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Color, int64, error) {
+func (r *ColorsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Color, int64, error) {
 	var colors []domain.Color
 	var total int64
 
@@ -30,16 +45,37 @@ func (r *ColorsRepository) List(ctx context.Context, tenantID, campID uuid.UUID,
 	// Add search filter if provided
 	query = ApplySearchFilter(query, search, "name")
 
+	// Parse and apply filters
+	filters, err := ParseFilterStrings(filterStrings)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to parse filters: %w", err)
+	}
+
+	query, err = ApplyFilters(query, filters, colorFields, colorFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply filters: %w", err)
+	}
+
 	// Get total count
 	if err := query.Model(&domain.Color{}).Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to count colors: %w", err)
+	}
+
+	// Apply sorting
+	query, err = ApplySorting(query, sortBy, sortOrder, colorSortableFields, colorFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply sorting: %w", err)
+	}
+
+	// If no sorting was specified, use default
+	if sortBy == nil || *sortBy == "" {
+		query = query.Order("created_at DESC")
 	}
 
 	// Get paginated results
 	if err := query.
 		Limit(limit).
 		Offset(offset).
-		Order("created_at DESC").
 		Find(&colors).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to list colors: %w", err)
 	}

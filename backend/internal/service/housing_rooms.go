@@ -16,7 +16,7 @@ import (
 // HousingRoomsService defines the interface for housing room business logic
 type HousingRoomsService interface {
 	// List retrieves housing rooms with pagination and optional search
-	List(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, limit, offset int, search *string) (*api.HousingRoomsListResponse, error)
+	List(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.HousingRoomsListResponse, error)
 
 	// GetByID retrieves a single housing room by ID
 	GetByID(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID) (*api.HousingRoom, error)
@@ -46,10 +46,10 @@ func NewHousingRoomsService(repo HousingRoomsRepository, areasRepo AreasReposito
 }
 
 // List retrieves housing rooms with pagination and optional search
-func (s *housingRoomsService) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) (*api.HousingRoomsListResponse, error) {
-	housingRooms, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search)
+func (s *housingRoomsService) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.HousingRoomsListResponse, error) {
+	housingRooms, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search, filterStrings, sortBy, sortOrder)
 	if err != nil {
-		return nil, pkgerrors.InternalServerError("Failed to list housing rooms", err)
+		return nil, pkgerrors.BadRequest("Failed to list housing rooms", err)
 	}
 
 	// Convert domain housing rooms to API housing rooms

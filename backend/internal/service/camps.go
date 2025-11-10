@@ -16,7 +16,7 @@ import (
 // CampsService defines the interface for camp business logic
 type CampsService interface {
 	// List retrieves camps with pagination and optional search
-	List(ctx context.Context, tenantID uuid.UUID, limit, offset int, search *string) (*api.CampsListResponse, error)
+	List(ctx context.Context, tenantID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.CampsListResponse, error)
 
 	// GetByID retrieves a single camp by ID
 	GetByID(ctx context.Context, tenantID, campID uuid.UUID) (*api.Camp, error)
@@ -44,7 +44,7 @@ func NewCampsService(repo CampsRepository) CampsService {
 }
 
 // List returns a paginated list of camps for a tenant, filtered by user access
-func (s *campsService) List(ctx context.Context, tenantID uuid.UUID, limit, offset int, search *string) (*api.CampsListResponse, error) {
+func (s *campsService) List(ctx context.Context, tenantID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.CampsListResponse, error) {
 	// Extract user's access rules from context to filter camps
 	accessRules, err := pkgcontext.ExtractAccessRules(ctx)
 	if err != nil {
@@ -55,7 +55,7 @@ func (s *campsService) List(ctx context.Context, tenantID uuid.UUID, limit, offs
 	campIDs := extractAccessibleCampIDs(accessRules, tenantID)
 
 	// Fetch camps with access filtering
-	camps, total, err := s.repo.List(ctx, tenantID, campIDs, limit, offset, search)
+	camps, total, err := s.repo.List(ctx, tenantID, campIDs, limit, offset, search, filterStrings, sortBy, sortOrder)
 	if err != nil {
 		return nil, pkgerrors.InternalServerError("Failed to list camps", err)
 	}

@@ -32,8 +32,25 @@ func NewGroupsRepository(db *database.Database) *GroupsRepository {
 	return &GroupsRepository{db: db}
 }
 
+// groupFields defines the filterable fields and their types for groups (API field names)
+var groupFields = map[string]domain.FieldType{
+	"name":          domain.FieldTypeText,
+	"sessionId":     domain.FieldTypeUUID,
+	"housingRoomId": domain.FieldTypeUUID,
+}
+
+// groupFieldToColumn maps API field names to database column names
+var groupFieldToColumn = map[string]string{
+	"name":          "name",
+	"sessionId":     "session_id",
+	"housingRoomId": "housing_room_id",
+}
+
+// groupSortableFields defines the sortable fields for groups (API field names)
+var groupSortableFields = []string{"name", "sessionId", "housingRoomId"}
+
 // List retrieves a paginated list of groups
-func (r *GroupsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Group, int64, error) {
+func (r *GroupsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Group, int64, error) {
 	var groups []domain.Group
 	var total int64
 
@@ -43,9 +60,31 @@ func (r *GroupsRepository) List(ctx context.Context, tenantID, campID uuid.UUID,
 	// Add search filter if provided
 	query = ApplySearchFilter(query, search, "name")
 
+	// Parse and apply filters
+	filters, err := ParseFilterStrings(filterStrings)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to parse filters: %w", err)
+	}
+
+	query, err = ApplyFilters(query, filters, groupFields, groupFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply filters: %w", err)
+	}
+
 	// Get total count
 	if err := query.Model(&domain.Group{}).Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to count groups: %w", err)
+	}
+
+	// Apply sorting
+	query, err = ApplySorting(query, sortBy, sortOrder, groupSortableFields, groupFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply sorting: %w", err)
+	}
+
+	// If no sorting was specified, use default
+	if sortBy == nil || *sortBy == "" {
+		query = query.Order("created_at DESC")
 	}
 
 	// Get paginated results with preloaded relationships
@@ -55,7 +94,6 @@ func (r *GroupsRepository) List(ctx context.Context, tenantID, campID uuid.UUID,
 		Preload("ChildGroups").
 		Limit(limit).
 		Offset(offset).
-		Order("created_at DESC").
 		Find(&groups).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to list groups: %w", err)
 	}

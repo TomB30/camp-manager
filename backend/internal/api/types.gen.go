@@ -35,11 +35,74 @@ const (
 	ScopeTypeTenant ScopeType = "tenant"
 )
 
+// Defines values for AreasSortBy.
+const (
+	AreasSortByName AreasSortBy = "name"
+)
+
+// Defines values for CampersSortBy.
+const (
+	CampersSortByBirthday       CampersSortBy = "birthday"
+	CampersSortByGender         CampersSortBy = "gender"
+	CampersSortByHousingGroupId CampersSortBy = "housingGroupId"
+	CampersSortByName           CampersSortBy = "name"
+	CampersSortBySessionId      CampersSortBy = "sessionId"
+)
+
+// Defines values for CampsSortBy.
+const (
+	CampsSortByName CampsSortBy = "name"
+)
+
+// Defines values for CertificationsSortBy.
+const (
+	CertificationsSortByName CertificationsSortBy = "name"
+)
+
+// Defines values for ColorsSortBy.
+const (
+	ColorsSortByHexCode ColorsSortBy = "hexCode"
+	ColorsSortByName    ColorsSortBy = "name"
+)
+
+// Defines values for GroupsSortBy.
+const (
+	GroupsSortByHousingRoomId GroupsSortBy = "housingRoomId"
+	GroupsSortByName          GroupsSortBy = "name"
+	GroupsSortBySessionId     GroupsSortBy = "sessionId"
+)
+
+// Defines values for HousingRoomsSortBy.
+const (
+	HousingRoomsSortByCapacity HousingRoomsSortBy = "capacity"
+	HousingRoomsSortByName     HousingRoomsSortBy = "name"
+)
+
 // Defines values for LocationsSortBy.
 const (
-	LocationsSortByAreaId    LocationsSortBy = "areaId"
-	LocationsSortByCreatedAt LocationsSortBy = "createdAt"
-	LocationsSortByName      LocationsSortBy = "name"
+	LocationsSortByAreaId LocationsSortBy = "areaId"
+	LocationsSortByName   LocationsSortBy = "name"
+)
+
+// Defines values for RolesSortBy.
+const (
+	RolesSortByName RolesSortBy = "name"
+)
+
+// Defines values for SessionsSortBy.
+const (
+	SessionsSortByEndDate   SessionsSortBy = "endDate"
+	SessionsSortByName      SessionsSortBy = "name"
+	SessionsSortByStartDate SessionsSortBy = "startDate"
+)
+
+// Defines values for StaffMembersSortBy.
+const (
+	StaffMembersSortByCertificationId StaffMembersSortBy = "certificationId"
+	StaffMembersSortByGender          StaffMembersSortBy = "gender"
+	StaffMembersSortByName            StaffMembersSortBy = "name"
+	StaffMembersSortByPhone           StaffMembersSortBy = "phone"
+	StaffMembersSortByRoleId          StaffMembersSortBy = "roleId"
 )
 
 // Defines values for SortOrder.
@@ -48,17 +111,140 @@ const (
 	SortOrderDesc SortOrder = "desc"
 )
 
+// Defines values for GetCampsParamsSortBy.
+const (
+	GetCampsParamsSortByName GetCampsParamsSortBy = "name"
+)
+
+// Defines values for GetCampsParamsSortOrder.
+const (
+	GetCampsParamsSortOrderAsc  GetCampsParamsSortOrder = "asc"
+	GetCampsParamsSortOrderDesc GetCampsParamsSortOrder = "desc"
+)
+
+// Defines values for ListAreasParamsSortBy.
+const (
+	ListAreasParamsSortByName ListAreasParamsSortBy = "name"
+)
+
+// Defines values for ListAreasParamsSortOrder.
+const (
+	ListAreasParamsSortOrderAsc  ListAreasParamsSortOrder = "asc"
+	ListAreasParamsSortOrderDesc ListAreasParamsSortOrder = "desc"
+)
+
+// Defines values for ListCampersParamsSortBy.
+const (
+	ListCampersParamsSortByBirthday       ListCampersParamsSortBy = "birthday"
+	ListCampersParamsSortByGender         ListCampersParamsSortBy = "gender"
+	ListCampersParamsSortByHousingGroupId ListCampersParamsSortBy = "housingGroupId"
+	ListCampersParamsSortByName           ListCampersParamsSortBy = "name"
+	ListCampersParamsSortBySessionId      ListCampersParamsSortBy = "sessionId"
+)
+
+// Defines values for ListCampersParamsSortOrder.
+const (
+	ListCampersParamsSortOrderAsc  ListCampersParamsSortOrder = "asc"
+	ListCampersParamsSortOrderDesc ListCampersParamsSortOrder = "desc"
+)
+
+// Defines values for ListCertificationsParamsSortBy.
+const (
+	ListCertificationsParamsSortByName ListCertificationsParamsSortBy = "name"
+)
+
+// Defines values for ListCertificationsParamsSortOrder.
+const (
+	ListCertificationsParamsSortOrderAsc  ListCertificationsParamsSortOrder = "asc"
+	ListCertificationsParamsSortOrderDesc ListCertificationsParamsSortOrder = "desc"
+)
+
+// Defines values for ListColorsParamsSortBy.
+const (
+	ListColorsParamsSortByHexCode ListColorsParamsSortBy = "hexCode"
+	ListColorsParamsSortByName    ListColorsParamsSortBy = "name"
+)
+
+// Defines values for ListColorsParamsSortOrder.
+const (
+	ListColorsParamsSortOrderAsc  ListColorsParamsSortOrder = "asc"
+	ListColorsParamsSortOrderDesc ListColorsParamsSortOrder = "desc"
+)
+
+// Defines values for ListGroupsParamsSortBy.
+const (
+	ListGroupsParamsSortByHousingRoomId ListGroupsParamsSortBy = "housingRoomId"
+	ListGroupsParamsSortByName          ListGroupsParamsSortBy = "name"
+	ListGroupsParamsSortBySessionId     ListGroupsParamsSortBy = "sessionId"
+)
+
+// Defines values for ListGroupsParamsSortOrder.
+const (
+	ListGroupsParamsSortOrderAsc  ListGroupsParamsSortOrder = "asc"
+	ListGroupsParamsSortOrderDesc ListGroupsParamsSortOrder = "desc"
+)
+
+// Defines values for ListHousingRoomsParamsSortBy.
+const (
+	ListHousingRoomsParamsSortByCapacity ListHousingRoomsParamsSortBy = "capacity"
+	ListHousingRoomsParamsSortByName     ListHousingRoomsParamsSortBy = "name"
+)
+
+// Defines values for ListHousingRoomsParamsSortOrder.
+const (
+	ListHousingRoomsParamsSortOrderAsc  ListHousingRoomsParamsSortOrder = "asc"
+	ListHousingRoomsParamsSortOrderDesc ListHousingRoomsParamsSortOrder = "desc"
+)
+
 // Defines values for ListLocationsParamsSortBy.
 const (
-	ListLocationsParamsSortByAreaId    ListLocationsParamsSortBy = "areaId"
-	ListLocationsParamsSortByCreatedAt ListLocationsParamsSortBy = "createdAt"
-	ListLocationsParamsSortByName      ListLocationsParamsSortBy = "name"
+	ListLocationsParamsSortByAreaId ListLocationsParamsSortBy = "areaId"
+	ListLocationsParamsSortByName   ListLocationsParamsSortBy = "name"
 )
 
 // Defines values for ListLocationsParamsSortOrder.
 const (
 	ListLocationsParamsSortOrderAsc  ListLocationsParamsSortOrder = "asc"
 	ListLocationsParamsSortOrderDesc ListLocationsParamsSortOrder = "desc"
+)
+
+// Defines values for ListRolesParamsSortBy.
+const (
+	ListRolesParamsSortByName ListRolesParamsSortBy = "name"
+)
+
+// Defines values for ListRolesParamsSortOrder.
+const (
+	ListRolesParamsSortOrderAsc  ListRolesParamsSortOrder = "asc"
+	ListRolesParamsSortOrderDesc ListRolesParamsSortOrder = "desc"
+)
+
+// Defines values for ListSessionsParamsSortBy.
+const (
+	ListSessionsParamsSortByEndDate   ListSessionsParamsSortBy = "endDate"
+	ListSessionsParamsSortByName      ListSessionsParamsSortBy = "name"
+	ListSessionsParamsSortByStartDate ListSessionsParamsSortBy = "startDate"
+)
+
+// Defines values for ListSessionsParamsSortOrder.
+const (
+	ListSessionsParamsSortOrderAsc  ListSessionsParamsSortOrder = "asc"
+	ListSessionsParamsSortOrderDesc ListSessionsParamsSortOrder = "desc"
+)
+
+// Defines values for ListStaffMembersParamsSortBy.
+const (
+	ListStaffMembersParamsSortByCertificationId ListStaffMembersParamsSortBy = "certificationId"
+	ListStaffMembersParamsSortByGender          ListStaffMembersParamsSortBy = "gender"
+	ListStaffMembersParamsSortByName            ListStaffMembersParamsSortBy = "name"
+	ListStaffMembersParamsSortByPhone           ListStaffMembersParamsSortBy = "phone"
+	ListStaffMembersParamsSortByRoleId          ListStaffMembersParamsSortBy = "roleId"
+)
+
+// Defines values for ListStaffMembersParamsSortOrder.
+const (
+	ListStaffMembersParamsSortOrderAsc  ListStaffMembersParamsSortOrder = "asc"
+	ListStaffMembersParamsSortOrderDesc ListStaffMembersParamsSortOrder = "desc"
 )
 
 // AccessRule defines model for AccessRule.
@@ -977,11 +1163,71 @@ type User struct {
 	TenantId string `json:"tenantId"`
 }
 
+// AreasFilterBy defines model for AreasFilterBy.
+type AreasFilterBy = []string
+
+// AreasSortBy defines model for AreasSortBy.
+type AreasSortBy string
+
+// CampersFilterBy defines model for CampersFilterBy.
+type CampersFilterBy = []string
+
+// CampersSortBy defines model for CampersSortBy.
+type CampersSortBy string
+
+// CampsFilterBy defines model for CampsFilterBy.
+type CampsFilterBy = []string
+
+// CampsSortBy defines model for CampsSortBy.
+type CampsSortBy string
+
+// CertificationsFilterBy defines model for CertificationsFilterBy.
+type CertificationsFilterBy = []string
+
+// CertificationsSortBy defines model for CertificationsSortBy.
+type CertificationsSortBy string
+
+// ColorsFilterBy defines model for ColorsFilterBy.
+type ColorsFilterBy = []string
+
+// ColorsSortBy defines model for ColorsSortBy.
+type ColorsSortBy string
+
+// GroupsFilterBy defines model for GroupsFilterBy.
+type GroupsFilterBy = []string
+
+// GroupsSortBy defines model for GroupsSortBy.
+type GroupsSortBy string
+
+// HousingRoomsFilterBy defines model for HousingRoomsFilterBy.
+type HousingRoomsFilterBy = []string
+
+// HousingRoomsSortBy defines model for HousingRoomsSortBy.
+type HousingRoomsSortBy string
+
 // LocationsFilterBy defines model for LocationsFilterBy.
 type LocationsFilterBy = []string
 
 // LocationsSortBy defines model for LocationsSortBy.
 type LocationsSortBy string
+
+// RolesFilterBy defines model for RolesFilterBy.
+type RolesFilterBy = []string
+
+// RolesSortBy defines model for RolesSortBy.
+type RolesSortBy string
+
+// SessionsFilterBy defines model for SessionsFilterBy.
+type SessionsFilterBy = []string
+
+// SessionsSortBy defines model for SessionsSortBy.
+type SessionsSortBy string
+
+// StaffMembersFilterBy defines model for StaffMembersFilterBy.
+type StaffMembersFilterBy = []string
+
+// StaffMembersSortBy defines model for StaffMembersSortBy.
+type StaffMembersSortBy string
 
 // CampId defines model for camp_id.
 type CampId = openapi_types.UUID
@@ -1000,6 +1246,37 @@ type Search = string
 
 // SortOrder defines model for sortOrder.
 type SortOrder string
+
+// GetCampsParams defines parameters for GetCamps.
+type GetCampsParams struct {
+	// Limit Maximum number of items to return per page
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to return results
+	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Search Search term to filter items by name, title, or other text fields
+	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *CampsFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *GetCampsParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *GetCampsParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
+}
+
+// GetCampsParamsSortBy defines parameters for GetCamps.
+type GetCampsParamsSortBy string
+
+// GetCampsParamsSortOrder defines parameters for GetCamps.
+type GetCampsParamsSortOrder string
 
 // ListActivitiesParams defines parameters for ListActivities.
 type ListActivitiesParams struct {
@@ -1023,7 +1300,26 @@ type ListAreasParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *AreasFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListAreasParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListAreasParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListAreasParamsSortBy defines parameters for ListAreas.
+type ListAreasParamsSortBy string
+
+// ListAreasParamsSortOrder defines parameters for ListAreas.
+type ListAreasParamsSortOrder string
 
 // ListCampersParams defines parameters for ListCampers.
 type ListCampersParams struct {
@@ -1035,7 +1331,26 @@ type ListCampersParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *CampersFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListCampersParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListCampersParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListCampersParamsSortBy defines parameters for ListCampers.
+type ListCampersParamsSortBy string
+
+// ListCampersParamsSortOrder defines parameters for ListCampers.
+type ListCampersParamsSortOrder string
 
 // ListCertificationsParams defines parameters for ListCertifications.
 type ListCertificationsParams struct {
@@ -1047,7 +1362,26 @@ type ListCertificationsParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *CertificationsFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListCertificationsParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListCertificationsParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListCertificationsParamsSortBy defines parameters for ListCertifications.
+type ListCertificationsParamsSortBy string
+
+// ListCertificationsParamsSortOrder defines parameters for ListCertifications.
+type ListCertificationsParamsSortOrder string
 
 // ListColorsParams defines parameters for ListColors.
 type ListColorsParams struct {
@@ -1059,7 +1393,26 @@ type ListColorsParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *ColorsFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListColorsParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListColorsParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListColorsParamsSortBy defines parameters for ListColors.
+type ListColorsParamsSortBy string
+
+// ListColorsParamsSortOrder defines parameters for ListColors.
+type ListColorsParamsSortOrder string
 
 // ListEventsParams defines parameters for ListEvents.
 type ListEventsParams struct {
@@ -1083,7 +1436,26 @@ type ListGroupsParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *GroupsFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListGroupsParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListGroupsParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListGroupsParamsSortBy defines parameters for ListGroups.
+type ListGroupsParamsSortBy string
+
+// ListGroupsParamsSortOrder defines parameters for ListGroups.
+type ListGroupsParamsSortOrder string
 
 // ListHousingRoomsParams defines parameters for ListHousingRooms.
 type ListHousingRoomsParams struct {
@@ -1095,7 +1467,26 @@ type ListHousingRoomsParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *HousingRoomsFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListHousingRoomsParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListHousingRoomsParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListHousingRoomsParamsSortBy defines parameters for ListHousingRooms.
+type ListHousingRoomsParamsSortBy string
+
+// ListHousingRoomsParamsSortOrder defines parameters for ListHousingRooms.
+type ListHousingRoomsParamsSortOrder string
 
 // ListLocationsParams defines parameters for ListLocations.
 type ListLocationsParams struct {
@@ -1150,7 +1541,26 @@ type ListRolesParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *RolesFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListRolesParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListRolesParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListRolesParamsSortBy defines parameters for ListRoles.
+type ListRolesParamsSortBy string
+
+// ListRolesParamsSortOrder defines parameters for ListRoles.
+type ListRolesParamsSortOrder string
 
 // ListSessionsParams defines parameters for ListSessions.
 type ListSessionsParams struct {
@@ -1162,7 +1572,26 @@ type ListSessionsParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *SessionsFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListSessionsParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListSessionsParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListSessionsParamsSortBy defines parameters for ListSessions.
+type ListSessionsParamsSortBy string
+
+// ListSessionsParamsSortOrder defines parameters for ListSessions.
+type ListSessionsParamsSortOrder string
 
 // ListStaffMembersParams defines parameters for ListStaffMembers.
 type ListStaffMembersParams struct {
@@ -1174,7 +1603,26 @@ type ListStaffMembersParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *StaffMembersFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListStaffMembersParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListStaffMembersParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListStaffMembersParamsSortBy defines parameters for ListStaffMembers.
+type ListStaffMembersParamsSortBy string
+
+// ListStaffMembersParamsSortOrder defines parameters for ListStaffMembers.
+type ListStaffMembersParamsSortOrder string
 
 // LoginJSONRequestBody defines body for Login for application/json ContentType.
 type LoginJSONRequestBody = LoginRequest

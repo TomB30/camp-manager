@@ -2,6 +2,13 @@ get:
   summary: Get all camps
   operationId: getCamps
   x-required-roles: [admin, program-admin, viewer]
+  parameters:
+    - $ref: "../parameters/limit.yaml"
+    - $ref: "../parameters/offset.yaml"
+    - $ref: "../parameters/search.yaml"
+    - $ref: "../parameters/CampsFilterBy.yaml"
+    - $ref: "../parameters/CampsSortBy.yaml"
+    - $ref: "../parameters/sortOrder.yaml"
   responses:
     "200":
       description: Success

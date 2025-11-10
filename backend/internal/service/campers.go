@@ -16,7 +16,7 @@ import (
 // CampersService defines the interface for camper business logic
 type CampersService interface {
 	// List retrieves campers with pagination and optional search
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.CampersListResponse, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.CampersListResponse, error)
 
 	// GetByID retrieves a single camper by ID
 	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Camper, error)
@@ -48,10 +48,10 @@ func NewCampersService(repo CampersRepository, sessionsRepo SessionsRepository, 
 }
 
 // List retrieves campers with pagination and optional search
-func (s *campersService) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.CampersListResponse, error) {
-	campers, total, err := s.repo.List(ctx, tenantId, campId, limit, offset, search)
+func (s *campersService) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.CampersListResponse, error) {
+	campers, total, err := s.repo.List(ctx, tenantId, campId, limit, offset, search, filterStrings, sortBy, sortOrder)
 	if err != nil {
-		return nil, pkgerrors.InternalServerError("Failed to list campers", err)
+		return nil, pkgerrors.BadRequest("Failed to list campers", err)
 	}
 
 	// Convert domain campers to API campers

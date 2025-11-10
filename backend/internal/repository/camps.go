@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/database"
@@ -20,10 +21,23 @@ func NewCampsRepository(db *database.Database) *CampsRepository {
 	}
 }
 
+// campFields defines the filterable fields and their types for camps (API field names)
+var campFields = map[string]domain.FieldType{
+	"name": domain.FieldTypeText,
+}
+
+// campFieldToColumn maps API field names to database column names
+var campFieldToColumn = map[string]string{
+	"name": "name",
+}
+
+// campSortableFields defines the sortable fields for camps (API field names)
+var campSortableFields = []string{"name"}
+
 // List returns a paginated list of camps for a tenant, filtered by accessible camp IDs
 // If campIDs is nil, returns all camps in the tenant (for system/tenant-scope users)
 // If campIDs is not nil, returns only the specified camps (for camp-scope users)
-func (r *CampsRepository) List(ctx context.Context, tenantID uuid.UUID, campIDs []uuid.UUID, limit, offset int, search *string) ([]domain.Camp, int64, error) {
+func (r *CampsRepository) List(ctx context.Context, tenantID uuid.UUID, campIDs []uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Camp, int64, error) {
 	var camps []domain.Camp
 	var total int64
 
@@ -42,13 +56,35 @@ func (r *CampsRepository) List(ctx context.Context, tenantID uuid.UUID, campIDs 
 	// Apply search filter if provided
 	query = ApplySearchFilter(query, search, "name")
 
+	// Parse and apply filters
+	filters, err := ParseFilterStrings(filterStrings)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to parse filters: %w", err)
+	}
+
+	query, err = ApplyFilters(query, filters, campFields, campFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply filters: %w", err)
+	}
+
+	// Apply sorting
+	query, err = ApplySorting(query, sortBy, sortOrder, campSortableFields, campFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply sorting: %w", err)
+	}
+
+	// If no sorting was specified, use default
+	if sortBy == nil || *sortBy == "" {
+		query = query.Order("created_at DESC")
+	}
+
 	// Get total count
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
 	// Get paginated results
-	if err := query.Order("created_at DESC").Limit(limit).Offset(offset).Find(&camps).Error; err != nil {
+	if err := query.Limit(limit).Offset(offset).Find(&camps).Error; err != nil {
 		return nil, 0, err
 	}
 

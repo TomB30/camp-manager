@@ -19,8 +19,21 @@ func NewCertificationsRepository(db *database.Database) *CertificationsRepositor
 	return &CertificationsRepository{db: db}
 }
 
+// certificationFields defines the filterable fields and their types for certifications (API field names)
+var certificationFields = map[string]domain.FieldType{
+	"name": domain.FieldTypeText,
+}
+
+// certificationFieldToColumn maps API field names to database column names
+var certificationFieldToColumn = map[string]string{
+	"name": "name",
+}
+
+// certificationSortableFields defines the sortable fields for certifications (API field names)
+var certificationSortableFields = []string{"name"}
+
 // List retrieves a paginated list of certifications
-func (r *CertificationsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Certification, int64, error) {
+func (r *CertificationsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Certification, int64, error) {
 	// TODO: Implement query with pagination and search
 	var certifications []domain.Certification
 	var total int64
@@ -31,16 +44,37 @@ func (r *CertificationsRepository) List(ctx context.Context, tenantID, campID uu
 	// Add search filter if provided
 	query = ApplySearchFilter(query, search, "name")
 
+	// Parse and apply filters
+	filters, err := ParseFilterStrings(filterStrings)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to parse filters: %w", err)
+	}
+
+	query, err = ApplyFilters(query, filters, certificationFields, certificationFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply filters: %w", err)
+	}
+
 	// Get total count
 	if err := query.Model(&domain.Certification{}).Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to count certifications: %w", err)
+	}
+
+	// Apply sorting
+	query, err = ApplySorting(query, sortBy, sortOrder, certificationSortableFields, certificationFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply sorting: %w", err)
+	}
+
+	// If no sorting was specified, use default
+	if sortBy == nil || *sortBy == "" {
+		query = query.Order("created_at DESC")
 	}
 
 	// Get paginated results
 	if err := query.
 		Limit(limit).
 		Offset(offset).
-		Order("created_at DESC").
 		Find(&certifications).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to list certifications: %w", err)
 	}

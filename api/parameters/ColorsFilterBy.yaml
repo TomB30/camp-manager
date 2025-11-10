@@ -1,0 +1,17 @@
+name: filterBy
+in: query
+required: false
+description: |
+  Filter results by parameters. Format: field operator value
+  Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+  =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+  Dates in ISO 8601 format. Text filters are case-insensitive.
+  Note: Text operators (=@, !@, =^, =~) only work with text fields.
+schema:
+  type: array
+  items:
+    type: string
+    pattern: "^(name|hexCode)(==|!=|<=|>=|=@|!@|=\\^|=~).+$"
+  example: ["name=@Blue", "hexCode==ff0000"]
+explode: true
+

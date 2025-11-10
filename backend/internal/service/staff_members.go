@@ -16,7 +16,7 @@ import (
 // StaffMembersService defines the interface for staff member business logic
 type StaffMembersService interface {
 	// List retrieves staff members with pagination and optional search
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.StaffMembersListResponse, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.StaffMembersListResponse, error)
 
 	// GetByID retrieves a single staff member by ID
 	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.StaffMember, error)
@@ -48,10 +48,10 @@ func NewStaffMembersService(repo StaffMembersRepository, groupsRepo GroupsReposi
 }
 
 // List retrieves staff members with pagination and optional search
-func (s *staffMembersService) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.StaffMembersListResponse, error) {
-	staffMembers, total, err := s.repo.List(ctx, tenantId, campId, limit, offset, search)
+func (s *staffMembersService) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.StaffMembersListResponse, error) {
+	staffMembers, total, err := s.repo.List(ctx, tenantId, campId, limit, offset, search, filterStrings, sortBy, sortOrder)
 	if err != nil {
-		return nil, pkgerrors.InternalServerError("Failed to list staff members", err)
+		return nil, pkgerrors.BadRequest("Failed to list staff members", err)
 	}
 
 	// Convert domain staff members to API staff members

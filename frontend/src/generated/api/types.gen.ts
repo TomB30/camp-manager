@@ -741,11 +741,6 @@ export type DurationPresetSpec = {
 export type Id = string;
 
 /**
- * Camp ID
- */
-export type CampId = string;
-
-/**
  * Maximum number of items to return per page
  */
 export type Limit = number;
@@ -768,17 +763,172 @@ export type Search = string;
  * Note: Text operators (=@, !@, =^, =~) only work with text fields.
  *
  */
-export type LocationsFilterBy = Array<string>;
+export type CampsFilterBy = Array<string>;
 
 /**
  * Field name to sort by
  */
-export type LocationsSortBy = 'name' | 'areaId' | 'createdAt';
+export type CampsSortBy = 'name';
 
 /**
  * Sort direction
  */
 export type SortOrder = 'asc' | 'desc';
+
+/**
+ * Camp ID
+ */
+export type CampId = string;
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type SessionsFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type SessionsSortBy = 'name' | 'startDate' | 'endDate';
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type CampersFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type CampersSortBy = 'name' | 'birthday' | 'gender' | 'sessionId' | 'housingGroupId';
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type StaffMembersFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type StaffMembersSortBy = 'name' | 'gender' | 'roleId' | 'certificationId' | 'phone';
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type AreasFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type AreasSortBy = 'name';
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type LocationsFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type LocationsSortBy = 'name' | 'areaId';
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type ColorsFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type ColorsSortBy = 'name' | 'hexCode';
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type RolesFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type RolesSortBy = 'name';
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type CertificationsFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type CertificationsSortBy = 'name';
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type HousingRoomsFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type HousingRoomsSortBy = 'name' | 'capacity';
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type GroupsFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type GroupsSortBy = 'name' | 'sessionId' | 'housingRoomId';
 
 export type LoginData = {
     body: LoginRequest;
@@ -910,7 +1060,37 @@ export type GetTenantByIdResponse = GetTenantByIdResponses[keyof GetTenantByIdRe
 export type GetCampsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
+    };
     url: '/api/v1/camps';
 };
 
@@ -1021,6 +1201,23 @@ export type ListSessionsData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name' | 'startDate' | 'endDate';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/sessions';
 };
@@ -1151,6 +1348,23 @@ export type ListCampersData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name' | 'birthday' | 'gender' | 'sessionId' | 'housingGroupId';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/campers';
 };
@@ -1281,6 +1495,23 @@ export type ListStaffMembersData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name' | 'gender' | 'roleId' | 'certificationId' | 'phone';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/staff-members';
 };
@@ -1411,6 +1642,23 @@ export type ListAreasData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/areas';
 };
@@ -1553,7 +1801,7 @@ export type ListLocationsData = {
         /**
          * Field name to sort by
          */
-        sortBy?: 'name' | 'areaId' | 'createdAt';
+        sortBy?: 'name' | 'areaId';
         /**
          * Sort direction
          */
@@ -1948,6 +2196,23 @@ export type ListColorsData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name' | 'hexCode';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/colors';
 };
@@ -2078,6 +2343,23 @@ export type ListRolesData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/roles';
 };
@@ -2208,6 +2490,23 @@ export type ListCertificationsData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/certifications';
 };
@@ -2338,6 +2637,23 @@ export type ListHousingRoomsData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name' | 'capacity';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/housing-rooms';
 };
@@ -2468,6 +2784,23 @@ export type ListGroupsData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name' | 'sessionId' | 'housingRoomId';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/groups';
 };

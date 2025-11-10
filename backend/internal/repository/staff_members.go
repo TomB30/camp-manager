@@ -21,8 +21,29 @@ func NewStaffMembersRepository(db *database.Database) *StaffMembersRepository {
 	return &StaffMembersRepository{db: db}
 }
 
+// staffMemberFields defines the filterable fields and their types for staff members (API field names)
+var staffMemberFields = map[string]domain.FieldType{
+	"name":            domain.FieldTypeText,
+	"gender":          domain.FieldTypeText,
+	"roleId":          domain.FieldTypeUUID,
+	"certificationId": domain.FieldTypeUUID,
+	"phone":           domain.FieldTypeText,
+}
+
+// staffMemberFieldToColumn maps API field names to database column names
+var staffMemberFieldToColumn = map[string]string{
+	"name":            "name",
+	"gender":          "gender",
+	"roleId":          "role_id",
+	"certificationId": "certification_id",
+	"phone":           "phone",
+}
+
+// staffMemberSortableFields defines the sortable fields for staff members (API field names)
+var staffMemberSortableFields = []string{"name", "gender", "roleId", "certificationId", "phone"}
+
 // List retrieves a paginated list of staff members
-func (r *StaffMembersRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.StaffMember, int64, error) {
+func (r *StaffMembersRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.StaffMember, int64, error) {
 	var staffMembers []domain.StaffMember
 	var total int64
 
@@ -32,9 +53,31 @@ func (r *StaffMembersRepository) List(ctx context.Context, tenantID, campID uuid
 	// Add search filter if provided
 	query = ApplySearchFilter(query, search, "name")
 
+	// Parse and apply filters
+	filters, err := ParseFilterStrings(filterStrings)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to parse filters: %w", err)
+	}
+
+	query, err = ApplyFilters(query, filters, staffMemberFields, staffMemberFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply filters: %w", err)
+	}
+
 	// Get total count
 	if err := query.Model(&domain.StaffMember{}).Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to count staff members: %w", err)
+	}
+
+	// Apply sorting
+	query, err = ApplySorting(query, sortBy, sortOrder, staffMemberSortableFields, staffMemberFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply sorting: %w", err)
+	}
+
+	// If no sorting was specified, use default
+	if sortBy == nil || *sortBy == "" {
+		query = query.Order("created_at DESC")
 	}
 
 	// Get paginated results with preloaded relationships
@@ -43,7 +86,6 @@ func (r *StaffMembersRepository) List(ctx context.Context, tenantID, campID uuid
 		Preload("StaffCertifications").
 		Limit(limit).
 		Offset(offset).
-		Order("created_at DESC").
 		Find(&staffMembers).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to list staff members: %w", err)
 	}

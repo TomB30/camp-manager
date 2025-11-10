@@ -1,0 +1,9 @@
+name: sortBy
+in: query
+required: false
+description: Field name to sort by
+schema:
+  type: string
+  enum: [name, startDate, endDate]
+  example: startDate
+

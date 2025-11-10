@@ -15,7 +15,7 @@ import (
 // ColorsService defines the interface for color business logic
 type ColorsService interface {
 	// List retrieves colors with pagination and optional search
-	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) (*api.ColorsListResponse, error)
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.ColorsListResponse, error)
 
 	// GetByID retrieves a single color by ID
 	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*api.Color, error)
@@ -43,10 +43,10 @@ func NewColorsService(repo ColorsRepository) ColorsService {
 }
 
 // List retrieves colors with pagination and optional search
-func (s *colorsService) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) (*api.ColorsListResponse, error) {
-	colors, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search)
+func (s *colorsService) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.ColorsListResponse, error) {
+	colors, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search, filterStrings, sortBy, sortOrder)
 	if err != nil {
-		return nil, pkgerrors.InternalServerError("Failed to list colors", err)
+		return nil, pkgerrors.BadRequest("Failed to list colors", err)
 	}
 
 	// Convert domain colors to API colors

@@ -141,8 +141,8 @@ func (h *Handler) DeleteAreaById(w http.ResponseWriter, r *http.Request, campId 
 
 // Camp management handlers (tenant-level) - delegate to CampsHandler
 
-func (h *Handler) GetCamps(w http.ResponseWriter, r *http.Request) {
-	h.camps.GetCamps(w, r)
+func (h *Handler) GetCamps(w http.ResponseWriter, r *http.Request, params api.GetCampsParams) {
+	h.camps.GetCamps(w, r, params)
 }
 
 func (h *Handler) CreateCamp(w http.ResponseWriter, r *http.Request) {

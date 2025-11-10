@@ -27,13 +27,12 @@ var locationFields = map[string]domain.FieldType{
 
 // locationFieldToColumn maps API field names to database column names
 var locationFieldToColumn = map[string]string{
-	"name":      "name",
-	"areaId":    "area_id",
-	"createdAt": "created_at",
+	"name":   "name",
+	"areaId": "area_id",
 }
 
 // locationSortableFields defines the sortable fields for locations (API field names)
-var locationSortableFields = []string{"name", "areaId", "createdAt"}
+var locationSortableFields = []string{"name", "areaId"}
 
 // List retrieves a paginated list of locations filtered by tenant and camp
 func (r *LocationsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Location, int64, error) {

@@ -16,7 +16,7 @@ import (
 // GroupsService defines the interface for group business logic
 type GroupsService interface {
 	// List retrieves groups with pagination and optional search
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.GroupsListResponse, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.GroupsListResponse, error)
 
 	// GetByID retrieves a single group by ID
 	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Group, error)
@@ -48,10 +48,10 @@ func NewGroupsService(repo GroupsRepository, sessionsRepo SessionsRepository, ho
 }
 
 // List retrieves groups with pagination and optional search
-func (s *groupsService) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.GroupsListResponse, error) {
-	groups, total, err := s.repo.List(ctx, tenantId, campId, limit, offset, search)
+func (s *groupsService) List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.GroupsListResponse, error) {
+	groups, total, err := s.repo.List(ctx, tenantId, campId, limit, offset, search, filterStrings, sortBy, sortOrder)
 	if err != nil {
-		return nil, pkgerrors.InternalServerError("Failed to list groups", err)
+		return nil, pkgerrors.BadRequest("Failed to list groups", err)
 	}
 
 	// Convert domain groups to API groups

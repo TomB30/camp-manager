@@ -63,10 +63,10 @@ Each of the following entities needs the same treatment as Locations:
 Here are the filterable fields for each entity (to save time looking them up):
 
 **Campers** (`api/schemas/CamperSpec.yaml`):
-- name (text), email (text), birthday (date), gender (text), sessionId (uuid), housingGroupId (uuid)
+- name (text), birthday (date), gender (text), sessionId (uuid), housingGroupId (uuid)
 
 **StaffMembers** (`api/schemas/StaffMemberSpec.yaml`):
-- name (text), email (text), birthday (date), gender (text), roleId (uuid), phone (text)
+- name (text), gender (text), roleId (uuid), certificationId (uuid), phone (text)
 
 **Events** (`api/schemas/EventSpec.yaml`):
 - name (text), startDate (date), endDate (date), capacity (number), locationId (uuid), programId (uuid), activityId (uuid), colorId (uuid)
@@ -87,7 +87,7 @@ Here are the filterable fields for each entity (to save time looking them up):
 - name (text)
 
 **HousingRooms** (`api/schemas/HousingRoomSpec.yaml`):
-- name (text), capacity (number), gender (text)
+- name (text), capacity (number)
 
 **Roles** (`api/schemas/RoleSpec.yaml`):
 - name (text)

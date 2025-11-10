@@ -15,7 +15,7 @@ import (
 // RolesService defines the interface for role business logic
 type RolesService interface {
 	// List retrieves roles with pagination and optional search
-	List(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, limit, offset int, search *string) (*api.RolesListResponse, error)
+	List(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.RolesListResponse, error)
 
 	// GetByID retrieves a single role by ID
 	GetByID(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID) (*api.Role, error)
@@ -43,10 +43,10 @@ func NewRolesService(repo RolesRepository) RolesService {
 }
 
 // List retrieves roles with pagination and optional search
-func (s *rolesService) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) (*api.RolesListResponse, error) {
-	roles, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search)
+func (s *rolesService) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.RolesListResponse, error) {
+	roles, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search, filterStrings, sortBy, sortOrder)
 	if err != nil {
-		return nil, pkgerrors.InternalServerError("Failed to list roles", err)
+		return nil, pkgerrors.BadRequest("Failed to list roles", err)
 	}
 
 	// Convert domain roles to API roles

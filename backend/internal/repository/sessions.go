@@ -19,8 +19,25 @@ func NewSessionsRepository(db *database.Database) *SessionsRepository {
 	return &SessionsRepository{db: db}
 }
 
+// sessionFields defines the filterable fields and their types for sessions (API field names)
+var sessionFields = map[string]domain.FieldType{
+	"name":      domain.FieldTypeText,
+	"startDate": domain.FieldTypeDate,
+	"endDate":   domain.FieldTypeDate,
+}
+
+// sessionFieldToColumn maps API field names to database column names
+var sessionFieldToColumn = map[string]string{
+	"name":      "name",
+	"startDate": "start_date",
+	"endDate":   "end_date",
+}
+
+// sessionSortableFields defines the sortable fields for sessions (API field names)
+var sessionSortableFields = []string{"name", "startDate", "endDate"}
+
 // List retrieves a paginated list of sessions filtered by tenant and camp
-func (r *SessionsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Session, int64, error) {
+func (r *SessionsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Session, int64, error) {
 	var sessions []domain.Session
 	var total int64
 
@@ -30,16 +47,37 @@ func (r *SessionsRepository) List(ctx context.Context, tenantID, campID uuid.UUI
 	// Add search filter if provided
 	query = ApplySearchFilter(query, search, "name")
 
+	// Parse and apply filters
+	filters, err := ParseFilterStrings(filterStrings)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to parse filters: %w", err)
+	}
+
+	query, err = ApplyFilters(query, filters, sessionFields, sessionFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply filters: %w", err)
+	}
+
 	// Get total count
 	if err := query.Model(&domain.Session{}).Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to count sessions: %w", err)
+	}
+
+	// Apply sorting
+	query, err = ApplySorting(query, sortBy, sortOrder, sessionSortableFields, sessionFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply sorting: %w", err)
+	}
+
+	// If no sorting was specified, use default
+	if sortBy == nil || *sortBy == "" {
+		query = query.Order("start_date DESC, created_at DESC")
 	}
 
 	// Get paginated results
 	if err := query.
 		Limit(limit).
 		Offset(offset).
-		Order("start_date DESC, created_at DESC").
 		Find(&sessions).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to list sessions: %w", err)
 	}

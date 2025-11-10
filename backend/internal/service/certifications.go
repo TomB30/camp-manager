@@ -14,7 +14,7 @@ import (
 // CertificationsService defines the interface for certification business logic
 type CertificationsService interface {
 	// List retrieves certifications with pagination and optional search
-	List(ctx context.Context, tenantID, campID uuid.UUID, limit int, offset int, search *string) (*api.CertificationsListResponse, error)
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit int, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.CertificationsListResponse, error)
 
 	// GetByID retrieves a single certification by ID
 	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*api.Certification, error)
@@ -42,10 +42,10 @@ func NewCertificationsService(repo CertificationsRepository) CertificationsServi
 }
 
 // List retrieves certifications with pagination and optional search
-func (s *certificationsService) List(ctx context.Context, tenantID, campID uuid.UUID, limit int, offset int, search *string) (*api.CertificationsListResponse, error) {
-	certifications, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search)
+func (s *certificationsService) List(ctx context.Context, tenantID, campID uuid.UUID, limit int, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.CertificationsListResponse, error) {
+	certifications, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search, filterStrings, sortBy, sortOrder)
 	if err != nil {
-		return nil, pkgerrors.InternalServerError("Failed to list certifications", err)
+		return nil, pkgerrors.BadRequest("Failed to list certifications", err)
 	}
 
 	// Convert domain certifications to API certifications

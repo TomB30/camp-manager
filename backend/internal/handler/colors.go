@@ -51,8 +51,24 @@ func (h *ColorsHandler) ListColors(w http.ResponseWriter, r *http.Request, campI
 		offset = *params.Offset
 	}
 
+	// Extract filter and sort parameters
+	filterStrings := []string{}
+	if params.FilterBy != nil {
+		filterStrings = *params.FilterBy
+	}
+
+	sortOrder := "asc"
+	if params.SortOrder != nil {
+		sortOrder = string(*params.SortOrder)
+	}
+
+	sortBy := ""
+	if params.SortBy != nil {
+		sortBy = string(*params.SortBy)
+	}
+
 	// Call service
-	response, err := h.service.List(r.Context(), tenantID, campUUID, limit, offset, params.Search)
+	response, err := h.service.List(r.Context(), tenantID, campUUID, limit, offset, params.Search, filterStrings, &sortBy, sortOrder)
 	if err != nil {
 		errors.WriteError(w, err)
 		return

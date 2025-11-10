@@ -15,7 +15,7 @@ import (
 // AreasService defines the interface for area business logic
 type AreasService interface {
 	// List retrieves areas with pagination and optional search
-	List(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, limit, offset int, search *string) (*api.AreasListResponse, error)
+	List(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.AreasListResponse, error)
 
 	// GetByID retrieves a single area by ID
 	GetByID(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID) (*api.Area, error)
@@ -43,10 +43,10 @@ func NewAreasService(repo AreasRepository) AreasService {
 }
 
 // List retrieves areas with pagination and optional search
-func (s *areasService) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) (*api.AreasListResponse, error) {
-	areas, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search)
+func (s *areasService) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.AreasListResponse, error) {
+	areas, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search, filterStrings, sortBy, sortOrder)
 	if err != nil {
-		return nil, pkgerrors.InternalServerError("Failed to list areas", err)
+		return nil, pkgerrors.BadRequest("Failed to list areas", err)
 	}
 
 	// Convert domain areas to API areas

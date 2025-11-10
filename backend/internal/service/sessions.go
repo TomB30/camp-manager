@@ -15,7 +15,7 @@ import (
 // SessionsService defines the interface for session business logic
 type SessionsService interface {
 	// List retrieves sessions with pagination and optional search
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string) (*api.SessionsListResponse, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit int, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.SessionsListResponse, error)
 
 	// GetByID retrieves a single session by ID
 	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Session, error)
@@ -43,10 +43,10 @@ func NewSessionsService(repo SessionsRepository) SessionsService {
 }
 
 // List retrieves sessions with pagination and optional search
-func (s *sessionsService) List(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, limit, offset int, search *string) (*api.SessionsListResponse, error) {
-	sessions, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search)
+func (s *sessionsService) List(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) (*api.SessionsListResponse, error) {
+	sessions, total, err := s.repo.List(ctx, tenantID, campID, limit, offset, search, filterStrings, sortBy, sortOrder)
 	if err != nil {
-		return nil, pkgerrors.InternalServerError("Failed to list sessions", err)
+		return nil, pkgerrors.BadRequest("Failed to list sessions", err)
 	}
 
 	// Convert domain sessions to API sessions

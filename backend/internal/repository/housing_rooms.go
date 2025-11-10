@@ -19,8 +19,23 @@ func NewHousingRoomsRepository(db *database.Database) *HousingRoomsRepository {
 	return &HousingRoomsRepository{db: db}
 }
 
+// housingRoomFields defines the filterable fields and their types for housing rooms (API field names)
+var housingRoomFields = map[string]domain.FieldType{
+	"name":     domain.FieldTypeText,
+	"capacity": domain.FieldTypeNumber,
+}
+
+// housingRoomFieldToColumn maps API field names to database column names
+var housingRoomFieldToColumn = map[string]string{
+	"name":     "name",
+	"capacity": "capacity",
+}
+
+// housingRoomSortableFields defines the sortable fields for housing rooms (API field names)
+var housingRoomSortableFields = []string{"name", "capacity"}
+
 // List retrieves a paginated list of housing rooms filtered by tenant and camp
-func (r *HousingRoomsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.HousingRoom, int64, error) {
+func (r *HousingRoomsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.HousingRoom, int64, error) {
 	var housingRooms []domain.HousingRoom
 	var total int64
 
@@ -30,16 +45,37 @@ func (r *HousingRoomsRepository) List(ctx context.Context, tenantID, campID uuid
 	// Add search filter if provided
 	query = ApplySearchFilter(query, search, "name")
 
+	// Parse and apply filters
+	filters, err := ParseFilterStrings(filterStrings)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to parse filters: %w", err)
+	}
+
+	query, err = ApplyFilters(query, filters, housingRoomFields, housingRoomFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply filters: %w", err)
+	}
+
 	// Get total count
 	if err := query.Model(&domain.HousingRoom{}).Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to count housing rooms: %w", err)
+	}
+
+	// Apply sorting
+	query, err = ApplySorting(query, sortBy, sortOrder, housingRoomSortableFields, housingRoomFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply sorting: %w", err)
+	}
+
+	// If no sorting was specified, use default
+	if sortBy == nil || *sortBy == "" {
+		query = query.Order("created_at DESC")
 	}
 
 	// Get paginated results
 	if err := query.
 		Limit(limit).
 		Offset(offset).
-		Order("created_at DESC").
 		Find(&housingRooms).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to list housing rooms: %w", err)
 	}

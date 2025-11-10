@@ -7,6 +7,9 @@ get:
     - $ref: "../parameters/limit.yaml"
     - $ref: "../parameters/offset.yaml"
     - $ref: "../parameters/search.yaml"
+    - $ref: "../parameters/CertificationsFilterBy.yaml"
+    - $ref: "../parameters/CertificationsSortBy.yaml"
+    - $ref: "../parameters/sortOrder.yaml"
   responses:
     "200":
       description: Success

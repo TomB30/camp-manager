@@ -19,8 +19,21 @@ func NewAreasRepository(db *database.Database) *AreasRepository {
 	return &AreasRepository{db: db}
 }
 
+// areaFields defines the filterable fields and their types for areas (API field names)
+var areaFields = map[string]domain.FieldType{
+	"name": domain.FieldTypeText,
+}
+
+// areaFieldToColumn maps API field names to database column names
+var areaFieldToColumn = map[string]string{
+	"name": "name",
+}
+
+// areaSortableFields defines the sortable fields for areas (API field names)
+var areaSortableFields = []string{"name"}
+
 // List retrieves a paginated list of areas filtered by tenant and camp
-func (r *AreasRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Area, int64, error) {
+func (r *AreasRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Area, int64, error) {
 	var areas []domain.Area
 	var total int64
 
@@ -30,16 +43,37 @@ func (r *AreasRepository) List(ctx context.Context, tenantID, campID uuid.UUID, 
 	// Add search filter if provided
 	query = ApplySearchFilter(query, search, "name")
 
+	// Parse and apply filters
+	filters, err := ParseFilterStrings(filterStrings)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to parse filters: %w", err)
+	}
+
+	query, err = ApplyFilters(query, filters, areaFields, areaFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply filters: %w", err)
+	}
+
 	// Get total count
 	if err := query.Model(&domain.Area{}).Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to count areas: %w", err)
+	}
+
+	// Apply sorting
+	query, err = ApplySorting(query, sortBy, sortOrder, areaSortableFields, areaFieldToColumn)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to apply sorting: %w", err)
+	}
+
+	// If no sorting was specified, use default
+	if sortBy == nil || *sortBy == "" {
+		query = query.Order("created_at DESC")
 	}
 
 	// Get paginated results
 	if err := query.
 		Limit(limit).
 		Offset(offset).
-		Order("created_at DESC").
 		Find(&areas).Error; err != nil {
 		return nil, 0, fmt.Errorf("failed to list areas: %w", err)
 	}

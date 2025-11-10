@@ -381,15 +381,6 @@ export const updateAreaById = <ThrowOnError extends boolean = false>(options: Op
  */
 export const listLocations = <ThrowOnError extends boolean = false>(options: Options<ListLocationsData, ThrowOnError>) => {
     return (options.client ?? client).get<ListLocationsResponses, unknown, ThrowOnError>({
-        querySerializer: {
-            parameters: {
-                filterBy: {
-                    array: {
-                        explode: false
-                    }
-                }
-            }
-        },
         url: '/api/v1/camps/{camp_id}/locations',
         ...options
     });

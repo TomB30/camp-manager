@@ -19,7 +19,7 @@ type ActivitiesRepository interface {
 
 // AreasRepository defines the data access interface for areas
 type AreasRepository interface {
-	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Area, int64, error)
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Area, int64, error)
 	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Area, error)
 	Create(ctx context.Context, area *domain.Area) error
 	Update(ctx context.Context, tenantID, campID uuid.UUID, area *domain.Area) error
@@ -28,7 +28,7 @@ type AreasRepository interface {
 
 // CampersRepository defines the data access interface for campers
 type CampersRepository interface {
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]domain.Camper, int64, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Camper, int64, error)
 	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*domain.Camper, error)
 	Create(ctx context.Context, camper *domain.Camper) error
 	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, camper *domain.Camper) error
@@ -37,7 +37,7 @@ type CampersRepository interface {
 
 // CertificationsRepository defines the data access interface for certifications
 type CertificationsRepository interface {
-	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Certification, int64, error)
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Certification, int64, error)
 	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Certification, error)
 	Create(ctx context.Context, certification *domain.Certification) error
 	Update(ctx context.Context, tenantID, campID uuid.UUID, certification *domain.Certification) error
@@ -46,7 +46,7 @@ type CertificationsRepository interface {
 
 // CampsRepository defines the data access interface for camps
 type CampsRepository interface {
-	List(ctx context.Context, tenantID uuid.UUID, campIDs []uuid.UUID, limit, offset int, search *string) ([]domain.Camp, int64, error)
+	List(ctx context.Context, tenantID uuid.UUID, campIDs []uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Camp, int64, error)
 	GetByID(ctx context.Context, tenantID, campID uuid.UUID) (*domain.Camp, error)
 	Create(ctx context.Context, camp *domain.Camp) error
 	Update(ctx context.Context, camp *domain.Camp) error
@@ -55,7 +55,7 @@ type CampsRepository interface {
 
 // ColorsRepository defines the data access interface for colors
 type ColorsRepository interface {
-	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Color, int64, error)
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Color, int64, error)
 	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Color, error)
 	Create(ctx context.Context, color *domain.Color) error
 	Update(ctx context.Context, tenantID, campID uuid.UUID, color *domain.Color) error
@@ -73,7 +73,7 @@ type EventsRepository interface {
 
 // GroupsRepository defines the data access interface for groups
 type GroupsRepository interface {
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]domain.Group, int64, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Group, int64, error)
 	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*domain.Group, error)
 	GetByIDs(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, ids []uuid.UUID) ([]domain.Group, error)
 	FindByHousingRoomAndSession(ctx context.Context, tenantId, campId, housingRoomId, sessionId uuid.UUID) (*domain.Group, error)
@@ -84,7 +84,7 @@ type GroupsRepository interface {
 
 // HousingRoomsRepository defines the data access interface for housing rooms
 type HousingRoomsRepository interface {
-	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.HousingRoom, int64, error)
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.HousingRoom, int64, error)
 	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.HousingRoom, error)
 	Create(ctx context.Context, room *domain.HousingRoom) error
 	Update(ctx context.Context, tenantID, campID uuid.UUID, room *domain.HousingRoom) error
@@ -111,7 +111,7 @@ type ProgramsRepository interface {
 
 // RolesRepository defines the data access interface for roles
 type RolesRepository interface {
-	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string) ([]domain.Role, int64, error)
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Role, int64, error)
 	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Role, error)
 	Create(ctx context.Context, role *domain.Role) error
 	Update(ctx context.Context, tenantID, campID uuid.UUID, role *domain.Role) error
@@ -120,7 +120,7 @@ type RolesRepository interface {
 
 // SessionsRepository defines the data access interface for sessions
 type SessionsRepository interface {
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]domain.Session, int64, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Session, int64, error)
 	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*domain.Session, error)
 	Create(ctx context.Context, session *domain.Session) error
 	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, session *domain.Session) error
@@ -129,7 +129,7 @@ type SessionsRepository interface {
 
 // StaffMembersRepository defines the data access interface for staff members
 type StaffMembersRepository interface {
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]domain.StaffMember, int64, error)
+	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.StaffMember, int64, error)
 	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*domain.StaffMember, error)
 	Create(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, staffMember *domain.StaffMember) error
 	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, staffMember *domain.StaffMember) error
