@@ -77,6 +77,12 @@ func main() {
 	// Setup router
 	r := chi.NewRouter()
 
+	// CORS middleware - must be before other middleware
+	corsMiddleware := middleware.NewCORSMiddleware(middleware.CORSConfig{
+		AllowedOrigins: middleware.ParseAllowedOrigins(cfg.CORS.AllowedOrigins),
+	})
+	r.Use(corsMiddleware)
+
 	// Global middleware
 	r.Use(chi_middleware.RequestID)
 	r.Use(chi_middleware.RealIP)

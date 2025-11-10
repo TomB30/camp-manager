@@ -11,6 +11,10 @@ import "./style.scss";
 import "./utils/devTools";
 import BaseButton from "./components/common/BaseButton.vue";
 import BaseInput from "./components/common/BaseInput.vue";
+import { initializeApiClient } from "./config/api";
+
+// Initialize API client with base URL before creating the app
+initializeApiClient();
 
 const app = createApp(App);
 

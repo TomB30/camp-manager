@@ -1,12 +1,28 @@
-import type { Camp, CampUpdateRequest } from "@/generated/api";
+import { getCamps, type Camp, type CampUpdateRequest } from "@/generated/api";
 import { storageService } from "./storage";
 import { STORAGE_KEYS } from "./storageKeys";
+import { apiClient } from "@/config/api";
 
 export const campService = {
   getCamp,
   updateCamp,
   initializeDefaultCamp,
+  getCampsApi,
 };
+
+// Example of using the generated API client directly
+async function getCampsApi(): Promise<Camp[]> {
+  const response = await getCamps({
+    client: apiClient,
+  });
+  if (response.error) {
+    const errorMessage = typeof response.error === 'object' && 'message' in response.error
+        ? String(response.error.message)
+        : "Failed to get camps";
+      throw new Error(errorMessage);
+  }
+  return response.data?.items || [];
+}
 
 /**
  * Get the camp (singleton). If no camp exists, initialize a default one.

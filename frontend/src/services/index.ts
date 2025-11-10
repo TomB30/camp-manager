@@ -3,6 +3,9 @@
  * Central export point for all services
  */
 
+// Authentication - example of using the generated API client directly
+export { authService } from "./authService";
+
 // Core infrastructure
 export { storageService } from "./storage";
 export { STORAGE_KEYS } from "./storageKeys";

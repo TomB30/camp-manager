@@ -125,7 +125,7 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/authStore";
 import { useToastStore } from "@/stores/toastStore";
 import { useMainStore } from "@/stores";
-import { campersService, storageService } from "@/services";
+import { authService, campersService, campService, storageService } from "@/services";
 import Icon from "@/components/Icon.vue";
 
 export default defineComponent({
@@ -170,6 +170,14 @@ export default defineComponent({
 
       try {
         if (mode.value === "login") {
+          // Example of using the generated API client directly
+          // const response = await authService.login({
+          //   email: email.value,
+          //   password: password.value,
+          // });
+
+          // const camps = await campService.getCampsApi();
+
           await authStore.login(email.value, password.value);
           toastStore.success("Successfully logged in!");
 
@@ -188,7 +196,7 @@ export default defineComponent({
         }
       } catch (error) {
         toastStore.error(
-          error instanceof Error ? error.message : "Authentication failed",
+          error instanceof Error ? error.message : "Authentication failed"
         );
       } finally {
         loading.value = false;

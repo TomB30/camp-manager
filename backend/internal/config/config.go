@@ -13,6 +13,7 @@ type Config struct {
 	Database DatabaseConfig
 	Logging  LoggingConfig
 	JWT      JWTConfig
+	CORS     CORSConfig
 }
 
 // ServerConfig holds HTTP server configuration
@@ -26,6 +27,11 @@ type ServerConfig struct {
 // JWTConfig holds JWT token configuration
 type JWTConfig struct {
 	SecretKey string
+}
+
+// CORSConfig holds CORS configuration
+type CORSConfig struct {
+	AllowedOrigins string
 }
 
 // DatabaseConfig holds database connection configuration
@@ -69,6 +75,9 @@ func Load() (*Config, error) {
 
 	// JWT defaults - IMPORTANT: Change this in production!
 	viper.SetDefault("JWT_SECRET_KEY", "development-secret-key-change-in-production")
+
+	// CORS defaults - allow localhost in development
+	viper.SetDefault("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000")
 
 	// Automatically read from environment variables
 	viper.AutomaticEnv()
@@ -118,6 +127,9 @@ func Load() (*Config, error) {
 		},
 		JWT: JWTConfig{
 			SecretKey: jwtSecretKey,
+		},
+		CORS: CORSConfig{
+			AllowedOrigins: viper.GetString("CORS_ALLOWED_ORIGINS"),
 		},
 	}
 
