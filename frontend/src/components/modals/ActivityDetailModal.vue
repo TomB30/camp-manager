@@ -16,13 +16,21 @@
         <div class="detail-section">
           <h4>Activity Settings</h4>
           <div class="detail-grid">
-            <div class="detail-item">
+            <div v-if="activity.spec.duration" class="detail-item">
               <span class="detail-label">Duration</span>
               <span class="detail-value"
                 ><DurationDisplay
                   :minutes="activity.spec.duration || 0"
                   format="long"
               /></span>
+            </div>
+
+            <div v-if="activity.spec.fixedTime" class="detail-item">
+              <span class="detail-label">Fixed Time</span>
+              <span class="detail-value">
+                {{ formatTime(activity.spec.fixedTime.startTime) }} - 
+                {{ formatTime(activity.spec.fixedTime.endTime) }}
+              </span>
             </div>
 
             <div v-if="activity.spec.defaultLocationId" class="detail-item">
@@ -44,6 +52,21 @@
               <span class="detail-value">
                 <template v-if="activity.spec.minStaff">
                   Min {{ activity.spec.minStaff }} staff
+                </template>
+              </span>
+            </div>
+
+            <div v-if="activity.spec.minAge || activity.spec.maxAge" class="detail-item">
+              <span class="detail-label">Age Requirements</span>
+              <span class="detail-value">
+                <template v-if="activity.spec.minAge && activity.spec.maxAge">
+                  Ages {{ activity.spec.minAge }} - {{ activity.spec.maxAge }}
+                </template>
+                <template v-else-if="activity.spec.minAge">
+                  Min age {{ activity.spec.minAge }}
+                </template>
+                <template v-else-if="activity.spec.maxAge">
+                  Max age {{ activity.spec.maxAge }}
                 </template>
               </span>
             </div>
@@ -136,6 +159,15 @@ export default defineComponent({
       const certification =
         this.certificationsStore.getCertificationById(certificationId);
       return certification?.meta.name || "Unknown Certification";
+    },
+    formatTime(time: string): string {
+      if (!time) return "";
+      // Convert 24-hour time (HH:mm) to 12-hour format with AM/PM
+      const [hours, minutes] = time.split(":");
+      const hour = parseInt(hours, 10);
+      const ampm = hour >= 12 ? "PM" : "AM";
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:${minutes} ${ampm}`;
     },
   },
 });

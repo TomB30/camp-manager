@@ -298,14 +298,29 @@ type ActivitySpec struct {
 	// DefaultLocationId ID of the default location
 	DefaultLocationId *openapi_types.UUID `json:"defaultLocationId,omitempty"`
 
-	// Duration Default duration in minutes
+	// Duration Default duration in minutes (mutually exclusive with fixedTime)
 	Duration *int `json:"duration,omitempty"`
+
+	// FixedTime Fixed time for the activity (mutually exclusive with duration)
+	FixedTime *struct {
+		// EndTime End time for the activity
+		EndTime string `json:"endTime"`
+
+		// StartTime Start time for the activity
+		StartTime string `json:"startTime"`
+	} `json:"fixedTime,omitempty"`
+
+	// MaxAge Maximum age required for this activity
+	MaxAge *int `json:"maxAge,omitempty"`
+
+	// MinAge Minimum age required for this activity
+	MinAge *int `json:"minAge,omitempty"`
 
 	// MinStaff Minimum number of staff required
 	MinStaff *int `json:"minStaff,omitempty"`
 
 	// ProgramId ID of the program this activity belongs to
-	ProgramId *openapi_types.UUID `json:"programId,omitempty"`
+	ProgramId openapi_types.UUID `json:"programId"`
 
 	// RequiredCertificationIds IDs of required staff certifications
 	RequiredCertificationIds *[]string `json:"requiredCertificationIds,omitempty"`

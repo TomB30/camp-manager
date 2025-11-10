@@ -11,7 +11,11 @@
       <div class="activity-meta">
         <span class="meta-item">
           <Icon name="Clock" :size="14" />
-          <DurationDisplay :minutes="activity.spec.duration || 0" />
+          <template v-if="activity.spec.fixedTime">
+            {{ formatTime(activity.spec.fixedTime.startTime) }} - 
+            {{ formatTime(activity.spec.fixedTime.endTime) }}
+          </template>
+          <DurationDisplay v-else :minutes="activity.spec.duration || 0" />
         </span>
 
         <span v-if="activity.spec.defaultLocationId" class="meta-item">
@@ -69,6 +73,15 @@ export default defineComponent({
     getLocationName(locationId: string): string {
       const location = this.locationsStore.getLocationById(locationId);
       return location?.meta.name || "Unknown Location";
+    },
+    formatTime(time: string): string {
+      if (!time) return "";
+      // Convert 24-hour time (HH:mm) to 12-hour format with AM/PM
+      const [hours, minutes] = time.split(":");
+      const hour = parseInt(hours, 10);
+      const ampm = hour >= 12 ? "PM" : "AM";
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:${minutes} ${ampm}`;
     },
   },
 });

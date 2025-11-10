@@ -27,32 +27,125 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Duration (minutes)</label>
-            <div class="duration-presets">
-              <BaseButton
-                v-for="preset in durationPresets"
-                :key="preset.minutes || 'custom'"
-                type="button"
-                class="duration-preset-btn"
-                :class="{
-                  active:
-                    preset.minutes === null
-                      ? isCustomDuration
-                      : formData.spec.duration === preset.minutes,
-                }"
-                @click="handleDurationPresetClick(preset)"
-              >
-                {{ preset.label }}
-              </BaseButton>
-            </div>
-            <div v-if="isCustomDuration" class="custom-duration-input">
-              <BaseInput
-                v-model="formData.spec.duration"
-                type="number"
-                :min="1"
-                placeholder="Enter custom duration in minutes"
-                required
+            <label class="form-label">Time Settings</label>
+            <div class="time-settings-container">
+              <q-option-group
+                inline
+                v-model="timeMode"
+                :options="[
+                  { label: 'Duration-based', value: 'duration' },
+                  { label: 'Fixed time', value: 'fixed' }
+                ]"
+                color="primary"
+                class="time-mode-selector"
               />
+
+              <div v-if="timeMode === 'duration'" class="time-input-section">
+                <label class="time-input-label">Duration (minutes)</label>
+                <div class="duration-presets">
+                  <BaseButton
+                    v-for="preset in durationPresets"
+                    :key="preset.minutes || 'custom'"
+                    type="button"
+                    class="duration-preset-btn"
+                    :class="{
+                      active:
+                        preset.minutes === null
+                          ? isCustomDuration
+                          : formData.spec.duration === preset.minutes,
+                    }"
+                    @click="handleDurationPresetClick(preset)"
+                  >
+                    {{ preset.label }}
+                  </BaseButton>
+                </div>
+                <div v-if="isCustomDuration" class="custom-duration-input">
+                  <div class="grid grid-cols-2">
+                    <div>
+                      <label class="form-sublabel">Hours</label>
+                      <BaseInput
+                        v-model="customDurationHours"
+                        type="number"
+                        :min="0"
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <label class="form-sublabel">Minutes</label>
+                      <BaseInput
+                        v-model="customDurationMinutes"
+                        type="number"
+                        :min="0"
+                        :max="59"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="timeMode === 'fixed'" class="time-input-section">
+                <label class="time-input-label">Fixed Time</label>
+                <div class="grid grid-cols-2">
+                  <div>
+                    <label class="form-sublabel">Start Time</label>
+                    <q-input
+                      v-model="formData.spec.fixedTime.startTime"
+                      outlined
+                      dense
+                      type="time"
+                      placeholder="HH:MM"
+                      :rules="[
+                        (val: string) => !!val || 'Start time is required',
+                      ]"
+                    />
+                  </div>
+                  <div>
+                    <label class="form-sublabel">End Time</label>
+                    <q-input
+                      v-model="formData.spec.fixedTime.endTime"
+                      outlined
+                      dense
+                      type="time"
+                      placeholder="HH:MM"
+                      :rules="[
+                        (val: string) => !!val || 'End time is required',
+                        (val: string) => validateEndTime(val) || 'End time must be after start time',
+                      ]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Age Requirements (Optional)</label>
+            <div class="grid grid-cols-2">
+              <div>
+                <label class="form-sublabel">Minimum Age</label>
+                <BaseInput
+                  v-model="formData.spec.minAge"
+                  type="number"
+                  :min="0"
+                  placeholder="Min age"
+                  :rules="[
+                    () => validateAgeRange() || 'Min age must be less than max age',
+                  ]"
+                />
+              </div>
+              <div>
+                <label class="form-sublabel">Maximum Age</label>
+                <BaseInput
+                  v-model="formData.spec.maxAge"
+                  type="number"
+                  :min="0"
+                  placeholder="Max age"
+                  :rules="[
+                    () => validateAgeRange() || 'Max age must be greater than min age',
+                  ]"
+                />
+              </div>
             </div>
           </div>
 
@@ -135,7 +228,7 @@ import BaseModal from "@/components/BaseModal.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import type { Activity, ActivityCreationRequest } from "@/generated/api";
+import type { Activity } from "@/generated/api";
 import { QForm } from "quasar";
 import { useToast } from "@/composables/useToast";
 
@@ -184,10 +277,19 @@ export default defineComponent({
           requiredCertificationIds: [],
           minStaff: null as number | null,
           defaultCapacity: null as number | null,
+          minAge: null as number | null,
+          maxAge: null as number | null,
+          fixedTime: {
+            startTime: "",
+            endTime: "",
+          },
         },
-      } as ActivityCreationRequest,
+      } as any,
       isCustomDuration: false,
+      timeMode: "duration" as "duration" | "fixed",
       editingActivity: null as Activity | null,
+      customDurationHours: 0,
+      customDurationMinutes: 0,
     };
   },
   created() {
@@ -195,6 +297,19 @@ export default defineComponent({
       const activity = this.activitiesStore.getActivityById(this.activityId);
       if (!activity) return;
       this.editingActivity = activity;
+      
+      // Determine if activity has fixed time or duration
+      if (activity.spec.fixedTime) {
+        this.timeMode = "fixed";
+        this.formData.spec.fixedTime = {
+          startTime: activity.spec.fixedTime.startTime || "",
+          endTime: activity.spec.fixedTime.endTime || "",
+        };
+      } else {
+        this.timeMode = "duration";
+        this.formData.spec.duration = activity.spec.duration || 60;
+      }
+      
       this.formData = {
         meta: {
           name: activity.meta.name,
@@ -206,8 +321,14 @@ export default defineComponent({
           defaultLocationId: activity.spec.defaultLocationId || "",
           requiredCertificationIds:
             activity.spec.requiredCertificationIds || [],
-          minStaff: activity.spec.minStaff || 0,
-          defaultCapacity: activity.spec.defaultCapacity || 0,
+          minStaff: activity.spec.minStaff || null,
+          defaultCapacity: activity.spec.defaultCapacity || null,
+          minAge: activity.spec.minAge || null,
+          maxAge: activity.spec.maxAge || null,
+          fixedTime: {
+            startTime: activity.spec.fixedTime?.startTime || "",
+            endTime: activity.spec.fixedTime?.endTime || "",
+          },
         },
       };
     }
@@ -215,6 +336,20 @@ export default defineComponent({
     this.isCustomDuration = !this.durationPresets.find(
       (preset) => preset.minutes === this.formData.spec.duration,
     );
+
+    // Set custom duration hours and minutes if custom
+    if (this.isCustomDuration && this.formData.spec.duration) {
+      this.customDurationHours = Math.floor(this.formData.spec.duration / 60);
+      this.customDurationMinutes = this.formData.spec.duration % 60;
+    }
+  },
+  watch: {
+    customDurationHours() {
+      this.updateDurationFromCustom();
+    },
+    customDurationMinutes() {
+      this.updateDurationFromCustom();
+    },
   },
   computed: {
     isEditing() {
@@ -254,11 +389,21 @@ export default defineComponent({
       if (preset.minutes === null) {
         // Custom option selected
         this.isCustomDuration = true;
+        // Initialize custom duration from current duration
+        if (this.formData.spec.duration) {
+          this.customDurationHours = Math.floor(this.formData.spec.duration / 60);
+          this.customDurationMinutes = this.formData.spec.duration % 60;
+        }
       } else {
         // Preset option selected
         this.isCustomDuration = false;
         this.formData.spec.duration = preset.minutes as number;
       }
+    },
+    updateDurationFromCustom() {
+      const hours = Number(this.customDurationHours) || 0;
+      const minutes = Number(this.customDurationMinutes) || 0;
+      this.formData.spec.duration = hours * 60 + minutes;
     },
     formatDuration(minutes: number): string {
       if (minutes < 60) {
@@ -271,25 +416,59 @@ export default defineComponent({
       }
       return `${hours}h ${remainingMinutes}m`;
     },
+    validateEndTime(endTime: string): boolean {
+      if (!this.formData.spec.fixedTime.startTime || !endTime) {
+        return true;
+      }
+      return endTime > this.formData.spec.fixedTime.startTime;
+    },
+    validateAgeRange(): boolean {
+      const minAge = this.formData.spec.minAge;
+      const maxAge = this.formData.spec.maxAge;
+      
+      // If both are null or undefined, validation passes
+      if (!minAge && !maxAge) {
+        return true;
+      }
+      
+      // If only one is set, validation passes
+      if (!minAge || !maxAge) {
+        return true;
+      }
+      
+      // If both are set, min must be less than max
+      return minAge < maxAge;
+    },
     async handleSave() {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
 
-      const activityData: ActivityCreationRequest = {
+      const activityData: any = {
         meta: {
           name: this.formData.meta.name,
           description: this.formData.meta.description || undefined,
         },
         spec: {
           programId: this.programId,
-          duration: this.formData.spec.duration,
           defaultLocationId: this.formData.spec.defaultLocationId || undefined,
           requiredCertificationIds:
             this.formData.spec.requiredCertificationIds || undefined,
           minStaff: this.formData.spec.minStaff || undefined,
           defaultCapacity: this.formData.spec.defaultCapacity || undefined,
+          minAge: this.formData.spec.minAge || undefined,
+          maxAge: this.formData.spec.maxAge || undefined,
         },
       };
+
+      // Add either duration or fixedTime based on timeMode
+      if (this.timeMode === "duration") {
+        activityData.spec.duration = this.formData.spec.duration;
+      } else {
+        activityData.spec.fixedTime = {
+          startTime: this.formData.spec.fixedTime.startTime,
+          endTime: this.formData.spec.fixedTime.endTime,
+        };
+      }
 
       if (this.activityId) {
         try {
@@ -320,6 +499,39 @@ export default defineComponent({
   margin-top: 0.375rem;
   font-size: 0.875rem;
   color: var(--text-secondary);
+}
+
+.form-sublabel {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.375rem;
+}
+
+.time-settings-container {
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background: var(--background);
+}
+
+.time-mode-selector {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.time-input-section {
+  animation: slideDown 0.2s ease-out;
+}
+
+.time-input-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
 }
 
 .duration-presets {

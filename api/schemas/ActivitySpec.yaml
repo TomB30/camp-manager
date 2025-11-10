@@ -1,14 +1,20 @@
 type: object
 required:
-  - programIds
+  - programId
 properties:
+  minAge:
+    type: integer
+    description: Minimum age required for this activity
+  maxAge:
+    type: integer
+    description: Maximum age required for this activity
   programId:
     type: string
     format: uuid
     description: ID of the program this activity belongs to
   duration:
     type: integer
-    description: Default duration in minutes
+    description: Default duration in minutes (mutually exclusive with fixedTime)
   defaultLocationId:
     type: string
     format: uuid
@@ -24,3 +30,19 @@ properties:
   defaultCapacity:
     type: integer
     description: Default activity capacity
+  fixedTime:
+    type: object
+    required:
+      - startTime
+      - endTime
+    description: Fixed time for the activity (mutually exclusive with duration)
+    properties:
+      startTime:
+        type: string
+        format: time
+        description: Start time for the activity
+      endTime:
+        type: string
+        format: time
+        description: End time for the activity
+  

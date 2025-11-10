@@ -608,11 +608,19 @@ export type ProgramSpec = {
 
 export type ActivitySpec = {
     /**
+     * Minimum age required for this activity
+     */
+    minAge?: number;
+    /**
+     * Maximum age required for this activity
+     */
+    maxAge?: number;
+    /**
      * ID of the program this activity belongs to
      */
-    programId?: string;
+    programId: string;
     /**
-     * Default duration in minutes
+     * Default duration in minutes (mutually exclusive with fixedTime)
      */
     duration?: number;
     /**
@@ -631,6 +639,19 @@ export type ActivitySpec = {
      * Default activity capacity
      */
     defaultCapacity?: number;
+    /**
+     * Fixed time for the activity (mutually exclusive with duration)
+     */
+    fixedTime?: {
+        /**
+         * Start time for the activity
+         */
+        startTime: string;
+        /**
+         * End time for the activity
+         */
+        endTime: string;
+    };
 };
 
 export type ColorSpec = {

@@ -412,19 +412,11 @@ export default defineComponent({
     };
   },
   data() {
-    // Round defaultEventDate to the next round hour
-    const roundedDefaultEventDate = new Date(this.defaultEventDate);
-    if (
-      roundedDefaultEventDate.getMinutes() > 0 ||
-      roundedDefaultEventDate.getSeconds() > 0 ||
-      roundedDefaultEventDate.getMilliseconds() > 0
-    ) {
-      roundedDefaultEventDate.setHours(roundedDefaultEventDate.getHours() + 1);
-      roundedDefaultEventDate.setMinutes(0, 0, 0);
-    }
-    const defaultDate = roundedDefaultEventDate;
-    const startHours = defaultDate.getHours().toString().padStart(2, "0");
-    const startMinutes = defaultDate.getMinutes().toString().padStart(2, "0");
+    // Set default start time to 9:00 AM
+    const defaultDate = new Date(this.defaultEventDate);
+    defaultDate.setHours(9, 0, 0, 0);
+    const startHours = "09";
+    const startMinutes = "00";
 
     return {
       formData: {
@@ -863,8 +855,14 @@ export default defineComponent({
       // Auto-populate form fields from activity template
       this.formData.meta.name = activity.meta.name;
 
-      // Calculate end time based on start time and duration
-      if (this.internalStartTime) {
+      // Handle time setting: either fixedTime or duration
+      if (activity.spec.fixedTime) {
+        // Use fixed time from activity
+        this.internalStartTime = activity.spec.fixedTime.startTime;
+        this.internalEndTime = activity.spec.fixedTime.endTime;
+        this.updateFormDataDates();
+      } else if (activity.spec.duration && this.internalStartTime) {
+        // Calculate end time based on start time and duration
         const [hours, minutes] = this.internalStartTime.split(":").map(Number);
         const startDate = new Date();
         startDate.setHours(hours, minutes, 0, 0);
