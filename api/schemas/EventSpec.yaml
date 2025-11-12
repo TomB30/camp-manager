@@ -33,12 +33,6 @@ properties:
       type: string
       format: uuid
     description: IDs of campers to exclude from assigned groups
-  requiredCertificationIds:
-    type: array
-    description: IDs of certifications required for this event
-    items:
-      type: string
-      format: uuid
   colorId:
     type: string
     format: uuid
@@ -48,6 +42,24 @@ properties:
   activityId:
     type: string
     format: uuid
+  requiredStaff:
+    type: array
+    items:
+      type: object
+      required:
+        - positionName
+      properties:
+        positionName:
+          type: string
+          description: Name of the position required for this event
+        requiredCertificationId:
+          type: string
+          format: uuid
+          description: ID of the certification required for this position
+        assignedStaffId:
+          type: string
+          format: uuid
+          description: ID of the staff member assigned to this position
   recurrenceId:
     type: string
     format: uuid

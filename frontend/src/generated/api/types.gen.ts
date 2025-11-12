@@ -608,37 +608,17 @@ export type ProgramSpec = {
 
 export type ActivitySpec = {
     /**
-     * Minimum age required for this activity
-     */
-    minAge?: number;
-    /**
-     * Maximum age required for this activity
-     */
-    maxAge?: number;
-    /**
      * ID of the program this activity belongs to
      */
     programId: string;
-    /**
-     * Default duration in minutes (mutually exclusive with fixedTime)
-     */
-    duration?: number;
     /**
      * ID of the default location
      */
     defaultLocationId?: string;
     /**
-     * IDs of required staff certifications
+     * Default duration in minutes (mutually exclusive with fixedTime)
      */
-    requiredCertificationIds?: Array<string>;
-    /**
-     * Minimum number of staff required
-     */
-    minStaff?: number;
-    /**
-     * Default activity capacity
-     */
-    defaultCapacity?: number;
+    duration?: number;
     /**
      * Fixed time for the activity (mutually exclusive with duration)
      */
@@ -652,6 +632,16 @@ export type ActivitySpec = {
          */
         endTime: string;
     };
+    requiredStaff?: Array<{
+        /**
+         * Name of the position required for this activity
+         */
+        positionName: string;
+        /**
+         * ID of the certification required for this position
+         */
+        requiredCertificationId?: string;
+    }>;
 };
 
 export type ColorSpec = {
@@ -728,13 +718,23 @@ export type EventSpec = {
      * IDs of campers to exclude from assigned groups
      */
     excludeCamperIds?: Array<string>;
-    /**
-     * IDs of certifications required for this event
-     */
-    requiredCertificationIds?: Array<string>;
     colorId?: string;
     programId?: string;
     activityId?: string;
+    requiredStaff?: Array<{
+        /**
+         * Name of the position required for this event
+         */
+        positionName: string;
+        /**
+         * ID of the certification required for this position
+         */
+        requiredCertificationId?: string;
+        /**
+         * ID of the staff member assigned to this position
+         */
+        assignedStaffId?: string;
+    }>;
     /**
      * Recurrence rule ID - links this event to a recurrence series
      */

@@ -241,21 +241,49 @@
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Required Certifications (Optional)</label>
-          <SelectionList
-            v-model="selectedCertificationIds"
-            :options="certificationOptions"
-            multiple
-            label="Select Certifications"
-          />
+        <!-- Staff Position Assignments -->
+        <div
+          v-if="
+            formData.spec.requiredStaff &&
+            formData.spec.requiredStaff.length > 0
+          "
+          class="form-group"
+        >
+          <label class="form-label">Staff Position Assignments</label>
           <p class="form-help-text">
-            Staff assigned to this event should have these certifications
+            Assign staff members to the required positions for this event
           </p>
+
+          <div class="staff-positions-list">
+            <div
+              v-for="(position, index) in formData.spec.requiredStaff"
+              :key="index"
+              class="staff-position-assignment"
+            >
+              <div class="position-header">
+                <div class="position-info">
+                  <span class="position-name">{{ position.positionName }}</span>
+                  <span
+                    v-if="position.requiredCertificationId"
+                    class="position-cert-badge"
+                  >
+                    {{ getCertificationName(position.requiredCertificationId) }}
+                    required
+                  </span>
+                </div>
+              </div>
+
+              <Autocomplete
+                label="Staff Member"
+                v-model="position.assignedStaffId"
+                :options="getStaffOptionsForPosition(position)"
+              />
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Assign Groups (Optional)</label>
+          <label class="form-label">Assign Groups</label>
           <div class="help-text">
             Select camper groups and family groups to assign to this event.
             Staff will be automatically included from family groups.
@@ -349,7 +377,6 @@ import type {
   Group,
   EventCreationRequest,
 } from "@/generated/api";
-import type { Certification } from "@/generated/api";
 import {
   type RecurrenceData,
   type DayOfWeek,
@@ -431,12 +458,16 @@ export default defineComponent({
           locationId: "",
           capacity: null as number | null,
           colorId: "",
-          requiredCertificationIds: [],
           groupIds: [],
           excludeCamperIds: [],
           excludeStaffIds: [],
           programId: "",
           activityId: "",
+          requiredStaff: [] as Array<{
+            positionName: string;
+            requiredCertificationId?: string;
+            assignedStaffId?: string;
+          }>,
         },
       } as EventCreationRequest,
       internalEventDate: defaultDate.toISOString().split("T")[0],
@@ -484,12 +515,12 @@ export default defineComponent({
           locationId: event.spec.locationId,
           capacity: event.spec.capacity,
           colorId: event.spec.colorId,
-          requiredCertificationIds: event.spec.requiredCertificationIds,
           groupIds: event.spec.groupIds,
           excludeCamperIds: event.spec.excludeCamperIds,
           excludeStaffIds: event.spec.excludeStaffIds,
           programId: event.spec.programId,
           activityId: event.spec.activityId,
+          requiredStaff: event.spec.requiredStaff || [],
         },
       } as EventCreationRequest;
     } else {
@@ -508,22 +539,6 @@ export default defineComponent({
         label: group.meta.name,
         value: group.meta.id,
       }));
-    },
-    certificationOptions(): ISelectOption[] {
-      return this.certificationsStore.certifications.map(
-        (certification: Certification) => ({
-          label: certification.meta.name,
-          value: certification.meta.id,
-        }),
-      );
-    },
-    selectedCertificationIds: {
-      get(): string[] {
-        return this.formData.spec.requiredCertificationIds || [];
-      },
-      set(value: string[]) {
-        this.formData.spec.requiredCertificationIds = value;
-      },
     },
     isEditing(): boolean {
       return !!this.eventId;
@@ -881,11 +896,6 @@ export default defineComponent({
         this.formData.spec.locationId = activity.spec.defaultLocationId;
       }
 
-      // Set default capacity if specified
-      if (activity.spec.defaultCapacity) {
-        this.formData.spec.capacity = activity.spec.defaultCapacity;
-      }
-
       // Inherit color from the program
       if (activity.spec.programId) {
         const program = this.programsStore.getProgramById(
@@ -896,14 +906,18 @@ export default defineComponent({
         }
       }
 
-      // Set required certifications if specified
+      // Set required staff positions if specified
       if (
-        activity.spec.requiredCertificationIds &&
-        activity.spec.requiredCertificationIds.length > 0
+        activity.spec.requiredStaff &&
+        activity.spec.requiredStaff.length > 0
       ) {
-        this.formData.spec.requiredCertificationIds = [
-          ...activity.spec.requiredCertificationIds,
-        ];
+        this.formData.spec.requiredStaff = activity.spec.requiredStaff.map(
+          (position: any) => ({
+            positionName: position.positionName,
+            requiredCertificationId: position.requiredCertificationId,
+            assignedStaffId: undefined, // Start with no staff assigned
+          }),
+        );
       }
 
       // Set program and activity IDs for reference
@@ -932,35 +946,51 @@ export default defineComponent({
         value: camper.meta.id,
       };
     },
-    getCertificationIdsFromNames(names: string[]): string[] {
-      return names
-        .map((name) => {
-          const cert = this.certificationsStore.certifications.find(
-            (c) => c.meta.name === name,
+    getCertificationName(certificationId: string): string {
+      const cert =
+        this.certificationsStore.getCertificationById(certificationId);
+      return cert ? cert.meta.name : "Unknown Certification";
+    },
+    getStaffOptionsForPosition(position: {
+      positionName: string;
+      requiredCertificationId?: string;
+      assignedStaffId?: string;
+    }): AutocompleteOption[] {
+      // Get all staff members
+      let availableStaff = this.staffMembers;
+
+      // Filter by required certification if specified
+      if (position.requiredCertificationId) {
+        availableStaff = availableStaff.filter((staff) => {
+          return (
+            staff.spec.certificationIds &&
+            staff.spec.certificationIds.includes(
+              position.requiredCertificationId!,
+            )
           );
-          return cert ? cert.meta.id : "";
-        })
-        .filter((id) => id !== "");
-    },
-    getCertificationNamesFromIds(ids: string[]): string[] {
-      return ids
-        .map((id) => {
-          const cert = this.certificationsStore.getCertificationById(id);
-          return cert ? cert.meta.name : "";
-        })
-        .filter((name) => name !== "");
-    },
-    getCertificationLabel(cert: Certification): string {
-      return cert.meta.name;
-    },
-    getCertificationInitials(cert: Certification): string {
-      return cert.meta.name.substring(0, 2).toUpperCase();
-    },
-    getCertificationOption(cert: Certification): AutocompleteOption {
-      return {
-        label: cert.meta.name,
-        value: cert.meta.id,
-      };
+        });
+      }
+
+      // Map to autocomplete options with availability indicators
+      return [
+        { label: "None", value: "" },
+        ...availableStaff.map((staff) => {
+          const availability = this.isStaffAvailable(staff);
+          const baseLabel = `${staff.meta.name}`;
+
+          if (!availability.available) {
+            return {
+              label: `⚠️ ${baseLabel} (${availability.reason})`,
+              value: staff.meta.id,
+            };
+          }
+
+          return {
+            label: baseLabel,
+            value: staff.meta.id,
+          };
+        }),
+      ];
     },
     getGroupLabel(group: Group): string {
       // Check if it's a camper group or family group
@@ -993,17 +1023,6 @@ export default defineComponent({
         group.spec.staffIds?.includes(staff.meta.id),
       );
     },
-    staffHasRequiredCertifications(staff: StaffMember): boolean {
-      if (this.selectedCertificationIds.length === 0) return true;
-      if (
-        !staff.spec.certificationIds ||
-        staff.spec.certificationIds.length === 0
-      )
-        return false;
-      return this.selectedCertificationIds.every((certId) =>
-        staff.spec.certificationIds!.includes(certId),
-      );
-    },
     isStaffAvailable(staff: StaffMember): {
       available: boolean;
       reason?: string;
@@ -1023,71 +1042,6 @@ export default defineComponent({
       );
 
       return { available: result.canAssign, reason: result.reason };
-    },
-    getStaffLabel(staff: StaffMember): string {
-      const baseLabel = `${staff.meta.name} - ${staff.spec.roleId}`;
-      const availability = this.isStaffAvailable(staff);
-
-      let prefix = "";
-
-      // Check program membership
-      if (this.isStaffInSelectedProgram(staff)) {
-        prefix = "🎯 ";
-      }
-
-      // Check certifications
-      if (this.selectedCertificationIds.length > 0) {
-        const hasCerts = this.staffHasRequiredCertifications(staff);
-        if (hasCerts) {
-          prefix = prefix ? prefix + "✓ " : "✓ ";
-        }
-      }
-
-      // Check availability
-      if (!availability.available) {
-        return `⚠️ ${prefix}${baseLabel} (${availability.reason})`;
-      }
-
-      return prefix + baseLabel;
-    },
-    getStaffInitials(staff: StaffMember): string {
-      const parts = staff.meta.name.split(" ");
-      if (parts.length >= 2) {
-        return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-      }
-      return staff.meta.name.charAt(0).toUpperCase();
-    },
-    getStaffOption(staff: StaffMember): AutocompleteOption {
-      const baseLabel = `${staff.meta.name} - ${staff.spec.roleId}`;
-      const availability = this.isStaffAvailable(staff);
-
-      let prefix = "";
-
-      // Check program membership
-      if (this.isStaffInSelectedProgram(staff)) {
-        prefix = "🎯 ";
-      }
-
-      // Check certifications
-      if (this.selectedCertificationIds.length > 0) {
-        const hasCerts = this.staffHasRequiredCertifications(staff);
-        if (hasCerts) {
-          prefix = prefix ? prefix + "✓ " : "✓ ";
-        }
-      }
-
-      // Check availability
-      if (!availability.available) {
-        return {
-          label: `⚠️ ${prefix}${baseLabel} (${availability.reason})`,
-          value: staff.meta.id,
-        };
-      }
-
-      return {
-        label: prefix + baseLabel,
-        value: staff.meta.id,
-      };
     },
     onProgramSelected(programId: string) {
       if (!programId) return;
@@ -1211,7 +1165,6 @@ export default defineComponent({
               locationId: formData.spec.locationId,
               capacity: formData.spec.capacity,
               colorId: formData.spec.colorId,
-              requiredCertificationIds: formData.spec.requiredCertificationIds,
               groupIds: formData.spec.groupIds || [],
               excludeCamperIds: formData.spec.excludeCamperIds || [],
               excludeStaffIds: formData.spec.excludeStaffIds || [],
@@ -1566,5 +1519,44 @@ export default defineComponent({
   font-size: 0.875rem;
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
+}
+
+.staff-positions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.staff-position-assignment {
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background: var(--background);
+}
+
+.position-header {
+  margin-bottom: 0.75rem;
+}
+
+.position-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.position-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.position-cert-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--primary-light);
+  color: var(--primary-color);
+  border-radius: var(--radius);
+  display: inline-block;
+  width: fit-content;
 }
 </style>

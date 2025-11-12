@@ -2,34 +2,17 @@ type: object
 required:
   - programId
 properties:
-  minAge:
-    type: integer
-    description: Minimum age required for this activity
-  maxAge:
-    type: integer
-    description: Maximum age required for this activity
   programId:
     type: string
     format: uuid
     description: ID of the program this activity belongs to
-  duration:
-    type: integer
-    description: Default duration in minutes (mutually exclusive with fixedTime)
   defaultLocationId:
     type: string
     format: uuid
     description: ID of the default location
-  requiredCertificationIds:
-    type: array
-    items:
-      type: string
-    description: IDs of required staff certifications
-  minStaff:
+  duration:
     type: integer
-    description: Minimum number of staff required
-  defaultCapacity:
-    type: integer
-    description: Default activity capacity
+    description: Default duration in minutes (mutually exclusive with fixedTime)
   fixedTime:
     type: object
     required:
@@ -45,4 +28,18 @@ properties:
         type: string
         format: time
         description: End time for the activity
+  requiredStaff:
+    type: array
+    items:
+      type: object
+      required:
+        - positionName
+      properties:
+        positionName:
+          type: string
+          description: Name of the position required for this activity
+        requiredCertificationId:
+          type: string
+          format: uuid
+          description: ID of the certification required for this position
   

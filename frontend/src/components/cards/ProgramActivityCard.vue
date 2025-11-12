@@ -23,9 +23,17 @@
           {{ getLocationName(activity.spec.defaultLocationId) }}
         </span>
 
-        <span v-if="activity.spec.defaultCapacity" class="meta-item">
+        <span
+          v-if="
+            activity.spec.requiredStaff &&
+            activity.spec.requiredStaff.length > 0
+          "
+          class="meta-item"
+        >
           <Icon name="Users" :size="14" />
-          {{ activity.spec.defaultCapacity }} max
+          {{ activity.spec.requiredStaff.length }} staff position{{
+            activity.spec.requiredStaff.length !== 1 ? "s" : ""
+          }}
         </span>
       </div>
     </div>

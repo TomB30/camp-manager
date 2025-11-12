@@ -72,8 +72,6 @@ export const buildActivity = (overrides: Partial<Activity> = {}): Activity => ({
   spec: {
     programId: "program-1",
     duration: 60,
-    requiredCertificationIds: [],
-    defaultCapacity: 20,
   },
   ...overrides,
 });

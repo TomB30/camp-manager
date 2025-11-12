@@ -122,39 +122,6 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Age Requirements (Optional)</label>
-            <div class="grid grid-cols-2">
-              <div>
-                <label class="form-sublabel">Minimum Age</label>
-                <BaseInput
-                  v-model="formData.spec.minAge"
-                  type="number"
-                  :min="0"
-                  placeholder="Min age"
-                  :rules="[
-                    () =>
-                      validateAgeRange() || 'Min age must be less than max age',
-                  ]"
-                />
-              </div>
-              <div>
-                <label class="form-sublabel">Maximum Age</label>
-                <BaseInput
-                  v-model="formData.spec.maxAge"
-                  type="number"
-                  :min="0"
-                  placeholder="Max age"
-                  :rules="[
-                    () =>
-                      validateAgeRange() ||
-                      'Max age must be greater than min age',
-                  ]"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
             <label class="form-label">Default Location</label>
             <Autocomplete
               v-model="formData.spec.defaultLocationId"
@@ -163,45 +130,66 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Default Capacity</label>
-            <BaseInput
-              v-model="formData.spec.defaultCapacity"
-              type="number"
-              :min="1"
-              placeholder="Maximum number of campers"
-            />
-          </div>
+            <label class="form-label">Required Staff Positions</label>
+            <p class="form-help-text">
+              Define staff positions needed for this activity. Events created
+              from this activity will inherit these requirements.
+            </p>
 
-          <div class="form-group">
-            <label class="form-label">Minimum Staff for Activity</label>
-            <div>
-              <BaseInput
-                v-model="formData.spec.minStaff"
-                type="number"
-                :min="0"
-                placeholder="Minimum number of staff required"
+            <div class="required-staff-list">
+              <div
+                v-for="(position, index) in formData.spec.requiredStaff"
+                :key="index"
+                class="required-staff-item"
+              >
+                <div
+                  class="staff-position-inputs row items-center justify-between q-gutter-x-md q-pt-md q-px-md"
+                >
+                  <BaseInput
+                    class="col"
+                    label="Position Name"
+                    v-model="position.positionName"
+                    placeholder="e.g., Lead Instructor, Lifeguard"
+                    :rules="[
+                      (val: string) => !!val || 'Position name is required',
+                    ]"
+                  />
+                  <q-select
+                    class="col"
+                    outlined
+                    dense
+                    label="Required Certification"
+                    v-model="position.requiredCertificationId"
+                    :options="certifications"
+                    placeholder="None"
+                    clearable
+                    :rules="[() => true]"
+                    emit-value
+                    map-options
+                  />
+
+                  <BaseButton
+                    class="q-mb-md"
+                    type="button"
+                    color="negative"
+                    outline
+                    size="sm"
+                    @click="removeStaffPosition(index)"
+                    round
+                  >
+                    <Icon name="X" :size="16" />
+                  </BaseButton>
+                </div>
+              </div>
+
+              <BaseButton
+                type="button"
+                outline
+                @click="addStaffPosition"
+                label="+ Add Staff Position"
+                class="add-position-btn"
               />
             </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Required Certifications</label>
-            <q-select
-              class="certifications-select"
-              outlined
-              dense
-              v-model="formData.spec.requiredCertificationIds"
-              :options="certifications"
-              placeholder="Select certifications..."
-              use-chips
-              multiple
-              emit-value
-              map-options
-            />
-            <p class="form-help-text">
-              Staff assigned to events using this activity will need these
-              certifications
-            </p>
           </div>
         </section>
       </q-form>
@@ -233,6 +221,7 @@ import BaseModal from "@/components/BaseModal.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
+import Icon from "@/components/Icon.vue";
 import type { Activity } from "@/generated/api";
 import { QForm } from "quasar";
 import { useToast } from "@/composables/useToast";
@@ -242,6 +231,7 @@ export default defineComponent({
   components: {
     BaseModal,
     Autocomplete,
+    Icon,
   },
   props: {
     activityId: {
@@ -279,11 +269,10 @@ export default defineComponent({
           programId: "",
           duration: 60,
           defaultLocationId: "",
-          requiredCertificationIds: [],
-          minStaff: null as number | null,
-          defaultCapacity: null as number | null,
-          minAge: null as number | null,
-          maxAge: null as number | null,
+          requiredStaff: [] as Array<{
+            positionName: string;
+            requiredCertificationId?: string;
+          }>,
           fixedTime: {
             startTime: "",
             endTime: "",
@@ -324,12 +313,7 @@ export default defineComponent({
           programId: activity.spec.programId,
           duration: activity.spec.duration || 60,
           defaultLocationId: activity.spec.defaultLocationId || "",
-          requiredCertificationIds:
-            activity.spec.requiredCertificationIds || [],
-          minStaff: activity.spec.minStaff || null,
-          defaultCapacity: activity.spec.defaultCapacity || null,
-          minAge: activity.spec.minAge || null,
-          maxAge: activity.spec.maxAge || null,
+          requiredStaff: activity.spec.requiredStaff || [],
           fixedTime: {
             startTime: activity.spec.fixedTime?.startTime || "",
             endTime: activity.spec.fixedTime?.endTime || "",
@@ -429,22 +413,14 @@ export default defineComponent({
       }
       return endTime > this.formData.spec.fixedTime.startTime;
     },
-    validateAgeRange(): boolean {
-      const minAge = this.formData.spec.minAge;
-      const maxAge = this.formData.spec.maxAge;
-
-      // If both are null or undefined, validation passes
-      if (!minAge && !maxAge) {
-        return true;
-      }
-
-      // If only one is set, validation passes
-      if (!minAge || !maxAge) {
-        return true;
-      }
-
-      // If both are set, min must be less than max
-      return minAge < maxAge;
+    addStaffPosition() {
+      this.formData.spec.requiredStaff.push({
+        positionName: "",
+        requiredCertificationId: undefined,
+      });
+    },
+    removeStaffPosition(index: number) {
+      this.formData.spec.requiredStaff.splice(index, 1);
     },
     async handleSave() {
       const isValid = await (this.$refs.formRef as QForm).validate();
@@ -458,12 +434,15 @@ export default defineComponent({
         spec: {
           programId: this.programId,
           defaultLocationId: this.formData.spec.defaultLocationId || undefined,
-          requiredCertificationIds:
-            this.formData.spec.requiredCertificationIds || undefined,
-          minStaff: this.formData.spec.minStaff || undefined,
-          defaultCapacity: this.formData.spec.defaultCapacity || undefined,
-          minAge: this.formData.spec.minAge || undefined,
-          maxAge: this.formData.spec.maxAge || undefined,
+          requiredStaff:
+            this.formData.spec.requiredStaff &&
+            this.formData.spec.requiredStaff.length > 0
+              ? this.formData.spec.requiredStaff.map((position: any) => ({
+                  positionName: position.positionName,
+                  requiredCertificationId:
+                    position.requiredCertificationId || undefined,
+                }))
+              : undefined,
         },
       };
 
@@ -615,5 +594,21 @@ export default defineComponent({
   .grid-cols-2 {
     grid-template-columns: 1fr;
   }
+}
+
+.required-staff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.required-staff-item {
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background: var(--background);
+}
+
+.add-position-btn {
+  margin-top: 0.5rem;
 }
 </style>

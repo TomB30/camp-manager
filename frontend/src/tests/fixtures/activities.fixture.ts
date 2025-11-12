@@ -1,6 +1,5 @@
 import type { Activity } from "@/generated/api";
 import { programsFixture } from "./programs.fixture";
-import { certificationsFixture } from "./certifications.fixture";
 
 export const activitiesFixture: Activity[] = [
   {
@@ -16,9 +15,6 @@ export const activitiesFixture: Activity[] = [
     spec: {
       programId: programsFixture[0].meta.id, // Arts & Crafts
       duration: 90,
-      requiredCertificationIds: [],
-      minStaff: 5,
-      defaultCapacity: 15,
     },
   },
   {
@@ -34,9 +30,6 @@ export const activitiesFixture: Activity[] = [
     spec: {
       programId: programsFixture[0].meta.id,
       duration: 120,
-      requiredCertificationIds: [],
-      minStaff: 4,
-      defaultCapacity: 12,
     },
   },
   {
@@ -52,9 +45,6 @@ export const activitiesFixture: Activity[] = [
     spec: {
       programId: programsFixture[1].meta.id, // Water Sports
       duration: 60,
-      requiredCertificationIds: [certificationsFixture[2].meta.id], // Lifeguard
-      minStaff: 6,
-      defaultCapacity: 20,
     },
   },
   {
@@ -70,9 +60,6 @@ export const activitiesFixture: Activity[] = [
     spec: {
       programId: programsFixture[1].meta.id,
       duration: 90,
-      requiredCertificationIds: [certificationsFixture[2].meta.id],
-      minStaff: 4,
-      defaultCapacity: 12,
     },
   },
   {
@@ -88,9 +75,6 @@ export const activitiesFixture: Activity[] = [
     spec: {
       programId: programsFixture[2].meta.id, // Outdoor Adventure
       duration: 120,
-      requiredCertificationIds: [certificationsFixture[1].meta.id], // First Aid
-      minStaff: 8,
-      defaultCapacity: 25,
     },
   },
   {
@@ -106,9 +90,6 @@ export const activitiesFixture: Activity[] = [
     spec: {
       programId: programsFixture[2].meta.id,
       duration: 75,
-      requiredCertificationIds: [certificationsFixture[4].meta.id], // Climbing Instructor
-      minStaff: 4,
-      defaultCapacity: 10,
     },
   },
   {
@@ -124,9 +105,6 @@ export const activitiesFixture: Activity[] = [
     spec: {
       programId: programsFixture[2].meta.id,
       duration: 60,
-      requiredCertificationIds: [certificationsFixture[3].meta.id], // Archery Instructor
-      minStaff: 5,
-      defaultCapacity: 15,
     },
   },
   {
@@ -142,9 +120,6 @@ export const activitiesFixture: Activity[] = [
     spec: {
       programId: programsFixture[0].meta.id,
       duration: 60,
-      requiredCertificationIds: [],
-      minStaff: 6,
-      defaultCapacity: 20,
     },
   },
   {
@@ -160,9 +135,6 @@ export const activitiesFixture: Activity[] = [
     spec: {
       programId: programsFixture[1].meta.id,
       duration: 120,
-      requiredCertificationIds: [certificationsFixture[2].meta.id],
-      minStaff: 6,
-      defaultCapacity: 16,
     },
   },
   {
@@ -178,9 +150,6 @@ export const activitiesFixture: Activity[] = [
     spec: {
       programId: programsFixture[2].meta.id,
       duration: 180,
-      requiredCertificationIds: [certificationsFixture[1].meta.id],
-      minStaff: 8,
-      defaultCapacity: 20,
     },
   },
 ];

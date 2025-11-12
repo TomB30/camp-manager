@@ -15,7 +15,8 @@ export type Conflict = {
     | "room_overcapacity"
     | "camper_double_booked"
     | "staff_double_booked"
-    | "missing_certification";
+    | "missing_certification"
+    | "unfilled_position";
   message: string;
   entityId: string;
   conflictingIds: string[];

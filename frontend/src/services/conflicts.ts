@@ -219,63 +219,56 @@ export class ConflictDetector {
       }
     });
 
-    // Check for missing certifications
+    // Check for missing staff positions or certifications
     events.forEach((event) => {
-      if (
-        !event.spec.requiredCertificationIds ||
-        event.spec.requiredCertificationIds.length === 0
-      ) {
+      if (!event.spec.requiredStaff || event.spec.requiredStaff.length === 0) {
         return;
       }
 
-      const assignedStaffIds =
-        eventStaffMap?.get(event.meta.id) || this.getEventStaffIds(event);
-      const assignedStaff = staffMembers.filter((m) =>
-        assignedStaffIds.includes(m.meta.id),
-      );
-
-      // Collect all certifications from assigned staff
-      const allCertifications = new Set<string>();
-      assignedStaff.forEach((staff) => {
-        if (
-          staff.spec.certificationIds &&
-          staff.spec.certificationIds.length > 0
-        ) {
-          staff.spec.certificationIds.forEach((certId) => {
-            const cert = certifications.find((c) => c.meta.id === certId);
-            if (cert) {
-              allCertifications.add(cert.meta.name);
-            }
-          });
-        }
+      const eventDate = new Date(event.spec.startDate);
+      const formattedDate = eventDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       });
 
-      const missingCerts = event.spec.requiredCertificationIds.filter(
-        (cert) => !allCertifications.has(cert),
-      );
+      event.spec.requiredStaff.forEach((position) => {
+        // Check if position is unfilled
+        if (!position.assignedStaffId) {
+          conflicts.push({
+            type: "unfilled_position",
+            message: `Event "${event.meta.name}" on ${formattedDate} has unfilled position: ${position.positionName}`,
+            entityId: event.meta.id,
+            conflictingIds: [],
+          });
+          return;
+        }
 
-      if (missingCerts.length > 0) {
-        const eventDate = new Date(event.spec.startDate);
-        const formattedDate = eventDate.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        });
-
-        const assignedStaffIds =
-          eventStaffMap?.get(event.meta.id) || this.getEventStaffIds(event);
-        const missingCertNames = missingCerts.map(
-          (certId) =>
-            certifications.find((c) => c.meta.id === certId)?.meta.name ||
-            certId,
-        );
-        conflicts.push({
-          type: "missing_certification",
-          message: `Event "${event.meta.name}" on ${formattedDate} requires certifications: ${missingCertNames.join(", ")}`,
-          entityId: event.meta.id,
-          conflictingIds: assignedStaffIds,
-        });
-      }
+        // Check if assigned staff has required certification
+        if (position.requiredCertificationId) {
+          const assignedStaff = staffMembers.find(
+            (s) => s.meta.id === position.assignedStaffId,
+          );
+          if (assignedStaff) {
+            const hasCertification =
+              assignedStaff.spec.certificationIds?.includes(
+                position.requiredCertificationId,
+              );
+            if (!hasCertification) {
+              const certName =
+                certifications.find(
+                  (c) => c.meta.id === position.requiredCertificationId,
+                )?.meta.name || "Unknown";
+              conflicts.push({
+                type: "missing_certification",
+                message: `Event "${event.meta.name}" on ${formattedDate}: ${assignedStaff.meta.name} assigned to ${position.positionName} lacks required ${certName} certification`,
+                entityId: event.meta.id,
+                conflictingIds: [assignedStaff.meta.id],
+              });
+            }
+          }
+        }
+      });
     });
 
     return conflicts;

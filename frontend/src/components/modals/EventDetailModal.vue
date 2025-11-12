@@ -139,23 +139,35 @@
         </div>
 
         <div
-          v-if="
-            event.spec.requiredCertificationIds &&
-            event.spec.requiredCertificationIds.length > 0
-          "
+          v-if="event.spec.requiredStaff && event.spec.requiredStaff.length > 0"
           class="mb-3"
         >
           <div class="text-sm text-grey-7 text-subtitle2 mb-1">
-            Required Certifications
+            Staff Positions
           </div>
-          <div class="flex flex-wrap gap-1">
-            <span
-              v-for="certId in event.spec.requiredCertificationIds"
-              :key="certId"
-              class="certification-badge"
+          <div class="staff-positions-list">
+            <div
+              v-for="(position, index) in event.spec.requiredStaff"
+              :key="index"
+              class="staff-position-item"
             >
-              {{ getCertificationName(certId) }}
-            </span>
+              <div class="position-header">
+                <span class="position-name">{{ position.positionName }}</span>
+                <span
+                  v-if="position.requiredCertificationId"
+                  class="certification-badge"
+                >
+                  {{ getCertificationName(position.requiredCertificationId) }}
+                </span>
+              </div>
+              <div v-if="position.assignedStaffId" class="assigned-staff">
+                <span class="staff-label">Assigned:</span>
+                {{ getStaffName(position.assignedStaffId) }}
+              </div>
+              <div v-else class="unassigned-staff">
+                <span class="text-xs text-grey-7">Not assigned</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -429,5 +441,48 @@ export default defineComponent({
   background: var(--background);
   border-radius: var(--radius);
   font-size: 0.875rem;
+}
+
+.staff-positions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.staff-position-item {
+  padding: 0.75rem;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+}
+
+.position-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.position-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.assigned-staff {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.staff-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-right: 0.25rem;
+}
+
+.unassigned-staff {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-style: italic;
 }
 </style>

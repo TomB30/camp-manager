@@ -39,59 +39,35 @@
                 getLocationName(activity.spec.defaultLocationId)
               }}</span>
             </div>
-
-            <div v-if="activity.spec.defaultCapacity" class="detail-item">
-              <span class="detail-label">Default Capacity</span>
-              <span class="detail-value"
-                >{{ activity.spec.defaultCapacity }} campers</span
-              >
-            </div>
-
-            <div v-if="activity.spec.minStaff" class="detail-item">
-              <span class="detail-label">Staff Requirements</span>
-              <span class="detail-value">
-                <template v-if="activity.spec.minStaff">
-                  Min {{ activity.spec.minStaff }} staff
-                </template>
-              </span>
-            </div>
-
-            <div
-              v-if="activity.spec.minAge || activity.spec.maxAge"
-              class="detail-item"
-            >
-              <span class="detail-label">Age Requirements</span>
-              <span class="detail-value">
-                <template v-if="activity.spec.minAge && activity.spec.maxAge">
-                  Ages {{ activity.spec.minAge }} - {{ activity.spec.maxAge }}
-                </template>
-                <template v-else-if="activity.spec.minAge">
-                  Min age {{ activity.spec.minAge }}
-                </template>
-                <template v-else-if="activity.spec.maxAge">
-                  Max age {{ activity.spec.maxAge }}
-                </template>
-              </span>
-            </div>
           </div>
         </div>
 
         <div
           v-if="
-            activity.spec.requiredCertificationIds &&
-            activity.spec.requiredCertificationIds.length > 0
+            activity.spec.requiredStaff &&
+            activity.spec.requiredStaff.length > 0
           "
           class="detail-section"
         >
-          <h4>Required Certifications</h4>
-          <div class="certifications-list">
-            <span
-              v-for="certId in activity.spec.requiredCertificationIds"
-              :key="certId"
-              class="certification-badge"
+          <h4>Required Staff Positions</h4>
+          <div class="required-staff-list">
+            <div
+              v-for="(position, index) in activity.spec.requiredStaff"
+              :key="index"
+              class="staff-position-item"
             >
-              {{ getCertificationName(certId) }}
-            </span>
+              <div class="position-name">{{ position.positionName }}</div>
+              <div
+                v-if="position.requiredCertificationId"
+                class="position-cert"
+              >
+                <span class="cert-label">Required:</span>
+                {{ getCertificationName(position.requiredCertificationId) }}
+              </div>
+              <div v-else class="position-cert">
+                <span class="cert-label">No certification required</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -284,6 +260,35 @@ export default defineComponent({
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.required-staff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.staff-position-item {
+  padding: 0.75rem;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+}
+
+.position-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.position-cert {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.cert-label {
   font-weight: 500;
 }
 </style>

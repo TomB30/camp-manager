@@ -292,9 +292,6 @@ type ActivityCreationRequest struct {
 
 // ActivitySpec defines model for ActivitySpec.
 type ActivitySpec struct {
-	// DefaultCapacity Default activity capacity
-	DefaultCapacity *int `json:"defaultCapacity,omitempty"`
-
 	// DefaultLocationId ID of the default location
 	DefaultLocationId *openapi_types.UUID `json:"defaultLocationId,omitempty"`
 
@@ -310,20 +307,15 @@ type ActivitySpec struct {
 		StartTime string `json:"startTime"`
 	} `json:"fixedTime,omitempty"`
 
-	// MaxAge Maximum age required for this activity
-	MaxAge *int `json:"maxAge,omitempty"`
-
-	// MinAge Minimum age required for this activity
-	MinAge *int `json:"minAge,omitempty"`
-
-	// MinStaff Minimum number of staff required
-	MinStaff *int `json:"minStaff,omitempty"`
-
 	// ProgramId ID of the program this activity belongs to
-	ProgramId openapi_types.UUID `json:"programId"`
+	ProgramId     openapi_types.UUID `json:"programId"`
+	RequiredStaff *[]struct {
+		// PositionName Name of the position required for this activity
+		PositionName string `json:"positionName"`
 
-	// RequiredCertificationIds IDs of required staff certifications
-	RequiredCertificationIds *[]string `json:"requiredCertificationIds,omitempty"`
+		// RequiredCertificationId ID of the certification required for this position
+		RequiredCertificationId *openapi_types.UUID `json:"requiredCertificationId,omitempty"`
+	} `json:"requiredStaff,omitempty"`
 }
 
 // ActivityUpdateRequest defines model for ActivityUpdateRequest.
@@ -708,11 +700,18 @@ type EventSpec struct {
 	ProgramId          *openapi_types.UUID `json:"programId,omitempty"`
 
 	// RecurrenceId Recurrence rule ID - links this event to a recurrence series
-	RecurrenceId *openapi_types.UUID `json:"recurrenceId,omitempty"`
+	RecurrenceId  *openapi_types.UUID `json:"recurrenceId,omitempty"`
+	RequiredStaff *[]struct {
+		// AssignedStaffId ID of the staff member assigned to this position
+		AssignedStaffId *openapi_types.UUID `json:"assignedStaffId,omitempty"`
 
-	// RequiredCertificationIds IDs of certifications required for this event
-	RequiredCertificationIds *[]openapi_types.UUID `json:"requiredCertificationIds,omitempty"`
-	StartDate                time.Time             `json:"startDate"`
+		// PositionName Name of the position required for this event
+		PositionName string `json:"positionName"`
+
+		// RequiredCertificationId ID of the certification required for this position
+		RequiredCertificationId *openapi_types.UUID `json:"requiredCertificationId,omitempty"`
+	} `json:"requiredStaff,omitempty"`
+	StartDate time.Time `json:"startDate"`
 }
 
 // EventUpdateRequest defines model for EventUpdateRequest.
