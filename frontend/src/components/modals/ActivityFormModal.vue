@@ -191,6 +191,77 @@
               />
             </div>
           </div>
+
+          <q-expansion-item
+            label="Advanced settings"
+            header-class="conflicts-expansion-header"
+            class="conflicts-expansion"
+          >
+            <div class="conflicts-content">
+              <p class="form-help-text">
+                Define scheduling conflicts to prevent incompatible activities
+                from being scheduled before, after, or during this activity.
+              </p>
+
+              <div class="form-group">
+                <label class="form-label">Pre-Activity Conflicts</label>
+                <p class="form-help-text">
+                  Activities that cannot occur immediately before this activity
+                </p>
+                <q-select
+                  outlined
+                  dense
+                  multiple
+                  use-chips
+                  v-model="formData.spec.activityConflicts.preActivityConflicts"
+                  :options="availableActivities"
+                  placeholder="Select activities..."
+                  emit-value
+                  map-options
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Post-Activity Conflicts</label>
+                <p class="form-help-text">
+                  Activities that cannot occur immediately after this activity
+                </p>
+                <q-select
+                  outlined
+                  dense
+                  multiple
+                  use-chips
+                  v-model="
+                    formData.spec.activityConflicts.postActivityConflicts
+                  "
+                  :options="availableActivities"
+                  placeholder="Select activities..."
+                  emit-value
+                  map-options
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Concurrent Activity Conflicts</label>
+                <p class="form-help-text">
+                  Activities that cannot occur at the same time as this activity
+                </p>
+                <q-select
+                  outlined
+                  dense
+                  multiple
+                  use-chips
+                  v-model="
+                    formData.spec.activityConflicts.concurrentActivityConflicts
+                  "
+                  :options="availableActivities"
+                  placeholder="Select activities..."
+                  emit-value
+                  map-options
+                />
+              </div>
+            </div>
+          </q-expansion-item>
         </section>
       </q-form>
     </template>
@@ -277,6 +348,11 @@ export default defineComponent({
             startTime: "",
             endTime: "",
           },
+          activityConflicts: {
+            preActivityConflicts: [] as string[],
+            postActivityConflicts: [] as string[],
+            concurrentActivityConflicts: [] as string[],
+          },
         },
       } as any,
       isCustomDuration: false,
@@ -317,6 +393,15 @@ export default defineComponent({
           fixedTime: {
             startTime: activity.spec.fixedTime?.startTime || "",
             endTime: activity.spec.fixedTime?.endTime || "",
+          },
+          activityConflicts: {
+            preActivityConflicts:
+              activity.spec.activityConflicts?.preActivityConflicts || [],
+            postActivityConflicts:
+              activity.spec.activityConflicts?.postActivityConflicts || [],
+            concurrentActivityConflicts:
+              activity.spec.activityConflicts?.concurrentActivityConflicts ||
+              [],
           },
         },
       };
@@ -368,6 +453,18 @@ export default defineComponent({
       presets.push({ label: "Custom", minutes: null });
 
       return presets;
+    },
+    availableActivities(): AutocompleteOption[] {
+      return this.activitiesStore.activities
+        .filter(
+          (activity) =>
+            activity.spec.programId === this.programId &&
+            activity.meta.id !== this.activityId,
+        )
+        .map((activity) => ({
+          value: activity.meta.id,
+          label: activity.meta.name,
+        }));
     },
   },
   methods: {
@@ -442,6 +539,35 @@ export default defineComponent({
                   requiredCertificationId:
                     position.requiredCertificationId || undefined,
                 }))
+              : undefined,
+          activityConflicts:
+            this.formData.spec.activityConflicts &&
+            (this.formData.spec.activityConflicts.preActivityConflicts
+              ?.length > 0 ||
+              this.formData.spec.activityConflicts.postActivityConflicts
+                ?.length > 0 ||
+              this.formData.spec.activityConflicts.concurrentActivityConflicts
+                ?.length > 0)
+              ? {
+                  preActivityConflicts:
+                    this.formData.spec.activityConflicts.preActivityConflicts
+                      ?.length > 0
+                      ? this.formData.spec.activityConflicts
+                          .preActivityConflicts
+                      : undefined,
+                  postActivityConflicts:
+                    this.formData.spec.activityConflicts.postActivityConflicts
+                      ?.length > 0
+                      ? this.formData.spec.activityConflicts
+                          .postActivityConflicts
+                      : undefined,
+                  concurrentActivityConflicts:
+                    this.formData.spec.activityConflicts
+                      .concurrentActivityConflicts?.length > 0
+                      ? this.formData.spec.activityConflicts
+                          .concurrentActivityConflicts
+                      : undefined,
+                }
               : undefined,
         },
       };
@@ -610,5 +736,24 @@ export default defineComponent({
 
 .add-position-btn {
   margin-top: 0.5rem;
+}
+
+.conflicts-expansion {
+  margin-top: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.conflicts-expansion :deep(.conflicts-expansion-header) {
+  background: var(--surface-secondary);
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.conflicts-content {
+  padding: 1rem;
+  background: var(--background);
 }
 </style>

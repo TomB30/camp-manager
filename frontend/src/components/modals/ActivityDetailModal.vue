@@ -79,6 +79,82 @@
             </span>
           </div>
         </div>
+
+        <div
+          v-if="hasActivityConflicts"
+          class="detail-section conflict-section"
+        >
+          <h4>Activity Conflicts</h4>
+
+          <div
+            v-if="
+              activity.spec.activityConflicts?.preActivityConflicts &&
+              activity.spec.activityConflicts.preActivityConflicts.length > 0
+            "
+            class="conflict-category"
+          >
+            <div class="conflict-category-label">
+              <Icon name="ArrowLeft" :size="16" />
+              <span>Cannot occur before</span>
+            </div>
+            <div class="conflict-activities-list">
+              <span
+                v-for="activityId in activity.spec.activityConflicts
+                  .preActivityConflicts"
+                :key="activityId"
+                class="conflict-activity-badge"
+              >
+                {{ getActivityName(activityId) }}
+              </span>
+            </div>
+          </div>
+
+          <div
+            v-if="
+              activity.spec.activityConflicts?.postActivityConflicts &&
+              activity.spec.activityConflicts.postActivityConflicts.length > 0
+            "
+            class="conflict-category"
+          >
+            <div class="conflict-category-label">
+              <Icon name="ArrowRight" :size="16" />
+              <span>Cannot occur after</span>
+            </div>
+            <div class="conflict-activities-list">
+              <span
+                v-for="activityId in activity.spec.activityConflicts
+                  .postActivityConflicts"
+                :key="activityId"
+                class="conflict-activity-badge"
+              >
+                {{ getActivityName(activityId) }}
+              </span>
+            </div>
+          </div>
+
+          <div
+            v-if="
+              activity.spec.activityConflicts?.concurrentActivityConflicts &&
+              activity.spec.activityConflicts.concurrentActivityConflicts
+                .length > 0
+            "
+            class="conflict-category"
+          >
+            <div class="conflict-category-label">
+              <span>Cannot occur concurrently with</span>
+            </div>
+            <div class="conflict-activities-list">
+              <span
+                v-for="activityId in activity.spec.activityConflicts
+                  .concurrentActivityConflicts"
+                :key="activityId"
+                class="conflict-activity-badge"
+              >
+                {{ getActivityName(activityId) }}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </template>
 
@@ -100,9 +176,11 @@ import {
   useLocationsStore,
   useColorsStore,
   useCertificationsStore,
+  useActivitiesStore,
 } from "@/stores";
 import BaseModal from "@/components/BaseModal.vue";
 import DurationDisplay from "@/components/DurationDisplay.vue";
+import Icon from "@/components/Icon.vue";
 import type { Activity } from "@/generated/api";
 
 export default defineComponent({
@@ -110,6 +188,7 @@ export default defineComponent({
   components: {
     BaseModal,
     DurationDisplay,
+    Icon,
   },
   props: {
     activity: {
@@ -123,7 +202,25 @@ export default defineComponent({
     const locationsStore = useLocationsStore();
     const colorsStore = useColorsStore();
     const certificationsStore = useCertificationsStore();
-    return { programsStore, locationsStore, colorsStore, certificationsStore };
+    const activitiesStore = useActivitiesStore();
+    return {
+      programsStore,
+      locationsStore,
+      colorsStore,
+      certificationsStore,
+      activitiesStore,
+    };
+  },
+  computed: {
+    hasActivityConflicts(): boolean {
+      if (!this.activity?.spec.activityConflicts) return false;
+      const conflicts = this.activity.spec.activityConflicts;
+      return (
+        (conflicts.preActivityConflicts?.length ?? 0) > 0 ||
+        (conflicts.postActivityConflicts?.length ?? 0) > 0 ||
+        (conflicts.concurrentActivityConflicts?.length ?? 0) > 0
+      );
+    },
   },
   methods: {
     getLocationName(locationId: string) {
@@ -138,6 +235,10 @@ export default defineComponent({
       const certification =
         this.certificationsStore.getCertificationById(certificationId);
       return certification?.meta.name || "Unknown Certification";
+    },
+    getActivityName(activityId: string) {
+      const activity = this.activitiesStore.getActivityById(activityId);
+      return activity?.meta.name || "Unknown Activity";
     },
     formatTime(time: string): string {
       if (!time) return "";
@@ -185,7 +286,6 @@ export default defineComponent({
 
 .detail-section:last-child {
   border-bottom: none;
-  padding-bottom: 0;
 }
 
 .detail-section h4 {
@@ -289,6 +389,47 @@ export default defineComponent({
 }
 
 .cert-label {
+  font-weight: 500;
+}
+
+.conflict-section {
+  background: var(--surface-secondary);
+  padding: 1rem;
+  border-radius: var(--radius);
+}
+
+.conflict-category {
+  margin-bottom: 1rem;
+}
+
+.conflict-category:last-child {
+  margin-bottom: 0;
+}
+
+.conflict-category-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.conflict-activities-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.conflict-activity-badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  background: white;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: calc(var(--radius) * 0.75);
+  font-size: 0.8125rem;
   font-weight: 500;
 }
 </style>

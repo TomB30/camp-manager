@@ -42,4 +42,26 @@ properties:
           type: string
           format: uuid
           description: ID of the certification required for this position
+  activityConflicts:
+    type: object
+    description: Defines scheduling conflicts with other activities
+    properties:
+      preActivityConflicts:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: Activities that cannot occur immediately before this activity
+      postActivityConflicts:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: Activities that cannot occur immediately after this activity
+      concurrentActivityConflicts:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: Activities that cannot occur at the same time as this activity
   

@@ -642,6 +642,23 @@ export type ActivitySpec = {
          */
         requiredCertificationId?: string;
     }>;
+    /**
+     * Defines scheduling conflicts with other activities
+     */
+    activityConflicts?: {
+        /**
+         * Activities that cannot occur immediately before this activity
+         */
+        preActivityConflicts?: Array<string>;
+        /**
+         * Activities that cannot occur immediately after this activity
+         */
+        postActivityConflicts?: Array<string>;
+        /**
+         * Activities that cannot occur at the same time as this activity
+         */
+        concurrentActivityConflicts?: Array<string>;
+    };
 };
 
 export type ColorSpec = {
