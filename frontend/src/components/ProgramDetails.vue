@@ -78,97 +78,26 @@
             :style="{ borderRadius: '8px' }"
           >
             <q-tab-panel name="activities">
-              <div class="section-header">
-                <h3>
-                  <Icon name="ListChecks" :size="20" />
-                  Activities
-                </h3>
-                <BaseButton
-                  color="grey-8"
-                  outline
-                  icon="add"
-                  label="Activity"
-                  @click="$emit('add-activity', program)"
-                />
-              </div>
-
-              <div
-                v-if="programActivities.length > 0"
-                class="activities-list q-pr-xs"
-                :style="{ maxHeight: 'calc(100vh - 290px)', overflowY: 'auto' }"
-              >
-                <ProgramActivityCard
-                  v-for="activity in programActivities"
-                  :key="activity.meta.id"
-                  :activity="activity"
-                  @remove="confirmRemoveActivity(activity.meta.id)"
-                  @click="viewActivity(activity)"
-                />
-              </div>
-
-              <div v-else class="empty-section">
-                <p>
-                  No activities yet. Add activities to create event templates.
-                </p>
-              </div>
+              <ProgramActivitiesSection
+                :activities="programActivities"
+                @add-activity="$emit('add-activity', program)"
+                @remove-activity="confirmRemoveActivity"
+                @view-activity="viewActivity"
+              />
             </q-tab-panel>
             <q-tab-panel name="staff-groups">
-              <div class="section-header">
-                <h3>
-                  <Icon name="UsersRound" :size="20" />
-                  Staff Groups
-                </h3>
-                <BaseButton
-                  color="grey-8"
-                  outline
-                  icon="add"
-                  label="Staff Group"
-                  @click="$emit('add-staff-group', program)"
-                />
-              </div>
-
-              <div v-if="programStaffGroups.length > 0" class="staff-list">
-                <ProgramStaffGroupCard
-                  v-for="group in programStaffGroups"
-                  :key="group.meta.id"
-                  :staff-group="group"
-                  @remove="confirmRemoveStaffGroup(group.meta.id)"
-                />
-              </div>
-
-              <div v-else class="empty-section">
-                <p>
-                  No staff groups assigned. Add staff groups to this program.
-                </p>
-              </div>
+              <ProgramStaffGroupsSection
+                :staff-groups="programStaffGroups"
+                @add-staff-group="$emit('add-staff-group', program)"
+                @remove-staff-group="confirmRemoveStaffGroup"
+              />
             </q-tab-panel>
             <q-tab-panel name="locations">
-              <div class="section-header">
-                <h3>
-                  <Icon name="Home" :size="20" />
-                  Locations
-                </h3>
-                <BaseButton
-                  color="grey-8"
-                  outline
-                  icon="add"
-                  label="Location"
-                  @click="$emit('add-location', program)"
-                />
-              </div>
-
-              <div v-if="programLocations.length > 0" class="locations-list">
-                <ProgramLocationCard
-                  v-for="location in programLocations"
-                  :key="location.meta.id"
-                  :location="location"
-                  @remove="confirmRemoveLocation(location.meta.id)"
-                />
-              </div>
-
-              <div v-else class="empty-section">
-                <p>No locations assigned. Add locations to this program.</p>
-              </div>
+              <ProgramLocationsSection
+                :locations="programLocations"
+                @add-location="$emit('add-location', program)"
+                @remove-location="confirmRemoveLocation"
+              />
             </q-tab-panel>
           </q-tab-panels>
         </template>
@@ -219,9 +148,9 @@ import {
   useProgramsStore,
 } from "@/stores";
 // Components
-import ProgramActivityCard from "./cards/ProgramActivityCard.vue";
-import ProgramStaffGroupCard from "./cards/ProgramStaffGroupCard.vue";
-import ProgramLocationCard from "./cards/ProgramLocationCard.vue";
+import ProgramActivitiesSection from "./sections/ProgramActivitiesSection.vue";
+import ProgramStaffGroupsSection from "./sections/ProgramStaffGroupsSection.vue";
+import ProgramLocationsSection from "./sections/ProgramLocationsSection.vue";
 import ConfirmModal from "./ConfirmModal.vue";
 import ActivityFormModal from "./modals/ActivityFormModal.vue";
 import ActivityDetailModal from "./modals/ActivityDetailModal.vue";
@@ -232,9 +161,9 @@ import { useToast } from "@/composables/useToast";
 export default defineComponent({
   name: "ProgramDetails",
   components: {
-    ProgramActivityCard,
-    ProgramStaffGroupCard,
-    ProgramLocationCard,
+    ProgramActivitiesSection,
+    ProgramStaffGroupsSection,
+    ProgramLocationsSection,
     ConfirmModal,
     ActivityFormModal,
     ActivityDetailModal,
@@ -518,93 +447,6 @@ export default defineComponent({
   border-radius: var(--radius-lg);
   padding-top: 0;
   box-shadow: var(--shadow);
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-light);
-}
-
-.section-header h3 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-  color: var(--text-primary);
-  @media (max-width: 768px) {
-    font-size: 1rem;
-  }
-}
-
-/* Activities List */
-.activities-list {
-  display: grid;
-  gap: 1rem;
-}
-
-/* Staff List */
-.staff-list {
-  display: grid;
-  gap: 1rem;
-}
-
-.staff-certifications {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-}
-
-.certification-badge {
-  display: inline-block;
-  padding: 0.125rem 0.5rem;
-  background: white;
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-/* Locations List */
-.locations-list {
-  display: grid;
-  gap: 1rem;
-}
-
-.location-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--surface-secondary);
-  color: var(--accent-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.location-meta {
-  font-size: 0.875rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-/* Empty States */
-.empty-section {
-  padding: 2rem;
-  text-align: center;
-  color: var(--text-secondary);
-}
-
-.empty-section p {
-  margin: 0;
 }
 
 @media (max-width: 768px) {

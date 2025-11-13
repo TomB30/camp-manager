@@ -24,8 +24,9 @@
       <BaseButton
         color="negative"
         outline
-        size="sm"
-        label="Remove"
+        size="xs"
+        icon="close"
+        round
         @click="$emit('remove', location.meta.id)"
       />
     </div>
@@ -83,22 +84,28 @@ export default defineComponent({
   transform: translateX(4px);
 }
 
-.location-info h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem 0;
-  color: var(--text-primary);
-}
+.location-info {
+  display: flex;
+  align-items: bottom;
+  gap: 0.5rem;
 
-.location-info p {
-  margin: 0;
-  font-size: 0.875rem;
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
 }
 
 .location-meta {
   display: flex;
   gap: 1rem;
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
   font-size: 0.8125rem;
   color: var(--text-secondary);
 }

@@ -19,8 +19,9 @@
       <BaseButton
         color="negative"
         outline
-        size="sm"
-        label="Remove"
+        size="xs"
+        icon="close"
+        round
         @click="$emit('remove', staffGroup.meta.id)"
       />
     </div>
@@ -36,7 +37,7 @@ import { useAreasStore } from "@/stores";
 // Components
 import Icon from "../Icon.vue";
 export default defineComponent({
-  name: "ProgramLocationCard",
+  name: "ProgramStaffGroupCard",
   components: {
     Icon,
   },
@@ -71,22 +72,28 @@ export default defineComponent({
   transform: translateX(4px);
 }
 
-.staff-group-info h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem 0;
-  color: var(--text-primary);
-}
+.staff-group-info {
+  display: flex;
+  align-items: bottom;
+  gap: 0.5rem;
 
-.staff-group-info p {
-  margin: 0;
-  font-size: 0.875rem;
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
 }
 
 .staff-group-meta {
   display: flex;
   gap: 1rem;
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
   font-size: 0.8125rem;
   color: var(--text-secondary);
 }

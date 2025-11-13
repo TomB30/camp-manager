@@ -42,8 +42,9 @@
       <BaseButton
         color="negative"
         outline
-        size="sm"
-        label="Delete"
+        size="xs"
+        icon="close"
+        round
         @click="$emit('remove', activity.meta.id)"
       />
     </div>
@@ -107,22 +108,28 @@ export default defineComponent({
   transform: translateX(4px);
 }
 
-.activity-info h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem 0;
-  color: var(--text-primary);
-}
+.activity-info {
+  display: flex;
+  align-items: bottom;
+  gap: 0.5rem;
 
-.activity-info p {
-  margin: 0;
-  font-size: 0.875rem;
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 0.875rem;
+  }
 }
 
 .activity-meta {
   display: flex;
   gap: 1rem;
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
   font-size: 0.8125rem;
   color: var(--text-secondary);
 }
