@@ -94,7 +94,7 @@ export default defineComponent({
       }
       const query = this.searchQuery.toLowerCase().trim();
       return this.activities.filter((activity) =>
-        activity.meta.name.toLowerCase().includes(query)
+        activity.meta.name.toLowerCase().includes(query),
       );
     },
   },
@@ -134,11 +134,10 @@ export default defineComponent({
   margin-bottom: 0.5rem;
 }
 
-
 .transition-wrapper {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .empty-section {
@@ -182,4 +181,3 @@ export default defineComponent({
   opacity: 0;
 }
 </style>
-

@@ -90,7 +90,7 @@ export default defineComponent({
       }
       const query = this.searchQuery.toLowerCase().trim();
       return this.staffGroups.filter((group) =>
-        group.meta.name.toLowerCase().includes(query)
+        group.meta.name.toLowerCase().includes(query),
       );
     },
   },
@@ -177,4 +177,3 @@ export default defineComponent({
   opacity: 0;
 }
 </style>
-

@@ -90,7 +90,7 @@ export default defineComponent({
       }
       const query = this.searchQuery.toLowerCase().trim();
       return this.locations.filter((location) =>
-        location.meta.name.toLowerCase().includes(query)
+        location.meta.name.toLowerCase().includes(query),
       );
     },
   },
@@ -133,7 +133,7 @@ export default defineComponent({
 .transition-wrapper {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .empty-section {
@@ -177,4 +177,3 @@ export default defineComponent({
   opacity: 0;
 }
 </style>
-

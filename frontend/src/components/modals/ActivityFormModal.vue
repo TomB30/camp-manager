@@ -542,8 +542,8 @@ export default defineComponent({
               : undefined,
           activityConflicts:
             this.formData.spec.activityConflicts &&
-            (this.formData.spec.activityConflicts.preActivityConflicts
-              ?.length > 0 ||
+            (this.formData.spec.activityConflicts.preActivityConflicts?.length >
+              0 ||
               this.formData.spec.activityConflicts.postActivityConflicts
                 ?.length > 0 ||
               this.formData.spec.activityConflicts.concurrentActivityConflicts

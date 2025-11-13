@@ -43,7 +43,24 @@
           />
         </div>
 
-        <div class="grid grid-cols-2">
+        <!-- Time inputs - Different UI based on activity constraints -->
+        <div v-if="selectedActivityHasFixedTime" class="form-group">
+          <label class="form-label">
+            Event Time (Fixed by Activity Template)
+          </label>
+          <div class="fixed-time-display row justify-between">
+            <div class="calculated-time-display col">
+              <span class="time-label">Start Time:</span>
+              <span class="time-value">{{ startTime }}</span>
+            </div>
+            <div class="calculated-time-display col">
+              <span class="time-label">End Time:</span>
+              <span class="time-value">{{ endTime }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div v-else class="grid grid-cols-2">
           <div class="form-group">
             <label class="form-label">Start Time</label>
             <BaseInput
@@ -55,8 +72,9 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">End Time</label>
+            <label class="form-label"> End Time </label>
             <BaseInput
+              v-if="!selectedActivityHasDuration"
               v-model="endTime"
               type="time"
               :rules="[
@@ -64,11 +82,21 @@
                 endTimeBeforeStartTime,
               ]"
             />
+            <div v-else class="calculated-time-display">
+              <span class="time-value">{{ endTime }}</span>
+              <span class="duration-info">
+                ({{ selectedActivityDuration }} min duration)
+              </span>
+              <q-tooltip> fixed duration by activity template </q-tooltip>
+            </div>
           </div>
         </div>
 
-        <!-- Duration Presets -->
-        <div class="form-group">
+        <!-- Duration Presets (only show when no activity constraints) -->
+        <div
+          v-if="!selectedActivityHasFixedTime && !selectedActivityHasDuration"
+          class="form-group"
+        >
           <label class="form-label">Quick Duration (Optional)</label>
           <div class="duration-presets">
             <button
@@ -476,6 +504,9 @@ export default defineComponent({
       selectedActivityId: "",
       selectedDurationPreset: null as number | null,
       formRef: null as any,
+      selectedActivityHasFixedTime: false,
+      selectedActivityHasDuration: false,
+      selectedActivityDuration: 0,
       recurrenceData: {
         enabled: false,
         frequency: "weekly" as "daily" | "weekly" | "monthly",
@@ -805,6 +836,27 @@ export default defineComponent({
       );
     },
     handleStartTimeChange(value: string): void {
+      this.internalStartTime = value;
+
+      // If activity has a fixed duration, recalculate end time
+      if (
+        this.selectedActivityHasDuration &&
+        this.selectedActivityDuration > 0
+      ) {
+        const [hours, minutes] = value.split(":").map(Number);
+        const startDate = new Date();
+        startDate.setHours(hours, minutes, 0, 0);
+
+        const endDate = new Date(
+          startDate.getTime() + this.selectedActivityDuration * 60000,
+        );
+        const endHours = endDate.getHours().toString().padStart(2, "0");
+        const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
+        this.internalEndTime = `${endHours}:${endMinutes}`;
+        this.updateFormDataDates();
+        return;
+      }
+
       // If endTime is set, keep the interval between startTime and endTime when startTime is changed
       if (this.internalEndTime) {
         const [oldStartHour, oldStartMinute] = this.internalStartTime
@@ -821,8 +873,6 @@ export default defineComponent({
         if (duration <= 0) {
           duration = 0;
         }
-
-        this.internalStartTime = value;
 
         // Use the NEW start time ("startTime") and shift endTime by this interval
         if (this.startTime) {
@@ -862,7 +912,13 @@ export default defineComponent({
       }
     },
     applyActivityTemplate(activityId: string) {
-      if (!activityId) return;
+      if (!activityId) {
+        // Reset activity constraints when no activity is selected
+        this.selectedActivityHasFixedTime = false;
+        this.selectedActivityHasDuration = false;
+        this.selectedActivityDuration = 0;
+        return;
+      }
 
       const activity = this.activitiesStore.getActivityById(activityId);
       if (!activity) return;
@@ -872,23 +928,40 @@ export default defineComponent({
 
       // Handle time setting: either fixedTime or duration
       if (activity.spec.fixedTime) {
-        // Use fixed time from activity
+        // Use fixed time from activity - this is locked and cannot be changed
+        this.selectedActivityHasFixedTime = true;
+        this.selectedActivityHasDuration = false;
+        this.selectedActivityDuration = 0;
         this.internalStartTime = activity.spec.fixedTime.startTime;
         this.internalEndTime = activity.spec.fixedTime.endTime;
         this.updateFormDataDates();
-      } else if (activity.spec.duration && this.internalStartTime) {
-        // Calculate end time based on start time and duration
-        const [hours, minutes] = this.internalStartTime.split(":").map(Number);
-        const startDate = new Date();
-        startDate.setHours(hours, minutes, 0, 0);
+      } else if (activity.spec.duration) {
+        // Use duration from activity - start time is editable, end time is calculated
+        this.selectedActivityHasFixedTime = false;
+        this.selectedActivityHasDuration = true;
+        this.selectedActivityDuration = activity.spec.duration;
 
-        const endDate = new Date(
-          startDate.getTime() + (activity.spec.duration || 0) * 60000,
-        );
-        const endHours = endDate.getHours().toString().padStart(2, "0");
-        const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
-        this.internalEndTime = `${endHours}:${endMinutes}`;
-        this.updateFormDataDates();
+        // Calculate end time based on start time and duration
+        if (this.internalStartTime) {
+          const [hours, minutes] = this.internalStartTime
+            .split(":")
+            .map(Number);
+          const startDate = new Date();
+          startDate.setHours(hours, minutes, 0, 0);
+
+          const endDate = new Date(
+            startDate.getTime() + (activity.spec.duration || 0) * 60000,
+          );
+          const endHours = endDate.getHours().toString().padStart(2, "0");
+          const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
+          this.internalEndTime = `${endHours}:${endMinutes}`;
+          this.updateFormDataDates();
+        }
+      } else {
+        // No time constraints from activity
+        this.selectedActivityHasFixedTime = false;
+        this.selectedActivityHasDuration = false;
+        this.selectedActivityDuration = 0;
       }
 
       // Set default location if specified
@@ -1558,5 +1631,64 @@ export default defineComponent({
   border-radius: var(--radius);
   display: inline-block;
   width: fit-content;
+}
+
+/* Activity Time Constraint Styles */
+.fixed-time-display {
+  gap: 1rem;
+  width: 100%;
+}
+
+.time-display-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.time-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.time-value {
+  color: var(--text-primary);
+}
+
+.duration-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--primary-color);
+  margin-left: 0.5rem;
+}
+
+.calculated-time-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  height: 40px;
+}
+
+.calculated-time-display .time-value {
+  color: var(--text-primary);
+}
+
+.duration-info {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  .fixed-time-display {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }
 </style>
