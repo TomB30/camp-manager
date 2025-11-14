@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     }),
     quasar({
       sassVariables: fileURLToPath(
-        new URL("./src/quasar-variables.scss", import.meta.url),
+        new URL("./src/styles/quasar-variables.scss", import.meta.url),
       ),
     }),
   ],

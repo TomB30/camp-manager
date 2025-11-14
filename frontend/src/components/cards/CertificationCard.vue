@@ -3,16 +3,18 @@
     class="card card-clickable card-horizontal certification-card"
     @click="$emit('click')"
   >
-    <div class="card-icon" :style="{ background: iconColor }">
-      <slot name="icon">
-        <Icon name="Award" :size="28" :stroke-width="2" />
-      </slot>
-    </div>
-    <div class="card-details">
-      <h4>{{ certification.meta.name }}</h4>
-      <p v-if="certification.meta.description" class="card-description">
-        {{ certification.meta.description }}
-      </p>
+    <div class="card-header">
+      <div class="card-icon" :style="{ background: iconColor }">
+        <slot name="icon">
+          <Icon name="Award" :size="28" :stroke-width="2" />
+        </slot>
+      </div>
+      <div>
+        <h4>{{ certification.meta.name }}</h4>
+        <p v-if="certification.meta.description" class="card-description">
+          {{ certification.meta.description }}
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -42,10 +44,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
-@import "./card-styles.css";
-
-.certification-card {
-  min-height: 120px;
+.card-header {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .badge .inline {

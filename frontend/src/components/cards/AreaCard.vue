@@ -1,36 +1,36 @@
 <template>
-  <div
-    class="card card-clickable card-horizontal area-card"
-    @click="$emit('click')"
-  >
-    <div class="card-icon" :style="{ background: '#3b82f6' }">
-      <slot name="icon">
-        <Icon name="Map" :size="28" :stroke-width="2" />
-      </slot>
-    </div>
-    <div class="card-details">
-      <h4>{{ area.meta.name }}</h4>
-      <div class="card-meta">
-        <span v-if="area.spec.capacity" class="badge badge-sm badge-secondary">
-          <Icon name="Users" :size="12" class="inline" />
+  <div class="card card-clickable area-card" @click="$emit('click')">
+    <section class="card-header">
+      <div class="card-icon" :style="{ background: '#3b82f6' }">
+        <slot name="icon">
+          <Icon name="Map" :size="28" :stroke-width="2" />
+        </slot>
+      </div>
+      <div class="title-and-description-wrapper">
+        <h4>{{ area.meta.name }}</h4>
+        <p v-if="area.meta.description" class="card-description">
+          {{ area.meta.description }}
+        </p>
+      </div>
+    </section>
+
+    <div class="row items-center gap-2">
+      <span v-if="area.spec.capacity" class="row items-center q-gutter-x-xs">
+        <Icon name="Users" :size="14" />
+        <span>
           {{ area.spec.capacity }}
         </span>
+      </span>
+      <div
+        v-if="area.spec.equipment && area.spec.equipment.length > 0"
+        class="row items-center q-gutter-x-xs"
+      >
+        <Icon name="Package" :size="14" />
+        <span>{{ area.spec.equipment.length }} equipment</span>
       </div>
-      <p v-if="area.meta.description" class="card-description">
-        {{ area.meta.description }}
-      </p>
-      <div class="card-stats">
-        <div
-          v-if="area.spec.equipment && area.spec.equipment.length > 0"
-          class="card-stat-item"
-        >
-          <Icon name="Package" :size="14" />
-          <span>{{ area.spec.equipment.length }} equipment</span>
-        </div>
-        <div v-if="area.spec.notes" class="card-stat-item">
-          <Icon name="FileText" :size="14" />
-          <span>Has notes</span>
-        </div>
+      <div v-if="area.spec.notes" class="row items-center q-gutter-x-xs">
+        <Icon name="FileText" :size="14" />
+        <span>Has notes</span>
       </div>
     </div>
   </div>
@@ -57,8 +57,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-@import "./card-styles.css";
-
 .area-card {
   min-height: 120px;
 }

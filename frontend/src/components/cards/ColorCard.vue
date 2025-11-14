@@ -17,11 +17,11 @@
           <Icon name="Trash2" :size="18" />
         </button>
       </div>
+      <span v-if="color.spec.default" class="badge badge-default">Default</span>
     </div>
     <div class="color-info">
       <div class="color-name">{{ color.meta.name }}</div>
       <div class="color-hex">{{ color.spec.hexValue }}</div>
-      <span v-if="color.spec.default" class="badge badge-default">Default</span>
     </div>
   </div>
 </template>
@@ -63,7 +63,7 @@ export default defineComponent({
 }
 
 .color-preview {
-  height: 120px;
+  height: 80px;
   position: relative;
   display: flex;
   align-items: center;
@@ -107,7 +107,7 @@ export default defineComponent({
 }
 
 .color-info {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem;
   text-align: center;
 }
 

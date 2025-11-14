@@ -29,7 +29,12 @@
       icon-name="Palette"
     />
 
-    <div v-else class="colors-grid">
+    <transition-group
+      v-else
+      name="list"
+      tag="div"
+      class="transition-wrapper colors-grid gap-1"
+    >
       <ColorCard
         v-for="color in filteredColors"
         :key="color.meta.id"
@@ -37,7 +42,7 @@
         @edit="editColor"
         @delete="deleteColorConfirm"
       />
-    </div>
+    </transition-group>
 
     <ColorFormModal
       v-if="showFormModal"
@@ -158,7 +163,6 @@ export default defineComponent({
 .colors-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
 }
 
 .colors-grid .empty-state {
@@ -217,7 +221,6 @@ export default defineComponent({
 @media (max-width: 768px) {
   .colors-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1rem;
   }
 }
 </style>

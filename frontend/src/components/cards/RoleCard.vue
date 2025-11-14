@@ -1,21 +1,17 @@
 <template>
-  <div
-    class="card card-clickable card-horizontal role-card"
-    @click="$emit('click')"
-  >
-    <div class="card-icon" :style="{ background: iconColor }">
-      <slot name="icon">
-        <Icon name="Shield" :size="28" :stroke-width="2" />
-      </slot>
-    </div>
-    <div class="card-details">
-      <h4>{{ role.meta.name }}</h4>
-      <p v-if="role.meta.description" class="card-description">
-        {{ role.meta.description }}
-      </p>
-      <p v-else class="card-description text-caption">
-        No description provided
-      </p>
+  <div class="card" @click="$emit('click')">
+    <div class="card-header">
+      <div class="card-icon" :style="{ background: iconColor }">
+        <slot name="icon">
+          <Icon name="Shield" :size="28" :stroke-width="2" />
+        </slot>
+      </div>
+      <div>
+        <h4>{{ role.meta.name }}</h4>
+        <p v-if="role.meta.description" class="card-description">
+          {{ role.meta.description }}
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -45,9 +41,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
-@import "./card-styles.css";
-
-.role-card {
-  min-height: 100px;
+.card-header {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 </style>

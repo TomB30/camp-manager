@@ -1,3 +1,4 @@
+@import "./card.scss";
 :root {
   --primary-color: #0f172a;
   --primary-dark: #020617;
@@ -225,22 +226,6 @@ p {
 .form-textarea {
   resize: vertical;
   min-height: 80px;
-}
-
-/* Cards */
-.card {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border-light);
-  transition: all 0.15s ease;
-}
-
-.card-header {
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-light);
 }
 
 /* Layout utilities */
@@ -558,4 +543,35 @@ p {
   background-color: white;
   color: var(--text-primary);
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.54);
+}
+
+/* List animations */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.3s ease;
+}
+
+.list-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.list-move {
+  transition: transform 0.3s ease;
+}
+
+/* Fade animation */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }

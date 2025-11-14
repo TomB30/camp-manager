@@ -7,7 +7,7 @@ import App from "./App.vue";
 import "quasar/dist/quasar.css";
 // Import icon libraries (optional - choose what you need)
 import "@quasar/extras/material-icons/material-icons.css";
-import "./style.scss";
+import "./styles/style.scss";
 import "./utils/devTools";
 import BaseButton from "./components/common/BaseButton.vue";
 import BaseInput from "./components/common/BaseInput.vue";

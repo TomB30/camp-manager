@@ -28,3 +28,4 @@ export { useAuthStore } from "./authStore";
 
 // Other stores
 export { useToastStore } from "./toastStore";
+export { useUIStore } from "./uiStore";

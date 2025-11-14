@@ -34,7 +34,12 @@
     />
 
     <!-- Grid View -->
-    <div v-else-if="viewMode === 'grid'" class="areas-grid">
+    <transition-group
+      v-else-if="viewMode === 'grid'"
+      name="list"
+      tag="div"
+      class="areas-grid transition-wrapper"
+    >
       <AreaCard
         v-for="area in filteredAreas"
         :key="area.meta.id"
@@ -45,7 +50,7 @@
           <Icon name="Map" :size="24" :stroke-width="2" />
         </template>
       </AreaCard>
-    </div>
+    </transition-group>
 
     <!-- Table View -->
     <DataTable
@@ -246,7 +251,7 @@ export default defineComponent({
 .areas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .areas-grid .empty-state {
@@ -283,13 +288,6 @@ export default defineComponent({
   to {
     opacity: 1;
     transform: translateX(0);
-  }
-}
-
-@media (max-width: 768px) {
-  .areas-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
   }
 }
 </style>

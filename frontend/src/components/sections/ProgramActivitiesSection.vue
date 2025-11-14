@@ -149,35 +149,4 @@ export default defineComponent({
 .empty-section p {
   margin: 0;
 }
-
-/* List animations */
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.3s ease;
-}
-
-.list-enter-from {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.list-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.list-move {
-  transition: transform 0.3s ease;
-}
-
-/* Fade animation */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
 </style>

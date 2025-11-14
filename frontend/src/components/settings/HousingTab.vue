@@ -34,7 +34,12 @@
     />
 
     <!-- Grid View -->
-    <div v-else-if="viewMode === 'grid'" class="rooms-grid">
+    <transition-group
+      v-else-if="viewMode === 'grid'"
+      name="list"
+      tag="div"
+      class="rooms-grid transition-wrapper"
+    >
       <HousingRoomCard
         v-for="room in filteredRooms"
         :key="room.meta.id"
@@ -42,7 +47,7 @@
         :groups="getGroupsForRoom(room.meta.id)"
         @click="selectRoom(room.meta.id)"
       />
-    </div>
+    </transition-group>
 
     <!-- Table View -->
     <DataTable
@@ -300,7 +305,7 @@ export default defineComponent({
 .rooms-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .rooms-grid .empty-state {
@@ -344,7 +349,6 @@ export default defineComponent({
 @media (max-width: 768px) {
   .rooms-grid {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
 }
 </style>

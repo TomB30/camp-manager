@@ -57,6 +57,8 @@ import {
   LogOut,
   ListChecks,
   Phone,
+  ArrowLeft,
+  Building,
 } from "lucide-vue-next";
 
 export type IconName = keyof typeof icons;
@@ -108,6 +110,8 @@ const icons: Record<string, Component> = {
   LogOut,
   ListChecks,
   Phone,
+  ArrowLeft,
+  Building,
 } as const;
 
 export default defineComponent({

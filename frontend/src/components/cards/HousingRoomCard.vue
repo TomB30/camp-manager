@@ -1,41 +1,25 @@
 <template>
-  <div
-    class="card card-clickable card-horizontal"
-    @click="$emit('click', room)"
-  >
-    <div class="card-icon" style="background: var(--accent-color)">
-      <Icon name="Bed" :size="32" :stroke-width="2" />
+  <div class="card" @click="$emit('click', room)">
+    <div class="card-header">
+      <div class="card-icon" style="background: var(--accent-color)">
+        <Icon name="Bed" :size="32" :stroke-width="2" />
+      </div>
+      <div>
+        <h4>{{ room.meta.name }}</h4>
+        <p v-if="room.meta.description" class="card-description">
+          {{ room.meta.description }}
+        </p>
+      </div>
     </div>
-    <div class="card-details">
-      <h4>{{ room.meta.name }}</h4>
-      <div class="card-meta row items-center">
-        <span class="badge badge-primary">{{ room.spec.beds }} beds</span>
-        <span v-if="room.spec.bathroom" class="badge badge-primary">
-          {{ bathroomLabel }}
-        </span>
-        <span
-          v-if="locationName"
-          class="text-sm text-grey-7 text-subtitle2 row items-center q-gutter-x-xs"
-        >
-          <Icon name="MapPin" :size="14" class="inline" />
-          <span>{{ locationName }}</span>
-        </span>
-      </div>
-      <div v-if="groups.length > 0" class="assigned-groups mt-2">
-        <div class="text-xs text-grey-7 text-subtitle2 mb-1">
-          Family Groups:
-        </div>
-        <div class="flex gap-1 flex-wrap">
-          <span
-            v-for="group in groups"
-            :key="group.meta.id"
-            class="badge badge-success badge-sm"
-          >
-            {{ group.meta.name }}
-          </span>
-        </div>
-      </div>
-      <div v-else class="text-xs text-grey-7 mt-2">No groups assigned</div>
+    <div class="card-meta row items-center gap-1">
+      <span class="badge badge-primary">{{ room.spec.beds }} beds</span>
+      <span v-if="room.spec.bathroom" class="badge badge-primary">
+        {{ bathroomLabel }}
+      </span>
+      <span v-if="areaName" class="row items-center q-gutter-x-xs">
+        <Icon name="MapPin" :size="14" class="inline" />
+        <span>{{ areaName }}</span>
+      </span>
     </div>
   </div>
 </template>
@@ -67,7 +51,7 @@ export default defineComponent({
     return { areasStore };
   },
   computed: {
-    locationName(): string | undefined {
+    areaName(): string | undefined {
       if (this.room.spec.areaId) {
         return this.areasStore.getAreaById(this.room.spec.areaId)?.meta.name;
       }
@@ -83,12 +67,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-@import "./card-styles.css";
-
-.assigned-groups {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-</style>
+<style scoped></style>

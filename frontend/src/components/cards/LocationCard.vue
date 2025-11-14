@@ -1,42 +1,28 @@
 <template>
-  <div
-    class="card card-clickable card-horizontal"
-    @click="$emit('click', location)"
-  >
-    <div class="card-icon" :style="{ background: '#3b82f6' }">
-      <Icon name="MapPin" :size="24" :stroke-width="2" />
+  <div class="card" @click="$emit('click', location)">
+    <div class="card-header">
+      <div class="card-icon" :style="{ background: '#3b82f6' }">
+        <Icon name="MapPin" :size="24" :stroke-width="2" />
+      </div>
+      <div>
+        <h4>{{ location.meta.name }}</h4>
+        <p v-if="location.meta.description" class="card-description">
+          {{ location.meta.description }}
+        </p>
+      </div>
     </div>
-    <div class="card-details">
-      <h4>{{ location.meta.name }}</h4>
-      <div class="card-meta row items-center">
-        <span v-if="location.spec.capacity" class="badge badge-success">
-          Capacity: {{ location.spec.capacity }}
-        </span>
-        <span
-          v-if="areaName"
-          class="text-sm text-grey-7 text-subtitle2 row items-center q-gutter-x-xs"
-        >
-          <Icon name="MapPin" :size="14" class="inline" />
-          <span>{{ areaName }}</span>
-        </span>
-      </div>
-      <div class="location-usage mt-2">
-        <div class="usage-bar">
-          <div
-            class="usage-fill"
-            :style="{
-              width: `${usagePercent}%`,
-              background:
-                usagePercent > 80
-                  ? 'var(--error-color)'
-                  : 'var(--success-color)',
-            }"
-          ></div>
-        </div>
-        <div class="text-xs text-grey-7 text-subtitle2 mt-1">
-          {{ usagePercent.toFixed(0) }}% average usage
-        </div>
-      </div>
+
+    <div class="card-meta row items-center gap-2">
+      <span v-if="location.spec.capacity" class="badge badge-success">
+        Capacity: {{ location.spec.capacity }}
+      </span>
+      <span
+        v-if="areaName"
+        class="text-sm text-grey-7 text-subtitle2 row items-center q-gutter-x-xs"
+      >
+        <Icon name="MapPin" :size="14" class="inline" />
+        <span>{{ areaName }}</span>
+      </span>
     </div>
   </div>
 </template>
@@ -73,33 +59,11 @@ export default defineComponent({
       }
       return undefined;
     },
-    usagePercent(): number {
-      const locationEvents = this.eventsStore.locationEvents(
-        this.location.meta.id,
-      );
-      if (locationEvents.length === 0) return 0;
-
-      if (!this.location.spec.capacity) return 0;
-
-      // Calculate average capacity usage
-      const totalUsage = locationEvents.reduce((sum, event) => {
-        return (
-          sum +
-          (this.eventsStore.getEventCamperIds(event.meta.id).length /
-            (this.location.spec.capacity || 1)) *
-            100
-        );
-      }, 0);
-
-      return totalUsage / locationEvents.length;
-    },
   },
 });
 </script>
 
 <style scoped>
-@import "./card-styles.css";
-
 .usage-bar {
   height: 6px;
   background: var(--surface-secondary);

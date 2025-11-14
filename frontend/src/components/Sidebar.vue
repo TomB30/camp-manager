@@ -1,86 +1,128 @@
 <template>
   <aside class="sidebar" :class="{ 'sidebar-mobile-open': isMobileOpen }">
     <div class="sidebar-content">
-      <div class="logo">
-        <Icon name="Sun" :size="20" class="logo-icon" />
-        <h1>Summer Camp</h1>
-      </div>
-
-      <!-- Camp Selector (for users with multiple camp access) -->
-      <div v-if="showCampSelector" class="camp-selector">
-        <label for="camp-select" class="camp-selector-label">
-          <Icon name="Building" :size="16" />
-          <span>Active Camp</span>
-        </label>
-        <select
-          id="camp-select"
-          v-model="selectedCampId"
-          @change="handleCampChange"
-          class="camp-select"
-        >
-          <option
-            v-for="camp in accessibleCamps"
-            :key="camp.campId"
-            :value="camp.campId"
-          >
-            {{ camp.campName }}
-            <template v-if="getCampRole(camp.campId)">
-              ({{ getRoleLabel(getCampRole(camp.campId)!) }})
-            </template>
-          </option>
-        </select>
-      </div>
-
-      <nav class="nav">
-        <RouterLink to="/" class="nav-link" @click="handleNavClick">
-          <Icon name="LayoutDashboard" :size="20" class="nav-icon" />
-          <span class="nav-text">Dashboard</span>
-        </RouterLink>
-        <RouterLink to="/calendar" class="nav-link" @click="handleNavClick">
-          <Icon name="Calendar" :size="20" class="nav-icon" />
-          <span class="nav-text">Calendar</span>
-        </RouterLink>
-        <RouterLink to="/programs" class="nav-link" @click="handleNavClick">
-          <Icon name="Boxes" :size="20" class="nav-icon" />
-          <span class="nav-text">Programs</span>
-        </RouterLink>
-        <RouterLink to="/groups" class="nav-link" @click="handleNavClick">
-          <Icon name="FolderOpen" :size="20" class="nav-icon" />
-          <span class="nav-text">Groups</span>
-        </RouterLink>
-        <RouterLink to="/staff" class="nav-link" @click="handleNavClick">
-          <Icon name="UsersRound" :size="20" class="nav-icon" />
-          <span class="nav-text">Staff</span>
-        </RouterLink>
-        <RouterLink to="/campers" class="nav-link" @click="handleNavClick">
-          <Icon name="Users" :size="20" class="nav-icon" />
-          <span class="nav-text">Campers</span>
-        </RouterLink>
-      </nav>
-
-      <!-- <div v-if="mainStore.conflicts.length > 0" class="conflicts-section">
-        <div class="conflicts-badge">
-          <span class="badge badge-error">
-            <Icon name="AlertTriangle" :size="16" />
-            {{ mainStore.conflicts.length }} Conflict{{
-              mainStore.conflicts.length > 1 ? "s" : ""
-            }}
-          </span>
+      <!-- Main Sidebar -->
+      <template v-if="uiStore.sidebarMode === 'main'">
+        <div class="logo">
+          <Icon name="Sun" :size="20" class="logo-icon" />
+          <h1>Summer Camp</h1>
         </div>
-      </div> -->
-      <!-- Camp Settings (Bottom of Sidebar) -->
-      <div class="settings-section">
-        <RouterLink to="/settings" class="nav-link" @click="handleNavClick">
-          <Icon name="Settings" :size="20" class="nav-icon" />
-          <span class="nav-text">Camp Settings</span>
-        </RouterLink>
-      </div>
 
-      <!-- Logout Button -->
-      <div class="nav-link" @click="handleLogout">
-        <Icon name="LogOut" :size="20" />
-        <span>Logout</span>
-      </div>
+        <!-- Camp Selector (for users with multiple camp access) -->
+        <div v-if="showCampSelector" class="camp-selector">
+          <label for="camp-select" class="camp-selector-label">
+            <Icon name="Building" :size="16" />
+            <span>Active Camp</span>
+          </label>
+          <select
+            id="camp-select"
+            v-model="selectedCampId"
+            @change="handleCampChange"
+            class="camp-select"
+          >
+            <option
+              v-for="camp in accessibleCamps"
+              :key="camp.campId"
+              :value="camp.campId"
+            >
+              {{ camp.campName }}
+              <template v-if="getCampRole(camp.campId)">
+                ({{ getRoleLabel(getCampRole(camp.campId)!) }})
+              </template>
+            </option>
+          </select>
+        </div>
+
+        <nav class="nav">
+          <RouterLink
+            v-for="link in mainNavLinks"
+            :key="link.path"
+            :to="link.path"
+            class="nav-link"
+            @click="handleNavClick"
+          >
+            <Icon :name="link.icon" :size="20" class="nav-icon" />
+            <span class="nav-text">{{ link.label }}</span>
+          </RouterLink>
+        </nav>
+
+        <!-- Camp Settings (Bottom of Sidebar) -->
+        <div class="settings-section">
+          <div class="nav-link" @click="handleSettingsClick">
+            <Icon name="Settings" :size="20" class="nav-icon" />
+            <span class="nav-text">Camp Settings</span>
+          </div>
+        </div>
+
+        <!-- Logout Button -->
+        <div class="nav-link" @click="handleLogout">
+          <Icon name="LogOut" :size="20" />
+          <span>Logout</span>
+        </div>
+      </template>
+
+      <!-- Settings Sidebar -->
+      <template v-else>
+        <div class="back-button-container">
+          <BaseButton
+            outline
+            round
+            dense
+            color="grey-7"
+            @click="handleBackToMain"
+          >
+            <Icon name="ArrowLeft" :size="18" />
+          </BaseButton>
+        </div>
+
+        <div class="settings-header">
+          <Icon name="Settings" :size="24" class="settings-icon" />
+          <h2>Camp Settings</h2>
+        </div>
+
+        <nav class="nav">
+          <div
+            v-for="category in settingsCategories"
+            :key="category.label"
+            class="settings-category"
+          >
+            <div
+              class="category-label"
+              :class="{ 'category-active': isCategoryActive(category) }"
+              @click="toggleCategory(category.label)"
+            >
+              <Icon :name="category.icon" :size="16" />
+              <span>{{ category.label }}</span>
+              <Icon
+                :name="
+                  expandedCategories.has(category.label)
+                    ? 'ChevronDown'
+                    : 'ChevronRight'
+                "
+                :size="16"
+                class="category-chevron"
+              />
+            </div>
+            <Transition name="expand">
+              <div
+                v-show="expandedCategories.has(category.label)"
+                class="category-links"
+              >
+                <RouterLink
+                  v-for="link in category.links"
+                  :key="link.path"
+                  :to="link.path"
+                  class="nav-link"
+                  @click="handleNavClick"
+                >
+                  <Icon :name="link.icon" :size="20" class="nav-icon" />
+                  <span class="nav-text">{{ link.label }}</span>
+                </RouterLink>
+              </div>
+            </Transition>
+          </div>
+        </nav>
+      </template>
     </div>
   </aside>
 </template>
@@ -88,8 +130,9 @@
 <script lang="ts">
 import { defineComponent, computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { useMainStore, useAuthStore } from "@/stores";
+import { useMainStore, useAuthStore, useUIStore } from "@/stores";
 import Icon from "./Icon.vue";
+import type { IconName } from "./Icon.vue";
 
 // Mock camp data - will be replaced with API call in the future
 const MOCK_CAMPS = [
@@ -97,6 +140,18 @@ const MOCK_CAMPS = [
   { campId: "camp-2", campName: "Adventure Camp 2024" },
   { campId: "camp-3", campName: "Sports Camp 2024" },
 ];
+
+interface NavLink {
+  path: string;
+  label: string;
+  icon: IconName;
+}
+
+interface SettingsCategory {
+  label: string;
+  icon: IconName;
+  links: NavLink[];
+}
 
 export default defineComponent({
   name: "Sidebar",
@@ -113,8 +168,64 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const authStore = useAuthStore();
+    const uiStore = useUIStore();
 
     const selectedCampId = ref(authStore.selectedCampId);
+    const expandedCategories = ref<Set<string>>(new Set(["Date & Times"]));
+
+    const mainNavLinks: NavLink[] = [
+      { path: "/", label: "Dashboard", icon: "LayoutDashboard" },
+      { path: "/calendar", label: "Calendar", icon: "Calendar" },
+      { path: "/programs", label: "Programs", icon: "Boxes" },
+      { path: "/groups", label: "Groups", icon: "FolderOpen" },
+      { path: "/staff", label: "Staff", icon: "UsersRound" },
+      { path: "/campers", label: "Campers", icon: "Users" },
+    ];
+
+    const settingsCategories: SettingsCategory[] = [
+      {
+        label: "Date & Times",
+        icon: "Clock",
+        links: [
+          {
+            path: "/settings/sessions",
+            label: "Sessions",
+            icon: "CalendarDays",
+          },
+          {
+            path: "/settings/duration-presets",
+            label: "Duration Presets",
+            icon: "Timer",
+          },
+        ],
+      },
+      {
+        label: "Areas & Locations",
+        icon: "Map",
+        links: [
+          { path: "/settings/areas", label: "Areas", icon: "Map" },
+          { path: "/settings/locations", label: "Locations", icon: "MapPin" },
+          { path: "/settings/housing", label: "Housing", icon: "Bed" },
+        ],
+      },
+      {
+        label: "Roles & Certifications",
+        icon: "Shield",
+        links: [
+          { path: "/settings/roles", label: "Roles", icon: "Shield" },
+          {
+            path: "/settings/certifications",
+            label: "Certifications",
+            icon: "Award",
+          },
+        ],
+      },
+      {
+        label: "Appearance",
+        icon: "Palette",
+        links: [{ path: "/settings/colors", label: "Colors", icon: "Palette" }],
+      },
+    ];
 
     // Sync with auth store when it changes
     watch(
@@ -122,6 +233,27 @@ export default defineComponent({
       (newValue) => {
         selectedCampId.value = newValue;
       },
+    );
+
+    // Auto-expand category when navigating to a settings page
+    watch(
+      () => router.currentRoute.value.path,
+      (newPath) => {
+        if (newPath.startsWith("/settings")) {
+          // Find which category contains this path
+          const activeCategory = settingsCategories.find((category) =>
+            category.links.some((link) => newPath.startsWith(link.path)),
+          );
+          if (
+            activeCategory &&
+            !expandedCategories.value.has(activeCategory.label)
+          ) {
+            expandedCategories.value.add(activeCategory.label);
+            expandedCategories.value = new Set(expandedCategories.value);
+          }
+        }
+      },
+      { immediate: true },
     );
 
     const showCampSelector = computed(() => {
@@ -160,19 +292,52 @@ export default defineComponent({
       }
     };
 
+    const handleSettingsClick = () => {
+      uiStore.toggleToSettings();
+      router.push("/settings");
+    };
+
+    const handleBackToMain = () => {
+      uiStore.toggleToMain();
+      router.push("/");
+    };
+
     const handleLogout = () => {
       authStore.logout();
       router.push("/login");
     };
 
+    const toggleCategory = (categoryLabel: string) => {
+      if (expandedCategories.value.has(categoryLabel)) {
+        expandedCategories.value.delete(categoryLabel);
+      } else {
+        expandedCategories.value.add(categoryLabel);
+      }
+      // Force reactivity
+      expandedCategories.value = new Set(expandedCategories.value);
+    };
+
+    const isCategoryActive = (category: SettingsCategory): boolean => {
+      const currentPath = router.currentRoute.value.path;
+      return category.links.some((link) => currentPath.startsWith(link.path));
+    };
+
     return {
+      uiStore,
       selectedCampId,
       showCampSelector,
       accessibleCamps,
       getCampRole,
       getRoleLabel,
       handleCampChange,
+      handleSettingsClick,
+      handleBackToMain,
       handleLogout,
+      mainNavLinks,
+      settingsCategories,
+      expandedCategories,
+      toggleCategory,
+      isCategoryActive,
     };
   },
   computed: {
@@ -301,7 +466,7 @@ export default defineComponent({
   flex-direction: column;
   gap: 0.25rem;
   flex: 1;
-  padding: 0 1rem;
+  padding: 0 0.5rem;
 }
 
 .nav-link {
@@ -340,6 +505,87 @@ export default defineComponent({
   border-top: 1px solid var(--border-light);
   border-bottom: 1px solid var(--border-light);
   margin-top: auto;
+}
+
+.back-button-container {
+  padding: 0 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.settings-header {
+  padding: 0 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.settings-icon {
+  color: var(--accent-color);
+  flex-shrink: 0;
+}
+
+.settings-header h2 {
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.settings-category {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.category-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  padding: 0.75rem 0.5rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.category-label:hover {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+}
+
+.category-label.category-active {
+  color: var(--accent-color);
+}
+
+.category-chevron {
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+
+.category-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow: hidden;
+}
+
+/* Expand/Collapse Animation */
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.3s ease;
+  max-height: 500px;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  max-height: 0;
+  opacity: 0;
 }
 
 .conflicts-section {

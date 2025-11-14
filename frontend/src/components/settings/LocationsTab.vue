@@ -37,14 +37,19 @@
     />
 
     <!-- Grid View -->
-    <div v-else-if="viewMode === 'grid'" class="locations-grid">
+    <transition-group
+      v-else-if="viewMode === 'grid'"
+      name="list"
+      tag="div"
+      class="locations-grid transition-wrapper"
+    >
       <LocationCard
         v-for="location in filteredLocations"
         :key="location.meta.id"
         :location="location"
         @click="selectLocation(location.meta.id)"
       />
-    </div>
+    </transition-group>
 
     <!-- Table View -->
     <DataTable
@@ -340,7 +345,7 @@ export default defineComponent({
 .locations-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .locations-grid .empty-state {
@@ -425,7 +430,6 @@ export default defineComponent({
 @media (max-width: 768px) {
   .locations-grid {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
 }
 </style>

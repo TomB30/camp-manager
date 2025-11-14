@@ -35,18 +35,19 @@
     />
 
     <!-- Grid View -->
-    <div v-else-if="viewMode === 'grid'" class="certifications-grid">
-      <div
+    <transition-group
+      v-else-if="viewMode === 'grid'"
+      name="list"
+      tag="div"
+      class="certifications-grid transition-wrapper"
+    >
+      <CertificationCard
         v-for="certification in filteredCertifications"
         :key="certification.meta.id"
-        class="certification-card-wrapper"
-      >
-        <CertificationCard
-          :certification="certification"
-          @click="selectCertification(certification.meta.id)"
-        />
-      </div>
-    </div>
+        :certification="certification"
+        @click="selectCertification(certification.meta.id)"
+      />
+    </transition-group>
 
     <!-- Table View -->
     <DataTable
@@ -229,7 +230,7 @@ export default defineComponent({
 .certifications-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .certifications-grid .empty-state {

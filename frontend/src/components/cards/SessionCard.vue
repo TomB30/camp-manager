@@ -1,7 +1,7 @@
 <template>
-  <div class="session-card" @click="$emit('click', session.meta.id)">
-    <div class="session-header">
-      <div class="session-icon">
+  <div class="session-card card" @click="$emit('click', session.meta.id)">
+    <div class="card-header">
+      <div class="session-icon card-icon">
         <Icon name="CalendarDays" :size="24" />
       </div>
       <div class="session-title-section">
@@ -73,40 +73,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.session-card {
-  background: var(--surface);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow);
-  cursor: pointer;
-}
-
-.session-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--primary-color);
-  background: var(--surface-secondary);
-}
-
-.session-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
 .session-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  flex-shrink: 0;
 }
 
 .session-title-section {
@@ -158,13 +126,9 @@ export default defineComponent({
 }
 
 @media (max-width: 768px) {
-  .session-icon {
-    width: 40px;
-    height: 40px;
-  }
-
   .session-details {
     flex-direction: column;
+    gap: 0;
   }
 }
 </style>

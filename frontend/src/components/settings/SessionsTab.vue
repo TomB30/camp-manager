@@ -29,14 +29,19 @@
       icon-name="CalendarDays"
     />
 
-    <div v-else class="sessions-list">
+    <transition-group
+      v-else
+      name="list"
+      tag="div"
+      class="sessions-list transition-wrapper"
+    >
       <SessionCard
         v-for="session in filteredSessions"
         :key="session.meta.id"
         :session="session"
         @click="selectSession"
       />
-    </div>
+    </transition-group>
 
     <SessionDetailModal
       v-if="!!selectedSession"
@@ -181,15 +186,10 @@ export default defineComponent({
 }
 
 .sessions-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 @keyframes slideIn {
@@ -200,16 +200,6 @@ export default defineComponent({
   to {
     opacity: 1;
     transform: translateX(0);
-  }
-}
-
-@media (max-width: 768px) {
-  .sessions-list {
-    gap: 1rem;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
   }
 }
 </style>

@@ -35,7 +35,12 @@
     />
 
     <!-- Grid View -->
-    <div v-else-if="viewMode === 'grid'" class="roles-grid">
+    <transition-group
+      v-else-if="viewMode === 'grid'"
+      name="list"
+      tag="div"
+      class="roles-grid transition-wrapper"
+    >
       <div
         v-for="role in filteredRoles"
         :key="role.meta.id"
@@ -43,7 +48,7 @@
       >
         <RoleCard :role="role" @click="selectRole(role.meta.id)" />
       </div>
-    </div>
+    </transition-group>
 
     <!-- Table View -->
     <DataTable
@@ -226,7 +231,7 @@ export default defineComponent({
 .roles-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .roles-grid .empty-state {

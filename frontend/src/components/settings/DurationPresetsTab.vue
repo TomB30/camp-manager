@@ -29,14 +29,19 @@
       icon-name="Timer"
     />
 
-    <div v-else class="presets-list">
+    <transition-group
+      v-else
+      name="list"
+      tag="div"
+      class="presets-list transition-wrapper"
+    >
       <DurationPresetCard
         v-for="preset in filteredPresets"
         :key="preset.meta.id"
         :duration-preset="preset"
         @click="selectPreset"
       />
-    </div>
+    </transition-group>
 
     <DurationPresetDetailModal
       v-if="!!selectedPreset"
@@ -178,14 +183,13 @@ export default defineComponent({
 .presets-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.25rem;
-  margin-top: 1.5rem;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 @media (max-width: 768px) {
   .presets-list {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
 }
 </style>
