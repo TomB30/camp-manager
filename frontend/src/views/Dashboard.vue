@@ -450,7 +450,7 @@ export default defineComponent({
       return type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
     },
     getLocationName(locationId: string): string | null | undefined {
-      const location = this.areasStore.getAreaById(locationId);
+      const location = this.locationsStore.getLocationById(locationId);
       return location?.meta.name || "Unknown Location";
     },
     getRoomUsage(locationId: string): number {
