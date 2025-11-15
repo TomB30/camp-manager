@@ -18,7 +18,6 @@ import type {
   Session,
   Role,
   Camp,
-  DurationPreset,
 } from "@/generated/api";
 
 // Helper function to generate UUIDs (simple version for mock data)
@@ -72,81 +71,6 @@ export const camp: Camp = {
     logoUrl: "https://via.placeholder.com/200x200?text=Camp+Logo",
   },
 };
-
-// Duration Presets
-export const durationPresets: DurationPreset[] = [
-  {
-    meta: {
-      id: generateId(),
-      tenantId: TENANT_ID,
-      campId: CAMP_ID,
-      name: "Quick Activity",
-      description: "Short 30-minute activities or transitions",
-      createdAt: octoberDate(1),
-      updatedAt: octoberDate(1),
-    },
-    spec: {
-      durationMinutes: 30,
-    },
-  },
-  {
-    meta: {
-      id: generateId(),
-      tenantId: TENANT_ID,
-      campId: CAMP_ID,
-      name: "Standard Session",
-      description: "Standard 1-hour activity session",
-      createdAt: octoberDate(1),
-      updatedAt: octoberDate(1),
-    },
-    spec: {
-      durationMinutes: 60,
-      default: true,
-    },
-  },
-  {
-    meta: {
-      id: generateId(),
-      tenantId: TENANT_ID,
-      campId: CAMP_ID,
-      name: "Extended Activity",
-      description: "90-minute extended activity session",
-      createdAt: octoberDate(1),
-      updatedAt: octoberDate(1),
-    },
-    spec: {
-      durationMinutes: 90,
-    },
-  },
-  {
-    meta: {
-      id: generateId(),
-      tenantId: TENANT_ID,
-      campId: CAMP_ID,
-      name: "Half Day",
-      description: "2-hour half-day program",
-      createdAt: octoberDate(1),
-      updatedAt: octoberDate(1),
-    },
-    spec: {
-      durationMinutes: 120,
-    },
-  },
-  {
-    meta: {
-      id: generateId(),
-      tenantId: TENANT_ID,
-      campId: CAMP_ID,
-      name: "Full Program",
-      description: "3-hour full program session",
-      createdAt: octoberDate(1),
-      updatedAt: octoberDate(1),
-    },
-    spec: {
-      durationMinutes: 180,
-    },
-  },
-];
 
 // Colors
 export const colors: Color[] = [
@@ -1947,7 +1871,6 @@ while (events.length > 60) {
 // Export all mock data
 export const mockData = {
   camp,
-  durationPresets,
   colors,
   sessions,
   areas,

@@ -34,7 +34,6 @@ export async function insertMockData(): Promise<void> {
   const { mockData } = await import("@/data/mockData");
 
   console.log(`- 1 camp`);
-  console.log(`- ${mockData.durationPresets.length} duration presets`);
   console.log(`- ${mockData.certifications.length} certifications`);
   console.log(`- ${mockData.roles.length} roles`);
   console.log(`- ${mockData.locations.length} locations`);

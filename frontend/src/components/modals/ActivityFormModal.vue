@@ -42,24 +42,7 @@
 
               <div v-if="timeMode === 'duration'" class="time-input-section">
                 <label class="time-input-label">Duration (minutes)</label>
-                <div class="duration-presets">
-                  <BaseButton
-                    v-for="preset in durationPresets"
-                    :key="preset.minutes || 'custom'"
-                    type="button"
-                    class="duration-preset-btn"
-                    :class="{
-                      active:
-                        preset.minutes === null
-                          ? isCustomDuration
-                          : formData.spec.duration === preset.minutes,
-                    }"
-                    @click="handleDurationPresetClick(preset)"
-                  >
-                    {{ preset.label }}
-                  </BaseButton>
-                </div>
-                <div v-if="isCustomDuration" class="custom-duration-input">
+                <div class="custom-duration-input">
                   <div class="grid grid-cols-2">
                     <div>
                       <label class="form-sublabel">Hours</label>
@@ -286,7 +269,6 @@ import {
   useLocationsStore,
   useCertificationsStore,
   useActivitiesStore,
-  useDurationPresetsStore,
 } from "@/stores";
 import BaseModal from "@/components/BaseModal.vue";
 import Autocomplete, {
@@ -319,13 +301,11 @@ export default defineComponent({
     const locationsStore = useLocationsStore();
     const certificationsStore = useCertificationsStore();
     const activitiesStore = useActivitiesStore();
-    const durationPresetsStore = useDurationPresetsStore();
     const toast = useToast();
     return {
       locationsStore,
       certificationsStore,
       activitiesStore,
-      durationPresetsStore,
       toast,
     };
   },
@@ -355,7 +335,6 @@ export default defineComponent({
           },
         },
       } as any,
-      isCustomDuration: false,
       timeMode: "duration" as "duration" | "fixed",
       editingActivity: null as Activity | null,
       customDurationHours: 0,
@@ -407,12 +386,8 @@ export default defineComponent({
       };
     }
 
-    this.isCustomDuration = !this.durationPresets.find(
-      (preset) => preset.minutes === this.formData.spec.duration,
-    );
-
-    // Set custom duration hours and minutes if custom
-    if (this.isCustomDuration && this.formData.spec.duration) {
+    // Set custom duration hours and minutes
+    if (this.formData.spec.duration) {
       this.customDurationHours = Math.floor(this.formData.spec.duration / 60);
       this.customDurationMinutes = this.formData.spec.duration % 60;
     }
@@ -441,19 +416,6 @@ export default defineComponent({
         label: certification.meta.name,
       }));
     },
-    durationPresets(): { label: string; minutes: number | null }[] {
-      // Build presets from store
-      const presets: { label: string; minutes: number | null }[] =
-        this.durationPresetsStore.sortedDurationPresets.map((preset) => ({
-          label: this.formatDuration(preset.spec.durationMinutes),
-          minutes: preset.spec.durationMinutes as number,
-        }));
-
-      // Add "Custom" option at the end
-      presets.push({ label: "Custom", minutes: null });
-
-      return presets;
-    },
     availableActivities(): AutocompleteOption[] {
       return this.activitiesStore.activities
         .filter(
@@ -468,26 +430,6 @@ export default defineComponent({
     },
   },
   methods: {
-    handleDurationPresetClick(preset: {
-      label: string;
-      minutes: number | null;
-    }) {
-      if (preset.minutes === null) {
-        // Custom option selected
-        this.isCustomDuration = true;
-        // Initialize custom duration from current duration
-        if (this.formData.spec.duration) {
-          this.customDurationHours = Math.floor(
-            this.formData.spec.duration / 60,
-          );
-          this.customDurationMinutes = this.formData.spec.duration % 60;
-        }
-      } else {
-        // Preset option selected
-        this.isCustomDuration = false;
-        this.formData.spec.duration = preset.minutes as number;
-      }
-    },
     updateDurationFromCustom() {
       const hours = Number(this.customDurationHours) || 0;
       const minutes = Number(this.customDurationMinutes) || 0;
@@ -644,43 +586,6 @@ export default defineComponent({
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 0.75rem;
-}
-
-.duration-presets {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.duration-preset-btn {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.375rem;
-  background: white;
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.duration-preset-btn:hover {
-  border-color: var(--primary-color);
-  background: var(--primary-light);
-  color: var(--primary-color);
-}
-
-.duration-preset-btn.active {
-  border-color: var(--primary-color);
-  background: var(--primary-color);
-  color: white;
-}
-
-.duration-preset-btn:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .custom-duration-input {

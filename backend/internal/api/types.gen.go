@@ -636,33 +636,6 @@ type ColorsListResponse struct {
 	Total int `json:"total"`
 }
 
-// DurationPreset defines model for DurationPreset.
-type DurationPreset struct {
-	Meta EntityMeta         `json:"meta"`
-	Spec DurationPresetSpec `json:"spec"`
-}
-
-// DurationPresetCreationRequest defines model for DurationPresetCreationRequest.
-type DurationPresetCreationRequest struct {
-	Meta EntityCreationRequestMeta `json:"meta"`
-	Spec DurationPresetSpec        `json:"spec"`
-}
-
-// DurationPresetSpec defines model for DurationPresetSpec.
-type DurationPresetSpec struct {
-	// Default Whether this is the default duration preset
-	Default *bool `json:"default,omitempty"`
-
-	// DurationMinutes Duration in minutes
-	DurationMinutes int `json:"durationMinutes"`
-}
-
-// DurationPresetUpdateRequest defines model for DurationPresetUpdateRequest.
-type DurationPresetUpdateRequest struct {
-	Meta EntityCreationRequestMeta `json:"meta"`
-	Spec DurationPresetSpec        `json:"spec"`
-}
-
 // EntityCreationRequestMeta defines model for EntityCreationRequestMeta.
 type EntityCreationRequestMeta struct {
 	// Description Description of the entity

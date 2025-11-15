@@ -30,7 +30,6 @@ export {
   type LabelUpdateRequest,
 } from "./labelsService";
 export { campService } from "./campService";
-export { durationPresetsService } from "./durationPresetsService";
 export { timeBlocksService } from "./timeBlocksService";
 
 // Other services

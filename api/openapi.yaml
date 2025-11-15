@@ -156,13 +156,6 @@ components:
     CampUpdateRequest:
       $ref: "./schemas/CampUpdateRequest.yaml"
 
-    DurationPreset:
-      $ref: "./schemas/DurationPreset.yaml"
-    DurationPresetCreationRequest:
-      $ref: "./schemas/DurationPresetCreationRequest.yaml"
-    DurationPresetUpdateRequest:
-      $ref: "./schemas/DurationPresetUpdateRequest.yaml"
-
 paths:
   # Authentication endpoints
   /api/v1/auth/login:

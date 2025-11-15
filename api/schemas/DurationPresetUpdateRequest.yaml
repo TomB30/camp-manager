@@ -1,9 +1,0 @@
-type: object
-required:
-  - meta
-  - spec
-properties:
-  meta:
-    $ref: "./EntityCreationRequestMeta.yaml"
-  spec:
-    $ref: "./DurationPresetSpec.yaml"

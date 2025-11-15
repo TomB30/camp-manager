@@ -69,12 +69,6 @@ const router = createRouter({
           meta: { requiresAuth: true },
         },
         {
-          path: "duration-presets",
-          name: "settings-duration-presets",
-          component: () => import("../views/DurationPresets.vue"),
-          meta: { requiresAuth: true },
-        },
-        {
           path: "areas",
           name: "settings-areas",
           component: () => import("../views/Areas.vue"),

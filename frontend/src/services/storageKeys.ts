@@ -20,5 +20,4 @@ export const STORAGE_KEYS = {
   ROLES: "camp_roles",
   TIME_BLOCKS: "camp_time_blocks",
   camp: "camp_settings",
-  DURATION_PRESETS: "camp_duration_presets",
 } as const;

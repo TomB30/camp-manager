@@ -434,21 +434,6 @@ export type CampUpdateRequest = {
     spec: CampSpec;
 };
 
-export type DurationPreset = {
-    meta: EntityMeta;
-    spec: DurationPresetSpec;
-};
-
-export type DurationPresetCreationRequest = {
-    meta: EntityCreationRequestMeta;
-    spec: DurationPresetSpec;
-};
-
-export type DurationPresetUpdateRequest = {
-    meta: EntityCreationRequestMeta;
-    spec: DurationPresetSpec;
-};
-
 export type TenantsListResponse = ListResponseBase & {
     items: Array<Tenant>;
 };
@@ -784,17 +769,6 @@ export type EventSpec = {
      * Indicates if this is the parent event of a recurrence series
      */
     isRecurrenceParent?: boolean;
-};
-
-export type DurationPresetSpec = {
-    /**
-     * Duration in minutes
-     */
-    durationMinutes: number;
-    /**
-     * Whether this is the default duration preset
-     */
-    default?: boolean;
 };
 
 /**

@@ -197,11 +197,6 @@ export default defineComponent({
             label: "Sessions",
             icon: "CalendarDays",
           },
-          {
-            path: "/settings/duration-presets",
-            label: "Duration Presets",
-            icon: "Timer",
-          },
         ],
       },
       {
