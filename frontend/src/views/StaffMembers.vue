@@ -283,14 +283,14 @@ export default defineComponent({
           (member: StaffMember) =>
             member.meta.name.toLowerCase().includes(query) ||
             (member.spec.phone &&
-              member.spec.phone.toLowerCase().includes(query))
+              member.spec.phone.toLowerCase().includes(query)),
         );
       }
 
       // Role filter
       if (this.filterRole) {
         members = members.filter(
-          (member: StaffMember) => member.spec.roleId === this.filterRole
+          (member: StaffMember) => member.spec.roleId === this.filterRole,
         );
       }
 

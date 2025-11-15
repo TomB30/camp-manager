@@ -312,7 +312,7 @@ export default defineComponent({
           (group: Group) =>
             group.meta.name.toLowerCase().includes(query) ||
             (group.meta.description &&
-              group.meta.description.toLowerCase().includes(query))
+              group.meta.description.toLowerCase().includes(query)),
         );
       }
 
@@ -339,7 +339,7 @@ export default defineComponent({
       // Session filter
       if (this.filterSession) {
         groups = groups.filter(
-          (group: Group) => group.spec.sessionId === this.filterSession
+          (group: Group) => group.spec.sessionId === this.filterSession,
         );
       }
 
@@ -370,7 +370,7 @@ export default defineComponent({
     },
     getSessionName(sessionId: string): string {
       const session = this.sessionsStore.sessions.find(
-        (s) => s.meta.id === sessionId
+        (s) => s.meta.id === sessionId,
       );
       return session?.meta.name || "Unknown Session";
     },
@@ -489,7 +489,7 @@ export default defineComponent({
 .groups-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .empty-state {

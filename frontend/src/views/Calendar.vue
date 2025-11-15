@@ -208,19 +208,19 @@ export default defineComponent({
     },
     weekEvents() {
       return this.weekDays.flatMap((day) =>
-        this.eventsStore.eventsForDate(day)
+        this.eventsStore.eventsForDate(day),
       );
     },
     monthEvents() {
       const start = new Date(
         this.selectedDate.getFullYear(),
         this.selectedDate.getMonth(),
-        1
+        1,
       );
       const end = new Date(
         this.selectedDate.getFullYear(),
         this.selectedDate.getMonth() + 1,
-        0
+        0,
       );
 
       return this.eventsStore.events.filter((event) => {
@@ -281,7 +281,7 @@ export default defineComponent({
         this.locationsStore.locations.map((r) => [
           r.meta.id,
           r.meta.name.toLowerCase(),
-        ])
+        ]),
       );
     },
     programLookupMap() {
@@ -289,7 +289,7 @@ export default defineComponent({
         this.programsStore.programs.map((p) => [
           p.meta.id,
           p.meta.name.toLowerCase(),
-        ])
+        ]),
       );
     },
     staffLookupMap() {
@@ -297,7 +297,7 @@ export default defineComponent({
         this.staffMembersStore.staffMembers.map((s) => [
           s.meta.id,
           s.meta.name.toLowerCase(),
-        ])
+        ]),
       );
     },
     filteredEvents() {
@@ -349,7 +349,7 @@ export default defineComponent({
 
         if (this.filterStaff) {
           const eventStaffIds = this.eventsStore.getEventStaffIds(
-            event.meta.id
+            event.meta.id,
           );
           if (!eventStaffIds.includes(this.filterStaff)) {
             return false;
@@ -373,7 +373,7 @@ export default defineComponent({
 
           // Search in assigned staff names (using memoized map for O(1) lookup)
           const eventStaffIds = this.eventsStore.getEventStaffIds(
-            event.meta.id
+            event.meta.id,
           );
           if (eventStaffIds.length > 0) {
             const hasMatchingStaff = eventStaffIds.some((staffId) => {

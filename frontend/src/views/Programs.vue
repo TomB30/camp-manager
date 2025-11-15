@@ -322,7 +322,7 @@ export default defineComponent({
         (program) =>
           program.meta.name.toLowerCase().includes(query) ||
           (program.meta.description &&
-            program.meta.description.toLowerCase().includes(query))
+            program.meta.description.toLowerCase().includes(query)),
       );
     },
     selectedProgram(): Program | null {
@@ -438,7 +438,7 @@ export default defineComponent({
       try {
         await this.programsStore.updateProgram(
           this.selectedProgram.meta.id,
-          updatedProgram
+          updatedProgram,
         );
         this.toast.success("Staff assignments updated");
       } catch (error: any) {
@@ -459,12 +459,12 @@ export default defineComponent({
       try {
         await this.programsStore.updateProgram(
           this.selectedProgram.meta.id,
-          updatedProgram
+          updatedProgram,
         );
         this.toast.success("Location assignments updated");
       } catch (error: any) {
         this.toast.error(
-          error.message || "Failed to update location assignments"
+          error.message || "Failed to update location assignments",
         );
       }
     },

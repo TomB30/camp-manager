@@ -264,21 +264,21 @@ export default defineComponent({
               .includes(query) ||
             `${camper.meta.name.split(" ")[0]} ${camper.meta.name.split(" ").slice(1).join(" ")}`
               .toLowerCase()
-              .includes(query)
+              .includes(query),
         );
       }
 
       // Session filter
       if (this.filterSession) {
         campers = campers.filter(
-          (camper: Camper) => camper.spec.sessionId === this.filterSession
+          (camper: Camper) => camper.spec.sessionId === this.filterSession,
         );
       }
 
       // Gender filter
       if (this.filterGender) {
         campers = campers.filter(
-          (camper: Camper) => camper.spec.gender === this.filterGender
+          (camper: Camper) => camper.spec.gender === this.filterGender,
         );
       }
 
@@ -315,7 +315,7 @@ export default defineComponent({
     getSessionName(sessionId: string | undefined): string {
       if (!sessionId) return "No session";
       const session = this.sessionsStore.sessions.find(
-        (s) => s.meta.id === sessionId
+        (s) => s.meta.id === sessionId,
       );
       return session?.meta.name || "Unknown Session";
     },
@@ -375,7 +375,7 @@ export default defineComponent({
 .campers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .campers-grid .empty-state {

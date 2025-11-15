@@ -195,7 +195,6 @@ export default defineComponent({
   white-space: nowrap;
 }
 
-
 .info-item {
   display: flex;
   align-items: center;
