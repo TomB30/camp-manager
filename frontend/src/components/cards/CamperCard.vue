@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="card clickable card-horizontal"
-    @click="$emit('click', camper)"
-  >
+  <div class="card clickable card-horizontal" @click="$emit('click', camper)">
     <AvatarInitials
       :first-name="getFirstName(camper.meta.name)"
       :last-name="getLastName(camper.meta.name)"

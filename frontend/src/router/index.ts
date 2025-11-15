@@ -71,8 +71,7 @@ const router = createRouter({
         {
           path: "duration-presets",
           name: "settings-duration-presets",
-          component: () =>
-            import("../views/DurationPresets.vue"),
+          component: () => import("../views/DurationPresets.vue"),
           meta: { requiresAuth: true },
         },
         {
@@ -96,8 +95,7 @@ const router = createRouter({
         {
           path: "certifications",
           name: "settings-certifications",
-          component: () =>
-            import("../views/Certifications.vue"),
+          component: () => import("../views/Certifications.vue"),
           meta: { requiresAuth: true },
         },
         {

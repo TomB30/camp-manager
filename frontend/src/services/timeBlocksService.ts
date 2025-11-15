@@ -75,4 +75,3 @@ async function deleteTimeBlock(id: string): Promise<void> {
 async function getTimeBlockById(id: string): Promise<TimeBlock | null> {
   return storageService.getById<TimeBlock>(STORAGE_KEYS.TIME_BLOCKS, id);
 }
-

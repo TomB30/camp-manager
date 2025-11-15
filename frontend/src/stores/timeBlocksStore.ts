@@ -33,9 +33,8 @@ export const useTimeBlocksStore = defineStore("timeBlocks", {
     async createTimeBlock(
       timeBlockRequest: TimeBlockCreationRequest,
     ): Promise<TimeBlock> {
-      const timeBlock = await timeBlocksService.createTimeBlock(
-        timeBlockRequest,
-      );
+      const timeBlock =
+        await timeBlocksService.createTimeBlock(timeBlockRequest);
       this.timeBlocks.push(timeBlock);
       return timeBlock;
     },
@@ -60,4 +59,3 @@ export const useTimeBlocksStore = defineStore("timeBlocks", {
     },
   },
 });
-

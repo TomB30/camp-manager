@@ -44,7 +44,8 @@
               :rules="[
                 (val: string) => !!val || 'Enter end time',
                 (val: string) =>
-                  isEndTimeAfterStart(val) || 'End time must be after start time',
+                  isEndTimeAfterStart(val) ||
+                  'End time must be after start time',
               ]"
             />
           </div>
@@ -257,4 +258,3 @@ export default defineComponent({
   }
 }
 </style>
-

@@ -94,4 +94,3 @@ export default defineComponent({
   margin-top: -2px;
 }
 </style>
-
