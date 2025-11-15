@@ -176,7 +176,7 @@ import LocationDetailModal from "@/components/modals/LocationDetailModal.vue";
 import LocationFormModal from "@/components/modals/LocationFormModal.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
-import Icon from "../Icon.vue";
+import Icon from "@/components/Icon.vue";
 import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
