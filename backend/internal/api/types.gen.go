@@ -35,6 +35,17 @@ const (
 	ScopeTypeTenant ScopeType = "tenant"
 )
 
+// Defines values for TimeBlockSpecDaysOfWeek.
+const (
+	TimeBlockSpecDaysOfWeekFriday    TimeBlockSpecDaysOfWeek = "friday"
+	TimeBlockSpecDaysOfWeekMonday    TimeBlockSpecDaysOfWeek = "monday"
+	TimeBlockSpecDaysOfWeekSaturday  TimeBlockSpecDaysOfWeek = "saturday"
+	TimeBlockSpecDaysOfWeekSunday    TimeBlockSpecDaysOfWeek = "sunday"
+	TimeBlockSpecDaysOfWeekThursday  TimeBlockSpecDaysOfWeek = "thursday"
+	TimeBlockSpecDaysOfWeekTuesday   TimeBlockSpecDaysOfWeek = "tuesday"
+	TimeBlockSpecDaysOfWeekWednesday TimeBlockSpecDaysOfWeek = "wednesday"
+)
+
 // Defines values for AreasSortBy.
 const (
 	AreasSortByName AreasSortBy = "name"
@@ -325,10 +336,10 @@ type ActivitySpec struct {
 	// DefaultLocationId ID of the default location
 	DefaultLocationId *openapi_types.UUID `json:"defaultLocationId,omitempty"`
 
-	// Duration Default duration in minutes (mutually exclusive with fixedTime)
+	// Duration Default duration in minutes (mutually exclusive with fixedTime and timeBlockId)
 	Duration *int `json:"duration,omitempty"`
 
-	// FixedTime Fixed time for the activity (mutually exclusive with duration)
+	// FixedTime Fixed time for the activity (mutually exclusive with duration and timeBlockId)
 	FixedTime *struct {
 		// EndTime End time for the activity
 		EndTime string `json:"endTime"`
@@ -346,6 +357,9 @@ type ActivitySpec struct {
 		// RequiredCertificationId ID of the certification required for this position
 		RequiredCertificationId *openapi_types.UUID `json:"requiredCertificationId,omitempty"`
 	} `json:"requiredStaff,omitempty"`
+
+	// TimeBlockId ID of the time block for this activity (mutually exclusive with duration and fixedTime). Activity will use current time block values.
+	TimeBlockId *openapi_types.UUID `json:"timeBlockId,omitempty"`
 }
 
 // ActivityUpdateRequest defines model for ActivityUpdateRequest.
@@ -1179,9 +1193,18 @@ type TimeBlockCreationRequest struct {
 
 // TimeBlockSpec defines model for TimeBlockSpec.
 type TimeBlockSpec struct {
-	EndTime   string `json:"endTime"`
+	// DaysOfWeek Days of the week this time block applies to. If empty or not provided, applies to all days.
+	DaysOfWeek *[]TimeBlockSpecDaysOfWeek `json:"daysOfWeek,omitempty"`
+
+	// EndTime End time for the time block
+	EndTime string `json:"endTime"`
+
+	// StartTime Start time for the time block
 	StartTime string `json:"startTime"`
 }
+
+// TimeBlockSpecDaysOfWeek defines model for TimeBlockSpec.DaysOfWeek.
+type TimeBlockSpecDaysOfWeek string
 
 // TimeBlockUpdateRequest defines model for TimeBlockUpdateRequest.
 type TimeBlockUpdateRequest struct {

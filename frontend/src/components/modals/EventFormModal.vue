@@ -43,23 +43,238 @@
           />
         </div>
 
-        <!-- Time inputs - Different UI based on activity constraints -->
-        <div v-if="selectedActivityHasFixedTime" class="form-group">
-          <label class="form-label">
-            Event Time (Fixed by Activity Template)
-          </label>
-          <div class="fixed-time-display row justify-between">
-            <div class="calculated-time-display col">
-              <span class="time-label">Start Time:</span>
-              <span class="time-value">{{ startTime }}</span>
+        <!-- Unified Event Time Section (for new events) -->
+        <div v-if="!isEditing" class="form-group">
+          <label class="form-label">Event Time</label>
+          <div class="time-settings-container">
+            <q-option-group
+              inline
+              v-model="timeSelectionMode"
+              :options="[
+                { label: 'Specific Time', value: 'specific' },
+                { label: 'Time Block', value: 'timeblock' }
+              ]"
+              color="primary"
+              class="time-mode-selector"
+              :disable="selectedActivityHasTimeBlock || selectedActivityHasFixedTime || selectedActivityHasDuration"
+            >
+              <q-tooltip v-if="selectedActivityHasTimeBlock">
+                Time mode is set by the activity template (uses time block)
+              </q-tooltip>
+              <q-tooltip v-else-if="selectedActivityHasFixedTime">
+                Time mode is set by the activity template (fixed time)
+              </q-tooltip>
+              <q-tooltip v-else-if="selectedActivityHasDuration">
+                Time mode is set by the activity template (duration-based)
+              </q-tooltip>
+            </q-option-group>
+
+            <!-- Specific Time Inputs -->
+            <div v-if="timeSelectionMode === 'specific'" class="time-input-section">
+              <label class="time-input-label">Set Time</label>
+              <div class="grid grid-cols-2">
+                <div>
+                  <label class="form-sublabel">Start Time</label>
+                  <q-input
+                    :model-value="startTime"
+                    @update:model-value="handleStartTimeChange"
+                    outlined
+                    dense
+                    type="time"
+                    placeholder="HH:MM"
+                    :rules="[(val: string) => !!val || 'Enter start time']"
+                    :disable="selectedActivityHasFixedTime"
+                  >
+                    <q-tooltip v-if="selectedActivityHasFixedTime">
+                      Start time is fixed by the activity template
+                    </q-tooltip>
+                  </q-input>
+                </div>
+                <div>
+                  <label class="form-sublabel">End Time</label>
+                  <q-input
+                    v-model="endTime"
+                    outlined
+                    dense
+                    type="time"
+                    placeholder="HH:MM"
+                    :rules="[
+                      (val: string) => !!val || 'Enter end time',
+                      endTimeBeforeStartTime,
+                    ]"
+                    :disable="selectedActivityHasFixedTime || selectedActivityHasDuration"
+                  >
+                    <q-tooltip v-if="selectedActivityHasFixedTime">
+                      End time is fixed by the activity template
+                    </q-tooltip>
+                    <q-tooltip v-else-if="selectedActivityHasDuration">
+                      End time is calculated based on the activity's {{ selectedActivityDuration }} minute duration
+                    </q-tooltip>
+                  </q-input>
+                  <div v-if="selectedActivityHasDuration" class="duration-hint">
+                    ({{ selectedActivityDuration }} min duration)
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="calculated-time-display col">
-              <span class="time-label">End Time:</span>
-              <span class="time-value">{{ endTime }}</span>
+
+            <!-- Time Block Selector -->
+            <div v-if="timeSelectionMode === 'timeblock'" class="time-input-section">
+              <label class="time-input-label">Select Time Block</label>
+              <p class="form-help-text">
+                Choose a time block. Time will be fixed once event is created.
+              </p>
+              <div class="autocomplete-wrapper">
+                <Autocomplete
+                  v-model="selectedTimeBlockId"
+                  :options="filteredTimeBlocks"
+                  @update:modelValue="applyTimeBlock"
+                  :disable="selectedActivityHasTimeBlock"
+                />
+                <q-tooltip v-if="selectedActivityHasTimeBlock">
+                  Time block is set by the activity template
+                </q-tooltip>
+              </div>
+              <div v-if="selectedTimeBlockId && selectedTimeBlock" class="time-block-preview">
+                <div class="time-preview-item">
+                  <strong>Time:</strong> {{ selectedTimeBlock.spec.startTime }} - {{ selectedTimeBlock.spec.endTime }}
+                </div>
+                <div v-if="selectedTimeBlock.spec.daysOfWeek && selectedTimeBlock.spec.daysOfWeek.length > 0" class="time-preview-item">
+                  <strong>Days:</strong> {{ formatDaysOfWeek(selectedTimeBlock.spec.daysOfWeek) }}
+                </div>
+                <div v-else class="time-preview-item">
+                  <strong>Days:</strong> All days
+                </div>
+              </div>
+            </div>
+
+            <!-- Recurrence Section -->
+            <div class="recurrence-section-container">
+              <div class="recurrence-header">
+                <q-checkbox
+                  v-model="recurrenceData.enabled"
+                  label="Repeat Event"
+                  color="primary"
+                />
+              </div>
+
+              <div v-if="recurrenceData.enabled" class="recurrence-content">
+                <!-- Repeat Every -->
+                <div class="recurrence-row">
+                  <label class="recurrence-label">Repeat every</label>
+                  <div class="recurrence-inputs">
+                    <NumberInput
+                      v-model="recurrenceData.interval"
+                      :min="1"
+                      :max="99"
+                    />
+                    <select
+                      v-model="recurrenceData.frequency"
+                      class="frequency-select"
+                    >
+                      <option value="daily">
+                        {{ recurrenceData.interval === 1 ? "day" : "days" }}
+                      </option>
+                      <option value="weekly">
+                        {{ recurrenceData.interval === 1 ? "week" : "weeks" }}
+                      </option>
+                      <option value="monthly">
+                        {{ recurrenceData.interval === 1 ? "month" : "months" }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Repeat On (for weekly) -->
+                <div
+                  v-if="recurrenceData.frequency === 'weekly'"
+                  class="recurrence-row"
+                >
+                  <label class="recurrence-label">Repeat on</label>
+                  <div class="days-selector">
+                    <button
+                      v-for="(day, index) in daysOfWeek"
+                      :key="index"
+                      type="button"
+                      class="day-button"
+                      :class="{
+                        active:
+                          recurrenceData.daysOfWeek &&
+                          recurrenceData.daysOfWeek.includes(index as any),
+                      }"
+                      @click="toggleDay(index)"
+                    >
+                      {{ day }}
+                      <q-tooltip>{{ getDayFullName(index) }}</q-tooltip>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Ends -->
+                <div class="recurrence-row">
+                  <label class="recurrence-label">Ends</label>
+                  <div class="ends-options">
+                    <label class="radio-option">
+                      <input
+                        type="radio"
+                        value="never"
+                        v-model="recurrenceData.endType"
+                        class="radio-input"
+                      />
+                      <span>Never</span>
+                    </label>
+
+                    <label class="radio-option">
+                      <input
+                        type="radio"
+                        value="on"
+                        v-model="recurrenceData.endType"
+                        class="radio-input"
+                      />
+                      <span>On</span>
+                      <input
+                        v-model="recurrenceData.endDate"
+                        type="date"
+                        class="date-input"
+                        :disabled="recurrenceData.endType !== 'on'"
+                        :min="defaultEventDate.toISOString()"
+                      />
+                    </label>
+
+                    <label class="radio-option">
+                      <input
+                        type="radio"
+                        value="after"
+                        v-model="recurrenceData.endType"
+                        class="radio-input"
+                      />
+                      <span>After</span>
+                      <NumberInput
+                        v-model="occurrencesValue"
+                        :min="1"
+                        :max="365"
+                        :disabled="recurrenceData.endType !== 'after'"
+                        :small="true"
+                      />
+                      <span>occurrences</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Recurrence Summary -->
+                <div
+                  v-if="recurrenceSummary"
+                  class="recurrence-summary"
+                  :class="{ warning: recurrenceSummary.includes('⚠️') }"
+                >
+                  <strong>Summary:</strong> {{ recurrenceSummary }}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
+        <!-- Time Inputs for editing events -->
         <div v-else class="grid grid-cols-2">
           <div class="form-group">
             <label class="form-label">Start Time</label>
@@ -74,7 +289,6 @@
           <div class="form-group">
             <label class="form-label"> End Time </label>
             <BaseInput
-              v-if="!selectedActivityHasDuration"
               v-model="endTime"
               type="time"
               :rules="[
@@ -82,143 +296,6 @@
                 endTimeBeforeStartTime,
               ]"
             />
-            <div v-else class="calculated-time-display">
-              <span class="time-value">{{ endTime }}</span>
-              <span class="duration-info">
-                ({{ selectedActivityDuration }} min duration)
-              </span>
-              <q-tooltip> fixed duration by activity template </q-tooltip>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recurrence Section (only show when creating new event) -->
-        <div v-if="!isEditing" class="form-group recurrence-section">
-          <div class="recurrence-header">
-            <label class="checkbox-label">
-              <input
-                type="checkbox"
-                v-model="recurrenceData.enabled"
-                class="checkbox-input"
-              />
-              <span class="form-label" style="margin: 0">Repeat Event</span>
-            </label>
-          </div>
-
-          <div v-if="recurrenceData.enabled" class="recurrence-content">
-            <!-- Repeat Every -->
-            <div class="recurrence-row">
-              <label class="recurrence-label">Repeat every</label>
-              <div class="recurrence-inputs">
-                <NumberInput
-                  v-model="recurrenceData.interval"
-                  :min="1"
-                  :max="99"
-                />
-                <select
-                  v-model="recurrenceData.frequency"
-                  class="frequency-select"
-                >
-                  <option value="daily">
-                    {{ recurrenceData.interval === 1 ? "day" : "days" }}
-                  </option>
-                  <option value="weekly">
-                    {{ recurrenceData.interval === 1 ? "week" : "weeks" }}
-                  </option>
-                  <option value="monthly">
-                    {{ recurrenceData.interval === 1 ? "month" : "months" }}
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Repeat On (for weekly) -->
-            <div
-              v-if="recurrenceData.frequency === 'weekly'"
-              class="recurrence-row"
-            >
-              <label class="recurrence-label">Repeat on</label>
-              <div class="days-selector">
-                <button
-                  v-for="(day, index) in daysOfWeek"
-                  :key="index"
-                  type="button"
-                  class="day-button"
-                  :class="{
-                    active:
-                      recurrenceData.daysOfWeek &&
-                      recurrenceData.daysOfWeek.includes(index as any),
-                  }"
-                  @click="toggleDay(index)"
-                >
-                  {{ day }}
-                </button>
-              </div>
-              <p class="recurrence-help-text">
-                Select which days of the week this event should occur. Example:
-                Select S, T, Th for every Sunday, Tuesday, and Thursday.
-              </p>
-            </div>
-
-            <!-- Ends -->
-            <div class="recurrence-row">
-              <label class="recurrence-label">Ends</label>
-              <div class="ends-options">
-                <label class="radio-option">
-                  <input
-                    type="radio"
-                    value="never"
-                    v-model="recurrenceData.endType"
-                    class="radio-input"
-                  />
-                  <span>Never</span>
-                </label>
-
-                <label class="radio-option">
-                  <input
-                    type="radio"
-                    value="on"
-                    v-model="recurrenceData.endType"
-                    class="radio-input"
-                  />
-                  <span>On</span>
-                  <input
-                    v-model="recurrenceData.endDate"
-                    type="date"
-                    class="date-input"
-                    :disabled="recurrenceData.endType !== 'on'"
-                    :min="defaultEventDate.toISOString()"
-                  />
-                </label>
-
-                <label class="radio-option">
-                  <input
-                    type="radio"
-                    value="after"
-                    v-model="recurrenceData.endType"
-                    class="radio-input"
-                  />
-                  <span>After</span>
-                  <NumberInput
-                    v-model="occurrencesValue"
-                    :min="1"
-                    :max="365"
-                    :disabled="recurrenceData.endType !== 'after'"
-                    :small="true"
-                  />
-                  <span>occurrences</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Recurrence Summary -->
-            <div
-              v-if="recurrenceSummary"
-              class="recurrence-summary"
-              :class="{ warning: recurrenceSummary.includes('⚠️') }"
-            >
-              <strong>Summary:</strong> {{ recurrenceSummary }}
-            </div>
           </div>
         </div>
 
@@ -350,7 +427,6 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import { dateUtils } from "@/utils/dateUtils";
 import {
   useEventsStore,
   useCampersStore,
@@ -362,6 +438,7 @@ import {
   useColorsStore,
   useCertificationsStore,
   useSessionsStore,
+  useTimeBlocksStore,
 } from "@/stores";
 import { conflictDetector } from "@/services/conflicts";
 import { useToast } from "@/composables/useToast";
@@ -376,6 +453,7 @@ import type {
   StaffMember,
   Group,
   EventCreationRequest,
+  TimeBlock,
 } from "@/generated/api";
 import {
   type RecurrenceData,
@@ -422,6 +500,7 @@ export default defineComponent({
     const certificationsStore = useCertificationsStore();
     const toast = useToast();
     const sessionsStore = useSessionsStore();
+    const timeBlocksStore = useTimeBlocksStore();
     return {
       eventsStore,
       campersStore,
@@ -434,6 +513,7 @@ export default defineComponent({
       certificationsStore,
       toast,
       sessionsStore,
+      timeBlocksStore,
     };
   },
   data() {
@@ -450,7 +530,6 @@ export default defineComponent({
           description: "",
         },
         spec: {
-          title: "",
           startDate: defaultDate.toISOString(),
           endDate: "",
           locationId: "",
@@ -472,9 +551,12 @@ export default defineComponent({
       internalStartTime: `${startHours}:${startMinutes}`,
       internalEndTime: "",
       selectedActivityId: "",
+      selectedTimeBlockId: "",
+      timeSelectionMode: "specific" as "specific" | "timeblock",
       formRef: null as any,
       selectedActivityHasFixedTime: false,
       selectedActivityHasDuration: false,
+      selectedActivityHasTimeBlock: false,
       selectedActivityDuration: 0,
       recurrenceData: {
         enabled: false,
@@ -488,7 +570,9 @@ export default defineComponent({
       daysOfWeek: ["S", "M", "T", "W", "T", "F", "S"],
     };
   },
-  created() {
+  async created() {
+    // Load time blocks
+    await this.timeBlocksStore.loadTimeBlocks();
     if (this.eventId) {
       const event = this.eventsStore.getEventById(this.eventId);
       if (!event) return;
@@ -663,6 +747,30 @@ export default defineComponent({
 
       return optionsWithGroups;
     },
+    filteredTimeBlocks(): AutocompleteOption[] {
+      // Filter time blocks based on event date's day of week
+      const eventDayOfWeek = this.getDayOfWeekFromDate(this.internalEventDate);
+      
+      return this.timeBlocksStore.timeBlocks
+        .filter((timeBlock) => {
+          // If no days are specified, time block applies to all days
+          if (!timeBlock.spec.daysOfWeek || timeBlock.spec.daysOfWeek.length === 0) {
+            return true;
+          }
+          // Check if event's day is in the time block's days
+          return timeBlock.spec.daysOfWeek.some(
+            (day) => day.toLowerCase() === eventDayOfWeek.toLowerCase()
+          );
+        })
+        .map((timeBlock) => ({
+          label: `${timeBlock.meta.name} (${timeBlock.spec.startTime} - ${timeBlock.spec.endTime})`,
+          value: timeBlock.meta.id,
+        }));
+    },
+    selectedTimeBlock(): TimeBlock | undefined {
+      if (!this.selectedTimeBlockId) return undefined;
+      return this.timeBlocksStore.getTimeBlockById(this.selectedTimeBlockId);
+    },
     allGroups(): Array<Group> {
       // Filter groups by session dates
       const eventDate = this.eventDate;
@@ -774,6 +882,12 @@ export default defineComponent({
     },
   },
   watch: {
+    timeSelectionMode(newMode) {
+      // Clear time block selection when switching to specific time
+      if (newMode === "specific") {
+        this.selectedTimeBlockId = "";
+      }
+    },
     "recurrenceData.frequency": {
       handler(newFrequency, oldFrequency) {
         // Auto-select the event's day when switching to weekly mode
@@ -804,7 +918,9 @@ export default defineComponent({
         ) === -1 || "End time must be later than start time"
       );
     },
-    handleStartTimeChange(value: string): void {
+    handleStartTimeChange(value: string | number | null): void {
+      if (typeof value !== 'string') return;
+      
       this.internalStartTime = value;
 
       // If activity has a fixed duration, recalculate end time
@@ -885,7 +1001,15 @@ export default defineComponent({
         // Reset activity constraints when no activity is selected
         this.selectedActivityHasFixedTime = false;
         this.selectedActivityHasDuration = false;
+        this.selectedActivityHasTimeBlock = false;
         this.selectedActivityDuration = 0;
+        this.timeSelectionMode = 'specific';
+        this.selectedTimeBlockId = '';
+        this.formData.spec.requiredStaff = [];
+        this.formData.spec.programId = "";
+        this.formData.spec.activityId = "";
+        this.formData.spec.locationId = "";
+        this.formData.meta.name = "";
         return;
       }
 
@@ -895,12 +1019,30 @@ export default defineComponent({
       // Auto-populate form fields from activity template
       this.formData.meta.name = activity.meta.name;
 
-      // Handle time setting: either fixedTime or duration
-      if (activity.spec.fixedTime) {
+      // Handle time setting: either timeBlockId, fixedTime, or duration
+      if (activity.spec.timeBlockId) {
+        // Use time block from activity - get the actual times from the time block
+        const timeBlock = this.timeBlocksStore.getTimeBlockById(
+          activity.spec.timeBlockId,
+        );
+        if (timeBlock) {
+          this.selectedActivityHasTimeBlock = true;
+          this.selectedActivityHasFixedTime = false;
+          this.selectedActivityHasDuration = false;
+          this.selectedActivityDuration = 0;
+          this.timeSelectionMode = 'timeblock';
+          this.selectedTimeBlockId = activity.spec.timeBlockId;
+          this.internalStartTime = timeBlock.spec.startTime;
+          this.internalEndTime = timeBlock.spec.endTime;
+          this.updateFormDataDates();
+        }
+      } else if (activity.spec.fixedTime) {
         // Use fixed time from activity - this is locked and cannot be changed
         this.selectedActivityHasFixedTime = true;
         this.selectedActivityHasDuration = false;
+        this.selectedActivityHasTimeBlock = false;
         this.selectedActivityDuration = 0;
+        this.timeSelectionMode = 'specific';
         this.internalStartTime = activity.spec.fixedTime.startTime;
         this.internalEndTime = activity.spec.fixedTime.endTime;
         this.updateFormDataDates();
@@ -908,7 +1050,9 @@ export default defineComponent({
         // Use duration from activity - start time is editable, end time is calculated
         this.selectedActivityHasFixedTime = false;
         this.selectedActivityHasDuration = true;
+        this.selectedActivityHasTimeBlock = false;
         this.selectedActivityDuration = activity.spec.duration;
+        this.timeSelectionMode = 'specific';
 
         // Calculate end time based on start time and duration
         if (this.internalStartTime) {
@@ -930,6 +1074,7 @@ export default defineComponent({
         // No time constraints from activity
         this.selectedActivityHasFixedTime = false;
         this.selectedActivityHasDuration = false;
+        this.selectedActivityHasTimeBlock = false;
         this.selectedActivityDuration = 0;
       }
 
@@ -966,27 +1111,45 @@ export default defineComponent({
       this.formData.spec.programId = activity.spec.programId;
       this.formData.spec.activityId = activity.meta.id;
     },
-    getCamperLabel(camper: Camper): string {
-      const age = camper.spec.birthday
-        ? dateUtils.calculateAge(camper.spec.birthday)
-        : 0;
-      return `${camper.meta.name} (Age: ${age})`;
+    applyTimeBlock(timeBlockId: string) {
+      if (!timeBlockId) return;
+
+      const timeBlock = this.timeBlocksStore.getTimeBlockById(timeBlockId);
+      if (!timeBlock) return;
+
+      // Set the event times from the time block
+      this.internalStartTime = timeBlock.spec.startTime;
+      this.internalEndTime = timeBlock.spec.endTime;
+      this.updateFormDataDates();
     },
-    getCamperInitials(camper: Camper): string {
-      const parts = camper.meta.name.split(" ");
-      if (parts.length >= 2) {
-        return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-      }
-      return camper.meta.name.charAt(0).toUpperCase();
+    getDayOfWeekFromDate(dateString: string): string {
+      const date = new Date(dateString);
+      const days = [
+        "sunday",
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+      ];
+      return days[date.getDay()];
     },
-    getCamperOption(camper: Camper): AutocompleteOption {
-      const age = camper.spec.birthday
-        ? dateUtils.calculateAge(camper.spec.birthday)
-        : 0;
-      return {
-        label: `${camper.meta.name} (Age: ${age})`,
-        value: camper.meta.id,
+    formatDaysOfWeek(days: string[]): string {
+      const dayMap: Record<string, string> = {
+        sunday: "Sun",
+        monday: "Mon",
+        tuesday: "Tue",
+        wednesday: "Wed",
+        thursday: "Thu",
+        friday: "Fri",
+        saturday: "Sat",
       };
+      return days.map((day) => dayMap[day.toLowerCase()] || day).join(", ");
+    },
+    getDayFullName(index: number): string {
+      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      return days[index] || "";
     },
     getCertificationName(certificationId: string): string {
       const cert =
@@ -1034,37 +1197,6 @@ export default defineComponent({
         }),
       ];
     },
-    getGroupLabel(group: Group): string {
-      // Check if it's a camper group or family group
-      const camperCount = this.groupsStore.getCampersInGroup(
-        group.meta.id,
-      ).length;
-      return `${group.meta.name} (${camperCount} campers)`;
-    },
-    getGroupInitials(group: Group): string {
-      // Use first two letters of the group name
-      return group.meta.name.substring(0, 2).toUpperCase();
-    },
-    getGroupOption(group: Group): AutocompleteOption {
-      return {
-        label: group.meta.name,
-        value: group.meta.id,
-      };
-    },
-    isStaffInSelectedProgram(staff: StaffMember): boolean {
-      if (!this.formData.spec.programId) return false;
-      const program = this.programsStore.getProgramById(
-        this.formData.spec.programId,
-      );
-
-      const groups: Group[] | undefined = program?.spec.staffGroupIds
-        ?.map((groupId) => this.groupsStore.getGroupById(groupId))
-        ?.filter((group): group is Group => group !== undefined);
-      if (!groups) return false;
-      return groups.some((group: Group) =>
-        group.spec.staffIds?.includes(staff.meta.id),
-      );
-    },
     isStaffAvailable(staff: StaffMember): {
       available: boolean;
       reason?: string;
@@ -1084,25 +1216,6 @@ export default defineComponent({
       );
 
       return { available: result.canAssign, reason: result.reason };
-    },
-    onProgramSelected(programId: string) {
-      if (!programId) return;
-
-      const program = this.programsStore.getProgramById(programId);
-      if (!program) return;
-
-      // Auto-apply program color if event color is not set or is default
-      if (
-        !this.formData.spec.colorId ||
-        this.formData.spec.colorId === "#6366F1"
-      ) {
-        if (program.spec.colorId) {
-          const color = this.colorsStore.getColorById(program.spec.colorId);
-          if (color) {
-            this.formData.spec.colorId = color.meta.id;
-          }
-        }
-      }
     },
     toggleDay(day: number) {
       if (!this.recurrenceData.daysOfWeek) {
@@ -1242,17 +1355,6 @@ export default defineComponent({
         this.$emit("close");
       }
     },
-    formatDuration(minutes: number): string {
-      if (minutes < 60) {
-        return `${minutes} min`;
-      }
-      const hours = Math.floor(minutes / 60);
-      const remainingMinutes = minutes % 60;
-      if (remainingMinutes === 0) {
-        return `${hours}h`;
-      }
-      return `${hours}h ${remainingMinutes}m`;
-    },
   },
 });
 </script>
@@ -1301,7 +1403,6 @@ export default defineComponent({
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  padding: 0.5rem;
   border-radius: var(--radius);
   transition: background 0.15s ease;
 }
@@ -1328,19 +1429,14 @@ export default defineComponent({
 }
 
 /* Recurrence Styles */
-.recurrence-section {
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 1rem;
-  background: var(--background);
+.recurrence-section-container {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
 }
 
-.recurrence-header .checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-weight: 600;
-  font-size: 1rem;
+.recurrence-header {
+  margin-bottom: 0.5rem;
 }
 
 .recurrence-content {
@@ -1350,6 +1446,7 @@ export default defineComponent({
   padding: 1rem;
   background: var(--surface);
   border-radius: var(--radius);
+  margin-top: 1rem;
 }
 
 .recurrence-row {
@@ -1383,29 +1480,33 @@ export default defineComponent({
 
 .days-selector {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .day-button {
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: none;
   border-radius: 50%;
-  border: 2px solid var(--border-color);
-  background: white;
-  color: var(--text-secondary);
+  background: #e8eaf6;
+  color: #5c6bc0;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .day-button:hover {
-  border-color: var(--primary-color);
-  background: var(--primary-light);
+  background: #c5cae9;
 }
 
 .day-button.active {
-  background: var(--primary-color);
-  border-color: var(--primary-color);
+  background: #5c6bc0;
   color: white;
 }
 
@@ -1601,6 +1702,78 @@ export default defineComponent({
   .fixed-time-display {
     flex-direction: column;
     gap: 1rem;
+  }
+}
+
+.time-settings-container {
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background: var(--background);
+}
+
+.time-mode-selector {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.time-input-section {
+  animation: slideDown 0.2s ease-out;
+}
+
+.time-input-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.form-sublabel {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.375rem;
+}
+
+.time-block-preview {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: var(--background-secondary);
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-color);
+}
+
+.time-preview-item {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.time-preview-item:last-child {
+  margin-bottom: 0;
+}
+
+.duration-hint {
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.autocomplete-wrapper {
+  position: relative;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

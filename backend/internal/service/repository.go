@@ -155,3 +155,12 @@ type TenantsRepository interface {
 	Update(ctx context.Context, tenant *domain.Tenant) error
 	Delete(ctx context.Context, tenantID uuid.UUID) error
 }
+
+// TimeBlocksRepository defines the data access interface for time blocks
+type TimeBlocksRepository interface {
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.TimeBlock, int64, error)
+	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.TimeBlock, error)
+	Create(ctx context.Context, timeBlock *domain.TimeBlock) error
+	Update(ctx context.Context, tenantID, campID uuid.UUID, timeBlock *domain.TimeBlock) error
+	Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error
+}

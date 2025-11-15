@@ -28,6 +28,17 @@
           <div>{{ duration }}</div>
         </div>
 
+        <div class="detail-section">
+          <div class="detail-label">Active Days</div>
+          <div class="days-display">
+            <Icon name="Calendar" :size="16" />
+            <span v-if="timeBlock.spec.daysOfWeek && timeBlock.spec.daysOfWeek.length > 0">
+              {{ daysOfWeekText }}
+            </span>
+            <span v-else>All days</span>
+          </div>
+        </div>
+
         <div v-if="timeBlock.meta.createdAt" class="detail-section">
           <div class="detail-label">Created</div>
           <div>{{ formatDate(timeBlock.meta.createdAt) }}</div>
@@ -94,6 +105,23 @@ export default defineComponent({
       }
       return `${hours} hour${hours > 1 ? "s" : ""} ${mins} minutes`;
     },
+    daysOfWeekText(): string {
+      if (!this.timeBlock || !this.timeBlock.spec.daysOfWeek || this.timeBlock.spec.daysOfWeek.length === 0) {
+        return "All days";
+      }
+      const dayMap: Record<string, string> = {
+        sunday: "Sunday",
+        monday: "Monday",
+        tuesday: "Tuesday",
+        wednesday: "Wednesday",
+        thursday: "Thursday",
+        friday: "Friday",
+        saturday: "Saturday",
+      };
+      return this.timeBlock.spec.daysOfWeek
+        .map((day) => dayMap[day.toLowerCase()] || day)
+        .join(", ");
+    },
   },
   methods: {
     formatDate(dateString: string): string {
@@ -137,6 +165,12 @@ export default defineComponent({
 }
 
 .time-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.days-display {
   display: flex;
   align-items: center;
   gap: 0.5rem;

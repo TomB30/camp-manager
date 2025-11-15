@@ -6,6 +6,14 @@ properties:
   startTime:
     type: string
     format: time
+    description: Start time for the time block
   endTime:
     type: string
     format: time
+    description: End time for the time block
+  daysOfWeek:
+    type: array
+    items:
+      type: string
+      enum: [sunday, monday, tuesday, wednesday, thursday, friday, saturday]
+    description: Days of the week this time block applies to. If empty or not provided, applies to all days.

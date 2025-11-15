@@ -14,16 +14,27 @@
       </div>
     </section>
 
-    <div class="row items-center gap-2">
-      <span class="row items-center q-gutter-x-xs">
-        <Icon name="Clock" :size="14" />
-        <span>{{ formatTime(timeBlock.spec.startTime) }}</span>
-      </span>
-      <span class="text-secondary">-</span>
-      <span class="row items-center q-gutter-x-xs">
-        <Icon name="Clock" :size="14" />
-        <span>{{ formatTime(timeBlock.spec.endTime) }}</span>
-      </span>
+    <div class="time-block-details">
+      <div class="row items-center gap-1 text-grey-8">
+        <span class="row items-center q-gutter-x-xs">
+          <Icon name="Clock" :size="14" />
+          <span>{{ formatTime(timeBlock.spec.startTime) }}</span>
+        </span>
+        <span class="text-grey-8">-</span>
+        <span class="row items-center q-gutter-x-xs">
+          <Icon name="Clock" :size="14" />
+          <span>{{ formatTime(timeBlock.spec.endTime) }}</span>
+        </span>
+      </div>
+      
+      <div v-if="timeBlock.spec.daysOfWeek && timeBlock.spec.daysOfWeek.length > 0" class="days-display">
+        <Icon name="Calendar" :size="14" />
+        <span class="days-text text-grey-8">{{ daysOfWeekText }}</span>
+      </div>
+      <div v-else class="days-display text-grey-8">
+        <Icon name="Calendar" :size="14" />
+        <span class="days-text">All days</span>
+      </div>
     </div>
   </div>
 </template>
@@ -61,6 +72,23 @@ export default defineComponent({
       }
       return `${hours}h ${mins}m`;
     },
+    daysOfWeekText(): string {
+      if (!this.timeBlock.spec.daysOfWeek || this.timeBlock.spec.daysOfWeek.length === 0) {
+        return "All days";
+      }
+      const dayMap: Record<string, string> = {
+        sunday: "Sun",
+        monday: "Mon",
+        tuesday: "Tue",
+        wednesday: "Wed",
+        thursday: "Thu",
+        friday: "Fri",
+        saturday: "Sat",
+      };
+      return this.timeBlock.spec.daysOfWeek
+        .map((day) => dayMap[day.toLowerCase()] || day)
+        .join(", ");
+    },
   },
   methods: {
     formatTime(timeString: string): string {
@@ -86,6 +114,24 @@ export default defineComponent({
 <style scoped>
 .time-block-card {
   min-height: 120px;
+}
+
+.time-block-details {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.days-display {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.days-text {
+  font-weight: 500;
 }
 
 .badge .inline {

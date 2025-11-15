@@ -435,6 +435,39 @@ COMMENT ON COLUMN housing_rooms.area_id IS 'Optional reference to the area where
 COMMENT ON COLUMN housing_rooms.beds IS 'Number of beds in the housing room';
 COMMENT ON COLUMN housing_rooms.bathroom IS 'Type of bathroom: private, shared, or empty string for none specified';
 
+-- ============================================================================
+-- TIME_BLOCKS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS time_blocks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    start_time VARCHAR(5) NOT NULL,
+    end_time VARCHAR(5) NOT NULL,
+    days_of_week JSONB,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP,
+    
+    CONSTRAINT check_start_time CHECK (start_time ~ '^([0-1][0-9]|2[0-3]):[0-5][0-9]$'),
+    CONSTRAINT check_end_time CHECK (end_time ~ '^([0-1][0-9]|2[0-3]):[0-5][0-9]$')
+);
+
+-- Indexes for time_blocks
+CREATE INDEX IF NOT EXISTS idx_time_blocks_tenant_id ON time_blocks(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_time_blocks_camp_id ON time_blocks(camp_id);
+CREATE INDEX IF NOT EXISTS idx_time_blocks_tenant_id_camp_id ON time_blocks(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_time_blocks_deleted_at ON time_blocks(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_time_blocks_name ON time_blocks(name);
+
+-- Trigger for time_blocks
+DROP TRIGGER IF EXISTS update_time_blocks_updated_at ON time_blocks;
+CREATE TRIGGER update_time_blocks_updated_at
+    BEFORE UPDATE ON time_blocks
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================================================
 -- GROUPS TABLE
@@ -641,3 +674,8 @@ COMMENT ON COLUMN staff_members.housing_group_id IS 'Optional housing room assig
 
 COMMENT ON COLUMN groups.session_id IS 'Optional session this group belongs to';
 COMMENT ON COLUMN groups.housing_room_id IS 'Optional housing room assignment for this group';
+
+COMMENT ON TABLE time_blocks IS 'Time blocks for scheduling activities with specific days of week';
+COMMENT ON COLUMN time_blocks.start_time IS 'Start time in HH:MM format (24-hour)';
+COMMENT ON COLUMN time_blocks.end_time IS 'End time in HH:MM format (24-hour)';
+COMMENT ON COLUMN time_blocks.days_of_week IS 'JSON array of days (sunday, monday, tuesday, wednesday, thursday, friday, saturday). Empty or null means all days.';

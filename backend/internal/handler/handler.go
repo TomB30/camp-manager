@@ -29,6 +29,7 @@ type Handler struct {
 	sessions       *SessionsHandler
 	staffMembers   *StaffMembersHandler
 	tenants        *TenantsHandler
+	timeBlocks     *TimeBlocksHandler
 	health         *HealthHandler
 }
 
@@ -50,6 +51,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	sessionsRepo := repository.NewSessionsRepository(db)
 	staffMembersRepo := repository.NewStaffMembersRepository(db)
 	tenantsRepo := repository.NewTenantsRepository(db)
+	timeBlocksRepo := repository.NewTimeBlocksRepository(db)
 	usersRepo := repository.NewUsersRepository(db)
 
 	// Initialize JWT service
@@ -72,6 +74,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	sessionsService := service.NewSessionsService(sessionsRepo)
 	staffMembersService := service.NewStaffMembersService(staffMembersRepo, groupsRepo, rolesRepo)
 	tenantsService := service.NewTenantsService(tenantsRepo)
+	timeBlocksService := service.NewTimeBlocksService(timeBlocksRepo)
 
 	// Initialize handlers
 	return &Handler{
@@ -91,6 +94,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 		sessions:       NewSessionsHandler(sessionsService),
 		staffMembers:   NewStaffMembersHandler(staffMembersService),
 		tenants:        NewTenantsHandler(tenantsService),
+		timeBlocks:     NewTimeBlocksHandler(timeBlocksService),
 		health:         NewHealthHandler(db),
 	}
 }
@@ -429,4 +433,26 @@ func (h *Handler) GetTenants(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) GetTenantById(w http.ResponseWriter, r *http.Request, id api.Id) {
 	h.tenants.GetTenantById(w, r, id)
+}
+
+// TimeBlocks handlers - delegate to TimeBlocksHandler
+
+func (h *Handler) ListTimeBlocks(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListTimeBlocksParams) {
+	h.timeBlocks.ListTimeBlocks(w, r, campId, params)
+}
+
+func (h *Handler) CreateTimeBlock(w http.ResponseWriter, r *http.Request, campId api.CampId) {
+	h.timeBlocks.CreateTimeBlock(w, r, campId)
+}
+
+func (h *Handler) GetTimeBlockById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.timeBlocks.GetTimeBlockById(w, r, campId, id)
+}
+
+func (h *Handler) UpdateTimeBlockById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.timeBlocks.UpdateTimeBlockById(w, r, campId, id)
+}
+
+func (h *Handler) DeleteTimeBlockById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+	h.timeBlocks.DeleteTimeBlockById(w, r, campId, id)
 }

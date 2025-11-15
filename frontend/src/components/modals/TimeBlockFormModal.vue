@@ -55,6 +55,33 @@
           <Icon name="Clock" :size="16" />
           <span>Duration: {{ duration }}</span>
         </div>
+
+        <div class="form-group">
+          <label class="form-label">Active Days</label>
+          <p class="form-help-text">
+            Select which days this time block applies to. Leave empty for all days.
+          </p>
+          <div class="days-selector">
+            <button
+              v-for="day in daysOfWeek"
+              :key="day.value"
+              type="button"
+              class="day-button"
+              :class="{ active: selectedDays.includes(day.value) }"
+              @click="toggleDay(day.value)"
+            >
+              {{ day.label }}
+              <q-tooltip>{{ day.value.charAt(0).toUpperCase() + day.value.slice(1) }}</q-tooltip>
+            </button>
+          </div>
+          <div v-if="selectedDays.length > 0" class="selected-days-display">
+            <span class="">Active on: </span>
+            <span class="text-primary">{{ selectedDaysText }}</span>
+          </div>
+          <div v-else class="selected-days-display">
+            <span class="">Active on all days</span>
+          </div>
+        </div>
       </q-form>
     </template>
 
@@ -113,9 +140,20 @@ export default defineComponent({
         spec: {
           startTime: "",
           endTime: "",
+          daysOfWeek: [] as string[],
         },
       } as TimeBlockCreationRequest,
       formRef: null as any,
+      selectedDays: [] as string[],
+      daysOfWeek: [
+        { label: "S", value: "sunday" },
+        { label: "M", value: "monday" },
+        { label: "T", value: "tuesday" },
+        { label: "W", value: "wednesday" },
+        { label: "T", value: "thursday" },
+        { label: "F", value: "friday" },
+        { label: "S", value: "saturday" },
+      ],
     };
   },
   created() {
@@ -133,8 +171,14 @@ export default defineComponent({
       spec: {
         startTime: timeBlock.spec.startTime,
         endTime: timeBlock.spec.endTime,
+        daysOfWeek: timeBlock.spec.daysOfWeek || [],
       },
     };
+    
+    // Set selected days from the time block
+    if (timeBlock.spec.daysOfWeek) {
+      this.selectedDays = [...timeBlock.spec.daysOfWeek];
+    }
   },
   computed: {
     isEditing(): boolean {
@@ -170,8 +214,28 @@ export default defineComponent({
       }
       return `${hours} hour${hours > 1 ? "s" : ""} ${mins} minutes`;
     },
+    selectedDaysText(): string {
+      const dayMap: Record<string, string> = {
+        sunday: "Sunday",
+        monday: "Monday",
+        tuesday: "Tuesday",
+        wednesday: "Wednesday",
+        thursday: "Thursday",
+        friday: "Friday",
+        saturday: "Saturday",
+      };
+      return this.selectedDays.map((day) => dayMap[day]).join(", ");
+    },
   },
   methods: {
+    toggleDay(day: string) {
+      const index = this.selectedDays.indexOf(day);
+      if (index > -1) {
+        this.selectedDays.splice(index, 1);
+      } else {
+        this.selectedDays.push(day);
+      }
+    },
     parseTime(timeString: string): Date {
       const [hours, minutes] = timeString.split(":").map(Number);
       const date = new Date();
@@ -188,6 +252,9 @@ export default defineComponent({
     async handleSave(): Promise<void> {
       const isValid = await (this.$refs.formRef as QForm).validate();
       if (!isValid) return;
+
+      // Update formData with selected days
+      this.formData.spec.daysOfWeek = this.selectedDays.length > 0 ? (this.selectedDays as any) : undefined;
 
       if (this.isEditing) {
         return this.handleUpdate();
@@ -240,16 +307,48 @@ export default defineComponent({
   grid-template-columns: repeat(2, 1fr);
 }
 
-.duration-display {
-  /* display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background-color: var(--bg-tertiary);
-  border-radius: var(--radius);
+.form-help-text {
+  margin-top: 0.25rem;
+  margin-bottom: 0.75rem;
   font-size: 0.875rem;
   color: var(--text-secondary);
-  margin-top: 0.5rem; */
+}
+
+.days-selector {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.day-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #e8eaf6;
+  color: #5c6bc0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-button:hover {
+  background: #c5cae9;
+}
+
+.day-button.active {
+  background: #5c6bc0;
+  color: white;
+}
+
+.selected-days-display {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
 }
 
 @media (max-width: 768px) {

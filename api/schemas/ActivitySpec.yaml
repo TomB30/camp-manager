@@ -12,13 +12,13 @@ properties:
     description: ID of the default location
   duration:
     type: integer
-    description: Default duration in minutes (mutually exclusive with fixedTime)
+    description: Default duration in minutes (mutually exclusive with fixedTime and timeBlockId)
   fixedTime:
     type: object
     required:
       - startTime
       - endTime
-    description: Fixed time for the activity (mutually exclusive with duration)
+    description: Fixed time for the activity (mutually exclusive with duration and timeBlockId)
     properties:
       startTime:
         type: string
@@ -28,6 +28,10 @@ properties:
         type: string
         format: time
         description: End time for the activity
+  timeBlockId:
+    type: string
+    format: uuid
+    description: ID of the time block for this activity (mutually exclusive with duration and fixedTime). Activity will use current time block values.
   requiredStaff:
     type: array
     items:

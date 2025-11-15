@@ -35,6 +35,7 @@
                 :options="[
                   { label: 'Duration-based', value: 'duration' },
                   { label: 'Fixed time', value: 'fixed' },
+                  { label: 'Time block', value: 'timeblock' },
                 ]"
                 color="primary"
                 class="time-mode-selector"
@@ -98,6 +99,29 @@
                           'End time must be after start time',
                       ]"
                     />
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="timeMode === 'timeblock'" class="time-input-section">
+                <label class="time-input-label">Time Block</label>
+                <p class="form-help-text">
+                  Choose a time block. Activity will automatically use the time block's current hours.
+                </p>
+                <Autocomplete
+                  v-model="formData.spec.timeBlockId"
+                  :options="timeBlocks"
+                  :rules="[(val: string) => !!val || 'Time block is required']"
+                />
+                <div v-if="selectedTimeBlock" class="time-block-preview">
+                  <div class="time-preview-item">
+                    <strong>Time:</strong> {{ selectedTimeBlock.spec.startTime }} - {{ selectedTimeBlock.spec.endTime }}
+                  </div>
+                  <div v-if="selectedTimeBlock.spec.daysOfWeek && selectedTimeBlock.spec.daysOfWeek.length > 0" class="time-preview-item">
+                    <strong>Days:</strong> {{ formatDaysOfWeek(selectedTimeBlock.spec.daysOfWeek) }}
+                  </div>
+                  <div v-else class="time-preview-item">
+                    <strong>Days:</strong> All days
                   </div>
                 </div>
               </div>
@@ -269,13 +293,14 @@ import {
   useLocationsStore,
   useCertificationsStore,
   useActivitiesStore,
+  useTimeBlocksStore,
 } from "@/stores";
 import BaseModal from "@/components/BaseModal.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
 import Icon from "@/components/Icon.vue";
-import type { Activity } from "@/generated/api";
+import type { Activity, TimeBlock } from "@/generated/api";
 import { QForm } from "quasar";
 import { useToast } from "@/composables/useToast";
 
@@ -301,11 +326,13 @@ export default defineComponent({
     const locationsStore = useLocationsStore();
     const certificationsStore = useCertificationsStore();
     const activitiesStore = useActivitiesStore();
+    const timeBlocksStore = useTimeBlocksStore();
     const toast = useToast();
     return {
       locationsStore,
       certificationsStore,
       activitiesStore,
+      timeBlocksStore,
       toast,
     };
   },
@@ -320,6 +347,7 @@ export default defineComponent({
           programId: "",
           duration: 60,
           defaultLocationId: "",
+          timeBlockId: "",
           requiredStaff: [] as Array<{
             positionName: string;
             requiredCertificationId?: string;
@@ -335,20 +363,26 @@ export default defineComponent({
           },
         },
       } as any,
-      timeMode: "duration" as "duration" | "fixed",
+      timeMode: "duration" as "duration" | "fixed" | "timeblock",
       editingActivity: null as Activity | null,
       customDurationHours: 0,
       customDurationMinutes: 0,
     };
   },
-  created() {
+  async created() {
+    // Load time blocks
+    await this.timeBlocksStore.loadTimeBlocks();
+
     if (this.activityId) {
       const activity = this.activitiesStore.getActivityById(this.activityId);
       if (!activity) return;
       this.editingActivity = activity;
 
-      // Determine if activity has fixed time or duration
-      if (activity.spec.fixedTime) {
+      // Determine if activity has timeBlockId, fixed time or duration
+      if (activity.spec.timeBlockId) {
+        this.timeMode = "timeblock";
+        this.formData.spec.timeBlockId = activity.spec.timeBlockId;
+      } else if (activity.spec.fixedTime) {
         this.timeMode = "fixed";
         this.formData.spec.fixedTime = {
           startTime: activity.spec.fixedTime.startTime || "",
@@ -368,6 +402,7 @@ export default defineComponent({
           programId: activity.spec.programId,
           duration: activity.spec.duration || 60,
           defaultLocationId: activity.spec.defaultLocationId || "",
+          timeBlockId: activity.spec.timeBlockId || "",
           requiredStaff: activity.spec.requiredStaff || [],
           fixedTime: {
             startTime: activity.spec.fixedTime?.startTime || "",
@@ -428,6 +463,16 @@ export default defineComponent({
           label: activity.meta.name,
         }));
     },
+    timeBlocks(): AutocompleteOption[] {
+      return this.timeBlocksStore.timeBlocks.map((timeBlock) => ({
+        value: timeBlock.meta.id,
+        label: timeBlock.meta.name,
+      }));
+    },
+    selectedTimeBlock(): TimeBlock | undefined {
+      if (!this.formData.spec.timeBlockId) return undefined;
+      return this.timeBlocksStore.getTimeBlockById(this.formData.spec.timeBlockId);
+    },
   },
   methods: {
     updateDurationFromCustom() {
@@ -460,6 +505,18 @@ export default defineComponent({
     },
     removeStaffPosition(index: number) {
       this.formData.spec.requiredStaff.splice(index, 1);
+    },
+    formatDaysOfWeek(days: string[]): string {
+      const dayMap: Record<string, string> = {
+        sunday: "Sun",
+        monday: "Mon",
+        tuesday: "Tue",
+        wednesday: "Wed",
+        thursday: "Thu",
+        friday: "Fri",
+        saturday: "Sat",
+      };
+      return days.map((day) => dayMap[day] || day).join(", ");
     },
     async handleSave() {
       const isValid = await (this.$refs.formRef as QForm).validate();
@@ -514,14 +571,16 @@ export default defineComponent({
         },
       };
 
-      // Add either duration or fixedTime based on timeMode
+      // Add either duration, fixedTime, or timeBlockId based on timeMode
       if (this.timeMode === "duration") {
         activityData.spec.duration = this.formData.spec.duration;
-      } else {
+      } else if (this.timeMode === "fixed") {
         activityData.spec.fixedTime = {
           startTime: this.formData.spec.fixedTime.startTime,
           endTime: this.formData.spec.fixedTime.endTime,
         };
+      } else if (this.timeMode === "timeblock") {
+        activityData.spec.timeBlockId = this.formData.spec.timeBlockId;
       }
 
       if (this.activityId) {
@@ -578,6 +637,23 @@ export default defineComponent({
 
 .time-input-section {
   animation: slideDown 0.2s ease-out;
+}
+
+.time-block-preview {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: var(--background-secondary);
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-color);
+}
+
+.time-preview-item {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.time-preview-item:last-child {
+  margin-bottom: 0;
 }
 
 .time-input-label {

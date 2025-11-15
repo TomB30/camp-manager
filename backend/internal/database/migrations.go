@@ -186,6 +186,7 @@ func (d *Database) DropAllTables() error {
 		"areas",
 		"certifications",
 		"colors",
+		"time_blocks",
 		"refresh_tokens",
 		"access_rules",
 		"users",

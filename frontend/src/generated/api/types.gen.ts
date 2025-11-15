@@ -475,8 +475,18 @@ export type CampsListResponse = ListResponseBase & {
 };
 
 export type TimeBlockSpec = {
+    /**
+     * Start time for the time block
+     */
     startTime: string;
+    /**
+     * End time for the time block
+     */
     endTime: string;
+    /**
+     * Days of the week this time block applies to. If empty or not provided, applies to all days.
+     */
+    daysOfWeek?: Array<'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday'>;
 };
 
 export type TimeBlock = {
@@ -625,11 +635,11 @@ export type ActivitySpec = {
      */
     defaultLocationId?: string;
     /**
-     * Default duration in minutes (mutually exclusive with fixedTime)
+     * Default duration in minutes (mutually exclusive with fixedTime and timeBlockId)
      */
     duration?: number;
     /**
-     * Fixed time for the activity (mutually exclusive with duration)
+     * Fixed time for the activity (mutually exclusive with duration and timeBlockId)
      */
     fixedTime?: {
         /**
@@ -641,6 +651,10 @@ export type ActivitySpec = {
          */
         endTime: string;
     };
+    /**
+     * ID of the time block for this activity (mutually exclusive with duration and fixedTime). Activity will use current time block values.
+     */
+    timeBlockId?: string;
     requiredStaff?: Array<{
         /**
          * Name of the position required for this activity
