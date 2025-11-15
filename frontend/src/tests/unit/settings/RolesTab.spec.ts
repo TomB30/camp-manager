@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createWrapper, setupTestPinia } from "@/tests/utils";
-import RolesTab from "@/components/settings/RolesTab.vue";
+import RolesTab from "@/views/Roles.vue";
 import { rolesFixture } from "@/tests/fixtures";
 import { useRolesStore } from "@/stores";
 import { Role } from "@/generated/api";

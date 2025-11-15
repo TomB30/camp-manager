@@ -54,56 +54,62 @@ const router = createRouter({
       children: [
         {
           path: "",
-          redirect: "/settings/sessions",
+          redirect: "/settings/time-blocks",
+        },
+        {
+          path: "time-blocks",
+          name: "settings-time-blocks",
+          component: () => import("../views/TimeBlocks.vue"),
+          meta: { requiresAuth: true },
         },
         {
           path: "sessions",
           name: "settings-sessions",
-          component: () => import("../components/settings/SessionsTab.vue"),
+          component: () => import("../views/Sessions.vue"),
           meta: { requiresAuth: true },
         },
         {
           path: "duration-presets",
           name: "settings-duration-presets",
           component: () =>
-            import("../components/settings/DurationPresetsTab.vue"),
+            import("../views/DurationPresets.vue"),
           meta: { requiresAuth: true },
         },
         {
           path: "areas",
           name: "settings-areas",
-          component: () => import("../components/settings/AreasTab.vue"),
+          component: () => import("../views/Areas.vue"),
           meta: { requiresAuth: true },
         },
         {
           path: "locations",
           name: "settings-locations",
-          component: () => import("../components/settings/LocationsTab.vue"),
+          component: () => import("../views/Locations.vue"),
           meta: { requiresAuth: true },
         },
         {
           path: "housing",
           name: "settings-housing",
-          component: () => import("../components/settings/HousingTab.vue"),
+          component: () => import("../views/Housing.vue"),
           meta: { requiresAuth: true },
         },
         {
           path: "certifications",
           name: "settings-certifications",
           component: () =>
-            import("../components/settings/CertificationsTab.vue"),
+            import("../views/Certifications.vue"),
           meta: { requiresAuth: true },
         },
         {
           path: "roles",
           name: "settings-roles",
-          component: () => import("../components/settings/RolesTab.vue"),
+          component: () => import("../views/Roles.vue"),
           meta: { requiresAuth: true },
         },
         {
           path: "colors",
           name: "settings-colors",
-          component: () => import("../components/settings/ColorsTab.vue"),
+          component: () => import("../views/Colors.vue"),
           meta: { requiresAuth: true },
         },
       ],

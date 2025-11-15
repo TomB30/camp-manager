@@ -48,9 +48,12 @@
 
         <!-- Camp Settings (Bottom of Sidebar) -->
         <div class="settings-section">
-          <div class="nav-link" @click="handleSettingsClick">
-            <Icon name="Settings" :size="20" class="nav-icon" />
-            <span class="nav-text">Camp Settings</span>
+          <div class="nav-link justify-between" @click="handleSettingsClick">
+            <div class="row items-center gap-1">
+              <Icon name="Settings" :size="20" class="nav-icon" />
+              <span class="nav-text">Camp Settings</span>
+            </div>
+            <Icon name="ChevronRight" :size="20" class="nav-icon" />
           </div>
         </div>
 
@@ -63,21 +66,18 @@
 
       <!-- Settings Sidebar -->
       <template v-else>
-        <div class="back-button-container">
+        <div class="q-px-md row items-center gap-1">
           <BaseButton
-            outline
             round
             dense
-            color="grey-7"
+            flat
+            size="md"
+            color="grey-8"
             @click="handleBackToMain"
           >
             <Icon name="ArrowLeft" :size="18" />
           </BaseButton>
-        </div>
-
-        <div class="settings-header">
-          <Icon name="Settings" :size="24" class="settings-icon" />
-          <h2>Camp Settings</h2>
+          <h3>Camp Settings</h3>
         </div>
 
         <nav class="nav">
@@ -187,6 +187,11 @@ export default defineComponent({
         label: "Date & Times",
         icon: "Clock",
         links: [
+          {
+            path: "/settings/time-blocks",
+            label: "Time Blocks",
+            icon: "Clock",
+          },
           {
             path: "/settings/sessions",
             label: "Sessions",
