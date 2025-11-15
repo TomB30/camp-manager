@@ -52,11 +52,15 @@
               v-model="timeSelectionMode"
               :options="[
                 { label: 'Specific Time', value: 'specific' },
-                { label: 'Time Block', value: 'timeblock' }
+                { label: 'Time Block', value: 'timeblock' },
               ]"
               color="primary"
               class="time-mode-selector"
-              :disable="selectedActivityHasTimeBlock || selectedActivityHasFixedTime || selectedActivityHasDuration"
+              :disable="
+                selectedActivityHasTimeBlock ||
+                selectedActivityHasFixedTime ||
+                selectedActivityHasDuration
+              "
             >
               <q-tooltip v-if="selectedActivityHasTimeBlock">
                 Time mode is set by the activity template (uses time block)
@@ -70,7 +74,10 @@
             </q-option-group>
 
             <!-- Specific Time Inputs -->
-            <div v-if="timeSelectionMode === 'specific'" class="time-input-section">
+            <div
+              v-if="timeSelectionMode === 'specific'"
+              class="time-input-section"
+            >
               <label class="time-input-label">Set Time</label>
               <div class="grid grid-cols-2">
                 <div>
@@ -102,13 +109,17 @@
                       (val: string) => !!val || 'Enter end time',
                       endTimeBeforeStartTime,
                     ]"
-                    :disable="selectedActivityHasFixedTime || selectedActivityHasDuration"
+                    :disable="
+                      selectedActivityHasFixedTime ||
+                      selectedActivityHasDuration
+                    "
                   >
                     <q-tooltip v-if="selectedActivityHasFixedTime">
                       End time is fixed by the activity template
                     </q-tooltip>
                     <q-tooltip v-else-if="selectedActivityHasDuration">
-                      End time is calculated based on the activity's {{ selectedActivityDuration }} minute duration
+                      End time is calculated based on the activity's
+                      {{ selectedActivityDuration }} minute duration
                     </q-tooltip>
                   </q-input>
                   <div v-if="selectedActivityHasDuration" class="duration-hint">
@@ -119,7 +130,10 @@
             </div>
 
             <!-- Time Block Selector -->
-            <div v-if="timeSelectionMode === 'timeblock'" class="time-input-section">
+            <div
+              v-if="timeSelectionMode === 'timeblock'"
+              class="time-input-section"
+            >
               <label class="time-input-label">Select Time Block</label>
               <p class="form-help-text">
                 Choose a time block. Time will be fixed once event is created.
@@ -135,12 +149,24 @@
                   Time block is set by the activity template
                 </q-tooltip>
               </div>
-              <div v-if="selectedTimeBlockId && selectedTimeBlock" class="time-block-preview">
+              <div
+                v-if="selectedTimeBlockId && selectedTimeBlock"
+                class="time-block-preview"
+              >
                 <div class="time-preview-item">
-                  <strong>Time:</strong> {{ selectedTimeBlock.spec.startTime }} - {{ selectedTimeBlock.spec.endTime }}
+                  <strong>Time:</strong>
+                  {{ selectedTimeBlock.spec.startTime }} -
+                  {{ selectedTimeBlock.spec.endTime }}
                 </div>
-                <div v-if="selectedTimeBlock.spec.daysOfWeek && selectedTimeBlock.spec.daysOfWeek.length > 0" class="time-preview-item">
-                  <strong>Days:</strong> {{ formatDaysOfWeek(selectedTimeBlock.spec.daysOfWeek) }}
+                <div
+                  v-if="
+                    selectedTimeBlock.spec.daysOfWeek &&
+                    selectedTimeBlock.spec.daysOfWeek.length > 0
+                  "
+                  class="time-preview-item"
+                >
+                  <strong>Days:</strong>
+                  {{ formatDaysOfWeek(selectedTimeBlock.spec.daysOfWeek) }}
                 </div>
                 <div v-else class="time-preview-item">
                   <strong>Days:</strong> All days
@@ -750,16 +776,19 @@ export default defineComponent({
     filteredTimeBlocks(): AutocompleteOption[] {
       // Filter time blocks based on event date's day of week
       const eventDayOfWeek = this.getDayOfWeekFromDate(this.internalEventDate);
-      
+
       return this.timeBlocksStore.timeBlocks
         .filter((timeBlock) => {
           // If no days are specified, time block applies to all days
-          if (!timeBlock.spec.daysOfWeek || timeBlock.spec.daysOfWeek.length === 0) {
+          if (
+            !timeBlock.spec.daysOfWeek ||
+            timeBlock.spec.daysOfWeek.length === 0
+          ) {
             return true;
           }
           // Check if event's day is in the time block's days
           return timeBlock.spec.daysOfWeek.some(
-            (day) => day.toLowerCase() === eventDayOfWeek.toLowerCase()
+            (day) => day.toLowerCase() === eventDayOfWeek.toLowerCase(),
           );
         })
         .map((timeBlock) => ({
@@ -919,8 +948,8 @@ export default defineComponent({
       );
     },
     handleStartTimeChange(value: string | number | null): void {
-      if (typeof value !== 'string') return;
-      
+      if (typeof value !== "string") return;
+
       this.internalStartTime = value;
 
       // If activity has a fixed duration, recalculate end time
@@ -1003,8 +1032,8 @@ export default defineComponent({
         this.selectedActivityHasDuration = false;
         this.selectedActivityHasTimeBlock = false;
         this.selectedActivityDuration = 0;
-        this.timeSelectionMode = 'specific';
-        this.selectedTimeBlockId = '';
+        this.timeSelectionMode = "specific";
+        this.selectedTimeBlockId = "";
         this.formData.spec.requiredStaff = [];
         this.formData.spec.programId = "";
         this.formData.spec.activityId = "";
@@ -1030,7 +1059,7 @@ export default defineComponent({
           this.selectedActivityHasFixedTime = false;
           this.selectedActivityHasDuration = false;
           this.selectedActivityDuration = 0;
-          this.timeSelectionMode = 'timeblock';
+          this.timeSelectionMode = "timeblock";
           this.selectedTimeBlockId = activity.spec.timeBlockId;
           this.internalStartTime = timeBlock.spec.startTime;
           this.internalEndTime = timeBlock.spec.endTime;
@@ -1042,7 +1071,7 @@ export default defineComponent({
         this.selectedActivityHasDuration = false;
         this.selectedActivityHasTimeBlock = false;
         this.selectedActivityDuration = 0;
-        this.timeSelectionMode = 'specific';
+        this.timeSelectionMode = "specific";
         this.internalStartTime = activity.spec.fixedTime.startTime;
         this.internalEndTime = activity.spec.fixedTime.endTime;
         this.updateFormDataDates();
@@ -1052,7 +1081,7 @@ export default defineComponent({
         this.selectedActivityHasDuration = true;
         this.selectedActivityHasTimeBlock = false;
         this.selectedActivityDuration = activity.spec.duration;
-        this.timeSelectionMode = 'specific';
+        this.timeSelectionMode = "specific";
 
         // Calculate end time based on start time and duration
         if (this.internalStartTime) {
@@ -1148,7 +1177,15 @@ export default defineComponent({
       return days.map((day) => dayMap[day.toLowerCase()] || day).join(", ");
     },
     getDayFullName(index: number): string {
-      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
       return days[index] || "";
     },
     getCertificationName(certificationId: string): string {

@@ -106,7 +106,8 @@
               <div v-if="timeMode === 'timeblock'" class="time-input-section">
                 <label class="time-input-label">Time Block</label>
                 <p class="form-help-text">
-                  Choose a time block. Activity will automatically use the time block's current hours.
+                  Choose a time block. Activity will automatically use the time
+                  block's current hours.
                 </p>
                 <Autocomplete
                   v-model="formData.spec.timeBlockId"
@@ -115,10 +116,19 @@
                 />
                 <div v-if="selectedTimeBlock" class="time-block-preview">
                   <div class="time-preview-item">
-                    <strong>Time:</strong> {{ selectedTimeBlock.spec.startTime }} - {{ selectedTimeBlock.spec.endTime }}
+                    <strong>Time:</strong>
+                    {{ selectedTimeBlock.spec.startTime }} -
+                    {{ selectedTimeBlock.spec.endTime }}
                   </div>
-                  <div v-if="selectedTimeBlock.spec.daysOfWeek && selectedTimeBlock.spec.daysOfWeek.length > 0" class="time-preview-item">
-                    <strong>Days:</strong> {{ formatDaysOfWeek(selectedTimeBlock.spec.daysOfWeek) }}
+                  <div
+                    v-if="
+                      selectedTimeBlock.spec.daysOfWeek &&
+                      selectedTimeBlock.spec.daysOfWeek.length > 0
+                    "
+                    class="time-preview-item"
+                  >
+                    <strong>Days:</strong>
+                    {{ formatDaysOfWeek(selectedTimeBlock.spec.daysOfWeek) }}
                   </div>
                   <div v-else class="time-preview-item">
                     <strong>Days:</strong> All days
@@ -471,7 +481,9 @@ export default defineComponent({
     },
     selectedTimeBlock(): TimeBlock | undefined {
       if (!this.formData.spec.timeBlockId) return undefined;
-      return this.timeBlocksStore.getTimeBlockById(this.formData.spec.timeBlockId);
+      return this.timeBlocksStore.getTimeBlockById(
+        this.formData.spec.timeBlockId,
+      );
     },
   },
   methods: {

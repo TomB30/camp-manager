@@ -32,7 +32,12 @@
           <div class="detail-label">Active Days</div>
           <div class="days-display">
             <Icon name="Calendar" :size="16" />
-            <span v-if="timeBlock.spec.daysOfWeek && timeBlock.spec.daysOfWeek.length > 0">
+            <span
+              v-if="
+                timeBlock.spec.daysOfWeek &&
+                timeBlock.spec.daysOfWeek.length > 0
+              "
+            >
               {{ daysOfWeekText }}
             </span>
             <span v-else>All days</span>
@@ -106,7 +111,11 @@ export default defineComponent({
       return `${hours} hour${hours > 1 ? "s" : ""} ${mins} minutes`;
     },
     daysOfWeekText(): string {
-      if (!this.timeBlock || !this.timeBlock.spec.daysOfWeek || this.timeBlock.spec.daysOfWeek.length === 0) {
+      if (
+        !this.timeBlock ||
+        !this.timeBlock.spec.daysOfWeek ||
+        this.timeBlock.spec.daysOfWeek.length === 0
+      ) {
         return "All days";
       }
       const dayMap: Record<string, string> = {

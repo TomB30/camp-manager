@@ -26,8 +26,11 @@
           <span>{{ formatTime(timeBlock.spec.endTime) }}</span>
         </span>
       </div>
-      
-      <div v-if="timeBlock.spec.daysOfWeek && timeBlock.spec.daysOfWeek.length > 0" class="days-display">
+
+      <div
+        v-if="timeBlock.spec.daysOfWeek && timeBlock.spec.daysOfWeek.length > 0"
+        class="days-display"
+      >
         <Icon name="Calendar" :size="14" />
         <span class="days-text text-grey-8">{{ daysOfWeekText }}</span>
       </div>
@@ -73,7 +76,10 @@ export default defineComponent({
       return `${hours}h ${mins}m`;
     },
     daysOfWeekText(): string {
-      if (!this.timeBlock.spec.daysOfWeek || this.timeBlock.spec.daysOfWeek.length === 0) {
+      if (
+        !this.timeBlock.spec.daysOfWeek ||
+        this.timeBlock.spec.daysOfWeek.length === 0
+      ) {
         return "All days";
       }
       const dayMap: Record<string, string> = {

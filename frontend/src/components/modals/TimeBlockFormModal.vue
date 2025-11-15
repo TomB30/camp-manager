@@ -59,7 +59,8 @@
         <div class="form-group">
           <label class="form-label">Active Days</label>
           <p class="form-help-text">
-            Select which days this time block applies to. Leave empty for all days.
+            Select which days this time block applies to. Leave empty for all
+            days.
           </p>
           <div class="days-selector">
             <button
@@ -71,7 +72,9 @@
               @click="toggleDay(day.value)"
             >
               {{ day.label }}
-              <q-tooltip>{{ day.value.charAt(0).toUpperCase() + day.value.slice(1) }}</q-tooltip>
+              <q-tooltip>{{
+                day.value.charAt(0).toUpperCase() + day.value.slice(1)
+              }}</q-tooltip>
             </button>
           </div>
           <div v-if="selectedDays.length > 0" class="selected-days-display">
@@ -174,7 +177,7 @@ export default defineComponent({
         daysOfWeek: timeBlock.spec.daysOfWeek || [],
       },
     };
-    
+
     // Set selected days from the time block
     if (timeBlock.spec.daysOfWeek) {
       this.selectedDays = [...timeBlock.spec.daysOfWeek];
@@ -254,7 +257,8 @@ export default defineComponent({
       if (!isValid) return;
 
       // Update formData with selected days
-      this.formData.spec.daysOfWeek = this.selectedDays.length > 0 ? (this.selectedDays as any) : undefined;
+      this.formData.spec.daysOfWeek =
+        this.selectedDays.length > 0 ? (this.selectedDays as any) : undefined;
 
       if (this.isEditing) {
         return this.handleUpdate();
