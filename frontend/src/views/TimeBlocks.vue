@@ -1,15 +1,11 @@
 <template>
-  <div class="time-blocks-tab">
+  <div class="time-blocks-tab view">
     <TabHeader
       title="Time Blocks"
       description="Manage time blocks for scheduling activities and events throughout your camp day."
       action-text="Time Block"
       @action="showModal = true"
-    >
-      <template #action-icon>
-        <Icon name="Plus" :size="18" />
-      </template>
-    </TabHeader>
+    />
 
     <!-- Search and Filters -->
     <FilterBar

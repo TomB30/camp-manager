@@ -1,15 +1,11 @@
 <template>
-  <div class="duration-presets-tab">
+  <div class="duration-presets-tab view">
     <TabHeader
       title="Duration Presets"
       description="Configure preset durations for quick selection when creating activities and events."
       action-text="Duration Preset"
       @action="showFormModal = true"
-    >
-      <template #action-icon>
-        <Icon name="Plus" :size="18" />
-      </template>
-    </TabHeader>
+    />
 
     <FilterBar
       v-if="durationPresetsStore.durationPresets.length > 0"

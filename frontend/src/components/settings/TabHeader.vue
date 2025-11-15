@@ -3,7 +3,7 @@
     <div class="tab-header-content">
       <div>
         <h2>{{ title }}</h2>
-        <p class="tab-description">{{ description }}</p>
+        <p v-if="description" class="tab-description">{{ description }}</p>
       </div>
       <div v-if="actionText || $slots.actions" class="tab-header-actions">
         <slot name="actions"></slot>
@@ -33,7 +33,7 @@ export default defineComponent({
     },
     description: {
       type: String,
-      required: true,
+      required: false,
     },
     actionText: {
       type: String,
@@ -76,6 +76,7 @@ export default defineComponent({
 }
 
 .tab-header-actions {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 0.75rem;

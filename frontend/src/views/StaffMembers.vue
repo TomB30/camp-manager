@@ -1,165 +1,164 @@
 <template>
-  <div class="container">
-    <div class="view">
-      <ViewHeader title="Staff Management">
-        <template #actions>
-          <BaseButton
-            color="primary"
-            @click="showModal = true"
-            label="Staff Member"
-            icon="add"
-          />
-        </template>
-      </ViewHeader>
+  <div class="view">
+    <TabHeader
+      title="Staff Management"
+      description="Manage your staff members and their roles, certifications, and assignments."
+      action-text="Staff Member"
+      @action="showModal = true"
+    />
 
-      <!-- Search and Filters -->
-      <FilterBar
-        v-model:searchQuery="searchQuery"
-        v-model:filter-role="filterRole"
-        v-model:filter-certification="filterCertification"
-        :filters="staffFilters"
-        :filtered-count="filteredMembers.length"
-        :total-count="staffMembersStore.staffMembers.length"
-        @clear="clearFilters"
-      >
-        <template #prepend>
-          <ViewToggle v-model="viewMode" />
-        </template>
-      </FilterBar>
+    <!-- Search and Filters -->
+    <FilterBar
+      v-model:searchQuery="searchQuery"
+      v-model:filter-role="filterRole"
+      v-model:filter-certification="filterCertification"
+      :filters="staffFilters"
+      :filtered-count="filteredMembers.length"
+      :total-count="staffMembersStore.staffMembers.length"
+      @clear="clearFilters"
+    >
+      <template #prepend>
+        <ViewToggle v-model="viewMode" />
+      </template>
+    </FilterBar>
 
-      <!-- Grid View -->
-      <div v-if="viewMode === 'grid'" class="staff-grid">
-        <StaffCard
-          v-for="member in filteredMembers"
-          :key="member.meta.id"
-          :member="member"
-          :formatted-role="formatRole(member.spec.roleId)"
-          @click="selectMember(member.meta.id)"
-        />
+    <!-- Grid View -->
+    <TransitionGroup
+      v-if="viewMode === 'grid'"
+      name="list"
+      tag="div"
+      class="staff-grid"
+    >
+      <StaffCard
+        v-for="member in filteredMembers"
+        :key="member.meta.id"
+        :member="member"
+        :formatted-role="formatRole(member.spec.roleId)"
+        @click="selectMember(member.meta.id)"
+      />
 
-        <EmptyState
-          v-if="
-            filteredMembers.length === 0 &&
-            staffMembersStore.staffMembers.length === 0
-          "
-          type="empty"
-          title="No Staff Members Yet"
-          message="Add your first staff member to start building your camp team and managing assignments."
-          action-text="Staff Member"
-          @action="showModal = true"
-          icon-name="Users"
-        />
+      <EmptyState
+        v-if="
+          filteredMembers.length === 0 &&
+          staffMembersStore.staffMembers.length === 0
+        "
+        type="empty"
+        title="No Staff Members Yet"
+        message="Add your first staff member to start building your camp team and managing assignments."
+        action-text="Staff Member"
+        @action="showModal = true"
+        icon-name="Users"
+      />
 
-        <EmptyState
-          v-if="
-            filteredMembers.length === 0 &&
-            staffMembersStore.staffMembers.length > 0
-          "
-          type="no-results"
-          title="No Staff Members Found"
-          message="No staff members match your current filters. Try adjusting your search criteria."
-          action-text="Clear Filters"
-          action-button-class="btn-secondary"
-          @action="clearFilters"
-          icon-name="Users"
-          hide-action-icon
-        />
-      </div>
+      <EmptyState
+        v-if="
+          filteredMembers.length === 0 &&
+          staffMembersStore.staffMembers.length > 0
+        "
+        type="no-results"
+        title="No Staff Members Found"
+        message="No staff members match your current filters. Try adjusting your search criteria."
+        action-text="Clear Filters"
+        action-button-class="btn-secondary"
+        @action="clearFilters"
+        icon-name="Users"
+        hide-action-icon
+      />
+    </TransitionGroup>
 
-      <!-- Table View -->
-      <DataTable
-        v-if="viewMode === 'table'"
-        :columns="memberColumns"
-        :data="filteredMembers"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
-      >
-        <template #cell-name="{ item }">
-          <div class="member-name-content">
-            <AvatarInitials
-              :first-name="item.meta.name.split(' ')[0]"
-              :last-name="item.meta.name.split(' ').slice(1).join(' ')"
-              size="sm"
-            />
-            <div class="member-fullname">
-              {{ item.meta.name }}
-            </div>
-          </div>
-        </template>
-
-        <template #cell-role="{ item }">
-          <span class="badge badge-primary badge-sm">{{
-            formatRole(item.spec.roleId)
-          }}</span>
-        </template>
-
-        <template #cell-certifications="{ item }">
-          <span
-            v-if="item.certificationIds && item.certificationIds.length > 0"
-            class="badge badge-success badge-sm"
-          >
-            {{ item.certificationIds.length }} cert(s)
-          </span>
-          <span v-else class="text-caption">None</span>
-        </template>
-
-        <template #cell-events="{ item }">
-          <span class="event-count">{{
-            getMemberEvents(item.meta.id).length
-          }}</span>
-        </template>
-
-        <template #cell-actions="{ item }">
-          <BaseButton
-            outline
-            color="grey-8"
+    <!-- Table View -->
+    <DataTable
+      v-if="viewMode === 'table'"
+      :columns="memberColumns"
+      :data="filteredMembers"
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      row-key="id"
+    >
+      <template #cell-name="{ item }">
+        <div class="member-name-content">
+          <AvatarInitials
+            :first-name="item.meta.name.split(' ')[0]"
+            :last-name="item.meta.name.split(' ').slice(1).join(' ')"
             size="sm"
-            @click="selectMember(item.meta.id)"
-            label="View Details"
           />
-        </template>
-      </DataTable>
+          <div class="member-fullname">
+            {{ item.meta.name }}
+          </div>
+        </div>
+      </template>
 
-      <!-- Member Detail Modal -->
-      <StaffMemberDetailModal
-        v-if="!!selectedMemberId && selectedMember"
-        :member="selectedMember"
-        @close="selectedMemberId = null"
-        @edit="editMember"
-        @delete="deleteMemberConfirm"
-      >
-        <template #events-list>
-          <EventsByDate
-            :events="
-              selectedMember ? getMemberEvents(selectedMember.meta.id) : []
-            "
-            :show-location="true"
-            :get-location-name="getLocationName"
-            empty-message="No events assigned"
-          />
-        </template>
-      </StaffMemberDetailModal>
+      <template #cell-role="{ item }">
+        <span class="badge badge-primary badge-sm">{{
+          formatRole(item.spec.roleId)
+        }}</span>
+      </template>
 
-      <!-- Add/Edit Member Modal -->
-      <StaffMemberFormModal
-        v-if="showModal"
-        :staff-member-id="editingMemberId || undefined"
-        @close="closeModal"
-      />
+      <template #cell-certifications="{ item }">
+        <span
+          v-if="item.certificationIds && item.certificationIds.length > 0"
+          class="badge badge-success badge-sm"
+        >
+          {{ item.certificationIds.length }} cert(s)
+        </span>
+        <span v-else class="text-caption">None</span>
+      </template>
 
-      <!-- Confirm Delete Modal -->
-      <ConfirmModal
-        v-if="showConfirmModal"
-        title="Delete Staff Member"
-        message="Are you sure you want to delete this staff member?"
-        details="They will be removed from all events."
-        confirm-text="Delete"
-        :danger-mode="true"
-        @confirm="handleConfirmAction"
-        @cancel="handleCancelConfirm"
-      />
-    </div>
+      <template #cell-events="{ item }">
+        <span class="event-count">{{
+          getMemberEvents(item.meta.id).length
+        }}</span>
+      </template>
+
+      <template #cell-actions="{ item }">
+        <BaseButton
+          outline
+          color="grey-8"
+          size="sm"
+          @click="selectMember(item.meta.id)"
+          label="View Details"
+        />
+      </template>
+    </DataTable>
+
+    <!-- Member Detail Modal -->
+    <StaffMemberDetailModal
+      v-if="!!selectedMemberId && selectedMember"
+      :member="selectedMember"
+      @close="selectedMemberId = null"
+      @edit="editMember"
+      @delete="deleteMemberConfirm"
+    >
+      <template #events-list>
+        <EventsByDate
+          :events="
+            selectedMember ? getMemberEvents(selectedMember.meta.id) : []
+          "
+          :show-location="true"
+          :get-location-name="getLocationName"
+          empty-message="No events assigned"
+        />
+      </template>
+    </StaffMemberDetailModal>
+
+    <!-- Add/Edit Member Modal -->
+    <StaffMemberFormModal
+      v-if="showModal"
+      :staff-member-id="editingMemberId || undefined"
+      @close="closeModal"
+    />
+
+    <!-- Confirm Delete Modal -->
+    <ConfirmModal
+      v-if="showConfirmModal"
+      title="Delete Staff Member"
+      message="Are you sure you want to delete this staff member?"
+      details="They will be removed from all events."
+      confirm-text="Delete"
+      :danger-mode="true"
+      @confirm="handleConfirmAction"
+      @cancel="handleCancelConfirm"
+    />
   </div>
 </template>
 
@@ -174,7 +173,6 @@ import {
   useRolesStore,
 } from "@/stores";
 import type { StaffMember, Event } from "@/generated/api";
-import ViewHeader from "@/components/ViewHeader.vue";
 import AvatarInitials from "@/components/AvatarInitials.vue";
 import StaffCard from "@/components/cards/StaffCard.vue";
 import FilterBar, { type Filter } from "@/components/FilterBar.vue";
@@ -185,11 +183,12 @@ import ViewToggle from "@/components/ViewToggle.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import StaffMemberDetailModal from "@/components/modals/StaffMemberDetailModal.vue";
 import StaffMemberFormModal from "@/components/modals/StaffMemberFormModal.vue";
+import TabHeader from "@/components/settings/TabHeader.vue";
+import Icon from "@/components/Icon.vue";
 
 export default defineComponent({
   name: "StaffMembers",
   components: {
-    ViewHeader,
     AvatarInitials,
     StaffCard,
     FilterBar,
@@ -200,6 +199,8 @@ export default defineComponent({
     EmptyState,
     StaffMemberDetailModal,
     StaffMemberFormModal,
+    TabHeader,
+    Icon,
   },
   data() {
     return {
@@ -282,14 +283,14 @@ export default defineComponent({
           (member: StaffMember) =>
             member.meta.name.toLowerCase().includes(query) ||
             (member.spec.phone &&
-              member.spec.phone.toLowerCase().includes(query)),
+              member.spec.phone.toLowerCase().includes(query))
         );
       }
 
       // Role filter
       if (this.filterRole) {
         members = members.filter(
-          (member: StaffMember) => member.spec.roleId === this.filterRole,
+          (member: StaffMember) => member.spec.roleId === this.filterRole
         );
       }
 
@@ -383,7 +384,7 @@ export default defineComponent({
 .staff-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .staff-grid .empty-state {

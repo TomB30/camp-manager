@@ -1,15 +1,11 @@
 <template>
-  <div class="activity-locations-tab">
+  <div class="activity-locations-tab view">
     <TabHeader
       title="Locations"
       description="Manage all locations where camp programs and events take place."
       action-text="Location"
       @action="showModal = true"
-    >
-      <template #action-icon>
-        <Icon name="Plus" :size="18" />
-      </template>
-    </TabHeader>
+    />
 
     <!-- Search and Filters -->
     <FilterBar

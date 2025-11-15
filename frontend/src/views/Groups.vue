@@ -1,184 +1,176 @@
 <template>
-  <div class="container">
-    <div class="view">
-      <ViewHeader
-        title="Groups"
-        tooltip="Create and manage groups with flexible assignment options. Groups can contain campers, staff, or even other groups. Use filters for automatic assignment or manually select members."
-      >
-        <template #actions>
-          <BaseButton
-            color="primary"
-            @click="showModal = true"
-            label="Group"
-            icon="add"
-          />
-        </template>
-      </ViewHeader>
+  <div class="groups-tab view">
+    <TabHeader
+      title="Groups"
+      description="Create and manage groups with flexible assignment options. Groups can contain campers, staff, or even other groups."
+      action-text="Group"
+      @action="showModal = true"
+    />
 
-      <FilterBar
-        v-model:searchQuery="searchQuery"
-        v-model:filter-type="filterType"
-        v-model:filter-session="filterSession"
-        :filters="groupsFilters"
-        :filtered-count="filteredGroups.length"
-        :total-count="groupsStore.groups.length"
-        search-placeholder="Search groups..."
-        @clear="clearFilters"
-      >
-        <template #prepend>
-          <ViewToggle v-model="viewMode" />
-        </template>
-      </FilterBar>
+    <FilterBar
+      v-model:searchQuery="searchQuery"
+      v-model:filter-type="filterType"
+      v-model:filter-session="filterSession"
+      :filters="groupsFilters"
+      :filtered-count="filteredGroups.length"
+      :total-count="groupsStore.groups.length"
+      search-placeholder="Search groups..."
+      @clear="clearFilters"
+    >
+      <template #prepend>
+        <ViewToggle v-model="viewMode" />
+      </template>
+    </FilterBar>
 
-      <div v-if="viewMode === 'grid'" class="groups-grid">
-        <GroupCard
-          v-for="group in filteredGroups"
-          :key="group.meta.id"
-          :group="group"
-          :campers-count="getCampersCount(group.meta.id)"
-          :staff-count="getStaffCount(group.meta.id)"
-          @click="selectGroup(group.meta.id)"
-        />
+    <TransitionGroup
+      v-if="viewMode === 'grid'"
+      name="list"
+      tag="div"
+      class="groups-grid"
+    >
+      <GroupCard
+        v-for="group in filteredGroups"
+        :key="group.meta.id"
+        :group="group"
+        :campers-count="getCampersCount(group.meta.id)"
+        :staff-count="getStaffCount(group.meta.id)"
+        @click="selectGroup(group.meta.id)"
+      />
 
-        <EmptyState
-          v-if="filteredGroups.length === 0 && groupsStore.groups.length === 0"
-          type="empty"
-          title="No Groups Yet"
-          message="Create your first group to organize campers and staff efficiently."
-          action-text="Group"
-          icon-name="FolderOpen"
-          @action="showModal = true"
-        />
+      <EmptyState
+        v-if="filteredGroups.length === 0 && groupsStore.groups.length === 0"
+        type="empty"
+        title="No Groups Yet"
+        message="Create your first group to organize campers and staff efficiently."
+        action-text="Group"
+        icon-name="FolderOpen"
+        @action="showModal = true"
+      />
 
-        <EmptyState
-          v-if="filteredGroups.length === 0 && groupsStore.groups.length > 0"
-          type="no-results"
-          title="No Groups Found"
-          message="No groups match your current filters. Try adjusting your search criteria."
-          action-text="Clear Filters"
-          action-button-class="btn-secondary"
-          hide-action-icon
-          icon-name="FolderOpen"
-          @action="clearFilters"
-        />
-      </div>
+      <EmptyState
+        v-if="filteredGroups.length === 0 && groupsStore.groups.length > 0"
+        type="no-results"
+        title="No Groups Found"
+        message="No groups match your current filters. Try adjusting your search criteria."
+        action-text="Clear Filters"
+        action-button-class="btn-secondary"
+        hide-action-icon
+        icon-name="FolderOpen"
+        @action="clearFilters"
+      />
+    </TransitionGroup>
 
-      <DataTable
-        v-if="viewMode === 'table'"
-        :columns="groupColumns"
-        :data="filteredGroups"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
-      >
-        <template #cell-name="{ item }">
-          <div class="group-name-content">
-            <div class="group-name-text">{{ item.meta.name }}</div>
-          </div>
-        </template>
+    <DataTable
+      v-if="viewMode === 'table'"
+      :columns="groupColumns"
+      :data="filteredGroups"
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      row-key="id"
+    >
+      <template #cell-name="{ item }">
+        <div class="group-name-content">
+          <div class="group-name-text">{{ item.meta.name }}</div>
+        </div>
+      </template>
 
-        <template #cell-type="{ item }">
-          <div class="type-badges">
-            <span v-if="isNestedGroup(item)" class="badge badge-sm badge-info"
-              >Nested</span
-            >
-            <span
-              v-else-if="hasManualCampers(item)"
-              class="badge badge-sm badge-primary"
-              >Manual Campers</span
-            >
-            <span v-else class="badge badge-sm badge-secondary">Empty</span>
-
-            <span
-              v-if="item.housingRoomId"
-              class="badge badge-sm badge-secondary"
-              >Housing</span
-            >
-          </div>
-        </template>
-
-        <template #cell-members="{ item }">
-          <div
-            class="members-counts text-caption row items-center q-gutter-x-md"
+      <template #cell-type="{ item }">
+        <div class="type-badges">
+          <span v-if="isNestedGroup(item)" class="badge badge-sm badge-info"
+            >Nested</span
           >
-            <span
-              v-if="getCampersCount(item.meta.id) > 0"
-              class="badge badge-success badge-sm"
-            >
-              {{ getCampersCount(item.meta.id) }} campers
-            </span>
-            <span
-              v-if="getStaffCount(item.meta.id) > 0"
-              class="badge badge-success badge-sm"
-            >
-              {{ getStaffCount(item.meta.id) }} staff
-            </span>
-            <span
-              v-if="
-                getCampersCount(item.meta.id) === 0 &&
-                getStaffCount(item.meta.id) === 0
-              "
-              class="text-caption text-sm"
-            >
-              No members
-            </span>
-          </div>
-        </template>
+          <span
+            v-else-if="hasManualCampers(item)"
+            class="badge badge-sm badge-primary"
+            >Manual Campers</span
+          >
+          <span v-else class="badge badge-sm badge-secondary">Empty</span>
 
-        <template #cell-session="{ item }">
-          <span v-if="item.sessionId" class="text-caption">{{
-            getSessionName(item.sessionId)
-          }}</span>
-          <span v-else class="text-caption text-sm">-</span>
-        </template>
+          <span v-if="item.housingRoomId" class="badge badge-sm badge-secondary"
+            >Housing</span
+          >
+        </div>
+      </template>
 
-        <template #cell-actions="{ item }">
-          <BaseButton
-            outline
-            color="grey-8"
-            size="sm"
-            @click="selectGroup(item.meta.id)"
-            label="View Details"
-          />
-        </template>
-      </DataTable>
+      <template #cell-members="{ item }">
+        <div class="members-counts text-caption row items-center q-gutter-x-md">
+          <span
+            v-if="getCampersCount(item.meta.id) > 0"
+            class="badge badge-success badge-sm"
+          >
+            {{ getCampersCount(item.meta.id) }} campers
+          </span>
+          <span
+            v-if="getStaffCount(item.meta.id) > 0"
+            class="badge badge-success badge-sm"
+          >
+            {{ getStaffCount(item.meta.id) }} staff
+          </span>
+          <span
+            v-if="
+              getCampersCount(item.meta.id) === 0 &&
+              getStaffCount(item.meta.id) === 0
+            "
+            class="text-caption text-sm"
+          >
+            No members
+          </span>
+        </div>
+      </template>
 
-      <GroupDetailModal
-        v-if="!!selectedGroupId"
-        :group="selectedGroup"
-        :campers="groupCampers"
-        :staff="groupStaff"
-        @close="selectedGroupId = null"
-        @edit="editGroup"
-        @delete="deleteGroupConfirm"
-      />
+      <template #cell-session="{ item }">
+        <span v-if="item.sessionId" class="text-caption">{{
+          getSessionName(item.sessionId)
+        }}</span>
+        <span v-else class="text-caption text-sm">-</span>
+      </template>
 
-      <GroupFormModal
-        v-if="showModal"
-        :is-editing="!!editingGroupId"
-        :form-data="formData"
-        :campers="campersStore.campers"
-        :staff-members="staffMembersStore.staffMembers"
-        :groups="groupsStore.groups"
-        :sessions="sessionsStore.sessions"
-        :housing-rooms="housingRoomsStore.housingRooms"
-        :certifications="certificationsStore.certifications"
-        :editing-group-id="editingGroupId"
-        @close="closeModal"
-        @save="saveGroup"
-      />
+      <template #cell-actions="{ item }">
+        <BaseButton
+          outline
+          color="grey-8"
+          size="sm"
+          @click="selectGroup(item.meta.id)"
+          label="View Details"
+        />
+      </template>
+    </DataTable>
 
-      <ConfirmModal
-        v-if="showConfirmModal"
-        title="Delete Group"
-        :message="`Are you sure you want to delete the group '${groupToDelete?.name}'?`"
-        details="This action cannot be undone. The group will be permanently deleted."
-        confirm-text="Delete"
-        :danger-mode="true"
-        @confirm="handleConfirmDelete"
-        @cancel="handleCancelDelete"
-      />
-    </div>
+    <GroupDetailModal
+      v-if="!!selectedGroupId"
+      :group="selectedGroup"
+      :campers="groupCampers"
+      :staff="groupStaff"
+      @close="selectedGroupId = null"
+      @edit="editGroup"
+      @delete="deleteGroupConfirm"
+    />
+
+    <GroupFormModal
+      v-if="showModal"
+      :is-editing="!!editingGroupId"
+      :form-data="formData"
+      :campers="campersStore.campers"
+      :staff-members="staffMembersStore.staffMembers"
+      :groups="groupsStore.groups"
+      :sessions="sessionsStore.sessions"
+      :housing-rooms="housingRoomsStore.housingRooms"
+      :certifications="certificationsStore.certifications"
+      :editing-group-id="editingGroupId"
+      @close="closeModal"
+      @save="saveGroup"
+    />
+
+    <ConfirmModal
+      v-if="showConfirmModal"
+      title="Delete Group"
+      :message="`Are you sure you want to delete the group '${groupToDelete?.name}'?`"
+      details="This action cannot be undone. The group will be permanently deleted."
+      confirm-text="Delete"
+      :danger-mode="true"
+      @confirm="handleConfirmDelete"
+      @cancel="handleCancelDelete"
+    />
   </div>
 </template>
 
@@ -193,7 +185,6 @@ import {
   useCertificationsStore,
 } from "@/stores";
 import type { Group, Camper, StaffMember, Session } from "@/generated/api";
-import ViewHeader from "@/components/ViewHeader.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import GroupCard from "@/components/cards/GroupCard.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
@@ -203,11 +194,12 @@ import ViewToggle from "@/components/ViewToggle.vue";
 import GroupDetailModal from "@/components/modals/GroupDetailModal.vue";
 import GroupFormModal from "@/components/modals/GroupFormModal.vue";
 import { useToast } from "@/composables/useToast";
+import TabHeader from "@/components/settings/TabHeader.vue";
+import Icon from "@/components/Icon.vue";
 
 export default defineComponent({
   name: "GroupsNew",
   components: {
-    ViewHeader,
     EmptyState,
     GroupCard,
     ConfirmModal,
@@ -216,6 +208,8 @@ export default defineComponent({
     ViewToggle,
     GroupDetailModal,
     GroupFormModal,
+    TabHeader,
+    Icon,
   },
   data() {
     return {
@@ -318,7 +312,7 @@ export default defineComponent({
           (group: Group) =>
             group.meta.name.toLowerCase().includes(query) ||
             (group.meta.description &&
-              group.meta.description.toLowerCase().includes(query)),
+              group.meta.description.toLowerCase().includes(query))
         );
       }
 
@@ -345,7 +339,7 @@ export default defineComponent({
       // Session filter
       if (this.filterSession) {
         groups = groups.filter(
-          (group: Group) => group.spec.sessionId === this.filterSession,
+          (group: Group) => group.spec.sessionId === this.filterSession
         );
       }
 
@@ -376,7 +370,7 @@ export default defineComponent({
     },
     getSessionName(sessionId: string): string {
       const session = this.sessionsStore.sessions.find(
-        (s) => s.meta.id === sessionId,
+        (s) => s.meta.id === sessionId
       );
       return session?.meta.name || "Unknown Session";
     },
@@ -495,7 +489,7 @@ export default defineComponent({
 .groups-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1rem;
+  gap: .5rem;
 }
 
 .empty-state {

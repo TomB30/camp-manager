@@ -1,15 +1,11 @@
 <template>
-  <div class="colors-tab">
+  <div class="colors-tab view">
     <TabHeader
       title="Color Palette"
       description="Manage the colors available for programs and events. Set a default color for events not created from activity templates."
       action-text="Color"
       @action="showFormModal = true"
-    >
-      <template #action-icon>
-        <Icon name="Plus" :size="18" />
-      </template>
-    </TabHeader>
+    />
 
     <FilterBar
       v-if="colorsStore.colors.length > 0"

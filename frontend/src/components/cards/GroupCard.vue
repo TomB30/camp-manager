@@ -29,7 +29,7 @@
     </p>
 
     <!-- Group type info -->
-    <div class="group-info">
+    <div class="row gap-2">
       <!-- Nested groups -->
       <div v-if="isNestedGroup" class="info-item">
         <Icon name="FolderOpen" :size="16" />
@@ -195,17 +195,11 @@ export default defineComponent({
   white-space: nowrap;
 }
 
-.group-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
   font-size: 0.875rem;
   color: var(--text-secondary);
 }

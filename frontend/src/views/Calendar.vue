@@ -1,130 +1,123 @@
 <template>
-  <div class="calendar-view">
-    <div class="view">
-      <ViewHeader title="Event Calendar">
-        <template #actions>
-          <BaseButton
-            color="primary"
-            @click="openNewEventModal"
-            icon="add"
-            label="Event"
-          />
-        </template>
-      </ViewHeader>
+  <div class="calendar-view view">
+    <TabHeader
+      title="Event Calendar"
+      action-text="Event"
+      @action="openNewEventModal"
+    />
 
-      <FilterBar
-        :show-search="true"
-        v-model:search-query="searchQuery"
-        search-placeholder="Search events by title, room, program, camper, or staff"
-        v-model:filter-room="filterRoom"
-        v-model:filter-program="filterProgram"
-        v-model:filter-staff="filterStaff"
-        v-model:filter-group="filterGroup"
-        :filters="eventFilters"
-        :filtered-count="filteredEvents.length"
-        :total-count="
-          viewMode === 'daily'
-            ? todayEvents.length
-            : viewMode === 'weekly'
-              ? weekEvents.length
-              : monthEvents.length
-        "
-        :show-count="true"
-        @clear="clearEventFilters"
-      >
-        <template #prepend>
-          <div class="calendar-view-toggle">
-            <button
-              class="btn btn-sm"
-              :class="viewMode === 'daily' ? 'btn-primary' : 'btn-secondary'"
-              @click="viewMode = 'daily'"
-            >
-              Daily
-            </button>
-            <button
-              class="btn btn-sm"
-              :class="viewMode === 'weekly' ? 'btn-primary' : 'btn-secondary'"
-              @click="viewMode = 'weekly'"
-            >
-              Weekly
-            </button>
-            <button
-              class="btn btn-sm"
-              :class="viewMode === 'monthly' ? 'btn-primary' : 'btn-secondary'"
-              @click="viewMode = 'monthly'"
-            >
-              Monthly
-            </button>
-          </div>
-        </template>
-      </FilterBar>
+    <FilterBar
+      :show-search="true"
+      v-model:search-query="searchQuery"
+      search-placeholder="Search events by title, room, program, camper, or staff"
+      v-model:filter-room="filterRoom"
+      v-model:filter-program="filterProgram"
+      v-model:filter-staff="filterStaff"
+      v-model:filter-group="filterGroup"
+      :filters="eventFilters"
+      :filtered-count="filteredEvents.length"
+      :total-count="
+        viewMode === 'daily'
+          ? todayEvents.length
+          : viewMode === 'weekly'
+            ? weekEvents.length
+            : monthEvents.length
+      "
+      :show-count="true"
+      @clear="clearEventFilters"
+    >
+      <template #prepend>
+        <div class="calendar-view-toggle">
+          <button
+            class="btn btn-sm"
+            :class="viewMode === 'daily' ? 'btn-primary' : 'btn-secondary'"
+            @click="viewMode = 'daily'"
+          >
+            Daily
+          </button>
+          <button
+            class="btn btn-sm"
+            :class="viewMode === 'weekly' ? 'btn-primary' : 'btn-secondary'"
+            @click="viewMode = 'weekly'"
+          >
+            Weekly
+          </button>
+          <button
+            class="btn btn-sm"
+            :class="viewMode === 'monthly' ? 'btn-primary' : 'btn-secondary'"
+            @click="viewMode = 'monthly'"
+          >
+            Monthly
+          </button>
+        </div>
+      </template>
+    </FilterBar>
 
-      <div class="date-navigation">
-        <div class="date-display">
-          <h3 v-if="viewMode === 'daily'">{{ formatDate(selectedDate) }}</h3>
-          <h3 v-else-if="viewMode === 'weekly'">
-            {{ formatWeekRange(selectedDate) }}
-          </h3>
-          <h3 v-else>{{ formatMonthYear(selectedDate) }}</h3>
-        </div>
-        <div class="date-controls">
-          <button class="btn btn-secondary" @click="changeDate(-1)">←</button>
-          <button class="btn btn-secondary" @click="goToToday">Today</button>
-          <button class="btn btn-secondary" @click="changeDate(1)">→</button>
-        </div>
+    <div class="date-navigation">
+      <div class="date-display">
+        <h3 v-if="viewMode === 'daily'">{{ formatDate(selectedDate) }}</h3>
+        <h3 v-else-if="viewMode === 'weekly'">
+          {{ formatWeekRange(selectedDate) }}
+        </h3>
+        <h3 v-else>{{ formatMonthYear(selectedDate) }}</h3>
       </div>
-
-      <DailyCalendarView
-        v-if="viewMode === 'daily'"
-        :events="filteredTodayEvents"
-        :rooms="locationsStore.locations"
-        @select-event="selectEvent"
-        @create-event="createEventAtHour"
-      />
-
-      <WeeklyCalendarView
-        v-else-if="viewMode === 'weekly'"
-        :week-days="weekDays"
-        :events="filteredEvents"
-        :rooms="locationsStore.locations"
-        @select-event="selectEvent"
-      />
-
-      <MonthlyCalendarView
-        v-else
-        :selected-date="selectedDate"
-        :events="filteredEvents"
-        @select-day="selectDay"
-        @select-event="selectEvent"
-      />
+      <div class="date-controls">
+        <button class="btn btn-secondary" @click="changeDate(-1)">←</button>
+        <button class="btn btn-secondary" @click="goToToday">Today</button>
+        <button class="btn btn-secondary" @click="changeDate(1)">→</button>
+      </div>
     </div>
 
-    <EventDetailModal
-      v-if="!!selectedEventId"
-      :event="selectedEvent"
-      @close="selectedEventId = null"
-      @edit="editEvent"
-      @delete="deleteEventConfirm"
+    <DailyCalendarView
+      v-if="viewMode === 'daily'"
+      :events="filteredTodayEvents"
+      :rooms="locationsStore.locations"
+      @select-event="selectEvent"
+      @create-event="createEventAtHour"
     />
 
-    <EventFormModal
-      v-if="showEventModal"
-      :event-id="editingEventId || undefined"
-      :default-event-date="selectedDate"
-      @close="closeEventModal"
+    <WeeklyCalendarView
+      v-else-if="viewMode === 'weekly'"
+      :week-days="weekDays"
+      :events="filteredEvents"
+      :rooms="locationsStore.locations"
+      @select-event="selectEvent"
     />
 
-    <ConfirmModal
-      v-if="showConfirmModal"
-      title="Delete Event"
-      :message="`Are you sure you want to delete the event '${confirmAction?.data.eventName}'?`"
-      details="This action cannot be undone. All assigned groups will be removed from this event."
-      confirm-text="Delete"
-      :danger-mode="true"
-      @confirm="handleConfirmAction"
-      @cancel="handleCancelConfirm"
+    <MonthlyCalendarView
+      v-else
+      :selected-date="selectedDate"
+      :events="filteredEvents"
+      @select-day="selectDay"
+      @select-event="selectEvent"
     />
   </div>
+
+  <EventDetailModal
+    v-if="!!selectedEventId"
+    :event="selectedEvent"
+    @close="selectedEventId = null"
+    @edit="editEvent"
+    @delete="deleteEventConfirm"
+  />
+
+  <EventFormModal
+    v-if="showEventModal"
+    :event-id="editingEventId || undefined"
+    :default-event-date="selectedDate"
+    @close="closeEventModal"
+  />
+
+  <ConfirmModal
+    v-if="showConfirmModal"
+    title="Delete Event"
+    :message="`Are you sure you want to delete the event '${confirmAction?.data.eventName}'?`"
+    details="This action cannot be undone. All assigned groups will be removed from this event."
+    confirm-text="Delete"
+    :danger-mode="true"
+    @confirm="handleConfirmAction"
+    @cancel="handleCancelConfirm"
+  />
 </template>
 
 <script lang="ts">
@@ -139,25 +132,26 @@ import {
 import { format, addDays, startOfWeek, addWeeks, addMonths } from "date-fns";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar, { type Filter } from "@/components/FilterBar.vue";
-import ViewHeader from "@/components/ViewHeader.vue";
 import EventDetailModal from "@/components/modals/EventDetailModal.vue";
 import EventFormModal from "@/components/modals/EventFormModal.vue";
 import DailyCalendarView from "@/components/DailyCalendarView.vue";
 import WeeklyCalendarView from "@/components/WeeklyCalendarView.vue";
 import MonthlyCalendarView from "@/components/MonthlyCalendarView.vue";
 import type { Event } from "@/generated/api";
-
+import TabHeader from "@/components/settings/TabHeader.vue";
+import Icon from "@/components/Icon.vue";
 export default defineComponent({
   name: "Calendar",
   components: {
     ConfirmModal,
     FilterBar,
-    ViewHeader,
     EventDetailModal,
     EventFormModal,
     DailyCalendarView,
     WeeklyCalendarView,
     MonthlyCalendarView,
+    TabHeader,
+    Icon,
   },
   data() {
     return {
@@ -214,19 +208,19 @@ export default defineComponent({
     },
     weekEvents() {
       return this.weekDays.flatMap((day) =>
-        this.eventsStore.eventsForDate(day),
+        this.eventsStore.eventsForDate(day)
       );
     },
     monthEvents() {
       const start = new Date(
         this.selectedDate.getFullYear(),
         this.selectedDate.getMonth(),
-        1,
+        1
       );
       const end = new Date(
         this.selectedDate.getFullYear(),
         this.selectedDate.getMonth() + 1,
-        0,
+        0
       );
 
       return this.eventsStore.events.filter((event) => {
@@ -287,7 +281,7 @@ export default defineComponent({
         this.locationsStore.locations.map((r) => [
           r.meta.id,
           r.meta.name.toLowerCase(),
-        ]),
+        ])
       );
     },
     programLookupMap() {
@@ -295,7 +289,7 @@ export default defineComponent({
         this.programsStore.programs.map((p) => [
           p.meta.id,
           p.meta.name.toLowerCase(),
-        ]),
+        ])
       );
     },
     staffLookupMap() {
@@ -303,7 +297,7 @@ export default defineComponent({
         this.staffMembersStore.staffMembers.map((s) => [
           s.meta.id,
           s.meta.name.toLowerCase(),
-        ]),
+        ])
       );
     },
     filteredEvents() {
@@ -355,7 +349,7 @@ export default defineComponent({
 
         if (this.filterStaff) {
           const eventStaffIds = this.eventsStore.getEventStaffIds(
-            event.meta.id,
+            event.meta.id
           );
           if (!eventStaffIds.includes(this.filterStaff)) {
             return false;
@@ -379,7 +373,7 @@ export default defineComponent({
 
           // Search in assigned staff names (using memoized map for O(1) lookup)
           const eventStaffIds = this.eventsStore.getEventStaffIds(
-            event.meta.id,
+            event.meta.id
           );
           if (eventStaffIds.length > 0) {
             const hasMatchingStaff = eventStaffIds.some((staffId) => {

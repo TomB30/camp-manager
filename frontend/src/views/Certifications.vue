@@ -1,15 +1,11 @@
 <template>
-  <div class="certifications-tab">
+  <div class="certifications-tab view">
     <TabHeader
       title="Staff Certifications"
       description="Manage the certifications available for your staff members. Define which certifications are required and their validity periods."
       action-text="Certification"
       @action="showModal = true"
-    >
-      <template #action-icon>
-        <Icon name="Plus" :size="18" />
-      </template>
-    </TabHeader>
+    />
 
     <!-- Search and Filters -->
     <FilterBar

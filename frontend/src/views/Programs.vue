@@ -1,143 +1,137 @@
 <template>
-  <div class="container">
-    <div class="view">
-      <!-- Breadcrumb Navigation (only show when inside a program) -->
-      <nav v-if="selectedProgramId" class="breadcrumbs">
-        <button class="breadcrumb-item" @click="selectedProgramId = null">
-          Programs
-        </button>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-item active">
-          {{ selectedProgram?.meta.name }}
-        </span>
-      </nav>
+  <div class="view">
+    <!-- Breadcrumb Navigation (only show when inside a program) -->
+    <nav v-if="selectedProgramId" class="breadcrumbs">
+      <button class="breadcrumb-item" @click="selectedProgramId = null">
+        Programs
+      </button>
+      <span class="breadcrumb-separator">/</span>
+      <span class="breadcrumb-item active">
+        {{ selectedProgram?.meta.name }}
+      </span>
+    </nav>
 
-      <!-- Programs List View -->
-      <div v-if="!selectedProgramId">
-        <ViewHeader
-          title="Programs"
-          tooltip="Programs are collections of activities, staff members, and locations. Create programs to organize your camp's offerings like 'Watersports', 'Arts & Crafts', or 'Adventure Sports'."
-        >
-          <template #actions>
-            <BaseButton
-              @click="showProgramModal = true"
-              label="Program"
-              icon="add"
-              color="primary"
-            />
-          </template>
-        </ViewHeader>
-
-        <!-- Search and Filters -->
-        <FilterBar
-          v-model:searchQuery="searchQuery"
-          :filtered-count="filteredPrograms.length"
-          :total-count="programsStore.programs.length"
-          search-placeholder="Search programs..."
-          @clear="clearFilters"
-        >
-          <template #prepend>
-            <ViewToggle v-model="viewMode" />
-          </template>
-        </FilterBar>
-
-        <!-- Grid View -->
-        <div v-if="viewMode === 'grid'" class="programs-grid">
-          <ProgramCard
-            v-for="program in filteredPrograms"
-            :key="program.meta.id"
-            :program="program"
-            @click="selectProgram(program.meta.id)"
-          />
-
-          <EmptyState
-            v-if="
-              filteredPrograms.length === 0 &&
-              programsStore.programs.length === 0
-            "
-            type="empty"
-            title="No Programs Yet"
-            message="Create your first program to organize activities, staff, and locations."
-            action-text="Program"
-            icon-name="Boxes"
-            @action="showProgramModal = true"
-          />
-
-          <EmptyState
-            v-if="
-              filteredPrograms.length === 0 && programsStore.programs.length > 0
-            "
-            type="no-results"
-            title="No Programs Found"
-            message="No programs match your search query."
-            action-text="Clear Filters"
-            action-button-class="btn-secondary"
-            @action="clearFilters"
-            icon-name="Boxes"
-            hide-action-icon
-          />
-        </div>
-
-        <!-- Table View -->
-        <DataTable
-          v-if="viewMode === 'table'"
-          :columns="programColumns"
-          :data="filteredPrograms"
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          row-key="id"
-        >
-          <template #cell-name="{ item }">
-            <div class="program-name-content">
-              <div
-                class="color-indicator"
-                :style="{ background: getProgramColor(item) }"
-              ></div>
-              <div class="program-name-text">{{ item.meta.name }}</div>
-            </div>
-          </template>
-
-          <template #cell-description="{ item }">
-            <span>{{ item.meta.description || "No description" }}</span>
-          </template>
-
-          <template #cell-activities="{ item }">
-            <span class="badge badge-sm badge-primary"
-              >{{ getActivitiesCount(item.meta.id) }} activities</span
-            >
-          </template>
-
-          <template #cell-staff="{ item }">
-            <span>{{ getStaffGroupsCount(item.meta.id) }} staff groups</span>
-          </template>
-
-          <template #cell-locations="{ item }">
-            <span>{{ getLocationsCount(item.meta.id) }} locations</span>
-          </template>
-
-          <template #cell-actions="{ item }">
-            <BaseButton
-              color="grey-8"
-              outline
-              label="View Details"
-              size="sm"
-              @click="selectProgram(item.meta.id)"
-            />
-          </template>
-        </DataTable>
-      </div>
-
-      <ProgramDetails
-        v-if="selectedProgram"
-        :program="selectedProgram"
-        @close="selectedProgramId = null"
-        @edit="editProgram"
-        @delete="deleteProgramConfirm"
-        @add-activity="showActivityFormModal = true"
-        @add-staff-group="showStaffSelector = true"
-        @add-location="showLocationSelector = true"
+    <!-- Programs List View -->
+    <div v-if="!selectedProgramId">
+      <TabHeader
+        title="Programs"
+        description="Programs are collections of activities, staff members, and locations. Create programs to organize your camp's offerings like 'Watersports', 'Arts & Crafts', or 'Adventure Sports'."
+        action-text="Program"
+        @action="showProgramModal = true"
       />
+      <!-- Search and Filters -->
+      <FilterBar
+        v-model:searchQuery="searchQuery"
+        :filtered-count="filteredPrograms.length"
+        :total-count="programsStore.programs.length"
+        search-placeholder="Search programs..."
+        @clear="clearFilters"
+      >
+        <template #prepend>
+          <ViewToggle v-model="viewMode" />
+        </template>
+      </FilterBar>
+
+      <!-- Grid View -->
+      <TransitionGroup
+        v-if="viewMode === 'grid'"
+        name="list"
+        tag="div"
+        class="programs-grid"
+      >
+        <ProgramCard
+          v-for="program in filteredPrograms"
+          :key="program.meta.id"
+          :program="program"
+          @click="selectProgram(program.meta.id)"
+        />
+
+        <EmptyState
+          v-if="
+            filteredPrograms.length === 0 && programsStore.programs.length === 0
+          "
+          type="empty"
+          title="No Programs Yet"
+          message="Create your first program to organize activities, staff, and locations."
+          action-text="Program"
+          icon-name="Boxes"
+          @action="showProgramModal = true"
+        />
+
+        <EmptyState
+          v-if="
+            filteredPrograms.length === 0 && programsStore.programs.length > 0
+          "
+          type="no-results"
+          title="No Programs Found"
+          message="No programs match your search query."
+          action-text="Clear Filters"
+          action-button-class="btn-secondary"
+          @action="clearFilters"
+          icon-name="Boxes"
+          hide-action-icon
+        />
+      </TransitionGroup>
+
+      <!-- Table View -->
+      <DataTable
+        v-if="viewMode === 'table'"
+        :columns="programColumns"
+        :data="filteredPrograms"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="program-name-content">
+            <div
+              class="color-indicator"
+              :style="{ background: getProgramColor(item) }"
+            ></div>
+            <div class="program-name-text">{{ item.meta.name }}</div>
+          </div>
+        </template>
+
+        <template #cell-description="{ item }">
+          <span>{{ item.meta.description || "No description" }}</span>
+        </template>
+
+        <template #cell-activities="{ item }">
+          <span class="badge badge-sm badge-primary"
+            >{{ getActivitiesCount(item.meta.id) }} activities</span
+          >
+        </template>
+
+        <template #cell-staff="{ item }">
+          <span>{{ getStaffGroupsCount(item.meta.id) }} staff groups</span>
+        </template>
+
+        <template #cell-locations="{ item }">
+          <span>{{ getLocationsCount(item.meta.id) }} locations</span>
+        </template>
+
+        <template #cell-actions="{ item }">
+          <BaseButton
+            color="grey-8"
+            outline
+            label="View Details"
+            size="sm"
+            @click="selectProgram(item.meta.id)"
+          />
+        </template>
+      </DataTable>
     </div>
+
+    <ProgramDetails
+      v-if="selectedProgram"
+      :program="selectedProgram"
+      @close="selectedProgramId = null"
+      @edit="editProgram"
+      @delete="deleteProgramConfirm"
+      @add-activity="showActivityFormModal = true"
+      @add-staff-group="showStaffSelector = true"
+      @add-location="showLocationSelector = true"
+    />
 
     <!-- Modals -->
     <ProgramFormModal
@@ -240,6 +234,8 @@ import type { AutocompleteOption } from "@/components/Autocomplete.vue";
 import SelectionList from "@/components/SelectionList.vue";
 import ProgramDetails from "@/components/ProgramDetails.vue";
 import ActivityFormModal from "@/components/modals/ActivityFormModal.vue";
+import TabHeader from "@/components/settings/TabHeader.vue";
+import Icon from "@/components/Icon.vue";
 export default defineComponent({
   name: "Programs",
   components: {
@@ -255,6 +251,8 @@ export default defineComponent({
     SelectionList,
     ProgramDetails,
     ActivityFormModal,
+    TabHeader,
+    Icon,
   },
   data() {
     return {
@@ -324,7 +322,7 @@ export default defineComponent({
         (program) =>
           program.meta.name.toLowerCase().includes(query) ||
           (program.meta.description &&
-            program.meta.description.toLowerCase().includes(query)),
+            program.meta.description.toLowerCase().includes(query))
       );
     },
     selectedProgram(): Program | null {
@@ -440,7 +438,7 @@ export default defineComponent({
       try {
         await this.programsStore.updateProgram(
           this.selectedProgram.meta.id,
-          updatedProgram,
+          updatedProgram
         );
         this.toast.success("Staff assignments updated");
       } catch (error: any) {
@@ -461,12 +459,12 @@ export default defineComponent({
       try {
         await this.programsStore.updateProgram(
           this.selectedProgram.meta.id,
-          updatedProgram,
+          updatedProgram
         );
         this.toast.success("Location assignments updated");
       } catch (error: any) {
         this.toast.error(
-          error.message || "Failed to update location assignments",
+          error.message || "Failed to update location assignments"
         );
       }
     },
@@ -536,7 +534,7 @@ export default defineComponent({
 .programs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .programs-grid .empty-state {

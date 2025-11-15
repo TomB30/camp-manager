@@ -1,151 +1,148 @@
 <template>
-  <div class="container">
-    <div class="view">
-      <ViewHeader title="Campers Management">
-        <template #actions>
-          <BaseButton
-            color="primary"
-            @click="showModal = true"
-            label="Camper"
-            icon="add"
-          />
-        </template>
-      </ViewHeader>
+  <div class="view">
+    <TabHeader
+      title="Campers"
+      description="Manage your campers and their registrations, allergies, and sessions."
+      action-text="Camper"
+      @action="showModal = true"
+    />
 
-      <FilterBar
-        v-model:searchQuery="searchQuery"
-        v-model:filter-gender="filterGender"
-        v-model:filter-age="filterAge"
-        v-model:filter-session="filterSession"
-        :filters="campersFilters"
-        :filtered-count="filteredCampers.length"
-        :total-count="campersStore.campers.length"
-        @clear="clearFilters"
-      >
-        <template #prepend>
-          <ViewToggle v-model="viewMode" />
-        </template>
-      </FilterBar>
+    <FilterBar
+      v-model:searchQuery="searchQuery"
+      v-model:filter-gender="filterGender"
+      v-model:filter-age="filterAge"
+      v-model:filter-session="filterSession"
+      :filters="campersFilters"
+      :filtered-count="filteredCampers.length"
+      :total-count="campersStore.campers.length"
+      @clear="clearFilters"
+    >
+      <template #prepend>
+        <ViewToggle v-model="viewMode" />
+      </template>
+    </FilterBar>
 
-      <div v-if="viewMode === 'grid'" class="campers-grid">
-        <CamperCard
-          v-for="camper in filteredCampers"
-          :key="camper.meta.id"
-          :camper="camper"
-          :formatted-gender="formatGender(camper.spec.gender)"
-          :session-name="getSessionName(camper.spec.sessionId)"
-          @click="selectCamper(camper.meta.id)"
-        />
+    <TransitionGroup
+      v-if="viewMode === 'grid'"
+      name="list"
+      tag="div"
+      class="campers-grid"
+    >
+      <CamperCard
+        v-for="camper in filteredCampers"
+        :key="camper.meta.id"
+        :camper="camper"
+        :formatted-gender="formatGender(camper.spec.gender)"
+        :session-name="getSessionName(camper.spec.sessionId)"
+        @click="selectCamper(camper.meta.id)"
+      />
 
-        <EmptyState
-          v-if="
-            filteredCampers.length === 0 && campersStore.campers.length === 0
-          "
-          type="empty"
-          title="No Campers Yet"
-          message="Add your first camper to start managing registrations and camp activities."
-          action-text="Camper"
-          @action="showModal = true"
-          icon-name="UsersRound"
-        />
+      <EmptyState
+        v-if="filteredCampers.length === 0 && campersStore.campers.length === 0"
+        type="empty"
+        title="No Campers Yet"
+        message="Add your first camper to start managing registrations and camp activities."
+        action-text="Camper"
+        @action="showModal = true"
+        icon-name="UsersRound"
+      />
 
-        <EmptyState
-          v-if="filteredCampers.length === 0 && campersStore.campers.length > 0"
-          type="no-results"
-          title="No Campers Found"
-          message="No campers match your current filters. Try adjusting your search criteria."
-          action-text="Clear Filters"
-          no-action-icon
-          action-button-class="btn-secondary"
-          @action="clearFilters"
-          icon-name="UsersRound"
-        />
-      </div>
+      <EmptyState
+        v-if="filteredCampers.length === 0 && campersStore.campers.length > 0"
+        type="no-results"
+        title="No Campers Found"
+        message="No campers match your current filters. Try adjusting your search criteria."
+        action-text="Clear Filters"
+        no-action-icon
+        action-button-class="btn-secondary"
+        @action="clearFilters"
+        icon-name="UsersRound"
+      />
+    </TransitionGroup>
 
-      <DataTable
-        v-if="viewMode === 'table'"
-        :columns="camperColumns"
-        :data="filteredCampers"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
-      >
-        <template #cell-name="{ item }">
-          <div class="camper-name-content">
-            <AvatarInitials
-              :first-name="item.spec.firstName"
-              :last-name="item.spec.lastName"
-              size="sm"
-            />
-            <div class="camper-fullname">
-              {{ item.spec.firstName }} {{ item.spec.lastName }}
-            </div>
-          </div>
-        </template>
-
-        <template #cell-age="{ item }">
-          {{ calculateAge(item.spec.birthday) }}
-        </template>
-
-        <template #cell-gender="{ item }">
-          <span class="badge badge-primary badge-sm">{{
-            formatGender(item.gender)
-          }}</span>
-        </template>
-
-        <template #cell-session="{ item }">
-          <span v-if="item.sessionId" class="badge badge-info badge-sm">
-            {{ getSessionName(item.sessionId) }}
-          </span>
-          <span v-else class="text-secondary">Not registered</span>
-        </template>
-
-        <template #cell-allergies="{ item }">
-          <span
-            v-if="item.allergies && item.allergies.length > 0"
-            class="badge badge-warning badge-sm"
-          >
-            {{ item.allergies.length }} allergy(ies)
-          </span>
-          <span v-else class="text-caption">None</span>
-        </template>
-
-        <template #cell-actions="{ item }">
-          <BaseButton
-            outline
-            color="grey-8"
+    <DataTable
+      v-if="viewMode === 'table'"
+      :columns="camperColumns"
+      :data="filteredCampers"
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      row-key="id"
+    >
+      <template #cell-name="{ item }">
+        <div class="camper-name-content">
+          <AvatarInitials
+            :first-name="item.spec.firstName"
+            :last-name="item.spec.lastName"
             size="sm"
-            @click="selectCamper(item.meta.id)"
-            label="View Details"
           />
-        </template>
-      </DataTable>
+          <div class="camper-fullname">
+            {{ item.spec.firstName }} {{ item.spec.lastName }}
+          </div>
+        </div>
+      </template>
 
-      <CamperDetailModal
-        v-if="!!selectedCamperId"
-        :camper="selectedCamper"
-        @close="selectedCamperId = null"
-        @edit="editCamper"
-        @delete="deleteCamperConfirm"
-      />
+      <template #cell-age="{ item }">
+        {{ calculateAge(item.spec.birthday) }}
+      </template>
 
-      <CamperFormModal
-        v-if="showModal"
-        :camper-id="editingCamperId || undefined"
-        @close="closeModal"
-      />
+      <template #cell-gender="{ item }">
+        <span class="badge badge-primary badge-sm">{{
+          formatGender(item.gender)
+        }}</span>
+      </template>
 
-      <ConfirmModal
-        v-if="showConfirmModal"
-        title="Delete Camper"
-        :message="`Are you sure you want to delete ${camperToDelete?.name}?`"
-        details="This action cannot be undone. The camper will be removed from all events and their housing assignment."
-        confirm-text="Delete"
-        :danger-mode="true"
-        @confirm="handleConfirmDelete"
-        @cancel="handleCancelDelete"
-      />
-    </div>
+      <template #cell-session="{ item }">
+        <span v-if="item.sessionId" class="badge badge-info badge-sm">
+          {{ getSessionName(item.sessionId) }}
+        </span>
+        <span v-else class="text-secondary">Not registered</span>
+      </template>
+
+      <template #cell-allergies="{ item }">
+        <span
+          v-if="item.allergies && item.allergies.length > 0"
+          class="badge badge-warning badge-sm"
+        >
+          {{ item.allergies.length }} allergy(ies)
+        </span>
+        <span v-else class="text-caption">None</span>
+      </template>
+
+      <template #cell-actions="{ item }">
+        <BaseButton
+          outline
+          color="grey-8"
+          size="sm"
+          @click="selectCamper(item.meta.id)"
+          label="View Details"
+        />
+      </template>
+    </DataTable>
+
+    <CamperDetailModal
+      v-if="!!selectedCamperId"
+      :camper="selectedCamper"
+      @close="selectedCamperId = null"
+      @edit="editCamper"
+      @delete="deleteCamperConfirm"
+    />
+
+    <CamperFormModal
+      v-if="showModal"
+      :camper-id="editingCamperId || undefined"
+      @close="closeModal"
+    />
+
+    <ConfirmModal
+      v-if="showConfirmModal"
+      title="Delete Camper"
+      :message="`Are you sure you want to delete ${camperToDelete?.name}?`"
+      details="This action cannot be undone. The camper will be removed from all events and their housing assignment."
+      confirm-text="Delete"
+      :danger-mode="true"
+      @confirm="handleConfirmDelete"
+      @cancel="handleCancelDelete"
+    />
   </div>
 </template>
 
@@ -153,7 +150,6 @@
 import { defineComponent } from "vue";
 import { useCampersStore, useSessionsStore } from "@/stores";
 import type { Camper } from "@/generated/api";
-import ViewHeader from "@/components/ViewHeader.vue";
 import AvatarInitials from "@/components/AvatarInitials.vue";
 import CamperCard from "@/components/cards/CamperCard.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
@@ -163,12 +159,13 @@ import ViewToggle from "@/components/ViewToggle.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import CamperDetailModal from "@/components/modals/CamperDetailModal.vue";
 import CamperFormModal from "@/components/modals/CamperFormModal.vue";
+import TabHeader from "@/components/settings/TabHeader.vue";
+import Icon from "@/components/Icon.vue";
 import { dateUtils } from "@/utils/dateUtils";
 
 export default defineComponent({
   name: "Campers",
   components: {
-    ViewHeader,
     AvatarInitials,
     CamperCard,
     ConfirmModal,
@@ -178,6 +175,8 @@ export default defineComponent({
     EmptyState,
     CamperDetailModal,
     CamperFormModal,
+    TabHeader,
+    Icon,
   },
   data() {
     return {
@@ -265,21 +264,21 @@ export default defineComponent({
               .includes(query) ||
             `${camper.meta.name.split(" ")[0]} ${camper.meta.name.split(" ").slice(1).join(" ")}`
               .toLowerCase()
-              .includes(query),
+              .includes(query)
         );
       }
 
       // Session filter
       if (this.filterSession) {
         campers = campers.filter(
-          (camper: Camper) => camper.spec.sessionId === this.filterSession,
+          (camper: Camper) => camper.spec.sessionId === this.filterSession
         );
       }
 
       // Gender filter
       if (this.filterGender) {
         campers = campers.filter(
-          (camper: Camper) => camper.spec.gender === this.filterGender,
+          (camper: Camper) => camper.spec.gender === this.filterGender
         );
       }
 
@@ -316,7 +315,7 @@ export default defineComponent({
     getSessionName(sessionId: string | undefined): string {
       if (!sessionId) return "No session";
       const session = this.sessionsStore.sessions.find(
-        (s) => s.meta.id === sessionId,
+        (s) => s.meta.id === sessionId
       );
       return session?.meta.name || "Unknown Session";
     },
@@ -376,7 +375,7 @@ export default defineComponent({
 .campers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
+  gap: .5rem;
 }
 
 .campers-grid .empty-state {

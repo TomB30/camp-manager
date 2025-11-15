@@ -1,15 +1,11 @@
 <template>
-  <div class="sessions-tab">
+  <div class="sessions-tab view">
     <TabHeader
       title="Camp Sessions"
       description="Define the time periods (weeks, months, or custom durations) that campers can register for at your camp."
       action-text="Session"
       @action="showFormModal = true"
-    >
-      <template #action-icon>
-        <Icon name="Plus" :size="18" />
-      </template>
-    </TabHeader>
+    />
 
     <FilterBar
       v-if="sessionsStore.sessions.length > 0"

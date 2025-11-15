@@ -1,15 +1,11 @@
 <template>
-  <div class="areas-tab">
+  <div class="areas-tab view">
     <TabHeader
       title="Areas"
       description="Manage all physical areas within your camp - from indoor facilities to outdoor spaces."
       action-text="Area"
       @action="showModal = true"
-    >
-      <template #action-icon>
-        <Icon name="Plus" :size="18" />
-      </template>
-    </TabHeader>
+    />
 
     <!-- Search and Filters -->
     <FilterBar

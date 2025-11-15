@@ -1,15 +1,11 @@
 <template>
-  <div class="cabins-tab">
+  <div class="cabins-tab view">
     <TabHeader
       title="Housing"
       description="Manage all sleeping accommodations where campers and family groups will stay during their time at camp."
       action-text="Room"
       @action="showModal = true"
-    >
-      <template #action-icon>
-        <Icon name="Plus" :size="18" />
-      </template>
-    </TabHeader>
+    />
 
     <!-- Search and Filters -->
     <FilterBar

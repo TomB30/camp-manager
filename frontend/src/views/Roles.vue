@@ -1,15 +1,11 @@
 <template>
-  <div class="roles-tab">
+  <div class="roles-tab view">
     <TabHeader
       title="Staff Roles"
       description="Manage the roles available for your staff members. Define different positions and responsibilities within your organization."
       action-text="Role"
       @action="showModal = true"
-    >
-      <template #action-icon>
-        <Icon name="Plus" :size="18" />
-      </template>
-    </TabHeader>
+    />
 
     <!-- Search and Filters -->
     <FilterBar
