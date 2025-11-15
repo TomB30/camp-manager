@@ -226,6 +226,21 @@ type ServerInterface interface {
 	// Update staff member by ID
 	// (PUT /api/v1/camps/{camp_id}/staff-members/{id})
 	UpdateStaffMemberById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all time blocks
+	// (GET /api/v1/camps/{camp_id}/time-blocks)
+	ListTimeBlocks(w http.ResponseWriter, r *http.Request, campId CampId, params ListTimeBlocksParams)
+	// Create a new time block
+	// (POST /api/v1/camps/{camp_id}/time-blocks)
+	CreateTimeBlock(w http.ResponseWriter, r *http.Request, campId CampId)
+	// Delete time block by ID
+	// (DELETE /api/v1/camps/{camp_id}/time-blocks/{id})
+	DeleteTimeBlockById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Get time block by ID
+	// (GET /api/v1/camps/{camp_id}/time-blocks/{id})
+	GetTimeBlockById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// Update time block by ID
+	// (PUT /api/v1/camps/{camp_id}/time-blocks/{id})
+	UpdateTimeBlockById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
 	// Delete camp by ID
 	// (DELETE /api/v1/camps/{id})
 	DeleteCampById(w http.ResponseWriter, r *http.Request, id Id)
@@ -670,6 +685,36 @@ func (_ Unimplemented) GetStaffMemberById(w http.ResponseWriter, r *http.Request
 // Update staff member by ID
 // (PUT /api/v1/camps/{camp_id}/staff-members/{id})
 func (_ Unimplemented) UpdateStaffMemberById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all time blocks
+// (GET /api/v1/camps/{camp_id}/time-blocks)
+func (_ Unimplemented) ListTimeBlocks(w http.ResponseWriter, r *http.Request, campId CampId, params ListTimeBlocksParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Create a new time block
+// (POST /api/v1/camps/{camp_id}/time-blocks)
+func (_ Unimplemented) CreateTimeBlock(w http.ResponseWriter, r *http.Request, campId CampId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Delete time block by ID
+// (DELETE /api/v1/camps/{camp_id}/time-blocks/{id})
+func (_ Unimplemented) DeleteTimeBlockById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get time block by ID
+// (GET /api/v1/camps/{camp_id}/time-blocks/{id})
+func (_ Unimplemented) GetTimeBlockById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Update time block by ID
+// (PUT /api/v1/camps/{camp_id}/time-blocks/{id})
+func (_ Unimplemented) UpdateTimeBlockById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3416,6 +3461,209 @@ func (siw *ServerInterfaceWrapper) UpdateStaffMemberById(w http.ResponseWriter, 
 	handler.ServeHTTP(w, r)
 }
 
+// ListTimeBlocks operation middleware
+func (siw *ServerInterfaceWrapper) ListTimeBlocks(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListTimeBlocksParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "search" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "search", r.URL.Query(), &params.Search)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "filterBy" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "filterBy", r.URL.Query(), &params.FilterBy)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "filterBy", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "sortBy" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "sortBy", r.URL.Query(), &params.SortBy)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sortBy", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "sortOrder" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "sortOrder", r.URL.Query(), &params.SortOrder)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sortOrder", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListTimeBlocks(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateTimeBlock operation middleware
+func (siw *ServerInterfaceWrapper) CreateTimeBlock(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateTimeBlock(w, r, campId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteTimeBlockById operation middleware
+func (siw *ServerInterfaceWrapper) DeleteTimeBlockById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteTimeBlockById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetTimeBlockById operation middleware
+func (siw *ServerInterfaceWrapper) GetTimeBlockById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetTimeBlockById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateTimeBlockById operation middleware
+func (siw *ServerInterfaceWrapper) UpdateTimeBlockById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id Id
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateTimeBlockById(w, r, campId, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // DeleteCampById operation middleware
 func (siw *ServerInterfaceWrapper) DeleteCampById(w http.ResponseWriter, r *http.Request) {
 
@@ -3855,6 +4103,21 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/staff-members/{id}", wrapper.UpdateStaffMemberById)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/time-blocks", wrapper.ListTimeBlocks)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/time-blocks", wrapper.CreateTimeBlock)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/api/v1/camps/{camp_id}/time-blocks/{id}", wrapper.DeleteTimeBlockById)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/time-blocks/{id}", wrapper.GetTimeBlockById)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/time-blocks/{id}", wrapper.UpdateTimeBlockById)
 	})
 	r.Group(func(r chi.Router) {
 		r.Delete(options.BaseURL+"/api/v1/camps/{id}", wrapper.DeleteCampById)

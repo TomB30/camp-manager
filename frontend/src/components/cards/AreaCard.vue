@@ -1,5 +1,5 @@
 <template>
-  <div class="card card-clickable area-card" @click="$emit('click')">
+  <div class="card clickable area-card" @click="$emit('click')">
     <section class="card-header">
       <div class="card-icon" :style="{ background: '#3b82f6' }">
         <slot name="icon">

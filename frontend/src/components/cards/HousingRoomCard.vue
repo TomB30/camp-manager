@@ -1,5 +1,5 @@
 <template>
-  <div class="card" @click="$emit('click', room)">
+  <div class="card clickable" @click="$emit('click', room)">
     <div class="card-header">
       <div class="card-icon" style="background: var(--accent-color)">
         <Icon name="Bed" :size="32" :stroke-width="2" />

@@ -6,12 +6,15 @@
   box-shadow: var(--shadow);
   border: 1px solid var(--border-light);
   transition: all 0.15s ease;
-  cursor: pointer;
-}
 
-.card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-4px);
+  &.clickable {
+    cursor: pointer;
+  }
+
+  &.clickable:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+  }
 }
 
 .card-header {

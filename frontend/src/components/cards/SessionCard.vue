@@ -1,5 +1,5 @@
 <template>
-  <div class="session-card card" @click="$emit('click', session.meta.id)">
+  <div class="session-card card clickable" @click="$emit('click', session.meta.id)">
     <div class="card-header">
       <div class="session-icon card-icon">
         <Icon name="CalendarDays" :size="24" />

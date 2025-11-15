@@ -1,0 +1,38 @@
+get:
+  summary: List all time blocks
+  operationId: listTimeBlocks
+  x-required-roles: [admin, program-admin, viewer]
+  parameters:
+    - $ref: "../parameters/camp_id.yaml"
+    - $ref: "../parameters/limit.yaml"
+    - $ref: "../parameters/offset.yaml"
+    - $ref: "../parameters/search.yaml"
+    - $ref: "../parameters/TimeBlocksFilterBy.yaml"
+    - $ref: "../parameters/TimeBlocksSortBy.yaml"
+    - $ref: "../parameters/sortOrder.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/TimeBlocksListResponse.yaml"
+post:
+  summary: Create a new time block
+  operationId: createTimeBlock
+  x-required-roles: [admin]
+  parameters:
+    - $ref: "../parameters/camp_id.yaml"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/TimeBlockCreationRequest.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/TimeBlock.yaml"

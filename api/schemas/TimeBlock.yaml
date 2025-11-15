@@ -1,0 +1,9 @@
+type: object
+required:
+  - meta
+  - spec
+properties:
+  meta:
+    $ref: "./EntityMeta.yaml"
+  spec:
+    $ref: "./TimeBlockSpec.yaml"

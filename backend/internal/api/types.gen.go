@@ -105,6 +105,12 @@ const (
 	StaffMembersSortByRoleId          StaffMembersSortBy = "roleId"
 )
 
+// Defines values for TimeBlocksSortBy.
+const (
+	TimeBlocksSortByEndTime   TimeBlocksSortBy = "endTime"
+	TimeBlocksSortByStartTime TimeBlocksSortBy = "startTime"
+)
+
 // Defines values for SortOrder.
 const (
 	SortOrderAsc  SortOrder = "asc"
@@ -247,6 +253,18 @@ const (
 	ListStaffMembersParamsSortOrderDesc ListStaffMembersParamsSortOrder = "desc"
 )
 
+// Defines values for ListTimeBlocksParamsSortBy.
+const (
+	ListTimeBlocksParamsSortByEndTime   ListTimeBlocksParamsSortBy = "endTime"
+	ListTimeBlocksParamsSortByStartTime ListTimeBlocksParamsSortBy = "startTime"
+)
+
+// Defines values for ListTimeBlocksParamsSortOrder.
+const (
+	ListTimeBlocksParamsSortOrderAsc  ListTimeBlocksParamsSortOrder = "asc"
+	ListTimeBlocksParamsSortOrderDesc ListTimeBlocksParamsSortOrder = "desc"
+)
+
 // AccessRule defines model for AccessRule.
 type AccessRule struct {
 	Role AccessRuleRole `json:"role"`
@@ -292,6 +310,18 @@ type ActivityCreationRequest struct {
 
 // ActivitySpec defines model for ActivitySpec.
 type ActivitySpec struct {
+	// ActivityConflicts Defines scheduling conflicts with other activities
+	ActivityConflicts *struct {
+		// ConcurrentActivityConflicts Activities that cannot occur at the same time as this activity
+		ConcurrentActivityConflicts *[]openapi_types.UUID `json:"concurrentActivityConflicts,omitempty"`
+
+		// PostActivityConflicts Activities that cannot occur immediately after this activity
+		PostActivityConflicts *[]openapi_types.UUID `json:"postActivityConflicts,omitempty"`
+
+		// PreActivityConflicts Activities that cannot occur immediately before this activity
+		PreActivityConflicts *[]openapi_types.UUID `json:"preActivityConflicts,omitempty"`
+	} `json:"activityConflicts,omitempty"`
+
 	// DefaultLocationId ID of the default location
 	DefaultLocationId *openapi_types.UUID `json:"defaultLocationId,omitempty"`
 
@@ -1162,6 +1192,47 @@ type TenantsListResponse struct {
 	Total int `json:"total"`
 }
 
+// TimeBlock defines model for TimeBlock.
+type TimeBlock struct {
+	Meta EntityMeta    `json:"meta"`
+	Spec TimeBlockSpec `json:"spec"`
+}
+
+// TimeBlockCreationRequest defines model for TimeBlockCreationRequest.
+type TimeBlockCreationRequest struct {
+	Meta EntityCreationRequestMeta `json:"meta"`
+	Spec TimeBlockSpec             `json:"spec"`
+}
+
+// TimeBlockSpec defines model for TimeBlockSpec.
+type TimeBlockSpec struct {
+	EndTime   string `json:"endTime"`
+	StartTime string `json:"startTime"`
+}
+
+// TimeBlockUpdateRequest defines model for TimeBlockUpdateRequest.
+type TimeBlockUpdateRequest struct {
+	Meta EntityCreationRequestMeta `json:"meta"`
+	Spec TimeBlockSpec             `json:"spec"`
+}
+
+// TimeBlocksListResponse defines model for TimeBlocksListResponse.
+type TimeBlocksListResponse struct {
+	Items []TimeBlock `json:"items"`
+
+	// Limit Number of items per page
+	Limit int `json:"limit"`
+
+	// Next Next offset value to use for the next page, or null if no more pages available
+	Next *int `json:"next"`
+
+	// Offset Current offset (starting position)
+	Offset int `json:"offset"`
+
+	// Total Total count of all items across all pages
+	Total int `json:"total"`
+}
+
 // User defines model for User.
 type User struct {
 	// AccessRules Array of access rules defining user's permissions
@@ -1242,6 +1313,12 @@ type StaffMembersFilterBy = []string
 
 // StaffMembersSortBy defines model for StaffMembersSortBy.
 type StaffMembersSortBy string
+
+// TimeBlocksFilterBy defines model for TimeBlocksFilterBy.
+type TimeBlocksFilterBy = []string
+
+// TimeBlocksSortBy defines model for TimeBlocksSortBy.
+type TimeBlocksSortBy string
 
 // CampId defines model for camp_id.
 type CampId = openapi_types.UUID
@@ -1638,6 +1715,37 @@ type ListStaffMembersParamsSortBy string
 // ListStaffMembersParamsSortOrder defines parameters for ListStaffMembers.
 type ListStaffMembersParamsSortOrder string
 
+// ListTimeBlocksParams defines parameters for ListTimeBlocks.
+type ListTimeBlocksParams struct {
+	// Limit Maximum number of items to return per page
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to return results
+	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Search Search term to filter items by name, title, or other text fields
+	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *TimeBlocksFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListTimeBlocksParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListTimeBlocksParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
+}
+
+// ListTimeBlocksParamsSortBy defines parameters for ListTimeBlocks.
+type ListTimeBlocksParamsSortBy string
+
+// ListTimeBlocksParamsSortOrder defines parameters for ListTimeBlocks.
+type ListTimeBlocksParamsSortOrder string
+
 // LoginJSONRequestBody defines body for Login for application/json ContentType.
 type LoginJSONRequestBody = LoginRequest
 
@@ -1724,6 +1832,12 @@ type CreateStaffMemberJSONRequestBody = StaffMemberCreationRequest
 
 // UpdateStaffMemberByIdJSONRequestBody defines body for UpdateStaffMemberById for application/json ContentType.
 type UpdateStaffMemberByIdJSONRequestBody = StaffMemberUpdateRequest
+
+// CreateTimeBlockJSONRequestBody defines body for CreateTimeBlock for application/json ContentType.
+type CreateTimeBlockJSONRequestBody = TimeBlockCreationRequest
+
+// UpdateTimeBlockByIdJSONRequestBody defines body for UpdateTimeBlockById for application/json ContentType.
+type UpdateTimeBlockByIdJSONRequestBody = TimeBlockUpdateRequest
 
 // UpdateCampByIdJSONRequestBody defines body for UpdateCampById for application/json ContentType.
 type UpdateCampByIdJSONRequestBody = CampUpdateRequest

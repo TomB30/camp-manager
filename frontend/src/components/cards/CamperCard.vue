@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card card-clickable card-horizontal"
+    class="card clickable card-horizontal"
     @click="$emit('click', camper)"
   >
     <AvatarInitials

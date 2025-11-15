@@ -20,6 +20,7 @@ export { useLabelsStore } from "./labelsStore";
 export { useRolesStore } from "./rolesStore";
 export { useCampStore } from "./campStore";
 export { useDurationPresetsStore } from "./durationPresetsStore";
+export { useTimeBlocksStore } from "./timeBlocksStore";
 // Main coordinating store
 export { useMainStore } from "./mainStore";
 

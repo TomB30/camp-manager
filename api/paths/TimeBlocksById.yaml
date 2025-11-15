@@ -1,0 +1,38 @@
+parameters:
+  - $ref: "../parameters/camp_id.yaml"
+  - $ref: "../parameters/id.yaml"
+get:
+  summary: Get time block by ID
+  operationId: getTimeBlockById
+  x-required-roles: [admin, program-admin, viewer]
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/TimeBlock.yaml"
+put:
+  summary: Update time block by ID
+  operationId: updateTimeBlockById
+  x-required-roles: [admin]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/TimeBlockUpdateRequest.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/TimeBlock.yaml"
+delete:
+  summary: Delete time block by ID
+  operationId: deleteTimeBlockById
+  x-required-roles: [admin]
+  responses:
+    "204":
+      description: Deleted

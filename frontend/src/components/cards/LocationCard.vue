@@ -1,5 +1,5 @@
 <template>
-  <div class="card" @click="$emit('click', location)">
+  <div class="card clickable" @click="$emit('click', location)">
     <div class="card-header">
       <div class="card-icon" :style="{ background: '#3b82f6' }">
         <Icon name="MapPin" :size="24" :stroke-width="2" />

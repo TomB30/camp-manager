@@ -1,5 +1,5 @@
 <template>
-  <div class="duration-preset-card card">
+  <div class="duration-preset-card card clickable">
     <div class="card-header">
       <div class="preset-icon card-icon">
         <Icon name="Timer" :size="24" />

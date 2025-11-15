@@ -360,6 +360,25 @@ type ClientInterface interface {
 
 	UpdateStaffMemberById(ctx context.Context, campId CampId, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListTimeBlocks request
+	ListTimeBlocks(ctx context.Context, campId CampId, params *ListTimeBlocksParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateTimeBlockWithBody request with any body
+	CreateTimeBlockWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateTimeBlock(ctx context.Context, campId CampId, body CreateTimeBlockJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteTimeBlockById request
+	DeleteTimeBlockById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetTimeBlockById request
+	GetTimeBlockById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateTimeBlockByIdWithBody request with any body
+	UpdateTimeBlockByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateTimeBlockById(ctx context.Context, campId CampId, id Id, body UpdateTimeBlockByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteCampById request
 	DeleteCampById(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -1568,6 +1587,90 @@ func (c *Client) UpdateStaffMemberByIdWithBody(ctx context.Context, campId CampI
 
 func (c *Client) UpdateStaffMemberById(ctx context.Context, campId CampId, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateStaffMemberByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListTimeBlocks(ctx context.Context, campId CampId, params *ListTimeBlocksParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListTimeBlocksRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTimeBlockWithBody(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTimeBlockRequestWithBody(c.Server, campId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateTimeBlock(ctx context.Context, campId CampId, body CreateTimeBlockJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateTimeBlockRequest(c.Server, campId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteTimeBlockById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteTimeBlockByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetTimeBlockById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetTimeBlockByIdRequest(c.Server, campId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateTimeBlockByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateTimeBlockByIdRequestWithBody(c.Server, campId, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateTimeBlockById(ctx context.Context, campId CampId, id Id, body UpdateTimeBlockByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateTimeBlockByIdRequest(c.Server, campId, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5956,6 +6059,325 @@ func NewUpdateStaffMemberByIdRequestWithBody(server string, campId CampId, id Id
 	return req, nil
 }
 
+// NewListTimeBlocksRequest generates requests for ListTimeBlocks
+func NewListTimeBlocksRequest(server string, campId CampId, params *ListTimeBlocksParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/time-blocks", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Search != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "search", runtime.ParamLocationQuery, *params.Search); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.FilterBy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "filterBy", runtime.ParamLocationQuery, *params.FilterBy); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.SortBy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sortBy", runtime.ParamLocationQuery, *params.SortBy); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.SortOrder != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sortOrder", runtime.ParamLocationQuery, *params.SortOrder); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateTimeBlockRequest calls the generic CreateTimeBlock builder with application/json body
+func NewCreateTimeBlockRequest(server string, campId CampId, body CreateTimeBlockJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateTimeBlockRequestWithBody(server, campId, "application/json", bodyReader)
+}
+
+// NewCreateTimeBlockRequestWithBody generates requests for CreateTimeBlock with any type of body
+func NewCreateTimeBlockRequestWithBody(server string, campId CampId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/time-blocks", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteTimeBlockByIdRequest generates requests for DeleteTimeBlockById
+func NewDeleteTimeBlockByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/time-blocks/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetTimeBlockByIdRequest generates requests for GetTimeBlockById
+func NewGetTimeBlockByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/time-blocks/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateTimeBlockByIdRequest calls the generic UpdateTimeBlockById builder with application/json body
+func NewUpdateTimeBlockByIdRequest(server string, campId CampId, id Id, body UpdateTimeBlockByIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateTimeBlockByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
+}
+
+// NewUpdateTimeBlockByIdRequestWithBody generates requests for UpdateTimeBlockById with any type of body
+func NewUpdateTimeBlockByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/time-blocks/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewDeleteCampByIdRequest generates requests for DeleteCampById
 func NewDeleteCampByIdRequest(server string, id Id) (*http.Request, error) {
 	var err error
@@ -6445,6 +6867,25 @@ type ClientWithResponsesInterface interface {
 	UpdateStaffMemberByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateStaffMemberByIdHTTPResponse, error)
 
 	UpdateStaffMemberByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateStaffMemberByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateStaffMemberByIdHTTPResponse, error)
+
+	// ListTimeBlocksWithResponse request
+	ListTimeBlocksWithResponse(ctx context.Context, campId CampId, params *ListTimeBlocksParams, reqEditors ...RequestEditorFn) (*ListTimeBlocksHTTPResponse, error)
+
+	// CreateTimeBlockWithBodyWithResponse request with any body
+	CreateTimeBlockWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTimeBlockHTTPResponse, error)
+
+	CreateTimeBlockWithResponse(ctx context.Context, campId CampId, body CreateTimeBlockJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTimeBlockHTTPResponse, error)
+
+	// DeleteTimeBlockByIdWithResponse request
+	DeleteTimeBlockByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteTimeBlockByIdHTTPResponse, error)
+
+	// GetTimeBlockByIdWithResponse request
+	GetTimeBlockByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetTimeBlockByIdHTTPResponse, error)
+
+	// UpdateTimeBlockByIdWithBodyWithResponse request with any body
+	UpdateTimeBlockByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTimeBlockByIdHTTPResponse, error)
+
+	UpdateTimeBlockByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateTimeBlockByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTimeBlockByIdHTTPResponse, error)
 
 	// DeleteCampByIdWithResponse request
 	DeleteCampByIdWithResponse(ctx context.Context, id Id, reqEditors ...RequestEditorFn) (*DeleteCampByIdHTTPResponse, error)
@@ -8011,6 +8452,115 @@ func (r UpdateStaffMemberByIdHTTPResponse) StatusCode() int {
 	return 0
 }
 
+type ListTimeBlocksHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TimeBlocksListResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r ListTimeBlocksHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListTimeBlocksHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateTimeBlockHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TimeBlock
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateTimeBlockHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateTimeBlockHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteTimeBlockByIdHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteTimeBlockByIdHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteTimeBlockByIdHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetTimeBlockByIdHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TimeBlock
+}
+
+// Status returns HTTPResponse.Status
+func (r GetTimeBlockByIdHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetTimeBlockByIdHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateTimeBlockByIdHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TimeBlock
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateTimeBlockByIdHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateTimeBlockByIdHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type DeleteCampByIdHTTPResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -8989,6 +9539,67 @@ func (c *ClientWithResponses) UpdateStaffMemberByIdWithResponse(ctx context.Cont
 		return nil, err
 	}
 	return ParseUpdateStaffMemberByIdHTTPResponse(rsp)
+}
+
+// ListTimeBlocksWithResponse request returning *ListTimeBlocksHTTPResponse
+func (c *ClientWithResponses) ListTimeBlocksWithResponse(ctx context.Context, campId CampId, params *ListTimeBlocksParams, reqEditors ...RequestEditorFn) (*ListTimeBlocksHTTPResponse, error) {
+	rsp, err := c.ListTimeBlocks(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListTimeBlocksHTTPResponse(rsp)
+}
+
+// CreateTimeBlockWithBodyWithResponse request with arbitrary body returning *CreateTimeBlockHTTPResponse
+func (c *ClientWithResponses) CreateTimeBlockWithBodyWithResponse(ctx context.Context, campId CampId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTimeBlockHTTPResponse, error) {
+	rsp, err := c.CreateTimeBlockWithBody(ctx, campId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTimeBlockHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateTimeBlockWithResponse(ctx context.Context, campId CampId, body CreateTimeBlockJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTimeBlockHTTPResponse, error) {
+	rsp, err := c.CreateTimeBlock(ctx, campId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateTimeBlockHTTPResponse(rsp)
+}
+
+// DeleteTimeBlockByIdWithResponse request returning *DeleteTimeBlockByIdHTTPResponse
+func (c *ClientWithResponses) DeleteTimeBlockByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteTimeBlockByIdHTTPResponse, error) {
+	rsp, err := c.DeleteTimeBlockById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteTimeBlockByIdHTTPResponse(rsp)
+}
+
+// GetTimeBlockByIdWithResponse request returning *GetTimeBlockByIdHTTPResponse
+func (c *ClientWithResponses) GetTimeBlockByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetTimeBlockByIdHTTPResponse, error) {
+	rsp, err := c.GetTimeBlockById(ctx, campId, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetTimeBlockByIdHTTPResponse(rsp)
+}
+
+// UpdateTimeBlockByIdWithBodyWithResponse request with arbitrary body returning *UpdateTimeBlockByIdHTTPResponse
+func (c *ClientWithResponses) UpdateTimeBlockByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTimeBlockByIdHTTPResponse, error) {
+	rsp, err := c.UpdateTimeBlockByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateTimeBlockByIdHTTPResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateTimeBlockByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateTimeBlockByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTimeBlockByIdHTTPResponse, error) {
+	rsp, err := c.UpdateTimeBlockById(ctx, campId, id, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateTimeBlockByIdHTTPResponse(rsp)
 }
 
 // DeleteCampByIdWithResponse request returning *DeleteCampByIdHTTPResponse
@@ -10730,6 +11341,126 @@ func ParseUpdateStaffMemberByIdHTTPResponse(rsp *http.Response) (*UpdateStaffMem
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest StaffMember
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListTimeBlocksHTTPResponse parses an HTTP response from a ListTimeBlocksWithResponse call
+func ParseListTimeBlocksHTTPResponse(rsp *http.Response) (*ListTimeBlocksHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListTimeBlocksHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TimeBlocksListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateTimeBlockHTTPResponse parses an HTTP response from a CreateTimeBlockWithResponse call
+func ParseCreateTimeBlockHTTPResponse(rsp *http.Response) (*CreateTimeBlockHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateTimeBlockHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TimeBlock
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteTimeBlockByIdHTTPResponse parses an HTTP response from a DeleteTimeBlockByIdWithResponse call
+func ParseDeleteTimeBlockByIdHTTPResponse(rsp *http.Response) (*DeleteTimeBlockByIdHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteTimeBlockByIdHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseGetTimeBlockByIdHTTPResponse parses an HTTP response from a GetTimeBlockByIdWithResponse call
+func ParseGetTimeBlockByIdHTTPResponse(rsp *http.Response) (*GetTimeBlockByIdHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetTimeBlockByIdHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TimeBlock
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateTimeBlockByIdHTTPResponse parses an HTTP response from a UpdateTimeBlockByIdWithResponse call
+func ParseUpdateTimeBlockByIdHTTPResponse(rsp *http.Response) (*UpdateTimeBlockByIdHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateTimeBlockByIdHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TimeBlock
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

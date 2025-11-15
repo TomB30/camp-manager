@@ -1,0 +1,11 @@
+type: object
+required:
+  - startTime
+  - endTime
+properties:
+  startTime:
+    type: string
+    format: time
+  endTime:
+    type: string
+    format: time

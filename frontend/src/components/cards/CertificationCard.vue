@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card card-clickable card-horizontal certification-card"
+    class="card clickable card-horizontal certification-card"
     @click="$emit('click')"
   >
     <div class="card-header">

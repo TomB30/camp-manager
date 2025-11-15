@@ -1,5 +1,5 @@
 <template>
-  <section class="program-activity-card card row justify-between">
+  <section class="program-activity-card card clickable row justify-between">
     <div class="column">
       <div class="activity-info">
         <h4>{{ activity.meta.name }}</h4>
@@ -99,13 +99,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .program-activity-card {
   padding: 1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.program-activity-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateX(4px);
 }
 
 .activity-info {

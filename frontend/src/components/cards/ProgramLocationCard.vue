@@ -1,5 +1,5 @@
 <template>
-  <section class="program-location-card card row justify-between">
+  <section class="program-location-card card clickable row justify-between">
     <div class="column">
       <div class="location-info">
         <h4>{{ location.meta.name }}</h4>
@@ -75,13 +75,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .program-location-card {
   padding: 1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.program-location-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateX(4px);
 }
 
 .location-info {

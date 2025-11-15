@@ -489,6 +489,30 @@ export type CampsListResponse = ListResponseBase & {
     items: Array<Camp>;
 };
 
+export type TimeBlockSpec = {
+    startTime: string;
+    endTime: string;
+};
+
+export type TimeBlock = {
+    meta: EntityMeta;
+    spec: TimeBlockSpec;
+};
+
+export type TimeBlocksListResponse = ListResponseBase & {
+    items: Array<TimeBlock>;
+};
+
+export type TimeBlockCreationRequest = {
+    meta: EntityCreationRequestMeta;
+    spec: TimeBlockSpec;
+};
+
+export type TimeBlockUpdateRequest = {
+    meta: EntityCreationRequestMeta;
+    spec: TimeBlockSpec;
+};
+
 export type SessionSpec = {
     startDate: string;
     endDate: string;
@@ -817,6 +841,21 @@ export type SortOrder = 'asc' | 'desc';
  * Camp ID
  */
 export type CampId = string;
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type TimeBlocksFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type TimeBlocksSortBy = 'startTime' | 'endTime';
 
 /**
  * Filter results by parameters. Format: field operator value
@@ -1217,6 +1256,153 @@ export type UpdateCampByIdResponses = {
 };
 
 export type UpdateCampByIdResponse = UpdateCampByIdResponses[keyof UpdateCampByIdResponses];
+
+export type ListTimeBlocksData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+        /**
+         * Search term to filter items by name, title, or other text fields
+         */
+        search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'startTime' | 'endTime';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
+    };
+    url: '/api/v1/camps/{camp_id}/time-blocks';
+};
+
+export type ListTimeBlocksResponses = {
+    /**
+     * Success
+     */
+    200: TimeBlocksListResponse;
+};
+
+export type ListTimeBlocksResponse = ListTimeBlocksResponses[keyof ListTimeBlocksResponses];
+
+export type CreateTimeBlockData = {
+    body: TimeBlockCreationRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/time-blocks';
+};
+
+export type CreateTimeBlockResponses = {
+    /**
+     * Success
+     */
+    200: TimeBlock;
+};
+
+export type CreateTimeBlockResponse = CreateTimeBlockResponses[keyof CreateTimeBlockResponses];
+
+export type DeleteTimeBlockByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/time-blocks/{id}';
+};
+
+export type DeleteTimeBlockByIdResponses = {
+    /**
+     * Deleted
+     */
+    204: void;
+};
+
+export type DeleteTimeBlockByIdResponse = DeleteTimeBlockByIdResponses[keyof DeleteTimeBlockByIdResponses];
+
+export type GetTimeBlockByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/time-blocks/{id}';
+};
+
+export type GetTimeBlockByIdResponses = {
+    /**
+     * Success
+     */
+    200: TimeBlock;
+};
+
+export type GetTimeBlockByIdResponse = GetTimeBlockByIdResponses[keyof GetTimeBlockByIdResponses];
+
+export type UpdateTimeBlockByIdData = {
+    body: TimeBlockUpdateRequest;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Resource ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/time-blocks/{id}';
+};
+
+export type UpdateTimeBlockByIdResponses = {
+    /**
+     * Success
+     */
+    200: TimeBlock;
+};
+
+export type UpdateTimeBlockByIdResponse = UpdateTimeBlockByIdResponses[keyof UpdateTimeBlockByIdResponses];
 
 export type ListSessionsData = {
     body?: never;

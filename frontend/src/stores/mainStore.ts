@@ -17,6 +17,7 @@ import { useSessionsStore } from "./sessionsStore";
 import { useLabelsStore } from "./labelsStore";
 import { useCampStore } from "./campStore";
 import { useDurationPresetsStore } from "./durationPresetsStore";
+import { useTimeBlocksStore } from "./timeBlocksStore";
 
 /**
  * Main Store
@@ -53,6 +54,7 @@ export const useMainStore = defineStore("main", {
         const labelsStore = useLabelsStore();
         const campStore = useCampStore();
         const durationPresetsStore = useDurationPresetsStore();
+        const timeBlocksStore = useTimeBlocksStore();
 
         await Promise.all([
           campStore.loadCamp(),
@@ -71,6 +73,7 @@ export const useMainStore = defineStore("main", {
           colorsStore.loadColors(),
           sessionsStore.loadSessions(),
           labelsStore.loadLabels(),
+          timeBlocksStore.loadTimeBlocks(),
         ]);
 
         this.updateConflicts();

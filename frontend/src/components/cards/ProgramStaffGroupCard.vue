@@ -1,5 +1,5 @@
 <template>
-  <section class="program-staff-group-card card row justify-between">
+  <section class="program-staff-group-card card clickable row justify-between">
     <div class="column">
       <div class="staff-group-info">
         <h4>{{ staffGroup.meta.name }}</h4>
@@ -63,13 +63,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .program-staff-group-card {
   padding: 1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.program-staff-group-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateX(4px);
 }
 
 .staff-group-info {

@@ -1,5 +1,5 @@
 <template>
-  <div class="label-card">
+  <div class="label-card clickable card">
     <div class="label-preview">
       <div class="label-overlay">
         <button
@@ -56,14 +56,7 @@ export default defineComponent({
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: all 0.2s ease;
   box-shadow: var(--shadow);
-  cursor: pointer;
-}
-
-.label-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .label-preview {
