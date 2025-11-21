@@ -30,7 +30,8 @@
         @click="$emit('select-event', event)"
       >
         <q-tooltip v-if="isMultiDayEvent(event)" :delay="300">
-          Multi-day event: {{ formatDate(event.spec.startDate) }} to {{ formatDate(event.spec.endDate) }}
+          Multi-day event: {{ formatDate(event.spec.startDate) }} to
+          {{ formatDate(event.spec.endDate) }}
         </q-tooltip>
         <div class="event-title">
           {{ event.meta.name }}
@@ -137,19 +138,19 @@ export default defineComponent({
     getMultiDayIndicator(event: Event): string {
       const start = new Date(event.spec.startDate);
       const end = new Date(event.spec.endDate);
-      
+
       const currentDayStart = new Date(this.currentDate);
       currentDayStart.setHours(0, 0, 0, 0);
-      
+
       const eventStartDay = new Date(start);
       eventStartDay.setHours(0, 0, 0, 0);
-      
+
       const eventEndDay = new Date(end);
       eventEndDay.setHours(0, 0, 0, 0);
-      
+
       const isFirstDay = eventStartDay.getTime() === currentDayStart.getTime();
       const isLastDay = eventEndDay.getTime() === currentDayStart.getTime();
-      
+
       if (isFirstDay && !isLastDay) {
         return "→"; // Starts here, continues
       } else if (isLastDay && !isFirstDay) {
@@ -182,17 +183,17 @@ export default defineComponent({
         today.setHours(0, 0, 0, 0);
         const eventStartDay = new Date(start);
         eventStartDay.setHours(0, 0, 0, 0);
-        
+
         if (eventStartDay < today) {
           startMinutes = dayStartMinutes;
         }
-        
+
         // If event continues past today, extend to end of visible hours
         const eventEndDay = new Date(end);
         eventEndDay.setHours(0, 0, 0, 0);
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
-        
+
         if (eventEndDay >= tomorrow) {
           endMinutes = dayEndMinutes;
         }

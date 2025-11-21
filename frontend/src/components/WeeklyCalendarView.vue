@@ -35,7 +35,8 @@
               @click.stop="$emit('select-event', event)"
             >
               <q-tooltip v-if="isMultiDayEvent(event)" :delay="300">
-                Multi-day event: {{ formatDate(event.spec.startDate) }} to {{ formatDate(event.spec.endDate) }}
+                Multi-day event: {{ formatDate(event.spec.startDate) }} to
+                {{ formatDate(event.spec.endDate) }}
               </q-tooltip>
               <div class="week-event-title">
                 {{ event.meta.name }}
@@ -159,31 +160,31 @@ export default defineComponent({
       const targetYear = day.getFullYear();
       const targetMonth = day.getMonth();
       const targetDay = day.getDate();
-      
+
       return this.events.filter((event) => {
         const eventStart = new Date(event.spec.startDate);
         const eventEnd = new Date(event.spec.endDate);
-        
+
         // Create day start/end for comparison
         const dayStart = new Date(targetYear, targetMonth, targetDay, 0, 0, 0);
         const dayEnd = new Date(targetYear, targetMonth, targetDay, 23, 59, 59);
-        
+
         // Check if event is active on this day
         const isActiveOnDay = eventStart <= dayEnd && eventEnd >= dayStart;
-        
+
         if (!isActiveOnDay) return false;
-        
+
         // For single-day events, show them in their starting hour
         const isSingleDay =
           eventStart.getDate() === eventEnd.getDate() &&
           eventStart.getMonth() === eventEnd.getMonth() &&
           eventStart.getFullYear() === eventEnd.getFullYear();
-        
+
         if (isSingleDay) {
           // Show in the hour it starts
           return eventStart.getHours() === hour;
         }
-        
+
         // For multi-day events:
         // - If it starts on this day, show in its starting hour
         // - If it started before this day, show at the earliest visible hour (7 AM)
@@ -191,7 +192,7 @@ export default defineComponent({
           eventStart.getFullYear() === targetYear &&
           eventStart.getMonth() === targetMonth &&
           eventStart.getDate() === targetDay;
-        
+
         if (startsOnDay) {
           return eventStart.getHours() === hour;
         } else {
@@ -212,19 +213,19 @@ export default defineComponent({
     getMultiDayIndicator(event: Event, day: Date): string {
       const start = new Date(event.spec.startDate);
       const end = new Date(event.spec.endDate);
-      
+
       const dayStart = new Date(day);
       dayStart.setHours(0, 0, 0, 0);
-      
+
       const eventStartDay = new Date(start);
       eventStartDay.setHours(0, 0, 0, 0);
-      
+
       const eventEndDay = new Date(end);
       eventEndDay.setHours(0, 0, 0, 0);
-      
+
       const isFirstDay = eventStartDay.getTime() === dayStart.getTime();
       const isLastDay = eventEndDay.getTime() === dayStart.getTime();
-      
+
       if (isFirstDay && !isLastDay) {
         return "→"; // Starts here, continues
       } else if (isLastDay && !isFirstDay) {
@@ -252,18 +253,18 @@ export default defineComponent({
       if (isMultiDay) {
         const dayStart = new Date(day);
         dayStart.setHours(0, 0, 0, 0);
-        
+
         const eventStartDay = new Date(start);
         eventStartDay.setHours(0, 0, 0, 0);
-        
+
         const eventEndDay = new Date(end);
         eventEndDay.setHours(0, 0, 0, 0);
-        
+
         // If event started before this day, start from beginning (7 AM visible start)
         if (eventStartDay < dayStart) {
           startMinutes = 7 * 60;
         }
-        
+
         // If event continues past this day, extend to end (9 PM visible end)
         if (eventEndDay > dayStart) {
           endMinutes = 21 * 60;
@@ -289,8 +290,7 @@ export default defineComponent({
         const otherEnd = new Date(otherEvent.spec.endDate);
         let otherStartMinutes =
           otherStart.getHours() * 60 + otherStart.getMinutes();
-        let otherEndMinutes =
-          otherEnd.getHours() * 60 + otherEnd.getMinutes();
+        let otherEndMinutes = otherEnd.getHours() * 60 + otherEnd.getMinutes();
 
         // Check if other event is multi-day
         const otherIsMultiDay =
@@ -304,9 +304,7 @@ export default defineComponent({
         }
 
         // Check if events overlap in time
-        return (
-          startMinutes < otherEndMinutes && endMinutes > otherStartMinutes
-        );
+        return startMinutes < otherEndMinutes && endMinutes > otherStartMinutes;
       });
 
       // Sort all overlapping events

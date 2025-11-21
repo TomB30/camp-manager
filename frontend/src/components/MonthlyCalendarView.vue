@@ -43,7 +43,9 @@
               }}</span>
               <span class="event-title">
                 {{ event.meta.name }}
-                <span v-if="isMultiDayEvent(event)" class="multi-day-indicator">↔</span>
+                <span v-if="isMultiDayEvent(event)" class="multi-day-indicator"
+                  >↔</span
+                >
               </span>
               <div
                 class="event-groups text-xs"
@@ -138,7 +140,7 @@ export default defineComponent({
         const dayEvents = this.events.filter((event) => {
           const eventStart = new Date(event.spec.startDate);
           const eventEnd = new Date(event.spec.endDate);
-          
+
           // Reset time to compare only dates
           const eventStartDate = new Date(eventStart);
           eventStartDate.setHours(0, 0, 0, 0);
@@ -146,7 +148,7 @@ export default defineComponent({
           eventEndDate.setHours(0, 0, 0, 0);
           const currentDate = new Date(date);
           currentDate.setHours(0, 0, 0, 0);
-          
+
           // Include event if it starts on this day or if this day falls within the event's date range
           return currentDate >= eventStartDate && currentDate <= eventEndDate;
         });
@@ -181,7 +183,7 @@ export default defineComponent({
       current.setHours(0, 0, 0, 0);
       const eventStartDay = new Date(eventStart);
       eventStartDay.setHours(0, 0, 0, 0);
-      
+
       // If event starts on a different day, show indicator instead of time
       if (eventStartDay.getTime() < current.getTime()) {
         return "→";

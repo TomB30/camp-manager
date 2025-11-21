@@ -34,20 +34,20 @@ type ActivitiesService interface {
 
 // activitiesService implements ActivitiesService
 type activitiesService struct {
-	repo              ActivitiesRepository
-	programsRepo      ProgramsRepository
-	locationsRepo     LocationsRepository
-	timeBlocksRepo    TimeBlocksRepository
+	repo               ActivitiesRepository
+	programsRepo       ProgramsRepository
+	locationsRepo      LocationsRepository
+	timeBlocksRepo     TimeBlocksRepository
 	certificationsRepo CertificationsRepository
 }
 
 // NewActivitiesService creates a new activities service
 func NewActivitiesService(repo ActivitiesRepository, programsRepo ProgramsRepository, locationsRepo LocationsRepository, timeBlocksRepo TimeBlocksRepository, certificationsRepo CertificationsRepository) ActivitiesService {
 	return &activitiesService{
-		repo:              repo,
-		programsRepo:      programsRepo,
-		locationsRepo:     locationsRepo,
-		timeBlocksRepo:    timeBlocksRepo,
+		repo:               repo,
+		programsRepo:       programsRepo,
+		locationsRepo:      locationsRepo,
+		timeBlocksRepo:     timeBlocksRepo,
 		certificationsRepo: certificationsRepo,
 	}
 }
@@ -158,7 +158,7 @@ func (s *activitiesService) Create(ctx context.Context, tenantID uuid.UUID, camp
 		if req.Spec.ActivityConflicts.ConcurrentActivityConflicts != nil {
 			allActivityIDs = append(allActivityIDs, *req.Spec.ActivityConflicts.ConcurrentActivityConflicts...)
 		}
-		
+
 		for _, activityID := range allActivityIDs {
 			if _, err := s.repo.GetByID(ctx, tenantID, campID, activityID); err != nil {
 				if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -301,7 +301,7 @@ func (s *activitiesService) Update(ctx context.Context, tenantID, campID, id uui
 		if req.Spec.ActivityConflicts.ConcurrentActivityConflicts != nil {
 			allActivityIDs = append(allActivityIDs, *req.Spec.ActivityConflicts.ConcurrentActivityConflicts...)
 		}
-		
+
 		for _, activityID := range allActivityIDs {
 			// Skip self-reference
 			if activityID == id {

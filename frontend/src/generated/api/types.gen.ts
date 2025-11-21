@@ -280,6 +280,53 @@ export type ActivitiesListResponse = ListResponseBase & {
     items: Array<Activity>;
 };
 
+/**
+ * Fixed time for the activity (mutually exclusive with duration and timeBlockId)
+ */
+export type ActivityFixedTime = {
+    /**
+     * Start time for the activity
+     */
+    startTime: string;
+    /**
+     * End time for the activity
+     */
+    endTime: string;
+    /**
+     * Number of days the activity spans (0 = same day, 1 = ends next day, etc.)
+     */
+    dayOffset?: number;
+};
+
+export type ActivityRequiredStaffPosition = {
+    /**
+     * Name of the position required for this activity
+     */
+    positionName: string;
+    /**
+     * ID of the certification required for this position
+     */
+    requiredCertificationId?: string;
+};
+
+/**
+ * Defines scheduling conflicts with other activities
+ */
+export type ActivityConflicts = {
+    /**
+     * Activities that cannot occur immediately before this activity
+     */
+    preActivityConflicts?: Array<string>;
+    /**
+     * Activities that cannot occur immediately after this activity
+     */
+    postActivityConflicts?: Array<string>;
+    /**
+     * Activities that cannot occur at the same time as this activity
+     */
+    concurrentActivityConflicts?: Array<string>;
+};
+
 export type Color = {
     meta: EntityMeta;
     spec: ColorSpec;
@@ -638,54 +685,13 @@ export type ActivitySpec = {
      * Default duration in minutes (mutually exclusive with fixedTime and timeBlockId)
      */
     duration?: number;
-    /**
-     * Fixed time for the activity (mutually exclusive with duration and timeBlockId)
-     */
-    fixedTime?: {
-        /**
-         * Start time for the activity
-         */
-        startTime: string;
-        /**
-         * End time for the activity
-         */
-        endTime: string;
-        /**
-         * Number of days the activity spans (0 = same day, 1 = ends next day, etc.)
-         */
-        dayOffset?: number;
-    };
+    fixedTime?: ActivityFixedTime;
     /**
      * ID of the time block for this activity (mutually exclusive with duration and fixedTime). Activity will use current time block values.
      */
     timeBlockId?: string;
-    requiredStaff?: Array<{
-        /**
-         * Name of the position required for this activity
-         */
-        positionName: string;
-        /**
-         * ID of the certification required for this position
-         */
-        requiredCertificationId?: string;
-    }>;
-    /**
-     * Defines scheduling conflicts with other activities
-     */
-    activityConflicts?: {
-        /**
-         * Activities that cannot occur immediately before this activity
-         */
-        preActivityConflicts?: Array<string>;
-        /**
-         * Activities that cannot occur immediately after this activity
-         */
-        postActivityConflicts?: Array<string>;
-        /**
-         * Activities that cannot occur at the same time as this activity
-         */
-        concurrentActivityConflicts?: Array<string>;
-    };
+    requiredStaff?: Array<ActivityRequiredStaffPosition>;
+    activityConflicts?: ActivityConflicts;
 };
 
 export type ColorSpec = {
@@ -923,6 +929,36 @@ export type LocationsFilterBy = Array<string>;
  * Field name to sort by
  */
 export type LocationsSortBy = 'name' | 'areaId';
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type ProgramsFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type ProgramsSortBy = 'name';
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type ActivitiesFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type ActivitiesSortBy = 'name';
 
 /**
  * Filter results by parameters. Format: field operator value
@@ -2152,6 +2188,23 @@ export type ListProgramsData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/programs';
 };
@@ -2282,6 +2335,23 @@ export type ListActivitiesData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/activities';
 };

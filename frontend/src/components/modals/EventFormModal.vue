@@ -117,7 +117,8 @@
                       :disable="isEndDateFromTemplate"
                     >
                       <q-tooltip v-if="isEndDateFromTemplate">
-                        End date is automatically calculated from the activity template
+                        End date is automatically calculated from the activity
+                        template
                       </q-tooltip>
                     </BaseInput>
                   </div>
@@ -970,11 +971,13 @@ export default defineComponent({
           this.internalEndDate = startDate.toISOString().split("T")[0];
         } else if (this.templateDuration >= 1440) {
           // Duration-based multi-day
-          const [hours, minutes] = this.internalStartTime.split(":").map(Number);
+          const [hours, minutes] = this.internalStartTime
+            .split(":")
+            .map(Number);
           const startDateTime = new Date(newDate);
           startDateTime.setHours(hours, minutes, 0, 0);
           const endDateTime = new Date(
-            startDateTime.getTime() + this.templateDuration * 60000
+            startDateTime.getTime() + this.templateDuration * 60000,
           );
           this.internalEndDate = endDateTime.toISOString().split("T")[0];
         }
@@ -1181,15 +1184,20 @@ export default defineComponent({
         this.timeSelectionMode = "specific";
         this.internalStartTime = activity.spec.fixedTime.startTime;
         this.internalEndTime = activity.spec.fixedTime.endTime;
-        
+
         // Handle multi-day fixed time activities
-        if (activity.spec.fixedTime.dayOffset && activity.spec.fixedTime.dayOffset > 0) {
+        if (
+          activity.spec.fixedTime.dayOffset &&
+          activity.spec.fixedTime.dayOffset > 0
+        ) {
           this.isMultiDayEvent = true;
           this.isEndDateFromTemplate = true;
           this.templateDayOffset = activity.spec.fixedTime.dayOffset;
           // Calculate end date = start date + dayOffset
           const startDate = new Date(this.internalEventDate);
-          startDate.setDate(startDate.getDate() + activity.spec.fixedTime.dayOffset);
+          startDate.setDate(
+            startDate.getDate() + activity.spec.fixedTime.dayOffset,
+          );
           this.internalEndDate = startDate.toISOString().split("T")[0];
         } else {
           this.isMultiDayEvent = false;
@@ -1197,7 +1205,7 @@ export default defineComponent({
           this.templateDayOffset = 0;
           this.internalEndDate = this.internalEventDate;
         }
-        
+
         this.updateFormDataDates();
       } else if (activity.spec.duration) {
         // Use duration from activity - start time is editable, end time is calculated
@@ -1218,7 +1226,7 @@ export default defineComponent({
           const endDateTime = new Date(
             startDateTime.getTime() + (activity.spec.duration || 0) * 60000,
           );
-          
+
           // Check if duration spans multiple days (>= 1440 minutes = 1 day)
           if (activity.spec.duration >= 1440) {
             this.isMultiDayEvent = true;
@@ -1231,9 +1239,12 @@ export default defineComponent({
             this.templateDuration = 0;
             this.internalEndDate = this.internalEventDate;
           }
-          
+
           const endHours = endDateTime.getHours().toString().padStart(2, "0");
-          const endMinutes = endDateTime.getMinutes().toString().padStart(2, "0");
+          const endMinutes = endDateTime
+            .getMinutes()
+            .toString()
+            .padStart(2, "0");
           this.internalEndTime = `${endHours}:${endMinutes}`;
           this.updateFormDataDates();
         }

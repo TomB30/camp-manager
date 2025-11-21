@@ -15,8 +15,16 @@
             {{ formatTime(activity.spec.fixedTime.startTime) }} -
             {{ formatTime(activity.spec.fixedTime.endTime) }}
 
-            <span class="q-ml-sm" v-if="activity.spec.fixedTime.dayOffset && activity.spec.fixedTime.dayOffset > 0">
-              +{{ activity.spec.fixedTime.dayOffset }} day{{ activity.spec.fixedTime.dayOffset !== 1 ? 's' : '' }}
+            <span
+              class="q-ml-sm"
+              v-if="
+                activity.spec.fixedTime.dayOffset &&
+                activity.spec.fixedTime.dayOffset > 0
+              "
+            >
+              +{{ activity.spec.fixedTime.dayOffset }} day{{
+                activity.spec.fixedTime.dayOffset !== 1 ? "s" : ""
+              }}
             </span>
           </template>
           <template v-else>

@@ -30,8 +30,16 @@
               <span class="detail-value">
                 {{ formatTime(activity.spec.fixedTime.startTime) }} -
                 {{ formatTime(activity.spec.fixedTime.endTime) }}
-                <span v-if="activity.spec.fixedTime.dayOffset && activity.spec.fixedTime.dayOffset > 0" class="multiday-indicator">
-                  (spans {{ activity.spec.fixedTime.dayOffset + 1 }} day{{ activity.spec.fixedTime.dayOffset + 1 !== 1 ? 's' : '' }})
+                <span
+                  v-if="
+                    activity.spec.fixedTime.dayOffset &&
+                    activity.spec.fixedTime.dayOffset > 0
+                  "
+                  class="multiday-indicator"
+                >
+                  (spans {{ activity.spec.fixedTime.dayOffset + 1 }} day{{
+                    activity.spec.fixedTime.dayOffset + 1 !== 1 ? "s" : ""
+                  }})
                 </span>
               </span>
             </div>

@@ -432,7 +432,10 @@ export default defineComponent({
           dayOffset: activity.spec.fixedTime.dayOffset || 0,
         };
         // Set multi-day flag if dayOffset exists
-        if (activity.spec.fixedTime.dayOffset && activity.spec.fixedTime.dayOffset > 0) {
+        if (
+          activity.spec.fixedTime.dayOffset &&
+          activity.spec.fixedTime.dayOffset > 0
+        ) {
           this.isFixedTimeMultiDay = true;
           this.fixedTimeDayOffset = activity.spec.fixedTime.dayOffset;
         }
@@ -644,7 +647,9 @@ export default defineComponent({
         activityData.spec.fixedTime = {
           startTime: this.formData.spec.fixedTime.startTime,
           endTime: this.formData.spec.fixedTime.endTime,
-          dayOffset: this.isFixedTimeMultiDay ? (Number(this.fixedTimeDayOffset) || 0) : undefined,
+          dayOffset: this.isFixedTimeMultiDay
+            ? Number(this.fixedTimeDayOffset) || 0
+            : undefined,
         };
       } else if (this.timeMode === "timeblock") {
         activityData.spec.timeBlockId = this.formData.spec.timeBlockId;
