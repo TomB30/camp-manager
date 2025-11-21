@@ -1,0 +1,12 @@
+type: object
+required:
+  - positionName
+properties:
+  positionName:
+    type: string
+    description: Name of the position required for this activity
+  requiredCertificationId:
+    type: string
+    format: uuid
+    description: ID of the certification required for this position
+

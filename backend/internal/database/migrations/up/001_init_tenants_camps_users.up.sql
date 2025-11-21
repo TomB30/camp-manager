@@ -679,3 +679,126 @@ COMMENT ON TABLE time_blocks IS 'Time blocks for scheduling activities with spec
 COMMENT ON COLUMN time_blocks.start_time IS 'Start time in HH:MM format (24-hour)';
 COMMENT ON COLUMN time_blocks.end_time IS 'End time in HH:MM format (24-hour)';
 COMMENT ON COLUMN time_blocks.days_of_week IS 'JSON array of days (sunday, monday, tuesday, wednesday, thursday, friday, saturday). Empty or null means all days.';
+
+-- ============================================================================
+-- PROGRAMS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS programs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    
+    -- Spec fields
+    color_id UUID REFERENCES colors(id) ON DELETE SET NULL,
+    
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+-- Indexes for programs
+CREATE INDEX IF NOT EXISTS idx_programs_tenant_id ON programs(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_programs_camp_id ON programs(camp_id);
+CREATE INDEX IF NOT EXISTS idx_programs_color_id ON programs(color_id);
+CREATE INDEX IF NOT EXISTS idx_programs_tenant_id_camp_id ON programs(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_programs_deleted_at ON programs(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_programs_name ON programs(name);
+
+-- Trigger for programs
+DROP TRIGGER IF EXISTS update_programs_updated_at ON programs;
+CREATE TRIGGER update_programs_updated_at
+    BEFORE UPDATE ON programs
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- ACTIVITIES TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS activities (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    
+    -- Spec fields
+    program_id UUID NOT NULL REFERENCES programs(id) ON DELETE CASCADE,
+    default_location_id UUID REFERENCES locations(id) ON DELETE SET NULL,
+    duration INTEGER,
+    fixed_time JSONB,
+    time_block_id UUID REFERENCES time_blocks(id) ON DELETE SET NULL,
+    required_staff JSONB,
+    activity_conflicts JSONB,
+    
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+-- Indexes for activities
+CREATE INDEX IF NOT EXISTS idx_activities_tenant_id ON activities(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_activities_camp_id ON activities(camp_id);
+CREATE INDEX IF NOT EXISTS idx_activities_program_id ON activities(program_id);
+CREATE INDEX IF NOT EXISTS idx_activities_default_location_id ON activities(default_location_id);
+CREATE INDEX IF NOT EXISTS idx_activities_time_block_id ON activities(time_block_id);
+CREATE INDEX IF NOT EXISTS idx_activities_tenant_id_camp_id ON activities(tenant_id, camp_id);
+CREATE INDEX IF NOT EXISTS idx_activities_deleted_at ON activities(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_activities_name ON activities(name);
+
+-- Trigger for activities
+DROP TRIGGER IF EXISTS update_activities_updated_at ON activities;
+CREATE TRIGGER update_activities_updated_at
+    BEFORE UPDATE ON activities
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- PROGRAM_LOCATIONS JUNCTION TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS program_locations (
+    program_id UUID NOT NULL REFERENCES programs(id) ON DELETE CASCADE,
+    location_id UUID NOT NULL REFERENCES locations(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    PRIMARY KEY (program_id, location_id)
+);
+
+-- Indexes for program_locations
+CREATE INDEX IF NOT EXISTS idx_program_locations_program_id ON program_locations(program_id);
+CREATE INDEX IF NOT EXISTS idx_program_locations_location_id ON program_locations(location_id);
+
+-- ============================================================================
+-- PROGRAM_STAFF_GROUPS JUNCTION TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS program_staff_groups (
+    program_id UUID NOT NULL REFERENCES programs(id) ON DELETE CASCADE,
+    group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    PRIMARY KEY (program_id, group_id)
+);
+
+-- Indexes for program_staff_groups
+CREATE INDEX IF NOT EXISTS idx_program_staff_groups_program_id ON program_staff_groups(program_id);
+CREATE INDEX IF NOT EXISTS idx_program_staff_groups_group_id ON program_staff_groups(group_id);
+
+-- ============================================================================
+-- COMMENTS FOR DOCUMENTATION (PROGRAMS, ACTIVITIES)
+-- ============================================================================
+
+COMMENT ON TABLE programs IS 'Programs that organize activities and staff groups';
+COMMENT ON TABLE activities IS 'Activities that belong to programs and can be scheduled';
+COMMENT ON TABLE program_locations IS 'Junction table linking programs to their associated locations (many-to-many)';
+COMMENT ON TABLE program_staff_groups IS 'Junction table linking programs to their staff groups (many-to-many)';
+
+COMMENT ON COLUMN programs.color_id IS 'Optional color for visual organization of the program';
+
+COMMENT ON COLUMN activities.program_id IS 'Program this activity belongs to (required)';
+COMMENT ON COLUMN activities.default_location_id IS 'Default location for this activity';
+COMMENT ON COLUMN activities.duration IS 'Default duration in minutes (mutually exclusive with fixedTime and timeBlockId)';
+COMMENT ON COLUMN activities.fixed_time IS 'Fixed time JSON object with startTime, endTime, and optional dayOffset (mutually exclusive with duration and timeBlockId)';
+COMMENT ON COLUMN activities.time_block_id IS 'Time block reference for scheduling (mutually exclusive with duration and fixedTime)';
+COMMENT ON COLUMN activities.required_staff IS 'JSON array of required staff positions with optional certification requirements';
+COMMENT ON COLUMN activities.activity_conflicts IS 'JSON object defining pre/post/concurrent activity conflicts';

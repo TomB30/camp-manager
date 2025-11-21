@@ -14,25 +14,7 @@ properties:
     type: integer
     description: Default duration in minutes (mutually exclusive with fixedTime and timeBlockId)
   fixedTime:
-    type: object
-    required:
-      - startTime
-      - endTime
-    description: Fixed time for the activity (mutually exclusive with duration and timeBlockId)
-    properties:
-      startTime:
-        type: string
-        format: time
-        description: Start time for the activity
-      endTime:
-        type: string
-        format: time
-        description: End time for the activity
-      dayOffset:
-        type: integer
-        minimum: 0
-        default: 0
-        description: Number of days the activity spans (0 = same day, 1 = ends next day, etc.)
+    $ref: "./ActivityFixedTime.yaml"
   timeBlockId:
     type: string
     format: uuid
@@ -40,37 +22,7 @@ properties:
   requiredStaff:
     type: array
     items:
-      type: object
-      required:
-        - positionName
-      properties:
-        positionName:
-          type: string
-          description: Name of the position required for this activity
-        requiredCertificationId:
-          type: string
-          format: uuid
-          description: ID of the certification required for this position
+      $ref: "./ActivityRequiredStaffPosition.yaml"
   activityConflicts:
-    type: object
-    description: Defines scheduling conflicts with other activities
-    properties:
-      preActivityConflicts:
-        type: array
-        items:
-          type: string
-          format: uuid
-        description: Activities that cannot occur immediately before this activity
-      postActivityConflicts:
-        type: array
-        items:
-          type: string
-          format: uuid
-        description: Activities that cannot occur immediately after this activity
-      concurrentActivityConflicts:
-        type: array
-        items:
-          type: string
-          format: uuid
-        description: Activities that cannot occur at the same time as this activity
+    $ref: "./ActivityConflicts.yaml"
   

@@ -58,7 +58,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	jwtService := domain.NewJWTService(cfg.JWT.SecretKey)
 
 	// Initialize services
-	activitiesService := service.NewActivitiesService(activitiesRepo)
+	activitiesService := service.NewActivitiesService(activitiesRepo, programsRepo, locationsRepo, timeBlocksRepo, certificationsRepo)
 	areasService := service.NewAreasService(areasRepo)
 	authService := service.NewAuthService(usersRepo, jwtService)
 	campersService := service.NewCampersService(campersRepo, sessionsRepo, groupsRepo)
@@ -69,7 +69,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	groupsService := service.NewGroupsService(groupsRepo, sessionsRepo, housingRoomsRepo)
 	housingRoomsService := service.NewHousingRoomsService(housingRoomsRepo, areasRepo)
 	locationsService := service.NewLocationsService(locationsRepo, areasRepo)
-	programsService := service.NewProgramsService(programsRepo)
+	programsService := service.NewProgramsService(programsRepo, colorsRepo, locationsRepo, groupsRepo, activitiesRepo)
 	rolesService := service.NewRolesService(rolesRepo)
 	sessionsService := service.NewSessionsService(sessionsRepo)
 	staffMembersService := service.NewStaffMembersService(staffMembersRepo, groupsRepo, rolesRepo)

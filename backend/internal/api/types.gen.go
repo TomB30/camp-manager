@@ -46,6 +46,11 @@ const (
 	TimeBlockSpecDaysOfWeekWednesday TimeBlockSpecDaysOfWeek = "wednesday"
 )
 
+// Defines values for ActivitiesSortBy.
+const (
+	ActivitiesSortByName ActivitiesSortBy = "name"
+)
+
 // Defines values for AreasSortBy.
 const (
 	AreasSortByName AreasSortBy = "name"
@@ -95,6 +100,11 @@ const (
 	LocationsSortByName   LocationsSortBy = "name"
 )
 
+// Defines values for ProgramsSortBy.
+const (
+	ProgramsSortByName ProgramsSortBy = "name"
+)
+
 // Defines values for RolesSortBy.
 const (
 	RolesSortByName RolesSortBy = "name"
@@ -137,6 +147,17 @@ const (
 const (
 	GetCampsParamsSortOrderAsc  GetCampsParamsSortOrder = "asc"
 	GetCampsParamsSortOrderDesc GetCampsParamsSortOrder = "desc"
+)
+
+// Defines values for ListActivitiesParamsSortBy.
+const (
+	ListActivitiesParamsSortByName ListActivitiesParamsSortBy = "name"
+)
+
+// Defines values for ListActivitiesParamsSortOrder.
+const (
+	ListActivitiesParamsSortOrderAsc  ListActivitiesParamsSortOrder = "asc"
+	ListActivitiesParamsSortOrderDesc ListActivitiesParamsSortOrder = "desc"
 )
 
 // Defines values for ListAreasParamsSortBy.
@@ -223,6 +244,17 @@ const (
 const (
 	ListLocationsParamsSortOrderAsc  ListLocationsParamsSortOrder = "asc"
 	ListLocationsParamsSortOrderDesc ListLocationsParamsSortOrder = "desc"
+)
+
+// Defines values for ListProgramsParamsSortBy.
+const (
+	ListProgramsParamsSortByName ListProgramsParamsSortBy = "name"
+)
+
+// Defines values for ListProgramsParamsSortOrder.
+const (
+	ListProgramsParamsSortOrderAsc  ListProgramsParamsSortOrder = "asc"
+	ListProgramsParamsSortOrderDesc ListProgramsParamsSortOrder = "desc"
 )
 
 // Defines values for ListRolesParamsSortBy.
@@ -313,25 +345,49 @@ type Activity struct {
 	Spec ActivitySpec `json:"spec"`
 }
 
+// ActivityConflicts Defines scheduling conflicts with other activities
+type ActivityConflicts struct {
+	// ConcurrentActivityConflicts Activities that cannot occur at the same time as this activity
+	ConcurrentActivityConflicts *[]openapi_types.UUID `json:"concurrentActivityConflicts,omitempty"`
+
+	// PostActivityConflicts Activities that cannot occur immediately after this activity
+	PostActivityConflicts *[]openapi_types.UUID `json:"postActivityConflicts,omitempty"`
+
+	// PreActivityConflicts Activities that cannot occur immediately before this activity
+	PreActivityConflicts *[]openapi_types.UUID `json:"preActivityConflicts,omitempty"`
+}
+
 // ActivityCreationRequest defines model for ActivityCreationRequest.
 type ActivityCreationRequest struct {
 	Meta EntityCreationRequestMeta `json:"meta"`
 	Spec ActivitySpec              `json:"spec"`
 }
 
+// ActivityFixedTime Fixed time for the activity (mutually exclusive with duration and timeBlockId)
+type ActivityFixedTime struct {
+	// DayOffset Number of days the activity spans (0 = same day, 1 = ends next day, etc.)
+	DayOffset *int `json:"dayOffset,omitempty"`
+
+	// EndTime End time for the activity
+	EndTime string `json:"endTime"`
+
+	// StartTime Start time for the activity
+	StartTime string `json:"startTime"`
+}
+
+// ActivityRequiredStaffPosition defines model for ActivityRequiredStaffPosition.
+type ActivityRequiredStaffPosition struct {
+	// PositionName Name of the position required for this activity
+	PositionName string `json:"positionName"`
+
+	// RequiredCertificationId ID of the certification required for this position
+	RequiredCertificationId *openapi_types.UUID `json:"requiredCertificationId,omitempty"`
+}
+
 // ActivitySpec defines model for ActivitySpec.
 type ActivitySpec struct {
 	// ActivityConflicts Defines scheduling conflicts with other activities
-	ActivityConflicts *struct {
-		// ConcurrentActivityConflicts Activities that cannot occur at the same time as this activity
-		ConcurrentActivityConflicts *[]openapi_types.UUID `json:"concurrentActivityConflicts,omitempty"`
-
-		// PostActivityConflicts Activities that cannot occur immediately after this activity
-		PostActivityConflicts *[]openapi_types.UUID `json:"postActivityConflicts,omitempty"`
-
-		// PreActivityConflicts Activities that cannot occur immediately before this activity
-		PreActivityConflicts *[]openapi_types.UUID `json:"preActivityConflicts,omitempty"`
-	} `json:"activityConflicts,omitempty"`
+	ActivityConflicts *ActivityConflicts `json:"activityConflicts,omitempty"`
 
 	// DefaultLocationId ID of the default location
 	DefaultLocationId *openapi_types.UUID `json:"defaultLocationId,omitempty"`
@@ -340,26 +396,11 @@ type ActivitySpec struct {
 	Duration *int `json:"duration,omitempty"`
 
 	// FixedTime Fixed time for the activity (mutually exclusive with duration and timeBlockId)
-	FixedTime *struct {
-		// DayOffset Number of days the activity spans (0 = same day, 1 = ends next day, etc.)
-		DayOffset *int `json:"dayOffset,omitempty"`
-
-		// EndTime End time for the activity
-		EndTime string `json:"endTime"`
-
-		// StartTime Start time for the activity
-		StartTime string `json:"startTime"`
-	} `json:"fixedTime,omitempty"`
+	FixedTime *ActivityFixedTime `json:"fixedTime,omitempty"`
 
 	// ProgramId ID of the program this activity belongs to
-	ProgramId     openapi_types.UUID `json:"programId"`
-	RequiredStaff *[]struct {
-		// PositionName Name of the position required for this activity
-		PositionName string `json:"positionName"`
-
-		// RequiredCertificationId ID of the certification required for this position
-		RequiredCertificationId *openapi_types.UUID `json:"requiredCertificationId,omitempty"`
-	} `json:"requiredStaff,omitempty"`
+	ProgramId     openapi_types.UUID               `json:"programId"`
+	RequiredStaff *[]ActivityRequiredStaffPosition `json:"requiredStaff,omitempty"`
 
 	// TimeBlockId ID of the time block for this activity (mutually exclusive with duration and fixedTime). Activity will use current time block values.
 	TimeBlockId *openapi_types.UUID `json:"timeBlockId,omitempty"`
@@ -1247,6 +1288,12 @@ type User struct {
 	TenantId string `json:"tenantId"`
 }
 
+// ActivitiesFilterBy defines model for ActivitiesFilterBy.
+type ActivitiesFilterBy = []string
+
+// ActivitiesSortBy defines model for ActivitiesSortBy.
+type ActivitiesSortBy string
+
 // AreasFilterBy defines model for AreasFilterBy.
 type AreasFilterBy = []string
 
@@ -1294,6 +1341,12 @@ type LocationsFilterBy = []string
 
 // LocationsSortBy defines model for LocationsSortBy.
 type LocationsSortBy string
+
+// ProgramsFilterBy defines model for ProgramsFilterBy.
+type ProgramsFilterBy = []string
+
+// ProgramsSortBy defines model for ProgramsSortBy.
+type ProgramsSortBy string
 
 // RolesFilterBy defines model for RolesFilterBy.
 type RolesFilterBy = []string
@@ -1378,7 +1431,26 @@ type ListActivitiesParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *ActivitiesFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListActivitiesParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListActivitiesParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListActivitiesParamsSortBy defines parameters for ListActivities.
+type ListActivitiesParamsSortBy string
+
+// ListActivitiesParamsSortOrder defines parameters for ListActivities.
+type ListActivitiesParamsSortOrder string
 
 // ListAreasParams defines parameters for ListAreas.
 type ListAreasParams struct {
@@ -1619,7 +1691,26 @@ type ListProgramsParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *ProgramsFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListProgramsParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListProgramsParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListProgramsParamsSortBy defines parameters for ListPrograms.
+type ListProgramsParamsSortBy string
+
+// ListProgramsParamsSortOrder defines parameters for ListPrograms.
+type ListProgramsParamsSortOrder string
 
 // ListRolesParams defines parameters for ListRoles.
 type ListRolesParams struct {

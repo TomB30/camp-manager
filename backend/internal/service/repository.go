@@ -10,11 +10,11 @@ import (
 
 // ActivitiesRepository defines the data access interface for activities
 type ActivitiesRepository interface {
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Activity, int, error)
-	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Activity, error)
-	Create(ctx context.Context, activity *api.Activity) error
-	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, activity *api.Activity) error
-	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Activity, int64, error)
+	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Activity, error)
+	Create(ctx context.Context, activity *domain.Activity) error
+	Update(ctx context.Context, tenantID, campID uuid.UUID, activity *domain.Activity) error
+	Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error
 }
 
 // AreasRepository defines the data access interface for areas
@@ -102,11 +102,11 @@ type LocationsRepository interface {
 
 // ProgramsRepository defines the data access interface for programs
 type ProgramsRepository interface {
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Program, int, error)
-	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Program, error)
-	Create(ctx context.Context, program *api.Program) error
-	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, program *api.Program) error
-	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Program, int64, error)
+	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Program, error)
+	Create(ctx context.Context, program *domain.Program) error
+	Update(ctx context.Context, tenantID, campID uuid.UUID, program *domain.Program) error
+	Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error
 }
 
 // RolesRepository defines the data access interface for roles

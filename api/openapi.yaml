@@ -94,6 +94,12 @@ components:
       $ref: "./schemas/ActivityUpdateRequest.yaml"
     ActivitiesListResponse:
       $ref: "./schemas/ActivitiesListResponse.yaml"
+    ActivityFixedTime:
+      $ref: "./schemas/ActivityFixedTime.yaml"
+    ActivityRequiredStaffPosition:
+      $ref: "./schemas/ActivityRequiredStaffPosition.yaml"
+    ActivityConflicts:
+      $ref: "./schemas/ActivityConflicts.yaml"
 
     Color:
       $ref: "./schemas/Color.yaml"

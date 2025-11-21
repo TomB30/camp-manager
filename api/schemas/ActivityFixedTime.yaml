@@ -1,0 +1,20 @@
+type: object
+required:
+  - startTime
+  - endTime
+description: Fixed time for the activity (mutually exclusive with duration and timeBlockId)
+properties:
+  startTime:
+    type: string
+    format: time
+    description: Start time for the activity
+  endTime:
+    type: string
+    format: time
+    description: End time for the activity
+  dayOffset:
+    type: integer
+    minimum: 0
+    default: 0
+    description: Number of days the activity spans (0 = same day, 1 = ends next day, etc.)
+
