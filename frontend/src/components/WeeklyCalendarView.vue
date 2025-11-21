@@ -32,9 +32,14 @@
               :style="getWeekEventStyle(event, day)"
               @click="$emit('select-event', event)"
             >
+              <q-tooltip v-if="isMultiDayEvent(event)" :delay="300">
+                Multi-day event: {{ formatDate(event.spec.startDate) }} to {{ formatDate(event.spec.endDate) }}
+              </q-tooltip>
               <div class="week-event-title">
                 {{ event.meta.name }}
-                <span v-if="isMultiDayEvent(event)" class="multi-day-indicator">↔</span>
+                <span v-if="isMultiDayEvent(event)" class="multi-day-indicator">
+                  {{ getMultiDayIndicator(event, day) }}
+                </span>
               </div>
               <div class="week-event-details">
                 <div class="week-event-room text-xs">
@@ -72,7 +77,6 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import { format } from "date-fns";
-import { dateUtils } from "@/utils/dateUtils";
 import { useColorsStore, useEventsStore, useGroupsStore } from "@/stores";
 import type { Event, Group, Location } from "@/generated/api";
 
@@ -131,6 +135,10 @@ export default defineComponent({
         ? `${format(date, "MMM d")} (Today)`
         : format(date, "MMM d");
     },
+    formatDate(dateString: string): string {
+      const date = new Date(dateString);
+      return format(date, "MMM d, yyyy");
+    },
     getLocationName(locationId: string): string {
       const location = this.rooms.find((r) => r.meta.id === locationId);
       return location?.meta.name || "Unknown Location";
@@ -139,7 +147,50 @@ export default defineComponent({
       return this.eventsStore.getEventCamperIds(eventId).length;
     },
     getEventsForDayAndHour(day: Date, hour: number): Event[] {
-      return dateUtils.filterEventsByDateAndHour(this.events, day, hour);
+      // Show events that are active on this day, but only once per day at the earliest visible hour
+      const targetYear = day.getFullYear();
+      const targetMonth = day.getMonth();
+      const targetDay = day.getDate();
+      
+      return this.events.filter((event) => {
+        const eventStart = new Date(event.spec.startDate);
+        const eventEnd = new Date(event.spec.endDate);
+        
+        // Create day start/end for comparison
+        const dayStart = new Date(targetYear, targetMonth, targetDay, 0, 0, 0);
+        const dayEnd = new Date(targetYear, targetMonth, targetDay, 23, 59, 59);
+        
+        // Check if event is active on this day
+        const isActiveOnDay = eventStart <= dayEnd && eventEnd >= dayStart;
+        
+        if (!isActiveOnDay) return false;
+        
+        // For single-day events, show them in their starting hour
+        const isSingleDay =
+          eventStart.getDate() === eventEnd.getDate() &&
+          eventStart.getMonth() === eventEnd.getMonth() &&
+          eventStart.getFullYear() === eventEnd.getFullYear();
+        
+        if (isSingleDay) {
+          // Show in the hour it starts
+          return eventStart.getHours() === hour;
+        }
+        
+        // For multi-day events:
+        // - If it starts on this day, show in its starting hour
+        // - If it started before this day, show at the earliest visible hour (7 AM)
+        const startsOnDay =
+          eventStart.getFullYear() === targetYear &&
+          eventStart.getMonth() === targetMonth &&
+          eventStart.getDate() === targetDay;
+        
+        if (startsOnDay) {
+          return eventStart.getHours() === hour;
+        } else {
+          // Starts before this day, show at 7 AM
+          return hour === 7;
+        }
+      });
     },
     isMultiDayEvent(event: Event): boolean {
       const start = new Date(event.spec.startDate);
@@ -149,6 +200,32 @@ export default defineComponent({
         start.getMonth() !== end.getMonth() ||
         start.getFullYear() !== end.getFullYear()
       );
+    },
+    getMultiDayIndicator(event: Event, day: Date): string {
+      const start = new Date(event.spec.startDate);
+      const end = new Date(event.spec.endDate);
+      
+      const dayStart = new Date(day);
+      dayStart.setHours(0, 0, 0, 0);
+      
+      const eventStartDay = new Date(start);
+      eventStartDay.setHours(0, 0, 0, 0);
+      
+      const eventEndDay = new Date(end);
+      eventEndDay.setHours(0, 0, 0, 0);
+      
+      const isFirstDay = eventStartDay.getTime() === dayStart.getTime();
+      const isLastDay = eventEndDay.getTime() === dayStart.getTime();
+      
+      if (isFirstDay && !isLastDay) {
+        return "→"; // Starts here, continues
+      } else if (isLastDay && !isFirstDay) {
+        return "←"; // Ends here
+      } else if (!isFirstDay && !isLastDay) {
+        return "↔"; // Continues through
+      } else {
+        return "→"; // Default
+      }
     },
     getWeekEventStyle(event: Event, day: Date) {
       const start = new Date(event.spec.startDate);
@@ -167,20 +244,19 @@ export default defineComponent({
       if (isMultiDay) {
         const dayStart = new Date(day);
         dayStart.setHours(0, 0, 0, 0);
-        const dayEnd = new Date(day);
-        dayEnd.setHours(23, 59, 59, 999);
-
+        
         const eventStartDay = new Date(start);
         eventStartDay.setHours(0, 0, 0, 0);
+        
         const eventEndDay = new Date(end);
         eventEndDay.setHours(0, 0, 0, 0);
-
+        
         // If event started before this day, start from beginning (7 AM visible start)
         if (eventStartDay < dayStart) {
           startMinutes = 7 * 60;
         }
-
-        // If event continues past this day, extend to end (21:00 or 9 PM visible end)
+        
+        // If event continues past this day, extend to end (9 PM visible end)
         if (eventEndDay > dayStart) {
           endMinutes = 21 * 60;
         }
@@ -203,19 +279,25 @@ export default defineComponent({
 
         const otherStart = new Date(otherEvent.spec.startDate);
         const otherEnd = new Date(otherEvent.spec.endDate);
-        const otherStartMinutes =
+        let otherStartMinutes =
           otherStart.getHours() * 60 + otherStart.getMinutes();
-        const otherEndMinutes =
+        let otherEndMinutes =
           otherEnd.getHours() * 60 + otherEnd.getMinutes();
 
-        // Check if they're in the same hour block
-        const eventHour = start.getHours();
-        const otherHour = otherStart.getHours();
+        // Check if other event is multi-day
+        const otherIsMultiDay =
+          otherStart.getDate() !== otherEnd.getDate() ||
+          otherStart.getMonth() !== otherEnd.getMonth() ||
+          otherStart.getFullYear() !== otherEnd.getFullYear();
 
-        // Check if events overlap
+        // For multi-day events, extend to end of visible day
+        if (otherIsMultiDay) {
+          otherEndMinutes = 21 * 60;
+        }
+
+        // Check if events overlap in time
         return (
-          eventHour === otherHour ||
-          (startMinutes < otherEndMinutes && endMinutes > otherStartMinutes)
+          startMinutes < otherEndMinutes && endMinutes > otherStartMinutes
         );
       });
 
@@ -351,6 +433,7 @@ export default defineComponent({
   background: var(--surface);
   overflow: visible !important;
   transition: background-color 0.15s ease;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .day-col:hover {
@@ -408,13 +491,14 @@ export default defineComponent({
 }
 
 .multi-day-event {
-  border-left: 3px solid rgba(255, 255, 255, 0.8);
+  border-left: 3px solid rgba(255, 255, 255, 0.9);
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.5);
 }
 
 .multi-day-indicator {
   margin-left: 0.25rem;
   font-weight: bold;
-  opacity: 0.9;
-  font-size: 0.8rem;
+  opacity: 0.95;
+  font-size: 0.9rem;
 }
 </style>

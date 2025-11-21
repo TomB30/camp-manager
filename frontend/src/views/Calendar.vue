@@ -72,6 +72,7 @@
       v-if="viewMode === 'daily'"
       :events="filteredTodayEvents"
       :rooms="locationsStore.locations"
+      :current-date="selectedDate"
       @select-event="selectEvent"
       @create-event="createEventAtHour"
     />

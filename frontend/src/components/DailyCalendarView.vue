@@ -29,9 +29,14 @@
         :style="getEventStyle(event)"
         @click="$emit('select-event', event)"
       >
+        <q-tooltip v-if="isMultiDayEvent(event)" :delay="300">
+          Multi-day event: {{ formatDate(event.spec.startDate) }} to {{ formatDate(event.spec.endDate) }}
+        </q-tooltip>
         <div class="event-title">
           {{ event.meta.name }}
-          <span v-if="isMultiDayEvent(event)" class="multi-day-indicator">↔</span>
+          <span v-if="isMultiDayEvent(event)" class="multi-day-indicator">
+            {{ getMultiDayIndicator(event) }}
+          </span>
         </div>
         <div class="event-details">
           <div class="event-room text-xs">
@@ -57,6 +62,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
+import { format } from "date-fns";
 import { useColorsStore, useEventsStore, useGroupsStore } from "@/stores";
 import type { Event, Group, Location } from "@/generated/api";
 
@@ -69,6 +75,10 @@ export default defineComponent({
     },
     rooms: {
       type: Array as PropType<Location[]>,
+      required: true,
+    },
+    currentDate: {
+      type: Date,
       required: true,
     },
   },
@@ -101,6 +111,10 @@ export default defineComponent({
       const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
       return `${displayHour}:00 ${ampm}`;
     },
+    formatDate(dateString: string): string {
+      const date = new Date(dateString);
+      return format(date, "MMM d, yyyy");
+    },
     getLocationName(locationId: string): string {
       const location = this.rooms.find((r) => r.meta.id === locationId);
       return location?.meta.name || "Unknown Location";
@@ -119,6 +133,32 @@ export default defineComponent({
         start.getMonth() !== end.getMonth() ||
         start.getFullYear() !== end.getFullYear()
       );
+    },
+    getMultiDayIndicator(event: Event): string {
+      const start = new Date(event.spec.startDate);
+      const end = new Date(event.spec.endDate);
+      
+      const currentDayStart = new Date(this.currentDate);
+      currentDayStart.setHours(0, 0, 0, 0);
+      
+      const eventStartDay = new Date(start);
+      eventStartDay.setHours(0, 0, 0, 0);
+      
+      const eventEndDay = new Date(end);
+      eventEndDay.setHours(0, 0, 0, 0);
+      
+      const isFirstDay = eventStartDay.getTime() === currentDayStart.getTime();
+      const isLastDay = eventEndDay.getTime() === currentDayStart.getTime();
+      
+      if (isFirstDay && !isLastDay) {
+        return "→"; // Starts here, continues
+      } else if (isLastDay && !isFirstDay) {
+        return "←"; // Ends here
+      } else if (!isFirstDay && !isLastDay) {
+        return "↔"; // Continues through
+      } else {
+        return "→"; // Default
+      }
     },
     getEventStyle(event: Event) {
       const start = new Date(event.spec.startDate);
@@ -325,12 +365,14 @@ export default defineComponent({
 }
 
 .multi-day-event {
-  border-left: 4px solid rgba(255, 255, 255, 0.8);
+  border-left: 4px solid rgba(255, 255, 255, 0.9);
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.5);
 }
 
 .multi-day-indicator {
   margin-left: 0.25rem;
   font-weight: bold;
-  opacity: 0.9;
+  opacity: 0.95;
+  font-size: 0.9rem;
 }
 </style>
