@@ -34,18 +34,9 @@
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Event Date</label>
-          <BaseInput
-            v-model="eventDate"
-            type="date"
-            :rules="[(val: string) => !!val || 'Enter event date']"
-          />
-        </div>
-
         <!-- Unified Event Time Section (for new events) -->
         <div v-if="!isEditing" class="form-group">
-          <label class="form-label">Event Time</label>
+          <label class="form-label">Event Date & Time</label>
           <div class="time-settings-container">
             <q-option-group
               inline
@@ -78,6 +69,60 @@
               v-if="timeSelectionMode === 'specific'"
               class="time-input-section"
             >
+              <!-- Multi-day Event Toggle -->
+              <div class="multiday-toggle-event">
+                <q-checkbox
+                  v-model="isMultiDayEvent"
+                  label="Multi-day event"
+                  dense
+                  :disable="isEndDateFromTemplate"
+                >
+                  <q-tooltip v-if="isEndDateFromTemplate">
+                    Multi-day setting is determined by the activity template
+                  </q-tooltip>
+                </q-checkbox>
+              </div>
+
+              <!-- Date Inputs -->
+              <div class="date-inputs-section">
+                <div v-if="!isMultiDayEvent" class="single-date-input">
+                  <label class="time-input-label">Event Date</label>
+                  <BaseInput
+                    v-model="eventDate"
+                    type="date"
+                    :rules="[(val: string) => !!val || 'Enter event date']"
+                  />
+                </div>
+                <div v-else class="multi-date-inputs">
+                  <div>
+                    <label class="form-sublabel">Start Date</label>
+                    <BaseInput
+                      v-model="eventDate"
+                      type="date"
+                      :rules="[(val: string) => !!val || 'Enter start date']"
+                    />
+                  </div>
+                  <div>
+                    <label class="form-sublabel">End Date</label>
+                    <BaseInput
+                      v-model="internalEndDate"
+                      type="date"
+                      :rules="[
+                        (val: string) => !!val || 'Enter end date',
+                        (val: string) =>
+                          !eventDate ||
+                          val >= eventDate ||
+                          'End date must be after start date',
+                      ]"
+                      :disable="isEndDateFromTemplate"
+                    >
+                      <q-tooltip v-if="isEndDateFromTemplate">
+                        End date is automatically calculated from the activity template
+                      </q-tooltip>
+                    </BaseInput>
+                  </div>
+                </div>
+              </div>
               <label class="time-input-label">Set Time</label>
               <div class="grid grid-cols-2">
                 <div>
@@ -574,8 +619,13 @@ export default defineComponent({
         },
       } as EventCreationRequest,
       internalEventDate: defaultDate.toISOString().split("T")[0],
+      internalEndDate: defaultDate.toISOString().split("T")[0],
       internalStartTime: `${startHours}:${startMinutes}`,
       internalEndTime: "",
+      isMultiDayEvent: false,
+      isEndDateFromTemplate: false,
+      templateDayOffset: 0,
+      templateDuration: 0,
       selectedActivityId: "",
       selectedTimeBlockId: "",
       timeSelectionMode: "specific" as "specific" | "timeblock",
@@ -911,10 +961,50 @@ export default defineComponent({
     },
   },
   watch: {
+    internalEventDate(newDate) {
+      // Recalculate end date if it's from a template
+      if (this.isEndDateFromTemplate) {
+        if (this.templateDayOffset > 0) {
+          // Fixed time with day offset
+          const startDate = new Date(newDate);
+          startDate.setDate(startDate.getDate() + this.templateDayOffset);
+          this.internalEndDate = startDate.toISOString().split("T")[0];
+        } else if (this.templateDuration >= 1440) {
+          // Duration-based multi-day
+          const [hours, minutes] = this.internalStartTime.split(":").map(Number);
+          const startDateTime = new Date(newDate);
+          startDateTime.setHours(hours, minutes, 0, 0);
+          const endDateTime = new Date(
+            startDateTime.getTime() + this.templateDuration * 60000
+          );
+          this.internalEndDate = endDateTime.toISOString().split("T")[0];
+        }
+      }
+    },
     timeSelectionMode(newMode) {
-      // Clear time block selection when switching to specific time
+      // Reset values when switching between modes
       if (newMode === "specific") {
+        // Switching to Specific Time - clear time block
         this.selectedTimeBlockId = "";
+        // Reset to default times
+        this.internalStartTime = "09:00";
+        this.internalEndTime = "";
+        // Reset multi-day settings
+        this.isMultiDayEvent = false;
+        this.isEndDateFromTemplate = false;
+        this.templateDayOffset = 0;
+        this.templateDuration = 0;
+        this.internalEndDate = this.internalEventDate;
+      } else if (newMode === "timeblock") {
+        // Switching to Time Block - clear specific time settings
+        this.internalStartTime = "09:00";
+        this.internalEndTime = "";
+        // Reset multi-day settings (not applicable for time blocks)
+        this.isMultiDayEvent = false;
+        this.isEndDateFromTemplate = false;
+        this.templateDayOffset = 0;
+        this.templateDuration = 0;
+        this.internalEndDate = this.internalEventDate;
       }
     },
     "recurrenceData.frequency": {
@@ -940,11 +1030,21 @@ export default defineComponent({
       return parseInt(value) > 0 || "Must be greater than 0";
     },
     endTimeBeforeStartTime(): boolean | string {
+      // For multi-day events, use the separate end date
+      const endDateToUse = this.isMultiDayEvent
+        ? this.internalEndDate
+        : this.internalEventDate;
+
+      const startDateTime = new Date(
+        `${this.internalEventDate}T${this.internalStartTime}:00`,
+      );
+      const endDateTime = new Date(
+        `${endDateToUse}T${this.internalEndTime}:00`,
+      );
+
       return (
-        compareAsc(
-          new Date(`${this.internalEventDate}T${this.internalStartTime}:00`),
-          new Date(`${this.internalEventDate}T${this.internalEndTime}:00`),
-        ) === -1 || "End time must be later than start time"
+        compareAsc(startDateTime, endDateTime) === -1 ||
+        "End date/time must be later than start date/time"
       );
     },
     handleStartTimeChange(value: string | number | null): void {
@@ -1018,9 +1118,14 @@ export default defineComponent({
         this.formData.spec.startDate = startDateTime.toISOString();
       }
 
-      if (this.internalEventDate && this.internalEndTime) {
+      // For multi-day events, use internalEndDate; otherwise use internalEventDate
+      const endDateToUse = this.isMultiDayEvent
+        ? this.internalEndDate
+        : this.internalEventDate;
+
+      if (endDateToUse && this.internalEndTime) {
         const endDateTime = new Date(
-          `${this.internalEventDate}T${this.internalEndTime}:00`,
+          `${endDateToUse}T${this.internalEndTime}:00`,
         );
         this.formData.spec.endDate = endDateTime.toISOString();
       }
@@ -1039,6 +1144,9 @@ export default defineComponent({
         this.formData.spec.activityId = "";
         this.formData.spec.locationId = "";
         this.formData.meta.name = "";
+        this.isEndDateFromTemplate = false;
+        this.templateDayOffset = 0;
+        this.templateDuration = 0;
         return;
       }
 
@@ -1074,6 +1182,23 @@ export default defineComponent({
         this.timeSelectionMode = "specific";
         this.internalStartTime = activity.spec.fixedTime.startTime;
         this.internalEndTime = activity.spec.fixedTime.endTime;
+        
+        // Handle multi-day fixed time activities
+        if (activity.spec.fixedTime.dayOffset && activity.spec.fixedTime.dayOffset > 0) {
+          this.isMultiDayEvent = true;
+          this.isEndDateFromTemplate = true;
+          this.templateDayOffset = activity.spec.fixedTime.dayOffset;
+          // Calculate end date = start date + dayOffset
+          const startDate = new Date(this.internalEventDate);
+          startDate.setDate(startDate.getDate() + activity.spec.fixedTime.dayOffset);
+          this.internalEndDate = startDate.toISOString().split("T")[0];
+        } else {
+          this.isMultiDayEvent = false;
+          this.isEndDateFromTemplate = false;
+          this.templateDayOffset = 0;
+          this.internalEndDate = this.internalEventDate;
+        }
+        
         this.updateFormDataDates();
       } else if (activity.spec.duration) {
         // Use duration from activity - start time is editable, end time is calculated
@@ -1088,14 +1213,28 @@ export default defineComponent({
           const [hours, minutes] = this.internalStartTime
             .split(":")
             .map(Number);
-          const startDate = new Date();
-          startDate.setHours(hours, minutes, 0, 0);
+          const startDateTime = new Date(this.internalEventDate);
+          startDateTime.setHours(hours, minutes, 0, 0);
 
-          const endDate = new Date(
-            startDate.getTime() + (activity.spec.duration || 0) * 60000,
+          const endDateTime = new Date(
+            startDateTime.getTime() + (activity.spec.duration || 0) * 60000,
           );
-          const endHours = endDate.getHours().toString().padStart(2, "0");
-          const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
+          
+          // Check if duration spans multiple days (>= 1440 minutes = 1 day)
+          if (activity.spec.duration >= 1440) {
+            this.isMultiDayEvent = true;
+            this.isEndDateFromTemplate = true;
+            this.templateDuration = activity.spec.duration;
+            this.internalEndDate = endDateTime.toISOString().split("T")[0];
+          } else {
+            this.isMultiDayEvent = false;
+            this.isEndDateFromTemplate = false;
+            this.templateDuration = 0;
+            this.internalEndDate = this.internalEventDate;
+          }
+          
+          const endHours = endDateTime.getHours().toString().padStart(2, "0");
+          const endMinutes = endDateTime.getMinutes().toString().padStart(2, "0");
           this.internalEndTime = `${endHours}:${endMinutes}`;
           this.updateFormDataDates();
         }
@@ -1812,5 +1951,33 @@ export default defineComponent({
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.multiday-toggle-event {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.date-inputs-section {
+  margin-bottom: 1rem;
+}
+
+.single-date-input {
+  animation: slideDown 0.2s ease-out;
+}
+
+.multi-date-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  animation: slideDown 0.2s ease-out;
+}
+
+.form-sublabel {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.375rem;
 }
 </style>

@@ -14,8 +14,14 @@
           <template v-if="activity.spec.fixedTime">
             {{ formatTime(activity.spec.fixedTime.startTime) }} -
             {{ formatTime(activity.spec.fixedTime.endTime) }}
+
+            <span class="q-ml-sm" v-if="activity.spec.fixedTime.dayOffset && activity.spec.fixedTime.dayOffset > 0">
+              +{{ activity.spec.fixedTime.dayOffset }} day{{ activity.spec.fixedTime.dayOffset !== 1 ? 's' : '' }}
+            </span>
           </template>
-          <DurationDisplay v-else :minutes="activity.spec.duration || 0" />
+          <template v-else>
+            <DurationDisplay :minutes="activity.spec.duration || 0" />
+          </template>
         </span>
 
         <span v-if="activity.spec.defaultLocationId" class="meta-item">

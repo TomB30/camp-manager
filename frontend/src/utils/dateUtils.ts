@@ -51,13 +51,16 @@ function filterEventsByDateAndHour<T extends Event>(
   const targetDay = targetDate.getDate();
 
   return events.filter((event) => {
-    const eventDate = new Date(event.spec.startDate);
-    return (
-      eventDate.getFullYear() === targetYear &&
-      eventDate.getMonth() === targetMonth &&
-      eventDate.getDate() === targetDay &&
-      eventDate.getHours() === targetHour
-    );
+    const eventStart = new Date(event.spec.startDate);
+    const eventEnd = new Date(event.spec.endDate);
+    
+    // Create target datetime at the specific hour
+    const targetDateTime = new Date(targetYear, targetMonth, targetDay, targetHour);
+    const targetEndHour = new Date(targetYear, targetMonth, targetDay, targetHour + 1);
+    
+    // Check if event overlaps with this hour on this day
+    // Event should be included if it's active during any part of this hour
+    return eventStart < targetEndHour && eventEnd > targetDateTime;
   });
 }
 

@@ -30,6 +30,9 @@
               <span class="detail-value">
                 {{ formatTime(activity.spec.fixedTime.startTime) }} -
                 {{ formatTime(activity.spec.fixedTime.endTime) }}
+                <span v-if="activity.spec.fixedTime.dayOffset && activity.spec.fixedTime.dayOffset > 0" class="multiday-indicator">
+                  (spans {{ activity.spec.fixedTime.dayOffset + 1 }} day{{ activity.spec.fixedTime.dayOffset + 1 !== 1 ? 's' : '' }})
+                </span>
               </span>
             </div>
 
@@ -431,5 +434,12 @@ export default defineComponent({
   border-radius: calc(var(--radius) * 0.75);
   font-size: 0.8125rem;
   font-weight: 500;
+}
+
+.multiday-indicator {
+  margin-left: 0.5rem;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.875rem;
 }
 </style>

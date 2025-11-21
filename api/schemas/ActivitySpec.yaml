@@ -28,6 +28,11 @@ properties:
         type: string
         format: time
         description: End time for the activity
+      dayOffset:
+        type: integer
+        minimum: 0
+        default: 0
+        description: Number of days the activity spans (0 = same day, 1 = ends next day, etc.)
   timeBlockId:
     type: string
     format: uuid

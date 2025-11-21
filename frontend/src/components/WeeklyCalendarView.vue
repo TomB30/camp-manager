@@ -28,10 +28,14 @@
               v-for="event in getEventsForDayAndHour(day, hour)"
               :key="event.meta.id"
               class="week-event"
+              :class="{ 'multi-day-event': isMultiDayEvent(event) }"
               :style="getWeekEventStyle(event, day)"
               @click="$emit('select-event', event)"
             >
-              <div class="week-event-title">{{ event.meta.name }}</div>
+              <div class="week-event-title">
+                {{ event.meta.name }}
+                <span v-if="isMultiDayEvent(event)" class="multi-day-indicator">↔</span>
+              </div>
               <div class="week-event-details">
                 <div class="week-event-room text-xs">
                   {{ getLocationName(event.spec.locationId || "") }}
@@ -137,12 +141,51 @@ export default defineComponent({
     getEventsForDayAndHour(day: Date, hour: number): Event[] {
       return dateUtils.filterEventsByDateAndHour(this.events, day, hour);
     },
-    getWeekEventStyle(event: Event, _day: Date) {
+    isMultiDayEvent(event: Event): boolean {
+      const start = new Date(event.spec.startDate);
+      const end = new Date(event.spec.endDate);
+      return (
+        start.getDate() !== end.getDate() ||
+        start.getMonth() !== end.getMonth() ||
+        start.getFullYear() !== end.getFullYear()
+      );
+    },
+    getWeekEventStyle(event: Event, day: Date) {
       const start = new Date(event.spec.startDate);
       const end = new Date(event.spec.endDate);
 
-      const startMinutes = start.getHours() * 60 + start.getMinutes();
-      const endMinutes = end.getHours() * 60 + end.getMinutes();
+      // Check if this is a multi-day event
+      const isMultiDay =
+        start.getDate() !== end.getDate() ||
+        start.getMonth() !== end.getMonth() ||
+        start.getFullYear() !== end.getFullYear();
+
+      let startMinutes = start.getHours() * 60 + start.getMinutes();
+      let endMinutes = end.getHours() * 60 + end.getMinutes();
+
+      // For multi-day events, adjust times based on which day we're rendering
+      if (isMultiDay) {
+        const dayStart = new Date(day);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(day);
+        dayEnd.setHours(23, 59, 59, 999);
+
+        const eventStartDay = new Date(start);
+        eventStartDay.setHours(0, 0, 0, 0);
+        const eventEndDay = new Date(end);
+        eventEndDay.setHours(0, 0, 0, 0);
+
+        // If event started before this day, start from beginning (7 AM visible start)
+        if (eventStartDay < dayStart) {
+          startMinutes = 7 * 60;
+        }
+
+        // If event continues past this day, extend to end (21:00 or 9 PM visible end)
+        if (eventEndDay > dayStart) {
+          endMinutes = 21 * 60;
+        }
+      }
+
       const duration = endMinutes - startMinutes;
 
       // Calculate height based on duration (80px per hour)
@@ -362,5 +405,16 @@ export default defineComponent({
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.3;
+}
+
+.multi-day-event {
+  border-left: 3px solid rgba(255, 255, 255, 0.8);
+}
+
+.multi-day-indicator {
+  margin-left: 0.25rem;
+  font-weight: bold;
+  opacity: 0.9;
+  font-size: 0.8rem;
 }
 </style>

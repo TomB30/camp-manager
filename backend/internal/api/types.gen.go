@@ -341,6 +341,9 @@ type ActivitySpec struct {
 
 	// FixedTime Fixed time for the activity (mutually exclusive with duration and timeBlockId)
 	FixedTime *struct {
+		// DayOffset Number of days the activity spans (0 = same day, 1 = ends next day, etc.)
+		DayOffset *int `json:"dayOffset,omitempty"`
+
 		// EndTime End time for the activity
 		EndTime string `json:"endTime"`
 

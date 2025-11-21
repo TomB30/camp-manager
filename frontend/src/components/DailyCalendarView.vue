@@ -25,10 +25,14 @@
         v-for="event in events"
         :key="event.meta.id"
         class="event-block"
+        :class="{ 'multi-day-event': isMultiDayEvent(event) }"
         :style="getEventStyle(event)"
         @click="$emit('select-event', event)"
       >
-        <div class="event-title">{{ event.meta.name }}</div>
+        <div class="event-title">
+          {{ event.meta.name }}
+          <span v-if="isMultiDayEvent(event)" class="multi-day-indicator">↔</span>
+        </div>
         <div class="event-details">
           <div class="event-room text-xs">
             {{ getLocationName(event.spec.locationId || "unknown") }}
@@ -107,13 +111,52 @@ export default defineComponent({
     handleTimeSlotClick(hour: number) {
       this.$emit("create-event", hour);
     },
+    isMultiDayEvent(event: Event): boolean {
+      const start = new Date(event.spec.startDate);
+      const end = new Date(event.spec.endDate);
+      return (
+        start.getDate() !== end.getDate() ||
+        start.getMonth() !== end.getMonth() ||
+        start.getFullYear() !== end.getFullYear()
+      );
+    },
     getEventStyle(event: Event) {
       const start = new Date(event.spec.startDate);
       const end = new Date(event.spec.endDate);
 
-      const startMinutes = start.getHours() * 60 + start.getMinutes();
-      const endMinutes = end.getHours() * 60 + end.getMinutes();
+      // Check if event spans multiple days
+      const isMultiDay =
+        start.getDate() !== end.getDate() ||
+        start.getMonth() !== end.getMonth() ||
+        start.getFullYear() !== end.getFullYear();
+
+      let startMinutes = start.getHours() * 60 + start.getMinutes();
+      let endMinutes = end.getHours() * 60 + end.getMinutes();
       const dayStartMinutes = 7 * 60; // 7 AM
+      const dayEndMinutes = 21 * 60; // 9 PM (end of visible hours)
+
+      // For multi-day events, adjust to show only the portion visible on this day
+      if (isMultiDay) {
+        // If event started before today, show from beginning of visible hours
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const eventStartDay = new Date(start);
+        eventStartDay.setHours(0, 0, 0, 0);
+        
+        if (eventStartDay < today) {
+          startMinutes = dayStartMinutes;
+        }
+        
+        // If event continues past today, extend to end of visible hours
+        const eventEndDay = new Date(end);
+        eventEndDay.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        if (eventEndDay >= tomorrow) {
+          endMinutes = dayEndMinutes;
+        }
+      }
 
       // Calculate position from top of grid (after header)
       const top = ((startMinutes - dayStartMinutes) / 60) * 80; // 80px per hour
@@ -279,5 +322,15 @@ export default defineComponent({
   opacity: 0.95;
   font-size: 0.8125rem;
   line-height: 1.4;
+}
+
+.multi-day-event {
+  border-left: 4px solid rgba(255, 255, 255, 0.8);
+}
+
+.multi-day-indicator {
+  margin-left: 0.25rem;
+  font-weight: bold;
+  opacity: 0.9;
 }
 </style>

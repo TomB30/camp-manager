@@ -42,9 +42,18 @@
               />
 
               <div v-if="timeMode === 'duration'" class="time-input-section">
-                <label class="time-input-label">Duration (minutes)</label>
+                <label class="time-input-label">Duration</label>
                 <div class="custom-duration-input">
-                  <div class="grid grid-cols-2">
+                  <div class="grid grid-cols-3">
+                    <div>
+                      <label class="form-sublabel">Days</label>
+                      <BaseInput
+                        v-model="customDurationDays"
+                        type="number"
+                        :min="0"
+                        placeholder="0"
+                      />
+                    </div>
                     <div>
                       <label class="form-sublabel">Hours</label>
                       <BaseInput
@@ -70,6 +79,25 @@
 
               <div v-if="timeMode === 'fixed'" class="time-input-section">
                 <label class="time-input-label">Fixed Time</label>
+                <div class="multiday-toggle">
+                  <q-checkbox
+                    v-model="isFixedTimeMultiDay"
+                    label="Multi-day activity"
+                    dense
+                  />
+                  <p class="form-help-text" v-if="isFixedTimeMultiDay">
+                    Specify how many days after the start date the activity ends
+                  </p>
+                </div>
+                <div v-if="isFixedTimeMultiDay" class="day-offset-input">
+                  <label class="form-sublabel">Day Offset</label>
+                  <BaseInput
+                    v-model="fixedTimeDayOffset"
+                    type="number"
+                    :min="0"
+                    placeholder="0 = same day, 1 = next day, etc."
+                  />
+                </div>
                 <div class="grid grid-cols-2">
                   <div>
                     <label class="form-sublabel">Start Time</label>
@@ -365,6 +393,7 @@ export default defineComponent({
           fixedTime: {
             startTime: "",
             endTime: "",
+            dayOffset: 0,
           },
           activityConflicts: {
             preActivityConflicts: [] as string[],
@@ -375,8 +404,11 @@ export default defineComponent({
       } as any,
       timeMode: "duration" as "duration" | "fixed" | "timeblock",
       editingActivity: null as Activity | null,
+      customDurationDays: 0,
       customDurationHours: 0,
       customDurationMinutes: 0,
+      isFixedTimeMultiDay: false,
+      fixedTimeDayOffset: 0,
     };
   },
   async created() {
@@ -397,7 +429,13 @@ export default defineComponent({
         this.formData.spec.fixedTime = {
           startTime: activity.spec.fixedTime.startTime || "",
           endTime: activity.spec.fixedTime.endTime || "",
+          dayOffset: activity.spec.fixedTime.dayOffset || 0,
         };
+        // Set multi-day flag if dayOffset exists
+        if (activity.spec.fixedTime.dayOffset && activity.spec.fixedTime.dayOffset > 0) {
+          this.isFixedTimeMultiDay = true;
+          this.fixedTimeDayOffset = activity.spec.fixedTime.dayOffset;
+        }
       } else {
         this.timeMode = "duration";
         this.formData.spec.duration = activity.spec.duration || 60;
@@ -417,6 +455,7 @@ export default defineComponent({
           fixedTime: {
             startTime: activity.spec.fixedTime?.startTime || "",
             endTime: activity.spec.fixedTime?.endTime || "",
+            dayOffset: activity.spec.fixedTime?.dayOffset || 0,
           },
           activityConflicts: {
             preActivityConflicts:
@@ -431,18 +470,27 @@ export default defineComponent({
       };
     }
 
-    // Set custom duration hours and minutes
+    // Set custom duration days, hours and minutes
     if (this.formData.spec.duration) {
-      this.customDurationHours = Math.floor(this.formData.spec.duration / 60);
-      this.customDurationMinutes = this.formData.spec.duration % 60;
+      const totalMinutes = this.formData.spec.duration;
+      this.customDurationDays = Math.floor(totalMinutes / 1440); // 1440 minutes in a day
+      const remainingMinutesAfterDays = totalMinutes % 1440;
+      this.customDurationHours = Math.floor(remainingMinutesAfterDays / 60);
+      this.customDurationMinutes = remainingMinutesAfterDays % 60;
     }
   },
   watch: {
+    customDurationDays() {
+      this.updateDurationFromCustom();
+    },
     customDurationHours() {
       this.updateDurationFromCustom();
     },
     customDurationMinutes() {
       this.updateDurationFromCustom();
+    },
+    fixedTimeDayOffset(newVal) {
+      this.formData.spec.fixedTime.dayOffset = Number(newVal) || 0;
     },
   },
   computed: {
@@ -488,9 +536,10 @@ export default defineComponent({
   },
   methods: {
     updateDurationFromCustom() {
+      const days = Number(this.customDurationDays) || 0;
       const hours = Number(this.customDurationHours) || 0;
       const minutes = Number(this.customDurationMinutes) || 0;
-      this.formData.spec.duration = hours * 60 + minutes;
+      this.formData.spec.duration = days * 1440 + hours * 60 + minutes;
     },
     formatDuration(minutes: number): string {
       if (minutes < 60) {
@@ -507,6 +556,11 @@ export default defineComponent({
       if (!this.formData.spec.fixedTime.startTime || !endTime) {
         return true;
       }
+      // For multi-day activities, end time can be before start time
+      if (this.isFixedTimeMultiDay) {
+        return true;
+      }
+      // For same-day activities, end time must be after start time
       return endTime > this.formData.spec.fixedTime.startTime;
     },
     addStaffPosition() {
@@ -590,6 +644,7 @@ export default defineComponent({
         activityData.spec.fixedTime = {
           startTime: this.formData.spec.fixedTime.startTime,
           endTime: this.formData.spec.fixedTime.endTime,
+          dayOffset: this.isFixedTimeMultiDay ? (Number(this.fixedTimeDayOffset) || 0) : undefined,
         };
       } else if (this.timeMode === "timeblock") {
         activityData.spec.timeBlockId = this.formData.spec.timeBlockId;
@@ -748,5 +803,17 @@ export default defineComponent({
 .conflicts-content {
   padding: 1rem;
   background: var(--background);
+}
+
+.multiday-toggle {
+  margin-bottom: 1rem;
+}
+
+.day-offset-input {
+  margin-bottom: 1rem;
+}
+
+.grid-cols-3 {
+  grid-template-columns: repeat(3, 1fr);
 }
 </style>

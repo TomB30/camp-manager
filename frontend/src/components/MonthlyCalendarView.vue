@@ -29,18 +29,22 @@
               v-for="event in getVisibleEvents(day.events)"
               :key="event.meta.id"
               class="event-item"
+              :class="{ 'multi-day-event': isMultiDayEvent(event) }"
               :style="{
                 backgroundColor: event.spec.colorId
                   ? colorsStore.getColorById(event.spec.colorId)?.spec.hexValue
                   : '#3B82F6',
               }"
-              :title="event.meta.name"
+              :title="getEventTooltip(event, day.date)"
               @click.stop="$emit('select-event', event)"
             >
               <span class="event-time">{{
-                formatEventTime(event.spec.startDate)
+                formatEventTime(event.spec.startDate, day.date)
               }}</span>
-              <span class="event-title">{{ event.meta.name }}</span>
+              <span class="event-title">
+                {{ event.meta.name }}
+                <span v-if="isMultiDayEvent(event)" class="multi-day-indicator">↔</span>
+              </span>
               <div
                 class="event-groups text-xs"
                 v-if="event.spec.groupIds && event.spec.groupIds.length > 0"
@@ -130,9 +134,21 @@ export default defineComponent({
       const today = new Date();
 
       return days.map((date) => {
+        // Include events that start on this day OR span across this day (multi-day events)
         const dayEvents = this.events.filter((event) => {
-          const eventDate = new Date(event.spec.startDate);
-          return isSameDay(eventDate, date);
+          const eventStart = new Date(event.spec.startDate);
+          const eventEnd = new Date(event.spec.endDate);
+          
+          // Reset time to compare only dates
+          const eventStartDate = new Date(eventStart);
+          eventStartDate.setHours(0, 0, 0, 0);
+          const eventEndDate = new Date(eventEnd);
+          eventEndDate.setHours(0, 0, 0, 0);
+          const currentDate = new Date(date);
+          currentDate.setHours(0, 0, 0, 0);
+          
+          // Include event if it starts on this day or if this day falls within the event's date range
+          return currentDate >= eventStartDate && currentDate <= eventEndDate;
         });
 
         return {
@@ -159,8 +175,18 @@ export default defineComponent({
     handleDayClick(day: CalendarDay) {
       this.$emit("select-day", day.date);
     },
-    formatEventTime(dateStr: string): string {
-      return format(new Date(dateStr), "h:mma");
+    formatEventTime(dateStr: string, currentDate: Date): string {
+      const eventStart = new Date(dateStr);
+      const current = new Date(currentDate);
+      current.setHours(0, 0, 0, 0);
+      const eventStartDay = new Date(eventStart);
+      eventStartDay.setHours(0, 0, 0, 0);
+      
+      // If event starts on a different day, show indicator instead of time
+      if (eventStartDay.getTime() < current.getTime()) {
+        return "→";
+      }
+      return format(eventStart, "h:mma");
     },
     getVisibleEvents(events: Event[]) {
       // Sort events by start time
@@ -171,6 +197,23 @@ export default defineComponent({
         );
       });
       return sortedEvents.slice(0, this.maxEventsPerDay);
+    },
+    isMultiDayEvent(event: Event): boolean {
+      const start = new Date(event.spec.startDate);
+      const end = new Date(event.spec.endDate);
+      const startDay = new Date(start);
+      startDay.setHours(0, 0, 0, 0);
+      const endDay = new Date(end);
+      endDay.setHours(0, 0, 0, 0);
+      return startDay.getTime() !== endDay.getTime();
+    },
+    getEventTooltip(event: Event, _currentDate: Date): string {
+      if (!this.isMultiDayEvent(event)) {
+        return event.meta.name;
+      }
+      const start = new Date(event.spec.startDate);
+      const end = new Date(event.spec.endDate);
+      return `${event.meta.name} (${format(start, "MMM d")} - ${format(end, "MMM d")})`;
     },
   },
 });
@@ -348,5 +391,16 @@ export default defineComponent({
   .event-label {
     font-size: 0.625rem;
   }
+}
+
+.multi-day-event {
+  border-left: 3px solid rgba(255, 255, 255, 0.9);
+  padding-left: 0.375rem;
+}
+
+.multi-day-indicator {
+  margin-left: 0.25rem;
+  font-weight: bold;
+  opacity: 0.9;
 }
 </style>

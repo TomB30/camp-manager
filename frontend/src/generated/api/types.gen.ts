@@ -650,6 +650,10 @@ export type ActivitySpec = {
          * End time for the activity
          */
         endTime: string;
+        /**
+         * Number of days the activity spans (0 = same day, 1 = ends next day, etc.)
+         */
+        dayOffset?: number;
     };
     /**
      * ID of the time block for this activity (mutually exclusive with duration and fixedTime). Activity will use current time block values.
