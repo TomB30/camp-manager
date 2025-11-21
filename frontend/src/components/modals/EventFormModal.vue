@@ -588,11 +588,10 @@ export default defineComponent({
     };
   },
   data() {
-    // Set default start time to 9:00 AM
+    // Use the time from defaultEventDate, or default to 9:00 AM if no time is set
     const defaultDate = new Date(this.defaultEventDate);
-    defaultDate.setHours(9, 0, 0, 0);
-    const startHours = "09";
-    const startMinutes = "00";
+    const startHours = defaultDate.getHours().toString().padStart(2, "0");
+    const startMinutes = defaultDate.getMinutes().toString().padStart(2, "0");
 
     return {
       formData: {

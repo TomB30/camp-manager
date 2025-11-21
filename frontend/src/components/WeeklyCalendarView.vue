@@ -7,7 +7,8 @@
         <div
           v-for="day in weekDays"
           :key="day.toISOString()"
-          class="day-header"
+          class="day-header clickable"
+          @click="handleDateHeaderClick(day)"
         >
           <div class="day-name">{{ formatDayName(day) }}</div>
           <div class="day-date">{{ formatDayDate(day) }}</div>
@@ -22,6 +23,7 @@
             v-for="day in weekDays"
             :key="`${hour}-${day.toISOString()}`"
             class="day-col"
+            @click="handleCellClick(day, hour)"
           >
             <!-- Events for this hour and day -->
             <div
@@ -30,7 +32,7 @@
               class="week-event"
               :class="{ 'multi-day-event': isMultiDayEvent(event) }"
               :style="getWeekEventStyle(event, day)"
-              @click="$emit('select-event', event)"
+              @click.stop="$emit('select-event', event)"
             >
               <q-tooltip v-if="isMultiDayEvent(event)" :delay="300">
                 Multi-day event: {{ formatDate(event.spec.startDate) }} to {{ formatDate(event.spec.endDate) }}
@@ -96,7 +98,7 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ["select-event"],
+  emits: ["select-event", "select-day", "create-event"],
   setup() {
     const eventsStore = useEventsStore();
     const colorsStore = useColorsStore();
@@ -138,6 +140,12 @@ export default defineComponent({
     formatDate(dateString: string): string {
       const date = new Date(dateString);
       return format(date, "MMM d, yyyy");
+    },
+    handleDateHeaderClick(day: Date) {
+      this.$emit("select-day", day);
+    },
+    handleCellClick(day: Date, hour: number) {
+      this.$emit("create-event", { date: day, hour });
     },
     getLocationName(locationId: string): string {
       const location = this.rooms.find((r) => r.meta.id === locationId);
@@ -378,6 +386,12 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.day-header:hover {
+  background: var(--surface-secondary);
 }
 
 .day-name {
@@ -434,6 +448,7 @@ export default defineComponent({
   overflow: visible !important;
   transition: background-color 0.15s ease;
   border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
 }
 
 .day-col:hover {

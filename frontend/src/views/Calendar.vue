@@ -83,6 +83,8 @@
       :events="filteredEvents"
       :rooms="locationsStore.locations"
       @select-event="selectEvent"
+      @select-day="selectDay"
+      @create-event="createEventAtDateAndHour"
     />
 
     <MonthlyCalendarView
@@ -105,7 +107,7 @@
   <EventFormModal
     v-if="showEventModal"
     :event-id="editingEventId || undefined"
-    :default-event-date="selectedDate"
+    :default-event-date="defaultEventDate"
     @close="closeEventModal"
   />
 
@@ -462,8 +464,16 @@ export default defineComponent({
     },
     createEventAtHour(hour: number) {
       // Set the default event date to the selected date and the selected hour
-      this.defaultEventDate = this.selectedDate;
-      this.defaultEventDate.setHours(hour, 0, 0, 0);
+      const eventDate = new Date(this.selectedDate);
+      eventDate.setHours(hour, 0, 0, 0);
+      this.defaultEventDate = eventDate;
+      this.showEventModal = true;
+    },
+    createEventAtDateAndHour({ date, hour }: { date: Date; hour: number }) {
+      // Set the default event date to the specific date and hour
+      const eventDate = new Date(date);
+      eventDate.setHours(hour, 0, 0, 0);
+      this.defaultEventDate = eventDate;
       this.showEventModal = true;
     },
     closeEventModal() {
