@@ -77,6 +77,8 @@ func Load() (*Config, error) {
 	viper.SetDefault("JWT_SECRET_KEY", "development-secret-key-change-in-production")
 
 	// CORS defaults - allow localhost in development
+	// For production: set to your actual frontend URL(s)
+	// Example: "https://camp-manager.onrender.com,https://your-github-username.github.io"
 	viper.SetDefault("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000")
 
 	// Automatically read from environment variables

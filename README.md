@@ -124,10 +124,19 @@ Run `make help` to see the full list of commands.
 
 ## 📚 Documentation
 
+### Getting Started
 - [Frontend Documentation](./frontend/README.md) - Vue app setup and usage
 - [Backend Documentation](./backend/README.md) - API server setup and architecture
 - [API Documentation](./api/README.md) - OpenAPI specification and schemas
+
+### Deployment & Operations
+- [Deployment Guide](./DEPLOYMENT.md) - GitHub Pages and Render deployment
+- [Render Deployment](./RENDER_DEPLOYMENT.md) - Detailed Render.com instructions
+- [Security Guide](./SECURITY.md) - Security best practices and environment variables
+
+### Development
 - [Development Guides](./docs/) - Architecture, features, and workflows
+- [Contributing](./docs/CONTRIBUTING.md) - Code of conduct and development process
 
 ## 🔧 API Commands
 
@@ -177,25 +186,94 @@ make build
 # Output: backend/bin/api
 ```
 
+## 🚀 Deployment
+
+This application supports two deployment strategies:
+
+### Option 1: GitHub Pages (Frontend Only) - **Currently Deployed**
+
+**Live Demo**: [https://YOUR_GITHUB_USERNAME.github.io/camp-manager/](https://YOUR_GITHUB_USERNAME.github.io/camp-manager/)
+
+- ✅ **Automatic deployment** on push to `main` branch
+- ✅ **Free hosting** forever
+- ✅ **Mock data** for demonstration
+- ✅ **No cold starts** - always available
+- ⚠️ **No backend** - authentication and data are simulated
+
+**Use for**: UI demos, portfolio showcases, testing frontend changes
+
+### Option 2: Render.com (Full-Stack) - **Ready to Deploy**
+
+Deploy the complete application with real backend and database:
+
+```bash
+# 1. Push latest code to GitHub
+git push origin main
+
+# 2. Deploy to Render (one-click)
+# Go to https://dashboard.render.com
+# New → Blueprint → Connect your GitHub repo
+# Render auto-detects render.yaml
+
+# 3. Update environment variables
+# - Generate JWT secret: openssl rand -base64 32
+# - Update CORS with your frontend URL
+```
+
+**Includes**:
+- ✅ Go backend API with JWT authentication
+- ✅ PostgreSQL database
+- ✅ Vue frontend (connected to real backend)
+- ✅ Automatic SSL/TLS
+- ✅ Free tier available
+
+**Free Tier Limitations**:
+- Cold starts after 15 minutes of inactivity (~50s)
+- Database: 90-day retention, 1GB storage
+- 750 hours/month per service
+
+**Production URLs** (after deployment):
+- Frontend: `https://camp-manager.onrender.com`
+- Backend API: `https://camp-manager-api.onrender.com`
+- Health Check: `https://camp-manager-api.onrender.com/health`
+
+### Detailed Deployment Guides
+
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Overview of all deployment options
+- **[RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md)** - Step-by-step Render guide
+- **[SECURITY.md](./SECURITY.md)** - Security best practices
+
+### Dual Deployment
+
+You can keep both deployments active:
+- **GitHub Pages** for frontend demos (mock data)
+- **Render** for full application testing (real data)
+
+Both can run simultaneously with proper CORS configuration.
+
 ## 🗺️ Roadmap
 
 ### Current Status
 - ✅ Frontend application with mock data
-- ✅ Backend infrastructure setup
+- ✅ Backend API with JWT authentication
 - ✅ OpenAPI specification
-- 🚧 Database schema and migrations (in progress)
-- 🚧 API endpoints implementation (in progress)
+- ✅ Database schema and migrations
+- ✅ Full CRUD API endpoints
+- ✅ GitHub Pages deployment (frontend only)
+- ✅ Render.com deployment ready (full-stack)
+- 🚧 Production deployment (pending)
 
 ### Future Enhancements
 - Multi-week/multi-session support
-- User authentication and authorization
 - Real-time updates with WebSockets
 - Report generation (PDF exports)
-- Email notifications
-- Parent portal
-- Photo sharing
+- Email notifications for parents and staff
+- Parent portal for registration and communication
+- Photo sharing and galleries
 - Payment and billing management
-- Mobile apps
+- Mobile apps (iOS and Android)
+- Advanced analytics and insights
+- Integration with external systems (CRM, payment processors)
 
 ## 🤝 Contributing
 
