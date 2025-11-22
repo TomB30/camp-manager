@@ -12,25 +12,27 @@ export const dateUtils = {
 
 /**
  * Get events for a specific date from a list of events
- * @param events Array of events with startDate property
+ * @param events Array of events with startDate and endDate properties
  * @param targetDate Date to filter by
- * @returns Events that occur on the target date
+ * @returns Events that are active on the target date (including multi-day events)
  */
-function filterEventsByDate<T extends { spec: { startDate: string } }>(
+function filterEventsByDate<T extends { spec: { startDate: string; endDate: string } }>(
   events: T[],
   targetDate: Date,
 ): T[] {
-  const targetYear = targetDate.getFullYear();
-  const targetMonth = targetDate.getMonth();
-  const targetDay = targetDate.getDate();
+  // Set target date to midnight for comparison
+  const targetDayStart = new Date(targetDate);
+  targetDayStart.setHours(0, 0, 0, 0);
+  
+  const targetDayEnd = new Date(targetDate);
+  targetDayEnd.setHours(23, 59, 59, 999);
 
   return events.filter((event) => {
-    const eventDate = new Date(event.spec.startDate);
-    return (
-      eventDate.getFullYear() === targetYear &&
-      eventDate.getMonth() === targetMonth &&
-      eventDate.getDate() === targetDay
-    );
+    const eventStart = new Date(event.spec.startDate);
+    const eventEnd = new Date(event.spec.endDate);
+    
+    // Event is active on this day if it starts on or before this day AND ends on or after this day
+    return eventStart <= targetDayEnd && eventEnd >= targetDayStart;
   });
 }
 

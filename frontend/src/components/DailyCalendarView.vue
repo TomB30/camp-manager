@@ -178,23 +178,26 @@ export default defineComponent({
 
       // For multi-day events, adjust to show only the portion visible on this day
       if (isMultiDay) {
-        // If event started before today, show from beginning of visible hours
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // Use the current date being displayed, not today
+        const currentDayStart = new Date(this.currentDate);
+        currentDayStart.setHours(0, 0, 0, 0);
+        
         const eventStartDay = new Date(start);
         eventStartDay.setHours(0, 0, 0, 0);
+        
+        const eventEndDay = new Date(end);
+        eventEndDay.setHours(0, 0, 0, 0);
 
-        if (eventStartDay < today) {
+        // If event started before the current displayed day, show from beginning of visible hours
+        if (eventStartDay < currentDayStart) {
           startMinutes = dayStartMinutes;
         }
 
-        // If event continues past today, extend to end of visible hours
-        const eventEndDay = new Date(end);
-        eventEndDay.setHours(0, 0, 0, 0);
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
-        if (eventEndDay >= tomorrow) {
+        // If event continues past the current displayed day, extend to end of visible hours
+        const nextDay = new Date(currentDayStart);
+        nextDay.setDate(nextDay.getDate() + 1);
+        
+        if (eventEndDay >= nextDay) {
           endMinutes = dayEndMinutes;
         }
       }
@@ -209,10 +212,39 @@ export default defineComponent({
 
         const otherStart = new Date(otherEvent.spec.startDate);
         const otherEnd = new Date(otherEvent.spec.endDate);
-        const otherStartMinutes =
+        let otherStartMinutes =
           otherStart.getHours() * 60 + otherStart.getMinutes();
-        const otherEndMinutes =
+        let otherEndMinutes =
           otherEnd.getHours() * 60 + otherEnd.getMinutes();
+
+        // Check if other event is multi-day
+        const otherIsMultiDay =
+          otherStart.getDate() !== otherEnd.getDate() ||
+          otherStart.getMonth() !== otherEnd.getMonth() ||
+          otherStart.getFullYear() !== otherEnd.getFullYear();
+
+        // For multi-day events, adjust times based on current displayed day
+        if (otherIsMultiDay) {
+          const currentDayStart = new Date(this.currentDate);
+          currentDayStart.setHours(0, 0, 0, 0);
+          
+          const otherStartDay = new Date(otherStart);
+          otherStartDay.setHours(0, 0, 0, 0);
+          
+          const otherEndDay = new Date(otherEnd);
+          otherEndDay.setHours(0, 0, 0, 0);
+
+          if (otherStartDay < currentDayStart) {
+            otherStartMinutes = dayStartMinutes;
+          }
+
+          const nextDay = new Date(currentDayStart);
+          nextDay.setDate(nextDay.getDate() + 1);
+          
+          if (otherEndDay >= nextDay) {
+            otherEndMinutes = dayEndMinutes;
+          }
+        }
 
         // Check if events overlap
         return startMinutes < otherEndMinutes && endMinutes > otherStartMinutes;

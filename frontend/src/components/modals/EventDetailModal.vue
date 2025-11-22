@@ -3,8 +3,23 @@
     <template #body>
       <div v-if="event">
         <div class="mb-3">
-          <div class="text-sm text-grey-7 text-subtitle2 mb-1">Time</div>
-          <div>
+          <div class="text-sm text-grey-7 text-subtitle2 mb-1">
+            Time
+            <span v-if="isMultiDayEvent(event)" class="multiday-badge ml-2">
+              Multi-day
+            </span>
+          </div>
+          <div v-if="isMultiDayEvent(event)">
+            <div class="time-range">
+              <div>
+                <span class="time-label">Starts:</span> {{ formatDateTime(event.spec.startDate) }}
+              </div>
+              <div>
+                <span class="time-label">Ends:</span> {{ formatDateTime(event.spec.endDate) }}
+              </div>
+            </div>
+          </div>
+          <div v-else>
             {{ formatTime(event.spec.startDate) }} -
             {{ formatTime(event.spec.endDate) }}
           </div>
@@ -256,6 +271,18 @@ export default defineComponent({
     formatTime(dateStr: string): string {
       return format(new Date(dateStr), "h:mm a");
     },
+    formatDateTime(dateStr: string): string {
+      return format(new Date(dateStr), "MMM d, yyyy 'at' h:mm a");
+    },
+    isMultiDayEvent(event: Event): boolean {
+      const start = new Date(event.spec.startDate);
+      const end = new Date(event.spec.endDate);
+      return (
+        start.getDate() !== end.getDate() ||
+        start.getMonth() !== end.getMonth() ||
+        start.getFullYear() !== end.getFullYear()
+      );
+    },
     getLocationName(locationId: string): string {
       const location = this.locationsStore.getLocationById(locationId);
       return location?.meta.name || "Unknown Location";
@@ -484,5 +511,31 @@ export default defineComponent({
   font-size: 0.875rem;
   color: var(--text-secondary);
   font-style: italic;
+}
+
+.multiday-badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  background: var(--primary);
+  color: white;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.time-range {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--surface-secondary);
+  border-radius: var(--radius);
+}
+
+.time-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-right: 0.5rem;
 }
 </style>
