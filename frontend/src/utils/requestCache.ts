@@ -186,15 +186,6 @@ export function resetCacheStats(): void {
 }
 
 /**
- * Debug logging (only in development)
- */
-function logDebug(message: string): void {
-  if (import.meta.env.DEV) {
-    console.log(`[RequestCache] ${message}`);
-  }
-}
-
-/**
  * Expose cache utilities on window in development mode
  */
 if (import.meta.env.DEV) {
