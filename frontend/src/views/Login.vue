@@ -125,8 +125,10 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/authStore";
 import { useToastStore } from "@/stores/toastStore";
 import { useMainStore } from "@/stores";
-import { campersService, storageService } from "@/services";
+import { campersService, campService, storageService } from "@/services";
 import Icon from "@/components/Icon.vue";
+import { isBackendEnabled } from "@/config/dataSource";
+import { Camp } from "@/generated/api";
 
 export default defineComponent({
   name: "Login",
@@ -153,16 +155,19 @@ export default defineComponent({
     };
 
     const loadDataAfterAuth = async () => {
-      // Check if we have data, if not, seed with mock data
-      const existingCampers = await campersService.listCampers();
+      if (isBackendEnabled()) {
+        await loadDataFromBackend();
+      } else {
+        // Check if we have data, if not, seed with mock data
+        const existingCampers = await campersService.listCampers();
 
-      if (existingCampers.length === 0) {
-        // Lazy load mock data only when needed
-        const { mockData } = await import("@/data/mockData");
-        await storageService.seedData(mockData);
+        if (existingCampers.length === 0) {
+          // Lazy load mock data only when needed
+          const { mockData } = await import("@/data/mockData");
+          await storageService.seedData(mockData);
+        }
+        await mainStore.loadAll();
       }
-
-      await mainStore.loadAll();
     };
 
     const handleSubmit = async () => {
@@ -190,11 +195,19 @@ export default defineComponent({
         }
       } catch (error) {
         toastStore.error(
-          error instanceof Error ? error.message : "Authentication failed",
+          error instanceof Error ? error.message : "Authentication failed"
         );
       } finally {
         loading.value = false;
       }
+    };
+
+    const loadDataFromBackend = async () => {
+      const camps: Camp[] = await campService.getCampsApi();
+      if (camps.length) {
+        authStore.setSelectedCamp(camps[0].meta.id);
+      }
+      await mainStore.loadAll();
     };
 
     return {
