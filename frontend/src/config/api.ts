@@ -4,6 +4,20 @@
  */
 
 import { client } from "@/generated/api/client.gen";
+import {
+  generateCacheKey,
+  getCachedResponse,
+  setCachedResponse,
+  invalidateEntityCache,
+  setCurrentToken,
+  clearAllCache,
+} from "@/utils/requestCache";
+import {
+  getEntityTypeFromUrl,
+  getCacheTTL,
+  isCachingEnabled,
+  CACHE_ENABLED,
+} from "@/config/cacheConfig";
 
 /**
  * Get the API base URL from environment variables
@@ -26,6 +40,90 @@ const getAuthToken = (): string | null => {
 };
 
 /**
+ * Create a custom fetch function that checks cache before making requests
+ */
+const createCachedFetch = (originalFetch: typeof fetch): typeof fetch => {
+  return async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    const request = new Request(input, init);
+    const method = request.method;
+    const url = request.url;
+    const token = getAuthToken();
+    
+    // Update cache system with current token (clears cache if token changed)
+    setCurrentToken(token);
+    
+    // Check cache for GET requests BEFORE making the network request
+    if (CACHE_ENABLED && method === 'GET') {
+      const entityType = getEntityTypeFromUrl(url);
+      
+      if (entityType && isCachingEnabled(entityType)) {
+        const cacheKey = generateCacheKey(method, url, token);
+        const cachedData = getCachedResponse(cacheKey);
+
+        if (cachedData !== null) {
+          // Cache hit! Return cached data WITHOUT making network request
+          if (import.meta.env.DEV) {
+            console.log(`[Cache] 🎯 Cache HIT - no network request made for ${entityType}`);
+          }
+          
+          return new Response(JSON.stringify(cachedData), {
+            status: 200,
+            statusText: 'OK (Cached)',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Cache': 'HIT',
+            },
+          });
+        }
+      }
+    }
+    
+    // Cache miss or non-cacheable - proceed with network request
+    const response = await originalFetch(request);
+    
+    // Handle successful GET responses - cache them
+    if (response.ok && method === 'GET' && CACHE_ENABLED) {
+      const entityType = getEntityTypeFromUrl(url);
+      
+      if (entityType && isCachingEnabled(entityType)) {
+        try {
+          const clonedResponse = response.clone();
+          const data = await clonedResponse.json();
+          const cacheKey = generateCacheKey(method, url, token);
+          const ttl = getCacheTTL(entityType);
+          setCachedResponse(cacheKey, data, ttl);
+        } catch (error) {
+          // If parsing fails, don't cache (might be non-JSON response)
+          if (import.meta.env.DEV) {
+            console.debug('[Cache] Could not cache response:', error);
+          }
+        }
+      }
+    }
+    
+    // Handle mutations - invalidate related cache
+    if (response.ok && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+      const entityType = getEntityTypeFromUrl(url);
+      
+      if (entityType) {
+        invalidateEntityCache(entityType);
+        
+        if (import.meta.env.DEV) {
+          console.log(`[Cache] 🔄 Invalidated cache for ${entityType} due to ${method} request`);
+        }
+      }
+    }
+    
+    // Handle 401 errors
+    if (response.status === 401) {
+      console.warn("[API] Received 401 Unauthorized - token may be expired");
+    }
+    
+    return response;
+  };
+};
+
+/**
  * Configure the API client with the base URL and other common settings
  */
 export function initializeApiClient(): void {
@@ -33,8 +131,13 @@ export function initializeApiClient(): void {
 
   console.log(`[API Config] Initializing API client with base URL: ${baseUrl}`);
 
+  // Create cached fetch wrapper
+  const cachedFetch = createCachedFetch(globalThis.fetch);
+
   client.setConfig({
     baseUrl,
+    // Use our custom cached fetch function
+    fetch: cachedFetch,
     // Add common headers or other configuration here
     headers: {
       "Content-Type": "application/json",
@@ -48,16 +151,6 @@ export function initializeApiClient(): void {
       request.headers.set("Authorization", `Bearer ${token}`);
     }
     return request;
-  });
-
-  // Optional: Add response interceptor to handle 401 errors
-  client.interceptors.response.use((response) => {
-    if (response.status === 401) {
-      // Token might be expired or invalid
-      console.warn("[API] Received 401 Unauthorized - token may be expired");
-      // You could dispatch a logout action here if needed
-    }
-    return response;
   });
 }
 
@@ -80,6 +173,8 @@ export function getApiUrl(): string {
  */
 export function setAuthToken(token: string): void {
   localStorage.setItem("auth_token", token);
+  // Update cache system with new token (this will clear cache if token changed)
+  setCurrentToken(token);
 }
 
 /**
@@ -88,4 +183,7 @@ export function setAuthToken(token: string): void {
  */
 export function clearAuthToken(): void {
   localStorage.removeItem("auth_token");
+  // Clear all cache on logout to prevent data leakage
+  setCurrentToken(null);
+  clearAllCache();
 }

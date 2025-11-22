@@ -100,6 +100,9 @@ export default defineComponent({
       searchQuery: "" as string,
     };
   },
+  created() {
+    this.colorsStore.loadColors();
+  },
   computed: {
     filteredColors(): Color[] {
       let filtered = this.colorsStore.colors;

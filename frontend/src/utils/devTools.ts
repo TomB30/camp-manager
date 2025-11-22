@@ -1,6 +1,12 @@
 import { storageService, STORAGE_KEYS } from "@/services";
 import { useMainStore } from "@/stores";
 import { isBackendEnabled, setBackendEnabled, getDataSourceMode } from "@/config/dataSource";
+import {
+  getCacheStats,
+  clearAllCache,
+  resetCacheStats,
+  invalidateEntityCache,
+} from "@/utils/requestCache";
 
 /**
  * Development Tools - Functions exposed to browser console for easy data management
@@ -118,6 +124,54 @@ To switch modes, use:
   return modeDisplay;
 }
 
+/**
+ * Get request cache statistics
+ */
+export function getCacheInfo(): void {
+  const stats = getCacheStats();
+  const hitRate = stats.hits + stats.misses > 0 
+    ? ((stats.hits / (stats.hits + stats.misses)) * 100).toFixed(2)
+    : '0';
+  
+  console.log(`
+📊 Request Cache Statistics
+  
+Cache Size: ${stats.size} entries
+Hits:       ${stats.hits}
+Misses:     ${stats.misses}
+Hit Rate:   ${hitRate}%
+Invalidations: ${stats.invalidations}
+
+Recent Cache Keys:
+${stats.entries.slice(0, 10).map((key, idx) => `  ${idx + 1}. ${key.substring(0, 80)}...`).join('\n')}
+${stats.entries.length > 10 ? `  ... and ${stats.entries.length - 10} more` : ''}
+
+Use devTools.clearCache() to clear all cached requests
+Use devTools.invalidateCache('entityType') to clear cache for a specific entity
+  `);
+}
+
+/**
+ * Clear request cache
+ */
+export function clearCache(): void {
+  clearAllCache();
+}
+
+/**
+ * Reset cache statistics
+ */
+export function resetCacheInfo(): void {
+  resetCacheStats();
+}
+
+/**
+ * Invalidate cache for a specific entity type
+ */
+export function invalidateCache(entityType: string): void {
+  invalidateEntityCache(entityType);
+}
+
 // Expose functions to window object for console access
 if (typeof window !== "undefined") {
   (window as any).devTools = {
@@ -126,6 +180,10 @@ if (typeof window !== "undefined") {
     resetData,
     toggleBackendMode,
     getDataSource,
+    getCacheInfo,
+    clearCache,
+    resetCacheInfo,
+    invalidateCache,
   };
 
   const currentMode = getDataSourceMode();
@@ -136,15 +194,26 @@ if (typeof window !== "undefined") {
 📊 Current Data Source: ${modeDisplay}
     
 Available commands:
-  devTools.clearData()         - Clear all data from localStorage
-  devTools.insertMockData()    - Insert fresh mock data
-  devTools.resetData()         - Clear and re-insert mock data (recommended)
-  devTools.toggleBackendMode() - Switch modes (⚠️  logs you out!)
-  devTools.getDataSource()     - Check current data source mode
+  
+  Data Management:
+    devTools.clearData()         - Clear all data from localStorage
+    devTools.insertMockData()    - Insert fresh mock data
+    devTools.resetData()         - Clear and re-insert mock data (recommended)
+  
+  Data Source:
+    devTools.toggleBackendMode() - Switch modes (⚠️  logs you out!)
+    devTools.getDataSource()     - Check current data source mode
+  
+  Request Cache:
+    devTools.getCacheInfo()      - View cache statistics and entries
+    devTools.clearCache()        - Clear all cached requests
+    devTools.resetCacheInfo()    - Reset cache statistics counters
+    devTools.invalidateCache(entityType) - Clear cache for specific entity
 
 Example usage:
   await devTools.resetData()
   devTools.toggleBackendMode()  // Note: This will logout and reload
+  devTools.getCacheInfo()       // View cache stats
 
 ⚠️  Important: Switching modes logs you out since backend and localStorage
    use different users and tokens. You'll need to login again after switching.
