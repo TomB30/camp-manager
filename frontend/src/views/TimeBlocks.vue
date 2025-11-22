@@ -199,7 +199,7 @@ export default defineComponent({
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         return timeBlocks.filter((timeBlock: TimeBlock) =>
-          timeBlock.meta.name.toLowerCase().includes(query)
+          timeBlock.meta.name.toLowerCase().includes(query),
         );
       }
 

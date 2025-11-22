@@ -2,161 +2,165 @@
   <div class="activity-locations-tab view">
     <LoadingState v-if="loading" message="Loading locations..." />
     <template v-else>
-    <TabHeader
-      title="Locations"
-      description="Manage all locations where camp programs and events take place."
-      action-text="Location"
-      @action="showModal = true"
-    />
-
-    <!-- Search and Filters -->
-    <FilterBar
-      v-model:searchQuery="searchQuery"
-      v-model:filter-area="filterArea"
-      :filters="locationFilters"
-      :filtered-count="filteredLocations.length"
-      search-placeholder="Search by location name..."
-      :total-count="locationsStore.locations.length"
-      @clear="clearFilters"
-    >
-      <template #prepend>
-        <ViewToggle v-model="viewMode" />
-      </template>
-    </FilterBar>
-
-    <!-- Empty State -->
-    <EmptyState
-      v-if="locationsStore.locations.length === 0"
-      icon-name="MapPin"
-      title="No locations configured"
-      message="Add your first location to start organizing your camp spaces."
-      action-text="Location"
-      @action="showModal = true"
-    />
-
-    <!-- Grid View -->
-    <transition-group
-      v-else-if="viewMode === 'grid'"
-      name="list"
-      tag="div"
-      class="locations-grid transition-wrapper"
-    >
-      <LocationCard
-        v-for="location in filteredLocations"
-        :key="location.meta.id"
-        :location="location"
-        @click="selectLocation(location.meta.id)"
+      <TabHeader
+        title="Locations"
+        description="Manage all locations where camp programs and events take place."
+        action-text="Location"
+        @action="showModal = true"
       />
-    </transition-group>
 
-    <!-- Table View -->
-    <DataTable
-      v-else
-      :columns="locationColumns"
-      :data="filteredLocations"
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
-      row-key="id"
-    >
-      <template #cell-name="{ item }">
-        <div class="location-name-content">
-          <div class="location-icon-sm" :style="{ background: '#3b82f6' }">
-            <Icon name="MapPin" :size="18" :stroke-width="2" />
+      <!-- Search and Filters -->
+      <FilterBar
+        v-model:searchQuery="searchQuery"
+        v-model:filter-area="filterArea"
+        :filters="locationFilters"
+        :filtered-count="filteredLocations.length"
+        search-placeholder="Search by location name..."
+        :total-count="locationsStore.locations.length"
+        @clear="clearFilters"
+      >
+        <template #prepend>
+          <ViewToggle v-model="viewMode" />
+        </template>
+      </FilterBar>
+
+      <!-- Empty State -->
+      <EmptyState
+        v-if="locationsStore.locations.length === 0"
+        icon-name="MapPin"
+        title="No locations configured"
+        message="Add your first location to start organizing your camp spaces."
+        action-text="Location"
+        @action="showModal = true"
+      />
+
+      <!-- Grid View -->
+      <transition-group
+        v-else-if="viewMode === 'grid'"
+        name="list"
+        tag="div"
+        class="locations-grid transition-wrapper"
+      >
+        <LocationCard
+          v-for="location in filteredLocations"
+          :key="location.meta.id"
+          :location="location"
+          @click="selectLocation(location.meta.id)"
+        />
+      </transition-group>
+
+      <!-- Table View -->
+      <DataTable
+        v-else
+        :columns="locationColumns"
+        :data="filteredLocations"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="location-name-content">
+            <div class="location-icon-sm" :style="{ background: '#3b82f6' }">
+              <Icon name="MapPin" :size="18" :stroke-width="2" />
+            </div>
+            <div class="location-name">{{ item.meta.name }}</div>
           </div>
-          <div class="location-name">{{ item.meta.name }}</div>
-        </div>
-      </template>
+        </template>
 
-      <template #cell-location="{ item }">
-        <span v-if="item.spec.areaId">
-          {{ areasStore.getAreaById(item.spec.areaId)?.meta.name || "Unknown" }}
-        </span>
-        <span v-else class="text-caption">No area</span>
-      </template>
+        <template #cell-location="{ item }">
+          <span v-if="item.spec.areaId">
+            {{
+              areasStore.getAreaById(item.spec.areaId)?.meta.name || "Unknown"
+            }}
+          </span>
+          <span v-else class="text-caption">No area</span>
+        </template>
 
-      <template #cell-equipment="{ item }">
-        <span
-          v-if="item.spec.equipment && item.spec.equipment.length > 0"
-          class="badge badge-success badge-sm"
-        >
-          {{ item.spec.equipment.length }} item(s)
-        </span>
-        <span v-else class="text-caption">None</span>
-      </template>
-
-      <template #cell-usage="{ item }">
-        <div class="usage-indicator">
-          <div class="usage-bar-sm">
-            <div
-              class="usage-fill-sm"
-              :style="{
-                width: `${getLocationUsage(item.meta.id)}%`,
-                background:
-                  getLocationUsage(item.meta.id) > 80
-                    ? 'var(--error-color)'
-                    : 'var(--success-color)',
-              }"
-            ></div>
-          </div>
-          <span class="usage-text"
-            >{{ getLocationUsage(item.meta.id).toFixed(0) }}%</span
+        <template #cell-equipment="{ item }">
+          <span
+            v-if="item.spec.equipment && item.spec.equipment.length > 0"
+            class="badge badge-success badge-sm"
           >
-        </div>
-      </template>
+            {{ item.spec.equipment.length }} item(s)
+          </span>
+          <span v-else class="text-caption">None</span>
+        </template>
 
-      <template #cell-events="{ item }">
-        <span class="event-count">{{
-          getLocationEvents(item.meta.id).length
-        }}</span>
-      </template>
+        <template #cell-usage="{ item }">
+          <div class="usage-indicator">
+            <div class="usage-bar-sm">
+              <div
+                class="usage-fill-sm"
+                :style="{
+                  width: `${getLocationUsage(item.meta.id)}%`,
+                  background:
+                    getLocationUsage(item.meta.id) > 80
+                      ? 'var(--error-color)'
+                      : 'var(--success-color)',
+                }"
+              ></div>
+            </div>
+            <span class="usage-text"
+              >{{ getLocationUsage(item.meta.id).toFixed(0) }}%</span
+            >
+          </div>
+        </template>
 
-      <template #cell-actions="{ item }">
-        <BaseButton
-          outline
-          color="grey-8"
-          size="sm"
-          @click="selectLocation(item.meta.id)"
-          label="View Details"
-        />
-      </template>
-    </DataTable>
+        <template #cell-events="{ item }">
+          <span class="event-count">{{
+            getLocationEvents(item.meta.id).length
+          }}</span>
+        </template>
 
-    <!-- Location Detail Modal -->
-    <LocationDetailModal
-      v-if="!!selectedLocationId"
-      :location="selectedLocation"
-      @close="selectedLocationId = null"
-      @edit="editLocation"
-      @delete="deleteLocationConfirm"
-    >
-      <template #events-list>
-        <EventsByDate
-          :events="
-            selectedLocation ? getLocationEvents(selectedLocation.meta.id) : []
-          "
-          :show-enrollment="true"
-          empty-message="No events scheduled"
-        />
-      </template>
-    </LocationDetailModal>
+        <template #cell-actions="{ item }">
+          <BaseButton
+            outline
+            color="grey-8"
+            size="sm"
+            @click="selectLocation(item.meta.id)"
+            label="View Details"
+          />
+        </template>
+      </DataTable>
 
-    <!-- Add/Edit Location Modal -->
-    <LocationFormModal
-      v-if="showModal"
-      :location-id="editingLocationId || undefined"
-      @close="closeModal"
-    />
+      <!-- Location Detail Modal -->
+      <LocationDetailModal
+        v-if="!!selectedLocationId"
+        :location="selectedLocation"
+        @close="selectedLocationId = null"
+        @edit="editLocation"
+        @delete="deleteLocationConfirm"
+      >
+        <template #events-list>
+          <EventsByDate
+            :events="
+              selectedLocation
+                ? getLocationEvents(selectedLocation.meta.id)
+                : []
+            "
+            :show-enrollment="true"
+            empty-message="No events scheduled"
+          />
+        </template>
+      </LocationDetailModal>
 
-    <!-- Confirm Delete Modal -->
-    <ConfirmModal
-      v-if="showConfirmModal"
-      title="Delete Location"
-      message="Are you sure you want to delete this location?"
-      confirm-text="Delete"
-      :danger-mode="true"
-      @confirm="handleConfirmAction"
-      @cancel="handleCancelConfirm"
-    />
+      <!-- Add/Edit Location Modal -->
+      <LocationFormModal
+        v-if="showModal"
+        :location-id="editingLocationId || undefined"
+        @close="closeModal"
+      />
+
+      <!-- Confirm Delete Modal -->
+      <ConfirmModal
+        v-if="showConfirmModal"
+        title="Delete Location"
+        message="Are you sure you want to delete this location?"
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleConfirmAction"
+        @cancel="handleCancelConfirm"
+      />
     </template>
   </div>
 </template>

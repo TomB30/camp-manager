@@ -2,132 +2,132 @@
   <div class="cabins-tab view">
     <LoadingState v-if="loading" message="Loading housing..." />
     <template v-else>
-    <TabHeader
-      title="Housing"
-      description="Manage all sleeping accommodations where campers and family groups will stay during their time at camp."
-      action-text="Room"
-      @action="showModal = true"
-    />
-
-    <!-- Search and Filters -->
-    <FilterBar
-      v-model:searchQuery="searchQuery"
-      :filtered-count="filteredRooms.length"
-      :total-count="housingRoomsStore.housingRooms.length"
-      @clear="clearFilters"
-    >
-      <template #prepend>
-        <ViewToggle v-model="viewMode" />
-      </template>
-    </FilterBar>
-
-    <!-- Empty State -->
-    <EmptyState
-      v-if="housingRoomsStore.housingRooms.length === 0"
-      icon-name="Bed"
-      title="No housing configured"
-      message="Add your first room to start managing sleeping accommodations for campers."
-      action-text="Room"
-      @action="showModal = true"
-    />
-
-    <!-- Grid View -->
-    <transition-group
-      v-else-if="viewMode === 'grid'"
-      name="list"
-      tag="div"
-      class="rooms-grid transition-wrapper"
-    >
-      <HousingRoomCard
-        v-for="room in filteredRooms"
-        :key="room.meta.id"
-        :room="room"
-        :groups="getGroupsForRoom(room.meta.id)"
-        @click="selectRoom(room.meta.id)"
+      <TabHeader
+        title="Housing"
+        description="Manage all sleeping accommodations where campers and family groups will stay during their time at camp."
+        action-text="Room"
+        @action="showModal = true"
       />
-    </transition-group>
 
-    <!-- Table View -->
-    <DataTable
-      v-else
-      :columns="roomColumns"
-      :data="filteredRooms"
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
-      row-key="id"
-    >
-      <template #cell-name="{ item }">
-        <div class="cabin-name-content">
-          <div class="cabin-icon-sm">
-            <Icon name="Bed" :size="18" :stroke-width="2" />
-          </div>
-          <div class="cabin-name">{{ item.meta.name }}</div>
-        </div>
-      </template>
+      <!-- Search and Filters -->
+      <FilterBar
+        v-model:searchQuery="searchQuery"
+        :filtered-count="filteredRooms.length"
+        :total-count="housingRoomsStore.housingRooms.length"
+        @clear="clearFilters"
+      >
+        <template #prepend>
+          <ViewToggle v-model="viewMode" />
+        </template>
+      </FilterBar>
 
-      <template #cell-beds="{ item }">
-        <span class="badge badge-primary badge-sm">{{ item.beds }} beds</span>
-      </template>
+      <!-- Empty State -->
+      <EmptyState
+        v-if="housingRoomsStore.housingRooms.length === 0"
+        icon-name="Bed"
+        title="No housing configured"
+        message="Add your first room to start managing sleeping accommodations for campers."
+        action-text="Room"
+        @action="showModal = true"
+      />
 
-      <template #cell-location="{ item }">
-        <span v-if="item.areaId">
-          {{ areasStore.getAreaById(item.areaId)?.meta.name || "Unknown" }}
-        </span>
-        <span v-else>—</span>
-      </template>
-
-      <template #cell-groups="{ item }">
-        <div
-          v-if="getGroupsForRoom(item.meta.id).length > 0"
-          class="flex gap-1 flex-wrap"
-        >
-          <span
-            v-for="group in getGroupsForRoom(item.meta.id)"
-            :key="group.meta.id"
-            class="badge badge-success badge-sm"
-          >
-            {{ group.meta.name }}
-          </span>
-        </div>
-        <span v-else class="text-caption">None</span>
-      </template>
-
-      <template #cell-actions="{ item }">
-        <BaseButton
-          outline
-          color="grey-8"
-          size="sm"
-          @click="selectRoom(item.meta.id)"
-          label="View Details"
+      <!-- Grid View -->
+      <transition-group
+        v-else-if="viewMode === 'grid'"
+        name="list"
+        tag="div"
+        class="rooms-grid transition-wrapper"
+      >
+        <HousingRoomCard
+          v-for="room in filteredRooms"
+          :key="room.meta.id"
+          :room="room"
+          :groups="getGroupsForRoom(room.meta.id)"
+          @click="selectRoom(room.meta.id)"
         />
-      </template>
-    </DataTable>
+      </transition-group>
 
-    <HousingRoomDetailModal
-      v-if="!!selectedRoomId"
-      :room="selectedRoom"
-      :groups="selectedRoomGroups"
-      @close="selectedRoomId = null"
-      @edit="editRoom"
-      @delete="deleteRoomConfirm"
-      @view-group="viewGroup"
-    />
+      <!-- Table View -->
+      <DataTable
+        v-else
+        :columns="roomColumns"
+        :data="filteredRooms"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="cabin-name-content">
+            <div class="cabin-icon-sm">
+              <Icon name="Bed" :size="18" :stroke-width="2" />
+            </div>
+            <div class="cabin-name">{{ item.meta.name }}</div>
+          </div>
+        </template>
 
-    <HousingRoomFormModal
-      v-if="showModal"
-      :room-id="editingRoomId || undefined"
-      @close="closeModal"
-    />
-    <ConfirmModal
-      v-if="showConfirmModal"
-      :title="confirmModalTitle"
-      :message="confirmModalMessage"
-      :details="confirmModalDetails"
-      confirm-text="Delete"
-      :danger-mode="true"
-      @confirm="handleConfirmAction"
-      @cancel="handleCancelConfirm"
-    />
+        <template #cell-beds="{ item }">
+          <span class="badge badge-primary badge-sm">{{ item.beds }} beds</span>
+        </template>
+
+        <template #cell-location="{ item }">
+          <span v-if="item.areaId">
+            {{ areasStore.getAreaById(item.areaId)?.meta.name || "Unknown" }}
+          </span>
+          <span v-else>—</span>
+        </template>
+
+        <template #cell-groups="{ item }">
+          <div
+            v-if="getGroupsForRoom(item.meta.id).length > 0"
+            class="flex gap-1 flex-wrap"
+          >
+            <span
+              v-for="group in getGroupsForRoom(item.meta.id)"
+              :key="group.meta.id"
+              class="badge badge-success badge-sm"
+            >
+              {{ group.meta.name }}
+            </span>
+          </div>
+          <span v-else class="text-caption">None</span>
+        </template>
+
+        <template #cell-actions="{ item }">
+          <BaseButton
+            outline
+            color="grey-8"
+            size="sm"
+            @click="selectRoom(item.meta.id)"
+            label="View Details"
+          />
+        </template>
+      </DataTable>
+
+      <HousingRoomDetailModal
+        v-if="!!selectedRoomId"
+        :room="selectedRoom"
+        :groups="selectedRoomGroups"
+        @close="selectedRoomId = null"
+        @edit="editRoom"
+        @delete="deleteRoomConfirm"
+        @view-group="viewGroup"
+      />
+
+      <HousingRoomFormModal
+        v-if="showModal"
+        :room-id="editingRoomId || undefined"
+        @close="closeModal"
+      />
+      <ConfirmModal
+        v-if="showConfirmModal"
+        :title="confirmModalTitle"
+        :message="confirmModalMessage"
+        :details="confirmModalDetails"
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleConfirmAction"
+        @cancel="handleCancelConfirm"
+      />
     </template>
   </div>
 </template>

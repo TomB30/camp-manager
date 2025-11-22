@@ -182,7 +182,7 @@ export default defineComponent({
         filtered = filtered.filter(
           (role) =>
             role.meta.name.toLowerCase().includes(query) ||
-            role.meta.description?.toLowerCase().includes(query)
+            role.meta.description?.toLowerCase().includes(query),
         );
       }
 

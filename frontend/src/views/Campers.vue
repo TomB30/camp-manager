@@ -2,149 +2,151 @@
   <div class="view">
     <LoadingState v-if="loading" message="Loading campers..." />
     <template v-else>
-    <TabHeader
-      title="Campers"
-      description="Manage your campers and their registrations, allergies, and sessions."
-      action-text="Camper"
-      @action="showModal = true"
-    />
-
-    <FilterBar
-      v-model:searchQuery="searchQuery"
-      v-model:filter-gender="filterGender"
-      v-model:filter-age="filterAge"
-      v-model:filter-session="filterSession"
-      :filters="campersFilters"
-      :filtered-count="filteredCampers.length"
-      :total-count="campersStore.campers.length"
-      @clear="clearFilters"
-    >
-      <template #prepend>
-        <ViewToggle v-model="viewMode" />
-      </template>
-    </FilterBar>
-
-    <TransitionGroup
-      v-if="viewMode === 'grid'"
-      name="list"
-      tag="div"
-      class="campers-grid"
-    >
-      <CamperCard
-        v-for="camper in filteredCampers"
-        :key="camper.meta.id"
-        :camper="camper"
-        :formatted-gender="formatGender(camper.spec.gender)"
-        :session-name="getSessionName(camper.spec.sessionId)"
-        @click="selectCamper(camper.meta.id)"
-      />
-
-      <EmptyState
-        v-if="filteredCampers.length === 0 && campersStore.campers.length === 0"
-        type="empty"
-        title="No Campers Yet"
-        message="Add your first camper to start managing registrations and camp activities."
+      <TabHeader
+        title="Campers"
+        description="Manage your campers and their registrations, allergies, and sessions."
         action-text="Camper"
         @action="showModal = true"
-        icon-name="UsersRound"
       />
 
-      <EmptyState
-        v-if="filteredCampers.length === 0 && campersStore.campers.length > 0"
-        type="no-results"
-        title="No Campers Found"
-        message="No campers match your current filters. Try adjusting your search criteria."
-        action-text="Clear Filters"
-        no-action-icon
-        action-button-class="btn-secondary"
-        @action="clearFilters"
-        icon-name="UsersRound"
-      />
-    </TransitionGroup>
+      <FilterBar
+        v-model:searchQuery="searchQuery"
+        v-model:filter-gender="filterGender"
+        v-model:filter-age="filterAge"
+        v-model:filter-session="filterSession"
+        :filters="campersFilters"
+        :filtered-count="filteredCampers.length"
+        :total-count="campersStore.campers.length"
+        @clear="clearFilters"
+      >
+        <template #prepend>
+          <ViewToggle v-model="viewMode" />
+        </template>
+      </FilterBar>
 
-    <DataTable
-      v-if="viewMode === 'table'"
-      :columns="camperColumns"
-      :data="filteredCampers"
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
-      row-key="id"
-    >
-      <template #cell-name="{ item }">
-        <div class="camper-name-content">
-          <AvatarInitials
-            :first-name="item.spec.firstName"
-            :last-name="item.spec.lastName"
-            size="sm"
-          />
-          <div class="camper-fullname">
-            {{ item.spec.firstName }} {{ item.spec.lastName }}
-          </div>
-        </div>
-      </template>
-
-      <template #cell-age="{ item }">
-        {{ calculateAge(item.spec.birthday) }}
-      </template>
-
-      <template #cell-gender="{ item }">
-        <span class="badge badge-primary badge-sm">{{
-          formatGender(item.spec.gender)
-        }}</span>
-      </template>
-
-      <template #cell-session="{ item }">
-        <span v-if="item.sessionId" class="badge badge-info badge-sm">
-          {{ getSessionName(item.sessionId) }}
-        </span>
-        <span v-else class="text-secondary">Not registered</span>
-      </template>
-
-      <template #cell-allergies="{ item }">
-        <span
-          v-if="item.allergies && item.allergies.length > 0"
-          class="badge badge-warning badge-sm"
-        >
-          {{ item.allergies.length }} allergy(ies)
-        </span>
-        <span v-else class="text-caption">None</span>
-      </template>
-
-      <template #cell-actions="{ item }">
-        <BaseButton
-          outline
-          color="grey-8"
-          size="sm"
-          @click="selectCamper(item.meta.id)"
-          label="View Details"
+      <TransitionGroup
+        v-if="viewMode === 'grid'"
+        name="list"
+        tag="div"
+        class="campers-grid"
+      >
+        <CamperCard
+          v-for="camper in filteredCampers"
+          :key="camper.meta.id"
+          :camper="camper"
+          :formatted-gender="formatGender(camper.spec.gender)"
+          :session-name="getSessionName(camper.spec.sessionId)"
+          @click="selectCamper(camper.meta.id)"
         />
-      </template>
-    </DataTable>
 
-    <CamperDetailModal
-      v-if="!!selectedCamperId"
-      :camper="selectedCamper"
-      @close="selectedCamperId = null"
-      @edit="editCamper"
-      @delete="deleteCamperConfirm"
-    />
+        <EmptyState
+          v-if="
+            filteredCampers.length === 0 && campersStore.campers.length === 0
+          "
+          type="empty"
+          title="No Campers Yet"
+          message="Add your first camper to start managing registrations and camp activities."
+          action-text="Camper"
+          @action="showModal = true"
+          icon-name="UsersRound"
+        />
 
-    <CamperFormModal
-      v-if="showModal"
-      :camper-id="editingCamperId || undefined"
-      @close="closeModal"
-    />
+        <EmptyState
+          v-if="filteredCampers.length === 0 && campersStore.campers.length > 0"
+          type="no-results"
+          title="No Campers Found"
+          message="No campers match your current filters. Try adjusting your search criteria."
+          action-text="Clear Filters"
+          no-action-icon
+          action-button-class="btn-secondary"
+          @action="clearFilters"
+          icon-name="UsersRound"
+        />
+      </TransitionGroup>
 
-    <ConfirmModal
-      v-if="showConfirmModal"
-      title="Delete Camper"
-      :message="`Are you sure you want to delete ${camperToDelete?.name}?`"
-      details="This action cannot be undone. The camper will be removed from all events and their housing assignment."
-      confirm-text="Delete"
-      :danger-mode="true"
-      @confirm="handleConfirmDelete"
-      @cancel="handleCancelDelete"
-    />
+      <DataTable
+        v-if="viewMode === 'table'"
+        :columns="camperColumns"
+        :data="filteredCampers"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="camper-name-content">
+            <AvatarInitials
+              :first-name="item.spec.firstName"
+              :last-name="item.spec.lastName"
+              size="sm"
+            />
+            <div class="camper-fullname">
+              {{ item.spec.firstName }} {{ item.spec.lastName }}
+            </div>
+          </div>
+        </template>
+
+        <template #cell-age="{ item }">
+          {{ calculateAge(item.spec.birthday) }}
+        </template>
+
+        <template #cell-gender="{ item }">
+          <span class="badge badge-primary badge-sm">{{
+            formatGender(item.spec.gender)
+          }}</span>
+        </template>
+
+        <template #cell-session="{ item }">
+          <span v-if="item.sessionId" class="badge badge-info badge-sm">
+            {{ getSessionName(item.sessionId) }}
+          </span>
+          <span v-else class="text-secondary">Not registered</span>
+        </template>
+
+        <template #cell-allergies="{ item }">
+          <span
+            v-if="item.allergies && item.allergies.length > 0"
+            class="badge badge-warning badge-sm"
+          >
+            {{ item.allergies.length }} allergy(ies)
+          </span>
+          <span v-else class="text-caption">None</span>
+        </template>
+
+        <template #cell-actions="{ item }">
+          <BaseButton
+            outline
+            color="grey-8"
+            size="sm"
+            @click="selectCamper(item.meta.id)"
+            label="View Details"
+          />
+        </template>
+      </DataTable>
+
+      <CamperDetailModal
+        v-if="!!selectedCamperId"
+        :camper="selectedCamper"
+        @close="selectedCamperId = null"
+        @edit="editCamper"
+        @delete="deleteCamperConfirm"
+      />
+
+      <CamperFormModal
+        v-if="showModal"
+        :camper-id="editingCamperId || undefined"
+        @close="closeModal"
+      />
+
+      <ConfirmModal
+        v-if="showConfirmModal"
+        title="Delete Camper"
+        :message="`Are you sure you want to delete ${camperToDelete?.name}?`"
+        details="This action cannot be undone. The camper will be removed from all events and their housing assignment."
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleConfirmDelete"
+        @cancel="handleCancelDelete"
+      />
     </template>
   </div>
 </template>

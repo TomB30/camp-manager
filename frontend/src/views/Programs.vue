@@ -2,213 +2,214 @@
   <div class="view">
     <LoadingState v-if="loading" message="Loading programs..." />
     <template v-else>
-    <!-- Breadcrumb Navigation (only show when inside a program) -->
-    <nav v-if="selectedProgramId" class="breadcrumbs">
-      <button class="breadcrumb-item" @click="selectedProgramId = null">
-        Programs
-      </button>
-      <span class="breadcrumb-separator">/</span>
-      <span class="breadcrumb-item active">
-        {{ selectedProgram?.meta.name }}
-      </span>
-    </nav>
+      <!-- Breadcrumb Navigation (only show when inside a program) -->
+      <nav v-if="selectedProgramId" class="breadcrumbs">
+        <button class="breadcrumb-item" @click="selectedProgramId = null">
+          Programs
+        </button>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-item active">
+          {{ selectedProgram?.meta.name }}
+        </span>
+      </nav>
 
-    <!-- Programs List View -->
-    <div v-if="!selectedProgramId">
-      <TabHeader
-        title="Programs"
-        description="Programs are collections of activities, staff members, and locations. Create programs to organize your camp's offerings like 'Watersports', 'Arts & Crafts', or 'Adventure Sports'."
-        action-text="Program"
-        @action="showProgramModal = true"
-      />
-      <!-- Search and Filters -->
-      <FilterBar
-        v-model:searchQuery="searchQuery"
-        :filtered-count="filteredPrograms.length"
-        :total-count="programsStore.programs.length"
-        search-placeholder="Search programs..."
-        @clear="clearFilters"
-      >
-        <template #prepend>
-          <ViewToggle v-model="viewMode" />
-        </template>
-      </FilterBar>
-
-      <!-- Grid View -->
-      <TransitionGroup
-        v-if="viewMode === 'grid'"
-        name="list"
-        tag="div"
-        class="programs-grid"
-      >
-        <ProgramCard
-          v-for="program in filteredPrograms"
-          :key="program.meta.id"
-          :program="program"
-          @click="selectProgram(program.meta.id)"
-        />
-
-        <EmptyState
-          v-if="
-            filteredPrograms.length === 0 && programsStore.programs.length === 0
-          "
-          type="empty"
-          title="No Programs Yet"
-          message="Create your first program to organize activities, staff, and locations."
+      <!-- Programs List View -->
+      <div v-if="!selectedProgramId">
+        <TabHeader
+          title="Programs"
+          description="Programs are collections of activities, staff members, and locations. Create programs to organize your camp's offerings like 'Watersports', 'Arts & Crafts', or 'Adventure Sports'."
           action-text="Program"
-          icon-name="Boxes"
           @action="showProgramModal = true"
         />
+        <!-- Search and Filters -->
+        <FilterBar
+          v-model:searchQuery="searchQuery"
+          :filtered-count="filteredPrograms.length"
+          :total-count="programsStore.programs.length"
+          search-placeholder="Search programs..."
+          @clear="clearFilters"
+        >
+          <template #prepend>
+            <ViewToggle v-model="viewMode" />
+          </template>
+        </FilterBar>
 
-        <EmptyState
-          v-if="
-            filteredPrograms.length === 0 && programsStore.programs.length > 0
-          "
-          type="no-results"
-          title="No Programs Found"
-          message="No programs match your search query."
-          action-text="Clear Filters"
-          action-button-class="btn-secondary"
-          @action="clearFilters"
-          icon-name="Boxes"
-          hide-action-icon
-        />
-      </TransitionGroup>
+        <!-- Grid View -->
+        <TransitionGroup
+          v-if="viewMode === 'grid'"
+          name="list"
+          tag="div"
+          class="programs-grid"
+        >
+          <ProgramCard
+            v-for="program in filteredPrograms"
+            :key="program.meta.id"
+            :program="program"
+            @click="selectProgram(program.meta.id)"
+          />
 
-      <!-- Table View -->
-      <DataTable
-        v-if="viewMode === 'table'"
-        :columns="programColumns"
-        :data="filteredPrograms"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
+          <EmptyState
+            v-if="
+              filteredPrograms.length === 0 &&
+              programsStore.programs.length === 0
+            "
+            type="empty"
+            title="No Programs Yet"
+            message="Create your first program to organize activities, staff, and locations."
+            action-text="Program"
+            icon-name="Boxes"
+            @action="showProgramModal = true"
+          />
+
+          <EmptyState
+            v-if="
+              filteredPrograms.length === 0 && programsStore.programs.length > 0
+            "
+            type="no-results"
+            title="No Programs Found"
+            message="No programs match your search query."
+            action-text="Clear Filters"
+            action-button-class="btn-secondary"
+            @action="clearFilters"
+            icon-name="Boxes"
+            hide-action-icon
+          />
+        </TransitionGroup>
+
+        <!-- Table View -->
+        <DataTable
+          v-if="viewMode === 'table'"
+          :columns="programColumns"
+          :data="filteredPrograms"
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          row-key="id"
+        >
+          <template #cell-name="{ item }">
+            <div class="program-name-content">
+              <div
+                class="color-indicator"
+                :style="{ background: getProgramColor(item) }"
+              ></div>
+              <div class="program-name-text">{{ item.meta.name }}</div>
+            </div>
+          </template>
+
+          <template #cell-description="{ item }">
+            <span>{{ item.meta.description || "No description" }}</span>
+          </template>
+
+          <template #cell-activities="{ item }">
+            <span class="badge badge-sm badge-primary"
+              >{{ getActivitiesCount(item.meta.id) }} activities</span
+            >
+          </template>
+
+          <template #cell-staff="{ item }">
+            <span>{{ getStaffGroupsCount(item.meta.id) }} staff groups</span>
+          </template>
+
+          <template #cell-locations="{ item }">
+            <span>{{ getLocationsCount(item.meta.id) }} locations</span>
+          </template>
+
+          <template #cell-actions="{ item }">
+            <BaseButton
+              color="grey-8"
+              outline
+              label="View Details"
+              size="sm"
+              @click="selectProgram(item.meta.id)"
+            />
+          </template>
+        </DataTable>
+      </div>
+
+      <ProgramDetails
+        v-if="selectedProgram"
+        :program="selectedProgram"
+        @close="selectedProgramId = null"
+        @edit="editProgram"
+        @delete="deleteProgramConfirm"
+        @add-activity="showActivityFormModal = true"
+        @add-staff-group="showStaffSelector = true"
+        @add-location="showLocationSelector = true"
+      />
+
+      <!-- Modals -->
+      <ProgramFormModal
+        v-if="showProgramModal"
+        :program-id="selectedProgramId || undefined"
+        @close="closeProgramModal"
+      />
+
+      <!-- Staff Selector Modal -->
+      <BaseModal
+        v-if="showStaffSelector"
+        title="Assign Staff Groups to Program"
+        @close="showStaffSelector = false"
       >
-        <template #cell-name="{ item }">
-          <div class="program-name-content">
-            <div
-              class="color-indicator"
-              :style="{ background: getProgramColor(item) }"
-            ></div>
-            <div class="program-name-text">{{ item.meta.name }}</div>
-          </div>
-        </template>
-
-        <template #cell-description="{ item }">
-          <span>{{ item.meta.description || "No description" }}</span>
-        </template>
-
-        <template #cell-activities="{ item }">
-          <span class="badge badge-sm badge-primary"
-            >{{ getActivitiesCount(item.meta.id) }} activities</span
-          >
-        </template>
-
-        <template #cell-staff="{ item }">
-          <span>{{ getStaffGroupsCount(item.meta.id) }} staff groups</span>
-        </template>
-
-        <template #cell-locations="{ item }">
-          <span>{{ getLocationsCount(item.meta.id) }} locations</span>
-        </template>
-
-        <template #cell-actions="{ item }">
-          <BaseButton
-            color="grey-8"
-            outline
-            label="View Details"
-            size="sm"
-            @click="selectProgram(item.meta.id)"
+        <template #body>
+          <SelectionList
+            v-model="programStaffGroupIds"
+            :options="staffGroupsOptions"
+            multiple
+            label="Select Staff Groups"
+            flat
           />
         </template>
-      </DataTable>
-    </div>
+        <template #footer>
+          <BaseButton
+            outline
+            color="grey-8"
+            @click="showStaffSelector = false"
+            label="Close"
+          />
+        </template>
+      </BaseModal>
 
-    <ProgramDetails
-      v-if="selectedProgram"
-      :program="selectedProgram"
-      @close="selectedProgramId = null"
-      @edit="editProgram"
-      @delete="deleteProgramConfirm"
-      @add-activity="showActivityFormModal = true"
-      @add-staff-group="showStaffSelector = true"
-      @add-location="showLocationSelector = true"
-    />
+      <!-- Location Selector Modal -->
+      <BaseModal
+        v-if="showLocationSelector"
+        title="Add Location to Program"
+        @close="showLocationSelector = false"
+      >
+        <template #body>
+          <SelectionList
+            v-model="programLocationIds"
+            :options="locationsOptions"
+            multiple
+            label="Select Locations"
+            flat
+          />
+        </template>
+        <template #footer>
+          <BaseButton
+            outline
+            color="grey-8"
+            @click="showLocationSelector = false"
+            label="Close"
+          />
+        </template>
+      </BaseModal>
 
-    <!-- Modals -->
-    <ProgramFormModal
-      v-if="showProgramModal"
-      :program-id="selectedProgramId || undefined"
-      @close="closeProgramModal"
-    />
+      <!-- Activity Form Modal -->
+      <ActivityFormModal
+        v-if="showActivityFormModal && selectedProgramId"
+        :program-id="selectedProgramId"
+        @close="showActivityFormModal = false"
+      />
 
-    <!-- Staff Selector Modal -->
-    <BaseModal
-      v-if="showStaffSelector"
-      title="Assign Staff Groups to Program"
-      @close="showStaffSelector = false"
-    >
-      <template #body>
-        <SelectionList
-          v-model="programStaffGroupIds"
-          :options="staffGroupsOptions"
-          multiple
-          label="Select Staff Groups"
-          flat
-        />
-      </template>
-      <template #footer>
-        <BaseButton
-          outline
-          color="grey-8"
-          @click="showStaffSelector = false"
-          label="Close"
-        />
-      </template>
-    </BaseModal>
-
-    <!-- Location Selector Modal -->
-    <BaseModal
-      v-if="showLocationSelector"
-      title="Add Location to Program"
-      @close="showLocationSelector = false"
-    >
-      <template #body>
-        <SelectionList
-          v-model="programLocationIds"
-          :options="locationsOptions"
-          multiple
-          label="Select Locations"
-          flat
-        />
-      </template>
-      <template #footer>
-        <BaseButton
-          outline
-          color="grey-8"
-          @click="showLocationSelector = false"
-          label="Close"
-        />
-      </template>
-    </BaseModal>
-
-    <!-- Activity Form Modal -->
-    <ActivityFormModal
-      v-if="showActivityFormModal && selectedProgramId"
-      :program-id="selectedProgramId"
-      @close="showActivityFormModal = false"
-    />
-
-    <!-- Confirm Delete Modal -->
-    <ConfirmModal
-      v-if="showDeleteConfirm"
-      :title="deleteConfirmTitle"
-      :message="deleteConfirmMessage"
-      confirm-text="Delete"
-      danger-mode
-      @confirm="confirmDelete"
-      @cancel="cancelDelete"
-    />
+      <!-- Confirm Delete Modal -->
+      <ConfirmModal
+        v-if="showDeleteConfirm"
+        :title="deleteConfirmTitle"
+        :message="deleteConfirmMessage"
+        confirm-text="Delete"
+        danger-mode
+        @confirm="confirmDelete"
+        @cancel="cancelDelete"
+      />
     </template>
   </div>
 </template>

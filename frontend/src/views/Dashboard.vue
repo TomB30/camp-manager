@@ -370,14 +370,14 @@ export default defineComponent({
       return [...this.todayEvents].sort(
         (a, b) =>
           new Date(a.spec.startDate).getTime() -
-          new Date(b.spec.startDate).getTime()
+          new Date(b.spec.startDate).getTime(),
       );
     },
     upcomingBirthdays(): BirthdayPerson[] {
       const today = new Date(
         new Date().getFullYear(),
         new Date().getMonth(),
-        new Date().getDate()
+        new Date().getDate(),
       );
       const daysToCheck = 7; // Show birthdays for the next 7 days
       const birthdays: BirthdayPerson[] = [];
@@ -387,7 +387,7 @@ export default defineComponent({
         birthday: string,
         name: string,
         id: string,
-        type: "camper" | "staff"
+        type: "camper" | "staff",
       ) => {
         if (!birthday) return null;
 
@@ -398,14 +398,14 @@ export default defineComponent({
         const thisYearBirthday = new Date(
           currentYear,
           birthDate.getMonth(),
-          birthDate.getDate()
+          birthDate.getDate(),
         );
 
         // Get next year's birthday in case we've passed this year's
         const nextYearBirthday = new Date(
           currentYear + 1,
           birthDate.getMonth(),
-          birthDate.getDate()
+          birthDate.getDate(),
         );
 
         // Determine which birthday to use
@@ -452,7 +452,7 @@ export default defineComponent({
           camper.spec.birthday,
           camper.meta.name,
           camper.meta.id,
-          "camper"
+          "camper",
         );
         if (info) birthdays.push(info);
       });
@@ -463,7 +463,7 @@ export default defineComponent({
           staff.spec.birthday || "",
           staff.meta.name,
           staff.meta.id,
-          "staff"
+          "staff",
         );
 
         if (info) birthdays.push(info);

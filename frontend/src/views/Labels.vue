@@ -121,12 +121,12 @@ export default defineComponent({
           (label: Label) =>
             label.meta.name.toLowerCase().includes(query) ||
             (label.meta.description &&
-              label.meta.description.toLowerCase().includes(query))
+              label.meta.description.toLowerCase().includes(query)),
         );
       }
 
       return [...filtered].sort((a, b) =>
-        a.meta.name.localeCompare(b.meta.name)
+        a.meta.name.localeCompare(b.meta.name),
       );
     },
   },

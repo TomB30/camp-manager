@@ -124,12 +124,12 @@ export default defineComponent({
         filtered = filtered.filter(
           (color) =>
             color.meta.name.toLowerCase().includes(query) ||
-            color.spec.hexValue.toLowerCase().includes(query)
+            color.spec.hexValue.toLowerCase().includes(query),
         );
       }
 
       return [...filtered].sort((a, b) =>
-        a.meta.name.localeCompare(b.meta.name)
+        a.meta.name.localeCompare(b.meta.name),
       );
     },
   },

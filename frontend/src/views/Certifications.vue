@@ -2,103 +2,103 @@
   <div class="certifications-tab view">
     <LoadingState v-if="loading" message="Loading certifications..." />
     <template v-else>
-    <TabHeader
-      title="Staff Certifications"
-      description="Manage the certifications available for your staff members. Define which certifications are required and their validity periods."
-      action-text="Certification"
-      @action="showModal = true"
-    />
-
-    <!-- Search and Filters -->
-    <FilterBar
-      v-model:searchQuery="searchQuery"
-      :filtered-count="filteredCertifications.length"
-      :total-count="certificationsStore.certifications.length"
-      @clear="clearFilters"
-    >
-      <template #prepend>
-        <ViewToggle v-model="viewMode" />
-      </template>
-    </FilterBar>
-
-    <!-- Empty State -->
-    <EmptyState
-      v-if="certificationsStore.certifications.length === 0"
-      type="empty"
-      title="No Certifications Yet"
-      message="Add your first certification to start tracking staff qualifications."
-      action-text="Certification"
-      @action="showModal = true"
-      icon-name="Award"
-    />
-
-    <!-- Grid View -->
-    <transition-group
-      v-else-if="viewMode === 'grid'"
-      name="list"
-      tag="div"
-      class="certifications-grid transition-wrapper"
-    >
-      <CertificationCard
-        v-for="certification in filteredCertifications"
-        :key="certification.meta.id"
-        :certification="certification"
-        @click="selectCertification(certification.meta.id)"
+      <TabHeader
+        title="Staff Certifications"
+        description="Manage the certifications available for your staff members. Define which certifications are required and their validity periods."
+        action-text="Certification"
+        @action="showModal = true"
       />
-    </transition-group>
 
-    <!-- Table View -->
-    <DataTable
-      v-else-if="viewMode === 'table' && filteredCertifications.length > 0"
-      :columns="certificationColumns"
-      :data="filteredCertifications"
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
-      row-key="id"
-    >
-      <template #cell-name="{ item }">
-        <div class="certification-name-content">
-          <div class="certification-icon-sm">
-            <Icon name="Award" :size="18" />
-          </div>
-          <div>{{ item.meta.name }}</div>
-        </div>
-      </template>
+      <!-- Search and Filters -->
+      <FilterBar
+        v-model:searchQuery="searchQuery"
+        :filtered-count="filteredCertifications.length"
+        :total-count="certificationsStore.certifications.length"
+        @clear="clearFilters"
+      >
+        <template #prepend>
+          <ViewToggle v-model="viewMode" />
+        </template>
+      </FilterBar>
 
-      <template #cell-actions="{ item }">
-        <BaseButton
-          outline
-          color="grey-8"
-          size="sm"
-          @click="selectCertification(item.meta.id)"
-          label="View Details"
+      <!-- Empty State -->
+      <EmptyState
+        v-if="certificationsStore.certifications.length === 0"
+        type="empty"
+        title="No Certifications Yet"
+        message="Add your first certification to start tracking staff qualifications."
+        action-text="Certification"
+        @action="showModal = true"
+        icon-name="Award"
+      />
+
+      <!-- Grid View -->
+      <transition-group
+        v-else-if="viewMode === 'grid'"
+        name="list"
+        tag="div"
+        class="certifications-grid transition-wrapper"
+      >
+        <CertificationCard
+          v-for="certification in filteredCertifications"
+          :key="certification.meta.id"
+          :certification="certification"
+          @click="selectCertification(certification.meta.id)"
         />
-      </template>
-    </DataTable>
+      </transition-group>
 
-    <CertificationDetailModal
-      v-if="!!selectedCertificationId"
-      :certification="selectedCertification"
-      @close="selectedCertificationId = null"
-      @edit="editCertificationFromDetail"
-      @delete="deleteCertificationConfirm"
-    />
+      <!-- Table View -->
+      <DataTable
+        v-else-if="viewMode === 'table' && filteredCertifications.length > 0"
+        :columns="certificationColumns"
+        :data="filteredCertifications"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="certification-name-content">
+            <div class="certification-icon-sm">
+              <Icon name="Award" :size="18" />
+            </div>
+            <div>{{ item.meta.name }}</div>
+          </div>
+        </template>
 
-    <CertificationFormModal
-      v-if="showModal"
-      :certification-id="editingCertificationId || undefined"
-      @close="closeModal"
-    />
+        <template #cell-actions="{ item }">
+          <BaseButton
+            outline
+            color="grey-8"
+            size="sm"
+            @click="selectCertification(item.meta.id)"
+            label="View Details"
+          />
+        </template>
+      </DataTable>
 
-    <ConfirmModal
-      v-if="showConfirmModal"
-      title="Delete Certification"
-      message="Are you sure you want to delete this certification?"
-      confirm-text="Delete"
-      :danger-mode="true"
-      @confirm="handleDeleteCertification"
-      @cancel="showConfirmModal = false"
-    />
+      <CertificationDetailModal
+        v-if="!!selectedCertificationId"
+        :certification="selectedCertification"
+        @close="selectedCertificationId = null"
+        @edit="editCertificationFromDetail"
+        @delete="deleteCertificationConfirm"
+      />
+
+      <CertificationFormModal
+        v-if="showModal"
+        :certification-id="editingCertificationId || undefined"
+        @close="closeModal"
+      />
+
+      <ConfirmModal
+        v-if="showConfirmModal"
+        title="Delete Certification"
+        message="Are you sure you want to delete this certification?"
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleDeleteCertification"
+        @cancel="showConfirmModal = false"
+      />
     </template>
   </div>
 </template>

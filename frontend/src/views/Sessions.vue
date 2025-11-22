@@ -2,68 +2,68 @@
   <div class="sessions-tab view">
     <LoadingState v-if="loading" message="Loading sessions..." />
     <template v-else>
-    <TabHeader
-      title="Camp Sessions"
-      description="Define the time periods (weeks, months, or custom durations) that campers can register for at your camp."
-      action-text="Session"
-      @action="showFormModal = true"
-    />
-
-    <FilterBar
-      v-if="sessionsStore.sessions.length > 0"
-      v-model:searchQuery="searchQuery"
-      :filtered-count="filteredSessions.length"
-      :total-count="sessionsStore.sessions.length"
-      @clear="clearFilters"
-    />
-
-    <EmptyState
-      v-if="sessionsStore.sessions.length === 0"
-      type="empty"
-      title="No Sessions Yet"
-      message="Add your first session to define the registration periods for your camp."
-      action-text="Session"
-      @action="showFormModal = true"
-      icon-name="CalendarDays"
-    />
-
-    <transition-group
-      v-else
-      name="list"
-      tag="div"
-      class="sessions-list transition-wrapper"
-    >
-      <SessionCard
-        v-for="session in filteredSessions"
-        :key="session.meta.id"
-        :session="session"
-        @click="selectSession"
+      <TabHeader
+        title="Camp Sessions"
+        description="Define the time periods (weeks, months, or custom durations) that campers can register for at your camp."
+        action-text="Session"
+        @action="showFormModal = true"
       />
-    </transition-group>
 
-    <SessionDetailModal
-      v-if="!!selectedSession"
-      :session="selectedSession"
-      @close="selectedSessionId = null"
-      @edit="editSessionFromDetail"
-      @delete="deleteSessionConfirm"
-    />
+      <FilterBar
+        v-if="sessionsStore.sessions.length > 0"
+        v-model:searchQuery="searchQuery"
+        :filtered-count="filteredSessions.length"
+        :total-count="sessionsStore.sessions.length"
+        @clear="clearFilters"
+      />
 
-    <SessionFormModal
-      v-if="showFormModal"
-      :session-id="editingSession?.meta.id"
-      @close="closeModal"
-    />
+      <EmptyState
+        v-if="sessionsStore.sessions.length === 0"
+        type="empty"
+        title="No Sessions Yet"
+        message="Add your first session to define the registration periods for your camp."
+        action-text="Session"
+        @action="showFormModal = true"
+        icon-name="CalendarDays"
+      />
 
-    <ConfirmModal
-      v-if="showConfirmModal"
-      title="Delete Session"
-      message="Are you sure you want to delete this session?"
-      confirm-text="Delete"
-      :danger-mode="true"
-      @confirm="handleDeleteSession"
-      @cancel="showConfirmModal = false"
-    />
+      <transition-group
+        v-else
+        name="list"
+        tag="div"
+        class="sessions-list transition-wrapper"
+      >
+        <SessionCard
+          v-for="session in filteredSessions"
+          :key="session.meta.id"
+          :session="session"
+          @click="selectSession"
+        />
+      </transition-group>
+
+      <SessionDetailModal
+        v-if="!!selectedSession"
+        :session="selectedSession"
+        @close="selectedSessionId = null"
+        @edit="editSessionFromDetail"
+        @delete="deleteSessionConfirm"
+      />
+
+      <SessionFormModal
+        v-if="showFormModal"
+        :session-id="editingSession?.meta.id"
+        @close="closeModal"
+      />
+
+      <ConfirmModal
+        v-if="showConfirmModal"
+        title="Delete Session"
+        message="Are you sure you want to delete this session?"
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleDeleteSession"
+        @cancel="showConfirmModal = false"
+      />
     </template>
   </div>
 </template>

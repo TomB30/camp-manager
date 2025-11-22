@@ -2,100 +2,100 @@
   <div class="calendar-view view">
     <LoadingState v-if="loading" message="Loading calendar..." />
     <template v-else>
-    <TabHeader
-      title="Event Calendar"
-      action-text="Event"
-      @action="openNewEventModal"
-    />
+      <TabHeader
+        title="Event Calendar"
+        action-text="Event"
+        @action="openNewEventModal"
+      />
 
-    <FilterBar
-      :show-search="true"
-      v-model:search-query="searchQuery"
-      search-placeholder="Search events by title, room, program, camper, or staff"
-      v-model:filter-room="filterRoom"
-      v-model:filter-program="filterProgram"
-      v-model:filter-staff="filterStaff"
-      v-model:filter-group="filterGroup"
-      :filters="eventFilters"
-      :filtered-count="filteredEvents.length"
-      :total-count="
-        viewMode === 'daily'
-          ? todayEvents.length
-          : viewMode === 'weekly'
-            ? weekEvents.length
-            : monthEvents.length
-      "
-      :show-count="true"
-      @clear="clearEventFilters"
-    >
-      <template #prepend>
-        <div class="calendar-view-toggle">
-          <button
-            class="btn btn-sm"
-            :class="viewMode === 'daily' ? 'btn-primary' : 'btn-secondary'"
-            @click="viewMode = 'daily'"
-          >
-            Daily
-          </button>
-          <button
-            class="btn btn-sm"
-            :class="viewMode === 'weekly' ? 'btn-primary' : 'btn-secondary'"
-            @click="viewMode = 'weekly'"
-          >
-            Weekly
-          </button>
-          <button
-            class="btn btn-sm"
-            :class="viewMode === 'monthly' ? 'btn-primary' : 'btn-secondary'"
-            @click="viewMode = 'monthly'"
-          >
-            Monthly
-          </button>
+      <FilterBar
+        :show-search="true"
+        v-model:search-query="searchQuery"
+        search-placeholder="Search events by title, room, program, camper, or staff"
+        v-model:filter-room="filterRoom"
+        v-model:filter-program="filterProgram"
+        v-model:filter-staff="filterStaff"
+        v-model:filter-group="filterGroup"
+        :filters="eventFilters"
+        :filtered-count="filteredEvents.length"
+        :total-count="
+          viewMode === 'daily'
+            ? todayEvents.length
+            : viewMode === 'weekly'
+              ? weekEvents.length
+              : monthEvents.length
+        "
+        :show-count="true"
+        @clear="clearEventFilters"
+      >
+        <template #prepend>
+          <div class="calendar-view-toggle">
+            <button
+              class="btn btn-sm"
+              :class="viewMode === 'daily' ? 'btn-primary' : 'btn-secondary'"
+              @click="viewMode = 'daily'"
+            >
+              Daily
+            </button>
+            <button
+              class="btn btn-sm"
+              :class="viewMode === 'weekly' ? 'btn-primary' : 'btn-secondary'"
+              @click="viewMode = 'weekly'"
+            >
+              Weekly
+            </button>
+            <button
+              class="btn btn-sm"
+              :class="viewMode === 'monthly' ? 'btn-primary' : 'btn-secondary'"
+              @click="viewMode = 'monthly'"
+            >
+              Monthly
+            </button>
+          </div>
+        </template>
+      </FilterBar>
+
+      <div class="date-navigation">
+        <div class="date-display">
+          <h3 v-if="viewMode === 'daily'">{{ formatDate(selectedDate) }}</h3>
+          <h3 v-else-if="viewMode === 'weekly'">
+            {{ formatWeekRange(selectedDate) }}
+          </h3>
+          <h3 v-else>{{ formatMonthYear(selectedDate) }}</h3>
         </div>
-      </template>
-    </FilterBar>
-
-    <div class="date-navigation">
-      <div class="date-display">
-        <h3 v-if="viewMode === 'daily'">{{ formatDate(selectedDate) }}</h3>
-        <h3 v-else-if="viewMode === 'weekly'">
-          {{ formatWeekRange(selectedDate) }}
-        </h3>
-        <h3 v-else>{{ formatMonthYear(selectedDate) }}</h3>
+        <div class="date-controls">
+          <button class="btn btn-secondary" @click="changeDate(-1)">←</button>
+          <button class="btn btn-secondary" @click="goToToday">Today</button>
+          <button class="btn btn-secondary" @click="changeDate(1)">→</button>
+        </div>
       </div>
-      <div class="date-controls">
-        <button class="btn btn-secondary" @click="changeDate(-1)">←</button>
-        <button class="btn btn-secondary" @click="goToToday">Today</button>
-        <button class="btn btn-secondary" @click="changeDate(1)">→</button>
-      </div>
-    </div>
 
-    <DailyCalendarView
-      v-if="viewMode === 'daily'"
-      :events="filteredTodayEvents"
-      :rooms="locationsStore.locations"
-      :current-date="selectedDate"
-      @select-event="selectEvent"
-      @create-event="createEventAtHour"
-    />
+      <DailyCalendarView
+        v-if="viewMode === 'daily'"
+        :events="filteredTodayEvents"
+        :rooms="locationsStore.locations"
+        :current-date="selectedDate"
+        @select-event="selectEvent"
+        @create-event="createEventAtHour"
+      />
 
-    <WeeklyCalendarView
-      v-else-if="viewMode === 'weekly'"
-      :week-days="weekDays"
-      :events="filteredEvents"
-      :rooms="locationsStore.locations"
-      @select-event="selectEvent"
-      @select-day="selectDay"
-      @create-event="createEventAtDateAndHour"
-    />
+      <WeeklyCalendarView
+        v-else-if="viewMode === 'weekly'"
+        :week-days="weekDays"
+        :events="filteredEvents"
+        :rooms="locationsStore.locations"
+        @select-event="selectEvent"
+        @select-day="selectDay"
+        @create-event="createEventAtDateAndHour"
+      />
 
-    <MonthlyCalendarView
-      v-else
-      :selected-date="selectedDate"
-      :events="filteredEvents"
-      @select-day="selectDay"
-      @select-event="selectEvent"
-    />
+      <MonthlyCalendarView
+        v-else
+        :selected-date="selectedDate"
+        :events="filteredEvents"
+        @select-day="selectDay"
+        @select-event="selectEvent"
+      />
     </template>
 
     <EventDetailModal

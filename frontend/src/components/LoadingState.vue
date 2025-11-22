@@ -58,4 +58,3 @@ export default defineComponent({
   font-weight: 500;
 }
 </style>
-

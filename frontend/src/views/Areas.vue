@@ -2,121 +2,121 @@
   <div class="areas-tab view">
     <LoadingState v-if="loading" message="Loading areas..." />
     <template v-else>
-    <TabHeader
-      title="Areas"
-      description="Manage all physical areas within your camp - from indoor facilities to outdoor spaces."
-      action-text="Area"
-      @action="showModal = true"
-    />
+      <TabHeader
+        title="Areas"
+        description="Manage all physical areas within your camp - from indoor facilities to outdoor spaces."
+        action-text="Area"
+        @action="showModal = true"
+      />
 
-    <!-- Search and Filters -->
-    <FilterBar
-      v-model:searchQuery="searchQuery"
-      search-placeholder="Search by area name..."
-      :filtered-count="filteredAreas.length"
-      :total-count="areasStore.areas.length"
-      @clear="clearFilters"
-    >
-      <template #prepend>
-        <ViewToggle v-model="viewMode" />
-      </template>
-    </FilterBar>
-
-    <!-- Empty State -->
-    <EmptyState
-      v-if="areasStore.areas.length === 0"
-      icon-name="Map"
-      title="No areas configured"
-      message="Add your first area to start organizing your camp spaces."
-      action-text="Area"
-    />
-
-    <!-- Grid View -->
-    <transition-group
-      v-else-if="viewMode === 'grid'"
-      name="list"
-      tag="div"
-      class="areas-grid transition-wrapper"
-    >
-      <AreaCard
-        v-for="area in filteredAreas"
-        :key="area.meta.id"
-        :area="area"
-        @click="selectArea(area.meta.id)"
+      <!-- Search and Filters -->
+      <FilterBar
+        v-model:searchQuery="searchQuery"
+        search-placeholder="Search by area name..."
+        :filtered-count="filteredAreas.length"
+        :total-count="areasStore.areas.length"
+        @clear="clearFilters"
       >
-        <template #icon>
-          <Icon name="Map" :size="24" :stroke-width="2" />
+        <template #prepend>
+          <ViewToggle v-model="viewMode" />
         </template>
-      </AreaCard>
-    </transition-group>
+      </FilterBar>
 
-    <!-- Table View -->
-    <DataTable
-      v-else
-      :columns="areaColumns"
-      :data="filteredAreas"
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
-      row-key="id"
-    >
-      <template #cell-name="{ item }">
-        <div class="area-name-content">
-          <div class="area-icon-sm" :style="{ background: '#3b82f6' }">
-            <Icon name="Map" :size="18" :stroke-width="2" />
-          </div>
-          <div class="area-name">{{ item.meta.name }}</div>
-        </div>
-      </template>
+      <!-- Empty State -->
+      <EmptyState
+        v-if="areasStore.areas.length === 0"
+        icon-name="Map"
+        title="No areas configured"
+        message="Add your first area to start organizing your camp spaces."
+        action-text="Area"
+      />
 
-      <template #cell-capacity="{ item }">
-        <span v-if="item.spec.capacity">{{ item.spec.capacity }}</span>
-        <span v-else class="text-secondary">N/A</span>
-      </template>
-
-      <template #cell-equipment="{ item }">
-        <span
-          v-if="item.spec.equipment && item.spec.equipment.length > 0"
-          class="badge badge-success badge-sm"
+      <!-- Grid View -->
+      <transition-group
+        v-else-if="viewMode === 'grid'"
+        name="list"
+        tag="div"
+        class="areas-grid transition-wrapper"
+      >
+        <AreaCard
+          v-for="area in filteredAreas"
+          :key="area.meta.id"
+          :area="area"
+          @click="selectArea(area.meta.id)"
         >
-          {{ item.spec.equipment.length }} item(s)
-        </span>
-        <span v-else class="text-caption">None</span>
-      </template>
+          <template #icon>
+            <Icon name="Map" :size="24" :stroke-width="2" />
+          </template>
+        </AreaCard>
+      </transition-group>
 
-      <template #cell-actions="{ item }">
-        <BaseButton
-          outline
-          color="grey-8"
-          size="sm"
-          @click="selectArea(item.meta.id)"
-          label="View Details"
-        />
-      </template>
-    </DataTable>
+      <!-- Table View -->
+      <DataTable
+        v-else
+        :columns="areaColumns"
+        :data="filteredAreas"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="area-name-content">
+            <div class="area-icon-sm" :style="{ background: '#3b82f6' }">
+              <Icon name="Map" :size="18" :stroke-width="2" />
+            </div>
+            <div class="area-name">{{ item.meta.name }}</div>
+          </div>
+        </template>
 
-    <AreaDetailModal
-      v-if="!!selectedAreaId"
-      :area="selectedArea"
-      @close="selectedAreaId = null"
-      @edit="editArea"
-      @delete="deleteAreaConfirm"
-    />
+        <template #cell-capacity="{ item }">
+          <span v-if="item.spec.capacity">{{ item.spec.capacity }}</span>
+          <span v-else class="text-secondary">N/A</span>
+        </template>
 
-    <AreaFormModal
-      v-if="showModal"
-      :area-id="editingAreaId || undefined"
-      @close="closeModal"
-    />
+        <template #cell-equipment="{ item }">
+          <span
+            v-if="item.spec.equipment && item.spec.equipment.length > 0"
+            class="badge badge-success badge-sm"
+          >
+            {{ item.spec.equipment.length }} item(s)
+          </span>
+          <span v-else class="text-caption">None</span>
+        </template>
 
-    <ConfirmModal
-      v-if="showConfirmModal"
-      title="Delete Area"
-      message="Are you sure you want to delete this area?"
-      confirm-text="Delete"
-      :danger-mode="true"
-      @confirm="handleConfirmAction"
-      @cancel="handleCancelConfirm"
-    />
+        <template #cell-actions="{ item }">
+          <BaseButton
+            outline
+            color="grey-8"
+            size="sm"
+            @click="selectArea(item.meta.id)"
+            label="View Details"
+          />
+        </template>
+      </DataTable>
+
+      <AreaDetailModal
+        v-if="!!selectedAreaId"
+        :area="selectedArea"
+        @close="selectedAreaId = null"
+        @edit="editArea"
+        @delete="deleteAreaConfirm"
+      />
+
+      <AreaFormModal
+        v-if="showModal"
+        :area-id="editingAreaId || undefined"
+        @close="closeModal"
+      />
+
+      <ConfirmModal
+        v-if="showConfirmModal"
+        title="Delete Area"
+        message="Are you sure you want to delete this area?"
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleConfirmAction"
+        @cancel="handleCancelConfirm"
+      />
     </template>
   </div>
 </template>
