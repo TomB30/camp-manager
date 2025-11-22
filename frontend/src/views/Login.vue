@@ -158,16 +158,28 @@ export default defineComponent({
       if (isBackendEnabled()) {
         await loadDataFromBackend();
       } else {
-        // Check if we have data, if not, seed with mock data
-        const existingCampers = await campersService.listCampers();
-
-        if (existingCampers.length === 0) {
-          // Lazy load mock data only when needed
-          const { mockData } = await import("@/data/mockData");
-          await storageService.seedData(mockData);
-        }
-        await mainStore.loadAll();
+        await loadLocalData();
       }
+    };
+
+    const loadDataFromBackend = async () => {
+      const camps: Camp[] = await campService.getCampsApi();
+      if (camps.length) {
+        authStore.setSelectedCamp(camps[0].meta.id);
+      }
+      await mainStore.loadAll();
+    };
+
+    const loadLocalData = async () => {
+      // Check if we have data, if not, seed with mock data
+      const existingCampers = await campersService.listCampers();
+
+      if (existingCampers.length === 0) {
+        // Lazy load mock data only when needed
+        const { mockData } = await import("@/data/mockData");
+        await storageService.seedData(mockData);
+      }
+      await mainStore.loadAll();
     };
 
     const handleSubmit = async () => {
@@ -200,14 +212,6 @@ export default defineComponent({
       } finally {
         loading.value = false;
       }
-    };
-
-    const loadDataFromBackend = async () => {
-      const camps: Camp[] = await campService.getCampsApi();
-      if (camps.length) {
-        authStore.setSelectedCamp(camps[0].meta.id);
-      }
-      await mainStore.loadAll();
     };
 
     return {

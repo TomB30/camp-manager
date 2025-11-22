@@ -45,8 +45,10 @@ import { defineComponent } from "vue";
 import Sidebar from "./components/Sidebar.vue";
 import Toast from "./components/Toast.vue";
 import { useMainStore, useAuthStore } from "./stores";
-import { campersService, storageService } from "./services";
+import { campersService, campService, storageService } from "./services";
 import Icon from "./components/Icon.vue";
+import { isBackendEnabled } from "./config/dataSource";
+import { Camp } from "./generated/api";
 
 export default defineComponent({
   name: "App",
@@ -58,7 +60,16 @@ export default defineComponent({
   data() {
     return {
       isMobileMenuOpen: false,
+      mainStore: useMainStore(),
+      authStore: useAuthStore(),
     };
+  },
+  async created() {
+    if (this.isAuthenticated && isBackendEnabled()) {
+      await this.loadDataFromBackend();
+    } else {
+      await this.loadLocalData();
+    }
   },
   computed: {
     isAuthenticated(): boolean {
@@ -67,6 +78,25 @@ export default defineComponent({
     },
   },
   methods: {
+    async loadDataFromBackend() {
+      const camps: Camp[] = await campService.getCampsApi();
+      if (camps.length) {
+        this.authStore.setSelectedCamp(camps[0].meta.id);
+      }
+      await this.mainStore.loadAll();
+    },
+
+    async loadLocalData() {
+      // Check if we have data, if not, seed with mock data
+      const existingCampers = await campersService.listCampers();
+
+      if (existingCampers.length === 0) {
+        // Lazy load mock data only when needed
+        const { mockData } = await import("@/data/mockData");
+        await storageService.seedData(mockData);
+      }
+      await this.mainStore.loadAll();
+    },
     toggleMobileMenu() {
       this.isMobileMenuOpen = !this.isMobileMenuOpen;
     },

@@ -93,7 +93,6 @@ export function getCachedResponse(cacheKey: string): any | null {
   }
 
   stats.hits++;
-  logDebug(`Cache HIT: ${cacheKey}`);
   return entry.data;
 }
 
@@ -110,7 +109,6 @@ export function setCachedResponse(
     timestamp: Date.now(),
     ttl,
   });
-  logDebug(`Cache SET: ${cacheKey} (TTL: ${ttl}ms)`);
 }
 
 /**
