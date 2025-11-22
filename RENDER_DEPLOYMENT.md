@@ -5,11 +5,13 @@ Complete guide for deploying the Camp Manager application to Render's free tier.
 ## Overview
 
 This deployment includes:
-- **Backend API** (Go) - Web Service with Docker
-- **PostgreSQL Database** - Managed database (free tier)
-- **Frontend** (Vue 3) - Static Site
+- **Backend API** (Go) - Web Service with Docker (via render.yaml Blueprint)
+- **PostgreSQL Database** - Managed database (via render.yaml Blueprint)
+- **Frontend** (Vue 3) - Static Site (deployed separately via Dashboard)
 
 **Cost**: $0/month on free tier
+
+**Important**: Render's Blueprint (render.yaml) only supports backend services and databases. The frontend static site must be deployed separately through the Render Dashboard (simple one-time setup).
 
 ## Prerequisites
 
@@ -19,9 +21,11 @@ This deployment includes:
 
 ## Deployment Options
 
-### Option 1: Infrastructure as Code (Recommended)
+### Option 1: Infrastructure as Code (Recommended for Backend + Database)
 
-Use the included `render.yaml` file for one-click deployment of all services.
+Use the included `render.yaml` file to deploy backend and database.
+
+**Note**: Static sites are not supported in render.yaml Blueprint. You'll deploy the frontend separately in Step 4.
 
 #### Steps:
 
@@ -32,35 +36,67 @@ Use the included `render.yaml` file for one-click deployment of all services.
    git push origin main
    ```
 
-2. **Create New Blueprint in Render**
+2. **Deploy Backend + Database via Blueprint**
    - Go to [Render Dashboard](https://dashboard.render.com)
    - Click "New" → "Blueprint"
    - Connect your GitHub repository
    - Select the `camp-manager` repository
    - Render will detect `render.yaml` automatically
    - Click "Apply"
+   - This deploys:
+     - ✅ PostgreSQL Database (camp-manager-db)
+     - ✅ Backend API (camp-manager-api)
 
-3. **Update Environment Variables**
+3. **Update Backend Environment Variables**
    
-   After initial deployment, update these in Render Dashboard:
+   After backend deployment, update in Render Dashboard:
    
-   **Backend (camp-manager-api):**
+   - Go to "camp-manager-api" service
+   - Click "Environment"
    - `JWT_SECRET_KEY` - Generate secure secret:
      ```bash
      openssl rand -base64 32
      ```
-   - `CORS_ALLOWED_ORIGINS` - Update with your frontend URL:
+   - `CORS_ALLOWED_ORIGINS` - Will update after frontend deployment (Step 4)
+
+4. **Deploy Frontend (Manual via Dashboard)**
+   
+   Static sites must be deployed separately:
+   
+   - In Render Dashboard, click "New" → "Static Site"
+   - Connect your GitHub repository
+   - Configure:
+     - **Name**: `camp-manager`
+     - **Branch**: `main`
+     - **Root Directory**: Leave empty
+     - **Build Command**: `cd frontend && npm ci && npm run build:render`
+     - **Publish Directory**: `frontend/dist`
+   
+   - Add Environment Variables:
+     ```bash
+     VITE_API_BASE_URL=https://camp-manager-api.onrender.com
+     VITE_BASE_PATH=/
+     ```
+   
+   - Add Rewrite Rule (for Vue Router):
+     - Source: `/*`
+     - Destination: `/index.html`
+     - Action: Rewrite
+   
+   - Click "Create Static Site"
+
+5. **Update Backend CORS**
+   
+   Now that you have the frontend URL:
+   
+   - Go to "camp-manager-api" service
+   - Update `CORS_ALLOWED_ORIGINS`:
      ```
      https://camp-manager.onrender.com,https://YOUR_GITHUB_USERNAME.github.io
      ```
+   - Click "Save Changes" (triggers redeploy)
 
-   **Frontend (camp-manager):**
-   - `VITE_API_BASE_URL` - Verify it points to:
-     ```
-     https://camp-manager-api.onrender.com
-     ```
-
-4. **Verify Deployment**
+6. **Verify Deployment**
    - Backend health check: `https://camp-manager-api.onrender.com/health`
    - Frontend: `https://camp-manager.onrender.com`
 

@@ -128,7 +128,7 @@ camp-manager/
 
 ### Quick Start with Render
 
-1. **One-Click Deploy** (Recommended)
+1. **Deploy Backend + Database** (Blueprint)
    ```bash
    # Push latest code
    git push origin main
@@ -136,17 +136,25 @@ camp-manager/
    # Go to Render Dashboard
    # New → Blueprint → Connect GitHub repo
    # Render auto-detects render.yaml
+   # This deploys backend API + PostgreSQL database
    ```
 
-2. **Update Environment Variables**
+2. **Deploy Frontend** (Dashboard - one-time setup)
+   - New → Static Site
+   - Configure build command and environment variables
+   - See [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md) Step 4 for details
+
+3. **Update Environment Variables**
    - Generate JWT secret: `openssl rand -base64 32`
    - Update CORS with your frontend URL
-   - See [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md) for details
+   - See [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md) for complete guide
 
-3. **Access Your App**
+4. **Access Your App**
    - Frontend: `https://camp-manager.onrender.com`
    - Backend API: `https://camp-manager-api.onrender.com`
    - Health Check: `https://camp-manager-api.onrender.com/health`
+
+**Note**: Render Blueprint (render.yaml) only supports backend services. Frontend must be deployed separately through Dashboard.
 
 ### Render Free Tier Limitations
 

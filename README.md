@@ -210,12 +210,16 @@ Deploy the complete application with real backend and database:
 # 1. Push latest code to GitHub
 git push origin main
 
-# 2. Deploy to Render (one-click)
+# 2. Deploy backend + database via Blueprint
 # Go to https://dashboard.render.com
 # New → Blueprint → Connect your GitHub repo
-# Render auto-detects render.yaml
+# Render auto-detects render.yaml and deploys backend + database
 
-# 3. Update environment variables
+# 3. Deploy frontend via Dashboard (one-time setup)
+# New → Static Site → Configure build settings
+# (See RENDER_DEPLOYMENT.md for detailed steps)
+
+# 4. Update environment variables
 # - Generate JWT secret: openssl rand -base64 32
 # - Update CORS with your frontend URL
 ```
