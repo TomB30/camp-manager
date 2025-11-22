@@ -1,60 +1,63 @@
 <template>
   <div class="colors-tab view">
-    <TabHeader
-      title="Color Palette"
-      description="Manage the colors available for programs and events. Set a default color for events not created from activity templates."
-      action-text="Color"
-      @action="showFormModal = true"
-    />
-
-    <FilterBar
-      v-if="colorsStore.colors.length > 0"
-      v-model:searchQuery="searchQuery"
-      :filtered-count="filteredColors.length"
-      :total-count="colorsStore.colors.length"
-      @clear="clearFilters"
-    />
-
-    <EmptyState
-      v-if="colorsStore.colors.length === 0"
-      type="empty"
-      title="No Colors Yet"
-      message="Add your first color to start customizing your camp's color palette."
-      action-text="Color"
-      @action="showFormModal = true"
-      icon-name="Palette"
-    />
-
-    <transition-group
-      v-else
-      name="list"
-      tag="div"
-      class="transition-wrapper colors-grid gap-1"
-    >
-      <ColorCard
-        v-for="color in filteredColors"
-        :key="color.meta.id"
-        :color="color"
-        @edit="editColor"
-        @delete="deleteColorConfirm"
+    <LoadingState v-if="loading" message="Loading colors..." />
+    <template v-else>
+      <TabHeader
+        title="Color Palette"
+        description="Manage the colors available for programs and events. Set a default color for events not created from activity templates."
+        action-text="Color"
+        @action="showFormModal = true"
       />
-    </transition-group>
 
-    <ColorFormModal
-      v-if="showFormModal"
-      :color-id="editingColor?.meta.id"
-      @close="closeModal"
-    />
+      <FilterBar
+        v-if="colorsStore.colors.length > 0"
+        v-model:searchQuery="searchQuery"
+        :filtered-count="filteredColors.length"
+        :total-count="colorsStore.colors.length"
+        @clear="clearFilters"
+      />
 
-    <ConfirmModal
-      v-if="showConfirmModal"
-      title="Delete Color"
-      message="Are you sure you want to delete this color?"
-      confirm-text="Delete"
-      :danger-mode="true"
-      @confirm="handleDeleteColor"
-      @cancel="showConfirmModal = false"
-    />
+      <EmptyState
+        v-if="colorsStore.colors.length === 0"
+        type="empty"
+        title="No Colors Yet"
+        message="Add your first color to start customizing your camp's color palette."
+        action-text="Color"
+        @action="showFormModal = true"
+        icon-name="Palette"
+      />
+
+      <transition-group
+        v-else
+        name="list"
+        tag="div"
+        class="transition-wrapper colors-grid gap-1"
+      >
+        <ColorCard
+          v-for="color in filteredColors"
+          :key="color.meta.id"
+          :color="color"
+          @edit="editColor"
+          @delete="deleteColorConfirm"
+        />
+      </transition-group>
+
+      <ColorFormModal
+        v-if="showFormModal"
+        :color-id="editingColor?.meta.id"
+        @close="closeModal"
+      />
+
+      <ConfirmModal
+        v-if="showConfirmModal"
+        title="Delete Color"
+        message="Are you sure you want to delete this color?"
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleDeleteColor"
+        @cancel="showConfirmModal = false"
+      />
+    </template>
   </div>
 </template>
 
@@ -72,6 +75,7 @@ import ColorFormModal from "@/components/modals/ColorFormModal.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar from "@/components/FilterBar.vue";
 import EmptyState from "@/components/EmptyState.vue";
+import LoadingState from "@/components/LoadingState.vue";
 // Composables
 import { useToast } from "@/composables/useToast";
 
@@ -85,6 +89,7 @@ export default defineComponent({
     ConfirmModal,
     FilterBar,
     EmptyState,
+    LoadingState,
   },
   setup() {
     const colorsStore = useColorsStore();
@@ -93,6 +98,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false as boolean,
       showFormModal: false as boolean,
       showConfirmModal: false as boolean,
       editingColor: null as Color | null,
@@ -100,8 +106,13 @@ export default defineComponent({
       searchQuery: "" as string,
     };
   },
-  created() {
-    this.colorsStore.loadColors();
+  async created() {
+    this.loading = true;
+    try {
+      await this.colorsStore.loadColors();
+    } finally {
+      this.loading = false;
+    }
   },
   computed: {
     filteredColors(): Color[] {
@@ -113,12 +124,12 @@ export default defineComponent({
         filtered = filtered.filter(
           (color) =>
             color.meta.name.toLowerCase().includes(query) ||
-            color.spec.hexValue.toLowerCase().includes(query),
+            color.spec.hexValue.toLowerCase().includes(query)
         );
       }
 
       return [...filtered].sort((a, b) =>
-        a.meta.name.localeCompare(b.meta.name),
+        a.meta.name.localeCompare(b.meta.name)
       );
     },
   },

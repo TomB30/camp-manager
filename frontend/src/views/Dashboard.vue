@@ -1,113 +1,117 @@
 <template>
   <div class="container">
     <div class="view">
-      <ViewHeader title="Dashboard" />
+      <LoadingState v-if="loading" message="Loading dashboard..." />
+      <template v-else>
+        <ViewHeader title="Dashboard" />
 
-      <!-- Stats Cards -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: #eff6ff; color: #3b82f6">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #eff6ff; color: #3b82f6">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Total Campers</div>
+              <div class="stat-value">{{ campersStore.campers.length }}</div>
+            </div>
           </div>
-          <div class="stat-content">
-            <div class="stat-label">Total Campers</div>
-            <div class="stat-value">{{ campersStore.campers.length }}</div>
-          </div>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-icon" style="background: #ecfdf5; color: #10b981">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #ecfdf5; color: #10b981">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Staff Members</div>
+              <div class="stat-value">
+                {{ staffMembersStore.staffMembers.length }}
+              </div>
+            </div>
           </div>
-          <div class="stat-content">
-            <div class="stat-label">Staff Members</div>
-            <div class="stat-value">
-              {{ staffMembersStore.staffMembers.length }}
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #f3e8ff; color: #9333ea">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M9 3v18"></path>
+              </svg>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Locations</div>
+              <div class="stat-value">
+                {{ locationsStore.locations.length }}
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #fef3c7; color: #d97706">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Today's Events</div>
+              <div class="stat-value">{{ todayEvents.length }}</div>
             </div>
           </div>
         </div>
 
-        <div class="stat-card">
-          <div class="stat-icon" style="background: #f3e8ff; color: #9333ea">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="M9 3v18"></path>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <div class="stat-label">Locations</div>
-            <div class="stat-value">{{ locationsStore.locations.length }}</div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon" style="background: #fef3c7; color: #d97706">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <div class="stat-label">Today's Events</div>
-            <div class="stat-value">{{ todayEvents.length }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Conflicts Alert -->
-      <!-- <div
+        <!-- Conflicts Alert -->
+        <!-- <div
         v-if="mainStore.conflicts.length > 0"
         class="conflicts-section"
         style="border-left: 4px solid var(--error-color)"
@@ -131,142 +135,151 @@
         </div>
       </div> -->
 
-      <!-- Today's Schedule -->
-      <div class="schedule-section">
-        <div class="card-header">
-          <h3>Today's Schedule</h3>
-        </div>
-        <div v-if="todayEvents.length === 0" class="empty-state">
-          <p>No events scheduled for today</p>
-        </div>
-        <div v-else class="events-timeline">
-          <div
-            v-for="event in sortedTodayEvents"
-            :key="event.meta.id"
-            class="timeline-event"
-            :style="{
-              borderLeftColor: event.spec.colorId
-                ? colorsStore.getColorById(event.spec.colorId)?.spec.hexValue
-                : '#2196F3',
-            }"
-          >
-            <div class="timeline-time">
-              {{ formatTime(event.spec.startDate) }} -
-              {{ formatTime(event.spec.endDate) }}
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-title">{{ event.meta.name }}</div>
-              <div class="timeline-meta">
-                <span class="badge badge-primary">
-                  {{ getLocationName(event.spec.locationId || "") }}
-                </span>
-                <span class="text-sm">
-                  {{ eventsStore.getEventCamperIds(event.meta.id).length }}/{{
-                    event.spec.capacity
-                  }}
-                  campers
-                </span>
-              </div>
-            </div>
+        <!-- Today's Schedule -->
+        <div class="schedule-section">
+          <div class="card-header">
+            <h3>Today's Schedule</h3>
           </div>
-        </div>
-      </div>
-
-      <!-- Upcoming Birthdays -->
-      <div class="birthdays-section">
-        <div class="card-header">
-          <h3>🎂 Upcoming Birthdays</h3>
-        </div>
-        <div v-if="upcomingBirthdays.length === 0" class="empty-state">
-          <p>No birthdays in the next 7 days</p>
-        </div>
-        <div v-else class="birthdays-list">
-          <div
-            v-for="birthday in upcomingBirthdays"
-            :key="`${birthday.type}-${birthday.id}`"
-            class="birthday-item"
-            :class="{ 'birthday-today': birthday.isToday }"
-          >
-            <div class="birthday-icon">
-              <Icon
-                :name="birthday.type === 'camper' ? 'Users' : 'UsersRound'"
-                :size="20"
-              />
-            </div>
-            <div class="birthday-content">
-              <div class="birthday-name">
-                {{ birthday.name }}
-                <span v-if="birthday.isToday" class="badge badge-success ml-2"
-                  >Today!</span
-                >
-              </div>
-              <div class="birthday-meta">
-                <span class="birthday-date">{{ birthday.dateFormatted }}</span>
-                <span class="birthday-age"
-                  >Turning {{ birthday.upcomingAge }}</span
-                >
-                <span
-                  class="badge badge-primary badge-sm"
-                  :class="{
-                    'badge-info': birthday.type === 'staff',
-                  }"
-                >
-                  {{ birthday.type === "camper" ? "Camper" : "Staff" }}
-                </span>
-              </div>
-            </div>
+          <div v-if="todayEvents.length === 0" class="empty-state">
+            <p>No events scheduled for today</p>
           </div>
-        </div>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="quick-actions-grid">
-        <div class="card">
-          <h4 class="mb-2">Quick Actions</h4>
-          <div class="flex flex-col gap-2">
-            <button class="btn btn-primary" @click="$router.push('/calendar')">
-              <Icon name="Calendar" :size="18" />
-              View Calendar
-            </button>
-            <button class="btn btn-secondary" @click="$router.push('/campers')">
-              <Icon name="Users" :size="18" />
-              Manage Campers
-            </button>
-            <button class="btn btn-secondary" @click="$router.push('/staff')">
-              <Icon name="UsersRound" :size="18" />
-              Manage Staff
-            </button>
-          </div>
-        </div>
-
-        <div class="card">
-          <h4 class="mb-2">Room Capacity</h4>
-          <div class="capacity-list">
+          <div v-else class="events-timeline">
             <div
-              v-for="room in locationsStore.locations.slice(0, 5)"
-              :key="room.meta.id"
-              class="capacity-item"
+              v-for="event in sortedTodayEvents"
+              :key="event.meta.id"
+              class="timeline-event"
+              :style="{
+                borderLeftColor: event.spec.colorId
+                  ? colorsStore.getColorById(event.spec.colorId)?.spec.hexValue
+                  : '#2196F3',
+              }"
             >
-              <div class="capacity-name">{{ room.meta.name }}</div>
-              <div class="capacity-bar">
-                <div
-                  class="capacity-fill"
-                  :style="{
-                    width: `${getRoomUsage(room.meta.id)}%`,
-                    background:
-                      getRoomUsage(room.meta.id) > 80
-                        ? 'var(--error-color)'
-                        : 'var(--success-color)',
-                  }"
-                ></div>
+              <div class="timeline-time">
+                {{ formatTime(event.spec.startDate) }} -
+                {{ formatTime(event.spec.endDate) }}
               </div>
-              <div class="capacity-text text-xs">
-                {{ getRoomUsage(room.meta.id).toFixed(0) }}% used
+              <div class="timeline-content">
+                <div class="timeline-title">{{ event.meta.name }}</div>
+                <div class="timeline-meta">
+                  <span class="badge badge-primary">
+                    {{ getLocationName(event.spec.locationId || "") }}
+                  </span>
+                  <span class="text-sm">
+                    {{ eventsStore.getEventCamperIds(event.meta.id).length }}/{{
+                      event.spec.capacity
+                    }}
+                    campers
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+
+        <!-- Upcoming Birthdays -->
+        <div class="birthdays-section">
+          <div class="card-header">
+            <h3>🎂 Upcoming Birthdays</h3>
+          </div>
+          <div v-if="upcomingBirthdays.length === 0" class="empty-state">
+            <p>No birthdays in the next 7 days</p>
+          </div>
+          <div v-else class="birthdays-list">
+            <div
+              v-for="birthday in upcomingBirthdays"
+              :key="`${birthday.type}-${birthday.id}`"
+              class="birthday-item"
+              :class="{ 'birthday-today': birthday.isToday }"
+            >
+              <div class="birthday-icon">
+                <Icon
+                  :name="birthday.type === 'camper' ? 'Users' : 'UsersRound'"
+                  :size="20"
+                />
+              </div>
+              <div class="birthday-content">
+                <div class="birthday-name">
+                  {{ birthday.name }}
+                  <span v-if="birthday.isToday" class="badge badge-success ml-2"
+                    >Today!</span
+                  >
+                </div>
+                <div class="birthday-meta">
+                  <span class="birthday-date">{{
+                    birthday.dateFormatted
+                  }}</span>
+                  <span class="birthday-age"
+                    >Turning {{ birthday.upcomingAge }}</span
+                  >
+                  <span
+                    class="badge badge-primary badge-sm"
+                    :class="{
+                      'badge-info': birthday.type === 'staff',
+                    }"
+                  >
+                    {{ birthday.type === "camper" ? "Camper" : "Staff" }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions-grid">
+          <div class="card">
+            <h4 class="mb-2">Quick Actions</h4>
+            <div class="flex flex-col gap-2">
+              <button
+                class="btn btn-primary"
+                @click="$router.push('/calendar')"
+              >
+                <Icon name="Calendar" :size="18" />
+                View Calendar
+              </button>
+              <button
+                class="btn btn-secondary"
+                @click="$router.push('/campers')"
+              >
+                <Icon name="Users" :size="18" />
+                Manage Campers
+              </button>
+              <button class="btn btn-secondary" @click="$router.push('/staff')">
+                <Icon name="UsersRound" :size="18" />
+                Manage Staff
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h4 class="mb-2">Room Capacity</h4>
+            <div class="capacity-list">
+              <div
+                v-for="room in locationsStore.locations.slice(0, 5)"
+                :key="room.meta.id"
+                class="capacity-item"
+              >
+                <div class="capacity-name">{{ room.meta.name }}</div>
+                <div class="capacity-bar">
+                  <div
+                    class="capacity-fill"
+                    :style="{
+                      width: `${getRoomUsage(room.meta.id)}%`,
+                      background:
+                        getRoomUsage(room.meta.id) > 80
+                          ? 'var(--error-color)'
+                          : 'var(--success-color)',
+                    }"
+                  ></div>
+                </div>
+                <div class="capacity-text text-xs">
+                  {{ getRoomUsage(room.meta.id).toFixed(0) }}% used
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -287,6 +300,7 @@ import Icon from "@/components/Icon.vue";
 import ViewHeader from "@/components/ViewHeader.vue";
 import type { Event } from "@/generated/api";
 import { dateUtils } from "@/utils/dateUtils";
+import LoadingState from "@/components/LoadingState.vue";
 
 interface BirthdayPerson {
   id: string;
@@ -304,6 +318,27 @@ export default defineComponent({
   components: {
     Icon,
     ViewHeader,
+    LoadingState,
+  },
+  data() {
+    return {
+      loading: false,
+    };
+  },
+  async created() {
+    this.loading = true;
+    try {
+      await Promise.all([
+        this.campersStore.loadCampers(),
+        this.staffMembersStore.loadStaffMembers(),
+        this.locationsStore.loadLocations(),
+        this.eventsStore.loadEvents(),
+        this.areasStore.loadAreas(),
+        this.colorsStore.loadColors(),
+      ]);
+    } finally {
+      this.loading = false;
+    }
   },
   computed: {
     campersStore() {
@@ -335,14 +370,14 @@ export default defineComponent({
       return [...this.todayEvents].sort(
         (a, b) =>
           new Date(a.spec.startDate).getTime() -
-          new Date(b.spec.startDate).getTime(),
+          new Date(b.spec.startDate).getTime()
       );
     },
     upcomingBirthdays(): BirthdayPerson[] {
       const today = new Date(
         new Date().getFullYear(),
         new Date().getMonth(),
-        new Date().getDate(),
+        new Date().getDate()
       );
       const daysToCheck = 7; // Show birthdays for the next 7 days
       const birthdays: BirthdayPerson[] = [];
@@ -352,7 +387,7 @@ export default defineComponent({
         birthday: string,
         name: string,
         id: string,
-        type: "camper" | "staff",
+        type: "camper" | "staff"
       ) => {
         if (!birthday) return null;
 
@@ -363,14 +398,14 @@ export default defineComponent({
         const thisYearBirthday = new Date(
           currentYear,
           birthDate.getMonth(),
-          birthDate.getDate(),
+          birthDate.getDate()
         );
 
         // Get next year's birthday in case we've passed this year's
         const nextYearBirthday = new Date(
           currentYear + 1,
           birthDate.getMonth(),
-          birthDate.getDate(),
+          birthDate.getDate()
         );
 
         // Determine which birthday to use
@@ -417,7 +452,7 @@ export default defineComponent({
           camper.spec.birthday,
           camper.meta.name,
           camper.meta.id,
-          "camper",
+          "camper"
         );
         if (info) birthdays.push(info);
       });
@@ -428,7 +463,7 @@ export default defineComponent({
           staff.spec.birthday || "",
           staff.meta.name,
           staff.meta.id,
-          "staff",
+          "staff"
         );
 
         if (info) birthdays.push(info);

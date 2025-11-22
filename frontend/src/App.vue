@@ -83,7 +83,6 @@ export default defineComponent({
       if (camps.length) {
         this.authStore.setSelectedCamp(camps[0].meta.id);
       }
-      await this.mainStore.loadAll();
     },
 
     async loadLocalData() {
@@ -95,7 +94,6 @@ export default defineComponent({
         const { mockData } = await import("@/data/mockData");
         await storageService.seedData(mockData);
       }
-      await this.mainStore.loadAll();
     },
     toggleMobileMenu() {
       this.isMobileMenuOpen = !this.isMobileMenuOpen;

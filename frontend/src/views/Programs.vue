@@ -1,5 +1,7 @@
 <template>
   <div class="view">
+    <LoadingState v-if="loading" message="Loading programs..." />
+    <template v-else>
     <!-- Breadcrumb Navigation (only show when inside a program) -->
     <nav v-if="selectedProgramId" class="breadcrumbs">
       <button class="breadcrumb-item" @click="selectedProgramId = null">
@@ -207,6 +209,7 @@
       @confirm="confirmDelete"
       @cancel="cancelDelete"
     />
+    </template>
   </div>
 </template>
 
@@ -236,6 +239,7 @@ import ProgramDetails from "@/components/ProgramDetails.vue";
 import ActivityFormModal from "@/components/modals/ActivityFormModal.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import Icon from "@/components/Icon.vue";
+import LoadingState from "@/components/LoadingState.vue";
 export default defineComponent({
   name: "Programs",
   components: {
@@ -253,9 +257,11 @@ export default defineComponent({
     ActivityFormModal,
     TabHeader,
     Icon,
+    LoadingState,
   },
   data() {
     return {
+      loading: false,
       searchQuery: "",
       viewMode: "grid" as "grid" | "table",
       currentPage: 1,
@@ -279,6 +285,20 @@ export default defineComponent({
         { key: "actions", label: "Actions", width: "140px" },
       ],
     };
+  },
+  async created() {
+    this.loading = true;
+    try {
+      await Promise.all([
+        this.programsStore.loadPrograms(),
+        this.activitiesStore.loadActivities(),
+        this.locationsStore.loadLocations(),
+        this.colorsStore.loadColors(),
+        this.groupsStore.loadGroups(),
+      ]);
+    } finally {
+      this.loading = false;
+    }
   },
   computed: {
     programsStore() {

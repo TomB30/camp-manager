@@ -1,5 +1,7 @@
 <template>
   <div class="groups-tab view">
+    <LoadingState v-if="loading" message="Loading groups..." />
+    <template v-else>
     <TabHeader
       title="Groups"
       description="Create and manage groups with flexible assignment options. Groups can contain campers, staff, or even other groups."
@@ -171,6 +173,7 @@
       @confirm="handleConfirmDelete"
       @cancel="handleCancelDelete"
     />
+    </template>
   </div>
 </template>
 
@@ -196,6 +199,7 @@ import GroupFormModal from "@/components/modals/GroupFormModal.vue";
 import { useToast } from "@/composables/useToast";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import Icon from "@/components/Icon.vue";
+import LoadingState from "@/components/LoadingState.vue";
 
 export default defineComponent({
   name: "GroupsNew",
@@ -210,9 +214,11 @@ export default defineComponent({
     GroupFormModal,
     TabHeader,
     Icon,
+    LoadingState,
   },
   data() {
     return {
+      loading: false,
       selectedGroupId: null as string | null,
       showModal: false,
       editingGroupId: null as string | null,
@@ -241,6 +247,21 @@ export default defineComponent({
         { key: "actions", label: "Actions", width: "140px" },
       ],
     };
+  },
+  async created() {
+    this.loading = true;
+    try {
+      await Promise.all([
+        this.groupsStore.loadGroups(),
+        this.campersStore.loadCampers(),
+        this.staffMembersStore.loadStaffMembers(),
+        this.sessionsStore.loadSessions(),
+        this.housingRoomsStore.loadHousingRooms(),
+        this.certificationsStore.loadCertifications(),
+      ]);
+    } finally {
+      this.loading = false;
+    }
   },
   mounted() {
     if (this.$route.query.id) {

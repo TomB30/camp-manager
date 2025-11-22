@@ -1,120 +1,123 @@
 <template>
   <div class="time-blocks-tab view">
-    <TabHeader
-      title="Time Blocks"
-      description="Manage time blocks for scheduling activities and events throughout your camp day."
-      action-text="Time Block"
-      @action="showModal = true"
-    />
+    <LoadingState v-if="loading" message="Loading time blocks..." />
+    <template v-else>
+      <TabHeader
+        title="Time Blocks"
+        description="Manage time blocks for scheduling activities and events throughout your camp day."
+        action-text="Time Block"
+        @action="showModal = true"
+      />
 
-    <!-- Search and Filters -->
-    <FilterBar
-      v-model:searchQuery="searchQuery"
-      search-placeholder="Search by time block name..."
-      :filtered-count="filteredTimeBlocks.length"
-      :total-count="timeBlocksStore.timeBlocks.length"
-      @clear="clearFilters"
-    >
-      <template #prepend>
-        <ViewToggle v-model="viewMode" />
-      </template>
-    </FilterBar>
-
-    <!-- Empty State -->
-    <EmptyState
-      v-if="timeBlocksStore.timeBlocks.length === 0"
-      icon-name="Clock"
-      title="No time blocks configured"
-      message="Add your first time block to start organizing your daily schedule."
-      action-text="Time Block"
-      @action="showModal = true"
-    />
-
-    <!-- Grid View -->
-    <transition-group
-      v-else-if="viewMode === 'grid'"
-      name="list"
-      tag="div"
-      class="time-blocks-grid transition-wrapper"
-    >
-      <TimeBlockCard
-        v-for="timeBlock in filteredTimeBlocks"
-        :key="timeBlock.meta.id"
-        :time-block="timeBlock"
-        @click="selectTimeBlock(timeBlock.meta.id)"
+      <!-- Search and Filters -->
+      <FilterBar
+        v-model:searchQuery="searchQuery"
+        search-placeholder="Search by time block name..."
+        :filtered-count="filteredTimeBlocks.length"
+        :total-count="timeBlocksStore.timeBlocks.length"
+        @clear="clearFilters"
       >
-        <template #icon>
-          <Icon name="Clock" :size="24" :stroke-width="2" />
+        <template #prepend>
+          <ViewToggle v-model="viewMode" />
         </template>
-      </TimeBlockCard>
-    </transition-group>
+      </FilterBar>
 
-    <!-- Table View -->
-    <DataTable
-      v-else
-      :columns="timeBlockColumns"
-      :data="filteredTimeBlocks"
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
-      row-key="id"
-    >
-      <template #cell-name="{ item }">
-        <div class="time-block-name-content">
-          <div class="time-block-icon-sm" :style="{ background: '#8b5cf6' }">
-            <Icon name="Clock" :size="18" :stroke-width="2" />
+      <!-- Empty State -->
+      <EmptyState
+        v-if="timeBlocksStore.timeBlocks.length === 0"
+        icon-name="Clock"
+        title="No time blocks configured"
+        message="Add your first time block to start organizing your daily schedule."
+        action-text="Time Block"
+        @action="showModal = true"
+      />
+
+      <!-- Grid View -->
+      <transition-group
+        v-else-if="viewMode === 'grid'"
+        name="list"
+        tag="div"
+        class="time-blocks-grid transition-wrapper"
+      >
+        <TimeBlockCard
+          v-for="timeBlock in filteredTimeBlocks"
+          :key="timeBlock.meta.id"
+          :time-block="timeBlock"
+          @click="selectTimeBlock(timeBlock.meta.id)"
+        >
+          <template #icon>
+            <Icon name="Clock" :size="24" :stroke-width="2" />
+          </template>
+        </TimeBlockCard>
+      </transition-group>
+
+      <!-- Table View -->
+      <DataTable
+        v-else
+        :columns="timeBlockColumns"
+        :data="filteredTimeBlocks"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="time-block-name-content">
+            <div class="time-block-icon-sm" :style="{ background: '#8b5cf6' }">
+              <Icon name="Clock" :size="18" :stroke-width="2" />
+            </div>
+            <div class="time-block-name">{{ item.meta.name }}</div>
           </div>
-          <div class="time-block-name">{{ item.meta.name }}</div>
-        </div>
-      </template>
+        </template>
 
-      <template #cell-startTime="{ item }">
-        <span>{{ formatTime(item.spec.startTime) }}</span>
-      </template>
+        <template #cell-startTime="{ item }">
+          <span>{{ formatTime(item.spec.startTime) }}</span>
+        </template>
 
-      <template #cell-endTime="{ item }">
-        <span>{{ formatTime(item.spec.endTime) }}</span>
-      </template>
+        <template #cell-endTime="{ item }">
+          <span>{{ formatTime(item.spec.endTime) }}</span>
+        </template>
 
-      <template #cell-duration="{ item }">
-        <span class="badge badge-success badge-sm">
-          {{ calculateDuration(item.spec.startTime, item.spec.endTime) }}
-        </span>
-      </template>
+        <template #cell-duration="{ item }">
+          <span class="badge badge-success badge-sm">
+            {{ calculateDuration(item.spec.startTime, item.spec.endTime) }}
+          </span>
+        </template>
 
-      <template #cell-actions="{ item }">
-        <BaseButton
-          outline
-          color="grey-8"
-          size="sm"
-          @click="selectTimeBlock(item.meta.id)"
-          label="View Details"
-        />
-      </template>
-    </DataTable>
+        <template #cell-actions="{ item }">
+          <BaseButton
+            outline
+            color="grey-8"
+            size="sm"
+            @click="selectTimeBlock(item.meta.id)"
+            label="View Details"
+          />
+        </template>
+      </DataTable>
 
-    <TimeBlockDetailModal
-      v-if="!!selectedTimeBlockId"
-      :time-block="selectedTimeBlock"
-      @close="selectedTimeBlockId = null"
-      @edit="editTimeBlock"
-      @delete="deleteTimeBlockConfirm"
-    />
+      <TimeBlockDetailModal
+        v-if="!!selectedTimeBlockId"
+        :time-block="selectedTimeBlock"
+        @close="selectedTimeBlockId = null"
+        @edit="editTimeBlock"
+        @delete="deleteTimeBlockConfirm"
+      />
 
-    <TimeBlockFormModal
-      v-if="showModal"
-      :time-block-id="editingTimeBlockId || undefined"
-      @close="closeModal"
-    />
+      <TimeBlockFormModal
+        v-if="showModal"
+        :time-block-id="editingTimeBlockId || undefined"
+        @close="closeModal"
+      />
 
-    <ConfirmModal
-      v-if="showConfirmModal"
-      title="Delete Time Block"
-      message="Are you sure you want to delete this time block?"
-      confirm-text="Delete"
-      :danger-mode="true"
-      @confirm="handleConfirmAction"
-      @cancel="handleCancelConfirm"
-    />
+      <ConfirmModal
+        v-if="showConfirmModal"
+        title="Delete Time Block"
+        message="Are you sure you want to delete this time block?"
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleConfirmAction"
+        @cancel="handleCancelConfirm"
+      />
+    </template>
   </div>
 </template>
 
@@ -135,6 +138,7 @@ import Icon from "@/components/Icon.vue";
 import DataTable from "@/components/DataTable.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
+import LoadingState from "@/components/LoadingState.vue";
 // Composables
 import { useToast } from "@/composables/useToast";
 
@@ -151,6 +155,7 @@ export default defineComponent({
     EmptyState,
     Icon,
     TabHeader,
+    LoadingState,
   },
   setup() {
     const timeBlocksStore = useTimeBlocksStore();
@@ -159,6 +164,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       showModal: false,
       showConfirmModal: false,
       editingTimeBlockId: null as string | null,
@@ -177,6 +183,14 @@ export default defineComponent({
       ],
     };
   },
+  async created() {
+    this.loading = true;
+    try {
+      await this.timeBlocksStore.loadTimeBlocks();
+    } finally {
+      this.loading = false;
+    }
+  },
   computed: {
     filteredTimeBlocks(): TimeBlock[] {
       const timeBlocks = this.timeBlocksStore.timeBlocks;
@@ -185,7 +199,7 @@ export default defineComponent({
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         return timeBlocks.filter((timeBlock: TimeBlock) =>
-          timeBlock.meta.name.toLowerCase().includes(query),
+          timeBlock.meta.name.toLowerCase().includes(query)
         );
       }
 

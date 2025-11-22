@@ -1,59 +1,62 @@
 <template>
   <div class="labels-tab">
-    <TabHeader
-      title="Labels"
-      description="Create and manage labels to categorize and filter entities throughout your camp system. Labels can be applied to campers, staff, events, programs, and more."
-      action-text="Label"
-      @action="showAddModal = true"
-    >
-      <template #action-icon>
-        <Icon name="Plus" :size="18" />
-      </template>
-    </TabHeader>
+    <LoadingState v-if="loading" message="Loading labels..." />
+    <template v-else>
+      <TabHeader
+        title="Labels"
+        description="Create and manage labels to categorize and filter entities throughout your camp system. Labels can be applied to campers, staff, events, programs, and more."
+        action-text="Label"
+        @action="showAddModal = true"
+      >
+        <template #action-icon>
+          <Icon name="Plus" :size="18" />
+        </template>
+      </TabHeader>
 
-    <FilterBar
-      v-if="labelsStore.labels.length > 0"
-      v-model:searchQuery="searchQuery"
-      :filtered-count="filteredLabels.length"
-      :total-count="labelsStore.labels.length"
-      @clear="clearFilters"
-    />
-
-    <EmptyState
-      v-if="labelsStore.labels.length === 0"
-      type="empty"
-      title="No Labels Yet"
-      message="Add your first label to start categorizing and organizing your camp entities."
-      action-text="Label"
-      @action="showAddModal = true"
-      icon-name="Tag"
-    />
-
-    <div v-else class="labels-grid">
-      <LabelCard
-        v-for="label in filteredLabels"
-        :key="label.meta.id"
-        :label="label"
-        @edit="editLabel"
-        @delete="deleteLabelConfirm"
+      <FilterBar
+        v-if="labelsStore.labels.length > 0"
+        v-model:searchQuery="searchQuery"
+        :filtered-count="filteredLabels.length"
+        :total-count="labelsStore.labels.length"
+        @clear="clearFilters"
       />
-    </div>
 
-    <LabelFormModal
-      v-if="showAddModal || showEditModal"
-      :label-id="editingLabel?.meta.id"
-      @close="closeModal"
-    />
+      <EmptyState
+        v-if="labelsStore.labels.length === 0"
+        type="empty"
+        title="No Labels Yet"
+        message="Add your first label to start categorizing and organizing your camp entities."
+        action-text="Label"
+        @action="showAddModal = true"
+        icon-name="Tag"
+      />
 
-    <ConfirmModal
-      v-if="showConfirmModal"
-      title="Delete Label"
-      message="Are you sure you want to delete this label? It will be removed from all entities that use it."
-      confirm-text="Delete"
-      :danger-mode="true"
-      @confirm="handleDeleteLabel"
-      @cancel="showConfirmModal = false"
-    />
+      <div v-else class="labels-grid">
+        <LabelCard
+          v-for="label in filteredLabels"
+          :key="label.meta.id"
+          :label="label"
+          @edit="editLabel"
+          @delete="deleteLabelConfirm"
+        />
+      </div>
+
+      <LabelFormModal
+        v-if="showAddModal || showEditModal"
+        :label-id="editingLabel?.meta.id"
+        @close="closeModal"
+      />
+
+      <ConfirmModal
+        v-if="showConfirmModal"
+        title="Delete Label"
+        message="Are you sure you want to delete this label? It will be removed from all entities that use it."
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleDeleteLabel"
+        @cancel="showConfirmModal = false"
+      />
+    </template>
   </div>
 </template>
 
@@ -69,6 +72,7 @@ import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar from "@/components/FilterBar.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import { useToast } from "@/composables/useToast";
+import LoadingState from "@/components/LoadingState.vue";
 
 export default defineComponent({
   name: "LabelsTab",
@@ -80,6 +84,7 @@ export default defineComponent({
     ConfirmModal,
     FilterBar,
     EmptyState,
+    LoadingState,
   },
   setup() {
     const labelsStore = useLabelsStore();
@@ -88,6 +93,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       showAddModal: false,
       showEditModal: false,
       showConfirmModal: false,
@@ -95,6 +101,14 @@ export default defineComponent({
       labelToDelete: null as Label | null,
       searchQuery: "",
     };
+  },
+  async created() {
+    this.loading = true;
+    try {
+      await this.labelsStore.loadLabels();
+    } finally {
+      this.loading = false;
+    }
   },
   computed: {
     filteredLabels(): Label[] {
@@ -107,12 +121,12 @@ export default defineComponent({
           (label: Label) =>
             label.meta.name.toLowerCase().includes(query) ||
             (label.meta.description &&
-              label.meta.description.toLowerCase().includes(query)),
+              label.meta.description.toLowerCase().includes(query))
         );
       }
 
       return [...filtered].sort((a, b) =>
-        a.meta.name.localeCompare(b.meta.name),
+        a.meta.name.localeCompare(b.meta.name)
       );
     },
   },

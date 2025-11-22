@@ -1,5 +1,7 @@
 <template>
   <div class="sessions-tab view">
+    <LoadingState v-if="loading" message="Loading sessions..." />
+    <template v-else>
     <TabHeader
       title="Camp Sessions"
       description="Define the time periods (weeks, months, or custom durations) that campers can register for at your camp."
@@ -62,6 +64,7 @@
       @confirm="handleDeleteSession"
       @cancel="showConfirmModal = false"
     />
+    </template>
   </div>
 </template>
 
@@ -78,6 +81,7 @@ import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar from "@/components/FilterBar.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import { useToast } from "@/composables/useToast";
+import LoadingState from "@/components/LoadingState.vue";
 
 export default defineComponent({
   name: "SessionsTab",
@@ -90,6 +94,7 @@ export default defineComponent({
     ConfirmModal,
     FilterBar,
     EmptyState,
+    LoadingState,
   },
   setup() {
     const sessionsStore = useSessionsStore();
@@ -98,6 +103,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false as boolean,
       showFormModal: false as boolean,
       showConfirmModal: false as boolean,
       editingSession: null as Session | null,
@@ -105,6 +111,14 @@ export default defineComponent({
       sessionToDelete: null as Session | null,
       searchQuery: "" as string,
     };
+  },
+  async created() {
+    this.loading = true;
+    try {
+      await this.sessionsStore.loadSessions();
+    } finally {
+      this.loading = false;
+    }
   },
   computed: {
     filteredSessions(): Session[] {

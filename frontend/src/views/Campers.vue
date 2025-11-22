@@ -1,5 +1,7 @@
 <template>
   <div class="view">
+    <LoadingState v-if="loading" message="Loading campers..." />
+    <template v-else>
     <TabHeader
       title="Campers"
       description="Manage your campers and their registrations, allergies, and sessions."
@@ -143,6 +145,7 @@
       @confirm="handleConfirmDelete"
       @cancel="handleCancelDelete"
     />
+    </template>
   </div>
 </template>
 
@@ -162,6 +165,7 @@ import CamperFormModal from "@/components/modals/CamperFormModal.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import Icon from "@/components/Icon.vue";
 import { dateUtils } from "@/utils/dateUtils";
+import LoadingState from "@/components/LoadingState.vue";
 
 export default defineComponent({
   name: "Campers",
@@ -177,9 +181,11 @@ export default defineComponent({
     CamperFormModal,
     TabHeader,
     Icon,
+    LoadingState,
   },
   data() {
     return {
+      loading: false,
       selectedCamperId: null as string | null,
       showModal: false,
       editingCamperId: null as string | null,
@@ -298,6 +304,17 @@ export default defineComponent({
 
       return campers;
     },
+  },
+  async created() {
+    this.loading = true;
+    try {
+      await Promise.all([
+        this.campersStore.loadCampers(),
+        this.sessionsStore.loadSessions(),
+      ]);
+    } finally {
+      this.loading = false;
+    }
   },
   methods: {
     calculateAge(birthday: string): number {

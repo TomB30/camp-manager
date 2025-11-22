@@ -1,5 +1,7 @@
 <template>
   <div class="view">
+    <LoadingState v-if="loading" message="Loading staff members..." />
+    <template v-else>
     <TabHeader
       title="Staff Management"
       description="Manage your staff members and their roles, certifications, and assignments."
@@ -159,6 +161,7 @@
       @confirm="handleConfirmAction"
       @cancel="handleCancelConfirm"
     />
+    </template>
   </div>
 </template>
 
@@ -185,6 +188,7 @@ import StaffMemberDetailModal from "@/components/modals/StaffMemberDetailModal.v
 import StaffMemberFormModal from "@/components/modals/StaffMemberFormModal.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import Icon from "@/components/Icon.vue";
+import LoadingState from "@/components/LoadingState.vue";
 
 export default defineComponent({
   name: "StaffMembers",
@@ -201,9 +205,11 @@ export default defineComponent({
     StaffMemberFormModal,
     TabHeader,
     Icon,
+    LoadingState,
   },
   data() {
     return {
+      loading: false,
       selectedMemberId: null as string | null,
       showModal: false,
       editingMemberId: null as string | null,
@@ -307,6 +313,20 @@ export default defineComponent({
 
       return members;
     },
+  },
+  async created() {
+    this.loading = true;
+    try {
+      await Promise.all([
+        this.staffMembersStore.loadStaffMembers(),
+        this.rolesStore.loadRoles(),
+        this.certificationsStore.loadCertifications(),
+        this.eventsStore.loadEvents(),
+        this.areasStore.loadAreas(),
+      ]);
+    } finally {
+      this.loading = false;
+    }
   },
   watch: {
     searchQuery() {

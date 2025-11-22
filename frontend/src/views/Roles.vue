@@ -1,108 +1,111 @@
 <template>
   <div class="roles-tab view">
-    <TabHeader
-      title="Staff Roles"
-      description="Manage the roles available for your staff members. Define different positions and responsibilities within your organization."
-      action-text="Role"
-      @action="showModal = true"
-    />
+    <LoadingState v-if="loading" message="Loading roles..." />
+    <template v-else>
+      <TabHeader
+        title="Staff Roles"
+        description="Manage the roles available for your staff members. Define different positions and responsibilities within your organization."
+        action-text="Role"
+        @action="showModal = true"
+      />
 
-    <!-- Search and Filters -->
-    <FilterBar
-      v-model:searchQuery="searchQuery"
-      :filtered-count="filteredRoles.length"
-      :total-count="rolesStore.roles.length"
-      @clear="clearFilters"
-    >
-      <template #prepend>
-        <ViewToggle v-model="viewMode" />
-      </template>
-    </FilterBar>
-
-    <!-- Empty State -->
-    <EmptyState
-      v-if="rolesStore.roles.length === 0"
-      type="empty"
-      title="No Roles Yet"
-      message="Add your first role to start organizing staff positions and responsibilities."
-      action-text="Role"
-      @action="showModal = true"
-      icon-name="Shield"
-    />
-
-    <!-- Grid View -->
-    <transition-group
-      v-else-if="viewMode === 'grid'"
-      name="list"
-      tag="div"
-      class="roles-grid transition-wrapper"
-    >
-      <div
-        v-for="role in filteredRoles"
-        :key="role.meta.id"
-        class="role-card-wrapper"
+      <!-- Search and Filters -->
+      <FilterBar
+        v-model:searchQuery="searchQuery"
+        :filtered-count="filteredRoles.length"
+        :total-count="rolesStore.roles.length"
+        @clear="clearFilters"
       >
-        <RoleCard :role="role" @click="selectRole(role.meta.id)" />
-      </div>
-    </transition-group>
+        <template #prepend>
+          <ViewToggle v-model="viewMode" />
+        </template>
+      </FilterBar>
 
-    <!-- Table View -->
-    <DataTable
-      v-else-if="viewMode === 'table' && filteredRoles.length > 0"
-      :columns="roleColumns"
-      :data="filteredRoles"
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
-      row-key="id"
-    >
-      <template #cell-name="{ item }">
-        <div class="role-name-content">
-          <div class="role-icon-sm">
-            <Icon name="Shield" :size="18" />
-          </div>
-          <div>{{ item.meta.name }}</div>
+      <!-- Empty State -->
+      <EmptyState
+        v-if="rolesStore.roles.length === 0"
+        type="empty"
+        title="No Roles Yet"
+        message="Add your first role to start organizing staff positions and responsibilities."
+        action-text="Role"
+        @action="showModal = true"
+        icon-name="Shield"
+      />
+
+      <!-- Grid View -->
+      <transition-group
+        v-else-if="viewMode === 'grid'"
+        name="list"
+        tag="div"
+        class="roles-grid transition-wrapper"
+      >
+        <div
+          v-for="role in filteredRoles"
+          :key="role.meta.id"
+          class="role-card-wrapper"
+        >
+          <RoleCard :role="role" @click="selectRole(role.meta.id)" />
         </div>
-      </template>
+      </transition-group>
 
-      <template #cell-description="{ item }">
-        <span v-if="item.meta.description">{{ item.meta.description }}</span>
-        <span v-else class="text-caption">No description</span>
-      </template>
+      <!-- Table View -->
+      <DataTable
+        v-else-if="viewMode === 'table' && filteredRoles.length > 0"
+        :columns="roleColumns"
+        :data="filteredRoles"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        row-key="id"
+      >
+        <template #cell-name="{ item }">
+          <div class="role-name-content">
+            <div class="role-icon-sm">
+              <Icon name="Shield" :size="18" />
+            </div>
+            <div>{{ item.meta.name }}</div>
+          </div>
+        </template>
 
-      <template #cell-actions="{ item }">
-        <BaseButton
-          outline
-          color="grey-8"
-          size="sm"
-          @click="selectRole(item.meta.id)"
-          label="View Details"
-        />
-      </template>
-    </DataTable>
+        <template #cell-description="{ item }">
+          <span v-if="item.meta.description">{{ item.meta.description }}</span>
+          <span v-else class="text-caption">No description</span>
+        </template>
 
-    <RoleDetailModal
-      v-if="!!selectedRoleId"
-      :role="selectedRole"
-      @close="selectedRoleId = null"
-      @edit="editRoleFromDetail"
-      @delete="deleteRoleConfirm"
-    />
+        <template #cell-actions="{ item }">
+          <BaseButton
+            outline
+            color="grey-8"
+            size="sm"
+            @click="selectRole(item.meta.id)"
+            label="View Details"
+          />
+        </template>
+      </DataTable>
 
-    <RoleFormModal
-      v-if="showModal"
-      :role-id="editingRoleId || undefined"
-      @close="closeModal"
-    />
+      <RoleDetailModal
+        v-if="!!selectedRoleId"
+        :role="selectedRole"
+        @close="selectedRoleId = null"
+        @edit="editRoleFromDetail"
+        @delete="deleteRoleConfirm"
+      />
 
-    <ConfirmModal
-      v-if="showConfirmModal"
-      title="Delete Role"
-      message="Are you sure you want to delete this role?"
-      confirm-text="Delete"
-      :danger-mode="true"
-      @confirm="handleDeleteRole"
-      @cancel="showConfirmModal = false"
-    />
+      <RoleFormModal
+        v-if="showModal"
+        :role-id="editingRoleId || undefined"
+        @close="closeModal"
+      />
+
+      <ConfirmModal
+        v-if="showConfirmModal"
+        title="Delete Role"
+        message="Are you sure you want to delete this role?"
+        confirm-text="Delete"
+        :danger-mode="true"
+        @confirm="handleDeleteRole"
+        @cancel="showConfirmModal = false"
+      />
+    </template>
   </div>
 </template>
 
@@ -121,6 +124,7 @@ import FilterBar from "@/components/FilterBar.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import { useToast } from "@/composables/useToast";
+import LoadingState from "@/components/LoadingState.vue";
 
 export default defineComponent({
   name: "RolesTab",
@@ -135,6 +139,7 @@ export default defineComponent({
     FilterBar,
     ViewToggle,
     EmptyState,
+    LoadingState,
   },
   setup() {
     const rolesStore = useRolesStore();
@@ -143,6 +148,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       showModal: false,
       showConfirmModal: false,
       editingRoleId: null as string | null,
@@ -159,6 +165,14 @@ export default defineComponent({
       ],
     };
   },
+  async created() {
+    this.loading = true;
+    try {
+      await this.rolesStore.loadRoles();
+    } finally {
+      this.loading = false;
+    }
+  },
   computed: {
     filteredRoles(): Role[] {
       let filtered = this.rolesStore.roles;
@@ -168,7 +182,7 @@ export default defineComponent({
         filtered = filtered.filter(
           (role) =>
             role.meta.name.toLowerCase().includes(query) ||
-            role.meta.description?.toLowerCase().includes(query),
+            role.meta.description?.toLowerCase().includes(query)
         );
       }
 

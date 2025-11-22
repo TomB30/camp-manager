@@ -1,5 +1,7 @@
 <template>
   <div class="activity-locations-tab view">
+    <LoadingState v-if="loading" message="Loading locations..." />
+    <template v-else>
     <TabHeader
       title="Locations"
       description="Manage all locations where camp programs and events take place."
@@ -155,6 +157,7 @@
       @confirm="handleConfirmAction"
       @cancel="handleCancelConfirm"
     />
+    </template>
   </div>
 </template>
 
@@ -174,6 +177,7 @@ import EmptyState from "@/components/EmptyState.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import Icon from "@/components/Icon.vue";
 import { useToast } from "@/composables/useToast";
+import LoadingState from "@/components/LoadingState.vue";
 
 export default defineComponent({
   name: "LocationsTab",
@@ -189,6 +193,7 @@ export default defineComponent({
     EmptyState,
     TabHeader,
     Icon,
+    LoadingState,
   },
   setup() {
     const locationsStore = useLocationsStore();
@@ -199,6 +204,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       selectedLocationId: null as string | null,
       showModal: false,
       editingLocationId: null as string | null,
@@ -219,6 +225,18 @@ export default defineComponent({
         { key: "actions", label: "Actions", width: "140px" },
       ],
     };
+  },
+  async created() {
+    this.loading = true;
+    try {
+      await Promise.all([
+        this.locationsStore.loadLocations(),
+        this.areasStore.loadAreas(),
+        this.eventsStore.loadEvents(),
+      ]);
+    } finally {
+      this.loading = false;
+    }
   },
   computed: {
     locationFilters(): Filter[] {

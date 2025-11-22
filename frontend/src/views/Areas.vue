@@ -1,5 +1,7 @@
 <template>
   <div class="areas-tab view">
+    <LoadingState v-if="loading" message="Loading areas..." />
+    <template v-else>
     <TabHeader
       title="Areas"
       description="Manage all physical areas within your camp - from indoor facilities to outdoor spaces."
@@ -115,6 +117,7 @@
       @confirm="handleConfirmAction"
       @cancel="handleCancelConfirm"
     />
+    </template>
   </div>
 </template>
 
@@ -135,6 +138,7 @@ import Icon from "@/components/Icon.vue";
 import DataTable from "@/components/DataTable.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
+import LoadingState from "@/components/LoadingState.vue";
 // Composables
 import { useToast } from "@/composables/useToast";
 
@@ -151,6 +155,7 @@ export default defineComponent({
     EmptyState,
     Icon,
     TabHeader,
+    LoadingState,
   },
   setup() {
     const areasStore = useAreasStore();
@@ -159,6 +164,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       showModal: false,
       showConfirmModal: false,
       editingAreaId: null as string | null,
@@ -175,6 +181,14 @@ export default defineComponent({
         { key: "actions", label: "", width: "120px" },
       ],
     };
+  },
+  async created() {
+    this.loading = true;
+    try {
+      await this.areasStore.loadAreas();
+    } finally {
+      this.loading = false;
+    }
   },
   computed: {
     filteredAreas(): Area[] {

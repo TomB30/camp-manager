@@ -1,5 +1,7 @@
 <template>
   <div class="cabins-tab view">
+    <LoadingState v-if="loading" message="Loading housing..." />
+    <template v-else>
     <TabHeader
       title="Housing"
       description="Manage all sleeping accommodations where campers and family groups will stay during their time at camp."
@@ -126,6 +128,7 @@
       @confirm="handleConfirmAction"
       @cancel="handleCancelConfirm"
     />
+    </template>
   </div>
 </template>
 
@@ -149,6 +152,7 @@ import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import { useToast } from "@/composables/useToast";
 import { useAreasStore } from "@/stores";
+import LoadingState from "@/components/LoadingState.vue";
 
 export default defineComponent({
   name: "HousingTab",
@@ -163,6 +167,7 @@ export default defineComponent({
     EmptyState,
     TabHeader,
     Icon,
+    LoadingState,
   },
   setup() {
     const housingRoomsStore = useHousingRoomsStore();
@@ -174,6 +179,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       selectedRoomId: null as string | null,
       showModal: false,
       editingRoomId: null as string | null,
@@ -194,6 +200,19 @@ export default defineComponent({
         { key: "actions", label: "Actions", width: "140px" },
       ],
     };
+  },
+  async created() {
+    this.loading = true;
+    try {
+      await Promise.all([
+        this.housingRoomsStore.loadHousingRooms(),
+        this.groupsStore.loadGroups(),
+        this.areasStore.loadAreas(),
+        this.sessionsStore.loadSessions(),
+      ]);
+    } finally {
+      this.loading = false;
+    }
   },
   computed: {
     selectedRoom(): HousingRoom | null {

@@ -1,5 +1,7 @@
 <template>
   <div class="calendar-view view">
+    <LoadingState v-if="loading" message="Loading calendar..." />
+    <template v-else>
     <TabHeader
       title="Event Calendar"
       action-text="Event"
@@ -94,33 +96,34 @@
       @select-day="selectDay"
       @select-event="selectEvent"
     />
+    </template>
+
+    <EventDetailModal
+      v-if="!!selectedEventId"
+      :event="selectedEvent"
+      @close="selectedEventId = null"
+      @edit="editEvent"
+      @delete="deleteEventConfirm"
+    />
+
+    <EventFormModal
+      v-if="showEventModal"
+      :event-id="editingEventId || undefined"
+      :default-event-date="defaultEventDate"
+      @close="closeEventModal"
+    />
+
+    <ConfirmModal
+      v-if="showConfirmModal"
+      title="Delete Event"
+      :message="`Are you sure you want to delete the event '${confirmAction?.data.eventName}'?`"
+      details="This action cannot be undone. All assigned groups will be removed from this event."
+      confirm-text="Delete"
+      :danger-mode="true"
+      @confirm="handleConfirmAction"
+      @cancel="handleCancelConfirm"
+    />
   </div>
-
-  <EventDetailModal
-    v-if="!!selectedEventId"
-    :event="selectedEvent"
-    @close="selectedEventId = null"
-    @edit="editEvent"
-    @delete="deleteEventConfirm"
-  />
-
-  <EventFormModal
-    v-if="showEventModal"
-    :event-id="editingEventId || undefined"
-    :default-event-date="defaultEventDate"
-    @close="closeEventModal"
-  />
-
-  <ConfirmModal
-    v-if="showConfirmModal"
-    title="Delete Event"
-    :message="`Are you sure you want to delete the event '${confirmAction?.data.eventName}'?`"
-    details="This action cannot be undone. All assigned groups will be removed from this event."
-    confirm-text="Delete"
-    :danger-mode="true"
-    @confirm="handleConfirmAction"
-    @cancel="handleCancelConfirm"
-  />
 </template>
 
 <script lang="ts">
@@ -143,6 +146,7 @@ import MonthlyCalendarView from "@/components/MonthlyCalendarView.vue";
 import type { Event } from "@/generated/api";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import Icon from "@/components/Icon.vue";
+import LoadingState from "@/components/LoadingState.vue";
 export default defineComponent({
   name: "Calendar",
   components: {
@@ -155,9 +159,11 @@ export default defineComponent({
     MonthlyCalendarView,
     TabHeader,
     Icon,
+    LoadingState,
   },
   data() {
     return {
+      loading: false,
       selectedDate: new Date(),
       selectedEventId: null as string | null,
       editingEventId: null as string | null,
@@ -176,8 +182,19 @@ export default defineComponent({
       defaultEventDate: new Date(),
     };
   },
-  created() {
-    this.eventsStore.loadEvents();
+  async created() {
+    this.loading = true;
+    try {
+      await Promise.all([
+        this.eventsStore.loadEvents(),
+        this.staffMembersStore.loadStaffMembers(),
+        this.locationsStore.loadLocations(),
+        this.groupsStore.loadGroups(),
+        this.programsStore.loadPrograms(),
+      ]);
+    } finally {
+      this.loading = false;
+    }
   },
   mounted() {
     this.handleEventIdFromQuery();

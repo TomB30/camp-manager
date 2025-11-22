@@ -1,5 +1,7 @@
 <template>
   <div class="certifications-tab view">
+    <LoadingState v-if="loading" message="Loading certifications..." />
+    <template v-else>
     <TabHeader
       title="Staff Certifications"
       description="Manage the certifications available for your staff members. Define which certifications are required and their validity periods."
@@ -97,6 +99,7 @@
       @confirm="handleDeleteCertification"
       @cancel="showConfirmModal = false"
     />
+    </template>
   </div>
 </template>
 
@@ -115,6 +118,7 @@ import FilterBar from "@/components/FilterBar.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import { useToast } from "@/composables/useToast";
+import LoadingState from "@/components/LoadingState.vue";
 
 export default defineComponent({
   name: "CertificationsTab",
@@ -129,6 +133,7 @@ export default defineComponent({
     FilterBar,
     ViewToggle,
     EmptyState,
+    LoadingState,
   },
   setup() {
     const certificationsStore = useCertificationsStore();
@@ -137,6 +142,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       showModal: false,
       showConfirmModal: false,
       editingCertificationId: null as string | null,
@@ -151,6 +157,14 @@ export default defineComponent({
         { key: "actions", label: "", width: "120px" },
       ],
     };
+  },
+  async created() {
+    this.loading = true;
+    try {
+      await this.certificationsStore.loadCertifications();
+    } finally {
+      this.loading = false;
+    }
   },
   computed: {
     filteredCertifications(): Certification[] {
