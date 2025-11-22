@@ -1,89 +1,23 @@
+/**
+ * Unified Colors Service
+ * Routes to either backend API or local storage based on configuration
+ */
+import { isBackendEnabled } from '@/config/dataSource';
+import { colorsStorage } from './colorsStorage';
+import { colorsApi } from './api/colorsApi';
 import type {
   Color,
   ColorCreationRequest,
   ColorUpdateRequest,
-} from "@/generated/api";
-import { storageService } from "./storage";
-import { getCurrentTenantId, getCurrentCampId } from "@/utils/tenantContext";
-import { STORAGE_KEYS } from "./storageKeys";
+} from '@/generated/api';
+
+const impl = () => isBackendEnabled() ? colorsApi : colorsStorage;
 
 export const colorsService = {
-  listColors,
-  createColor,
-  updateColor,
-  deleteColor,
-  getColorById,
-  getColorByName,
-  getColorByHex,
+  listColors: (): Promise<Color[]> => impl().listColors(),
+  createColor: (data: ColorCreationRequest): Promise<Color> => impl().createColor(data),
+  updateColor: (id: string, data: ColorUpdateRequest): Promise<Color> => impl().updateColor(id, data),
+  deleteColor: (id: string): Promise<void> => impl().deleteColor(id),
+  getColorById: (id: string): Promise<Color | null> => impl().getColorById(id),
 };
 
-async function listColors(): Promise<Color[]> {
-  return storageService.getAll<Color>(STORAGE_KEYS.COLORS);
-}
-
-async function createColor(color: ColorCreationRequest): Promise<Color> {
-  const newColor = {
-    ...color,
-    meta: {
-      id: crypto.randomUUID(),
-      tenantId: getCurrentTenantId(),
-      campId: getCurrentCampId(),
-      name: color.meta.name,
-      description: color.meta.description,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  };
-  return storageService.save<Color>(STORAGE_KEYS.COLORS, newColor);
-}
-
-async function updateColor(
-  id: string,
-  color: ColorUpdateRequest,
-): Promise<Color> {
-  const existingColor = await storageService.getById<Color>(
-    STORAGE_KEYS.COLORS,
-    id,
-  );
-  if (!existingColor) {
-    throw new Error(`Color with id ${id} not found`);
-  }
-  const updatedColor = {
-    ...existingColor,
-    ...color,
-    meta: {
-      id: existingColor.meta.id,
-      tenantId: existingColor.meta.tenantId,
-      campId: existingColor.meta.campId,
-      name: color.meta.name,
-      description: color.meta.description,
-      createdAt: existingColor.meta.createdAt,
-      updatedAt: new Date().toISOString(),
-    },
-  };
-  return storageService.save<Color>(STORAGE_KEYS.COLORS, updatedColor);
-}
-
-async function deleteColor(id: string): Promise<void> {
-  return storageService.delete(STORAGE_KEYS.COLORS, id);
-}
-
-async function getColorById(id: string): Promise<Color | null> {
-  return storageService.getById<Color>(STORAGE_KEYS.COLORS, id);
-}
-
-async function getColorByName(name: string): Promise<Color | null> {
-  const colors = await listColors();
-  return (
-    colors.find((c) => c.meta.name.toLowerCase() === name.toLowerCase()) || null
-  );
-}
-
-async function getColorByHex(hexValue: string): Promise<Color | null> {
-  const colors = await listColors();
-  return (
-    colors.find(
-      (c) => c.spec.hexValue.toLowerCase() === hexValue.toLowerCase(),
-    ) || null
-  );
-}

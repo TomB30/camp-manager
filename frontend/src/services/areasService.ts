@@ -1,69 +1,23 @@
+/**
+ * Unified Areas Service
+ * Routes to either backend API or local storage based on configuration
+ */
+import { isBackendEnabled } from '@/config/dataSource';
+import { areasStorage } from './areasStorage';
+import { areasApi } from './api/areasApi';
 import type {
   Area,
   AreaCreationRequest,
   AreaUpdateRequest,
-} from "@/generated/api";
-import { storageService } from "./storage";
-import { getTenantContext } from "@/utils/tenantContext";
-import { STORAGE_KEYS } from "./storageKeys";
+} from '@/generated/api';
+
+const impl = () => isBackendEnabled() ? areasApi : areasStorage;
 
 export const areasService = {
-  listAreas,
-  createArea,
-  updateArea,
-  deleteArea,
-  getAreaById,
+  listAreas: (): Promise<Area[]> => impl().listAreas(),
+  createArea: (data: AreaCreationRequest): Promise<Area> => impl().createArea(data),
+  updateArea: (id: string, data: AreaUpdateRequest): Promise<Area> => impl().updateArea(id, data),
+  deleteArea: (id: string): Promise<void> => impl().deleteArea(id),
+  getAreaById: (id: string): Promise<Area | null> => impl().getAreaById(id),
 };
 
-async function listAreas(): Promise<Area[]> {
-  return storageService.getAll<Area>(STORAGE_KEYS.AREAS);
-}
-
-async function createArea(area: AreaCreationRequest): Promise<Area> {
-  const { tenantId, campId } = getTenantContext();
-  const newArea = {
-    ...area,
-    meta: {
-      id: crypto.randomUUID(),
-      tenantId,
-      campId,
-      name: area.meta.name,
-      description: area.meta.description,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  };
-  return storageService.save<Area>(STORAGE_KEYS.AREAS, newArea);
-}
-
-async function updateArea(id: string, area: AreaUpdateRequest): Promise<Area> {
-  const existingArea = await storageService.getById<Area>(
-    STORAGE_KEYS.AREAS,
-    id,
-  );
-  if (!existingArea) {
-    throw new Error(`Area with id ${id} not found`);
-  }
-  const updatedArea = {
-    ...existingArea,
-    ...area,
-    meta: {
-      id: existingArea.meta.id,
-      tenantId: existingArea.meta.tenantId,
-      campId: existingArea.meta.campId,
-      name: area.meta.name,
-      description: area.meta.description,
-      createdAt: existingArea.meta.createdAt,
-      updatedAt: new Date().toISOString(),
-    },
-  };
-  return storageService.save<Area>(STORAGE_KEYS.AREAS, updatedArea);
-}
-
-async function deleteArea(id: string): Promise<void> {
-  return storageService.delete(STORAGE_KEYS.AREAS, id);
-}
-
-async function getAreaById(id: string): Promise<Area | null> {
-  return storageService.getById<Area>(STORAGE_KEYS.AREAS, id);
-}

@@ -110,7 +110,7 @@ const router = createRouter({
 });
 
 // Navigation guard
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
   const uiStore = useUIStore();
 
@@ -119,7 +119,7 @@ router.beforeEach((to, from, next) => {
 
   // Check authentication on first navigation
   if (from.name === undefined) {
-    authStore.checkAuth();
+    await authStore.checkAuth();
   }
 
   // Handle sidebar mode based on route

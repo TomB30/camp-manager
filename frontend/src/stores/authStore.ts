@@ -1,82 +1,8 @@
 import { defineStore } from "pinia";
 import type { User } from "@/generated/api";
+import { authService } from "@/services";
 
-const AUTH_STORAGE_KEY = "camp_manager_auth";
 const SELECTED_CAMP_KEY = "camp_manager_selected_camp";
-
-// Mock users for development
-const MOCK_USERS: Array<User & { password: string }> = [
-  {
-    id: "user-system",
-    email: "system@admin.com",
-    password: "password",
-    tenantId: "tenant-1",
-    accessRules: [
-      {
-        role: "admin",
-        scopeType: "system",
-        scopeId: null,
-      },
-    ],
-  },
-  {
-    id: "user-tenant-admin",
-    email: "tenant@admin.com",
-    password: "password",
-    tenantId: "tenant-1",
-    accessRules: [
-      {
-        role: "admin",
-        scopeType: "tenant",
-        scopeId: "tenant-1",
-      },
-    ],
-  },
-  {
-    id: "user-camp-admin",
-    email: "camp@admin.com",
-    password: "password",
-    tenantId: "tenant-1",
-    accessRules: [
-      {
-        role: "admin",
-        scopeType: "camp",
-        scopeId: "camp-1",
-      },
-    ],
-  },
-  {
-    id: "user-mixed",
-    email: "mixed@user.com",
-    password: "password",
-    tenantId: "tenant-1",
-    accessRules: [
-      {
-        role: "admin",
-        scopeType: "camp",
-        scopeId: "camp-1",
-      },
-      {
-        role: "viewer",
-        scopeType: "camp",
-        scopeId: "camp-2",
-      },
-    ],
-  },
-  {
-    id: "user-viewer",
-    email: "viewer@camp.com",
-    password: "password",
-    tenantId: "tenant-1",
-    accessRules: [
-      {
-        role: "viewer",
-        scopeType: "camp",
-        scopeId: "camp-1",
-      },
-    ],
-  },
-];
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -159,21 +85,14 @@ export const useAuthStore = defineStore("auth", {
 
   actions: {
     async login(email: string, password: string): Promise<void> {
-      // Mock login - validate against mock users
-      const user = MOCK_USERS.find(
-        (u) => u.email === email && u.password === password,
-      );
+      // Use authService which routes to backend API or localStorage based on mode
+      const response = await authService.login({
+        email,
+        password,
+      });
 
-      if (!user) {
-        throw new Error("Invalid email or password");
-      }
-
-      // Remove password from stored user
-      const { password: _, ...userWithoutPassword } = user;
-      this.currentUser = userWithoutPassword;
-
-      // Save to localStorage
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(this.currentUser));
+      // Set current user from response
+      this.currentUser = response.user;
 
       // Set initial selected camp if user has camp access
       const campIds = this.accessibleCampIds;
@@ -184,67 +103,58 @@ export const useAuthStore = defineStore("auth", {
 
     async signup(
       email: string,
-      _: string, // password is not used for now
+      password: string,
       tenantId: string,
     ): Promise<void> {
-      // Mock signup - in real implementation this would call the API
-      const existingUser = MOCK_USERS.find((u) => u.email === email);
-
-      if (existingUser) {
-        throw new Error("User with this email already exists");
-      }
-
-      // Create new user with viewer access
-      const newUser: User = {
-        id: `user-${Date.now()}`,
+      // Use authService which routes to backend API or localStorage based on mode
+      const response = await authService.signup({
         email,
+        password,
         tenantId,
-        accessRules: [
-          {
-            role: "viewer",
-            scopeType: "tenant",
-            scopeId: tenantId,
-          },
-        ],
-      };
+      });
 
-      this.currentUser = newUser;
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(this.currentUser));
+      // Set current user from response
+      this.currentUser = response.user;
     },
 
-    logout(): void {
+    async logout(): Promise<void> {
+      // Use authService which routes to backend API or localStorage based on mode
+      await authService.logout();
+      
+      // Clear local state
       this.currentUser = null;
       this.selectedCampId = null;
-      localStorage.removeItem(AUTH_STORAGE_KEY);
       localStorage.removeItem(SELECTED_CAMP_KEY);
     },
 
-    checkAuth(): boolean {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (stored) {
-        try {
-          this.currentUser = JSON.parse(stored);
-
-          // Restore selected camp
-          const selectedCamp = localStorage.getItem(SELECTED_CAMP_KEY);
-          if (selectedCamp) {
-            this.selectedCampId = selectedCamp;
-          } else {
-            // Set initial selected camp if user has camp access
-            const campIds = this.accessibleCampIds;
-            if (campIds.length > 0) {
-              this.setSelectedCamp(campIds[0]);
-            }
-          }
-
-          return true;
-        } catch (e) {
-          // Invalid stored data, clear it
-          this.logout();
-          return false;
-        }
+    async checkAuth(): Promise<boolean> {
+      // Check if user is authenticated using authService
+      if (!authService.isAuthenticated()) {
+        return false;
       }
-      return false;
+
+      try {
+        // Get current user from service
+        this.currentUser = await authService.getCurrentUser();
+
+        // Restore selected camp
+        const selectedCamp = localStorage.getItem(SELECTED_CAMP_KEY);
+        if (selectedCamp) {
+          this.selectedCampId = selectedCamp;
+        } else {
+          // Set initial selected camp if user has camp access
+          const campIds = this.accessibleCampIds;
+          if (campIds.length > 0) {
+            this.setSelectedCamp(campIds[0]);
+          }
+        }
+
+        return true;
+      } catch (e) {
+        // Invalid stored data, clear it
+        await this.logout();
+        return false;
+      }
     },
 
     setSelectedCamp(campId: string): void {

@@ -1,5 +1,6 @@
 import { storageService, STORAGE_KEYS } from "@/services";
 import { useMainStore } from "@/stores";
+import { isBackendEnabled, setBackendEnabled, getDataSourceMode } from "@/config/dataSource";
 
 /**
  * Development Tools - Functions exposed to browser console for easy data management
@@ -8,6 +9,8 @@ import { useMainStore } from "@/stores";
  * - clearData(): Clear all data from localStorage
  * - insertMockData(): Insert fresh mock data
  * - resetData(): Clear and re-insert mock data in one step
+ * - toggleBackendMode(): Switch between backend API and localStorage
+ * - getDataSource(): Check current data source mode
  */
 
 /**
@@ -65,23 +68,73 @@ export async function resetData(): Promise<void> {
   console.log("✅ Data reset complete!");
 }
 
+/**
+ * Toggle between backend API and localStorage mode
+ */
+export function toggleBackendMode(): void {
+  const currentMode = isBackendEnabled();
+  const newMode = !currentMode;
+  
+  setBackendEnabled(newMode);
+  
+  console.log(`
+🔄 Data Source Mode Changed!
+  
+Previous: ${currentMode ? 'BACKEND API' : 'LOCAL_STORAGE'}
+Current:  ${newMode ? 'BACKEND API' : 'LOCAL_STORAGE'}
+
+⚠️  Page will reload to apply changes...
+  `);
+  
+  // Reload the page to apply changes
+  setTimeout(() => {
+    window.location.reload();
+  }, 1000);
+}
+
+/**
+ * Get current data source mode
+ */
+export function getDataSource(): string {
+  const mode = getDataSourceMode();
+  const modeDisplay = mode === 'backend' ? 'BACKEND API' : 'LOCAL_STORAGE';
+  
+  console.log(`
+📊 Current Data Source: ${modeDisplay}
+  
+To switch modes, use:
+  devTools.toggleBackendMode()
+  `);
+  
+  return modeDisplay;
+}
+
 // Expose functions to window object for console access
 if (typeof window !== "undefined") {
   (window as any).devTools = {
     clearData,
     insertMockData,
     resetData,
+    toggleBackendMode,
+    getDataSource,
   };
+
+  const currentMode = getDataSourceMode();
+  const modeDisplay = currentMode === 'backend' ? 'BACKEND API' : 'LOCAL_STORAGE';
 
   console.log(`
 🛠️  Development Tools Loaded!
+📊 Current Data Source: ${modeDisplay}
     
 Available commands:
-  devTools.clearData()      - Clear all data from localStorage
-  devTools.insertMockData() - Insert fresh mock data
-  devTools.resetData()      - Clear and re-insert mock data (recommended)
+  devTools.clearData()         - Clear all data from localStorage
+  devTools.insertMockData()    - Insert fresh mock data
+  devTools.resetData()         - Clear and re-insert mock data (recommended)
+  devTools.toggleBackendMode() - Switch between backend API and localStorage
+  devTools.getDataSource()     - Check current data source mode
 
 Example usage:
   await devTools.resetData()
+  devTools.toggleBackendMode()
   `);
 }

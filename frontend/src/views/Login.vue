@@ -170,14 +170,7 @@ export default defineComponent({
 
       try {
         if (mode.value === "login") {
-          // Example of using the generated API client directly
-          // const response = await authService.login({
-          //   email: email.value,
-          //   password: password.value,
-          // });
-
-          // const camps = await campService.getCampsApi();
-
+          // Login using authStore (which uses authService internally)
           await authStore.login(email.value, password.value);
           toastStore.success("Successfully logged in!");
 
@@ -186,6 +179,7 @@ export default defineComponent({
 
           router.push("/");
         } else {
+          // Signup using authStore (which uses authService internally)
           await authStore.signup(email.value, password.value, tenantId.value);
           toastStore.success("Account created successfully!");
 

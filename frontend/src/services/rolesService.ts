@@ -1,68 +1,23 @@
+/**
+ * Unified Roles Service
+ * Routes to either backend API or local storage based on configuration
+ */
+import { isBackendEnabled } from '@/config/dataSource';
+import { rolesStorage } from './rolesStorage';
+import { rolesApi } from './api/rolesApi';
 import type {
   Role,
   RoleCreationRequest,
   RoleUpdateRequest,
-} from "@/generated/api";
-import { storageService } from "./storage";
-import { getCurrentTenantId, getCurrentCampId } from "@/utils/tenantContext";
-import { STORAGE_KEYS } from "./storageKeys";
+} from '@/generated/api';
+
+const impl = () => isBackendEnabled() ? rolesApi : rolesStorage;
 
 export const rolesService = {
-  listRoles,
-  createRole,
-  updateRole,
-  deleteRole,
-  getRoleById,
+  listRoles: (): Promise<Role[]> => impl().listRoles(),
+  createRole: (data: RoleCreationRequest): Promise<Role> => impl().createRole(data),
+  updateRole: (id: string, data: RoleUpdateRequest): Promise<Role> => impl().updateRole(id, data),
+  deleteRole: (id: string): Promise<void> => impl().deleteRole(id),
+  getRoleById: (id: string): Promise<Role | null> => impl().getRoleById(id),
 };
 
-async function listRoles(): Promise<Role[]> {
-  return storageService.getAll<Role>(STORAGE_KEYS.ROLES);
-}
-
-async function createRole(role: RoleCreationRequest): Promise<Role> {
-  const newRole = {
-    ...role,
-    meta: {
-      id: crypto.randomUUID(),
-      tenantId: getCurrentTenantId(),
-      campId: getCurrentCampId(),
-      name: role.meta.name,
-      description: role.meta.description,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  };
-  return storageService.save<Role>(STORAGE_KEYS.ROLES, newRole);
-}
-
-async function updateRole(id: string, role: RoleUpdateRequest): Promise<Role> {
-  const existingRole = await storageService.getById<Role>(
-    STORAGE_KEYS.ROLES,
-    id,
-  );
-  if (!existingRole) {
-    throw new Error(`Role with id ${id} not found`);
-  }
-  const updatedRole = {
-    ...existingRole,
-    ...role,
-    meta: {
-      id: existingRole.meta.id,
-      tenantId: existingRole.meta.tenantId,
-      campId: existingRole.meta.campId,
-      name: role.meta.name,
-      description: role.meta.description,
-      createdAt: existingRole.meta.createdAt,
-      updatedAt: new Date().toISOString(),
-    },
-  };
-  return storageService.save<Role>(STORAGE_KEYS.ROLES, updatedRole);
-}
-
-async function deleteRole(id: string): Promise<void> {
-  return storageService.delete(STORAGE_KEYS.ROLES, id);
-}
-
-async function getRoleById(id: string): Promise<Role | null> {
-  return storageService.getById<Role>(STORAGE_KEYS.ROLES, id);
-}
