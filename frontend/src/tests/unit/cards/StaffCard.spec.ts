@@ -136,24 +136,7 @@ describe("StaffCard", () => {
         },
       });
 
-      expect(wrapper.classes()).toContain("card-clickable");
-    });
-
-    it("has card-horizontal class", () => {
-      const member: StaffMember = {
-        ...staffMembersFixture[0],
-        spec: {
-          ...staffMembersFixture[0].spec,
-        },
-      };
-      const wrapper = createWrapper(StaffCard, {
-        props: {
-          member,
-          formattedRole: "Counselor",
-        },
-      });
-
-      expect(wrapper.classes()).toContain("card-horizontal");
+      expect(wrapper.classes()).toContain("clickable");
     });
   });
 });

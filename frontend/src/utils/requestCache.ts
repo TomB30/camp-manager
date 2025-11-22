@@ -27,16 +27,16 @@ let currentToken: string | null = null;
 export function generateCacheKey(
   method: string,
   url: string,
-  token: string | null
+  token: string | null,
 ): string {
   // Parse URL to get pathname and search params
   const urlObj = new URL(url);
   const pathname = urlObj.pathname;
   const searchParams = urlObj.searchParams.toString();
-  
+
   // Include token in cache key to prevent cross-user cache pollution
-  const tokenPart = token ? `token:${token}` : 'no-token';
-  
+  const tokenPart = token ? `token:${token}` : "no-token";
+
   // Combine method, pathname, params, and token
   return `${method}:${pathname}:${searchParams}:${tokenPart}`;
 }
@@ -51,17 +51,17 @@ export function getEntityFromUrl(url: string): string | null {
   try {
     const urlObj = new URL(url);
     const pathname = urlObj.pathname;
-    
+
     // Match patterns like /camps/{id}/{entity} or /camps/{id}/{entity}/{id}
     const entityMatch = pathname.match(/\/camps\/[^/]+\/([^/]+)/);
-    
+
     if (entityMatch && entityMatch[1]) {
       return entityMatch[1];
     }
-    
+
     return null;
   } catch (error) {
-    console.error('[Cache] Error parsing URL for entity:', error);
+    console.error("[Cache] Error parsing URL for entity:", error);
     return null;
   }
 }
@@ -79,19 +79,19 @@ function isValidCacheEntry(entry: CacheEntry): boolean {
  */
 export function getCachedResponse(cacheKey: string): any | null {
   const entry = cache.get(cacheKey);
-  
+
   if (!entry) {
     stats.misses++;
     return null;
   }
-  
+
   if (!isValidCacheEntry(entry)) {
     // Cache expired, remove it
     cache.delete(cacheKey);
     stats.misses++;
     return null;
   }
-  
+
   stats.hits++;
   logDebug(`Cache HIT: ${cacheKey}`);
   return entry.data;
@@ -103,7 +103,7 @@ export function getCachedResponse(cacheKey: string): any | null {
 export function setCachedResponse(
   cacheKey: string,
   data: any,
-  ttl: number
+  ttl: number,
 ): void {
   cache.set(cacheKey, {
     data,
@@ -119,7 +119,7 @@ export function setCachedResponse(
  */
 export function invalidateEntityCache(entityType: string): void {
   let invalidatedCount = 0;
-  
+
   // Find and delete all cache entries that contain this entity in their key
   for (const [key, _] of cache.entries()) {
     // Check if this cache key is for the entity we're invalidating
@@ -129,7 +129,7 @@ export function invalidateEntityCache(entityType: string): void {
       invalidatedCount++;
     }
   }
-  
+
   stats.invalidations += invalidatedCount;
 }
 
@@ -150,7 +150,7 @@ export function clearAllCache(): void {
 export function setCurrentToken(token: string | null): void {
   const previousToken = currentToken;
   currentToken = token;
-  
+
   // If token changed, clear all cache to prevent user A seeing user B's data
   if (previousToken !== token) {
     clearAllCache();
@@ -167,7 +167,10 @@ export function getCurrentToken(): string | null {
 /**
  * Get cache statistics for debugging
  */
-export function getCacheStats(): CacheStats & { size: number; entries: string[] } {
+export function getCacheStats(): CacheStats & {
+  size: number;
+  entries: string[];
+} {
   return {
     ...stats,
     size: cache.size,
@@ -204,4 +207,3 @@ if (import.meta.env.DEV) {
     invalidateEntity: invalidateEntityCache,
   };
 }
-

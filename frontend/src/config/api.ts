@@ -43,19 +43,22 @@ const getAuthToken = (): string | null => {
  * Create a custom fetch function that checks cache before making requests
  */
 const createCachedFetch = (originalFetch: typeof fetch): typeof fetch => {
-  return async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+  return async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
     const request = new Request(input, init);
     const method = request.method;
     const url = request.url;
     const token = getAuthToken();
-    
+
     // Update cache system with current token (clears cache if token changed)
     setCurrentToken(token);
-    
+
     // Check cache for GET requests BEFORE making the network request
-    if (CACHE_ENABLED && method === 'GET') {
+    if (CACHE_ENABLED && method === "GET") {
       const entityType = getEntityTypeFromUrl(url);
-      
+
       if (entityType && isCachingEnabled(entityType)) {
         const cacheKey = generateCacheKey(method, url, token);
         const cachedData = getCachedResponse(cacheKey);
@@ -63,28 +66,30 @@ const createCachedFetch = (originalFetch: typeof fetch): typeof fetch => {
         if (cachedData !== null) {
           // Cache hit! Return cached data WITHOUT making network request
           if (import.meta.env.DEV) {
-            console.log(`[Cache] 🎯 Cache HIT - no network request made for ${entityType}`);
+            console.log(
+              `[Cache] 🎯 Cache HIT - no network request made for ${entityType}`,
+            );
           }
-          
+
           return new Response(JSON.stringify(cachedData), {
             status: 200,
-            statusText: 'OK (Cached)',
+            statusText: "OK (Cached)",
             headers: {
-              'Content-Type': 'application/json',
-              'X-Cache': 'HIT',
+              "Content-Type": "application/json",
+              "X-Cache": "HIT",
             },
           });
         }
       }
     }
-    
+
     // Cache miss or non-cacheable - proceed with network request
     const response = await originalFetch(request);
-    
+
     // Handle successful GET responses - cache them
-    if (response.ok && method === 'GET' && CACHE_ENABLED) {
+    if (response.ok && method === "GET" && CACHE_ENABLED) {
       const entityType = getEntityTypeFromUrl(url);
-      
+
       if (entityType && isCachingEnabled(entityType)) {
         try {
           const clonedResponse = response.clone();
@@ -95,30 +100,32 @@ const createCachedFetch = (originalFetch: typeof fetch): typeof fetch => {
         } catch (error) {
           // If parsing fails, don't cache (might be non-JSON response)
           if (import.meta.env.DEV) {
-            console.debug('[Cache] Could not cache response:', error);
+            console.debug("[Cache] Could not cache response:", error);
           }
         }
       }
     }
-    
+
     // Handle mutations - invalidate related cache
-    if (response.ok && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+    if (response.ok && ["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
       const entityType = getEntityTypeFromUrl(url);
-      
+
       if (entityType) {
         invalidateEntityCache(entityType);
-        
+
         if (import.meta.env.DEV) {
-          console.log(`[Cache] 🔄 Invalidated cache for ${entityType} due to ${method} request`);
+          console.log(
+            `[Cache] 🔄 Invalidated cache for ${entityType} due to ${method} request`,
+          );
         }
       }
     }
-    
+
     // Handle 401 errors
     if (response.status === 401) {
       console.warn("[API] Received 401 Unauthorized - token may be expired");
     }
-    
+
     return response;
   };
 };

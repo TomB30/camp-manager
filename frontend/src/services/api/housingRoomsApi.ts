@@ -1,14 +1,14 @@
 /**
  * Backend API implementation for Housing Rooms
  */
-import * as sdk from '@/generated/api/sdk.gen';
+import * as sdk from "@/generated/api/sdk.gen";
 import type {
   HousingRoom,
   HousingRoomCreationRequest,
   HousingRoomUpdateRequest,
-} from '@/generated/api';
-import { apiClient } from '@/config/api';
-import { getApiCampId } from '@/utils/tenantContext';
+} from "@/generated/api";
+import { apiClient } from "@/config/api";
+import { getApiCampId } from "@/utils/tenantContext";
 
 export const housingRoomsApi = {
   listHousingRooms,
@@ -19,12 +19,15 @@ export const housingRoomsApi = {
 };
 
 async function listHousingRooms(): Promise<HousingRoom[]> {
-  const response = await sdk.listHousingRooms({ client: apiClient, path: { camp_id: getApiCampId() } });
-  
+  const response = await sdk.listHousingRooms({
+    client: apiClient,
+    path: { camp_id: getApiCampId() },
+  });
+
   if (response.error) {
-    throw new Error('Failed to fetch housing rooms');
+    throw new Error("Failed to fetch housing rooms");
   }
-  
+
   return response.data?.items || [];
 }
 
@@ -36,11 +39,11 @@ async function createHousingRoom(
     path: { camp_id: getApiCampId() },
     body: room,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to create housing room');
+    throw new Error("Failed to create housing room");
   }
-  
+
   return response.data;
 }
 
@@ -53,11 +56,11 @@ async function updateHousingRoom(
     path: { camp_id: getApiCampId(), id },
     body: room,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to update housing room');
+    throw new Error("Failed to update housing room");
   }
-  
+
   return response.data;
 }
 
@@ -66,9 +69,9 @@ async function deleteHousingRoom(id: string): Promise<void> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
-    throw new Error('Failed to delete housing room');
+    throw new Error("Failed to delete housing room");
   }
 }
 
@@ -77,11 +80,10 @@ async function getHousingRoomById(id: string): Promise<HousingRoom | null> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
     return null;
   }
-  
+
   return response.data || null;
 }
-

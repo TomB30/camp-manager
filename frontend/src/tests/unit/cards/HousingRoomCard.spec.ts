@@ -176,20 +176,7 @@ describe("HousingRoomCard", () => {
         pinia,
       });
 
-      expect(wrapper.classes()).toContain("card-clickable");
-    });
-
-    it("has card-horizontal class", () => {
-      const room: HousingRoom = {
-        ...housingRoomsFixture[0],
-        spec: { ...housingRoomsFixture[0].spec },
-      };
-      const wrapper = createWrapper(HousingRoomCard, {
-        props: { room },
-        pinia,
-      });
-
-      expect(wrapper.classes()).toContain("card-horizontal");
+      expect(wrapper.classes()).toContain("clickable");
     });
   });
 

@@ -1,14 +1,14 @@
 /**
  * Backend API implementation for Locations
  */
-import * as sdk from '@/generated/api/sdk.gen';
+import * as sdk from "@/generated/api/sdk.gen";
 import type {
   Location,
   LocationCreationRequest,
   LocationUpdateRequest,
-} from '@/generated/api';
-import { apiClient } from '@/config/api';
-import { getApiCampId } from '@/utils/tenantContext';
+} from "@/generated/api";
+import { apiClient } from "@/config/api";
+import { getApiCampId } from "@/utils/tenantContext";
 
 export const locationsApi = {
   listLocations,
@@ -20,12 +20,15 @@ export const locationsApi = {
 };
 
 async function listLocations(): Promise<Location[]> {
-  const response = await sdk.listLocations({ client: apiClient, path: { camp_id: getApiCampId() } });
-  
+  const response = await sdk.listLocations({
+    client: apiClient,
+    path: { camp_id: getApiCampId() },
+  });
+
   if (response.error) {
-    throw new Error('Failed to fetch locations');
+    throw new Error("Failed to fetch locations");
   }
-  
+
   return response.data?.items || [];
 }
 
@@ -37,11 +40,11 @@ async function createLocation(
     path: { camp_id: getApiCampId() },
     body: location,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to create location');
+    throw new Error("Failed to create location");
   }
-  
+
   return response.data;
 }
 
@@ -54,11 +57,11 @@ async function updateLocation(
     path: { camp_id: getApiCampId(), id },
     body: location,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to update location');
+    throw new Error("Failed to update location");
   }
-  
+
   return response.data;
 }
 
@@ -67,9 +70,9 @@ async function deleteLocation(id: string): Promise<void> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
-    throw new Error('Failed to delete location');
+    throw new Error("Failed to delete location");
   }
 }
 
@@ -78,11 +81,11 @@ async function getLocationById(id: string): Promise<Location | null> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
     return null;
   }
-  
+
   return response.data || null;
 }
 
@@ -91,4 +94,3 @@ async function getLocationsByArea(areaId: string): Promise<Location[]> {
   const locations = await listLocations();
   return locations.filter((l) => l.spec.areaId === areaId);
 }
-

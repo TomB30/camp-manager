@@ -120,7 +120,7 @@ export const useAuthStore = defineStore("auth", {
     async logout(): Promise<void> {
       // Use authService which routes to backend API or localStorage based on mode
       await authService.logout();
-      
+
       // Clear local state
       this.currentUser = null;
       this.selectedCampId = null;

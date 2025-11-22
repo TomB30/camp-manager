@@ -1,14 +1,14 @@
 /**
  * Backend API implementation for Events
  */
-import * as sdk from '@/generated/api/sdk.gen';
+import * as sdk from "@/generated/api/sdk.gen";
 import type {
   Event,
   EventCreationRequest,
   EventUpdateRequest,
-} from '@/generated/api';
-import { apiClient } from '@/config/api';
-import { getApiCampId } from '@/utils/tenantContext';
+} from "@/generated/api";
+import { apiClient } from "@/config/api";
+import { getApiCampId } from "@/utils/tenantContext";
 
 export const eventsApi = {
   listEvents,
@@ -23,12 +23,15 @@ export const eventsApi = {
 };
 
 async function listEvents(): Promise<Event[]> {
-  const response = await sdk.listEvents({ client: apiClient, path: { camp_id: getApiCampId() } });
-  
+  const response = await sdk.listEvents({
+    client: apiClient,
+    path: { camp_id: getApiCampId() },
+  });
+
   if (response.error) {
-    throw new Error('Failed to fetch events');
+    throw new Error("Failed to fetch events");
   }
-  
+
   return response.data?.items || [];
 }
 
@@ -38,11 +41,11 @@ async function createEvent(event: EventCreationRequest): Promise<Event> {
     path: { camp_id: getApiCampId() },
     body: event,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to create event');
+    throw new Error("Failed to create event");
   }
-  
+
   return response.data;
 }
 
@@ -55,11 +58,11 @@ async function updateEvent(
     path: { camp_id: getApiCampId(), id },
     body: event,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to update event');
+    throw new Error("Failed to update event");
   }
-  
+
   return response.data;
 }
 
@@ -68,9 +71,9 @@ async function deleteEvent(id: string): Promise<void> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
-    throw new Error('Failed to delete event');
+    throw new Error("Failed to delete event");
   }
 }
 
@@ -79,18 +82,18 @@ async function getEventById(id: string): Promise<Event | null> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
     return null;
   }
-  
+
   return response.data || null;
 }
 
 async function saveEventsBatch(events: Event[]): Promise<Event[]> {
   // Backend doesn't have batch endpoint, so create/update individually
   const results: Event[] = [];
-  
+
   for (const event of events) {
     if (event.meta.id) {
       // Update existing
@@ -108,7 +111,7 @@ async function saveEventsBatch(events: Event[]): Promise<Event[]> {
       results.push(created);
     }
   }
-  
+
   return results;
 }
 
@@ -129,7 +132,7 @@ async function getEventsByDateRange(
   endDate?: Date,
 ): Promise<Event[]> {
   let events = await listEvents();
-  
+
   if (startDate || endDate) {
     events = events.filter((event) => {
       const eventStart = new Date(event.spec.startDate);
@@ -138,7 +141,6 @@ async function getEventsByDateRange(
       return true;
     });
   }
-  
+
   return events;
 }
-

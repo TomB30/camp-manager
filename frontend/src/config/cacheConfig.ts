@@ -26,26 +26,26 @@ export const cacheConfig: CacheConfiguration = {
   // Core entities
   campers: { ttl: 60000, enabled: true },
   groups: { ttl: 30000, enabled: true },
-  'staff-members': { ttl: 60000, enabled: true }, // Staff changes less frequently
-  
+  "staff-members": { ttl: 60000, enabled: true }, // Staff changes less frequently
+
   // Program-related entities
   programs: { ttl: 30000, enabled: true },
   activities: { ttl: 30000, enabled: true },
   events: { ttl: 30000, enabled: true },
-  
+
   // Location entities
   locations: { ttl: 120000, enabled: true },
   areas: { ttl: 120000, enabled: true },
-  'housing-rooms': { ttl: 120000, enabled: true },
-  
+  "housing-rooms": { ttl: 120000, enabled: true },
+
   // Configuration entities (change even less frequently)
   sessions: { ttl: 120000, enabled: true },
   roles: { ttl: 120000, enabled: true },
   colors: { ttl: 120000, enabled: true },
   labels: { ttl: 120000, enabled: true },
   certifications: { ttl: 120000, enabled: true },
-  'time-blocks': { ttl: 120000, enabled: true },
-  
+  "time-blocks": { ttl: 120000, enabled: true },
+
   // Camp settings
   camps: { ttl: 120000, enabled: true },
 };
@@ -65,10 +65,12 @@ export const CACHE_ENABLED = true;
  * Get cache configuration for a specific entity type
  */
 export function getEntityCacheConfig(entityType: string): EntityCacheConfig {
-  return cacheConfig[entityType] || {
-    ttl: DEFAULT_CACHE_TTL,
-    enabled: true,
-  };
+  return (
+    cacheConfig[entityType] || {
+      ttl: DEFAULT_CACHE_TTL,
+      enabled: true,
+    }
+  );
 }
 
 /**
@@ -78,7 +80,7 @@ export function isCachingEnabled(entityType: string): boolean {
   if (!CACHE_ENABLED) {
     return false;
   }
-  
+
   const config = getEntityCacheConfig(entityType);
   return config.enabled;
 }
@@ -98,19 +100,19 @@ export function getCacheTTL(entityType: string): number {
 export const entityUrlPatterns: Record<string, RegExp[]> = {
   campers: [/\/camps\/[^/]+\/campers/],
   groups: [/\/camps\/[^/]+\/groups/],
-  'staff-members': [/\/camps\/[^/]+\/staff-members/],
+  "staff-members": [/\/camps\/[^/]+\/staff-members/],
   programs: [/\/camps\/[^/]+\/programs/],
   activities: [/\/camps\/[^/]+\/activities/],
   events: [/\/camps\/[^/]+\/events/],
   locations: [/\/camps\/[^/]+\/locations/],
   areas: [/\/camps\/[^/]+\/areas/],
-  'housing-rooms': [/\/camps\/[^/]+\/housing-rooms/],
+  "housing-rooms": [/\/camps\/[^/]+\/housing-rooms/],
   sessions: [/\/camps\/[^/]+\/sessions/],
   roles: [/\/camps\/[^/]+\/roles/],
   colors: [/\/camps\/[^/]+\/colors/],
   labels: [/\/camps\/[^/]+\/labels/],
   certifications: [/\/camps\/[^/]+\/certifications/],
-  'time-blocks': [/\/camps\/[^/]+\/time-blocks/],
+  "time-blocks": [/\/camps\/[^/]+\/time-blocks/],
   camps: [/\/camps\/[^/]+$/],
 };
 
@@ -121,7 +123,7 @@ export function getEntityTypeFromUrl(url: string): string | null {
   try {
     const urlObj = new URL(url);
     const pathname = urlObj.pathname;
-    
+
     // Check each entity pattern
     for (const [entityType, patterns] of Object.entries(entityUrlPatterns)) {
       for (const pattern of patterns) {
@@ -130,10 +132,10 @@ export function getEntityTypeFromUrl(url: string): string | null {
         }
       }
     }
-    
+
     return null;
   } catch (error) {
-    console.error('[CacheConfig] Error parsing URL:', error);
+    console.error("[CacheConfig] Error parsing URL:", error);
     return null;
   }
 }
@@ -150,4 +152,3 @@ if (import.meta.env.DEV) {
     getEntityTypeFromUrl,
   };
 }
-

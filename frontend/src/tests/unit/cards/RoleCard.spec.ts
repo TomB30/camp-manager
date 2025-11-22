@@ -105,7 +105,7 @@ describe("RoleCard", () => {
         props: { role },
       });
 
-      expect(wrapper.classes()).toContain("card-clickable");
+      expect(wrapper.classes()).toContain("clickable");
     });
 
     it("has role-card class", () => {
@@ -118,18 +118,6 @@ describe("RoleCard", () => {
       });
 
       expect(wrapper.classes()).toContain("role-card");
-    });
-
-    it("has card-horizontal class", () => {
-      const role: Role = {
-        ...rolesFixture[0],
-        meta: { ...rolesFixture[0].meta, id: "role-1" },
-      };
-      const wrapper = createWrapper(RoleCard, {
-        props: { role },
-      });
-
-      expect(wrapper.classes()).toContain("card-horizontal");
     });
   });
 

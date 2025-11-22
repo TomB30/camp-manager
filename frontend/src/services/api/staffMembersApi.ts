@@ -1,14 +1,14 @@
 /**
  * Backend API implementation for Staff Members
  */
-import * as sdk from '@/generated/api/sdk.gen';
+import * as sdk from "@/generated/api/sdk.gen";
 import type {
   StaffMember,
   StaffMemberCreationRequest,
   StaffMemberUpdateRequest,
-} from '@/generated/api';
-import { apiClient } from '@/config/api';
-import { getApiCampId } from '@/utils/tenantContext';
+} from "@/generated/api";
+import { apiClient } from "@/config/api";
+import { getApiCampId } from "@/utils/tenantContext";
 
 export const staffMembersApi = {
   listStaffMembers,
@@ -20,12 +20,15 @@ export const staffMembersApi = {
 };
 
 async function listStaffMembers(): Promise<StaffMember[]> {
-  const response = await sdk.listStaffMembers({ client: apiClient, path: { camp_id: getApiCampId() } });
-  
+  const response = await sdk.listStaffMembers({
+    client: apiClient,
+    path: { camp_id: getApiCampId() },
+  });
+
   if (response.error) {
-    throw new Error('Failed to fetch staff members');
+    throw new Error("Failed to fetch staff members");
   }
-  
+
   return response.data?.items || [];
 }
 
@@ -37,11 +40,11 @@ async function createStaffMember(
     path: { camp_id: getApiCampId() },
     body: member,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to create staff member');
+    throw new Error("Failed to create staff member");
   }
-  
+
   return response.data;
 }
 
@@ -54,11 +57,11 @@ async function updateStaffMember(
     path: { camp_id: getApiCampId(), id },
     body: member,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to update staff member');
+    throw new Error("Failed to update staff member");
   }
-  
+
   return response.data;
 }
 
@@ -67,9 +70,9 @@ async function deleteStaffMember(id: string): Promise<void> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
-    throw new Error('Failed to delete staff member');
+    throw new Error("Failed to delete staff member");
   }
 }
 
@@ -78,11 +81,11 @@ async function getStaffMemberById(id: string): Promise<StaffMember | null> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
     return null;
   }
-  
+
   return response.data || null;
 }
 
@@ -95,4 +98,3 @@ async function getStaffMembersByCertification(
     s.spec.certificationIds?.includes(certificationId),
   );
 }
-

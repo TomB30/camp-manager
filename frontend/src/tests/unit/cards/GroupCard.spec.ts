@@ -221,7 +221,7 @@ describe("GroupCard", () => {
         pinia,
       });
 
-      expect(wrapper.classes()).toContain("card-clickable");
+      expect(wrapper.classes()).toContain("clickable");
     });
   });
 });

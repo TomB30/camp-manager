@@ -12,10 +12,12 @@
           <div v-if="isMultiDayEvent(event)">
             <div class="time-range">
               <div>
-                <span class="time-label">Starts:</span> {{ formatDateTime(event.spec.startDate) }}
+                <span class="time-label">Starts:</span>
+                {{ formatDateTime(event.spec.startDate) }}
               </div>
               <div>
-                <span class="time-label">Ends:</span> {{ formatDateTime(event.spec.endDate) }}
+                <span class="time-label">Ends:</span>
+                {{ formatDateTime(event.spec.endDate) }}
               </div>
             </div>
           </div>

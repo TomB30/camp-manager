@@ -55,12 +55,12 @@ export function getTenantContext(): { tenantId: string; campId: string } {
  */
 export function getApiCampId(): string {
   const authStore = useAuthStore();
-  
+
   // Try to get from auth store's selected camp
   if (authStore.selectedCampId) {
     return authStore.selectedCampId;
   }
-  
+
   // Fall back to getCurrentCampId logic
   return getCurrentCampId();
 }

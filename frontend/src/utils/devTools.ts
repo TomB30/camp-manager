@@ -1,6 +1,10 @@
 import { storageService, STORAGE_KEYS } from "@/services";
 import { useMainStore } from "@/stores";
-import { isBackendEnabled, setBackendEnabled, getDataSourceMode } from "@/config/dataSource";
+import {
+  isBackendEnabled,
+  setBackendEnabled,
+  getDataSourceMode,
+} from "@/config/dataSource";
 import {
   getCacheStats,
   clearAllCache,
@@ -81,26 +85,26 @@ export async function resetData(): Promise<void> {
 export function toggleBackendMode(): void {
   const currentMode = isBackendEnabled();
   const newMode = !currentMode;
-  
+
   // Clear all authentication data
   console.log("🔐 Logging out and clearing authentication data...");
   localStorage.removeItem("auth_token");
   localStorage.removeItem("camp_manager_auth");
   localStorage.removeItem("camp_manager_selected_camp");
-  
+
   // Set new mode
   setBackendEnabled(newMode);
-  
+
   console.log(`
 🔄 Data Source Mode Changed!
   
-Previous: ${currentMode ? 'BACKEND API' : 'LOCAL_STORAGE'}
-Current:  ${newMode ? 'BACKEND API' : 'LOCAL_STORAGE'}
+Previous: ${currentMode ? "BACKEND API" : "LOCAL_STORAGE"}
+Current:  ${newMode ? "BACKEND API" : "LOCAL_STORAGE"}
 
 🔐 Authentication cleared - you'll need to login again
 ⚠️  Page will reload to apply changes...
   `);
-  
+
   // Reload the page to apply changes (redirects to login via router guard)
   setTimeout(() => {
     window.location.reload();
@@ -112,15 +116,15 @@ Current:  ${newMode ? 'BACKEND API' : 'LOCAL_STORAGE'}
  */
 export function getDataSource(): string {
   const mode = getDataSourceMode();
-  const modeDisplay = mode === 'backend' ? 'BACKEND API' : 'LOCAL_STORAGE';
-  
+  const modeDisplay = mode === "backend" ? "BACKEND API" : "LOCAL_STORAGE";
+
   console.log(`
 📊 Current Data Source: ${modeDisplay}
   
 To switch modes, use:
   devTools.toggleBackendMode()
   `);
-  
+
   return modeDisplay;
 }
 
@@ -129,10 +133,11 @@ To switch modes, use:
  */
 export function getCacheInfo(): void {
   const stats = getCacheStats();
-  const hitRate = stats.hits + stats.misses > 0 
-    ? ((stats.hits / (stats.hits + stats.misses)) * 100).toFixed(2)
-    : '0';
-  
+  const hitRate =
+    stats.hits + stats.misses > 0
+      ? ((stats.hits / (stats.hits + stats.misses)) * 100).toFixed(2)
+      : "0";
+
   console.log(`
 📊 Request Cache Statistics
   
@@ -143,8 +148,11 @@ Hit Rate:   ${hitRate}%
 Invalidations: ${stats.invalidations}
 
 Recent Cache Keys:
-${stats.entries.slice(0, 10).map((key, idx) => `  ${idx + 1}. ${key.substring(0, 80)}...`).join('\n')}
-${stats.entries.length > 10 ? `  ... and ${stats.entries.length - 10} more` : ''}
+${stats.entries
+  .slice(0, 10)
+  .map((key, idx) => `  ${idx + 1}. ${key.substring(0, 80)}...`)
+  .join("\n")}
+${stats.entries.length > 10 ? `  ... and ${stats.entries.length - 10} more` : ""}
 
 Use devTools.clearCache() to clear all cached requests
 Use devTools.invalidateCache('entityType') to clear cache for a specific entity
@@ -187,7 +195,8 @@ if (typeof window !== "undefined") {
   };
 
   const currentMode = getDataSourceMode();
-  const modeDisplay = currentMode === 'backend' ? 'BACKEND API' : 'LOCAL_STORAGE';
+  const modeDisplay =
+    currentMode === "backend" ? "BACKEND API" : "LOCAL_STORAGE";
 
   console.log(`
 🛠️  Development Tools Loaded!

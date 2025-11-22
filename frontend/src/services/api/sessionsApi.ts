@@ -1,14 +1,14 @@
 /**
  * Backend API implementation for Sessions
  */
-import * as sdk from '@/generated/api/sdk.gen';
+import * as sdk from "@/generated/api/sdk.gen";
 import type {
   Session,
   SessionCreationRequest,
   SessionUpdateRequest,
-} from '@/generated/api';
-import { apiClient } from '@/config/api';
-import { getApiCampId } from '@/utils/tenantContext';
+} from "@/generated/api";
+import { apiClient } from "@/config/api";
+import { getApiCampId } from "@/utils/tenantContext";
 
 export const sessionsApi = {
   listSessions,
@@ -19,12 +19,15 @@ export const sessionsApi = {
 };
 
 async function listSessions(): Promise<Session[]> {
-  const response = await sdk.listSessions({ client: apiClient, path: { camp_id: getApiCampId() } });
-  
+  const response = await sdk.listSessions({
+    client: apiClient,
+    path: { camp_id: getApiCampId() },
+  });
+
   if (response.error) {
-    throw new Error('Failed to fetch sessions');
+    throw new Error("Failed to fetch sessions");
   }
-  
+
   return response.data?.items || [];
 }
 
@@ -36,11 +39,11 @@ async function createSession(
     path: { camp_id: getApiCampId() },
     body: session,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to create session');
+    throw new Error("Failed to create session");
   }
-  
+
   return response.data;
 }
 
@@ -53,11 +56,11 @@ async function updateSession(
     path: { camp_id: getApiCampId(), id },
     body: session,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to update session');
+    throw new Error("Failed to update session");
   }
-  
+
   return response.data;
 }
 
@@ -66,9 +69,9 @@ async function deleteSession(id: string): Promise<void> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
-    throw new Error('Failed to delete session');
+    throw new Error("Failed to delete session");
   }
 }
 
@@ -77,11 +80,10 @@ async function getSessionById(id: string): Promise<Session | null> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
     return null;
   }
-  
+
   return response.data || null;
 }
-

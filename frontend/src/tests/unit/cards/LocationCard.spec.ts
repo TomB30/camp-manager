@@ -179,19 +179,7 @@ describe("LocationCard", () => {
         pinia,
       });
 
-      expect(wrapper.classes()).toContain("card-clickable");
-    });
-
-    it("has card-horizontal class", () => {
-      const location: Location = locationsFixture[0];
-      const wrapper = createWrapper(LocationCard, {
-        props: {
-          location,
-        },
-        pinia,
-      });
-
-      expect(wrapper.classes()).toContain("card-horizontal");
+      expect(wrapper.classes()).toContain("clickable");
     });
   });
 

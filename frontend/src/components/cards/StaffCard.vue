@@ -1,26 +1,25 @@
 <template>
-  <div
-    class="card card-clickable card-horizontal"
-    @click="$emit('click', member)"
-  >
-    <AvatarInitials
-      :first-name="getFirstName(member.meta.name)"
-      :last-name="getLastName(member.meta.name)"
-      size="lg"
-    />
-    <div class="card-details">
-      <h4>{{ member.meta.name }}</h4>
-      <div class="member-role">
-        <span class="badge badge-primary">{{ formattedRole }}</span>
+  <div class="card clickable" @click="$emit('click', member)">
+    <section class="card-header">
+      <div class="card-icon">
+        <AvatarInitials
+          :first-name="getFirstName(member.meta.name)"
+          :last-name="getLastName(member.meta.name)"
+          size="lg"
+        />
       </div>
-      <div
-        v-if="member.spec.phone"
-        class="member-contact text-caption mt-1 row items-center gap-1"
-      >
-        <Icon name="Phone" :size="14" color="var(--text-secondary)" />
+      <div class="title-and-description-wrapper">
+        <h4>{{ member.meta.name }}</h4>
+        <p class="card-description">{{ formattedRole }}</p>
+      </div>
+    </section>
+
+    <div class="row items-center gap-2">
+      <div v-if="member.spec.phone" class="row items-center gap-1">
+        <Icon name="Phone" :size="14" />
         {{ member.spec.phone }}
       </div>
-      <div v-if="certificationCount > 0" class="member-certs text-xs mt-2">
+      <div v-if="certificationCount > 0" class="row items-center">
         {{ certificationCount }} Certification(s)
       </div>
     </div>
@@ -65,7 +64,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-@import "./card-styles.css";
-</style>

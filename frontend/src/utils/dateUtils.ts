@@ -16,21 +16,20 @@ export const dateUtils = {
  * @param targetDate Date to filter by
  * @returns Events that are active on the target date (including multi-day events)
  */
-function filterEventsByDate<T extends { spec: { startDate: string; endDate: string } }>(
-  events: T[],
-  targetDate: Date,
-): T[] {
+function filterEventsByDate<
+  T extends { spec: { startDate: string; endDate: string } },
+>(events: T[], targetDate: Date): T[] {
   // Set target date to midnight for comparison
   const targetDayStart = new Date(targetDate);
   targetDayStart.setHours(0, 0, 0, 0);
-  
+
   const targetDayEnd = new Date(targetDate);
   targetDayEnd.setHours(23, 59, 59, 999);
 
   return events.filter((event) => {
     const eventStart = new Date(event.spec.startDate);
     const eventEnd = new Date(event.spec.endDate);
-    
+
     // Event is active on this day if it starts on or before this day AND ends on or after this day
     return eventStart <= targetDayEnd && eventEnd >= targetDayStart;
   });

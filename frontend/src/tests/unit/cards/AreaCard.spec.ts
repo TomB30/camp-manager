@@ -146,7 +146,7 @@ describe("AreaCard", () => {
         },
       });
 
-      expect(wrapper.classes()).toContain("card-clickable");
+      expect(wrapper.classes()).toContain("clickable");
     });
 
     it("has area-card class", () => {

@@ -89,7 +89,7 @@ describe("CertificationCard", () => {
         props: { certification },
       });
 
-      expect(wrapper.classes()).toContain("card-clickable");
+      expect(wrapper.classes()).toContain("clickable");
     });
 
     it("has certification-card class", () => {

@@ -1,14 +1,14 @@
 /**
  * Backend API implementation for Time Blocks
  */
-import * as sdk from '@/generated/api/sdk.gen';
+import * as sdk from "@/generated/api/sdk.gen";
 import type {
   TimeBlock,
   TimeBlockCreationRequest,
   TimeBlockUpdateRequest,
-} from '@/generated/api';
-import { apiClient } from '@/config/api';
-import { getApiCampId } from '@/utils/tenantContext';
+} from "@/generated/api";
+import { apiClient } from "@/config/api";
+import { getApiCampId } from "@/utils/tenantContext";
 
 export const timeBlocksApi = {
   listTimeBlocks,
@@ -19,12 +19,15 @@ export const timeBlocksApi = {
 };
 
 async function listTimeBlocks(): Promise<TimeBlock[]> {
-  const response = await sdk.listTimeBlocks({ client: apiClient, path: { camp_id: getApiCampId() } });
-  
+  const response = await sdk.listTimeBlocks({
+    client: apiClient,
+    path: { camp_id: getApiCampId() },
+  });
+
   if (response.error) {
-    throw new Error('Failed to fetch time blocks');
+    throw new Error("Failed to fetch time blocks");
   }
-  
+
   return response.data?.items || [];
 }
 
@@ -36,11 +39,11 @@ async function createTimeBlock(
     path: { camp_id: getApiCampId() },
     body: timeBlock,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to create time block');
+    throw new Error("Failed to create time block");
   }
-  
+
   return response.data;
 }
 
@@ -53,11 +56,11 @@ async function updateTimeBlock(
     path: { camp_id: getApiCampId(), id },
     body: timeBlock,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to update time block');
+    throw new Error("Failed to update time block");
   }
-  
+
   return response.data;
 }
 
@@ -66,9 +69,9 @@ async function deleteTimeBlock(id: string): Promise<void> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
-    throw new Error('Failed to delete time block');
+    throw new Error("Failed to delete time block");
   }
 }
 
@@ -77,11 +80,10 @@ async function getTimeBlockById(id: string): Promise<TimeBlock | null> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
     return null;
   }
-  
+
   return response.data || null;
 }
-

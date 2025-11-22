@@ -1,14 +1,14 @@
 /**
  * Backend API implementation for Campers
  */
-import * as sdk from '@/generated/api/sdk.gen';
+import * as sdk from "@/generated/api/sdk.gen";
 import type {
   Camper,
   CamperCreationRequest,
   CamperUpdateRequest,
-} from '@/generated/api';
-import { apiClient } from '@/config/api';
-import { getApiCampId } from '@/utils/tenantContext';
+} from "@/generated/api";
+import { apiClient } from "@/config/api";
+import { getApiCampId } from "@/utils/tenantContext";
 
 export const campersApi = {
   listCampers,
@@ -21,15 +21,15 @@ export const campersApi = {
 };
 
 async function listCampers(): Promise<Camper[]> {
-  const response = await sdk.listCampers({ 
+  const response = await sdk.listCampers({
     client: apiClient,
     path: { camp_id: getApiCampId() },
   });
-  
+
   if (response.error) {
-    throw new Error('Failed to fetch campers');
+    throw new Error("Failed to fetch campers");
   }
-  
+
   return response.data?.items || [];
 }
 
@@ -39,11 +39,11 @@ async function createCamper(camper: CamperCreationRequest): Promise<Camper> {
     path: { camp_id: getApiCampId() },
     body: camper,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to create camper');
+    throw new Error("Failed to create camper");
   }
-  
+
   return response.data;
 }
 
@@ -56,11 +56,11 @@ async function updateCamper(
     path: { camp_id: getApiCampId(), id },
     body: camper,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to update camper');
+    throw new Error("Failed to update camper");
   }
-  
+
   return response.data;
 }
 
@@ -69,9 +69,9 @@ async function deleteCamper(id: string): Promise<void> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
-    throw new Error('Failed to delete camper');
+    throw new Error("Failed to delete camper");
   }
 }
 
@@ -80,11 +80,11 @@ async function getCamperById(id: string): Promise<Camper | null> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
     return null;
   }
-  
+
   return response.data || null;
 }
 
@@ -101,4 +101,3 @@ async function getCampersBySession(sessionId: string): Promise<Camper[]> {
   const campers = await listCampers();
   return campers.filter((c) => c.spec.sessionId === sessionId);
 }
-

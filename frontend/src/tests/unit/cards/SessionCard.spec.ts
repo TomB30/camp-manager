@@ -157,7 +157,7 @@ describe("SessionCard", () => {
         props: { session },
       });
 
-      expect(wrapper.find(".session-header").exists()).toBe(true);
+      expect(wrapper.find(".card-header").exists()).toBe(true);
     });
 
     it("displays session details section", () => {

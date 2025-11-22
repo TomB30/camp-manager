@@ -1,20 +1,27 @@
 <template>
-  <div class="card clickable card-horizontal" @click="$emit('click', camper)">
-    <AvatarInitials
-      :first-name="getFirstName(camper.meta.name)"
-      :last-name="getLastName(camper.meta.name)"
-      size="lg"
-    />
-    <div class="card-details">
-      <h4>{{ camper.meta.name }}</h4>
-      <div class="card-meta">
+  <div class="card clickable" @click="$emit('click', camper)">
+    <section class="card-header">
+      <div class="card-icon">
+        <AvatarInitials
+          :first-name="getFirstName(camper.meta.name)"
+          :last-name="getLastName(camper.meta.name)"
+          size="lg"
+        />
+      </div>
+      <div class="title-and-description-wrapper">
+        <h4>{{ camper.meta.name }}</h4>
+        <p class="card-description">{{ formattedGender }}</p>
+      </div>
+    </section>
+    <section class="card-details">
+      <div class="card-meta row items-center gap-1">
         <span class="badge badge-primary">Age {{ age }}</span>
         <span class="badge badge-primary">{{ formattedGender }}</span>
         <span v-if="sessionName" class="badge badge-primary">{{
           sessionName
         }}</span>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -61,7 +68,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-@import "./card-styles.css";
-</style>

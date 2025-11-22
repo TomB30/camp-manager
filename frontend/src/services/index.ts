@@ -24,9 +24,7 @@ export { certificationsService } from "./certificationsService";
 export { rolesService } from "./rolesService";
 export { colorsService } from "./colorsService";
 export { sessionsService } from "./sessionsService";
-export {
-  labelsService,
-} from "./labelsService";
+export { labelsService } from "./labelsService";
 export type { LabelCreationRequest, LabelUpdateRequest } from "./labelsStorage";
 export { campService } from "./campService";
 export { timeBlocksService } from "./timeBlocksService";

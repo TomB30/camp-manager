@@ -181,10 +181,10 @@ export default defineComponent({
         // Use the current date being displayed, not today
         const currentDayStart = new Date(this.currentDate);
         currentDayStart.setHours(0, 0, 0, 0);
-        
+
         const eventStartDay = new Date(start);
         eventStartDay.setHours(0, 0, 0, 0);
-        
+
         const eventEndDay = new Date(end);
         eventEndDay.setHours(0, 0, 0, 0);
 
@@ -196,7 +196,7 @@ export default defineComponent({
         // If event continues past the current displayed day, extend to end of visible hours
         const nextDay = new Date(currentDayStart);
         nextDay.setDate(nextDay.getDate() + 1);
-        
+
         if (eventEndDay >= nextDay) {
           endMinutes = dayEndMinutes;
         }
@@ -214,8 +214,7 @@ export default defineComponent({
         const otherEnd = new Date(otherEvent.spec.endDate);
         let otherStartMinutes =
           otherStart.getHours() * 60 + otherStart.getMinutes();
-        let otherEndMinutes =
-          otherEnd.getHours() * 60 + otherEnd.getMinutes();
+        let otherEndMinutes = otherEnd.getHours() * 60 + otherEnd.getMinutes();
 
         // Check if other event is multi-day
         const otherIsMultiDay =
@@ -227,10 +226,10 @@ export default defineComponent({
         if (otherIsMultiDay) {
           const currentDayStart = new Date(this.currentDate);
           currentDayStart.setHours(0, 0, 0, 0);
-          
+
           const otherStartDay = new Date(otherStart);
           otherStartDay.setHours(0, 0, 0, 0);
-          
+
           const otherEndDay = new Date(otherEnd);
           otherEndDay.setHours(0, 0, 0, 0);
 
@@ -240,7 +239,7 @@ export default defineComponent({
 
           const nextDay = new Date(currentDayStart);
           nextDay.setDate(nextDay.getDate() + 1);
-          
+
           if (otherEndDay >= nextDay) {
             otherEndMinutes = dayEndMinutes;
           }

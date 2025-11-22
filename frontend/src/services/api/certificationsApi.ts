@@ -1,14 +1,14 @@
 /**
  * Backend API implementation for Certifications
  */
-import * as sdk from '@/generated/api/sdk.gen';
+import * as sdk from "@/generated/api/sdk.gen";
 import type {
   Certification,
   CertificationCreationRequest,
   CertificationUpdateRequest,
-} from '@/generated/api';
-import { apiClient } from '@/config/api';
-import { getApiCampId } from '@/utils/tenantContext';
+} from "@/generated/api";
+import { apiClient } from "@/config/api";
+import { getApiCampId } from "@/utils/tenantContext";
 
 export const certificationsApi = {
   listCertifications,
@@ -19,12 +19,15 @@ export const certificationsApi = {
 };
 
 async function listCertifications(): Promise<Certification[]> {
-  const response = await sdk.listCertifications({ client: apiClient, path: { camp_id: getApiCampId() } });
-  
+  const response = await sdk.listCertifications({
+    client: apiClient,
+    path: { camp_id: getApiCampId() },
+  });
+
   if (response.error) {
-    throw new Error('Failed to fetch certifications');
+    throw new Error("Failed to fetch certifications");
   }
-  
+
   return response.data?.items || [];
 }
 
@@ -36,11 +39,11 @@ async function createCertification(
     path: { camp_id: getApiCampId() },
     body: certification,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to create certification');
+    throw new Error("Failed to create certification");
   }
-  
+
   return response.data;
 }
 
@@ -53,11 +56,11 @@ async function updateCertification(
     path: { camp_id: getApiCampId(), id },
     body: certification,
   });
-  
+
   if (response.error || !response.data) {
-    throw new Error('Failed to update certification');
+    throw new Error("Failed to update certification");
   }
-  
+
   return response.data;
 }
 
@@ -66,9 +69,9 @@ async function deleteCertification(id: string): Promise<void> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
-    throw new Error('Failed to delete certification');
+    throw new Error("Failed to delete certification");
   }
 }
 
@@ -77,11 +80,10 @@ async function getCertificationById(id: string): Promise<Certification | null> {
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
   });
-  
+
   if (response.error) {
     return null;
   }
-  
+
   return response.data || null;
 }
-

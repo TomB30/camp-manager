@@ -93,19 +93,7 @@ describe("CamperCard", () => {
         props: { camper },
       });
 
-      expect(wrapper.classes()).toContain("card-clickable");
-    });
-
-    it("has card-horizontal class for layout", () => {
-      const camper: Camper = {
-        ...campersFixture[0],
-        spec: { ...campersFixture[0].spec, housingGroupId: "housing-group-1" },
-      };
-      const wrapper = createWrapper(CamperCard, {
-        props: { camper },
-      });
-
-      expect(wrapper.classes()).toContain("card-horizontal");
+      expect(wrapper.classes()).toContain("clickable");
     });
   });
 
