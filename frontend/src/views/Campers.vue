@@ -87,7 +87,7 @@
 
       <template #cell-gender="{ item }">
         <span class="badge badge-primary badge-sm">{{
-          formatGender(item.gender)
+          formatGender(item.spec.gender)
         }}</span>
       </template>
 
