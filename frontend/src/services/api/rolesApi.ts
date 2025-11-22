@@ -8,6 +8,7 @@ import type {
   RoleUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const rolesApi = {
   listRoles,
@@ -18,7 +19,7 @@ export const rolesApi = {
 };
 
 async function listRoles(): Promise<Role[]> {
-  const response = await sdk.listRoles({ client: apiClient });
+  const response = await sdk.listRoles({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch roles');
@@ -30,6 +31,7 @@ async function listRoles(): Promise<Role[]> {
 async function createRole(role: RoleCreationRequest): Promise<Role> {
   const response = await sdk.createRole({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: role,
   });
   
@@ -46,7 +48,7 @@ async function updateRole(
 ): Promise<Role> {
   const response = await sdk.updateRoleById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: role,
   });
   
@@ -60,7 +62,7 @@ async function updateRole(
 async function deleteRole(id: string): Promise<void> {
   const response = await sdk.deleteRoleById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -71,7 +73,7 @@ async function deleteRole(id: string): Promise<void> {
 async function getRoleById(id: string): Promise<Role | null> {
   const response = await sdk.getRoleById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

@@ -8,6 +8,7 @@ import type {
   AreaUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const areasApi = {
   listAreas,
@@ -18,7 +19,7 @@ export const areasApi = {
 };
 
 async function listAreas(): Promise<Area[]> {
-  const response = await sdk.listAreas({ client: apiClient });
+  const response = await sdk.listAreas({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch areas');
@@ -30,6 +31,7 @@ async function listAreas(): Promise<Area[]> {
 async function createArea(area: AreaCreationRequest): Promise<Area> {
   const response = await sdk.createArea({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: area,
   });
   
@@ -46,7 +48,7 @@ async function updateArea(
 ): Promise<Area> {
   const response = await sdk.updateAreaById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: area,
   });
   
@@ -60,7 +62,7 @@ async function updateArea(
 async function deleteArea(id: string): Promise<void> {
   const response = await sdk.deleteAreaById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -71,7 +73,7 @@ async function deleteArea(id: string): Promise<void> {
 async function getAreaById(id: string): Promise<Area | null> {
   const response = await sdk.getAreaById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

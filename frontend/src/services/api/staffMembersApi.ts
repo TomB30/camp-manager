@@ -8,6 +8,7 @@ import type {
   StaffMemberUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const staffMembersApi = {
   listStaffMembers,
@@ -19,7 +20,7 @@ export const staffMembersApi = {
 };
 
 async function listStaffMembers(): Promise<StaffMember[]> {
-  const response = await sdk.listStaffMembers({ client: apiClient });
+  const response = await sdk.listStaffMembers({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch staff members');
@@ -33,6 +34,7 @@ async function createStaffMember(
 ): Promise<StaffMember> {
   const response = await sdk.createStaffMember({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: member,
   });
   
@@ -49,7 +51,7 @@ async function updateStaffMember(
 ): Promise<StaffMember> {
   const response = await sdk.updateStaffMemberById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: member,
   });
   
@@ -63,7 +65,7 @@ async function updateStaffMember(
 async function deleteStaffMember(id: string): Promise<void> {
   const response = await sdk.deleteStaffMemberById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -74,7 +76,7 @@ async function deleteStaffMember(id: string): Promise<void> {
 async function getStaffMemberById(id: string): Promise<StaffMember | null> {
   const response = await sdk.getStaffMemberById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

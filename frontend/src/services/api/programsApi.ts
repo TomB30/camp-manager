@@ -8,6 +8,7 @@ import type {
   ProgramUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const programsApi = {
   listPrograms,
@@ -18,7 +19,7 @@ export const programsApi = {
 };
 
 async function listPrograms(): Promise<Program[]> {
-  const response = await sdk.listPrograms({ client: apiClient });
+  const response = await sdk.listPrograms({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch programs');
@@ -32,6 +33,7 @@ async function createProgram(
 ): Promise<Program> {
   const response = await sdk.createProgram({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: program,
   });
   
@@ -48,7 +50,7 @@ async function updateProgram(
 ): Promise<Program> {
   const response = await sdk.updateProgramById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: program,
   });
   
@@ -62,7 +64,7 @@ async function updateProgram(
 async function deleteProgram(id: string): Promise<void> {
   const response = await sdk.deleteProgramById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -73,7 +75,7 @@ async function deleteProgram(id: string): Promise<void> {
 async function getProgramById(id: string): Promise<Program | null> {
   const response = await sdk.getProgramById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

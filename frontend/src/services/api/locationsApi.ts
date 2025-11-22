@@ -8,6 +8,7 @@ import type {
   LocationUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const locationsApi = {
   listLocations,
@@ -19,7 +20,7 @@ export const locationsApi = {
 };
 
 async function listLocations(): Promise<Location[]> {
-  const response = await sdk.listLocations({ client: apiClient });
+  const response = await sdk.listLocations({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch locations');
@@ -33,6 +34,7 @@ async function createLocation(
 ): Promise<Location> {
   const response = await sdk.createLocation({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: location,
   });
   
@@ -49,7 +51,7 @@ async function updateLocation(
 ): Promise<Location> {
   const response = await sdk.updateLocationById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: location,
   });
   
@@ -63,7 +65,7 @@ async function updateLocation(
 async function deleteLocation(id: string): Promise<void> {
   const response = await sdk.deleteLocationById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -74,7 +76,7 @@ async function deleteLocation(id: string): Promise<void> {
 async function getLocationById(id: string): Promise<Location | null> {
   const response = await sdk.getLocationById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

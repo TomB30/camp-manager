@@ -4,6 +4,7 @@
  */
 
 import { useCampStore } from "@/stores/campStore";
+import { useAuthStore } from "@/stores/authStore";
 import { mockData } from "@/data/mockData";
 
 /**
@@ -46,4 +47,20 @@ export function getTenantContext(): { tenantId: string; campId: string } {
     tenantId: getCurrentTenantId(),
     campId: getCurrentCampId(),
   };
+}
+
+/**
+ * Get the current camp ID for API calls
+ * Tries to get from authStore's selectedCampId first, then falls back to campStore
+ */
+export function getApiCampId(): string {
+  const authStore = useAuthStore();
+  
+  // Try to get from auth store's selected camp
+  if (authStore.selectedCampId) {
+    return authStore.selectedCampId;
+  }
+  
+  // Fall back to getCurrentCampId logic
+  return getCurrentCampId();
 }

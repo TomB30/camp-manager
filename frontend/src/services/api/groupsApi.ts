@@ -8,6 +8,7 @@ import type {
   GroupUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const groupsApi = {
   listGroups,
@@ -18,7 +19,7 @@ export const groupsApi = {
 };
 
 async function listGroups(): Promise<Group[]> {
-  const response = await sdk.listGroups({ client: apiClient });
+  const response = await sdk.listGroups({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch groups');
@@ -30,6 +31,7 @@ async function listGroups(): Promise<Group[]> {
 async function createGroup(group: GroupCreationRequest): Promise<Group> {
   const response = await sdk.createGroup({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: group,
   });
   
@@ -46,7 +48,7 @@ async function updateGroup(
 ): Promise<Group> {
   const response = await sdk.updateGroupById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: group,
   });
   
@@ -60,7 +62,7 @@ async function updateGroup(
 async function deleteGroup(id: string): Promise<void> {
   const response = await sdk.deleteGroupById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -71,7 +73,7 @@ async function deleteGroup(id: string): Promise<void> {
 async function getGroupById(id: string): Promise<Group | null> {
   const response = await sdk.getGroupById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

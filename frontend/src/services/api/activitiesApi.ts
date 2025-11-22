@@ -8,6 +8,7 @@ import type {
   ActivityUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const activitiesApi = {
   listActivities,
@@ -18,7 +19,7 @@ export const activitiesApi = {
 };
 
 async function listActivities(): Promise<Activity[]> {
-  const response = await sdk.listActivities({ client: apiClient });
+  const response = await sdk.listActivities({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch activities');
@@ -32,6 +33,7 @@ async function createActivity(
 ): Promise<Activity> {
   const response = await sdk.createActivity({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: activity,
   });
   
@@ -48,7 +50,7 @@ async function updateActivity(
 ): Promise<Activity> {
   const response = await sdk.updateActivityById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: activity,
   });
   
@@ -62,7 +64,7 @@ async function updateActivity(
 async function deleteActivity(id: string): Promise<void> {
   const response = await sdk.deleteActivityById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -73,7 +75,7 @@ async function deleteActivity(id: string): Promise<void> {
 async function getActivityById(id: string): Promise<Activity | null> {
   const response = await sdk.getActivityById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

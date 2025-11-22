@@ -8,6 +8,7 @@ import type {
   SessionUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const sessionsApi = {
   listSessions,
@@ -18,7 +19,7 @@ export const sessionsApi = {
 };
 
 async function listSessions(): Promise<Session[]> {
-  const response = await sdk.listSessions({ client: apiClient });
+  const response = await sdk.listSessions({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch sessions');
@@ -32,6 +33,7 @@ async function createSession(
 ): Promise<Session> {
   const response = await sdk.createSession({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: session,
   });
   
@@ -48,7 +50,7 @@ async function updateSession(
 ): Promise<Session> {
   const response = await sdk.updateSessionById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: session,
   });
   
@@ -62,7 +64,7 @@ async function updateSession(
 async function deleteSession(id: string): Promise<void> {
   const response = await sdk.deleteSessionById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -73,7 +75,7 @@ async function deleteSession(id: string): Promise<void> {
 async function getSessionById(id: string): Promise<Session | null> {
   const response = await sdk.getSessionById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

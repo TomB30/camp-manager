@@ -8,6 +8,7 @@ import type {
   EventUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const eventsApi = {
   listEvents,
@@ -22,7 +23,7 @@ export const eventsApi = {
 };
 
 async function listEvents(): Promise<Event[]> {
-  const response = await sdk.listEvents({ client: apiClient });
+  const response = await sdk.listEvents({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch events');
@@ -34,6 +35,7 @@ async function listEvents(): Promise<Event[]> {
 async function createEvent(event: EventCreationRequest): Promise<Event> {
   const response = await sdk.createEvent({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: event,
   });
   
@@ -50,7 +52,7 @@ async function updateEvent(
 ): Promise<Event> {
   const response = await sdk.updateEventById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: event,
   });
   
@@ -64,7 +66,7 @@ async function updateEvent(
 async function deleteEvent(id: string): Promise<void> {
   const response = await sdk.deleteEventById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -75,7 +77,7 @@ async function deleteEvent(id: string): Promise<void> {
 async function getEventById(id: string): Promise<Event | null> {
   const response = await sdk.getEventById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

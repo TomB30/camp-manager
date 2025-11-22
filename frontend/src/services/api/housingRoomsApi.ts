@@ -8,6 +8,7 @@ import type {
   HousingRoomUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const housingRoomsApi = {
   listHousingRooms,
@@ -18,7 +19,7 @@ export const housingRoomsApi = {
 };
 
 async function listHousingRooms(): Promise<HousingRoom[]> {
-  const response = await sdk.listHousingRooms({ client: apiClient });
+  const response = await sdk.listHousingRooms({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch housing rooms');
@@ -32,6 +33,7 @@ async function createHousingRoom(
 ): Promise<HousingRoom> {
   const response = await sdk.createHousingRoom({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: room,
   });
   
@@ -48,7 +50,7 @@ async function updateHousingRoom(
 ): Promise<HousingRoom> {
   const response = await sdk.updateHousingRoomById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: room,
   });
   
@@ -62,7 +64,7 @@ async function updateHousingRoom(
 async function deleteHousingRoom(id: string): Promise<void> {
   const response = await sdk.deleteHousingRoomById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -73,7 +75,7 @@ async function deleteHousingRoom(id: string): Promise<void> {
 async function getHousingRoomById(id: string): Promise<HousingRoom | null> {
   const response = await sdk.getHousingRoomById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

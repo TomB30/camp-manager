@@ -8,6 +8,7 @@ import type {
   CertificationUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const certificationsApi = {
   listCertifications,
@@ -18,7 +19,7 @@ export const certificationsApi = {
 };
 
 async function listCertifications(): Promise<Certification[]> {
-  const response = await sdk.listCertifications({ client: apiClient });
+  const response = await sdk.listCertifications({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch certifications');
@@ -32,6 +33,7 @@ async function createCertification(
 ): Promise<Certification> {
   const response = await sdk.createCertification({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: certification,
   });
   
@@ -48,7 +50,7 @@ async function updateCertification(
 ): Promise<Certification> {
   const response = await sdk.updateCertificationById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: certification,
   });
   
@@ -62,7 +64,7 @@ async function updateCertification(
 async function deleteCertification(id: string): Promise<void> {
   const response = await sdk.deleteCertificationById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -73,7 +75,7 @@ async function deleteCertification(id: string): Promise<void> {
 async function getCertificationById(id: string): Promise<Certification | null> {
   const response = await sdk.getCertificationById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

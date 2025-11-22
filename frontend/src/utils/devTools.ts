@@ -70,11 +70,19 @@ export async function resetData(): Promise<void> {
 
 /**
  * Toggle between backend API and localStorage mode
+ * Clears authentication data since backend and localStorage use different users/tokens
  */
 export function toggleBackendMode(): void {
   const currentMode = isBackendEnabled();
   const newMode = !currentMode;
   
+  // Clear all authentication data
+  console.log("🔐 Logging out and clearing authentication data...");
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("camp_manager_auth");
+  localStorage.removeItem("camp_manager_selected_camp");
+  
+  // Set new mode
   setBackendEnabled(newMode);
   
   console.log(`
@@ -83,10 +91,11 @@ export function toggleBackendMode(): void {
 Previous: ${currentMode ? 'BACKEND API' : 'LOCAL_STORAGE'}
 Current:  ${newMode ? 'BACKEND API' : 'LOCAL_STORAGE'}
 
+🔐 Authentication cleared - you'll need to login again
 ⚠️  Page will reload to apply changes...
   `);
   
-  // Reload the page to apply changes
+  // Reload the page to apply changes (redirects to login via router guard)
   setTimeout(() => {
     window.location.reload();
   }, 1000);
@@ -130,11 +139,14 @@ Available commands:
   devTools.clearData()         - Clear all data from localStorage
   devTools.insertMockData()    - Insert fresh mock data
   devTools.resetData()         - Clear and re-insert mock data (recommended)
-  devTools.toggleBackendMode() - Switch between backend API and localStorage
+  devTools.toggleBackendMode() - Switch modes (⚠️  logs you out!)
   devTools.getDataSource()     - Check current data source mode
 
 Example usage:
   await devTools.resetData()
-  devTools.toggleBackendMode()
+  devTools.toggleBackendMode()  // Note: This will logout and reload
+
+⚠️  Important: Switching modes logs you out since backend and localStorage
+   use different users and tokens. You'll need to login again after switching.
   `);
 }

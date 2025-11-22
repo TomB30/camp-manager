@@ -8,6 +8,7 @@ import type {
   ColorUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const colorsApi = {
   listColors,
@@ -18,7 +19,7 @@ export const colorsApi = {
 };
 
 async function listColors(): Promise<Color[]> {
-  const response = await sdk.listColors({ client: apiClient });
+  const response = await sdk.listColors({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch colors');
@@ -30,6 +31,7 @@ async function listColors(): Promise<Color[]> {
 async function createColor(color: ColorCreationRequest): Promise<Color> {
   const response = await sdk.createColor({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: color,
   });
   
@@ -46,7 +48,7 @@ async function updateColor(
 ): Promise<Color> {
   const response = await sdk.updateColorById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: color,
   });
   
@@ -60,7 +62,7 @@ async function updateColor(
 async function deleteColor(id: string): Promise<void> {
   const response = await sdk.deleteColorById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -71,7 +73,7 @@ async function deleteColor(id: string): Promise<void> {
 async function getColorById(id: string): Promise<Color | null> {
   const response = await sdk.getColorById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

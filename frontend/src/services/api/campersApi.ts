@@ -8,6 +8,7 @@ import type {
   CamperUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const campersApi = {
   listCampers,
@@ -20,7 +21,10 @@ export const campersApi = {
 };
 
 async function listCampers(): Promise<Camper[]> {
-  const response = await sdk.listCampers({ client: apiClient });
+  const response = await sdk.listCampers({ 
+    client: apiClient,
+    path: { camp_id: getApiCampId() },
+  });
   
   if (response.error) {
     throw new Error('Failed to fetch campers');
@@ -32,6 +36,7 @@ async function listCampers(): Promise<Camper[]> {
 async function createCamper(camper: CamperCreationRequest): Promise<Camper> {
   const response = await sdk.createCamper({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: camper,
   });
   
@@ -48,7 +53,7 @@ async function updateCamper(
 ): Promise<Camper> {
   const response = await sdk.updateCamperById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: camper,
   });
   
@@ -62,7 +67,7 @@ async function updateCamper(
 async function deleteCamper(id: string): Promise<void> {
   const response = await sdk.deleteCamperById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -73,7 +78,7 @@ async function deleteCamper(id: string): Promise<void> {
 async function getCamperById(id: string): Promise<Camper | null> {
   const response = await sdk.getCamperById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {

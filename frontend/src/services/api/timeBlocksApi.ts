@@ -8,6 +8,7 @@ import type {
   TimeBlockUpdateRequest,
 } from '@/generated/api';
 import { apiClient } from '@/config/api';
+import { getApiCampId } from '@/utils/tenantContext';
 
 export const timeBlocksApi = {
   listTimeBlocks,
@@ -18,7 +19,7 @@ export const timeBlocksApi = {
 };
 
 async function listTimeBlocks(): Promise<TimeBlock[]> {
-  const response = await sdk.listTimeBlocks({ client: apiClient });
+  const response = await sdk.listTimeBlocks({ client: apiClient, path: { camp_id: getApiCampId() } });
   
   if (response.error) {
     throw new Error('Failed to fetch time blocks');
@@ -32,6 +33,7 @@ async function createTimeBlock(
 ): Promise<TimeBlock> {
   const response = await sdk.createTimeBlock({
     client: apiClient,
+    path: { camp_id: getApiCampId() },
     body: timeBlock,
   });
   
@@ -48,7 +50,7 @@ async function updateTimeBlock(
 ): Promise<TimeBlock> {
   const response = await sdk.updateTimeBlockById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
     body: timeBlock,
   });
   
@@ -62,7 +64,7 @@ async function updateTimeBlock(
 async function deleteTimeBlock(id: string): Promise<void> {
   const response = await sdk.deleteTimeBlockById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
@@ -73,7 +75,7 @@ async function deleteTimeBlock(id: string): Promise<void> {
 async function getTimeBlockById(id: string): Promise<TimeBlock | null> {
   const response = await sdk.getTimeBlockById({
     client: apiClient,
-    path: { id },
+    path: { camp_id: getApiCampId(), id },
   });
   
   if (response.error) {
