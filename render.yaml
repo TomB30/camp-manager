@@ -7,10 +7,7 @@ services:
   - type: pserv
     name: camp-manager-db
     plan: free
-    databaseName: campmanager
-    user: campmanager
     region: oregon
-    ipAllowList: []
 
   # Backend API Service
   - type: web
