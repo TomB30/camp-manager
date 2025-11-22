@@ -126,35 +126,39 @@ camp-manager/
 
 **Cost**: Free tier available (see limitations below)
 
-### Quick Start with Render
+### Quick Start with Render (Free Tier)
 
-1. **Deploy Backend + Database** (Blueprint)
-   ```bash
-   # Push latest code
-   git push origin main
-   
-   # Go to Render Dashboard
-   # New → Blueprint → Connect GitHub repo
-   # Render auto-detects render.yaml
-   # This deploys backend API + PostgreSQL database
-   ```
+**Follow the manual deployment steps** - guaranteed to work with free tier:
 
-2. **Deploy Frontend** (Dashboard - one-time setup)
+1. **Create PostgreSQL Database** (5 min)
+   - New → PostgreSQL
+   - Name: `camp-manager-db`
+   - Plan: Free
+   - Save connection details
+
+2. **Deploy Backend API** (10 min)
+   - New → Web Service
+   - Runtime: Docker
+   - Configure environment variables
+   - Uses `backend/Dockerfile`
+
+3. **Deploy Frontend** (5 min)
    - New → Static Site
-   - Configure build command and environment variables
-   - See [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md) Step 4 for details
+   - Configure build command
+   - Add environment variables
 
-3. **Update Environment Variables**
-   - Generate JWT secret: `openssl rand -base64 32`
-   - Update CORS with your frontend URL
-   - See [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md) for complete guide
+4. **Update CORS** (1 min)
+   - Update backend CORS_ALLOWED_ORIGINS
+   - Include your frontend URL
 
-4. **Access Your App**
-   - Frontend: `https://camp-manager.onrender.com`
-   - Backend API: `https://camp-manager-api.onrender.com`
-   - Health Check: `https://camp-manager-api.onrender.com/health`
+**Complete step-by-step instructions**: [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md) - Option 2
 
-**Note**: Render Blueprint (render.yaml) only supports backend services. Frontend must be deployed separately through Dashboard.
+**Access Your App**:
+- Frontend: `https://camp-manager.onrender.com`
+- Backend API: `https://camp-manager-api.onrender.com`
+- Health Check: `https://camp-manager-api.onrender.com/health`
+
+**Note**: Render's Blueprint (render.yaml) may require a paid plan. Manual deployment works perfectly with the free tier.
 
 ### Render Free Tier Limitations
 

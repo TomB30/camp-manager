@@ -204,24 +204,25 @@ This application supports two deployment strategies:
 
 ### Option 2: Render.com (Full-Stack) - **Ready to Deploy**
 
-Deploy the complete application with real backend and database:
+Deploy the complete application with real backend and database on Render's **free tier**:
 
 ```bash
 # 1. Push latest code to GitHub
 git push origin main
 
-# 2. Deploy backend + database via Blueprint
+# 2. Deploy services via Render Dashboard (100% free tier compatible)
 # Go to https://dashboard.render.com
-# New → Blueprint → Connect your GitHub repo
-# Render auto-detects render.yaml and deploys backend + database
+# Follow the step-by-step guide in RENDER_DEPLOYMENT.md
 
-# 3. Deploy frontend via Dashboard (one-time setup)
-# New → Static Site → Configure build settings
-# (See RENDER_DEPLOYMENT.md for detailed steps)
+# Steps overview:
+# - Create PostgreSQL database (free tier)
+# - Deploy backend API (free tier)
+# - Deploy frontend static site (always free)
+# - Update environment variables
+# - Configure CORS
 
-# 4. Update environment variables
-# - Generate JWT secret: openssl rand -base64 32
-# - Update CORS with your frontend URL
+# Total time: ~15 minutes
+# See RENDER_DEPLOYMENT.md Option 2 for detailed instructions
 ```
 
 **Includes**:

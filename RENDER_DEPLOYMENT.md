@@ -21,11 +21,17 @@ This deployment includes:
 
 ## Deployment Options
 
-### Option 1: Infrastructure as Code (Recommended for Backend + Database)
+### ⚠️ Important: Use Manual Deployment for Free Tier
+
+**Render's Blueprint feature may require a paid plan.** For the free tier, use **Option 2: Manual Deployment** below, which works perfectly and gives you full control.
+
+### Option 1: Infrastructure as Code (Blueprint - May Require Paid Plan)
 
 Use the included `render.yaml` file to deploy backend and database.
 
-**Note**: Static sites are not supported in render.yaml Blueprint. You'll deploy the frontend separately in Step 4.
+**Note**: This option may not be available on Render's free tier. If you see payment prompts, skip to Option 2.
+
+**Additional Note**: Static sites are not supported in render.yaml Blueprint. You'll deploy the frontend separately in Step 4.
 
 #### Steps:
 
@@ -100,9 +106,9 @@ Use the included `render.yaml` file to deploy backend and database.
    - Backend health check: `https://camp-manager-api.onrender.com/health`
    - Frontend: `https://camp-manager.onrender.com`
 
-### Option 2: Manual Deployment (Step-by-Step)
+### Option 2: Manual Deployment (Recommended - 100% Free Tier Compatible) ✅
 
-Deploy services individually through the Render Dashboard.
+Deploy services individually through the Render Dashboard. This method is guaranteed to work with Render's free tier.
 
 #### Step 1: Create PostgreSQL Database
 

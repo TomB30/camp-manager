@@ -65,6 +65,15 @@ func main() {
 	}
 	log.Info("Database migrations completed successfully")
 
+	// Seed database with demo data
+	if err := db.SeedData(); err != nil {
+		log.Fatal("Failed to seed database", zap.Error(err))
+	}
+	log.Info("Database seeded successfully",
+		zap.String("demo_email", "admin@democamp.com"),
+		zap.String("demo_password", "password123"),
+	)
+
 	// Initialize handlers
 	h := handler.NewHandler(db, cfg)
 	healthHandler := handler.NewHealthHandler(db)
