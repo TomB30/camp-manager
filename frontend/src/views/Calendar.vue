@@ -113,15 +113,11 @@
       @close="closeEventModal"
     />
 
-    <ConfirmModal
-      v-if="showConfirmModal"
-      title="Delete Event"
-      :message="`Are you sure you want to delete the event '${confirmAction?.data.eventName}'?`"
-      details="This action cannot be undone. All assigned groups will be removed from this event."
-      confirm-text="Delete"
-      :danger-mode="true"
-      @confirm="handleConfirmAction"
-      @cancel="handleCancelConfirm"
+    <EventDeleteModal
+      v-if="showDeleteModal"
+      :event="eventToDelete"
+      @confirm="handleDeleteConfirm"
+      @cancel="handleCancelDelete"
     />
   </div>
 </template>
@@ -137,10 +133,10 @@ import {
   useColorsStore,
 } from "@/stores";
 import { format, addDays, startOfWeek, addWeeks, addMonths } from "date-fns";
-import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar, { type Filter } from "@/components/FilterBar.vue";
 import EventDetailModal from "@/components/modals/EventDetailModal.vue";
 import EventFormModal from "@/components/modals/EventFormModal.vue";
+import EventDeleteModal from "@/components/modals/EventDeleteModal.vue";
 import DailyCalendarView from "@/components/DailyCalendarView.vue";
 import WeeklyCalendarView from "@/components/WeeklyCalendarView.vue";
 import MonthlyCalendarView from "@/components/MonthlyCalendarView.vue";
@@ -151,10 +147,10 @@ import LoadingState from "@/components/LoadingState.vue";
 export default defineComponent({
   name: "Calendar",
   components: {
-    ConfirmModal,
     FilterBar,
     EventDetailModal,
     EventFormModal,
+    EventDeleteModal,
     DailyCalendarView,
     WeeklyCalendarView,
     MonthlyCalendarView,
@@ -170,11 +166,8 @@ export default defineComponent({
       editingEventId: null as string | null,
       showEventModal: false,
       viewMode: "daily" as "daily" | "weekly" | "monthly",
-      showConfirmModal: false,
-      confirmAction: null as {
-        type: "deleteEvent";
-        data?: any;
-      } | null,
+      showDeleteModal: false,
+      eventToDelete: null as Event | null,
       searchQuery: "",
       filterRoom: "",
       filterProgram: "",
@@ -507,26 +500,22 @@ export default defineComponent({
     deleteEventConfirm() {
       if (!this.selectedEventId) return;
       const event = this.eventsStore.getEventById(this.selectedEventId);
-      this.confirmAction = {
-        type: "deleteEvent",
-        data: { eventId: this.selectedEventId, eventName: event?.meta.name },
-      };
-      this.showConfirmModal = true;
+      if (!event) return;
+      
+      this.eventToDelete = event;
+      this.showDeleteModal = true;
     },
-    async handleConfirmAction() {
-      if (!this.confirmAction) return;
+    async handleDeleteConfirm(deleteScope: "single" | "future" | "all") {
+      if (!this.eventToDelete) return;
 
-      if (this.confirmAction.type === "deleteEvent") {
-        await this.eventsStore.deleteEvent(this.confirmAction.data.eventId);
-        this.selectedEventId = null;
-      }
-
-      this.showConfirmModal = false;
-      this.confirmAction = null;
+      await this.eventsStore.deleteEvent(this.eventToDelete.meta.id, deleteScope);
+      this.selectedEventId = null;
+      this.showDeleteModal = false;
+      this.eventToDelete = null;
     },
-    handleCancelConfirm() {
-      this.showConfirmModal = false;
-      this.confirmAction = null;
+    handleCancelDelete() {
+      this.showDeleteModal = false;
+      this.eventToDelete = null;
     },
   },
 });
