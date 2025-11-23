@@ -2,26 +2,11 @@
  * Recurrence utility for generating recurring events
  */
 
-export type RecurrenceFrequency = "daily" | "weekly" | "monthly";
-export type RecurrenceEndType = "never" | "on" | "after";
-export type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6; // Sunday = 0, Monday = 1, etc.
+import { RecurrenceRule } from "@/generated/api";
 
-export interface RecurrenceRule {
-  frequency: RecurrenceFrequency;
-  interval: number; // e.g., every 2 weeks
-  daysOfWeek?: DayOfWeek[]; // For weekly recurrence
-  endType: RecurrenceEndType;
-  endDate?: string; // ISO date string
-  occurrences?: number; // Number of occurrences
-}
+export type RecurrenceFrequency = RecurrenceRule["frequency"];
+export type RecurrenceEndType = RecurrenceRule["endType"];
 
-export interface RecurrenceData extends RecurrenceRule {
-  enabled: boolean;
-}
-
-/**
- * Generates dates for recurring events based on the recurrence rule
- */
 export function generateRecurrenceDates(
   startDate: Date,
   rule: RecurrenceRule,
@@ -50,7 +35,7 @@ export function generateRecurrenceDates(
           nextDate = getNextWeeklyDate(
             currentDate,
             rule.daysOfWeek,
-            rule.interval,
+            rule.interval
           );
         } else {
           // If no days specified, repeat on the same day of the week
@@ -89,22 +74,22 @@ export function generateRecurrenceDates(
  */
 function getNextWeeklyDate(
   currentDate: Date,
-  daysOfWeek: DayOfWeek[],
-  interval: number,
+  daysOfWeek: number[],
+  interval: number
 ): Date {
-  const sortedDays = [...daysOfWeek].sort((a, b) => a - b);
+  const sortedDays = [...daysOfWeek].sort((a: number, b: number) => a - b);
   const currentDay = currentDate.getDay();
 
   // Find the next day in the current week
-  const nextDayInWeek = sortedDays.find((day) => day > currentDay);
+  const nextDayInWeek = sortedDays.find((day: number) => day > currentDay);
 
   if (nextDayInWeek !== undefined) {
     // Next occurrence is in the same week
-    const daysToAdd = nextDayInWeek - currentDay;
+    const daysToAdd = nextDayInWeek! - currentDay;
     return addDays(currentDate, daysToAdd);
   } else {
     // Move to the next interval week and use the first selected day
-    const daysUntilNextWeek = 7 - currentDay + sortedDays[0];
+    const daysUntilNextWeek = 7 - currentDay + sortedDays[0]!;
     const weeksToSkip = interval - 1;
     return addDays(currentDate, daysUntilNextWeek + weeksToSkip * 7);
   }

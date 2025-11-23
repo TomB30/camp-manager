@@ -19,10 +19,6 @@
             :options="activityOptions"
             @update:modelValue="applyActivityTemplate"
           />
-          <div
-            v-if="selectedActivityId"
-            class="text-xs text-secondary mt-1"
-          ></div>
         </div>
 
         <div class="form-group">
@@ -224,42 +220,47 @@
             <div class="recurrence-section-container">
               <div class="recurrence-header">
                 <q-checkbox
-                  v-model="recurrenceData.enabled"
+                  dense
+                  v-model="formData.spec.isRecurrenceParent"
+                  @update:model-value="toggleRecurrence"
                   label="Repeat Event"
                   color="primary"
                 />
               </div>
 
-              <div v-if="recurrenceData.enabled" class="recurrence-content">
+              <div
+                v-if="formData.spec.recurrenceRule"
+                class="recurrence-content"
+              >
                 <!-- Repeat Every -->
                 <div class="recurrence-row">
                   <label class="recurrence-label">Repeat every</label>
-                  <div class="recurrence-inputs">
-                    <NumberInput
-                      v-model="recurrenceData.interval"
+                  <div class="row gap-2">
+                    <q-input
+                      class="col-2"
+                      type="number"
+                      v-model="formData.spec.recurrenceRule.interval"
+                      outlined
+                      dense
                       :min="1"
                       :max="99"
                     />
-                    <select
-                      v-model="recurrenceData.frequency"
-                      class="frequency-select"
+                    <q-select
+                      class="col-3"
+                      outlined
+                      dense
+                      v-model="formData.spec.recurrenceRule.frequency"
+                      map-options
+                      emit-value
+                      :options="frequencyOptions"
                     >
-                      <option value="daily">
-                        {{ recurrenceData.interval === 1 ? "day" : "days" }}
-                      </option>
-                      <option value="weekly">
-                        {{ recurrenceData.interval === 1 ? "week" : "weeks" }}
-                      </option>
-                      <option value="monthly">
-                        {{ recurrenceData.interval === 1 ? "month" : "months" }}
-                      </option>
-                    </select>
+                    </q-select>
                   </div>
                 </div>
 
                 <!-- Repeat On (for weekly) -->
                 <div
-                  v-if="recurrenceData.frequency === 'weekly'"
+                  v-if="formData.spec.recurrenceRule?.frequency === 'weekly'"
                   class="recurrence-row"
                 >
                   <label class="recurrence-label">Repeat on</label>
@@ -271,8 +272,10 @@
                       class="day-button"
                       :class="{
                         active:
-                          recurrenceData.daysOfWeek &&
-                          recurrenceData.daysOfWeek.includes(index as any),
+                          formData.spec.recurrenceRule.daysOfWeek &&
+                          formData.spec.recurrenceRule.daysOfWeek.includes(
+                            index as any
+                          ),
                       }"
                       @click="toggleDay(index)"
                     >
@@ -285,51 +288,44 @@
                 <!-- Ends -->
                 <div class="recurrence-row">
                   <label class="recurrence-label">Ends</label>
+                  <q-option-group
+                    v-model="formData.spec.recurrenceRule.endType"
+                    class="q-gutter-x-md"
+                    inline
+                    :options="endTypeOptions"
+                    @update:model-value="handleEndTypeChange"
+                    dense
+                  />
                   <div class="ends-options">
-                    <label class="radio-option">
-                      <input
-                        type="radio"
-                        value="never"
-                        v-model="recurrenceData.endType"
-                        class="radio-input"
-                      />
-                      <span>Never</span>
-                    </label>
-
-                    <label class="radio-option">
-                      <input
-                        type="radio"
-                        value="on"
-                        v-model="recurrenceData.endType"
-                        class="radio-input"
-                      />
-                      <span>On</span>
-                      <input
-                        v-model="recurrenceData.endDate"
+                    <div
+                      v-if="formData.spec.recurrenceRule.endType === 'on'"
+                      class="row"
+                    >
+                      <q-input
+                        class="col-4"
+                        v-model="formData.spec.recurrenceRule.endDate"
                         type="date"
-                        class="date-input"
-                        :disabled="recurrenceData.endType !== 'on'"
                         :min="defaultEventDate.toISOString()"
+                        outlined
+                        dense
+                        label="End Date"
                       />
-                    </label>
-
-                    <label class="radio-option">
-                      <input
-                        type="radio"
-                        value="after"
-                        v-model="recurrenceData.endType"
-                        class="radio-input"
-                      />
-                      <span>After</span>
-                      <NumberInput
-                        v-model="occurrencesValue"
+                    </div>
+                    <div
+                      v-if="formData.spec.recurrenceRule.endType === 'after'"
+                      class="row items-center gap-2"
+                    >
+                      <q-input
+                        class="col-4"
+                        v-model="formData.spec.recurrenceRule.occurrences"
+                        type="number"
                         :min="1"
                         :max="365"
-                        :disabled="recurrenceData.endType !== 'after'"
-                        :small="true"
+                        outlined
+                        dense
+                        label="Number of Occurrences"
                       />
-                      <span>occurrences</span>
-                    </label>
+                    </div>
                   </div>
                 </div>
 
@@ -377,6 +373,7 @@
             v-model="formData.spec.locationId"
             :options="locationOptions"
             :required="true"
+            no-option-text="No locations found"
           />
         </div>
 
@@ -427,6 +424,7 @@
                 label="Staff Member"
                 v-model="position.assignedStaffId"
                 :options="getStaffOptionsForPosition(position)"
+                no-option-text="No staff members found"
               />
             </div>
           </div>
@@ -443,6 +441,7 @@
             :options="groupOptions"
             multiple
             label="Select Groups"
+            no-option-text="No groups found"
           />
         </div>
 
@@ -518,7 +517,6 @@ import BaseModal from "@/components/BaseModal.vue";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete.vue";
-import NumberInput from "@/components/NumberInput.vue";
 import type {
   Location,
   Camper,
@@ -526,10 +524,10 @@ import type {
   Group,
   EventCreationRequest,
   TimeBlock,
+  EventRequiredStaffPosition,
+  RecurrenceRule,
 } from "@/generated/api";
 import {
-  type RecurrenceData,
-  type DayOfWeek,
   formatRecurrenceRule,
   validateRecurrenceRule,
   generateRecurrenceDates,
@@ -539,13 +537,13 @@ import { compareAsc } from "date-fns";
 import InfoTooltip from "../InfoTooltip.vue";
 import type { ISelectOption } from "@/components/SelectionList.vue";
 import SelectionList from "@/components/SelectionList.vue";
+import { isBackendEnabled } from "@/config/dataSource";
 
 export default defineComponent({
   name: "EventFormModal",
   components: {
     BaseModal,
     Autocomplete,
-    NumberInput,
     InfoTooltip,
     SelectionList,
   },
@@ -603,19 +601,18 @@ export default defineComponent({
         spec: {
           startDate: defaultDate.toISOString(),
           endDate: "",
-          locationId: "",
+          locationId: null as string | null,
           capacity: null as number | null,
-          colorId: "",
-          groupIds: [],
-          excludeCamperIds: [],
-          excludeStaffIds: [],
-          programId: "",
-          activityId: "",
-          requiredStaff: [] as Array<{
-            positionName: string;
-            requiredCertificationId?: string;
-            assignedStaffId?: string;
-          }>,
+          colorId: null as string | null,
+          groupIds: null as string[] | null,
+          excludeCamperIds: null as string[] | null,
+          excludeStaffIds: null as string[] | null,
+          programId: null as string | null,
+          activityId: null as string | null,
+          requiredStaff: null as EventRequiredStaffPosition[] | null,
+          recurrenceId: null as string | null,
+          isRecurrenceParent: false as boolean | null,
+          recurrenceRule: null as RecurrenceRule | null,
         },
       } as EventCreationRequest,
       internalEventDate: defaultDate.toISOString().split("T")[0],
@@ -634,21 +631,25 @@ export default defineComponent({
       selectedActivityHasDuration: false,
       selectedActivityHasTimeBlock: false,
       selectedActivityDuration: 0,
-      recurrenceData: {
-        enabled: false,
-        frequency: "weekly" as "daily" | "weekly" | "monthly",
-        interval: 1,
-        daysOfWeek: [] as DayOfWeek[],
-        endType: "never" as "never" | "on" | "after",
-        endDate: "",
-        occurrences: 10,
-      } as RecurrenceData,
       daysOfWeek: ["S", "M", "T", "W", "T", "F", "S"],
     };
   },
   async created() {
     // Load time blocks
-    await this.timeBlocksStore.loadTimeBlocks();
+    await Promise.all([
+      this.timeBlocksStore.loadTimeBlocks(),
+      this.groupsStore.loadGroups(),
+      this.locationsStore.loadLocations(),
+      this.programsStore.loadPrograms(),
+      this.activitiesStore.loadActivities(),
+      this.colorsStore.loadColors(),
+      this.certificationsStore.loadCertifications(),
+      this.sessionsStore.loadSessions(),
+      this.timeBlocksStore.loadTimeBlocks(),
+      this.staffMembersStore.loadStaffMembers(),
+      this.campersStore.loadCampers(),
+    ]);
+
     if (this.eventId) {
       const event = this.eventsStore.getEventById(this.eventId);
       if (!event) return;
@@ -681,6 +682,9 @@ export default defineComponent({
           programId: event.spec.programId,
           activityId: event.spec.activityId,
           requiredStaff: event.spec.requiredStaff || [],
+          recurrenceRule: event.spec.recurrenceRule,
+          isRecurrenceParent: event.spec.isRecurrenceParent,
+          recurrenceId: event.spec.recurrenceId,
         },
       } as EventCreationRequest;
     } else {
@@ -694,6 +698,36 @@ export default defineComponent({
     }
   },
   computed: {
+    endTypeOptions(): ISelectOption[] {
+      return [
+        { label: "Never", value: "never" },
+        { label: "On", value: "on" },
+        { label: "After", value: "after" },
+      ];
+    },
+    frequencyOptions(): ISelectOption[] {
+      return [
+        {
+          label:
+            this.formData.spec.recurrenceRule?.interval === 1 ? "day" : "days",
+          value: "daily",
+        },
+        {
+          label:
+            this.formData.spec.recurrenceRule?.interval === 1
+              ? "week"
+              : "weeks",
+          value: "weekly",
+        },
+        {
+          label:
+            this.formData.spec.recurrenceRule?.interval === 1
+              ? "month"
+              : "months",
+          value: "monthly",
+        },
+      ];
+    },
     groupOptions(): ISelectOption[] {
       return this.groups.map((group: Group) => ({
         label: group.meta.name,
@@ -809,7 +843,7 @@ export default defineComponent({
 
       this.programsStore.programs.forEach((program) => {
         const programActivities = this.activitiesStore.getActivitiesInProgram(
-          program.meta.id,
+          program.meta.id
         );
         if (programActivities.length > 0) {
           programActivities.forEach((activity) => {
@@ -838,7 +872,7 @@ export default defineComponent({
           }
           // Check if event's day is in the time block's days
           return timeBlock.spec.daysOfWeek.some(
-            (day) => day.toLowerCase() === eventDayOfWeek.toLowerCase(),
+            (day) => day.toLowerCase() === eventDayOfWeek.toLowerCase()
           );
         })
         .map((timeBlock) => ({
@@ -928,7 +962,7 @@ export default defineComponent({
         const group = this.groupsStore.getGroupById(groupId);
         if (group && group.spec.staffIds) {
           group.spec.staffIds.forEach((staffId: string) =>
-            staffIds.add(staffId),
+            staffIds.add(staffId)
           );
         }
       });
@@ -942,22 +976,16 @@ export default defineComponent({
         }));
     },
     recurrenceSummary(): string | null {
-      if (!this.recurrenceData.enabled) return null;
+      if (!this.formData.spec.recurrenceRule) return null;
 
-      const validation = validateRecurrenceRule(this.recurrenceData);
+      const validation = validateRecurrenceRule(
+        this.formData.spec.recurrenceRule
+      );
       if (!validation.valid) {
         return `⚠️ ${validation.error}`;
       }
 
-      return formatRecurrenceRule(this.recurrenceData);
-    },
-    occurrencesValue: {
-      get(): number {
-        return this.recurrenceData.occurrences || 10;
-      },
-      set(value: number) {
-        this.recurrenceData.occurrences = value;
-      },
+      return formatRecurrenceRule(this.formData.spec.recurrenceRule);
     },
   },
   watch: {
@@ -977,7 +1005,7 @@ export default defineComponent({
           const startDateTime = new Date(newDate);
           startDateTime.setHours(hours, minutes, 0, 0);
           const endDateTime = new Date(
-            startDateTime.getTime() + this.templateDuration * 60000,
+            startDateTime.getTime() + this.templateDuration * 60000
           );
           this.internalEndDate = endDateTime.toISOString().split("T")[0];
         }
@@ -1009,24 +1037,21 @@ export default defineComponent({
         this.internalEndDate = this.internalEventDate;
       }
     },
-    "recurrenceData.frequency": {
-      handler(newFrequency, oldFrequency) {
-        // Auto-select the event's day when switching to weekly mode
-        if (newFrequency === "weekly" && oldFrequency !== "weekly") {
-          if (
-            !this.recurrenceData.daysOfWeek ||
-            this.recurrenceData.daysOfWeek.length === 0
-          ) {
-            // Get the day of week from the event date
-            const eventDate = new Date(this.defaultEventDate);
-            const dayOfWeek = eventDate.getDay() as DayOfWeek;
-            this.recurrenceData.daysOfWeek = [dayOfWeek];
-          }
-        }
-      },
-    },
   },
   methods: {
+    handleEndTypeChange(value: RecurrenceRule["endType"]): void {
+      if (!this.formData.spec.recurrenceRule) return;
+      if (value === "on") {
+        this.formData.spec.recurrenceRule.endDate = this.internalEventDate;
+        this.formData.spec.recurrenceRule.occurrences = undefined;
+      } else if (value === "after") {
+        this.formData.spec.recurrenceRule.occurrences = 10;
+        this.formData.spec.recurrenceRule.endDate = undefined;
+      } else {
+        this.formData.spec.recurrenceRule.endDate = undefined;
+        this.formData.spec.recurrenceRule.occurrences = undefined;
+      }
+    },
     isValidCapacity(value: string): boolean | string {
       if (!value) return true;
       return parseInt(value) > 0 || "Must be greater than 0";
@@ -1038,10 +1063,10 @@ export default defineComponent({
         : this.internalEventDate;
 
       const startDateTime = new Date(
-        `${this.internalEventDate}T${this.internalStartTime}:00`,
+        `${this.internalEventDate}T${this.internalStartTime}:00`
       );
       const endDateTime = new Date(
-        `${endDateToUse}T${this.internalEndTime}:00`,
+        `${endDateToUse}T${this.internalEndTime}:00`
       );
 
       return (
@@ -1064,7 +1089,7 @@ export default defineComponent({
         startDate.setHours(hours, minutes, 0, 0);
 
         const endDate = new Date(
-          startDate.getTime() + this.selectedActivityDuration * 60000,
+          startDate.getTime() + this.selectedActivityDuration * 60000
         );
         const endHours = endDate.getHours().toString().padStart(2, "0");
         const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
@@ -1104,7 +1129,7 @@ export default defineComponent({
       } else {
         const result = compareAsc(
           new Date(`${this.internalEventDate}T${this.internalStartTime}:00`),
-          new Date(`${this.internalEventDate}T${this.internalEndTime}:00`),
+          new Date(`${this.internalEventDate}T${this.internalEndTime}:00`)
         );
         if (result === 1) {
           this.endTime = this.startTime;
@@ -1115,7 +1140,7 @@ export default defineComponent({
       // Combine date and time into ISO datetime strings
       if (this.internalEventDate && this.internalStartTime) {
         const startDateTime = new Date(
-          `${this.internalEventDate}T${this.internalStartTime}:00`,
+          `${this.internalEventDate}T${this.internalStartTime}:00`
         );
         this.formData.spec.startDate = startDateTime.toISOString();
       }
@@ -1127,7 +1152,7 @@ export default defineComponent({
 
       if (endDateToUse && this.internalEndTime) {
         const endDateTime = new Date(
-          `${endDateToUse}T${this.internalEndTime}:00`,
+          `${endDateToUse}T${this.internalEndTime}:00`
         );
         this.formData.spec.endDate = endDateTime.toISOString();
       }
@@ -1142,9 +1167,9 @@ export default defineComponent({
         this.timeSelectionMode = "specific";
         this.selectedTimeBlockId = "";
         this.formData.spec.requiredStaff = [];
-        this.formData.spec.programId = "";
-        this.formData.spec.activityId = "";
-        this.formData.spec.locationId = "";
+        this.formData.spec.programId = undefined;
+        this.formData.spec.activityId = undefined;
+        this.formData.spec.locationId = undefined;
         this.formData.meta.name = "";
         this.isEndDateFromTemplate = false;
         this.templateDayOffset = 0;
@@ -1162,7 +1187,7 @@ export default defineComponent({
       if (activity.spec.timeBlockId) {
         // Use time block from activity - get the actual times from the time block
         const timeBlock = this.timeBlocksStore.getTimeBlockById(
-          activity.spec.timeBlockId,
+          activity.spec.timeBlockId
         );
         if (timeBlock) {
           this.selectedActivityHasTimeBlock = true;
@@ -1196,7 +1221,7 @@ export default defineComponent({
           // Calculate end date = start date + dayOffset
           const startDate = new Date(this.internalEventDate);
           startDate.setDate(
-            startDate.getDate() + activity.spec.fixedTime.dayOffset,
+            startDate.getDate() + activity.spec.fixedTime.dayOffset
           );
           this.internalEndDate = startDate.toISOString().split("T")[0];
         } else {
@@ -1224,7 +1249,7 @@ export default defineComponent({
           startDateTime.setHours(hours, minutes, 0, 0);
 
           const endDateTime = new Date(
-            startDateTime.getTime() + (activity.spec.duration || 0) * 60000,
+            startDateTime.getTime() + (activity.spec.duration || 0) * 60000
           );
 
           // Check if duration spans multiple days (>= 1440 minutes = 1 day)
@@ -1264,7 +1289,7 @@ export default defineComponent({
       // Inherit color from the program
       if (activity.spec.programId) {
         const program = this.programsStore.getProgramById(
-          activity.spec.programId,
+          activity.spec.programId
         );
         if (program && program.spec.colorId) {
           this.formData.spec.colorId = program.spec.colorId;
@@ -1281,7 +1306,7 @@ export default defineComponent({
             positionName: position.positionName,
             requiredCertificationId: position.requiredCertificationId,
             assignedStaffId: undefined, // Start with no staff assigned
-          }),
+          })
         );
       }
 
@@ -1356,7 +1381,7 @@ export default defineComponent({
           return (
             staff.spec.certificationIds &&
             staff.spec.certificationIds.includes(
-              position.requiredCertificationId!,
+              position.requiredCertificationId!
             )
           );
         });
@@ -1398,21 +1423,37 @@ export default defineComponent({
         this.eventsStore.events,
         this.eventId
           ? new Map<string, string[]>([[this.eventId, []]])
-          : undefined,
+          : undefined
       );
 
       return { available: result.canAssign, reason: result.reason };
     },
     toggleDay(day: number) {
-      if (!this.recurrenceData.daysOfWeek) {
-        this.recurrenceData.daysOfWeek = [];
+      if (!this.formData.spec.recurrenceRule) return;
+      if (!this.formData.spec.recurrenceRule.daysOfWeek) {
+        this.formData.spec.recurrenceRule.daysOfWeek = [];
       }
-      const index = this.recurrenceData.daysOfWeek.indexOf(day as DayOfWeek);
+      const index = this.formData.spec.recurrenceRule.daysOfWeek.indexOf(
+        day as number
+      );
       if (index > -1) {
-        this.recurrenceData.daysOfWeek.splice(index, 1);
+        this.formData.spec.recurrenceRule.daysOfWeek.splice(index, 1);
       } else {
-        this.recurrenceData.daysOfWeek.push(day as DayOfWeek);
-        this.recurrenceData.daysOfWeek.sort((a, b) => a - b);
+        this.formData.spec.recurrenceRule.daysOfWeek.push(day as number);
+        this.formData.spec.recurrenceRule.daysOfWeek.sort(
+          (a: number, b: number) => a - b
+        );
+      }
+    },
+    toggleRecurrence(val: boolean): void {
+      if (val) {
+        this.formData.spec.recurrenceRule = {
+          frequency: "daily",
+          interval: 1,
+          endType: "never",
+        };
+      } else {
+        delete this.formData.spec.recurrenceRule;
       }
     },
     async handleSave() {
@@ -1423,8 +1464,10 @@ export default defineComponent({
       this.updateFormDataDates();
 
       // Validate recurrence if enabled
-      if (this.recurrenceData.enabled) {
-        const validation = validateRecurrenceRule(this.recurrenceData);
+      if (this.formData.spec.recurrenceRule) {
+        const validation = validateRecurrenceRule(
+          this.formData.spec.recurrenceRule
+        );
         if (!validation.valid) {
           this.toast.error("Invalid recurrence settings", validation.error);
           return;
@@ -1448,22 +1491,31 @@ export default defineComponent({
       }
     },
     async createEvent(): Promise<void> {
-      if (this.recurrenceData.enabled) {
-        return this.createRecurringEvents(
-          this.formData,
-          this.recurrenceData,
-          new Date(this.formData.spec.startDate),
-          new Date(this.formData.spec.endDate),
-        );
+      if (isBackendEnabled()) {
+        if (this.formData.spec.recurrenceRule) {
+          this.formData.spec.recurrenceId = crypto.randomUUID();
+        }
+        await this.eventsStore.createEvent(this.formData);
+        this.toast.success("Event created successfully");
+        this.$emit("close");
       } else {
-        return this.createSingleEvent();
+        if (this.formData.spec.recurrenceRule) {
+          return this.createRecurringEvents(
+            this.formData,
+            this.formData.spec.recurrenceRule,
+            new Date(this.formData.spec.startDate),
+            new Date(this.formData.spec.endDate)
+          );
+        } else {
+          return this.createSingleEvent();
+        }
       }
     },
     async createRecurringEvents(
       formData: EventCreationRequest,
-      recurrence: RecurrenceData,
+      recurrence: RecurrenceRule,
       startDate: Date,
-      endDate: Date,
+      endDate: Date
     ): Promise<void> {
       try {
         // Generate all occurrence dates
@@ -1477,7 +1529,7 @@ export default defineComponent({
         // Show loading toast for large batches
         if (occurrenceDates.length > 10) {
           this.toast.info(
-            `Creating ${occurrenceDates.length} recurring events...`,
+            `Creating ${occurrenceDates.length} recurring events...`
           );
         }
 
@@ -1517,13 +1569,13 @@ export default defineComponent({
           };
 
           eventCreationRequestsPromises.push(
-            this.eventsStore.createEvent(event),
+            this.eventsStore.createEvent(event)
           );
         }
 
         await Promise.all(eventCreationRequestsPromises);
         this.toast.success(
-          `Successfully created ${occurrenceDates.length} recurring events`,
+          `Successfully created ${occurrenceDates.length} recurring events`
         );
       } catch (error: any) {
         this.toast.error("Failed to create recurring events", error.message);
@@ -1629,10 +1681,6 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  padding: 1rem;
-  background: var(--surface);
-  border-radius: var(--radius);
-  margin-top: 1rem;
 }
 
 .recurrence-row {
@@ -1645,23 +1693,6 @@ export default defineComponent({
   font-weight: 500;
   color: var(--text-primary);
   font-size: 0.95rem;
-}
-
-.recurrence-inputs {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.frequency-select {
-  height: 42px;
-  padding: 0 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  background: white;
-  font-size: 0.95rem;
-  cursor: pointer;
-  min-width: 100px;
 }
 
 .days-selector {
@@ -1696,49 +1727,6 @@ export default defineComponent({
   color: white;
 }
 
-.ends-options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.radio-option {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  background: white;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.radio-option:hover {
-  background: var(--background);
-}
-
-.radio-input {
-  cursor: pointer;
-  width: 18px;
-  height: 18px;
-}
-
-.date-input {
-  flex: 1;
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  font-size: 0.9rem;
-  background: white;
-}
-
-.date-input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: var(--background);
-}
-
 .recurrence-summary {
   padding: 0.75rem;
   background: var(--primary-light);
@@ -1764,13 +1752,6 @@ export default defineComponent({
   font-weight: 500;
 }
 
-.recurrence-help-text {
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  line-height: 1.4;
-}
-
 @media (max-width: 768px) {
   .days-selector {
     justify-content: space-between;
@@ -1780,10 +1761,6 @@ export default defineComponent({
     width: 36px;
     height: 36px;
     font-size: 0.85rem;
-  }
-
-  .recurrence-help-text {
-    font-size: 0.8rem;
   }
 }
 

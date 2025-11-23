@@ -751,10 +751,55 @@ export type GroupSpec = {
     groupIds?: Array<string>;
 };
 
+export type EventRequiredStaffPosition = {
+    /**
+     * Name of the position required for this event
+     */
+    positionName: string;
+    /**
+     * ID of the certification required for this position
+     */
+    requiredCertificationId?: string;
+    /**
+     * ID of the staff member assigned to this position
+     */
+    assignedStaffId?: string;
+};
+
+export type RecurrenceRule = {
+    /**
+     * Frequency of recurrence
+     */
+    frequency: 'daily' | 'weekly' | 'monthly';
+    /**
+     * Interval for recurrence (e.g., every 2 weeks)
+     */
+    interval: number;
+    /**
+     * Days of week for weekly recurrence (0=Sunday, 6=Saturday)
+     */
+    daysOfWeek?: Array<number>;
+    /**
+     * Type of recurrence end condition
+     */
+    endType: 'never' | 'on' | 'after';
+    /**
+     * End date for recurrence (required if endType is "on")
+     */
+    endDate?: string;
+    /**
+     * Number of occurrences (required if endType is "after")
+     */
+    occurrences?: number;
+};
+
 export type EventSpec = {
     startDate: string;
     endDate: string;
     locationId?: string;
+    /**
+     * Optional maximum capacity for the event
+     */
     capacity?: number;
     /**
      * IDs of groups assigned to this event
@@ -771,28 +816,16 @@ export type EventSpec = {
     colorId?: string;
     programId?: string;
     activityId?: string;
-    requiredStaff?: Array<{
-        /**
-         * Name of the position required for this event
-         */
-        positionName: string;
-        /**
-         * ID of the certification required for this position
-         */
-        requiredCertificationId?: string;
-        /**
-         * ID of the staff member assigned to this position
-         */
-        assignedStaffId?: string;
-    }>;
+    requiredStaff?: Array<EventRequiredStaffPosition>;
     /**
-     * Recurrence rule ID - links this event to a recurrence series
+     * Links events in a recurring series together
      */
     recurrenceId?: string;
     /**
-     * Indicates if this is the parent event of a recurrence series
+     * True for the first event in a recurring series
      */
     isRecurrenceParent?: boolean;
+    recurrenceRule?: RecurrenceRule;
 };
 
 /**
@@ -946,6 +979,11 @@ export type ProgramsFilterBy = Array<string>;
 export type ProgramsSortBy = 'name';
 
 /**
+ * Force deletion and cascade to dependent resources (events)
+ */
+export type Force = boolean;
+
+/**
  * Filter results by parameters. Format: field operator value
  * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
  * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
@@ -1034,6 +1072,31 @@ export type GroupsFilterBy = Array<string>;
  * Field name to sort by
  */
 export type GroupsSortBy = 'name' | 'sessionId' | 'housingRoomId';
+
+/**
+ * Filter results by parameters. Format: field operator value
+ * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+ * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+ * Dates in ISO 8601 format. Text filters are case-insensitive.
+ * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+ *
+ */
+export type EventsFilterBy = Array<string>;
+
+/**
+ * Field name to sort by
+ */
+export type EventsSortBy = 'name' | 'startDate' | 'endDate';
+
+/**
+ * Scope of update for recurring events (single=this event only, future=this and future events, all=entire series)
+ */
+export type UpdateScope = 'single' | 'future' | 'all';
+
+/**
+ * Scope of deletion for recurring events (single=this event only, future=this and future events, all=entire series)
+ */
+export type DeleteScope = 'single' | 'future' | 'all';
 
 export type LoginData = {
     body: LoginRequest;
@@ -2251,8 +2314,20 @@ export type DeleteProgramByIdData = {
          */
         id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Force deletion and cascade to dependent resources (events)
+         */
+        force?: boolean;
+    };
     url: '/api/v1/camps/{camp_id}/programs/{id}';
+};
+
+export type DeleteProgramByIdErrors = {
+    /**
+     * Cannot delete - activities/events exist (use force=true to cascade delete)
+     */
+    409: unknown;
 };
 
 export type DeleteProgramByIdResponses = {
@@ -2398,8 +2473,20 @@ export type DeleteActivityByIdData = {
          */
         id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Force deletion and cascade to dependent resources (events)
+         */
+        force?: boolean;
+    };
     url: '/api/v1/camps/{camp_id}/activities/{id}';
+};
+
+export type DeleteActivityByIdErrors = {
+    /**
+     * Cannot delete - events exist (use force=true to cascade delete)
+     */
+    409: unknown;
 };
 
 export type DeleteActivityByIdResponses = {
@@ -3217,6 +3304,23 @@ export type ListEventsData = {
          * Search term to filter items by name, title, or other text fields
          */
         search?: string;
+        /**
+         * Filter results by parameters. Format: field operator value
+         * Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+         * =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+         * Dates in ISO 8601 format. Text filters are case-insensitive.
+         * Note: Text operators (=@, !@, =^, =~) only work with text fields.
+         *
+         */
+        filterBy?: Array<string>;
+        /**
+         * Field name to sort by
+         */
+        sortBy?: 'name' | 'startDate' | 'endDate';
+        /**
+         * Sort direction
+         */
+        sortOrder?: 'asc' | 'desc';
     };
     url: '/api/v1/camps/{camp_id}/events';
 };
@@ -3263,7 +3367,12 @@ export type DeleteEventByIdData = {
          */
         id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Scope of deletion for recurring events (single=this event only, future=this and future events, all=entire series)
+         */
+        deleteScope?: 'single' | 'future' | 'all';
+    };
     url: '/api/v1/camps/{camp_id}/events/{id}';
 };
 
@@ -3313,7 +3422,12 @@ export type UpdateEventByIdData = {
          */
         id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Scope of update for recurring events (single=this event only, future=this and future events, all=entire series)
+         */
+        updateScope?: 'single' | 'future' | 'all';
+    };
     url: '/api/v1/camps/{camp_id}/events/{id}';
 };
 

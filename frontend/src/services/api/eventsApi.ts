@@ -6,9 +6,22 @@ import type {
   Event,
   EventCreationRequest,
   EventUpdateRequest,
+  UpdateScope,
+  DeleteScope,
+  EventsSortBy,
+  SortOrder,
 } from "@/generated/api";
 import { apiClient } from "@/config/api";
 import { getApiCampId } from "@/utils/tenantContext";
+
+export interface ListEventsOptions {
+  limit?: number;
+  offset?: number;
+  search?: string;
+  filterBy?: Array<string>;
+  sortBy?: EventsSortBy;
+  sortOrder?: SortOrder;
+}
 
 export const eventsApi = {
   listEvents,
@@ -22,10 +35,20 @@ export const eventsApi = {
   getEventsByDateRange,
 };
 
-async function listEvents(): Promise<Event[]> {
+async function listEvents(options?: ListEventsOptions): Promise<Event[]> {
   const response = await sdk.listEvents({
     client: apiClient,
     path: { camp_id: getApiCampId() },
+    query: options
+      ? {
+          limit: options.limit,
+          offset: options.offset,
+          search: options.search,
+          filterBy: options.filterBy,
+          sortBy: options.sortBy,
+          sortOrder: options.sortOrder,
+        }
+      : undefined,
   });
 
   if (response.error) {
@@ -52,11 +75,13 @@ async function createEvent(event: EventCreationRequest): Promise<Event> {
 async function updateEvent(
   id: string,
   event: EventUpdateRequest,
+  updateScope?: UpdateScope,
 ): Promise<Event> {
   const response = await sdk.updateEventById({
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
     body: event,
+    query: updateScope ? { updateScope } : undefined,
   });
 
   if (response.error || !response.data) {
@@ -66,10 +91,14 @@ async function updateEvent(
   return response.data;
 }
 
-async function deleteEvent(id: string): Promise<void> {
+async function deleteEvent(
+  id: string,
+  deleteScope?: DeleteScope,
+): Promise<void> {
   const response = await sdk.deleteEventById({
     client: apiClient,
     path: { camp_id: getApiCampId(), id },
+    query: deleteScope ? { deleteScope } : undefined,
   });
 
   if (response.error) {

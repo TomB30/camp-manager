@@ -216,7 +216,7 @@ import {
   useCertificationsStore,
 } from "@/stores";
 import { useToastStore } from "@/stores/toastStore";
-import type { Event } from "@/generated/api";
+import type { Event, EventRequiredStaffPosition } from "@/generated/api";
 
 export default defineComponent({
   name: "EventDetailModal",

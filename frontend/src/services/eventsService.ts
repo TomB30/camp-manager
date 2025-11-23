@@ -4,22 +4,29 @@
  */
 import { isBackendEnabled } from "@/config/dataSource";
 import { eventsStorage } from "./eventsStorage";
-import { eventsApi } from "./api/eventsApi";
+import { eventsApi, type ListEventsOptions } from "./api/eventsApi";
 import type {
   Event,
   EventCreationRequest,
   EventUpdateRequest,
+  UpdateScope,
+  DeleteScope,
 } from "@/generated/api";
 
 const impl = () => (isBackendEnabled() ? eventsApi : eventsStorage);
 
 export const eventsService = {
-  listEvents: (): Promise<Event[]> => impl().listEvents(),
+  listEvents: (options?: ListEventsOptions): Promise<Event[]> =>
+    impl().listEvents(options),
   createEvent: (data: EventCreationRequest): Promise<Event> =>
     impl().createEvent(data),
-  updateEvent: (id: string, data: EventUpdateRequest): Promise<Event> =>
-    impl().updateEvent(id, data),
-  deleteEvent: (id: string): Promise<void> => impl().deleteEvent(id),
+  updateEvent: (
+    id: string,
+    data: EventUpdateRequest,
+    updateScope?: UpdateScope,
+  ): Promise<Event> => impl().updateEvent(id, data, updateScope),
+  deleteEvent: (id: string, deleteScope?: DeleteScope): Promise<void> =>
+    impl().deleteEvent(id, deleteScope),
   getEventById: (id: string): Promise<Event | null> => impl().getEventById(id),
   saveEventsBatch: (events: Event[]): Promise<Event[]> =>
     impl().saveEventsBatch(events),

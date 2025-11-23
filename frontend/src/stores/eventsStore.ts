@@ -3,7 +3,10 @@ import type {
   Event,
   EventCreationRequest,
   EventUpdateRequest,
+  UpdateScope,
+  DeleteScope,
 } from "@/generated/api";
+import type { ListEventsOptions } from "@/services/api/eventsApi";
 import { eventsService } from "@/services";
 import { dateUtils } from "@/utils/dateUtils";
 import { useGroupsStore } from "./groupsStore";
@@ -128,10 +131,10 @@ export const useEventsStore = defineStore("events", {
   },
 
   actions: {
-    async loadEvents(): Promise<void> {
+    async loadEvents(options?: ListEventsOptions): Promise<void> {
       this.loading = true;
       try {
-        this.events = await eventsService.listEvents();
+        this.events = await eventsService.listEvents(options);
       } finally {
         this.loading = false;
       }
@@ -151,17 +154,34 @@ export const useEventsStore = defineStore("events", {
     async updateEvent(
       id: string,
       eventUpdate: EventUpdateRequest,
+      updateScope?: UpdateScope,
     ): Promise<void> {
-      const event = await eventsService.updateEvent(id, eventUpdate);
-      const index = this.events.findIndex((e) => e.meta.id === id);
-      if (index >= 0) {
-        this.events[index] = event;
+      const event = await eventsService.updateEvent(id, eventUpdate, updateScope);
+      
+      // Handle recurring event updates
+      if (updateScope && updateScope !== "single") {
+        // Reload all events to get the updated series
+        await this.loadEvents();
+      } else {
+        // Update single event in state
+        const index = this.events.findIndex((e) => e.meta.id === id);
+        if (index >= 0) {
+          this.events[index] = event;
+        }
       }
     },
 
-    async deleteEvent(id: string): Promise<void> {
-      await eventsService.deleteEvent(id);
-      this.events = this.events.filter((e) => e.meta.id !== id);
+    async deleteEvent(id: string, deleteScope?: DeleteScope): Promise<void> {
+      await eventsService.deleteEvent(id, deleteScope);
+      
+      // Handle recurring event deletions
+      if (deleteScope && deleteScope !== "single") {
+        // Reload all events to reflect the deletion
+        await this.loadEvents();
+      } else {
+        // Remove single event from state
+        this.events = this.events.filter((e) => e.meta.id !== id);
+      }
     },
 
     /**

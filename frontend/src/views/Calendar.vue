@@ -134,6 +134,7 @@ import {
   useLocationsStore,
   useGroupsStore,
   useProgramsStore,
+  useColorsStore,
 } from "@/stores";
 import { format, addDays, startOfWeek, addWeeks, addMonths } from "date-fns";
 import ConfirmModal from "@/components/ConfirmModal.vue";
@@ -191,6 +192,7 @@ export default defineComponent({
         this.locationsStore.loadLocations(),
         this.groupsStore.loadGroups(),
         this.programsStore.loadPrograms(),
+        this.colorsStore.loadColors(),
       ]);
     } finally {
       this.loading = false;
@@ -221,6 +223,9 @@ export default defineComponent({
     },
     programsStore() {
       return useProgramsStore();
+    },
+    colorsStore() {
+      return useColorsStore();
     },
     weekDays() {
       const start = startOfWeek(this.selectedDate);
@@ -497,6 +502,7 @@ export default defineComponent({
       this.showEventModal = false;
       this.editingEventId = null;
       this.defaultEventDate = new Date();
+      this.eventsStore.loadEvents();
     },
     deleteEventConfirm() {
       if (!this.selectedEventId) return;
