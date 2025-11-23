@@ -284,7 +284,7 @@ func (d *Database) SeedData() error {
 			CampID:      camp.ID,
 			Name:        "Red",
 			Description: "Bright red color for high-energy activities",
-			HexValue:    "#FF0000",
+			HexValue:    "#EF5350",
 			Default:     true,
 		},
 		{
@@ -292,7 +292,7 @@ func (d *Database) SeedData() error {
 			CampID:      camp.ID,
 			Name:        "Blue",
 			Description: "Calming blue for water activities",
-			HexValue:    "#0000FF",
+			HexValue:    "#1E88E5",
 			Default:     false,
 		},
 		{
@@ -300,7 +300,7 @@ func (d *Database) SeedData() error {
 			CampID:      camp.ID,
 			Name:        "Green",
 			Description: "Nature green for outdoor activities",
-			HexValue:    "#00FF00",
+			HexValue:    "#43A047",
 			Default:     false,
 		},
 		{
@@ -308,7 +308,7 @@ func (d *Database) SeedData() error {
 			CampID:      camp.ID,
 			Name:        "Yellow",
 			Description: "Sunny yellow for morning activities",
-			HexValue:    "#FFFF00",
+			HexValue:    "#FFD54F",
 			Default:     false,
 		},
 		{
@@ -316,7 +316,7 @@ func (d *Database) SeedData() error {
 			CampID:      camp.ID,
 			Name:        "Purple",
 			Description: "Creative purple for arts and crafts",
-			HexValue:    "#800080",
+			HexValue:    "#AB47BC",
 			Default:     false,
 		},
 	}
@@ -479,7 +479,7 @@ func (d *Database) SeedData() error {
 			CampID:      camp2.ID,
 			Name:        "Orange",
 			Description: "Energetic orange for adventure activities",
-			HexValue:    "#FFA500",
+			HexValue:    "#FF7043",
 			Default:     true,
 		},
 		{
@@ -487,7 +487,7 @@ func (d *Database) SeedData() error {
 			CampID:      camp2.ID,
 			Name:        "Teal",
 			Description: "Cool teal for water sports",
-			HexValue:    "#008080",
+			HexValue:    "#26A69A",
 			Default:     false,
 		},
 		{
@@ -495,7 +495,7 @@ func (d *Database) SeedData() error {
 			CampID:      camp2.ID,
 			Name:        "Brown",
 			Description: "Earthy brown for hiking activities",
-			HexValue:    "#8B4513",
+			HexValue:    "#795548",
 			Default:     false,
 		},
 	}
@@ -1074,7 +1074,7 @@ func (d *Database) SeedData() error {
 	}
 
 	// Create additional test users with various access rules for authorization testing
-	
+
 	// User 3: Camp-scoped admin for Demo Camp (first camp)
 	user3 := &domain.User{
 		TenantID:      tenant.ID,
