@@ -156,8 +156,12 @@ export const useEventsStore = defineStore("events", {
       eventUpdate: EventUpdateRequest,
       updateScope?: UpdateScope,
     ): Promise<void> {
-      const event = await eventsService.updateEvent(id, eventUpdate, updateScope);
-      
+      const event = await eventsService.updateEvent(
+        id,
+        eventUpdate,
+        updateScope,
+      );
+
       // Handle recurring event updates
       if (updateScope && updateScope !== "single") {
         // Reload all events to get the updated series
@@ -173,7 +177,7 @@ export const useEventsStore = defineStore("events", {
 
     async deleteEvent(id: string, deleteScope?: DeleteScope): Promise<void> {
       await eventsService.deleteEvent(id, deleteScope);
-      
+
       // Handle recurring event deletions
       if (deleteScope && deleteScope !== "single") {
         // Reload all events to reflect the deletion

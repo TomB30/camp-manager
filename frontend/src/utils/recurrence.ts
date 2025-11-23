@@ -35,7 +35,7 @@ export function generateRecurrenceDates(
           nextDate = getNextWeeklyDate(
             currentDate,
             rule.daysOfWeek,
-            rule.interval
+            rule.interval,
           );
         } else {
           // If no days specified, repeat on the same day of the week
@@ -75,7 +75,7 @@ export function generateRecurrenceDates(
 function getNextWeeklyDate(
   currentDate: Date,
   daysOfWeek: number[],
-  interval: number
+  interval: number,
 ): Date {
   const sortedDays = [...daysOfWeek].sort((a: number, b: number) => a - b);
   const currentDay = currentDate.getDay();

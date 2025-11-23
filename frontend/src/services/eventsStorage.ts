@@ -65,8 +65,7 @@ async function listEvents(options?: ListEventsOptions): Promise<Event[]> {
           return 0;
       }
 
-      const comparison =
-        aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+      const comparison = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
       return options.sortOrder === "desc" ? -comparison : comparison;
     });
   }

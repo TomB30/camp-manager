@@ -274,7 +274,7 @@
                         active:
                           formData.spec.recurrenceRule.daysOfWeek &&
                           formData.spec.recurrenceRule.daysOfWeek.includes(
-                            index as any
+                            index as any,
                           ),
                       }"
                       @click="toggleDay(index)"
@@ -843,7 +843,7 @@ export default defineComponent({
 
       this.programsStore.programs.forEach((program) => {
         const programActivities = this.activitiesStore.getActivitiesInProgram(
-          program.meta.id
+          program.meta.id,
         );
         if (programActivities.length > 0) {
           programActivities.forEach((activity) => {
@@ -872,7 +872,7 @@ export default defineComponent({
           }
           // Check if event's day is in the time block's days
           return timeBlock.spec.daysOfWeek.some(
-            (day) => day.toLowerCase() === eventDayOfWeek.toLowerCase()
+            (day) => day.toLowerCase() === eventDayOfWeek.toLowerCase(),
           );
         })
         .map((timeBlock) => ({
@@ -962,7 +962,7 @@ export default defineComponent({
         const group = this.groupsStore.getGroupById(groupId);
         if (group && group.spec.staffIds) {
           group.spec.staffIds.forEach((staffId: string) =>
-            staffIds.add(staffId)
+            staffIds.add(staffId),
           );
         }
       });
@@ -979,7 +979,7 @@ export default defineComponent({
       if (!this.formData.spec.recurrenceRule) return null;
 
       const validation = validateRecurrenceRule(
-        this.formData.spec.recurrenceRule
+        this.formData.spec.recurrenceRule,
       );
       if (!validation.valid) {
         return `⚠️ ${validation.error}`;
@@ -1005,7 +1005,7 @@ export default defineComponent({
           const startDateTime = new Date(newDate);
           startDateTime.setHours(hours, minutes, 0, 0);
           const endDateTime = new Date(
-            startDateTime.getTime() + this.templateDuration * 60000
+            startDateTime.getTime() + this.templateDuration * 60000,
           );
           this.internalEndDate = endDateTime.toISOString().split("T")[0];
         }
@@ -1063,10 +1063,10 @@ export default defineComponent({
         : this.internalEventDate;
 
       const startDateTime = new Date(
-        `${this.internalEventDate}T${this.internalStartTime}:00`
+        `${this.internalEventDate}T${this.internalStartTime}:00`,
       );
       const endDateTime = new Date(
-        `${endDateToUse}T${this.internalEndTime}:00`
+        `${endDateToUse}T${this.internalEndTime}:00`,
       );
 
       return (
@@ -1089,7 +1089,7 @@ export default defineComponent({
         startDate.setHours(hours, minutes, 0, 0);
 
         const endDate = new Date(
-          startDate.getTime() + this.selectedActivityDuration * 60000
+          startDate.getTime() + this.selectedActivityDuration * 60000,
         );
         const endHours = endDate.getHours().toString().padStart(2, "0");
         const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
@@ -1129,7 +1129,7 @@ export default defineComponent({
       } else {
         const result = compareAsc(
           new Date(`${this.internalEventDate}T${this.internalStartTime}:00`),
-          new Date(`${this.internalEventDate}T${this.internalEndTime}:00`)
+          new Date(`${this.internalEventDate}T${this.internalEndTime}:00`),
         );
         if (result === 1) {
           this.endTime = this.startTime;
@@ -1140,7 +1140,7 @@ export default defineComponent({
       // Combine date and time into ISO datetime strings
       if (this.internalEventDate && this.internalStartTime) {
         const startDateTime = new Date(
-          `${this.internalEventDate}T${this.internalStartTime}:00`
+          `${this.internalEventDate}T${this.internalStartTime}:00`,
         );
         this.formData.spec.startDate = startDateTime.toISOString();
       }
@@ -1152,7 +1152,7 @@ export default defineComponent({
 
       if (endDateToUse && this.internalEndTime) {
         const endDateTime = new Date(
-          `${endDateToUse}T${this.internalEndTime}:00`
+          `${endDateToUse}T${this.internalEndTime}:00`,
         );
         this.formData.spec.endDate = endDateTime.toISOString();
       }
@@ -1187,7 +1187,7 @@ export default defineComponent({
       if (activity.spec.timeBlockId) {
         // Use time block from activity - get the actual times from the time block
         const timeBlock = this.timeBlocksStore.getTimeBlockById(
-          activity.spec.timeBlockId
+          activity.spec.timeBlockId,
         );
         if (timeBlock) {
           this.selectedActivityHasTimeBlock = true;
@@ -1221,7 +1221,7 @@ export default defineComponent({
           // Calculate end date = start date + dayOffset
           const startDate = new Date(this.internalEventDate);
           startDate.setDate(
-            startDate.getDate() + activity.spec.fixedTime.dayOffset
+            startDate.getDate() + activity.spec.fixedTime.dayOffset,
           );
           this.internalEndDate = startDate.toISOString().split("T")[0];
         } else {
@@ -1249,7 +1249,7 @@ export default defineComponent({
           startDateTime.setHours(hours, minutes, 0, 0);
 
           const endDateTime = new Date(
-            startDateTime.getTime() + (activity.spec.duration || 0) * 60000
+            startDateTime.getTime() + (activity.spec.duration || 0) * 60000,
           );
 
           // Check if duration spans multiple days (>= 1440 minutes = 1 day)
@@ -1289,7 +1289,7 @@ export default defineComponent({
       // Inherit color from the program
       if (activity.spec.programId) {
         const program = this.programsStore.getProgramById(
-          activity.spec.programId
+          activity.spec.programId,
         );
         if (program && program.spec.colorId) {
           this.formData.spec.colorId = program.spec.colorId;
@@ -1306,7 +1306,7 @@ export default defineComponent({
             positionName: position.positionName,
             requiredCertificationId: position.requiredCertificationId,
             assignedStaffId: undefined, // Start with no staff assigned
-          })
+          }),
         );
       }
 
@@ -1381,7 +1381,7 @@ export default defineComponent({
           return (
             staff.spec.certificationIds &&
             staff.spec.certificationIds.includes(
-              position.requiredCertificationId!
+              position.requiredCertificationId!,
             )
           );
         });
@@ -1423,7 +1423,7 @@ export default defineComponent({
         this.eventsStore.events,
         this.eventId
           ? new Map<string, string[]>([[this.eventId, []]])
-          : undefined
+          : undefined,
       );
 
       return { available: result.canAssign, reason: result.reason };
@@ -1434,14 +1434,14 @@ export default defineComponent({
         this.formData.spec.recurrenceRule.daysOfWeek = [];
       }
       const index = this.formData.spec.recurrenceRule.daysOfWeek.indexOf(
-        day as number
+        day as number,
       );
       if (index > -1) {
         this.formData.spec.recurrenceRule.daysOfWeek.splice(index, 1);
       } else {
         this.formData.spec.recurrenceRule.daysOfWeek.push(day as number);
         this.formData.spec.recurrenceRule.daysOfWeek.sort(
-          (a: number, b: number) => a - b
+          (a: number, b: number) => a - b,
         );
       }
     },
@@ -1466,7 +1466,7 @@ export default defineComponent({
       // Validate recurrence if enabled
       if (this.formData.spec.recurrenceRule) {
         const validation = validateRecurrenceRule(
-          this.formData.spec.recurrenceRule
+          this.formData.spec.recurrenceRule,
         );
         if (!validation.valid) {
           this.toast.error("Invalid recurrence settings", validation.error);
@@ -1504,7 +1504,7 @@ export default defineComponent({
             this.formData,
             this.formData.spec.recurrenceRule,
             new Date(this.formData.spec.startDate),
-            new Date(this.formData.spec.endDate)
+            new Date(this.formData.spec.endDate),
           );
         } else {
           return this.createSingleEvent();
@@ -1515,7 +1515,7 @@ export default defineComponent({
       formData: EventCreationRequest,
       recurrence: RecurrenceRule,
       startDate: Date,
-      endDate: Date
+      endDate: Date,
     ): Promise<void> {
       try {
         // Generate all occurrence dates
@@ -1529,7 +1529,7 @@ export default defineComponent({
         // Show loading toast for large batches
         if (occurrenceDates.length > 10) {
           this.toast.info(
-            `Creating ${occurrenceDates.length} recurring events...`
+            `Creating ${occurrenceDates.length} recurring events...`,
           );
         }
 
@@ -1569,13 +1569,13 @@ export default defineComponent({
           };
 
           eventCreationRequestsPromises.push(
-            this.eventsStore.createEvent(event)
+            this.eventsStore.createEvent(event),
           );
         }
 
         await Promise.all(eventCreationRequestsPromises);
         this.toast.success(
-          `Successfully created ${occurrenceDates.length} recurring events`
+          `Successfully created ${occurrenceDates.length} recurring events`,
         );
       } catch (error: any) {
         this.toast.error("Failed to create recurring events", error.message);

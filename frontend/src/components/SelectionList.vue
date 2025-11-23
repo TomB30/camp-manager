@@ -109,7 +109,7 @@ export default defineComponent({
   computed: {
     selectedOptions(): ISelectOption[] {
       return this.options.filter((option) =>
-        this.modelValue.includes(option.value)
+        this.modelValue.includes(option.value),
       );
     },
   },
@@ -133,7 +133,7 @@ export default defineComponent({
       if (this.multiple && Array.isArray(this.modelValue)) {
         this.$emit(
           "update:modelValue",
-          this.modelValue.filter((item) => item !== value)
+          this.modelValue.filter((item) => item !== value),
         );
       } else {
         this.$emit("update:modelValue", "");
