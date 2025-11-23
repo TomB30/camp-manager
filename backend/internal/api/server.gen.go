@@ -39,7 +39,7 @@ type ServerInterface interface {
 	CreateActivity(w http.ResponseWriter, r *http.Request, campId CampId)
 	// Delete activity by ID
 	// (DELETE /api/v1/camps/{camp_id}/activities/{id})
-	DeleteActivityById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	DeleteActivityById(w http.ResponseWriter, r *http.Request, campId CampId, id Id, params DeleteActivityByIdParams)
 	// Get activity by ID
 	// (GET /api/v1/camps/{camp_id}/activities/{id})
 	GetActivityById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
@@ -114,13 +114,13 @@ type ServerInterface interface {
 	CreateEvent(w http.ResponseWriter, r *http.Request, campId CampId)
 	// Delete event
 	// (DELETE /api/v1/camps/{camp_id}/events/{id})
-	DeleteEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	DeleteEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id, params DeleteEventByIdParams)
 	// Get event by ID
 	// (GET /api/v1/camps/{camp_id}/events/{id})
 	GetEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
 	// Update event
 	// (PUT /api/v1/camps/{camp_id}/events/{id})
-	UpdateEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	UpdateEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id, params UpdateEventByIdParams)
 	// List all groups
 	// (GET /api/v1/camps/{camp_id}/groups)
 	ListGroups(w http.ResponseWriter, r *http.Request, campId CampId, params ListGroupsParams)
@@ -174,7 +174,7 @@ type ServerInterface interface {
 	CreateProgram(w http.ResponseWriter, r *http.Request, campId CampId)
 	// Delete program by ID
 	// (DELETE /api/v1/camps/{camp_id}/programs/{id})
-	DeleteProgramById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	DeleteProgramById(w http.ResponseWriter, r *http.Request, campId CampId, id Id, params DeleteProgramByIdParams)
 	// Get program by ID
 	// (GET /api/v1/camps/{camp_id}/programs/{id})
 	GetProgramById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
@@ -312,7 +312,7 @@ func (_ Unimplemented) CreateActivity(w http.ResponseWriter, r *http.Request, ca
 
 // Delete activity by ID
 // (DELETE /api/v1/camps/{camp_id}/activities/{id})
-func (_ Unimplemented) DeleteActivityById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+func (_ Unimplemented) DeleteActivityById(w http.ResponseWriter, r *http.Request, campId CampId, id Id, params DeleteActivityByIdParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -462,7 +462,7 @@ func (_ Unimplemented) CreateEvent(w http.ResponseWriter, r *http.Request, campI
 
 // Delete event
 // (DELETE /api/v1/camps/{camp_id}/events/{id})
-func (_ Unimplemented) DeleteEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+func (_ Unimplemented) DeleteEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id, params DeleteEventByIdParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -474,7 +474,7 @@ func (_ Unimplemented) GetEventById(w http.ResponseWriter, r *http.Request, camp
 
 // Update event
 // (PUT /api/v1/camps/{camp_id}/events/{id})
-func (_ Unimplemented) UpdateEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+func (_ Unimplemented) UpdateEventById(w http.ResponseWriter, r *http.Request, campId CampId, id Id, params UpdateEventByIdParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -582,7 +582,7 @@ func (_ Unimplemented) CreateProgram(w http.ResponseWriter, r *http.Request, cam
 
 // Delete program by ID
 // (DELETE /api/v1/camps/{camp_id}/programs/{id})
-func (_ Unimplemented) DeleteProgramById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+func (_ Unimplemented) DeleteProgramById(w http.ResponseWriter, r *http.Request, campId CampId, id Id, params DeleteProgramByIdParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1018,8 +1018,19 @@ func (siw *ServerInterfaceWrapper) DeleteActivityById(w http.ResponseWriter, r *
 		return
 	}
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteActivityByIdParams
+
+	// ------------- Optional query parameter "force" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "force", r.URL.Query(), &params.Force)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "force", Err: err})
+		return
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteActivityById(w, r, campId, id)
+		siw.Handler.DeleteActivityById(w, r, campId, id, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1950,6 +1961,30 @@ func (siw *ServerInterfaceWrapper) ListEvents(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	// ------------- Optional query parameter "filterBy" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "filterBy", r.URL.Query(), &params.FilterBy)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "filterBy", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "sortBy" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "sortBy", r.URL.Query(), &params.SortBy)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sortBy", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "sortOrder" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "sortOrder", r.URL.Query(), &params.SortOrder)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sortOrder", Err: err})
+		return
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ListEvents(w, r, campId, params)
 	}))
@@ -2009,8 +2044,19 @@ func (siw *ServerInterfaceWrapper) DeleteEventById(w http.ResponseWriter, r *htt
 		return
 	}
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteEventByIdParams
+
+	// ------------- Optional query parameter "deleteScope" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "deleteScope", r.URL.Query(), &params.DeleteScope)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "deleteScope", Err: err})
+		return
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteEventById(w, r, campId, id)
+		siw.Handler.DeleteEventById(w, r, campId, id, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2077,8 +2123,19 @@ func (siw *ServerInterfaceWrapper) UpdateEventById(w http.ResponseWriter, r *htt
 		return
 	}
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateEventByIdParams
+
+	// ------------- Optional query parameter "updateScope" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "updateScope", r.URL.Query(), &params.UpdateScope)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "updateScope", Err: err})
+		return
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.UpdateEventById(w, r, campId, id)
+		siw.Handler.UpdateEventById(w, r, campId, id, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -2821,8 +2878,19 @@ func (siw *ServerInterfaceWrapper) DeleteProgramById(w http.ResponseWriter, r *h
 		return
 	}
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteProgramByIdParams
+
+	// ------------- Optional query parameter "force" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "force", r.URL.Query(), &params.Force)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "force", Err: err})
+		return
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteProgramById(w, r, campId, id)
+		siw.Handler.DeleteProgramById(w, r, campId, id, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {

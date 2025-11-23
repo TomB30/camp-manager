@@ -1,0 +1,9 @@
+name: updateScope
+in: query
+required: false
+schema:
+  type: string
+  enum: [single, future, all]
+  default: single
+description: Scope of update for recurring events (single=this event only, future=this and future events, all=entire series)
+

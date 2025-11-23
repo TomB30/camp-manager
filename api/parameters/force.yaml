@@ -1,0 +1,8 @@
+name: force
+in: query
+required: false
+schema:
+  type: boolean
+  default: false
+description: Force deletion and cascade to dependent resources (events)
+

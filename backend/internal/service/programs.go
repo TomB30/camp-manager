@@ -28,26 +28,28 @@ type ProgramsService interface {
 	Update(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID, req *api.ProgramUpdateRequest) (*api.Program, error)
 
 	// Delete deletes a program by ID
-	Delete(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID) error
+	Delete(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID, force bool) error
 }
 
 // programsService implements ProgramsService
 type programsService struct {
-	repo         ProgramsRepository
-	colorsRepo   ColorsRepository
-	locationsRepo LocationsRepository
-	groupsRepo   GroupsRepository
+	repo           ProgramsRepository
+	colorsRepo     ColorsRepository
+	locationsRepo  LocationsRepository
+	groupsRepo     GroupsRepository
 	activitiesRepo ActivitiesRepository
+	eventsRepo     EventsRepository
 }
 
 // NewProgramsService creates a new programs service
-func NewProgramsService(repo ProgramsRepository, colorsRepo ColorsRepository, locationsRepo LocationsRepository, groupsRepo GroupsRepository, activitiesRepo ActivitiesRepository) ProgramsService {
+func NewProgramsService(repo ProgramsRepository, colorsRepo ColorsRepository, locationsRepo LocationsRepository, groupsRepo GroupsRepository, activitiesRepo ActivitiesRepository, eventsRepo EventsRepository) ProgramsService {
 	return &programsService{
-		repo:          repo,
-		colorsRepo:    colorsRepo,
-		locationsRepo: locationsRepo,
-		groupsRepo:    groupsRepo,
+		repo:           repo,
+		colorsRepo:     colorsRepo,
+		locationsRepo:  locationsRepo,
+		groupsRepo:     groupsRepo,
 		activitiesRepo: activitiesRepo,
+		eventsRepo:     eventsRepo,
 	}
 }
 
@@ -237,10 +239,10 @@ func (s *programsService) Update(ctx context.Context, tenantID, campID, id uuid.
 	return &apiProgram, nil
 }
 
-// Delete deletes a program by ID (CASCADE will auto-delete related activities)
-func (s *programsService) Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error {
+// Delete deletes a program by ID
+func (s *programsService) Delete(ctx context.Context, tenantID, campID, id uuid.UUID, force bool) error {
 	// Check if program exists
-	_, err := s.repo.GetByID(ctx, tenantID, campID, id)
+	program, err := s.repo.GetByID(ctx, tenantID, campID, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return pkgerrors.NotFound("Program not found", err)
@@ -248,7 +250,45 @@ func (s *programsService) Delete(ctx context.Context, tenantID, campID, id uuid.
 		return pkgerrors.InternalServerError("Failed to get program", err)
 	}
 
-	// Delete the program (CASCADE will delete associated activities)
+	// Check if any events reference this program directly
+	events, err := s.eventsRepo.GetByProgramID(ctx, tenantID, campID, id)
+	if err != nil {
+		return pkgerrors.InternalServerError("Failed to check events", err)
+	}
+
+	// Check if any activities belong to this program
+	var activityEvents []domain.Event
+	for _, activityID := range program.ActivityIDs {
+		ae, err := s.eventsRepo.GetByActivityID(ctx, tenantID, campID, activityID)
+		if err != nil {
+			return pkgerrors.InternalServerError("Failed to check activity events", err)
+		}
+		activityEvents = append(activityEvents, ae...)
+	}
+
+	totalEvents := len(events) + len(activityEvents)
+
+	if totalEvents > 0 {
+		if !force {
+			return pkgerrors.Conflict(fmt.Sprintf("Cannot delete program: %d event(s) are using this program or its activities. Use force=true to cascade delete", totalEvents), nil)
+		}
+
+		// Cascade delete all events for this program
+		if len(events) > 0 {
+			if err := s.eventsRepo.DeleteByProgramID(ctx, tenantID, campID, id); err != nil {
+				return pkgerrors.InternalServerError("Failed to cascade delete program events", err)
+			}
+		}
+
+		// Cascade delete all events for activities in this program
+		for _, activityID := range program.ActivityIDs {
+			if err := s.eventsRepo.DeleteByActivityID(ctx, tenantID, campID, activityID); err != nil {
+				return pkgerrors.InternalServerError("Failed to cascade delete activity events", err)
+			}
+		}
+	}
+
+	// Delete the program (CASCADE in database will soft-delete associated activities)
 	if err := s.repo.Delete(ctx, tenantID, campID, id); err != nil {
 		return pkgerrors.InternalServerError("Failed to delete program", err)
 	}

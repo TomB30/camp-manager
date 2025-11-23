@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/api"
@@ -64,11 +65,19 @@ type ColorsRepository interface {
 
 // EventsRepository defines the data access interface for events
 type EventsRepository interface {
-	List(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, limit, offset int, search *string) ([]api.Event, int, error)
-	GetByID(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID) (*api.Event, error)
-	Create(ctx context.Context, event *api.Event) error
-	Update(ctx context.Context, tenantId uuid.UUID, campId uuid.UUID, id uuid.UUID, event *api.Event) error
-	Delete(ctx context.Context, tenantId uuid.UUID, campID uuid.UUID, id uuid.UUID) error
+	List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Event, int64, error)
+	GetByID(ctx context.Context, tenantID, campID, id uuid.UUID) (*domain.Event, error)
+	Create(ctx context.Context, event *domain.Event) error
+	CreateBatch(ctx context.Context, events []*domain.Event) error
+	Update(ctx context.Context, tenantID, campID uuid.UUID, event *domain.Event) error
+	Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error
+	GetByRecurrenceID(ctx context.Context, tenantID, campID, recurrenceID uuid.UUID) ([]domain.Event, error)
+	DeleteByRecurrenceID(ctx context.Context, tenantID, campID, recurrenceID uuid.UUID) error
+	DeleteByRecurrenceIDAfterDate(ctx context.Context, tenantID, campID, recurrenceID uuid.UUID, afterDate time.Time) error
+	GetByActivityID(ctx context.Context, tenantID, campID, activityID uuid.UUID) ([]domain.Event, error)
+	DeleteByActivityID(ctx context.Context, tenantID, campID, activityID uuid.UUID) error
+	GetByProgramID(ctx context.Context, tenantID, campID, programID uuid.UUID) ([]domain.Event, error)
+	DeleteByProgramID(ctx context.Context, tenantID, campID, programID uuid.UUID) error
 }
 
 // GroupsRepository defines the data access interface for groups

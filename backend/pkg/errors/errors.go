@@ -50,6 +50,10 @@ func Forbidden(message string, err error) *AppError {
 	return NewAppError(http.StatusForbidden, message, err)
 }
 
+func Conflict(message string, err error) *AppError {
+	return NewAppError(http.StatusConflict, message, err)
+}
+
 // ErrorResponse represents a JSON error response
 type ErrorResponse struct {
 	Error   string `json:"error"`

@@ -802,3 +802,68 @@ COMMENT ON COLUMN activities.fixed_time IS 'Fixed time JSON object with startTim
 COMMENT ON COLUMN activities.time_block_id IS 'Time block reference for scheduling (mutually exclusive with duration and fixedTime)';
 COMMENT ON COLUMN activities.required_staff IS 'JSON array of required staff positions with optional certification requirements';
 COMMENT ON COLUMN activities.activity_conflicts IS 'JSON object defining pre/post/concurrent activity conflicts';
+
+-- ============================================================================
+-- EVENTS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    
+    -- Spec fields
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
+    location_id UUID REFERENCES locations(id) ON DELETE SET NULL,
+    capacity INTEGER,
+    color_id UUID REFERENCES colors(id) ON DELETE SET NULL,
+    program_id UUID REFERENCES programs(id) ON DELETE SET NULL,
+    activity_id UUID REFERENCES activities(id) ON DELETE SET NULL,
+    
+    -- Group assignments (JSONB arrays)
+    group_ids JSONB,
+    exclude_staff_ids JSONB,
+    exclude_camper_ids JSONB,
+    
+    -- Required staff (JSONB array of objects)
+    required_staff JSONB,
+    
+    -- Recurrence fields
+    recurrence_id UUID,
+    is_recurrence_parent BOOLEAN DEFAULT false,
+    recurrence_rule JSONB,
+    
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+-- Indexes for events
+CREATE INDEX IF NOT EXISTS idx_events_tenant_id ON events(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_events_camp_id ON events(camp_id);
+CREATE INDEX IF NOT EXISTS idx_events_start_date ON events(start_date);
+CREATE INDEX IF NOT EXISTS idx_events_end_date ON events(end_date);
+CREATE INDEX IF NOT EXISTS idx_events_location_id ON events(location_id);
+CREATE INDEX IF NOT EXISTS idx_events_program_id ON events(program_id);
+CREATE INDEX IF NOT EXISTS idx_events_activity_id ON events(activity_id);
+CREATE INDEX IF NOT EXISTS idx_events_recurrence_id ON events(recurrence_id);
+CREATE INDEX IF NOT EXISTS idx_events_date_range ON events(start_date, end_date);
+CREATE INDEX IF NOT EXISTS idx_events_deleted_at ON events(deleted_at);
+CREATE INDEX IF NOT EXISTS idx_events_tenant_id_camp_id ON events(tenant_id, camp_id);
+
+-- Trigger for events
+DROP TRIGGER IF EXISTS update_events_updated_at ON events;
+CREATE TRIGGER update_events_updated_at
+    BEFORE UPDATE ON events
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+COMMENT ON TABLE events IS 'Events scheduled at the camp, optionally linked to activities and programs';
+COMMENT ON COLUMN events.capacity IS 'Optional maximum capacity for the event';
+COMMENT ON COLUMN events.activity_id IS 'Optional activity template this event was created from';
+COMMENT ON COLUMN events.program_id IS 'Optional program this event belongs to';
+COMMENT ON COLUMN events.recurrence_id IS 'Links events in a recurring series together';
+COMMENT ON COLUMN events.is_recurrence_parent IS 'True for the first event in a recurring series';
+COMMENT ON COLUMN events.recurrence_rule IS 'Original recurrence rule (only stored in parent event)';

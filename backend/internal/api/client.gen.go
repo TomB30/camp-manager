@@ -122,7 +122,7 @@ type ClientInterface interface {
 	CreateActivity(ctx context.Context, campId CampId, body CreateActivityJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteActivityById request
-	DeleteActivityById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeleteActivityById(ctx context.Context, campId CampId, id Id, params *DeleteActivityByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetActivityById request
 	GetActivityById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -217,15 +217,15 @@ type ClientInterface interface {
 	CreateEvent(ctx context.Context, campId CampId, body CreateEventJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteEventById request
-	DeleteEventById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeleteEventById(ctx context.Context, campId CampId, id Id, params *DeleteEventByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetEventById request
 	GetEventById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateEventByIdWithBody request with any body
-	UpdateEventByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdateEventByIdWithBody(ctx context.Context, campId CampId, id Id, params *UpdateEventByIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	UpdateEventById(ctx context.Context, campId CampId, id Id, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdateEventById(ctx context.Context, campId CampId, id Id, params *UpdateEventByIdParams, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListGroups request
 	ListGroups(ctx context.Context, campId CampId, params *ListGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -293,7 +293,7 @@ type ClientInterface interface {
 	CreateProgram(ctx context.Context, campId CampId, body CreateProgramJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteProgramById request
-	DeleteProgramById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeleteProgramById(ctx context.Context, campId CampId, id Id, params *DeleteProgramByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetProgramById request
 	GetProgramById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -541,8 +541,8 @@ func (c *Client) CreateActivity(ctx context.Context, campId CampId, body CreateA
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeleteActivityById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteActivityByIdRequest(c.Server, campId, id)
+func (c *Client) DeleteActivityById(ctx context.Context, campId CampId, id Id, params *DeleteActivityByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteActivityByIdRequest(c.Server, campId, id, params)
 	if err != nil {
 		return nil, err
 	}
@@ -961,8 +961,8 @@ func (c *Client) CreateEvent(ctx context.Context, campId CampId, body CreateEven
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeleteEventById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteEventByIdRequest(c.Server, campId, id)
+func (c *Client) DeleteEventById(ctx context.Context, campId CampId, id Id, params *DeleteEventByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteEventByIdRequest(c.Server, campId, id, params)
 	if err != nil {
 		return nil, err
 	}
@@ -985,8 +985,8 @@ func (c *Client) GetEventById(ctx context.Context, campId CampId, id Id, reqEdit
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateEventByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateEventByIdRequestWithBody(c.Server, campId, id, contentType, body)
+func (c *Client) UpdateEventByIdWithBody(ctx context.Context, campId CampId, id Id, params *UpdateEventByIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateEventByIdRequestWithBody(c.Server, campId, id, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -997,8 +997,8 @@ func (c *Client) UpdateEventByIdWithBody(ctx context.Context, campId CampId, id 
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateEventById(ctx context.Context, campId CampId, id Id, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateEventByIdRequest(c.Server, campId, id, body)
+func (c *Client) UpdateEventById(ctx context.Context, campId CampId, id Id, params *UpdateEventByIdParams, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateEventByIdRequest(c.Server, campId, id, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1297,8 +1297,8 @@ func (c *Client) CreateProgram(ctx context.Context, campId CampId, body CreatePr
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeleteProgramById(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteProgramByIdRequest(c.Server, campId, id)
+func (c *Client) DeleteProgramById(ctx context.Context, campId CampId, id Id, params *DeleteProgramByIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteProgramByIdRequest(c.Server, campId, id, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2240,7 +2240,7 @@ func NewCreateActivityRequestWithBody(server string, campId CampId, contentType 
 }
 
 // NewDeleteActivityByIdRequest generates requests for DeleteActivityById
-func NewDeleteActivityByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
+func NewDeleteActivityByIdRequest(server string, campId CampId, id Id, params *DeleteActivityByIdParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -2270,6 +2270,28 @@ func NewDeleteActivityByIdRequest(server string, campId CampId, id Id) (*http.Re
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Force != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "force", runtime.ParamLocationQuery, *params.Force); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
@@ -3728,6 +3750,54 @@ func NewListEventsRequest(server string, campId CampId, params *ListEventsParams
 
 		}
 
+		if params.FilterBy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "filterBy", runtime.ParamLocationQuery, *params.FilterBy); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.SortBy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sortBy", runtime.ParamLocationQuery, *params.SortBy); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.SortOrder != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sortOrder", runtime.ParamLocationQuery, *params.SortOrder); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
 		queryURL.RawQuery = queryValues.Encode()
 	}
 
@@ -3787,7 +3857,7 @@ func NewCreateEventRequestWithBody(server string, campId CampId, contentType str
 }
 
 // NewDeleteEventByIdRequest generates requests for DeleteEventById
-func NewDeleteEventByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
+func NewDeleteEventByIdRequest(server string, campId CampId, id Id, params *DeleteEventByIdParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -3817,6 +3887,28 @@ func NewDeleteEventByIdRequest(server string, campId CampId, id Id) (*http.Reque
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.DeleteScope != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "deleteScope", runtime.ParamLocationQuery, *params.DeleteScope); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
@@ -3869,18 +3961,18 @@ func NewGetEventByIdRequest(server string, campId CampId, id Id) (*http.Request,
 }
 
 // NewUpdateEventByIdRequest calls the generic UpdateEventById builder with application/json body
-func NewUpdateEventByIdRequest(server string, campId CampId, id Id, body UpdateEventByIdJSONRequestBody) (*http.Request, error) {
+func NewUpdateEventByIdRequest(server string, campId CampId, id Id, params *UpdateEventByIdParams, body UpdateEventByIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateEventByIdRequestWithBody(server, campId, id, "application/json", bodyReader)
+	return NewUpdateEventByIdRequestWithBody(server, campId, id, params, "application/json", bodyReader)
 }
 
 // NewUpdateEventByIdRequestWithBody generates requests for UpdateEventById with any type of body
-func NewUpdateEventByIdRequestWithBody(server string, campId CampId, id Id, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateEventByIdRequestWithBody(server string, campId CampId, id Id, params *UpdateEventByIdParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -3910,6 +4002,28 @@ func NewUpdateEventByIdRequestWithBody(server string, campId CampId, id Id, cont
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.UpdateScope != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "updateScope", runtime.ParamLocationQuery, *params.UpdateScope); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("PUT", queryURL.String(), body)
@@ -5063,7 +5177,7 @@ func NewCreateProgramRequestWithBody(server string, campId CampId, contentType s
 }
 
 // NewDeleteProgramByIdRequest generates requests for DeleteProgramById
-func NewDeleteProgramByIdRequest(server string, campId CampId, id Id) (*http.Request, error) {
+func NewDeleteProgramByIdRequest(server string, campId CampId, id Id, params *DeleteProgramByIdParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -5093,6 +5207,28 @@ func NewDeleteProgramByIdRequest(server string, campId CampId, id Id) (*http.Req
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Force != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "force", runtime.ParamLocationQuery, *params.Force); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
@@ -6726,7 +6862,7 @@ type ClientWithResponsesInterface interface {
 	CreateActivityWithResponse(ctx context.Context, campId CampId, body CreateActivityJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateActivityHTTPResponse, error)
 
 	// DeleteActivityByIdWithResponse request
-	DeleteActivityByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteActivityByIdHTTPResponse, error)
+	DeleteActivityByIdWithResponse(ctx context.Context, campId CampId, id Id, params *DeleteActivityByIdParams, reqEditors ...RequestEditorFn) (*DeleteActivityByIdHTTPResponse, error)
 
 	// GetActivityByIdWithResponse request
 	GetActivityByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetActivityByIdHTTPResponse, error)
@@ -6821,15 +6957,15 @@ type ClientWithResponsesInterface interface {
 	CreateEventWithResponse(ctx context.Context, campId CampId, body CreateEventJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateEventHTTPResponse, error)
 
 	// DeleteEventByIdWithResponse request
-	DeleteEventByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteEventByIdHTTPResponse, error)
+	DeleteEventByIdWithResponse(ctx context.Context, campId CampId, id Id, params *DeleteEventByIdParams, reqEditors ...RequestEditorFn) (*DeleteEventByIdHTTPResponse, error)
 
 	// GetEventByIdWithResponse request
 	GetEventByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetEventByIdHTTPResponse, error)
 
 	// UpdateEventByIdWithBodyWithResponse request with any body
-	UpdateEventByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error)
+	UpdateEventByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, params *UpdateEventByIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error)
 
-	UpdateEventByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error)
+	UpdateEventByIdWithResponse(ctx context.Context, campId CampId, id Id, params *UpdateEventByIdParams, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error)
 
 	// ListGroupsWithResponse request
 	ListGroupsWithResponse(ctx context.Context, campId CampId, params *ListGroupsParams, reqEditors ...RequestEditorFn) (*ListGroupsHTTPResponse, error)
@@ -6897,7 +7033,7 @@ type ClientWithResponsesInterface interface {
 	CreateProgramWithResponse(ctx context.Context, campId CampId, body CreateProgramJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateProgramHTTPResponse, error)
 
 	// DeleteProgramByIdWithResponse request
-	DeleteProgramByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteProgramByIdHTTPResponse, error)
+	DeleteProgramByIdWithResponse(ctx context.Context, campId CampId, id Id, params *DeleteProgramByIdParams, reqEditors ...RequestEditorFn) (*DeleteProgramByIdHTTPResponse, error)
 
 	// GetProgramByIdWithResponse request
 	GetProgramByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*GetProgramByIdHTTPResponse, error)
@@ -8871,8 +9007,8 @@ func (c *ClientWithResponses) CreateActivityWithResponse(ctx context.Context, ca
 }
 
 // DeleteActivityByIdWithResponse request returning *DeleteActivityByIdHTTPResponse
-func (c *ClientWithResponses) DeleteActivityByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteActivityByIdHTTPResponse, error) {
-	rsp, err := c.DeleteActivityById(ctx, campId, id, reqEditors...)
+func (c *ClientWithResponses) DeleteActivityByIdWithResponse(ctx context.Context, campId CampId, id Id, params *DeleteActivityByIdParams, reqEditors ...RequestEditorFn) (*DeleteActivityByIdHTTPResponse, error) {
+	rsp, err := c.DeleteActivityById(ctx, campId, id, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -9176,8 +9312,8 @@ func (c *ClientWithResponses) CreateEventWithResponse(ctx context.Context, campI
 }
 
 // DeleteEventByIdWithResponse request returning *DeleteEventByIdHTTPResponse
-func (c *ClientWithResponses) DeleteEventByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteEventByIdHTTPResponse, error) {
-	rsp, err := c.DeleteEventById(ctx, campId, id, reqEditors...)
+func (c *ClientWithResponses) DeleteEventByIdWithResponse(ctx context.Context, campId CampId, id Id, params *DeleteEventByIdParams, reqEditors ...RequestEditorFn) (*DeleteEventByIdHTTPResponse, error) {
+	rsp, err := c.DeleteEventById(ctx, campId, id, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -9194,16 +9330,16 @@ func (c *ClientWithResponses) GetEventByIdWithResponse(ctx context.Context, camp
 }
 
 // UpdateEventByIdWithBodyWithResponse request with arbitrary body returning *UpdateEventByIdHTTPResponse
-func (c *ClientWithResponses) UpdateEventByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error) {
-	rsp, err := c.UpdateEventByIdWithBody(ctx, campId, id, contentType, body, reqEditors...)
+func (c *ClientWithResponses) UpdateEventByIdWithBodyWithResponse(ctx context.Context, campId CampId, id Id, params *UpdateEventByIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error) {
+	rsp, err := c.UpdateEventByIdWithBody(ctx, campId, id, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseUpdateEventByIdHTTPResponse(rsp)
 }
 
-func (c *ClientWithResponses) UpdateEventByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error) {
-	rsp, err := c.UpdateEventById(ctx, campId, id, body, reqEditors...)
+func (c *ClientWithResponses) UpdateEventByIdWithResponse(ctx context.Context, campId CampId, id Id, params *UpdateEventByIdParams, body UpdateEventByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEventByIdHTTPResponse, error) {
+	rsp, err := c.UpdateEventById(ctx, campId, id, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -9420,8 +9556,8 @@ func (c *ClientWithResponses) CreateProgramWithResponse(ctx context.Context, cam
 }
 
 // DeleteProgramByIdWithResponse request returning *DeleteProgramByIdHTTPResponse
-func (c *ClientWithResponses) DeleteProgramByIdWithResponse(ctx context.Context, campId CampId, id Id, reqEditors ...RequestEditorFn) (*DeleteProgramByIdHTTPResponse, error) {
-	rsp, err := c.DeleteProgramById(ctx, campId, id, reqEditors...)
+func (c *ClientWithResponses) DeleteProgramByIdWithResponse(ctx context.Context, campId CampId, id Id, params *DeleteProgramByIdParams, reqEditors ...RequestEditorFn) (*DeleteProgramByIdHTTPResponse, error) {
+	rsp, err := c.DeleteProgramById(ctx, campId, id, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}

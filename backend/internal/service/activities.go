@@ -29,7 +29,7 @@ type ActivitiesService interface {
 	Update(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID, req *api.ActivityUpdateRequest) (*api.Activity, error)
 
 	// Delete deletes an activity by ID
-	Delete(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID) error
+	Delete(ctx context.Context, tenantID uuid.UUID, campID uuid.UUID, id uuid.UUID, force bool) error
 }
 
 // activitiesService implements ActivitiesService
@@ -39,16 +39,18 @@ type activitiesService struct {
 	locationsRepo      LocationsRepository
 	timeBlocksRepo     TimeBlocksRepository
 	certificationsRepo CertificationsRepository
+	eventsRepo         EventsRepository
 }
 
 // NewActivitiesService creates a new activities service
-func NewActivitiesService(repo ActivitiesRepository, programsRepo ProgramsRepository, locationsRepo LocationsRepository, timeBlocksRepo TimeBlocksRepository, certificationsRepo CertificationsRepository) ActivitiesService {
+func NewActivitiesService(repo ActivitiesRepository, programsRepo ProgramsRepository, locationsRepo LocationsRepository, timeBlocksRepo TimeBlocksRepository, certificationsRepo CertificationsRepository, eventsRepo EventsRepository) ActivitiesService {
 	return &activitiesService{
 		repo:               repo,
 		programsRepo:       programsRepo,
 		locationsRepo:      locationsRepo,
 		timeBlocksRepo:     timeBlocksRepo,
 		certificationsRepo: certificationsRepo,
+		eventsRepo:         eventsRepo,
 	}
 }
 
@@ -371,7 +373,7 @@ func (s *activitiesService) Update(ctx context.Context, tenantID, campID, id uui
 }
 
 // Delete deletes an activity by ID
-func (s *activitiesService) Delete(ctx context.Context, tenantID, campID, id uuid.UUID) error {
+func (s *activitiesService) Delete(ctx context.Context, tenantID, campID, id uuid.UUID, force bool) error {
 	// Check if activity exists
 	_, err := s.repo.GetByID(ctx, tenantID, campID, id)
 	if err != nil {
@@ -379,6 +381,23 @@ func (s *activitiesService) Delete(ctx context.Context, tenantID, campID, id uui
 			return pkgerrors.NotFound("Activity not found", err)
 		}
 		return pkgerrors.InternalServerError("Failed to get activity", err)
+	}
+
+	// Check if any events reference this activity
+	events, err := s.eventsRepo.GetByActivityID(ctx, tenantID, campID, id)
+	if err != nil {
+		return pkgerrors.InternalServerError("Failed to check events", err)
+	}
+
+	if len(events) > 0 {
+		if !force {
+			return pkgerrors.Conflict(fmt.Sprintf("Cannot delete activity: %d event(s) are using this activity. Use force=true to cascade delete", len(events)), nil)
+		}
+
+		// Cascade delete all events
+		if err := s.eventsRepo.DeleteByActivityID(ctx, tenantID, campID, id); err != nil {
+			return pkgerrors.InternalServerError("Failed to cascade delete events", err)
+		}
 	}
 
 	// Delete the activity

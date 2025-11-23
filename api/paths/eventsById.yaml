@@ -16,6 +16,8 @@ put:
   summary: Update event
   operationId: updateEventById
   x-required-roles: [admin, program-admin]
+  parameters:
+    - $ref: "../parameters/update_scope.yaml"
   requestBody:
     required: true
     content:
@@ -33,6 +35,8 @@ delete:
   summary: Delete event
   operationId: deleteEventById
   x-required-roles: [admin, program-admin]
+  parameters:
+    - $ref: "../parameters/delete_scope.yaml"
   responses:
     "204":
       description: Deleted

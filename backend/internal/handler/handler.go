@@ -58,18 +58,18 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	jwtService := domain.NewJWTService(cfg.JWT.SecretKey)
 
 	// Initialize services
-	activitiesService := service.NewActivitiesService(activitiesRepo, programsRepo, locationsRepo, timeBlocksRepo, certificationsRepo)
+	eventsService := service.NewEventsService(eventsRepo, activitiesRepo, programsRepo, locationsRepo, groupsRepo)
+	activitiesService := service.NewActivitiesService(activitiesRepo, programsRepo, locationsRepo, timeBlocksRepo, certificationsRepo, eventsRepo)
 	areasService := service.NewAreasService(areasRepo)
 	authService := service.NewAuthService(usersRepo, jwtService)
 	campersService := service.NewCampersService(campersRepo, sessionsRepo, groupsRepo)
 	campsService := service.NewCampsService(campsRepo)
 	certificationsService := service.NewCertificationsService(certificationsRepo)
 	colorsService := service.NewColorsService(colorsRepo)
-	eventsService := service.NewEventsService(eventsRepo)
 	groupsService := service.NewGroupsService(groupsRepo, sessionsRepo, housingRoomsRepo)
 	housingRoomsService := service.NewHousingRoomsService(housingRoomsRepo, areasRepo)
 	locationsService := service.NewLocationsService(locationsRepo, areasRepo)
-	programsService := service.NewProgramsService(programsRepo, colorsRepo, locationsRepo, groupsRepo, activitiesRepo)
+	programsService := service.NewProgramsService(programsRepo, colorsRepo, locationsRepo, groupsRepo, activitiesRepo, eventsRepo)
 	rolesService := service.NewRolesService(rolesRepo)
 	sessionsService := service.NewSessionsService(sessionsRepo)
 	staffMembersService := service.NewStaffMembersService(staffMembersRepo, groupsRepo, rolesRepo)
@@ -117,8 +117,8 @@ func (h *Handler) UpdateActivityById(w http.ResponseWriter, r *http.Request, cam
 	h.activities.UpdateActivityById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteActivityById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
-	h.activities.DeleteActivityById(w, r, campId, id)
+func (h *Handler) DeleteActivityById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id, params api.DeleteActivityByIdParams) {
+	h.activities.DeleteActivityById(w, r, campId, id, params)
 }
 
 // Areas handlers - delegate to AreasHandler
@@ -245,12 +245,12 @@ func (h *Handler) GetEventById(w http.ResponseWriter, r *http.Request, campId ap
 	h.events.GetEventById(w, r, campId, id)
 }
 
-func (h *Handler) UpdateEventById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
-	h.events.UpdateEventById(w, r, campId, id)
+func (h *Handler) UpdateEventById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id, params api.UpdateEventByIdParams) {
+	h.events.UpdateEventById(w, r, campId, id, params)
 }
 
-func (h *Handler) DeleteEventById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
-	h.events.DeleteEventById(w, r, campId, id)
+func (h *Handler) DeleteEventById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id, params api.DeleteEventByIdParams) {
+	h.events.DeleteEventById(w, r, campId, id, params)
 }
 
 // Groups handlers - delegate to GroupsHandler
@@ -337,8 +337,8 @@ func (h *Handler) UpdateProgramById(w http.ResponseWriter, r *http.Request, camp
 	h.programs.UpdateProgramById(w, r, campId, id)
 }
 
-func (h *Handler) DeleteProgramById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
-	h.programs.DeleteProgramById(w, r, campId, id)
+func (h *Handler) DeleteProgramById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id, params api.DeleteProgramByIdParams) {
+	h.programs.DeleteProgramById(w, r, campId, id, params)
 }
 
 // Roles handlers - delegate to RolesHandler

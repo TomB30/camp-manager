@@ -201,7 +201,7 @@ func (h *ActivitiesHandler) UpdateActivityById(w http.ResponseWriter, r *http.Re
 }
 
 // DeleteActivityById handles DELETE /api/v1/camps/{camp_id}/activities/{id}
-func (h *ActivitiesHandler) DeleteActivityById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+func (h *ActivitiesHandler) DeleteActivityById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id, params api.DeleteActivityByIdParams) {
 	// Extract tenant ID from context
 	tenantIDStr, err := pkgcontext.ExtractTenantID(r.Context())
 	if err != nil {
@@ -223,8 +223,14 @@ func (h *ActivitiesHandler) DeleteActivityById(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	// Get force parameter from params
+	force := false
+	if params.Force != nil {
+		force = bool(*params.Force)
+	}
+
 	// Call service
-	if err := h.service.Delete(r.Context(), tenantID, campUUID, activityID); err != nil {
+	if err := h.service.Delete(r.Context(), tenantID, campUUID, activityID, force); err != nil {
 		errors.WriteError(w, err)
 		return
 	}

@@ -33,6 +33,10 @@ delete:
   summary: Delete activity by ID
   operationId: deleteActivityById
   x-required-roles: [admin, program-admin]
+  parameters:
+    - $ref: "../parameters/force.yaml"
   responses:
     "204":
       description: Deleted
+    "409":
+      description: Cannot delete - events exist (use force=true to cascade delete)

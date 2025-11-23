@@ -1,0 +1,751 @@
+{
+	"info": {
+		"_postman_id": "events-api-collection",
+		"name": "Camp Manager - Events API",
+		"description": "Complete API collection for testing Events endpoints with recurring event support",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Save the token to environment variable",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('auth_token', response.token);",
+									"    pm.environment.set('user_id', response.user.id);",
+									"    console.log('Token saved:', response.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@democamp.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "login"]
+						},
+						"description": "Login to get authentication token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Events - Basic CRUD",
+			"item": [
+				{
+					"name": "List Events",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events?limit=50&offset=0",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								},
+								{
+									"key": "search",
+									"value": "Meeting",
+									"disabled": true
+								},
+								{
+									"key": "filterBy",
+									"value": "startDate>=2024-01-01T00:00:00Z",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List all events with optional filtering, sorting, and pagination"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Single Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('event_id', response.meta.id);",
+									"    console.log('Event created:', response.meta.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta\": {\n    \"name\": \"Team Meeting\",\n    \"description\": \"Weekly team sync meeting\"\n  },\n  \"spec\": {\n    \"startDate\": \"2024-06-15T10:00:00Z\",\n    \"endDate\": \"2024-06-15T11:00:00Z\",\n    \"capacity\": 20\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events"]
+						},
+						"description": "Create a single event"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event with Activity",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta\": {\n    \"name\": \"Swimming Lesson\",\n    \"description\": \"Beginner swimming instruction\"\n  },\n  \"spec\": {\n    \"startDate\": \"2024-06-16T14:00:00Z\",\n    \"endDate\": \"2024-06-16T15:00:00Z\",\n    \"activityId\": \"{{activity_id}}\",\n    \"locationId\": \"{{location_id}}\",\n    \"capacity\": 15,\n    \"colorId\": \"{{color_id}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events"]
+						},
+						"description": "Create an event based on an activity template"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events/{{event_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events", "{{event_id}}"]
+						},
+						"description": "Retrieve a specific event by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Event",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta\": {\n    \"name\": \"Updated Team Meeting\",\n    \"description\": \"Weekly team sync meeting - Updated\"\n  },\n  \"spec\": {\n    \"startDate\": \"2024-06-15T10:30:00Z\",\n    \"endDate\": \"2024-06-15T11:30:00Z\",\n    \"capacity\": 25\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events/{{event_id}}?updateScope=single",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events", "{{event_id}}"],
+							"query": [
+								{
+									"key": "updateScope",
+									"value": "single",
+									"description": "single | future | all"
+								}
+							]
+						},
+						"description": "Update a single event"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Event",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events/{{event_id}}?deleteScope=single",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events", "{{event_id}}"],
+							"query": [
+								{
+									"key": "deleteScope",
+									"value": "single",
+									"description": "single | future | all"
+								}
+							]
+						},
+						"description": "Delete a single event"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Events - Recurring",
+			"item": [
+				{
+					"name": "Create Daily Recurring Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (Array.isArray(response) && response.length > 0) {",
+									"        pm.environment.set('recurring_event_id', response[0].meta.id);",
+									"        pm.environment.set('recurrence_id', response[0].spec.recurrenceId);",
+									"        console.log('Recurring series created:', response.length, 'events');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta\": {\n    \"name\": \"Daily Standup\",\n    \"description\": \"Daily team standup meeting\"\n  },\n  \"spec\": {\n    \"startDate\": \"2024-06-17T09:00:00Z\",\n    \"endDate\": \"2024-06-17T09:15:00Z\",\n    \"capacity\": 10,\n    \"recurrenceRule\": {\n      \"frequency\": \"daily\",\n      \"interval\": 1,\n      \"endType\": \"after\",\n      \"occurrences\": 5\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events"]
+						},
+						"description": "Create a daily recurring event series (5 occurrences)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Weekly Recurring Event",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta\": {\n    \"name\": \"Weekly All-Hands\",\n    \"description\": \"Weekly company all-hands meeting\"\n  },\n  \"spec\": {\n    \"startDate\": \"2024-06-17T15:00:00Z\",\n    \"endDate\": \"2024-06-17T16:00:00Z\",\n    \"capacity\": 100,\n    \"recurrenceRule\": {\n      \"frequency\": \"weekly\",\n      \"interval\": 1,\n      \"daysOfWeek\": [1],\n      \"endType\": \"on\",\n      \"endDate\": \"2024-08-31T23:59:59Z\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events"]
+						},
+						"description": "Create a weekly recurring event (every Monday until end date)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Monthly Recurring Event",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta\": {\n    \"name\": \"Monthly Review\",\n    \"description\": \"Monthly performance review meeting\"\n  },\n  \"spec\": {\n    \"startDate\": \"2024-06-01T10:00:00Z\",\n    \"endDate\": \"2024-06-01T11:00:00Z\",\n    \"recurrenceRule\": {\n      \"frequency\": \"monthly\",\n      \"interval\": 1,\n      \"endType\": \"after\",\n      \"occurrences\": 6\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events"]
+						},
+						"description": "Create a monthly recurring event (6 months)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Single Event in Series",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta\": {\n    \"name\": \"Daily Standup - Special Session\",\n    \"description\": \"Modified for this occurrence only\"\n  },\n  \"spec\": {\n    \"startDate\": \"2024-06-18T09:00:00Z\",\n    \"endDate\": \"2024-06-18T09:30:00Z\",\n    \"capacity\": 15\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events/{{recurring_event_id}}?updateScope=single",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events", "{{recurring_event_id}}"],
+							"query": [
+								{
+									"key": "updateScope",
+									"value": "single"
+								}
+							]
+						},
+						"description": "Update only this occurrence (breaks it from the series)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Future Events in Series",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta\": {\n    \"name\": \"Daily Standup - Updated\",\n    \"description\": \"Updated for this and future occurrences\"\n  },\n  \"spec\": {\n    \"startDate\": \"2024-06-19T09:00:00Z\",\n    \"endDate\": \"2024-06-19T09:20:00Z\",\n    \"capacity\": 12\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events/{{recurring_event_id}}?updateScope=future",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events", "{{recurring_event_id}}"],
+							"query": [
+								{
+									"key": "updateScope",
+									"value": "future"
+								}
+							]
+						},
+						"description": "Update this and all future occurrences in the series"
+					},
+					"response": []
+				},
+				{
+					"name": "Update All Events in Series",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta\": {\n    \"name\": \"Daily Standup - Series Update\",\n    \"description\": \"Updated for entire series\"\n  },\n  \"spec\": {\n    \"startDate\": \"2024-06-17T09:00:00Z\",\n    \"endDate\": \"2024-06-17T09:25:00Z\",\n    \"capacity\": 20\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events/{{recurring_event_id}}?updateScope=all",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events", "{{recurring_event_id}}"],
+							"query": [
+								{
+									"key": "updateScope",
+									"value": "all"
+								}
+							]
+						},
+						"description": "Update all occurrences in the series"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Single Event in Series",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events/{{recurring_event_id}}?deleteScope=single",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events", "{{recurring_event_id}}"],
+							"query": [
+								{
+									"key": "deleteScope",
+									"value": "single"
+								}
+							]
+						},
+						"description": "Delete only this occurrence"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Future Events in Series",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events/{{recurring_event_id}}?deleteScope=future",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events", "{{recurring_event_id}}"],
+							"query": [
+								{
+									"key": "deleteScope",
+									"value": "future"
+								}
+							]
+						},
+						"description": "Delete this and all future occurrences"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Entire Series",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events/{{recurring_event_id}}?deleteScope=all",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events", "{{recurring_event_id}}"],
+							"query": [
+								{
+									"key": "deleteScope",
+									"value": "all"
+								}
+							]
+						},
+						"description": "Delete entire recurring series"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Events - Advanced",
+			"item": [
+				{
+					"name": "Create Event with Groups",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta\": {\n    \"name\": \"Group Activity\",\n    \"description\": \"Activity for specific groups\"\n  },\n  \"spec\": {\n    \"startDate\": \"2024-06-20T14:00:00Z\",\n    \"endDate\": \"2024-06-20T15:30:00Z\",\n    \"groupIds\": [\"{{group_id_1}}\", \"{{group_id_2}}\"],\n    \"excludeStaffIds\": [],\n    \"excludeCamperIds\": [],\n    \"capacity\": 30\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events"]
+						},
+						"description": "Create an event assigned to specific groups"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event with Required Staff",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta\": {\n    \"name\": \"Swimming with Lifeguards\",\n    \"description\": \"Swimming activity requiring certified lifeguards\"\n  },\n  \"spec\": {\n    \"startDate\": \"2024-06-21T10:00:00Z\",\n    \"endDate\": \"2024-06-21T11:00:00Z\",\n    \"locationId\": \"{{location_id}}\",\n    \"capacity\": 25,\n    \"requiredStaff\": [\n      {\n        \"positionName\": \"Lifeguard\",\n        \"requiredCertificationId\": \"{{certification_id}}\"\n      },\n      {\n        \"positionName\": \"Swimming Instructor\",\n        \"requiredCertificationId\": \"{{certification_id}}\",\n        \"assignedStaffId\": \"{{staff_id}}\"\n      }\n    ]\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events"]
+						},
+						"description": "Create an event with required staff positions and certifications"
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Events by Date Range",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events?filterBy=startDate>=2024-06-15T00:00:00Z&filterBy=endDate<=2024-06-30T23:59:59Z",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events"],
+							"query": [
+								{
+									"key": "filterBy",
+									"value": "startDate>=2024-06-15T00:00:00Z"
+								},
+								{
+									"key": "filterBy",
+									"value": "endDate<=2024-06-30T23:59:59Z"
+								}
+							]
+						},
+						"description": "Filter events by date range"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Events by Name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/events?search=Meeting&sortBy=startDate&sortOrder=desc",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "events"],
+							"query": [
+								{
+									"key": "search",
+									"value": "Meeting"
+								},
+								{
+									"key": "sortBy",
+									"value": "startDate"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								}
+							]
+						},
+						"description": "Search events by name and sort by start date"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Activities & Programs - Cascade Delete",
+			"item": [
+				{
+					"name": "Delete Activity (Check Conflict)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/activities/{{activity_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "activities", "{{activity_id}}"]
+						},
+						"description": "Try to delete activity - will return 409 Conflict if events exist"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Activity (Force Cascade)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/activities/{{activity_id}}?force=true",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "activities", "{{activity_id}}"],
+							"query": [
+								{
+									"key": "force",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Force delete activity and cascade to all related events"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Program (Check Conflict)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/programs/{{program_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "programs", "{{program_id}}"]
+						},
+						"description": "Try to delete program - will return 409 Conflict if events exist"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Program (Force Cascade)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/camps/{{camp_id}}/programs/{{program_id}}?force=true",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "camps", "{{camp_id}}", "programs", "{{program_id}}"],
+							"query": [
+								{
+									"key": "force",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Force delete program and cascade to activities and events"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "camp_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "event_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "recurring_event_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "recurrence_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "activity_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "program_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "location_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "color_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "group_id_1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "group_id_2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "certification_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "staff_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+

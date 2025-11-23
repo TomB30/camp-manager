@@ -28,6 +28,20 @@ const (
 	HousingRoomSpecBathroomShared  HousingRoomSpecBathroom = "shared"
 )
 
+// Defines values for RecurrenceRuleEndType.
+const (
+	RecurrenceRuleEndTypeAfter RecurrenceRuleEndType = "after"
+	RecurrenceRuleEndTypeNever RecurrenceRuleEndType = "never"
+	RecurrenceRuleEndTypeOn    RecurrenceRuleEndType = "on"
+)
+
+// Defines values for RecurrenceRuleFrequency.
+const (
+	RecurrenceRuleFrequencyDaily   RecurrenceRuleFrequency = "daily"
+	RecurrenceRuleFrequencyMonthly RecurrenceRuleFrequency = "monthly"
+	RecurrenceRuleFrequencyWeekly  RecurrenceRuleFrequency = "weekly"
+)
+
 // Defines values for ScopeType.
 const (
 	ScopeTypeCamp   ScopeType = "camp"
@@ -81,6 +95,13 @@ const (
 	ColorsSortByName    ColorsSortBy = "name"
 )
 
+// Defines values for EventsSortBy.
+const (
+	EventsSortByEndDate   EventsSortBy = "endDate"
+	EventsSortByName      EventsSortBy = "name"
+	EventsSortByStartDate EventsSortBy = "startDate"
+)
+
 // Defines values for GroupsSortBy.
 const (
 	GroupsSortByHousingRoomId GroupsSortBy = "housingRoomId"
@@ -132,10 +153,24 @@ const (
 	TimeBlocksSortByStartTime TimeBlocksSortBy = "startTime"
 )
 
+// Defines values for DeleteScope.
+const (
+	DeleteScopeAll    DeleteScope = "all"
+	DeleteScopeFuture DeleteScope = "future"
+	DeleteScopeSingle DeleteScope = "single"
+)
+
 // Defines values for SortOrder.
 const (
 	SortOrderAsc  SortOrder = "asc"
 	SortOrderDesc SortOrder = "desc"
+)
+
+// Defines values for UpdateScope.
+const (
+	UpdateScopeAll    UpdateScope = "all"
+	UpdateScopeFuture UpdateScope = "future"
+	UpdateScopeSingle UpdateScope = "single"
 )
 
 // Defines values for GetCampsParamsSortBy.
@@ -207,6 +242,33 @@ const (
 const (
 	ListColorsParamsSortOrderAsc  ListColorsParamsSortOrder = "asc"
 	ListColorsParamsSortOrderDesc ListColorsParamsSortOrder = "desc"
+)
+
+// Defines values for ListEventsParamsSortBy.
+const (
+	ListEventsParamsSortByEndDate   ListEventsParamsSortBy = "endDate"
+	ListEventsParamsSortByName      ListEventsParamsSortBy = "name"
+	ListEventsParamsSortByStartDate ListEventsParamsSortBy = "startDate"
+)
+
+// Defines values for ListEventsParamsSortOrder.
+const (
+	ListEventsParamsSortOrderAsc  ListEventsParamsSortOrder = "asc"
+	ListEventsParamsSortOrderDesc ListEventsParamsSortOrder = "desc"
+)
+
+// Defines values for DeleteEventByIdParamsDeleteScope.
+const (
+	DeleteEventByIdParamsDeleteScopeAll    DeleteEventByIdParamsDeleteScope = "all"
+	DeleteEventByIdParamsDeleteScopeFuture DeleteEventByIdParamsDeleteScope = "future"
+	DeleteEventByIdParamsDeleteScopeSingle DeleteEventByIdParamsDeleteScope = "single"
+)
+
+// Defines values for UpdateEventByIdParamsUpdateScope.
+const (
+	UpdateEventByIdParamsUpdateScopeAll    UpdateEventByIdParamsUpdateScope = "all"
+	UpdateEventByIdParamsUpdateScopeFuture UpdateEventByIdParamsUpdateScope = "future"
+	UpdateEventByIdParamsUpdateScopeSingle UpdateEventByIdParamsUpdateScope = "single"
 )
 
 // Defines values for ListGroupsParamsSortBy.
@@ -739,12 +801,26 @@ type EventCreationRequest struct {
 	Spec EventSpec                 `json:"spec"`
 }
 
+// EventRequiredStaffPosition defines model for EventRequiredStaffPosition.
+type EventRequiredStaffPosition struct {
+	// AssignedStaffId ID of the staff member assigned to this position
+	AssignedStaffId *openapi_types.UUID `json:"assignedStaffId,omitempty"`
+
+	// PositionName Name of the position required for this event
+	PositionName string `json:"positionName"`
+
+	// RequiredCertificationId ID of the certification required for this position
+	RequiredCertificationId *openapi_types.UUID `json:"requiredCertificationId,omitempty"`
+}
+
 // EventSpec defines model for EventSpec.
 type EventSpec struct {
 	ActivityId *openapi_types.UUID `json:"activityId,omitempty"`
-	Capacity   *int                `json:"capacity,omitempty"`
-	ColorId    *openapi_types.UUID `json:"colorId,omitempty"`
-	EndDate    time.Time           `json:"endDate"`
+
+	// Capacity Optional maximum capacity for the event
+	Capacity *int                `json:"capacity,omitempty"`
+	ColorId  *openapi_types.UUID `json:"colorId,omitempty"`
+	EndDate  time.Time           `json:"endDate"`
 
 	// ExcludeCamperIds IDs of campers to exclude from assigned groups
 	ExcludeCamperIds *[]openapi_types.UUID `json:"excludeCamperIds,omitempty"`
@@ -755,24 +831,16 @@ type EventSpec struct {
 	// GroupIds IDs of groups assigned to this event
 	GroupIds *[]openapi_types.UUID `json:"groupIds,omitempty"`
 
-	// IsRecurrenceParent Indicates if this is the parent event of a recurrence series
+	// IsRecurrenceParent True for the first event in a recurring series
 	IsRecurrenceParent *bool               `json:"isRecurrenceParent,omitempty"`
 	LocationId         *openapi_types.UUID `json:"locationId,omitempty"`
 	ProgramId          *openapi_types.UUID `json:"programId,omitempty"`
 
-	// RecurrenceId Recurrence rule ID - links this event to a recurrence series
-	RecurrenceId  *openapi_types.UUID `json:"recurrenceId,omitempty"`
-	RequiredStaff *[]struct {
-		// AssignedStaffId ID of the staff member assigned to this position
-		AssignedStaffId *openapi_types.UUID `json:"assignedStaffId,omitempty"`
-
-		// PositionName Name of the position required for this event
-		PositionName string `json:"positionName"`
-
-		// RequiredCertificationId ID of the certification required for this position
-		RequiredCertificationId *openapi_types.UUID `json:"requiredCertificationId,omitempty"`
-	} `json:"requiredStaff,omitempty"`
-	StartDate time.Time `json:"startDate"`
+	// RecurrenceId Links events in a recurring series together
+	RecurrenceId   *openapi_types.UUID           `json:"recurrenceId,omitempty"`
+	RecurrenceRule *RecurrenceRule               `json:"recurrenceRule,omitempty"`
+	RequiredStaff  *[]EventRequiredStaffPosition `json:"requiredStaff,omitempty"`
+	StartDate      time.Time                     `json:"startDate"`
 }
 
 // EventUpdateRequest defines model for EventUpdateRequest.
@@ -1026,6 +1094,33 @@ type ProgramsListResponse struct {
 	// Total Total count of all items across all pages
 	Total int `json:"total"`
 }
+
+// RecurrenceRule defines model for RecurrenceRule.
+type RecurrenceRule struct {
+	// DaysOfWeek Days of week for weekly recurrence (0=Sunday, 6=Saturday)
+	DaysOfWeek *[]int `json:"daysOfWeek,omitempty"`
+
+	// EndDate End date for recurrence (required if endType is "on")
+	EndDate *time.Time `json:"endDate,omitempty"`
+
+	// EndType Type of recurrence end condition
+	EndType RecurrenceRuleEndType `json:"endType"`
+
+	// Frequency Frequency of recurrence
+	Frequency RecurrenceRuleFrequency `json:"frequency"`
+
+	// Interval Interval for recurrence (e.g., every 2 weeks)
+	Interval int `json:"interval"`
+
+	// Occurrences Number of occurrences (required if endType is "after")
+	Occurrences *int `json:"occurrences,omitempty"`
+}
+
+// RecurrenceRuleEndType Type of recurrence end condition
+type RecurrenceRuleEndType string
+
+// RecurrenceRuleFrequency Frequency of recurrence
+type RecurrenceRuleFrequency string
 
 // Role defines model for Role.
 type Role struct {
@@ -1324,6 +1419,12 @@ type ColorsFilterBy = []string
 // ColorsSortBy defines model for ColorsSortBy.
 type ColorsSortBy string
 
+// EventsFilterBy defines model for EventsFilterBy.
+type EventsFilterBy = []string
+
+// EventsSortBy defines model for EventsSortBy.
+type EventsSortBy string
+
 // GroupsFilterBy defines model for GroupsFilterBy.
 type GroupsFilterBy = []string
 
@@ -1375,6 +1476,12 @@ type TimeBlocksSortBy string
 // CampId defines model for camp_id.
 type CampId = openapi_types.UUID
 
+// DeleteScope defines model for delete_scope.
+type DeleteScope string
+
+// Force defines model for force.
+type Force = bool
+
 // Id defines model for id.
 type Id = string
 
@@ -1389,6 +1496,9 @@ type Search = string
 
 // SortOrder defines model for sortOrder.
 type SortOrder string
+
+// UpdateScope defines model for update_scope.
+type UpdateScope string
 
 // GetCampsParams defines parameters for GetCamps.
 type GetCampsParams struct {
@@ -1451,6 +1561,12 @@ type ListActivitiesParamsSortBy string
 
 // ListActivitiesParamsSortOrder defines parameters for ListActivities.
 type ListActivitiesParamsSortOrder string
+
+// DeleteActivityByIdParams defines parameters for DeleteActivityById.
+type DeleteActivityByIdParams struct {
+	// Force Force deletion and cascade to dependent resources (events)
+	Force *Force `form:"force,omitempty" json:"force,omitempty"`
+}
 
 // ListAreasParams defines parameters for ListAreas.
 type ListAreasParams struct {
@@ -1586,7 +1702,44 @@ type ListEventsParams struct {
 
 	// Search Search term to filter items by name, title, or other text fields
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
+
+	// FilterBy Filter results by parameters. Format: field operator value
+	// Operators: == (equals), != (not equals), <= (less/equal), >= (greater/equal),
+	// =@ (contains), !@ (not contains), =^ (starts with), =~ (ends with)
+	// Dates in ISO 8601 format. Text filters are case-insensitive.
+	// Note: Text operators (=@, !@, =^, =~) only work with text fields.
+	FilterBy *EventsFilterBy `form:"filterBy,omitempty" json:"filterBy,omitempty"`
+
+	// SortBy Field name to sort by
+	SortBy *ListEventsParamsSortBy `form:"sortBy,omitempty" json:"sortBy,omitempty"`
+
+	// SortOrder Sort direction
+	SortOrder *ListEventsParamsSortOrder `form:"sortOrder,omitempty" json:"sortOrder,omitempty"`
 }
+
+// ListEventsParamsSortBy defines parameters for ListEvents.
+type ListEventsParamsSortBy string
+
+// ListEventsParamsSortOrder defines parameters for ListEvents.
+type ListEventsParamsSortOrder string
+
+// DeleteEventByIdParams defines parameters for DeleteEventById.
+type DeleteEventByIdParams struct {
+	// DeleteScope Scope of deletion for recurring events (single=this event only, future=this and future events, all=entire series)
+	DeleteScope *DeleteEventByIdParamsDeleteScope `form:"deleteScope,omitempty" json:"deleteScope,omitempty"`
+}
+
+// DeleteEventByIdParamsDeleteScope defines parameters for DeleteEventById.
+type DeleteEventByIdParamsDeleteScope string
+
+// UpdateEventByIdParams defines parameters for UpdateEventById.
+type UpdateEventByIdParams struct {
+	// UpdateScope Scope of update for recurring events (single=this event only, future=this and future events, all=entire series)
+	UpdateScope *UpdateEventByIdParamsUpdateScope `form:"updateScope,omitempty" json:"updateScope,omitempty"`
+}
+
+// UpdateEventByIdParamsUpdateScope defines parameters for UpdateEventById.
+type UpdateEventByIdParamsUpdateScope string
 
 // ListGroupsParams defines parameters for ListGroups.
 type ListGroupsParams struct {
@@ -1711,6 +1864,12 @@ type ListProgramsParamsSortBy string
 
 // ListProgramsParamsSortOrder defines parameters for ListPrograms.
 type ListProgramsParamsSortOrder string
+
+// DeleteProgramByIdParams defines parameters for DeleteProgramById.
+type DeleteProgramByIdParams struct {
+	// Force Force deletion and cascade to dependent resources (events)
+	Force *Force `form:"force,omitempty" json:"force,omitempty"`
+}
 
 // ListRolesParams defines parameters for ListRoles.
 type ListRolesParams struct {

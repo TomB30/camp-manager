@@ -15,6 +15,7 @@ properties:
   capacity:
     type: integer
     minimum: 1
+    description: Optional maximum capacity for the event
   groupIds:
     type: array
     items:
@@ -45,25 +46,14 @@ properties:
   requiredStaff:
     type: array
     items:
-      type: object
-      required:
-        - positionName
-      properties:
-        positionName:
-          type: string
-          description: Name of the position required for this event
-        requiredCertificationId:
-          type: string
-          format: uuid
-          description: ID of the certification required for this position
-        assignedStaffId:
-          type: string
-          format: uuid
-          description: ID of the staff member assigned to this position
+      $ref: "./EventRequiredStaffPosition.yaml"
   recurrenceId:
     type: string
     format: uuid
-    description: Recurrence rule ID - links this event to a recurrence series
+    description: Links events in a recurring series together
   isRecurrenceParent:
     type: boolean
-    description: Indicates if this is the parent event of a recurrence series
+    description: True for the first event in a recurring series
+  recurrenceRule:
+    $ref: "./RecurrenceRule.yaml"
+    description: Recurrence rule (only present in parent event)

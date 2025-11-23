@@ -201,7 +201,7 @@ func (h *ProgramsHandler) UpdateProgramById(w http.ResponseWriter, r *http.Reque
 }
 
 // DeleteProgramById handles DELETE /api/v1/camps/{camp_id}/programs/{id}
-func (h *ProgramsHandler) DeleteProgramById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
+func (h *ProgramsHandler) DeleteProgramById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id, params api.DeleteProgramByIdParams) {
 	// Extract tenant ID from context
 	tenantIDStr, err := pkgcontext.ExtractTenantID(r.Context())
 	if err != nil {
@@ -223,8 +223,14 @@ func (h *ProgramsHandler) DeleteProgramById(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	// Get force parameter from params
+	force := false
+	if params.Force != nil {
+		force = bool(*params.Force)
+	}
+
 	// Call service
-	if err := h.service.Delete(r.Context(), tenantID, campUUID, programID); err != nil {
+	if err := h.service.Delete(r.Context(), tenantID, campUUID, programID, force); err != nil {
 		errors.WriteError(w, err)
 		return
 	}
@@ -232,4 +238,3 @@ func (h *ProgramsHandler) DeleteProgramById(w http.ResponseWriter, r *http.Reque
 	// Write no content response
 	w.WriteHeader(http.StatusNoContent)
 }
-
