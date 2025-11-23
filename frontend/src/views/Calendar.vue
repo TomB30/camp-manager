@@ -180,7 +180,7 @@ export default defineComponent({
     this.loading = true;
     try {
       await Promise.all([
-        this.eventsStore.loadEvents(),
+        this.loadEventsForCurrentView(),
         this.staffMembersStore.loadStaffMembers(),
         this.locationsStore.loadLocations(),
         this.groupsStore.loadGroups(),
@@ -198,6 +198,16 @@ export default defineComponent({
     "$route.query.eventId": {
       handler() {
         this.handleEventIdFromQuery();
+      },
+    },
+    viewMode: {
+      handler() {
+        this.loadEventsForCurrentView();
+      },
+    },
+    selectedDate: {
+      handler() {
+        this.loadEventsForCurrentView();
       },
     },
   },
@@ -419,6 +429,46 @@ export default defineComponent({
     },
   },
   methods: {
+    async loadEventsForCurrentView() {
+      const dateRange = this.getDateRangeForView();
+      const filterBy = [
+        `startDate>=${dateRange.start.toISOString()}`,
+        `startDate<=${dateRange.end.toISOString()}`,
+      ];
+      await this.eventsStore.loadEvents({ filterBy, limit: 500 });
+    },
+    getDateRangeForView(): { start: Date; end: Date } {
+      if (this.viewMode === "daily") {
+        // For daily view, get events for the selected day
+        const start = new Date(this.selectedDate);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(this.selectedDate);
+        end.setHours(23, 59, 59, 999);
+        return { start, end };
+      } else if (this.viewMode === "weekly") {
+        // For weekly view, get events for the entire week
+        const start = startOfWeek(this.selectedDate);
+        start.setHours(0, 0, 0, 0);
+        const end = addDays(start, 6);
+        end.setHours(23, 59, 59, 999);
+        return { start, end };
+      } else {
+        // For monthly view, get events for the entire month
+        const start = new Date(
+          this.selectedDate.getFullYear(),
+          this.selectedDate.getMonth(),
+          1,
+        );
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(
+          this.selectedDate.getFullYear(),
+          this.selectedDate.getMonth() + 1,
+          0,
+        );
+        end.setHours(23, 59, 59, 999);
+        return { start, end };
+      }
+    },
     handleEventIdFromQuery() {
       const eventId = this.$route.query.eventId as string | undefined;
       if (eventId) {
@@ -495,7 +545,7 @@ export default defineComponent({
       this.showEventModal = false;
       this.editingEventId = null;
       this.defaultEventDate = new Date();
-      this.eventsStore.loadEvents();
+      this.loadEventsForCurrentView();
     },
     deleteEventConfirm() {
       if (!this.selectedEventId) return;

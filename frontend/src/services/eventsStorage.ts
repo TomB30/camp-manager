@@ -35,11 +35,66 @@ async function listEvents(options?: ListEventsOptions): Promise<Event[]> {
     );
   }
 
-  // Apply filterBy (basic implementation)
+  // Apply filterBy
   if (options?.filterBy && options.filterBy.length > 0) {
-    // This is a simplified implementation - full filtering would need parser
-    // For now, just log that it's not fully implemented
-    console.warn("filterBy not fully implemented in storage layer");
+    events = events.filter((event) => {
+      return options.filterBy!.every((filter) => {
+        // Parse filter string: field operator value
+        const match = filter.match(/^(name|startDate|endDate)(==|!=|<=|>=|=@|!@|=\^|=~)(.+)$/);
+        if (!match) return true; // Skip invalid filters
+        
+        const [, field, operator, value] = match;
+        
+        let eventValue: any;
+        if (field === "name") {
+          eventValue = event.meta.name;
+        } else if (field === "startDate") {
+          eventValue = new Date(event.spec.startDate);
+        } else if (field === "endDate") {
+          eventValue = new Date(event.spec.endDate);
+        } else {
+          return true;
+        }
+        
+        // Handle date comparisons
+        if (field === "startDate" || field === "endDate") {
+          const compareDate = new Date(value);
+          switch (operator) {
+            case "==":
+              return eventValue.getTime() === compareDate.getTime();
+            case "!=":
+              return eventValue.getTime() !== compareDate.getTime();
+            case "<=":
+              return eventValue.getTime() <= compareDate.getTime();
+            case ">=":
+              return eventValue.getTime() >= compareDate.getTime();
+            default:
+              return true;
+          }
+        }
+        
+        // Handle text comparisons
+        const eventValueStr = String(eventValue).toLowerCase();
+        const compareValue = value.toLowerCase();
+        
+        switch (operator) {
+          case "==":
+            return eventValueStr === compareValue;
+          case "!=":
+            return eventValueStr !== compareValue;
+          case "=@":
+            return eventValueStr.includes(compareValue);
+          case "!@":
+            return !eventValueStr.includes(compareValue);
+          case "=^":
+            return eventValueStr.startsWith(compareValue);
+          case "=~":
+            return eventValueStr.endsWith(compareValue);
+          default:
+            return true;
+        }
+      });
+    });
   }
 
   // Apply sorting
