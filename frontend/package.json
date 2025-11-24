@@ -19,6 +19,7 @@
     "api:build": "npm run api:lint && npm run api:bundle",
     "generate-types": "npm run api:generate-types",
     "generate-client": "npm run api:generate-client",
+    "generate-pwa-icons": "node generate-pwa-icons.js",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
@@ -58,9 +59,12 @@
     "playwright": "^1.56.1",
     "prettier": "^3.6.2",
     "sass": "^1.93.2",
+    "sharp": "^0.34.5",
     "typescript": "^5.4.2",
     "vite": "^5.1.6",
+    "vite-plugin-pwa": "^1.1.0",
     "vitest": "^4.0.1",
-    "vue-tsc": "^2.0.6"
+    "vue-tsc": "^2.0.6",
+    "workbox-window": "^7.4.0"
   }
 }

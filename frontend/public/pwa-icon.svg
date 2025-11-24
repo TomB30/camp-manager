@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#1976d2" rx="64"/>
+  <g fill="#ffffff">
+    <!-- Tent/Camp Icon -->
+    <path d="M256 120 L160 320 L352 320 Z" stroke="#ffffff" stroke-width="8" fill="none"/>
+    <path d="M140 320 L372 320 L372 360 L140 360 Z" fill="#ffffff"/>
+    <circle cx="200" cy="240" r="12"/>
+    <circle cx="312" cy="240" r="12"/>
+    <!-- Tree -->
+    <path d="M380 280 L420 340 L380 340 L420 380 L380 380 L380 400 L360 400 L360 380 L320 380 L360 340 L320 340 L360 280 Z" fill="#90caf9"/>
+    <!-- Sun -->
+    <circle cx="80" cy="180" r="20" fill="#ffd54f"/>
+  </g>
+</svg>
+
