@@ -47,7 +47,9 @@
                   <div class="grid grid-cols-3">
                     <div>
                       <label class="form-sublabel">Days</label>
-                      <BaseInput
+                      <q-input
+                        outlined
+                        dense
                         v-model="customDurationDays"
                         type="number"
                         :min="0"
@@ -56,7 +58,9 @@
                     </div>
                     <div>
                       <label class="form-sublabel">Hours</label>
-                      <BaseInput
+                      <q-input
+                        outlined
+                        dense
                         v-model="customDurationHours"
                         type="number"
                         :min="0"
@@ -65,7 +69,9 @@
                     </div>
                     <div>
                       <label class="form-sublabel">Minutes</label>
-                      <BaseInput
+                      <q-input
+                        outlined
+                        dense
                         v-model="customDurationMinutes"
                         type="number"
                         :min="0"
@@ -91,7 +97,9 @@
                 </div>
                 <div v-if="isFixedTimeMultiDay" class="day-offset-input">
                   <label class="form-sublabel">Day Offset</label>
-                  <BaseInput
+                  <q-input
+                    outlined
+                    dense
                     v-model="fixedTimeDayOffset"
                     type="number"
                     :min="0"
@@ -413,7 +421,10 @@ export default defineComponent({
   },
   async created() {
     // Load time blocks
-    await this.timeBlocksStore.loadTimeBlocks();
+    await Promise.all([
+      this.timeBlocksStore.loadTimeBlocks(),
+      this.certificationsStore.loadCertifications(),
+    ]);
 
     if (this.activityId) {
       const activity = this.activitiesStore.getActivityById(this.activityId);

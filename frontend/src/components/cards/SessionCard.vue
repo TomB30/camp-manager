@@ -7,28 +7,26 @@
       <div class="session-icon card-icon">
         <Icon name="CalendarDays" :size="24" />
       </div>
-      <div class="session-title-section">
-        <h3 class="session-name">{{ session.meta.name }}</h3>
-        <p v-if="session.meta.description" class="session-description">
+      <div>
+        <h4>{{ session.meta.name }}</h4>
+        <p v-if="session.meta.description" class="card-description">
           {{ session.meta.description }}
         </p>
       </div>
     </div>
 
-    <div class="session-details">
-      <div class="session-detail">
-        <Icon name="Calendar" :size="16" class="detail-icon" />
-        <span class="detail-label">Dates:</span>
-        <span class="detail-value"
+    <div class="row justify-between">
+      <div class="card-info-item">
+        <Icon name="Calendar" :size="16" />
+        <span
           >{{ formatDate(session.spec.startDate) }} -
           {{ formatDate(session.spec.endDate) }}</span
         >
       </div>
 
-      <div class="session-detail">
-        <Icon name="Clock" :size="16" class="detail-icon" />
-        <span class="detail-label">Duration:</span>
-        <span class="detail-value">{{
+      <div class="card-info-item">
+        <Icon name="Timer" :size="16" />
+        <span>{{
           dateUtils.calculateDuration(
             session.spec.startDate,
             session.spec.endDate,
@@ -78,25 +76,6 @@ export default defineComponent({
 <style scoped>
 .session-icon {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.session-title-section {
-  flex: 1;
-  min-width: 0;
-}
-
-.session-name {
-  margin: 0 0 0.25rem 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.session-description {
-  margin: 0;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
 }
 
 .session-details {

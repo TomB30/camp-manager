@@ -11,15 +11,19 @@
         </p>
       </div>
     </div>
-    <div class="card-meta row items-center gap-1">
-      <span class="badge badge-primary">{{ room.spec.beds }} beds</span>
-      <span v-if="room.spec.bathroom" class="badge badge-primary">
-        {{ bathroomLabel }}
-      </span>
-      <span v-if="areaName" class="row items-center q-gutter-x-xs">
-        <Icon name="MapPin" :size="14" class="inline" />
+    <div class="row gap-2">
+      <div class="card-info-item">
+        <Icon name="Bed" :size="16" />
+        <span>{{ room.spec.beds }} beds</span>
+      </div>
+      <div class="card-info-item">
+        <Icon name="Toilet" :size="16" />
+        <span>{{ bathroomLabel }}</span>
+      </div>
+      <div class="card-info-item" v-if="areaName">
+        <Icon name="MapPin" :size="16" />
         <span>{{ areaName }}</span>
-      </span>
+      </div>
     </div>
   </div>
 </template>

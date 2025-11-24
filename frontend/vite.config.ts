@@ -30,11 +30,16 @@ export default defineConfig(({ mode }) => {
       }),
       VitePWA({
         registerType: "autoUpdate",
-        includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
+        includeAssets: [
+          "favicon.ico",
+          "apple-touch-icon.png",
+          "masked-icon.svg",
+        ],
         manifest: {
           name: "CampFlow",
           short_name: "CampFlow",
-          description: "A comprehensive camp management system for staff, campers, activities, and schedules",
+          description:
+            "A comprehensive camp management system for staff, campers, activities, and schedules",
           theme_color: "#1976d2",
           background_color: "#ffffff",
           display: "standalone",

@@ -1,31 +1,38 @@
 <template>
-  <div
-    class="card card-clickable"
-    :style="{ borderLeft: `4px solid ${programColor}` }"
-    @click="$emit('click', program)"
-  >
+  <div class="card clickable" @click="$emit('click', program)">
     <div class="card-header">
-      <h4>{{ program.meta.name }}</h4>
+      <div class="card-icon" :style="{ background: programColor }">
+        <Icon name="Boxes" :size="24" />
+      </div>
       <div>
-        <span class="badge badge-primary"
-          >{{ activitiesCount }} activities</span
-        >
+        <h4>{{ program.meta.name }}</h4>
+        <p v-if="program.meta.description" class="card-description">
+          {{ program.meta.description }}
+        </p>
       </div>
     </div>
 
-    <p v-if="program.meta.description" class="card-description">
-      {{ program.meta.description }}
-    </p>
-
-    <div class="card-stats">
-      <span class="card-stat-item">
+    <div class="row gap-2">
+      <div class="card-info-item" v-if="staffGroupsCount > 0">
         <Icon name="Users" :size="16" />
-        {{ staffGroupsCount }} staff groups
-      </span>
-      <span class="card-stat-item">
-        <Icon name="Home" :size="16" />
-        {{ locationsCount }} locations
-      </span>
+        <span>
+          {{ staffGroupsCount }} staff group{{
+            staffGroupsCount !== 1 ? "s" : ""
+          }}
+        </span>
+      </div>
+      <div class="card-info-item" v-if="locationsCount > 0">
+        <Icon name="MapPin" :size="16" />
+        <span>
+          {{ locationsCount }} location{{ locationsCount !== 1 ? "s" : "" }}
+        </span>
+      </div>
+      <div class="card-info-item" v-if="activitiesCount > 0">
+        <Icon name="Bike" :size="16" />
+        <span>
+          {{ activitiesCount }} activit{{ activitiesCount !== 1 ? "ies" : "y" }}
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -75,7 +82,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-@import "./card-styles.css";
-</style>

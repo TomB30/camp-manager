@@ -57,6 +57,14 @@
   flex-shrink: 0;
 }
 
+.card-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
 @media (max-width: 768px) {
   .card-icon {
     width: 40px;

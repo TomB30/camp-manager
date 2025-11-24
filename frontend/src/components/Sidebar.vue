@@ -177,7 +177,7 @@ export default defineComponent({
       { path: "/", label: "Dashboard", icon: "LayoutDashboard" },
       { path: "/calendar", label: "Calendar", icon: "Calendar" },
       { path: "/programs", label: "Programs", icon: "Boxes" },
-      { path: "/groups", label: "Groups", icon: "FolderOpen" },
+      { path: "/groups", label: "Groups", icon: "Network" },
       { path: "/staff", label: "Staff", icon: "UsersRound" },
       { path: "/campers", label: "Campers", icon: "Users" },
     ];

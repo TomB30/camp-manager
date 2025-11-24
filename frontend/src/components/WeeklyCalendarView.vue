@@ -294,7 +294,7 @@ export default defineComponent({
 
         const otherStart = new Date(otherEvent.spec.startDate);
         const otherEnd = new Date(otherEvent.spec.endDate);
-        
+
         // Calculate the effective time range for the other event on this day
         let otherStartMinutes =
           otherStart.getHours() * 60 + otherStart.getMinutes();
@@ -309,7 +309,7 @@ export default defineComponent({
         if (otherIsMultiDay) {
           const otherEventStartDay = new Date(otherStart);
           otherEventStartDay.setHours(0, 0, 0, 0);
-          
+
           const otherEventEndDay = new Date(otherEnd);
           otherEventEndDay.setHours(0, 0, 0, 0);
 
@@ -332,16 +332,16 @@ export default defineComponent({
       const allOverlapping = [event, ...overlappingEvents].sort((a, b) => {
         const aStart = new Date(a.spec.startDate);
         const bStart = new Date(b.spec.startDate);
-        
+
         // Calculate effective start times for this day
         let aStartMinutes = aStart.getHours() * 60 + aStart.getMinutes();
         let bStartMinutes = bStart.getHours() * 60 + bStart.getMinutes();
-        
+
         const aStartDay = new Date(aStart);
         aStartDay.setHours(0, 0, 0, 0);
         const bStartDay = new Date(bStart);
         bStartDay.setHours(0, 0, 0, 0);
-        
+
         // If event started before this day, effective start is 7 AM
         if (aStartDay < dayStart) {
           aStartMinutes = 7 * 60;
@@ -349,13 +349,15 @@ export default defineComponent({
         if (bStartDay < dayStart) {
           bStartMinutes = 7 * 60;
         }
-        
+
         // Sort by effective start time on this day
-        if (aStartMinutes !== bStartMinutes) return aStartMinutes - bStartMinutes;
-        
+        if (aStartMinutes !== bStartMinutes)
+          return aStartMinutes - bStartMinutes;
+
         // If same time, sort by original start date (earlier events first)
-        if (aStart.getTime() !== bStart.getTime()) return aStart.getTime() - bStart.getTime();
-        
+        if (aStart.getTime() !== bStart.getTime())
+          return aStart.getTime() - bStart.getTime();
+
         // If same start date, sort by ID for consistency
         return a.meta.id.localeCompare(b.meta.id);
       });

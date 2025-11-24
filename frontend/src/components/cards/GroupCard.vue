@@ -1,37 +1,19 @@
 <template>
   <div class="card clickable" @click="$emit('click', group)">
     <div class="card-header">
-      <div class="card-header-main">
-        <h4>{{ group.meta.name }}</h4>
-        <div class="group-badges">
-          <span v-if="isNestedGroup" class="badge badge-info">
-            <Icon name="FolderOpen" :size="12" />
-            Nested Group
-          </span>
-          <span v-if="group.spec.housingRoomId" class="badge badge-secondary">
-            <Icon name="Bed" :size="12" />
-            Housing
-          </span>
-        </div>
+      <div class="card-icon" :style="{ background: '#3b82f6' }">
+        <Icon name="Network" :size="24" :stroke-width="2" />
       </div>
-      <div class="card-header-counts">
-        <span v-if="campersCount > 0" class="badge badge-primary">
-          {{ campersCount }} {{ campersCount === 1 ? "camper" : "campers" }}
-        </span>
-        <span v-if="staffCount > 0" class="badge badge-success">
-          {{ staffCount }} staff
-        </span>
+      <div>
+        <h4>{{ group.meta.name }}</h4>
+        <p>{{ group.meta.description }}</p>
       </div>
     </div>
-
-    <p v-if="group.meta.description" class="card-description">
-      {{ group.meta.description }}
-    </p>
 
     <!-- Group type info -->
     <div class="row gap-2">
       <!-- Nested groups -->
-      <div v-if="isNestedGroup" class="info-item">
+      <div v-if="isNestedGroup" class="card-info-item">
         <Icon name="FolderOpen" :size="16" />
         <span
           >{{ childGroupCount }} child
@@ -42,7 +24,7 @@
       <!-- Manual campers -->
       <div
         v-if="group.spec.camperIds && group.spec.camperIds.length > 0"
-        class="info-item"
+        class="card-info-item"
       >
         <Icon name="Users" :size="16" />
         <span>{{ group.spec.camperIds.length }} campers</span>
@@ -51,20 +33,20 @@
       <!-- Manual staff -->
       <div
         v-if="group.spec.staffIds && group.spec.staffIds.length > 0"
-        class="info-item"
+        class="card-info-item"
       >
         <Icon name="Users" :size="16" />
         <span>{{ group.spec.staffIds.length }} staff</span>
       </div>
 
       <!-- Housing room -->
-      <div v-if="group.spec.housingRoomId" class="info-item">
+      <div v-if="group.spec.housingRoomId" class="card-info-item">
         <Icon name="Bed" :size="16" />
         <span>{{ housingRoomName }}</span>
       </div>
 
       <!-- Session -->
-      <div v-if="group.spec.sessionId" class="info-item">
+      <div v-if="group.spec.sessionId" class="card-info-item">
         <Icon name="Calendar" :size="16" />
         <span>{{ sessionName }}</span>
       </div>
@@ -143,108 +125,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-@import "./card-styles.css";
-
-.card-header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.card-header-main {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.card-header-main h4 {
-  margin: 0;
-  flex: 1;
-}
-
-.group-badges {
-  display: flex;
-  gap: 0.375rem;
-  flex-wrap: wrap;
-}
-
-.card-header-counts {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.card-labels {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-  margin-bottom: 0.75rem;
-}
-
-.label-badge {
-  display: inline-block;
-  padding: 0.25rem 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: white;
-  border-radius: 9999px;
-  white-space: nowrap;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.group-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.filter-section-label {
-  width: 100%;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 0.25rem;
-}
-
-.filter-tag {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  background: var(--background-secondary);
-  border-radius: var(--radius);
-  font-size: 0.75rem;
-}
-
-.filter-tag strong {
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.badge-info {
-  background-color: #3b82f6;
-  color: white;
-}
-
-.badge-secondary {
-  background-color: #64748b;
-  color: white;
-}
-
-.badge-success {
-  background-color: #10b981;
-  color: white;
-}
-</style>

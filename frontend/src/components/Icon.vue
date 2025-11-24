@@ -59,6 +59,10 @@ import {
   Phone,
   ArrowLeft,
   Building,
+  Group,
+  Network,
+  Toilet,
+  Bike,
 } from "lucide-vue-next";
 
 export type IconName = keyof typeof icons;
@@ -112,6 +116,10 @@ const icons: Record<string, Component> = {
   Phone,
   ArrowLeft,
   Building,
+  Group,
+  Network,
+  Toilet,
+  Bike,
 } as const;
 
 export default defineComponent({
