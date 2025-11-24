@@ -6,71 +6,64 @@
     <template #body>
       <div class="delete-modal-content">
         <p class="event-name">{{ eventName }}</p>
-        
+
         <div v-if="isRecurring" class="scope-options">
-          <p class="scope-header">This is a recurring event. Choose deletion scope:</p>
-          
+          <p class="scope-header">
+            This is a recurring event. Choose deletion scope:
+          </p>
+
           <div class="scope-option">
-            <q-radio
-              v-model="selectedScope"
-              val="single"
-              color="primary"
-            >
+            <q-radio v-model="selectedScope" val="single" color="primary">
               <div class="scope-label">
                 <div class="scope-title">This event only</div>
                 <div class="scope-description">Delete only this occurrence</div>
               </div>
             </q-radio>
           </div>
-          
+
           <div class="scope-option">
-            <q-radio
-              v-model="selectedScope"
-              val="future"
-              color="primary"
-            >
+            <q-radio v-model="selectedScope" val="future" color="primary">
               <div class="scope-label">
                 <div class="scope-title">This and future events</div>
-                <div class="scope-description">Delete this event and all future occurrences</div>
+                <div class="scope-description">
+                  Delete this event and all future occurrences
+                </div>
               </div>
             </q-radio>
           </div>
-          
+
           <div class="scope-option">
-            <q-radio
-              v-model="selectedScope"
-              val="all"
-              color="primary"
-            >
+            <q-radio v-model="selectedScope" val="all" color="primary">
               <div class="scope-label">
                 <div class="scope-title">All events in series</div>
-                <div class="scope-description">Delete the entire recurring series</div>
+                <div class="scope-description">
+                  Delete the entire recurring series
+                </div>
               </div>
             </q-radio>
           </div>
         </div>
-        
+
         <div v-else class="single-event-message">
           <p>Are you sure you want to delete this event?</p>
         </div>
-        
+
         <p class="warning-message">
           <Icon name="AlertTriangle" :size="16" />
-          This action cannot be undone. All assigned groups will be removed from 
-          {{ isRecurring && selectedScope === 'all' ? 'all events in the series' : 
-             isRecurring && selectedScope === 'future' ? 'this and future events' : 
-             'this event' }}.
+          This action cannot be undone. All assigned groups will be removed from
+          {{
+            isRecurring && selectedScope === "all"
+              ? "all events in the series"
+              : isRecurring && selectedScope === "future"
+                ? "this and future events"
+                : "this event"
+          }}.
         </p>
       </div>
     </template>
     <template #footer>
       <BaseButton @click="cancel" label="Cancel" flat />
-      <BaseButton
-        color="negative"
-        outline
-        @click="confirm"
-        label="Delete"
-      />
+      <BaseButton color="negative" outline @click="confirm" label="Delete" />
     </template>
   </BaseModal>
 </template>
@@ -104,7 +97,7 @@ export default defineComponent({
       return this.event?.meta.name || "this event";
     },
     isRecurring(): boolean {
-      return !!(this.event?.spec.recurrenceId);
+      return !!this.event?.spec.recurrenceId;
     },
   },
   methods: {
@@ -214,4 +207,3 @@ export default defineComponent({
   margin-top: 0.125rem;
 }
 </style>
-

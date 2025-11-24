@@ -40,11 +40,13 @@ async function listEvents(options?: ListEventsOptions): Promise<Event[]> {
     events = events.filter((event) => {
       return options.filterBy!.every((filter) => {
         // Parse filter string: field operator value
-        const match = filter.match(/^(name|startDate|endDate)(==|!=|<=|>=|=@|!@|=\^|=~)(.+)$/);
+        const match = filter.match(
+          /^(name|startDate|endDate)(==|!=|<=|>=|=@|!@|=\^|=~)(.+)$/,
+        );
         if (!match) return true; // Skip invalid filters
-        
+
         const [, field, operator, value] = match;
-        
+
         let eventValue: any;
         if (field === "name") {
           eventValue = event.meta.name;
@@ -55,7 +57,7 @@ async function listEvents(options?: ListEventsOptions): Promise<Event[]> {
         } else {
           return true;
         }
-        
+
         // Handle date comparisons
         if (field === "startDate" || field === "endDate") {
           const compareDate = new Date(value);
@@ -72,11 +74,11 @@ async function listEvents(options?: ListEventsOptions): Promise<Event[]> {
               return true;
           }
         }
-        
+
         // Handle text comparisons
         const eventValueStr = String(eventValue).toLowerCase();
         const compareValue = value.toLowerCase();
-        
+
         switch (operator) {
           case "==":
             return eventValueStr === compareValue;

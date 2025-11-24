@@ -21,6 +21,14 @@
           />
         </div>
 
+        <!-- Show activity info when editing -->
+        <div v-if="isEditing && formData.spec.activityId" class="form-group">
+          <label class="form-label">Activity Template</label>
+          <div class="activity-info-display">
+            {{ getActivityName(formData.spec.activityId) }}
+          </div>
+        </div>
+
         <div class="form-group">
           <label class="form-label">Title</label>
           <BaseInput
@@ -30,8 +38,8 @@
           />
         </div>
 
-        <!-- Unified Event Time Section (for new events) -->
-        <div v-if="!isEditing" class="form-group">
+        <!-- Unified Event Time Section -->
+        <div class="form-group">
           <label class="form-label">Event Date & Time</label>
           <div class="time-settings-container">
             <q-option-group
@@ -44,21 +52,34 @@
               color="primary"
               class="time-mode-selector"
               :disable="
+                isEditing ||
                 selectedActivityHasTimeBlock ||
                 selectedActivityHasFixedTime ||
                 selectedActivityHasDuration
               "
             >
-              <q-tooltip v-if="selectedActivityHasTimeBlock">
-                Time mode is set by the activity template (uses time block)
-              </q-tooltip>
-              <q-tooltip v-else-if="selectedActivityHasFixedTime">
-                Time mode is set by the activity template (fixed time)
-              </q-tooltip>
-              <q-tooltip v-else-if="selectedActivityHasDuration">
-                Time mode is set by the activity template (duration-based)
-              </q-tooltip>
             </q-option-group>
+            <q-tooltip v-if="isEditing" target=".time-mode-selector">
+              Time mode cannot be changed when editing an event
+            </q-tooltip>
+            <q-tooltip
+              v-else-if="selectedActivityHasTimeBlock"
+              target=".time-mode-selector"
+            >
+              Time mode is set by the activity template (uses time block)
+            </q-tooltip>
+            <q-tooltip
+              v-else-if="selectedActivityHasFixedTime"
+              target=".time-mode-selector"
+            >
+              Time mode is set by the activity template (fixed time)
+            </q-tooltip>
+            <q-tooltip
+              v-else-if="selectedActivityHasDuration"
+              target=".time-mode-selector"
+            >
+              Time mode is set by the activity template (duration-based)
+            </q-tooltip>
 
             <!-- Specific Time Inputs -->
             <div
@@ -72,6 +93,7 @@
                   label="Multi-day event"
                   dense
                   :disable="isEndDateFromTemplate"
+                  @update:model-value="handleMultiDayToggle"
                 >
                   <q-tooltip v-if="isEndDateFromTemplate">
                     Multi-day setting is determined by the activity template
@@ -216,8 +238,8 @@
               </div>
             </div>
 
-            <!-- Recurrence Section -->
-            <div class="recurrence-section-container">
+            <!-- Recurrence Section (only for new events) -->
+            <div v-if="!isEditing" class="recurrence-section-container">
               <div class="recurrence-header">
                 <q-checkbox
                   dense
@@ -242,7 +264,7 @@
                       :model-value="formData.spec.recurrenceRule.interval"
                       @update:model-value="
                         formData.spec.recurrenceRule.interval = parseInt(
-                          ($event as string) ?? '1'
+                          ($event as string) ?? '1',
                         )
                       "
                       outlined
@@ -279,7 +301,7 @@
                         active:
                           formData.spec.recurrenceRule.daysOfWeek &&
                           formData.spec.recurrenceRule.daysOfWeek.includes(
-                            index as any
+                            index as any,
                           ),
                       }"
                       @click="toggleDay(index)"
@@ -325,7 +347,7 @@
                         :model-value="formData.spec.recurrenceRule.occurrences"
                         @update:model-value="
                           formData.spec.recurrenceRule.occurrences = parseInt(
-                            ($event as string) ?? '1'
+                            ($event as string) ?? '1',
                           )
                         "
                         type="number"
@@ -349,31 +371,6 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- Time Inputs for editing events -->
-        <div v-else class="grid grid-cols-2">
-          <div class="form-group">
-            <label class="form-label">Start Time</label>
-            <BaseInput
-              :model-value="startTime"
-              @update:model-value="handleStartTimeChange"
-              type="time"
-              :rules="[(val: string) => !!val || 'Enter start time']"
-            />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label"> End Time </label>
-            <BaseInput
-              v-model="endTime"
-              type="time"
-              :rules="[
-                (val: string) => !!val || 'Enter end time',
-                endTimeBeforeStartTime,
-              ]"
-            />
           </div>
         </div>
 
@@ -668,8 +665,12 @@ export default defineComponent({
       const startDate = new Date(event.spec.startDate);
       const endDate = new Date(event.spec.endDate);
 
-      // Extract date part (YYYY-MM-DD)
+      // Extract date parts (YYYY-MM-DD)
       this.internalEventDate = startDate.toISOString().split("T")[0];
+      this.internalEndDate = endDate.toISOString().split("T")[0];
+
+      // Check if it's a multi-day event
+      this.isMultiDayEvent = this.internalEventDate !== this.internalEndDate;
 
       // Extract time parts (HH:MM)
       this.internalStartTime = `${startDate.getHours().toString().padStart(2, "0")}:${startDate.getMinutes().toString().padStart(2, "0")}`;
@@ -853,7 +854,7 @@ export default defineComponent({
 
       this.programsStore.programs.forEach((program) => {
         const programActivities = this.activitiesStore.getActivitiesInProgram(
-          program.meta.id
+          program.meta.id,
         );
         if (programActivities.length > 0) {
           programActivities.forEach((activity) => {
@@ -882,7 +883,7 @@ export default defineComponent({
           }
           // Check if event's day is in the time block's days
           return timeBlock.spec.daysOfWeek.some(
-            (day) => day.toLowerCase() === eventDayOfWeek.toLowerCase()
+            (day) => day.toLowerCase() === eventDayOfWeek.toLowerCase(),
           );
         })
         .map((timeBlock) => ({
@@ -972,7 +973,7 @@ export default defineComponent({
         const group = this.groupsStore.getGroupById(groupId);
         if (group && group.spec.staffIds) {
           group.spec.staffIds.forEach((staffId: string) =>
-            staffIds.add(staffId)
+            staffIds.add(staffId),
           );
         }
       });
@@ -989,7 +990,7 @@ export default defineComponent({
       if (!this.formData.spec.recurrenceRule) return null;
 
       const validation = validateRecurrenceRule(
-        this.formData.spec.recurrenceRule
+        this.formData.spec.recurrenceRule,
       );
       if (!validation.valid) {
         return `⚠️ ${validation.error}`;
@@ -1015,7 +1016,7 @@ export default defineComponent({
           const startDateTime = new Date(newDate);
           startDateTime.setHours(hours, minutes, 0, 0);
           const endDateTime = new Date(
-            startDateTime.getTime() + this.templateDuration * 60000
+            startDateTime.getTime() + this.templateDuration * 60000,
           );
           this.internalEndDate = endDateTime.toISOString().split("T")[0];
         }
@@ -1073,10 +1074,10 @@ export default defineComponent({
         : this.internalEventDate;
 
       const startDateTime = new Date(
-        `${this.internalEventDate}T${this.internalStartTime}:00`
+        `${this.internalEventDate}T${this.internalStartTime}:00`,
       );
       const endDateTime = new Date(
-        `${endDateToUse}T${this.internalEndTime}:00`
+        `${endDateToUse}T${this.internalEndTime}:00`,
       );
 
       return (
@@ -1099,7 +1100,7 @@ export default defineComponent({
         startDate.setHours(hours, minutes, 0, 0);
 
         const endDate = new Date(
-          startDate.getTime() + this.selectedActivityDuration * 60000
+          startDate.getTime() + this.selectedActivityDuration * 60000,
         );
         const endHours = endDate.getHours().toString().padStart(2, "0");
         const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
@@ -1108,7 +1109,13 @@ export default defineComponent({
         return;
       }
 
-      // If endTime is set, keep the interval between startTime and endTime when startTime is changed
+      // For multi-day events, don't auto-adjust end time since times are on different dates
+      if (this.isMultiDayEvent) {
+        this.updateFormDataDates();
+        return;
+      }
+
+      // If endTime is set, keep the interval between startTime and endTime when startTime is changed (single-day events only)
       if (this.internalEndTime) {
         const [oldStartHour, oldStartMinute] = this.internalStartTime
           .split(":")
@@ -1139,7 +1146,7 @@ export default defineComponent({
       } else {
         const result = compareAsc(
           new Date(`${this.internalEventDate}T${this.internalStartTime}:00`),
-          new Date(`${this.internalEventDate}T${this.internalEndTime}:00`)
+          new Date(`${this.internalEventDate}T${this.internalEndTime}:00`),
         );
         if (result === 1) {
           this.endTime = this.startTime;
@@ -1150,7 +1157,7 @@ export default defineComponent({
       // Combine date and time into ISO datetime strings
       if (this.internalEventDate && this.internalStartTime) {
         const startDateTime = new Date(
-          `${this.internalEventDate}T${this.internalStartTime}:00`
+          `${this.internalEventDate}T${this.internalStartTime}:00`,
         );
         this.formData.spec.startDate = startDateTime.toISOString();
       }
@@ -1162,7 +1169,7 @@ export default defineComponent({
 
       if (endDateToUse && this.internalEndTime) {
         const endDateTime = new Date(
-          `${endDateToUse}T${this.internalEndTime}:00`
+          `${endDateToUse}T${this.internalEndTime}:00`,
         );
         this.formData.spec.endDate = endDateTime.toISOString();
       }
@@ -1197,7 +1204,7 @@ export default defineComponent({
       if (activity.spec.timeBlockId) {
         // Use time block from activity - get the actual times from the time block
         const timeBlock = this.timeBlocksStore.getTimeBlockById(
-          activity.spec.timeBlockId
+          activity.spec.timeBlockId,
         );
         if (timeBlock) {
           this.selectedActivityHasTimeBlock = true;
@@ -1231,7 +1238,7 @@ export default defineComponent({
           // Calculate end date = start date + dayOffset
           const startDate = new Date(this.internalEventDate);
           startDate.setDate(
-            startDate.getDate() + activity.spec.fixedTime.dayOffset
+            startDate.getDate() + activity.spec.fixedTime.dayOffset,
           );
           this.internalEndDate = startDate.toISOString().split("T")[0];
         } else {
@@ -1259,7 +1266,7 @@ export default defineComponent({
           startDateTime.setHours(hours, minutes, 0, 0);
 
           const endDateTime = new Date(
-            startDateTime.getTime() + (activity.spec.duration || 0) * 60000
+            startDateTime.getTime() + (activity.spec.duration || 0) * 60000,
           );
 
           // Check if duration spans multiple days (>= 1440 minutes = 1 day)
@@ -1299,7 +1306,7 @@ export default defineComponent({
       // Inherit color from the program
       if (activity.spec.programId) {
         const program = this.programsStore.getProgramById(
-          activity.spec.programId
+          activity.spec.programId,
         );
         if (program && program.spec.colorId) {
           this.formData.spec.colorId = program.spec.colorId;
@@ -1316,7 +1323,7 @@ export default defineComponent({
             positionName: position.positionName,
             requiredCertificationId: position.requiredCertificationId,
             assignedStaffId: undefined, // Start with no staff assigned
-          })
+          }),
         );
       }
 
@@ -1372,6 +1379,17 @@ export default defineComponent({
       ];
       return days[index] || "";
     },
+    getActivityName(activityId: string): string {
+      const activity = this.activitiesStore.getActivityById(activityId);
+      return activity ? activity.meta.name : "Unknown Activity";
+    },
+    handleMultiDayToggle(value: boolean): void {
+      if (!value) {
+        // When switching from multi-day to single-day, set end date same as start date
+        this.internalEndDate = this.internalEventDate;
+        this.updateFormDataDates();
+      }
+    },
     getCertificationName(certificationId: string): string {
       const cert =
         this.certificationsStore.getCertificationById(certificationId);
@@ -1391,7 +1409,7 @@ export default defineComponent({
           return (
             staff.spec.certificationIds &&
             staff.spec.certificationIds.includes(
-              position.requiredCertificationId!
+              position.requiredCertificationId!,
             )
           );
         });
@@ -1433,7 +1451,7 @@ export default defineComponent({
         this.eventsStore.events,
         this.eventId
           ? new Map<string, string[]>([[this.eventId, []]])
-          : undefined
+          : undefined,
       );
 
       return { available: result.canAssign, reason: result.reason };
@@ -1444,14 +1462,14 @@ export default defineComponent({
         this.formData.spec.recurrenceRule.daysOfWeek = [];
       }
       const index = this.formData.spec.recurrenceRule.daysOfWeek.indexOf(
-        day as number
+        day as number,
       );
       if (index > -1) {
         this.formData.spec.recurrenceRule.daysOfWeek.splice(index, 1);
       } else {
         this.formData.spec.recurrenceRule.daysOfWeek.push(day as number);
         this.formData.spec.recurrenceRule.daysOfWeek.sort(
-          (a: number, b: number) => a - b
+          (a: number, b: number) => a - b,
         );
       }
     },
@@ -1476,7 +1494,7 @@ export default defineComponent({
       // Validate recurrence if enabled
       if (this.formData.spec.recurrenceRule) {
         const validation = validateRecurrenceRule(
-          this.formData.spec.recurrenceRule
+          this.formData.spec.recurrenceRule,
         );
         if (!validation.valid) {
           this.toast.error("Invalid recurrence settings", validation.error);
@@ -1505,7 +1523,7 @@ export default defineComponent({
         if (this.formData.spec.recurrenceRule) {
           if (this.formData.spec.recurrenceRule.endDate) {
             this.formData.spec.recurrenceRule.endDate = new Date(
-              this.formData.spec.recurrenceRule.endDate
+              this.formData.spec.recurrenceRule.endDate,
             ).toISOString();
           }
           this.formData.spec.recurrenceId = crypto.randomUUID();
@@ -1519,7 +1537,7 @@ export default defineComponent({
             this.formData,
             this.formData.spec.recurrenceRule,
             new Date(this.formData.spec.startDate),
-            new Date(this.formData.spec.endDate)
+            new Date(this.formData.spec.endDate),
           );
         } else {
           return this.createSingleEvent();
@@ -1530,7 +1548,7 @@ export default defineComponent({
       formData: EventCreationRequest,
       recurrence: RecurrenceRule,
       startDate: Date,
-      endDate: Date
+      endDate: Date,
     ): Promise<void> {
       try {
         // Generate all occurrence dates
@@ -1544,7 +1562,7 @@ export default defineComponent({
         // Show loading toast for large batches
         if (occurrenceDates.length > 10) {
           this.toast.info(
-            `Creating ${occurrenceDates.length} recurring events...`
+            `Creating ${occurrenceDates.length} recurring events...`,
           );
         }
 
@@ -1584,13 +1602,13 @@ export default defineComponent({
           };
 
           eventCreationRequestsPromises.push(
-            this.eventsStore.createEvent(event)
+            this.eventsStore.createEvent(event),
           );
         }
 
         await Promise.all(eventCreationRequestsPromises);
         this.toast.success(
-          `Successfully created ${occurrenceDates.length} recurring events`
+          `Successfully created ${occurrenceDates.length} recurring events`,
         );
       } catch (error: any) {
         this.toast.error("Failed to create recurring events", error.message);
@@ -1953,6 +1971,15 @@ export default defineComponent({
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.activity-info-display {
+  padding: 0.75rem;
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 0.9375rem;
 }
 
 .multiday-toggle-event {

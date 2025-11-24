@@ -551,14 +551,17 @@ export default defineComponent({
       if (!this.selectedEventId) return;
       const event = this.eventsStore.getEventById(this.selectedEventId);
       if (!event) return;
-      
+
       this.eventToDelete = event;
       this.showDeleteModal = true;
     },
     async handleDeleteConfirm(deleteScope: "single" | "future" | "all") {
       if (!this.eventToDelete) return;
 
-      await this.eventsStore.deleteEvent(this.eventToDelete.meta.id, deleteScope);
+      await this.eventsStore.deleteEvent(
+        this.eventToDelete.meta.id,
+        deleteScope,
+      );
       this.selectedEventId = null;
       this.showDeleteModal = false;
       this.eventToDelete = null;
