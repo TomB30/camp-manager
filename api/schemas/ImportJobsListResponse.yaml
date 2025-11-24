@@ -1,0 +1,21 @@
+type: object
+required:
+  - items
+  - total
+  - limit
+  - offset
+properties:
+  items:
+    type: array
+    items:
+      $ref: "./ImportJob.yaml"
+  total:
+    type: integer
+    description: Total number of import jobs
+  limit:
+    type: integer
+    description: Maximum number of items returned
+  offset:
+    type: integer
+    description: Number of items skipped
+

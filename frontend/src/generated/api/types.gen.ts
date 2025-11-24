@@ -481,6 +481,102 @@ export type CampUpdateRequest = {
     spec: CampSpec;
 };
 
+export type ImportJob = {
+    /**
+     * Unique identifier for the import job
+     */
+    id: string;
+    /**
+     * Tenant ID
+     */
+    tenantId: string;
+    /**
+     * Camp ID
+     */
+    campId: string;
+    entityType: ImportEntityType;
+    status: ImportJobStatus;
+    mode: ImportMode;
+    /**
+     * Path to the uploaded CSV file
+     */
+    filePath: string;
+    /**
+     * Total number of rows in the CSV
+     */
+    totalRows: number;
+    /**
+     * Number of rows processed so far
+     */
+    processedRows: number;
+    /**
+     * Number of successfully imported rows
+     */
+    successCount: number;
+    /**
+     * Number of rows that failed to import
+     */
+    errorCount: number;
+    /**
+     * List of validation errors
+     */
+    validationErrors?: Array<ValidationError>;
+    /**
+     * Timestamp when the job was created
+     */
+    createdAt: string;
+    /**
+     * Timestamp when the job was last updated
+     */
+    updatedAt: string;
+};
+
+/**
+ * Status of an import job
+ */
+export type ImportJobStatus = 'pending' | 'validating' | 'validated' | 'importing' | 'completed' | 'failed';
+
+/**
+ * Import mode - create only creates new entities, upsert creates or updates existing entities
+ */
+export type ImportMode = 'create' | 'upsert';
+
+/**
+ * Type of entity being imported
+ */
+export type ImportEntityType = 'campers' | 'staff_members' | 'groups';
+
+export type ValidationError = {
+    /**
+     * Row number where the error occurred (1-based, header is row 0)
+     */
+    row: number;
+    /**
+     * Field name where the error occurred
+     */
+    field: string;
+    /**
+     * Error message
+     */
+    message: string;
+};
+
+export type ImportJobsListResponse = {
+    items: Array<ImportJob>;
+    /**
+     * Total number of import jobs
+     */
+    total: number;
+    /**
+     * Maximum number of items returned
+     */
+    limit: number;
+    /**
+     * Number of items skipped
+     */
+    offset: number;
+};
+
 export type TenantsListResponse = ListResponseBase & {
     items: Array<Tenant>;
 };
@@ -3439,3 +3535,148 @@ export type UpdateEventByIdResponses = {
 };
 
 export type UpdateEventByIdResponse = UpdateEventByIdResponses[keyof UpdateEventByIdResponses];
+
+export type ListImportJobsData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+    };
+    query?: {
+        /**
+         * Maximum number of items to return per page
+         */
+        limit?: number;
+        /**
+         * Number of items to skip before starting to return results
+         */
+        offset?: number;
+    };
+    url: '/api/v1/camps/{camp_id}/imports';
+};
+
+export type ListImportJobsResponses = {
+    /**
+     * Success
+     */
+    200: ImportJobsListResponse;
+};
+
+export type ListImportJobsResponse = ListImportJobsResponses[keyof ListImportJobsResponses];
+
+export type GetImportJobByIdData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Import job ID
+         */
+        job_id: string;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/imports/{job_id}';
+};
+
+export type GetImportJobByIdResponses = {
+    /**
+     * Success
+     */
+    200: ImportJob;
+};
+
+export type GetImportJobByIdResponse = GetImportJobByIdResponses[keyof GetImportJobByIdResponses];
+
+export type ValidateImportData = {
+    body: {
+        /**
+         * CSV file to validate
+         */
+        file: Blob | File;
+    };
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Type of entity to import
+         */
+        entity_type: ImportEntityType;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/imports/{entity_type}/validate';
+};
+
+export type ValidateImportResponses = {
+    /**
+     * Validation completed
+     */
+    200: ImportJob;
+};
+
+export type ValidateImportResponse = ValidateImportResponses[keyof ValidateImportResponses];
+
+export type StartImportData = {
+    body: {
+        /**
+         * CSV file to import
+         */
+        file: Blob | File;
+    };
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Type of entity to import
+         */
+        entity_type: ImportEntityType;
+    };
+    query?: {
+        /**
+         * Import mode (default is create)
+         */
+        mode?: ImportMode;
+    };
+    url: '/api/v1/camps/{camp_id}/imports/{entity_type}';
+};
+
+export type StartImportResponses = {
+    /**
+     * Import job created and queued for processing
+     */
+    202: ImportJob;
+};
+
+export type StartImportResponse = StartImportResponses[keyof StartImportResponses];
+
+export type GetImportTemplateData = {
+    body?: never;
+    path: {
+        /**
+         * Camp ID
+         */
+        camp_id: string;
+        /**
+         * Type of entity to get template for
+         */
+        entity_type: ImportEntityType;
+    };
+    query?: never;
+    url: '/api/v1/camps/{camp_id}/imports/{entity_type}/template';
+};
+
+export type GetImportTemplateResponses = {
+    /**
+     * CSV template file
+     */
+    200: Blob | File;
+};
+
+export type GetImportTemplateResponse = GetImportTemplateResponses[keyof GetImportTemplateResponses];

@@ -3,11 +3,25 @@
 -- Created: 2025-11-06
 
 -- Drop tables in reverse order of dependencies
--- First drop junction tables
+-- First drop events and related tables
+DROP TABLE IF EXISTS events CASCADE;
+
+-- Drop junction tables for programs and activities
+DROP TABLE IF EXISTS program_staff_groups CASCADE;
+DROP TABLE IF EXISTS program_locations CASCADE;
+
+-- Drop activities and programs
+DROP TABLE IF EXISTS activities CASCADE;
+DROP TABLE IF EXISTS programs CASCADE;
+
+-- Drop junction tables for groups, campers, staff
 DROP TABLE IF EXISTS staff_member_certifications CASCADE;
 DROP TABLE IF EXISTS group_groups CASCADE;
 DROP TABLE IF EXISTS group_staff_members CASCADE;
 DROP TABLE IF EXISTS group_campers CASCADE;
+
+-- Drop import jobs table
+DROP TABLE IF EXISTS import_jobs CASCADE;
 
 -- Then drop main tables
 DROP TABLE IF EXISTS groups CASCADE;

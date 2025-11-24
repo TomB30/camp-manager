@@ -3,12 +3,15 @@ package handler
 import (
 	"net/http"
 
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/tbechar/camp-manager-backend/internal/api"
 	"github.com/tbechar/camp-manager-backend/internal/config"
 	"github.com/tbechar/camp-manager-backend/internal/database"
 	"github.com/tbechar/camp-manager-backend/internal/domain"
 	"github.com/tbechar/camp-manager-backend/internal/repository"
 	"github.com/tbechar/camp-manager-backend/internal/service"
+	"github.com/tbechar/camp-manager-backend/pkg/csvimport"
+	"github.com/tbechar/camp-manager-backend/pkg/csvimport/entities"
 )
 
 // Handler aggregates all entity handlers and implements the ServerInterface
@@ -23,6 +26,7 @@ type Handler struct {
 	events         *EventsHandler
 	groups         *GroupsHandler
 	housingRooms   *HousingRoomsHandler
+	imports        *ImportsHandler
 	locations      *LocationsHandler
 	programs       *ProgramsHandler
 	roles          *RolesHandler
@@ -57,6 +61,21 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	// Initialize JWT service
 	jwtService := domain.NewJWTService(cfg.JWT.SecretKey)
 
+	// Initialize import repositories and validators/mappers
+	importJobsRepo := repository.NewImportJobsRepository(db)
+
+	// Create validators and mappers for import entities
+	camperValidator := entities.NewCamperImportValidator(sessionsRepo, groupsRepo)
+	camperMapper := entities.NewCamperImportMapper(sessionsRepo, groupsRepo)
+
+	validators := map[domain.ImportEntityType]csvimport.EntityValidator{
+		domain.ImportEntityTypeCampers: camperValidator,
+	}
+
+	mappers := map[domain.ImportEntityType]csvimport.EntityMapper{
+		domain.ImportEntityTypeCampers: camperMapper,
+	}
+
 	// Initialize services
 	eventsService := service.NewEventsService(eventsRepo, activitiesRepo, programsRepo, locationsRepo, groupsRepo)
 	activitiesService := service.NewActivitiesService(activitiesRepo, programsRepo, locationsRepo, timeBlocksRepo, certificationsRepo, eventsRepo)
@@ -76,6 +95,16 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	tenantsService := service.NewTenantsService(tenantsRepo)
 	timeBlocksService := service.NewTimeBlocksService(timeBlocksRepo)
 
+	// Initialize import service
+	importService := service.NewImportService(
+		importJobsRepo,
+		service.ImportServiceConfig{
+			UploadDir: "./uploads/imports",
+		},
+		validators,
+		mappers,
+	)
+
 	// Initialize handlers
 	return &Handler{
 		activities:     NewActivitiesHandler(activitiesService),
@@ -88,6 +117,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 		events:         NewEventsHandler(eventsService),
 		groups:         NewGroupsHandler(groupsService),
 		housingRooms:   NewHousingRoomsHandler(housingRoomsService),
+		imports:        NewImportsHandler(importService),
 		locations:      NewLocationsHandler(locationsService),
 		programs:       NewProgramsHandler(programsService),
 		roles:          NewRolesHandler(rolesService),
@@ -455,4 +485,26 @@ func (h *Handler) UpdateTimeBlockById(w http.ResponseWriter, r *http.Request, ca
 
 func (h *Handler) DeleteTimeBlockById(w http.ResponseWriter, r *http.Request, campId api.CampId, id api.Id) {
 	h.timeBlocks.DeleteTimeBlockById(w, r, campId, id)
+}
+
+// Import handlers - delegate to ImportsHandler
+
+func (h *Handler) ListImportJobs(w http.ResponseWriter, r *http.Request, campId api.CampId, params api.ListImportJobsParams) {
+	h.imports.ListImportJobs(w, r, campId.String())
+}
+
+func (h *Handler) GetImportJobById(w http.ResponseWriter, r *http.Request, campId api.CampId, jobId openapi_types.UUID) {
+	h.imports.GetImportStatus(w, r, campId.String(), jobId.String())
+}
+
+func (h *Handler) ValidateImport(w http.ResponseWriter, r *http.Request, campId api.CampId, entityType api.ImportEntityType) {
+	h.imports.ValidateImport(w, r, campId.String(), string(entityType))
+}
+
+func (h *Handler) StartImport(w http.ResponseWriter, r *http.Request, campId api.CampId, entityType api.ImportEntityType, params api.StartImportParams) {
+	h.imports.StartImport(w, r, campId.String(), string(entityType))
+}
+
+func (h *Handler) GetImportTemplate(w http.ResponseWriter, r *http.Request, campId api.CampId, entityType api.ImportEntityType) {
+	h.imports.GetTemplate(w, r, campId.String(), string(entityType))
 }

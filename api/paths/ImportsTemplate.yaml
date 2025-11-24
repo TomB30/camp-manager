@@ -1,0 +1,21 @@
+parameters:
+  - $ref: "../parameters/camp_id.yaml"
+  - name: entity_type
+    in: path
+    required: true
+    schema:
+      $ref: "../schemas/ImportEntityType.yaml"
+    description: Type of entity to get template for
+get:
+  summary: Download CSV template for entity type
+  operationId: getImportTemplate
+  x-required-roles: [admin, program-admin]
+  responses:
+    "200":
+      description: CSV template file
+      content:
+        text/csv:
+          schema:
+            type: string
+            format: binary
+

@@ -141,6 +141,24 @@ func (r *GroupsRepository) GetByIDs(ctx context.Context, tenantID, campID uuid.U
 	return groups, nil
 }
 
+// GetByName retrieves a single group by name with tenant and camp validation
+func (r *GroupsRepository) GetByName(ctx context.Context, tenantID, campID uuid.UUID, name string) (*domain.Group, error) {
+	var group domain.Group
+
+	err := ScopedQuery(r.db, ctx, tenantID, campID).
+		Where("name = ?", name).
+		First(&group).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("group not found")
+		}
+		return nil, fmt.Errorf("failed to get group: %w", err)
+	}
+
+	return &group, nil
+}
+
 // FindByHousingRoomAndSession retrieves a group by housing room and session
 func (r *GroupsRepository) FindByHousingRoomAndSession(ctx context.Context, tenantID, campID, housingRoomID, sessionID uuid.UUID) (*domain.Group, error) {
 	var group domain.Group

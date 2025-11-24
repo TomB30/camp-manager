@@ -162,6 +162,20 @@ components:
     CampUpdateRequest:
       $ref: "./schemas/CampUpdateRequest.yaml"
 
+    # Import schemas
+    ImportJob:
+      $ref: "./schemas/ImportJob.yaml"
+    ImportJobStatus:
+      $ref: "./schemas/ImportJobStatus.yaml"
+    ImportMode:
+      $ref: "./schemas/ImportMode.yaml"
+    ImportEntityType:
+      $ref: "./schemas/ImportEntityType.yaml"
+    ValidationError:
+      $ref: "./schemas/ValidationError.yaml"
+    ImportJobsListResponse:
+      $ref: "./schemas/ImportJobsListResponse.yaml"
+
 paths:
   # Authentication endpoints
   /api/v1/auth/login:
@@ -255,3 +269,15 @@ paths:
     $ref: "./paths/Events.yaml"
   /api/v1/camps/{camp_id}/events/{id}:
     $ref: "./paths/EventsById.yaml"
+
+  # Import endpoints
+  /api/v1/camps/{camp_id}/imports:
+    $ref: "./paths/Imports.yaml"
+  /api/v1/camps/{camp_id}/imports/{job_id}:
+    $ref: "./paths/ImportsById.yaml"
+  /api/v1/camps/{camp_id}/imports/{entity_type}/validate:
+    $ref: "./paths/ImportsValidate.yaml"
+  /api/v1/camps/{camp_id}/imports/{entity_type}:
+    $ref: "./paths/ImportsStart.yaml"
+  /api/v1/camps/{camp_id}/imports/{entity_type}/template:
+    $ref: "./paths/ImportsTemplate.yaml"

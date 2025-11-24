@@ -1,0 +1,16 @@
+get:
+  summary: List all import jobs for a camp
+  operationId: listImportJobs
+  x-required-roles: [admin, program-admin]
+  parameters:
+    - $ref: "../parameters/camp_id.yaml"
+    - $ref: "../parameters/limit.yaml"
+    - $ref: "../parameters/offset.yaml"
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/ImportJobsListResponse.yaml"
+

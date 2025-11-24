@@ -1,0 +1,16 @@
+type: object
+required:
+  - row
+  - field
+  - message
+properties:
+  row:
+    type: integer
+    description: Row number where the error occurred (1-based, header is row 0)
+  field:
+    type: string
+    description: Field name where the error occurred
+  message:
+    type: string
+    description: Error message
+

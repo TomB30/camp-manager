@@ -1,0 +1,40 @@
+parameters:
+  - $ref: "../parameters/camp_id.yaml"
+  - name: entity_type
+    in: path
+    required: true
+    schema:
+      $ref: "../schemas/ImportEntityType.yaml"
+    description: Type of entity to import
+post:
+  summary: Start an asynchronous CSV import
+  operationId: startImport
+  x-required-roles: [admin]
+  parameters:
+    - name: mode
+      in: query
+      required: false
+      schema:
+        $ref: "../schemas/ImportMode.yaml"
+      description: Import mode (default is create)
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          required:
+            - file
+          properties:
+            file:
+              type: string
+              format: binary
+              description: CSV file to import
+  responses:
+    "202":
+      description: Import job created and queued for processing
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/ImportJob.yaml"
+

@@ -1,0 +1,21 @@
+parameters:
+  - $ref: "../parameters/camp_id.yaml"
+  - name: job_id
+    in: path
+    required: true
+    schema:
+      type: string
+      format: uuid
+    description: Import job ID
+get:
+  summary: Get import job status by ID
+  operationId: getImportJobById
+  x-required-roles: [admin, program-admin]
+  responses:
+    "200":
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/ImportJob.yaml"
+

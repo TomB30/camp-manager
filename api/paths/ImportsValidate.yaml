@@ -1,0 +1,33 @@
+parameters:
+  - $ref: "../parameters/camp_id.yaml"
+  - name: entity_type
+    in: path
+    required: true
+    schema:
+      $ref: "../schemas/ImportEntityType.yaml"
+    description: Type of entity to import
+post:
+  summary: Validate a CSV file without importing (dry-run)
+  operationId: validateImport
+  x-required-roles: [admin]
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          required:
+            - file
+          properties:
+            file:
+              type: string
+              format: binary
+              description: CSV file to validate
+  responses:
+    "200":
+      description: Validation completed
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/ImportJob.yaml"
+

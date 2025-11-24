@@ -100,6 +100,21 @@ func (r *SessionsRepository) GetByID(ctx context.Context, tenantID, campID, id u
 	return &session, nil
 }
 
+// GetByName retrieves a single session by name with tenant and camp validation
+func (r *SessionsRepository) GetByName(ctx context.Context, tenantID, campID uuid.UUID, name string) (*domain.Session, error) {
+	var session domain.Session
+
+	err := ScopedQuery(r.db, ctx, tenantID, campID).
+		Where("name = ?", name).
+		First(&session).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &session, nil
+}
+
 // Create inserts a new session
 func (r *SessionsRepository) Create(ctx context.Context, session *domain.Session) error {
 	if err := r.db.WithContext(ctx).Create(session).Error; err != nil {

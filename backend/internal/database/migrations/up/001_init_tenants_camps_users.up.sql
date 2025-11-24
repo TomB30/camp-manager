@@ -867,3 +867,53 @@ COMMENT ON COLUMN events.program_id IS 'Optional program this event belongs to';
 COMMENT ON COLUMN events.recurrence_id IS 'Links events in a recurring series together';
 COMMENT ON COLUMN events.is_recurrence_parent IS 'True for the first event in a recurring series';
 COMMENT ON COLUMN events.recurrence_rule IS 'Original recurrence rule (only stored in parent event)';
+
+-- ============================================================================
+-- IMPORT_JOBS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS import_jobs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    camp_id UUID NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    entity_type VARCHAR(50) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    mode VARCHAR(50) NOT NULL,
+    file_path TEXT NOT NULL,
+    total_rows INT NOT NULL DEFAULT 0,
+    processed_rows INT NOT NULL DEFAULT 0,
+    success_count INT NOT NULL DEFAULT 0,
+    error_count INT NOT NULL DEFAULT 0,
+    validation_errors JSONB,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT check_entity_type CHECK (entity_type IN ('campers', 'staff_members', 'groups')),
+    CONSTRAINT check_status CHECK (status IN ('pending', 'validating', 'validated', 'importing', 'completed', 'failed')),
+    CONSTRAINT check_mode CHECK (mode IN ('create', 'upsert'))
+);
+
+-- Indexes for import_jobs
+CREATE INDEX IF NOT EXISTS idx_import_jobs_tenant_id ON import_jobs(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_import_jobs_camp_id ON import_jobs(camp_id);
+CREATE INDEX IF NOT EXISTS idx_import_jobs_status ON import_jobs(status);
+CREATE INDEX IF NOT EXISTS idx_import_jobs_entity_type ON import_jobs(entity_type);
+CREATE INDEX IF NOT EXISTS idx_import_jobs_created_at ON import_jobs(created_at);
+CREATE INDEX IF NOT EXISTS idx_import_jobs_tenant_id_camp_id ON import_jobs(tenant_id, camp_id);
+
+-- Trigger for import_jobs
+DROP TRIGGER IF EXISTS update_import_jobs_updated_at ON import_jobs;
+CREATE TRIGGER update_import_jobs_updated_at
+    BEFORE UPDATE ON import_jobs
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+COMMENT ON TABLE import_jobs IS 'CSV import jobs for bulk importing entities like campers, staff, and groups';
+COMMENT ON COLUMN import_jobs.entity_type IS 'Type of entity being imported: campers, staff_members, groups';
+COMMENT ON COLUMN import_jobs.status IS 'Job status: pending, validating, validated, importing, completed, failed';
+COMMENT ON COLUMN import_jobs.mode IS 'Import mode: create (only new), upsert (create or update)';
+COMMENT ON COLUMN import_jobs.file_path IS 'Path to the uploaded CSV file';
+COMMENT ON COLUMN import_jobs.total_rows IS 'Total number of rows in the CSV file';
+COMMENT ON COLUMN import_jobs.processed_rows IS 'Number of rows processed so far';
+COMMENT ON COLUMN import_jobs.success_count IS 'Number of successfully imported rows';
+COMMENT ON COLUMN import_jobs.error_count IS 'Number of rows that failed to import';
+COMMENT ON COLUMN import_jobs.validation_errors IS 'JSON array of validation errors with row, field, and message';

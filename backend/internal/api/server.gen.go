@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // ServerInterface represents all server handlers.
@@ -151,6 +152,21 @@ type ServerInterface interface {
 	// Update housing room
 	// (PUT /api/v1/camps/{camp_id}/housing-rooms/{id})
 	UpdateHousingRoomById(w http.ResponseWriter, r *http.Request, campId CampId, id Id)
+	// List all import jobs for a camp
+	// (GET /api/v1/camps/{camp_id}/imports)
+	ListImportJobs(w http.ResponseWriter, r *http.Request, campId CampId, params ListImportJobsParams)
+	// Start an asynchronous CSV import
+	// (POST /api/v1/camps/{camp_id}/imports/{entity_type})
+	StartImport(w http.ResponseWriter, r *http.Request, campId CampId, entityType ImportEntityType, params StartImportParams)
+	// Download CSV template for entity type
+	// (GET /api/v1/camps/{camp_id}/imports/{entity_type}/template)
+	GetImportTemplate(w http.ResponseWriter, r *http.Request, campId CampId, entityType ImportEntityType)
+	// Validate a CSV file without importing (dry-run)
+	// (POST /api/v1/camps/{camp_id}/imports/{entity_type}/validate)
+	ValidateImport(w http.ResponseWriter, r *http.Request, campId CampId, entityType ImportEntityType)
+	// Get import job status by ID
+	// (GET /api/v1/camps/{camp_id}/imports/{job_id})
+	GetImportJobById(w http.ResponseWriter, r *http.Request, campId CampId, jobId openapi_types.UUID)
 	// List all locations
 	// (GET /api/v1/camps/{camp_id}/locations)
 	ListLocations(w http.ResponseWriter, r *http.Request, campId CampId, params ListLocationsParams)
@@ -535,6 +551,36 @@ func (_ Unimplemented) GetHousingRoomById(w http.ResponseWriter, r *http.Request
 // Update housing room
 // (PUT /api/v1/camps/{camp_id}/housing-rooms/{id})
 func (_ Unimplemented) UpdateHousingRoomById(w http.ResponseWriter, r *http.Request, campId CampId, id Id) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// List all import jobs for a camp
+// (GET /api/v1/camps/{camp_id}/imports)
+func (_ Unimplemented) ListImportJobs(w http.ResponseWriter, r *http.Request, campId CampId, params ListImportJobsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Start an asynchronous CSV import
+// (POST /api/v1/camps/{camp_id}/imports/{entity_type})
+func (_ Unimplemented) StartImport(w http.ResponseWriter, r *http.Request, campId CampId, entityType ImportEntityType, params StartImportParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Download CSV template for entity type
+// (GET /api/v1/camps/{camp_id}/imports/{entity_type}/template)
+func (_ Unimplemented) GetImportTemplate(w http.ResponseWriter, r *http.Request, campId CampId, entityType ImportEntityType) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Validate a CSV file without importing (dry-run)
+// (POST /api/v1/camps/{camp_id}/imports/{entity_type}/validate)
+func (_ Unimplemented) ValidateImport(w http.ResponseWriter, r *http.Request, campId CampId, entityType ImportEntityType) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get import job status by ID
+// (GET /api/v1/camps/{camp_id}/imports/{job_id})
+func (_ Unimplemented) GetImportJobById(w http.ResponseWriter, r *http.Request, campId CampId, jobId openapi_types.UUID) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2551,6 +2597,197 @@ func (siw *ServerInterfaceWrapper) UpdateHousingRoomById(w http.ResponseWriter, 
 	handler.ServeHTTP(w, r)
 }
 
+// ListImportJobs operation middleware
+func (siw *ServerInterfaceWrapper) ListImportJobs(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListImportJobsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListImportJobs(w, r, campId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// StartImport operation middleware
+func (siw *ServerInterfaceWrapper) StartImport(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "entity_type" -------------
+	var entityType ImportEntityType
+
+	err = runtime.BindStyledParameterWithOptions("simple", "entity_type", chi.URLParam(r, "entity_type"), &entityType, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "entity_type", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params StartImportParams
+
+	// ------------- Optional query parameter "mode" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "mode", r.URL.Query(), &params.Mode)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "mode", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.StartImport(w, r, campId, entityType, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetImportTemplate operation middleware
+func (siw *ServerInterfaceWrapper) GetImportTemplate(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "entity_type" -------------
+	var entityType ImportEntityType
+
+	err = runtime.BindStyledParameterWithOptions("simple", "entity_type", chi.URLParam(r, "entity_type"), &entityType, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "entity_type", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetImportTemplate(w, r, campId, entityType)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ValidateImport operation middleware
+func (siw *ServerInterfaceWrapper) ValidateImport(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "entity_type" -------------
+	var entityType ImportEntityType
+
+	err = runtime.BindStyledParameterWithOptions("simple", "entity_type", chi.URLParam(r, "entity_type"), &entityType, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "entity_type", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ValidateImport(w, r, campId, entityType)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetImportJobById operation middleware
+func (siw *ServerInterfaceWrapper) GetImportJobById(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "camp_id" -------------
+	var campId CampId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "camp_id", chi.URLParam(r, "camp_id"), &campId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "camp_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "job_id" -------------
+	var jobId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "job_id", chi.URLParam(r, "job_id"), &jobId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "job_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetImportJobById(w, r, campId, jobId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListLocations operation middleware
 func (siw *ServerInterfaceWrapper) ListLocations(w http.ResponseWriter, r *http.Request) {
 
@@ -4144,6 +4381,21 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Put(options.BaseURL+"/api/v1/camps/{camp_id}/housing-rooms/{id}", wrapper.UpdateHousingRoomById)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/imports", wrapper.ListImportJobs)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/imports/{entity_type}", wrapper.StartImport)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/imports/{entity_type}/template", wrapper.GetImportTemplate)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/camps/{camp_id}/imports/{entity_type}/validate", wrapper.ValidateImport)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/imports/{job_id}", wrapper.GetImportJobById)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/camps/{camp_id}/locations", wrapper.ListLocations)

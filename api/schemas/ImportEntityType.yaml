@@ -1,0 +1,7 @@
+type: string
+enum:
+  - campers
+  - staff_members
+  - groups
+description: Type of entity being imported
+

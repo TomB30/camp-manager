@@ -28,6 +28,29 @@ const (
 	HousingRoomSpecBathroomShared  HousingRoomSpecBathroom = "shared"
 )
 
+// Defines values for ImportEntityType.
+const (
+	ImportEntityTypeCampers      ImportEntityType = "campers"
+	ImportEntityTypeGroups       ImportEntityType = "groups"
+	ImportEntityTypeStaffMembers ImportEntityType = "staff_members"
+)
+
+// Defines values for ImportJobStatus.
+const (
+	ImportJobStatusCompleted  ImportJobStatus = "completed"
+	ImportJobStatusFailed     ImportJobStatus = "failed"
+	ImportJobStatusImporting  ImportJobStatus = "importing"
+	ImportJobStatusPending    ImportJobStatus = "pending"
+	ImportJobStatusValidated  ImportJobStatus = "validated"
+	ImportJobStatusValidating ImportJobStatus = "validating"
+)
+
+// Defines values for ImportMode.
+const (
+	ImportModeCreate ImportMode = "create"
+	ImportModeUpsert ImportMode = "upsert"
+)
+
 // Defines values for RecurrenceRuleEndType.
 const (
 	RecurrenceRuleEndTypeAfter RecurrenceRuleEndType = "after"
@@ -972,6 +995,74 @@ type HousingRoomsListResponse struct {
 	Total int `json:"total"`
 }
 
+// ImportEntityType Type of entity being imported
+type ImportEntityType string
+
+// ImportJob defines model for ImportJob.
+type ImportJob struct {
+	// CampId Camp ID
+	CampId openapi_types.UUID `json:"campId"`
+
+	// CreatedAt Timestamp when the job was created
+	CreatedAt time.Time `json:"createdAt"`
+
+	// EntityType Type of entity being imported
+	EntityType ImportEntityType `json:"entityType"`
+
+	// ErrorCount Number of rows that failed to import
+	ErrorCount int `json:"errorCount"`
+
+	// FilePath Path to the uploaded CSV file
+	FilePath string `json:"filePath"`
+
+	// Id Unique identifier for the import job
+	Id openapi_types.UUID `json:"id"`
+
+	// Mode Import mode - create only creates new entities, upsert creates or updates existing entities
+	Mode ImportMode `json:"mode"`
+
+	// ProcessedRows Number of rows processed so far
+	ProcessedRows int `json:"processedRows"`
+
+	// Status Status of an import job
+	Status ImportJobStatus `json:"status"`
+
+	// SuccessCount Number of successfully imported rows
+	SuccessCount int `json:"successCount"`
+
+	// TenantId Tenant ID
+	TenantId openapi_types.UUID `json:"tenantId"`
+
+	// TotalRows Total number of rows in the CSV
+	TotalRows int `json:"totalRows"`
+
+	// UpdatedAt Timestamp when the job was last updated
+	UpdatedAt time.Time `json:"updatedAt"`
+
+	// ValidationErrors List of validation errors
+	ValidationErrors *[]ValidationError `json:"validationErrors,omitempty"`
+}
+
+// ImportJobStatus Status of an import job
+type ImportJobStatus string
+
+// ImportJobsListResponse defines model for ImportJobsListResponse.
+type ImportJobsListResponse struct {
+	Items []ImportJob `json:"items"`
+
+	// Limit Maximum number of items returned
+	Limit int `json:"limit"`
+
+	// Offset Number of items skipped
+	Offset int `json:"offset"`
+
+	// Total Total number of import jobs
+	Total int `json:"total"`
+}
+
+// ImportMode Import mode - create only creates new entities, upsert creates or updates existing entities
+type ImportMode string
+
 // ListResponseBase defines model for ListResponseBase.
 type ListResponseBase struct {
 	// Limit Number of items per page
@@ -1381,6 +1472,18 @@ type User struct {
 
 	// TenantId The tenant this user belongs to
 	TenantId string `json:"tenantId"`
+}
+
+// ValidationError defines model for ValidationError.
+type ValidationError struct {
+	// Field Field name where the error occurred
+	Field string `json:"field"`
+
+	// Message Error message
+	Message string `json:"message"`
+
+	// Row Row number where the error occurred (1-based, header is row 0)
+	Row int `json:"row"`
 }
 
 // ActivitiesFilterBy defines model for ActivitiesFilterBy.
@@ -1803,6 +1906,33 @@ type ListHousingRoomsParamsSortBy string
 // ListHousingRoomsParamsSortOrder defines parameters for ListHousingRooms.
 type ListHousingRoomsParamsSortOrder string
 
+// ListImportJobsParams defines parameters for ListImportJobs.
+type ListImportJobsParams struct {
+	// Limit Maximum number of items to return per page
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip before starting to return results
+	Offset *Offset `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
+// StartImportMultipartBody defines parameters for StartImport.
+type StartImportMultipartBody struct {
+	// File CSV file to import
+	File openapi_types.File `json:"file"`
+}
+
+// StartImportParams defines parameters for StartImport.
+type StartImportParams struct {
+	// Mode Import mode (default is create)
+	Mode *ImportMode `form:"mode,omitempty" json:"mode,omitempty"`
+}
+
+// ValidateImportMultipartBody defines parameters for ValidateImport.
+type ValidateImportMultipartBody struct {
+	// File CSV file to validate
+	File openapi_types.File `json:"file"`
+}
+
 // ListLocationsParams defines parameters for ListLocations.
 type ListLocationsParams struct {
 	// Limit Maximum number of items to return per page
@@ -2051,6 +2181,12 @@ type CreateHousingRoomJSONRequestBody = HousingRoomCreationRequest
 
 // UpdateHousingRoomByIdJSONRequestBody defines body for UpdateHousingRoomById for application/json ContentType.
 type UpdateHousingRoomByIdJSONRequestBody = HousingRoomUpdateRequest
+
+// StartImportMultipartRequestBody defines body for StartImport for multipart/form-data ContentType.
+type StartImportMultipartRequestBody StartImportMultipartBody
+
+// ValidateImportMultipartRequestBody defines body for ValidateImport for multipart/form-data ContentType.
+type ValidateImportMultipartRequestBody ValidateImportMultipartBody
 
 // CreateLocationJSONRequestBody defines body for CreateLocation for application/json ContentType.
 type CreateLocationJSONRequestBody = LocationCreationRequest

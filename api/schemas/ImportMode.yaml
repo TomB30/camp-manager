@@ -1,0 +1,6 @@
+type: string
+enum:
+  - create
+  - upsert
+description: Import mode - create only creates new entities, upsert creates or updates existing entities
+

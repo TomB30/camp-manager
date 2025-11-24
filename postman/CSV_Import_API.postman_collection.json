@@ -1,0 +1,571 @@
+{
+  "info": {
+    "name": "Camp Manager - CSV Import API",
+    "description": "Test collection for CSV import endpoints. Includes authentication and all import operations for campers.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "tenant_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "camp_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "import_job_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Save the auth token from response",
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('auth_token', jsonData.accessToken);",
+                  "    ",
+                  "    // Extract tenant_id and camp_id from user data if available",
+                  "    if (jsonData.user && jsonData.user.accessRules && jsonData.user.accessRules.length > 0) {",
+                  "        const firstRule = jsonData.user.accessRules[0];",
+                  "        pm.collectionVariables.set('tenant_id', firstRule.tenantId);",
+                  "        if (firstRule.campId) {",
+                  "            pm.collectionVariables.set('camp_id', firstRule.campId);",
+                  "        }",
+                  "    }",
+                  "    ",
+                  "    pm.test('Login successful', function () {",
+                  "        pm.response.to.have.status(200);",
+                  "        pm.expect(jsonData.accessToken).to.be.a('string');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@democamp.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Login to get authentication token. Default credentials:\n- Email: admin@democamp.com\n- Password: password123"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get user info successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "me"]
+            },
+            "description": "Get current authenticated user information including access rules"
+          },
+          "response": []
+        }
+      ],
+      "description": "Authentication endpoints to obtain access token"
+    },
+    {
+      "name": "CSV Import - Templates",
+      "item": [
+        {
+          "name": "Download Campers Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Template downloaded successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.response.to.have.header('Content-Type', 'text/csv');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/camps/{{camp_id}}/imports/campers/template",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "camps", "{{camp_id}}", "imports", "campers", "template"]
+            },
+            "description": "Download CSV template for campers with correct headers and example data"
+          },
+          "response": []
+        },
+        {
+          "name": "Download Staff Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Template downloaded successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.response.to.have.header('Content-Type', 'text/csv');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/camps/{{camp_id}}/imports/staff_members/template",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "camps", "{{camp_id}}", "imports", "staff_members", "template"]
+            },
+            "description": "Download CSV template for staff members"
+          },
+          "response": []
+        },
+        {
+          "name": "Download Groups Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Template downloaded successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.response.to.have.header('Content-Type', 'text/csv');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/camps/{{camp_id}}/imports/groups/template",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "camps", "{{camp_id}}", "imports", "groups", "template"]
+            },
+            "description": "Download CSV template for groups"
+          },
+          "response": []
+        }
+      ],
+      "description": "Download CSV templates for different entity types"
+    },
+    {
+      "name": "CSV Import - Validation",
+      "item": [
+        {
+          "name": "Validate Campers CSV (Dry-Run)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Validation completed', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "    pm.expect(jsonData).to.have.property('totalRows');",
+                  "    ",
+                  "    if (jsonData.status === 'failed') {",
+                  "        console.log('Validation errors:', jsonData.validationErrors);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/camps/{{camp_id}}/imports/campers/validate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "camps", "{{camp_id}}", "imports", "campers", "validate"]
+            },
+            "description": "Validate a campers CSV file without importing. Select a CSV file in the Body > form-data > file field.\n\nExpected CSV format:\nname,description,birthday,gender,sessionName,groupNames\nJohn Doe,Returning camper,2010-05-15,male,Session 1,\"Group A,Group B\""
+          },
+          "response": []
+        }
+      ],
+      "description": "Validate CSV files before importing (dry-run mode)"
+    },
+    {
+      "name": "CSV Import - Import Operations",
+      "item": [
+        {
+          "name": "Start Campers Import (Create Mode)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Import job created', function () {",
+                  "    pm.response.to.have.status(202);",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.status).to.equal('pending');",
+                  "    ",
+                  "    // Save job ID for status checking",
+                  "    pm.collectionVariables.set('import_job_id', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/camps/{{camp_id}}/imports/campers?mode=create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "camps", "{{camp_id}}", "imports", "campers"],
+              "query": [
+                {
+                  "key": "mode",
+                  "value": "create",
+                  "description": "Import mode: create (default) or upsert"
+                }
+              ]
+            },
+            "description": "Start an asynchronous import of campers from CSV file. Select a CSV file in the Body > form-data > file field.\n\nMode options:\n- create: Only creates new campers (fails if exists)\n- upsert: Creates or updates existing campers"
+          },
+          "response": []
+        },
+        {
+          "name": "Start Campers Import (Upsert Mode)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Import job created', function () {",
+                  "    pm.response.to.have.status(202);",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.status).to.equal('pending');",
+                  "    pm.collectionVariables.set('import_job_id', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/camps/{{camp_id}}/imports/campers?mode=upsert",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "camps", "{{camp_id}}", "imports", "campers"],
+              "query": [
+                {
+                  "key": "mode",
+                  "value": "upsert"
+                }
+              ]
+            },
+            "description": "Start import with upsert mode (creates or updates existing records)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Start CSV import operations"
+    },
+    {
+      "name": "CSV Import - Status & Tracking",
+      "item": [
+        {
+          "name": "Get Import Job Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get status successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "    pm.expect(jsonData).to.have.property('totalRows');",
+                  "    pm.expect(jsonData).to.have.property('processedRows');",
+                  "    pm.expect(jsonData).to.have.property('successCount');",
+                  "    pm.expect(jsonData).to.have.property('errorCount');",
+                  "    ",
+                  "    console.log('Import Status:', jsonData.status);",
+                  "    console.log('Progress:', jsonData.processedRows, '/', jsonData.totalRows);",
+                  "    console.log('Success:', jsonData.successCount, '| Errors:', jsonData.errorCount);",
+                  "    ",
+                  "    if (jsonData.validationErrors && jsonData.validationErrors.length > 0) {",
+                  "        console.log('Errors:', JSON.stringify(jsonData.validationErrors, null, 2));",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/camps/{{camp_id}}/imports/{{import_job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "camps", "{{camp_id}}", "imports", "{{import_job_id}}"]
+            },
+            "description": "Get the current status and progress of an import job. Poll this endpoint to track import progress.\n\nStatus values:\n- pending: Job queued, not started yet\n- validating: Validating CSV data\n- validated: Validation passed\n- importing: Currently importing data\n- completed: Import finished successfully\n- failed: Import failed (check validationErrors)"
+          },
+          "response": []
+        },
+        {
+          "name": "List All Import Jobs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('List imports successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('items');",
+                  "    pm.expect(jsonData).to.have.property('total');",
+                  "    pm.expect(jsonData.items).to.be.an('array');",
+                  "    ",
+                  "    console.log('Total import jobs:', jsonData.total);",
+                  "    console.log('Jobs returned:', jsonData.items.length);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/camps/{{camp_id}}/imports?limit=50&offset=0",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "camps", "{{camp_id}}", "imports"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Maximum number of results"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Number of results to skip"
+                }
+              ]
+            },
+            "description": "List all import jobs for the camp with pagination"
+          },
+          "response": []
+        }
+      ],
+      "description": "Check import status and list import history"
+    },
+    {
+      "name": "Helper - Create Test Data",
+      "item": [
+        {
+          "name": "List Sessions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('List sessions successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.items && jsonData.items.length > 0) {",
+                  "        console.log('Available sessions:');",
+                  "        jsonData.items.forEach(session => {",
+                  "            console.log('- ' + session.meta.name + ' (' + session.meta.id + ')');",
+                  "        });",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/camps/{{camp_id}}/sessions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "camps", "{{camp_id}}", "sessions"]
+            },
+            "description": "List all sessions (needed for CSV import - sessionName column)"
+          },
+          "response": []
+        },
+        {
+          "name": "List Groups",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('List groups successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.items && jsonData.items.length > 0) {",
+                  "        console.log('Available groups:');",
+                  "        jsonData.items.forEach(group => {",
+                  "            console.log('- ' + group.meta.name + ' (' + group.meta.id + ')');",
+                  "        });",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/camps/{{camp_id}}/groups",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "camps", "{{camp_id}}", "groups"]
+            },
+            "description": "List all groups (needed for CSV import - groupNames column)"
+          },
+          "response": []
+        },
+        {
+          "name": "List Campers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('List campers successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const jsonData = pm.response.json();",
+                  "    console.log('Total campers:', jsonData.total);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/camps/{{camp_id}}/campers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "camps", "{{camp_id}}", "campers"]
+            },
+            "description": "List all campers to verify import results"
+          },
+          "response": []
+        }
+      ],
+      "description": "Helper endpoints to list existing data needed for CSV imports"
+    }
+  ]
+}
+

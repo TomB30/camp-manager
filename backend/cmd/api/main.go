@@ -20,6 +20,11 @@ import (
 	"github.com/tbechar/camp-manager-backend/internal/domain"
 	"github.com/tbechar/camp-manager-backend/internal/handler"
 	"github.com/tbechar/camp-manager-backend/internal/middleware"
+	"github.com/tbechar/camp-manager-backend/internal/repository"
+	"github.com/tbechar/camp-manager-backend/internal/service"
+	"github.com/tbechar/camp-manager-backend/internal/worker"
+	"github.com/tbechar/camp-manager-backend/pkg/csvimport"
+	"github.com/tbechar/camp-manager-backend/pkg/csvimport/entities"
 	"github.com/tbechar/camp-manager-backend/pkg/logger"
 )
 
@@ -73,6 +78,46 @@ func main() {
 		zap.String("demo_email", "admin@democamp.com"),
 		zap.String("demo_password", "password123"),
 	)
+
+	// Initialize repositories for import worker
+	importJobsRepo := repository.NewImportJobsRepository(db)
+	sessionsRepo := repository.NewSessionsRepository(db)
+	groupsRepo := repository.NewGroupsRepository(db)
+	campersRepo := repository.NewCampersRepository(db)
+	
+	// Create validators and mappers for import entities
+	camperValidator := entities.NewCamperImportValidator(sessionsRepo, groupsRepo)
+	camperMapper := entities.NewCamperImportMapper(sessionsRepo, groupsRepo)
+	
+	validators := map[domain.ImportEntityType]csvimport.EntityValidator{
+		domain.ImportEntityTypeCampers: camperValidator,
+	}
+	
+	mappers := map[domain.ImportEntityType]csvimport.EntityMapper{
+		domain.ImportEntityTypeCampers: camperMapper,
+	}
+	
+	// Initialize campers service for import worker
+	campersService := service.NewCampersService(campersRepo, sessionsRepo, groupsRepo)
+	
+	// Initialize import worker
+	importWorker := worker.NewImportWorker(
+		importJobsRepo,
+		validators,
+		mappers,
+		campersService,
+		worker.ImportWorkerConfig{
+			PollInterval: 10 * time.Second,
+			BatchSize:    100,
+		},
+	)
+	
+	// Start import worker in background
+	workerCtx, workerCancel := context.WithCancel(context.Background())
+	defer workerCancel()
+	go importWorker.Start(workerCtx)
+	
+	log.Info("Import worker started")
 
 	// Initialize handlers
 	h := handler.NewHandler(db, cfg)
@@ -136,6 +181,10 @@ func main() {
 	<-quit
 
 	log.Info("Server shutting down...")
+	
+	// Stop import worker
+	workerCancel()
+	log.Info("Import worker stopped")
 
 	// Graceful shutdown with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
@@ -264,6 +265,21 @@ type ClientInterface interface {
 	UpdateHousingRoomByIdWithBody(ctx context.Context, campId CampId, id Id, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateHousingRoomById(ctx context.Context, campId CampId, id Id, body UpdateHousingRoomByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListImportJobs request
+	ListImportJobs(ctx context.Context, campId CampId, params *ListImportJobsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// StartImportWithBody request with any body
+	StartImportWithBody(ctx context.Context, campId CampId, entityType ImportEntityType, params *StartImportParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetImportTemplate request
+	GetImportTemplate(ctx context.Context, campId CampId, entityType ImportEntityType, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ValidateImportWithBody request with any body
+	ValidateImportWithBody(ctx context.Context, campId CampId, entityType ImportEntityType, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetImportJobById request
+	GetImportJobById(ctx context.Context, campId CampId, jobId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListLocations request
 	ListLocations(ctx context.Context, campId CampId, params *ListLocationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1167,6 +1183,66 @@ func (c *Client) UpdateHousingRoomByIdWithBody(ctx context.Context, campId CampI
 
 func (c *Client) UpdateHousingRoomById(ctx context.Context, campId CampId, id Id, body UpdateHousingRoomByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateHousingRoomByIdRequest(c.Server, campId, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListImportJobs(ctx context.Context, campId CampId, params *ListImportJobsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListImportJobsRequest(c.Server, campId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) StartImportWithBody(ctx context.Context, campId CampId, entityType ImportEntityType, params *StartImportParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewStartImportRequestWithBody(c.Server, campId, entityType, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetImportTemplate(ctx context.Context, campId CampId, entityType ImportEntityType, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetImportTemplateRequest(c.Server, campId, entityType)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ValidateImportWithBody(ctx context.Context, campId CampId, entityType ImportEntityType, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewValidateImportRequestWithBody(c.Server, campId, entityType, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetImportJobById(ctx context.Context, campId CampId, jobId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetImportJobByIdRequest(c.Server, campId, jobId)
 	if err != nil {
 		return nil, err
 	}
@@ -4674,6 +4750,268 @@ func NewUpdateHousingRoomByIdRequestWithBody(server string, campId CampId, id Id
 	return req, nil
 }
 
+// NewListImportJobsRequest generates requests for ListImportJobs
+func NewListImportJobsRequest(server string, campId CampId, params *ListImportJobsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/imports", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewStartImportRequestWithBody generates requests for StartImport with any type of body
+func NewStartImportRequestWithBody(server string, campId CampId, entityType ImportEntityType, params *StartImportParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "entity_type", runtime.ParamLocationPath, entityType)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/imports/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Mode != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "mode", runtime.ParamLocationQuery, *params.Mode); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetImportTemplateRequest generates requests for GetImportTemplate
+func NewGetImportTemplateRequest(server string, campId CampId, entityType ImportEntityType) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "entity_type", runtime.ParamLocationPath, entityType)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/imports/%s/template", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewValidateImportRequestWithBody generates requests for ValidateImport with any type of body
+func NewValidateImportRequestWithBody(server string, campId CampId, entityType ImportEntityType, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "entity_type", runtime.ParamLocationPath, entityType)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/imports/%s/validate", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetImportJobByIdRequest generates requests for GetImportJobById
+func NewGetImportJobByIdRequest(server string, campId CampId, jobId openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "camp_id", runtime.ParamLocationPath, campId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "job_id", runtime.ParamLocationPath, jobId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/camps/%s/imports/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewListLocationsRequest generates requests for ListLocations
 func NewListLocationsRequest(server string, campId CampId, params *ListLocationsParams) (*http.Request, error) {
 	var err error
@@ -7005,6 +7343,21 @@ type ClientWithResponsesInterface interface {
 
 	UpdateHousingRoomByIdWithResponse(ctx context.Context, campId CampId, id Id, body UpdateHousingRoomByIdJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateHousingRoomByIdHTTPResponse, error)
 
+	// ListImportJobsWithResponse request
+	ListImportJobsWithResponse(ctx context.Context, campId CampId, params *ListImportJobsParams, reqEditors ...RequestEditorFn) (*ListImportJobsHTTPResponse, error)
+
+	// StartImportWithBodyWithResponse request with any body
+	StartImportWithBodyWithResponse(ctx context.Context, campId CampId, entityType ImportEntityType, params *StartImportParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*StartImportHTTPResponse, error)
+
+	// GetImportTemplateWithResponse request
+	GetImportTemplateWithResponse(ctx context.Context, campId CampId, entityType ImportEntityType, reqEditors ...RequestEditorFn) (*GetImportTemplateHTTPResponse, error)
+
+	// ValidateImportWithBodyWithResponse request with any body
+	ValidateImportWithBodyWithResponse(ctx context.Context, campId CampId, entityType ImportEntityType, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ValidateImportHTTPResponse, error)
+
+	// GetImportJobByIdWithResponse request
+	GetImportJobByIdWithResponse(ctx context.Context, campId CampId, jobId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetImportJobByIdHTTPResponse, error)
+
 	// ListLocationsWithResponse request
 	ListLocationsWithResponse(ctx context.Context, campId CampId, params *ListLocationsParams, reqEditors ...RequestEditorFn) (*ListLocationsHTTPResponse, error)
 
@@ -8133,6 +8486,115 @@ func (r UpdateHousingRoomByIdHTTPResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpdateHousingRoomByIdHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListImportJobsHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ImportJobsListResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r ListImportJobsHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListImportJobsHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type StartImportHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON202      *ImportJob
+}
+
+// Status returns HTTPResponse.Status
+func (r StartImportHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r StartImportHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetImportTemplateHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r GetImportTemplateHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetImportTemplateHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ValidateImportHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ImportJob
+}
+
+// Status returns HTTPResponse.Status
+func (r ValidateImportHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ValidateImportHTTPResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetImportJobByIdHTTPResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ImportJob
+}
+
+// Status returns HTTPResponse.Status
+func (r GetImportJobByIdHTTPResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetImportJobByIdHTTPResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9466,6 +9928,51 @@ func (c *ClientWithResponses) UpdateHousingRoomByIdWithResponse(ctx context.Cont
 		return nil, err
 	}
 	return ParseUpdateHousingRoomByIdHTTPResponse(rsp)
+}
+
+// ListImportJobsWithResponse request returning *ListImportJobsHTTPResponse
+func (c *ClientWithResponses) ListImportJobsWithResponse(ctx context.Context, campId CampId, params *ListImportJobsParams, reqEditors ...RequestEditorFn) (*ListImportJobsHTTPResponse, error) {
+	rsp, err := c.ListImportJobs(ctx, campId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListImportJobsHTTPResponse(rsp)
+}
+
+// StartImportWithBodyWithResponse request with arbitrary body returning *StartImportHTTPResponse
+func (c *ClientWithResponses) StartImportWithBodyWithResponse(ctx context.Context, campId CampId, entityType ImportEntityType, params *StartImportParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*StartImportHTTPResponse, error) {
+	rsp, err := c.StartImportWithBody(ctx, campId, entityType, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseStartImportHTTPResponse(rsp)
+}
+
+// GetImportTemplateWithResponse request returning *GetImportTemplateHTTPResponse
+func (c *ClientWithResponses) GetImportTemplateWithResponse(ctx context.Context, campId CampId, entityType ImportEntityType, reqEditors ...RequestEditorFn) (*GetImportTemplateHTTPResponse, error) {
+	rsp, err := c.GetImportTemplate(ctx, campId, entityType, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetImportTemplateHTTPResponse(rsp)
+}
+
+// ValidateImportWithBodyWithResponse request with arbitrary body returning *ValidateImportHTTPResponse
+func (c *ClientWithResponses) ValidateImportWithBodyWithResponse(ctx context.Context, campId CampId, entityType ImportEntityType, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*ValidateImportHTTPResponse, error) {
+	rsp, err := c.ValidateImportWithBody(ctx, campId, entityType, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseValidateImportHTTPResponse(rsp)
+}
+
+// GetImportJobByIdWithResponse request returning *GetImportJobByIdHTTPResponse
+func (c *ClientWithResponses) GetImportJobByIdWithResponse(ctx context.Context, campId CampId, jobId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetImportJobByIdHTTPResponse, error) {
+	rsp, err := c.GetImportJobById(ctx, campId, jobId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetImportJobByIdHTTPResponse(rsp)
 }
 
 // ListLocationsWithResponse request returning *ListLocationsHTTPResponse
@@ -10973,6 +11480,126 @@ func ParseUpdateHousingRoomByIdHTTPResponse(rsp *http.Response) (*UpdateHousingR
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest HousingRoom
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListImportJobsHTTPResponse parses an HTTP response from a ListImportJobsWithResponse call
+func ParseListImportJobsHTTPResponse(rsp *http.Response) (*ListImportJobsHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListImportJobsHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ImportJobsListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseStartImportHTTPResponse parses an HTTP response from a StartImportWithResponse call
+func ParseStartImportHTTPResponse(rsp *http.Response) (*StartImportHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &StartImportHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest ImportJob
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetImportTemplateHTTPResponse parses an HTTP response from a GetImportTemplateWithResponse call
+func ParseGetImportTemplateHTTPResponse(rsp *http.Response) (*GetImportTemplateHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetImportTemplateHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseValidateImportHTTPResponse parses an HTTP response from a ValidateImportWithResponse call
+func ParseValidateImportHTTPResponse(rsp *http.Response) (*ValidateImportHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ValidateImportHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ImportJob
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetImportJobByIdHTTPResponse parses an HTTP response from a GetImportJobByIdWithResponse call
+func ParseGetImportJobByIdHTTPResponse(rsp *http.Response) (*GetImportJobByIdHTTPResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetImportJobByIdHTTPResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ImportJob
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

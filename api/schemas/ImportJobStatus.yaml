@@ -1,0 +1,10 @@
+type: string
+enum:
+  - pending
+  - validating
+  - validated
+  - importing
+  - completed
+  - failed
+description: Status of an import job
+

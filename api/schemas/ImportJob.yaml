@@ -1,0 +1,63 @@
+type: object
+required:
+  - id
+  - tenantId
+  - campId
+  - entityType
+  - status
+  - mode
+  - filePath
+  - totalRows
+  - processedRows
+  - successCount
+  - errorCount
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Unique identifier for the import job
+  tenantId:
+    type: string
+    format: uuid
+    description: Tenant ID
+  campId:
+    type: string
+    format: uuid
+    description: Camp ID
+  entityType:
+    $ref: "./ImportEntityType.yaml"
+  status:
+    $ref: "./ImportJobStatus.yaml"
+  mode:
+    $ref: "./ImportMode.yaml"
+  filePath:
+    type: string
+    description: Path to the uploaded CSV file
+  totalRows:
+    type: integer
+    description: Total number of rows in the CSV
+  processedRows:
+    type: integer
+    description: Number of rows processed so far
+  successCount:
+    type: integer
+    description: Number of successfully imported rows
+  errorCount:
+    type: integer
+    description: Number of rows that failed to import
+  validationErrors:
+    type: array
+    items:
+      $ref: "./ValidationError.yaml"
+    description: List of validation errors
+  createdAt:
+    type: string
+    format: date-time
+    description: Timestamp when the job was created
+  updatedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the job was last updated
+
