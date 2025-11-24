@@ -249,11 +249,38 @@ export default defineComponent({
         return startMinutes < otherEndMinutes && endMinutes > otherStartMinutes;
       });
 
-      // Sort all overlapping events (including current) by start time, then by id for consistency
+      // Sort all overlapping events (including current) by effective start time on this day
       const allOverlapping = [event, ...overlappingEvents].sort((a, b) => {
-        const aStart = new Date(a.spec.startDate).getTime();
-        const bStart = new Date(b.spec.startDate).getTime();
-        if (aStart !== bStart) return aStart - bStart;
+        const aStart = new Date(a.spec.startDate);
+        const bStart = new Date(b.spec.startDate);
+        
+        // Calculate effective start times for this day
+        let aStartMinutes = aStart.getHours() * 60 + aStart.getMinutes();
+        let bStartMinutes = bStart.getHours() * 60 + bStart.getMinutes();
+        
+        const currentDayStart = new Date(this.currentDate);
+        currentDayStart.setHours(0, 0, 0, 0);
+        
+        const aStartDay = new Date(aStart);
+        aStartDay.setHours(0, 0, 0, 0);
+        const bStartDay = new Date(bStart);
+        bStartDay.setHours(0, 0, 0, 0);
+        
+        // If event started before this day, effective start is 7 AM
+        if (aStartDay < currentDayStart) {
+          aStartMinutes = dayStartMinutes;
+        }
+        if (bStartDay < currentDayStart) {
+          bStartMinutes = dayStartMinutes;
+        }
+        
+        // Sort by effective start time on this day
+        if (aStartMinutes !== bStartMinutes) return aStartMinutes - bStartMinutes;
+        
+        // If same time, sort by original start date (earlier events first)
+        if (aStart.getTime() !== bStart.getTime()) return aStart.getTime() - bStart.getTime();
+        
+        // If same start date, sort by ID for consistency
         return a.meta.id.localeCompare(b.meta.id);
       });
 
@@ -394,11 +421,6 @@ export default defineComponent({
   opacity: 0.95;
   font-size: 0.8125rem;
   line-height: 1.4;
-}
-
-.multi-day-event {
-  border-left: 4px solid rgba(255, 255, 255, 0.9);
-  border-bottom: 2px dashed rgba(255, 255, 255, 0.5);
 }
 
 .multi-day-indicator {

@@ -276,11 +276,17 @@ export default defineComponent({
       // Calculate height based on duration (80px per hour)
       const heightPx = (duration / 60) * 80 - 4; // Subtract 4px for spacing
 
-      // Find overlapping events for the same day
-      const eventDate = start.toISOString().split("T")[0];
+      // Find overlapping events for the current day being rendered
+      const dayStart = new Date(day);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(day);
+      dayEnd.setHours(23, 59, 59, 999);
+
+      // Get all events active on this specific day
       const dayEvents = this.events.filter((e) => {
-        const eDate = new Date(e.spec.startDate).toISOString().split("T")[0];
-        return eDate === eventDate;
+        const eStart = new Date(e.spec.startDate);
+        const eEnd = new Date(e.spec.endDate);
+        return eStart <= dayEnd && eEnd >= dayStart;
       });
 
       const overlappingEvents = dayEvents.filter((otherEvent) => {
@@ -288,6 +294,8 @@ export default defineComponent({
 
         const otherStart = new Date(otherEvent.spec.startDate);
         const otherEnd = new Date(otherEvent.spec.endDate);
+        
+        // Calculate the effective time range for the other event on this day
         let otherStartMinutes =
           otherStart.getHours() * 60 + otherStart.getMinutes();
         let otherEndMinutes = otherEnd.getHours() * 60 + otherEnd.getMinutes();
@@ -298,20 +306,57 @@ export default defineComponent({
           otherStart.getMonth() !== otherEnd.getMonth() ||
           otherStart.getFullYear() !== otherEnd.getFullYear();
 
-        // For multi-day events, extend to end of visible day
         if (otherIsMultiDay) {
-          otherEndMinutes = 21 * 60;
+          const otherEventStartDay = new Date(otherStart);
+          otherEventStartDay.setHours(0, 0, 0, 0);
+          
+          const otherEventEndDay = new Date(otherEnd);
+          otherEventEndDay.setHours(0, 0, 0, 0);
+
+          // If other event started before this day, its effective start is 7 AM
+          if (otherEventStartDay < dayStart) {
+            otherStartMinutes = 7 * 60;
+          }
+
+          // If other event continues past this day, its effective end is 9 PM
+          if (otherEventEndDay > dayStart) {
+            otherEndMinutes = 21 * 60;
+          }
         }
 
-        // Check if events overlap in time
+        // Check if events overlap in time on this specific day
         return startMinutes < otherEndMinutes && endMinutes > otherStartMinutes;
       });
 
-      // Sort all overlapping events
+      // Sort all overlapping events by their effective start time on this day
       const allOverlapping = [event, ...overlappingEvents].sort((a, b) => {
-        const aStart = new Date(a.spec.startDate).getTime();
-        const bStart = new Date(b.spec.startDate).getTime();
-        if (aStart !== bStart) return aStart - bStart;
+        const aStart = new Date(a.spec.startDate);
+        const bStart = new Date(b.spec.startDate);
+        
+        // Calculate effective start times for this day
+        let aStartMinutes = aStart.getHours() * 60 + aStart.getMinutes();
+        let bStartMinutes = bStart.getHours() * 60 + bStart.getMinutes();
+        
+        const aStartDay = new Date(aStart);
+        aStartDay.setHours(0, 0, 0, 0);
+        const bStartDay = new Date(bStart);
+        bStartDay.setHours(0, 0, 0, 0);
+        
+        // If event started before this day, effective start is 7 AM
+        if (aStartDay < dayStart) {
+          aStartMinutes = 7 * 60;
+        }
+        if (bStartDay < dayStart) {
+          bStartMinutes = 7 * 60;
+        }
+        
+        // Sort by effective start time on this day
+        if (aStartMinutes !== bStartMinutes) return aStartMinutes - bStartMinutes;
+        
+        // If same time, sort by original start date (earlier events first)
+        if (aStart.getTime() !== bStart.getTime()) return aStart.getTime() - bStart.getTime();
+        
+        // If same start date, sort by ID for consistency
         return a.meta.id.localeCompare(b.meta.id);
       });
 
@@ -501,11 +546,6 @@ export default defineComponent({
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.3;
-}
-
-.multi-day-event {
-  border-left: 3px solid rgba(255, 255, 255, 0.9);
-  border-bottom: 2px dashed rgba(255, 255, 255, 0.5);
 }
 
 .multi-day-indicator {

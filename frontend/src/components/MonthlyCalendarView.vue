@@ -395,11 +395,6 @@ export default defineComponent({
   }
 }
 
-.multi-day-event {
-  border-left: 3px solid rgba(255, 255, 255, 0.9);
-  padding-left: 0.375rem;
-}
-
 .multi-day-indicator {
   margin-left: 0.25rem;
   font-weight: bold;
