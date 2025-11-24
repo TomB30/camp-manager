@@ -245,15 +245,20 @@ export default defineComponent({
         this.selectedDate.getMonth(),
         1,
       );
+      start.setHours(0, 0, 0, 0);
       const end = new Date(
         this.selectedDate.getFullYear(),
         this.selectedDate.getMonth() + 1,
         0,
       );
+      end.setHours(23, 59, 59, 999);
 
+      // Include events that overlap with the month
+      // An event overlaps if: startDate <= monthEnd AND endDate >= monthStart
       return this.eventsStore.events.filter((event) => {
-        const eventDate = new Date(event.spec.startDate);
-        return eventDate >= start && eventDate <= end;
+        const eventStart = new Date(event.spec.startDate);
+        const eventEnd = new Date(event.spec.endDate);
+        return eventStart <= end && eventEnd >= start;
       });
     },
     eventFilters(): Filter[] {
@@ -431,9 +436,11 @@ export default defineComponent({
   methods: {
     async loadEventsForCurrentView() {
       const dateRange = this.getDateRangeForView();
+      // Filter for events that overlap with the view range
+      // An event overlaps if: startDate <= rangeEnd AND endDate >= rangeStart
       const filterBy = [
-        `startDate>=${dateRange.start.toISOString()}`,
         `startDate<=${dateRange.end.toISOString()}`,
+        `endDate>=${dateRange.start.toISOString()}`,
       ];
       await this.eventsStore.loadEvents({ filterBy, limit: 500 });
     },
