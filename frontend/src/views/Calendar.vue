@@ -628,6 +628,7 @@ export default defineComponent({
     color: var(--text-primary);
   }
   .date-controls {
+    flex-shrink: 0;
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
