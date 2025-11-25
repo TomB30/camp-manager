@@ -40,13 +40,13 @@
               <p class="file-name">{{ file.name }}</p>
               <p class="file-size">{{ formatFileSize(file.size) }}</p>
             </div>
-            <q-btn 
-            icon="close"
-            color="grey-6"
-            flat
-            round
-            size="sm"
-            @click="clearFile"
+            <q-btn
+              icon="close"
+              color="grey-6"
+              flat
+              round
+              size="sm"
+              @click="clearFile"
             />
           </div>
 
@@ -70,7 +70,10 @@
           </div>
 
           <!-- Success Message -->
-          <div v-if="validated && validationErrors.length === 0" class="success-section">
+          <div
+            v-if="validated && validationErrors.length === 0"
+            class="success-section"
+          >
             <Icon name="CheckCircle" :size="20" class="success-icon" />
             <p class="success-message">
               Validation successful! {{ totalRows }} row(s) ready to import.
@@ -441,4 +444,3 @@ export default defineComponent({
   color: var(--text-secondary);
 }
 </style>
-
