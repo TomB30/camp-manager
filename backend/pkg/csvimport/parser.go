@@ -1,6 +1,7 @@
 package csvimport
 
 import (
+	"bytes"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -10,7 +11,16 @@ import (
 // ParseCSV parses a CSV file and returns a slice of row maps
 // Each map contains column name -> value pairs
 func ParseCSV(reader io.Reader) ([]map[string]string, []string, error) {
-	csvReader := csv.NewReader(reader)
+	// Read all content to handle BOM
+	content, err := io.ReadAll(reader)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to read CSV content: %w", err)
+	}
+
+	// Remove UTF-8 BOM if present
+	content = bytes.TrimPrefix(content, []byte{0xEF, 0xBB, 0xBF})
+
+	csvReader := csv.NewReader(bytes.NewReader(content))
 	csvReader.TrimLeadingSpace = true
 
 	// Read header row
@@ -22,7 +32,7 @@ func ParseCSV(reader io.Reader) ([]map[string]string, []string, error) {
 		return nil, nil, fmt.Errorf("failed to read CSV header: %w", err)
 	}
 
-	// Trim and validate headers
+	// Trim and validate headers (also handles any remaining whitespace)
 	for i, header := range headers {
 		headers[i] = strings.TrimSpace(header)
 		if headers[i] == "" {
@@ -103,6 +113,11 @@ func ValidateHeaders(headers []string, required []string, optional []string) err
 	}
 
 	if len(missing) > 0 {
+		// Debug output to help troubleshoot header issues
+		fmt.Printf("CSV Header Validation Failed:\n")
+		fmt.Printf("  Missing: %v\n", missing)
+		fmt.Printf("  Required: %v\n", required)
+		fmt.Printf("  Found headers: %v\n", headers)
 		return fmt.Errorf("missing required columns: %s", strings.Join(missing, ", "))
 	}
 
@@ -123,9 +138,13 @@ func ValidateHeaders(headers []string, required []string, optional []string) err
 	}
 
 	if len(unknown) > 0 {
+		// Debug output to help troubleshoot header issues
+		fmt.Printf("CSV Header Validation - Unknown Columns:\n")
+		fmt.Printf("  Unknown: %v\n", unknown)
+		fmt.Printf("  Valid (required): %v\n", required)
+		fmt.Printf("  Valid (optional): %v\n", optional)
 		return fmt.Errorf("unknown columns: %s", strings.Join(unknown, ", "))
 	}
 
 	return nil
 }
-

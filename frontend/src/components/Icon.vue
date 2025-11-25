@@ -63,6 +63,7 @@ import {
   Network,
   Toilet,
   Bike,
+  Upload,
 } from "lucide-vue-next";
 
 export type IconName = keyof typeof icons;
@@ -120,6 +121,7 @@ const icons: Record<string, Component> = {
   Network,
   Toilet,
   Bike,
+  Upload,
 } as const;
 
 export default defineComponent({

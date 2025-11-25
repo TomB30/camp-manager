@@ -6,8 +6,20 @@
         title="Campers"
         description="Manage your campers and their registrations, allergies, and sessions."
         action-text="Camper"
-        @action="showModal = true"
-      />
+      >
+        <template v-slot:actions>
+          <q-menu>
+            <q-list style="min-width: 180px">
+              <q-item clickable v-close-popup @click="showModal = true">
+                <q-item-section>From Scratch</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="showCSVModal = true">
+                <q-item-section>From CSV</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </template>
+      </TabHeader>
 
       <FilterBar
         v-model:searchQuery="searchQuery"
@@ -75,12 +87,12 @@
         <template #cell-name="{ item }">
           <div class="camper-name-content">
             <AvatarInitials
-              :first-name="item.spec.firstName"
-              :last-name="item.spec.lastName"
+              :first-name="item.meta.name.split(' ')[0]"
+              :last-name="item.meta.name.split(' ').slice(1).join(' ')"
               size="sm"
             />
             <div class="camper-fullname">
-              {{ item.spec.firstName }} {{ item.spec.lastName }}
+              {{ item.meta.name }}
             </div>
           </div>
         </template>
@@ -96,20 +108,10 @@
         </template>
 
         <template #cell-session="{ item }">
-          <span v-if="item.sessionId" class="badge badge-info badge-sm">
-            {{ getSessionName(item.sessionId) }}
+          <span v-if="item.spec.sessionId" class="badge badge-info badge-sm">
+            {{ getSessionName(item.spec.sessionId) }}
           </span>
           <span v-else class="text-secondary">Not registered</span>
-        </template>
-
-        <template #cell-allergies="{ item }">
-          <span
-            v-if="item.allergies && item.allergies.length > 0"
-            class="badge badge-warning badge-sm"
-          >
-            {{ item.allergies.length }} allergy(ies)
-          </span>
-          <span v-else class="text-caption">None</span>
         </template>
 
         <template #cell-actions="{ item }">
@@ -135,6 +137,12 @@
         v-if="showModal"
         :camper-id="editingCamperId || undefined"
         @close="closeModal"
+      />
+
+      <CamperCSVModal
+        v-if="showCSVModal"
+        @close="showCSVModal = false"
+        @imported="handleImportSuccess"
       />
 
       <ConfirmModal
@@ -164,6 +172,7 @@ import ViewToggle from "@/components/ViewToggle.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import CamperDetailModal from "@/components/modals/CamperDetailModal.vue";
 import CamperFormModal from "@/components/modals/CamperFormModal.vue";
+import CamperCSVModal from "@/components/modals/CamperCSVModal.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import Icon from "@/components/Icon.vue";
 import { dateUtils } from "@/utils/dateUtils";
@@ -181,6 +190,7 @@ export default defineComponent({
     EmptyState,
     CamperDetailModal,
     CamperFormModal,
+    CamperCSVModal,
     TabHeader,
     Icon,
     LoadingState,
@@ -190,6 +200,7 @@ export default defineComponent({
       loading: false,
       selectedCamperId: null as string | null,
       showModal: false,
+      showCSVModal: false,
       editingCamperId: null as string | null,
       viewMode: "grid" as "grid" | "table",
       currentPage: 1,
@@ -205,8 +216,6 @@ export default defineComponent({
         { key: "age", label: "Age", width: "80px" },
         { key: "gender", label: "Gender", width: "100px" },
         { key: "session", label: "Session", width: "150px" },
-        { key: "parentContact", label: "Parent Contact", width: "250px" },
-        { key: "allergies", label: "Allergies", width: "120px" },
         { key: "actions", label: "Actions", width: "140px" },
       ],
     };
@@ -374,6 +383,11 @@ export default defineComponent({
     closeModal(): void {
       this.showModal = false;
       this.editingCamperId = null;
+    },
+    async handleImportSuccess(): Promise<void> {
+      // Reload campers after successful import
+      await this.campersStore.loadCampers();
+      this.showCSVModal = false;
     },
   },
   watch: {

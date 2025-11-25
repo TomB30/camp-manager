@@ -39,3 +39,7 @@ coverage
 
 # openapi-ts error logs
 openapi-ts-error-*.log
+
+# postman
+postman/*
+test_campers.csv
