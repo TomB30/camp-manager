@@ -14,6 +14,7 @@ type Config struct {
 	Logging  LoggingConfig
 	JWT      JWTConfig
 	CORS     CORSConfig
+	Cleanup  CleanupConfig
 }
 
 // ServerConfig holds HTTP server configuration
@@ -53,6 +54,14 @@ type LoggingConfig struct {
 	Format string
 }
 
+// CleanupConfig holds cleanup worker configuration
+type CleanupConfig struct {
+	Enabled              bool
+	PollInterval         time.Duration
+	SuccessRetentionDays int
+	FailedRetentionDays  int
+}
+
 // Load reads configuration from environment variables
 func Load() (*Config, error) {
 	viper.SetDefault("SERVER_HOST", "0.0.0.0")
@@ -81,6 +90,12 @@ func Load() (*Config, error) {
 	// Example: "https://camp-manager.onrender.com,https://your-github-username.github.io"
 	viper.SetDefault("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000")
 
+	// Cleanup worker defaults
+	viper.SetDefault("CLEANUP_ENABLED", "true")
+	viper.SetDefault("CLEANUP_POLL_INTERVAL", "24h")
+	viper.SetDefault("CLEANUP_SUCCESS_RETENTION_DAYS", 30)
+	viper.SetDefault("CLEANUP_FAILED_RETENTION_DAYS", 90)
+
 	// Automatically read from environment variables
 	viper.AutomaticEnv()
 
@@ -103,6 +118,11 @@ func Load() (*Config, error) {
 	jwtSecretKey := viper.GetString("JWT_SECRET_KEY")
 	if jwtSecretKey == "" {
 		return nil, fmt.Errorf("JWT_SECRET_KEY is required")
+	}
+
+	cleanupPollInterval, err := time.ParseDuration(viper.GetString("CLEANUP_POLL_INTERVAL"))
+	if err != nil {
+		return nil, fmt.Errorf("invalid CLEANUP_POLL_INTERVAL: %w", err)
 	}
 
 	config := &Config{
@@ -132,6 +152,12 @@ func Load() (*Config, error) {
 		},
 		CORS: CORSConfig{
 			AllowedOrigins: viper.GetString("CORS_ALLOWED_ORIGINS"),
+		},
+		Cleanup: CleanupConfig{
+			Enabled:              viper.GetBool("CLEANUP_ENABLED"),
+			PollInterval:         cleanupPollInterval,
+			SuccessRetentionDays: viper.GetInt("CLEANUP_SUCCESS_RETENTION_DAYS"),
+			FailedRetentionDays:  viper.GetInt("CLEANUP_FAILED_RETENTION_DAYS"),
 		},
 	}
 

@@ -43,3 +43,6 @@ openapi-ts-error-*.log
 # postman
 postman/*
 test_campers.csv
+
+# Backend uploads
+backend/uploads/

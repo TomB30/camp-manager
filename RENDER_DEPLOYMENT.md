@@ -164,6 +164,12 @@ Deploy services individually through the Render Dashboard. This method is guaran
    
    # CORS (update after frontend deployment)
    CORS_ALLOWED_ORIGINS=http://localhost:5173
+   
+   # Cleanup Worker (optional - defaults shown)
+   CLEANUP_ENABLED=true
+   CLEANUP_POLL_INTERVAL=24h
+   CLEANUP_SUCCESS_RETENTION_DAYS=30
+   CLEANUP_FAILED_RETENTION_DAYS=90
    ```
 
 5. Click "Create Web Service"

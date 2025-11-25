@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/tbechar/camp-manager-backend/internal/database"
@@ -163,5 +164,54 @@ func (r *ImportJobsRepository) GetPendingJobs(ctx context.Context) ([]domain.Imp
 	}
 
 	return jobs, nil
+}
+
+// GetOldCompletedJobs retrieves import jobs that are completed and older than the retention period
+func (r *ImportJobsRepository) GetOldCompletedJobs(ctx context.Context, olderThan time.Time) ([]domain.ImportJob, error) {
+	var jobs []domain.ImportJob
+
+	err := r.db.WithContext(ctx).
+		Where("status = ? AND updated_at < ?", string(domain.ImportJobStatusCompleted), olderThan).
+		Order("updated_at ASC").
+		Find(&jobs).Error
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get old completed import jobs: %w", err)
+	}
+
+	return jobs, nil
+}
+
+// GetOldFailedJobs retrieves import jobs that are failed and older than the retention period
+func (r *ImportJobsRepository) GetOldFailedJobs(ctx context.Context, olderThan time.Time) ([]domain.ImportJob, error) {
+	var jobs []domain.ImportJob
+
+	err := r.db.WithContext(ctx).
+		Where("status = ? AND updated_at < ?", string(domain.ImportJobStatusFailed), olderThan).
+		Order("updated_at ASC").
+		Find(&jobs).Error
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get old failed import jobs: %w", err)
+	}
+
+	return jobs, nil
+}
+
+// Delete removes an import job from the database
+func (r *ImportJobsRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	result := r.db.WithContext(ctx).
+		Where("id = ?", id).
+		Delete(&domain.ImportJob{})
+
+	if result.Error != nil {
+		return fmt.Errorf("failed to delete import job: %w", result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("import job not found")
+	}
+
+	return nil
 }
 

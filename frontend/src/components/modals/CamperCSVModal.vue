@@ -262,10 +262,8 @@ export default defineComponent({
         if (response.error || !response.data) {
           throw new Error("Failed to import CSV file");
         }
-
-        const importJob = response.data as ImportJob;
         this.toast.success(
-          `Import started! Processing ${importJob.totalRows} row(s).`,
+          `Import started! This might take a few minutes to complete.`,
         );
         this.$emit("imported");
       } catch (error: any) {

@@ -119,6 +119,26 @@ func main() {
 	
 	log.Info("Import worker started")
 
+	// Initialize and start cleanup worker (if enabled)
+	if cfg.Cleanup.Enabled {
+		cleanupWorker := worker.NewCleanupWorker(
+			importJobsRepo,
+			worker.CleanupWorkerConfig{
+				PollInterval:         cfg.Cleanup.PollInterval,
+				SuccessRetentionDays: cfg.Cleanup.SuccessRetentionDays,
+				FailedRetentionDays:  cfg.Cleanup.FailedRetentionDays,
+			},
+		)
+		go cleanupWorker.Start(workerCtx)
+		log.Info("Cleanup worker started",
+			zap.Duration("poll_interval", cfg.Cleanup.PollInterval),
+			zap.Int("success_retention_days", cfg.Cleanup.SuccessRetentionDays),
+			zap.Int("failed_retention_days", cfg.Cleanup.FailedRetentionDays),
+		)
+	} else {
+		log.Info("Cleanup worker disabled")
+	}
+
 	// Initialize handlers
 	h := handler.NewHandler(db, cfg)
 	healthHandler := handler.NewHealthHandler(db)
@@ -182,9 +202,9 @@ func main() {
 
 	log.Info("Server shutting down...")
 	
-	// Stop import worker
+	// Stop workers (import and cleanup)
 	workerCancel()
-	log.Info("Import worker stopped")
+	log.Info("Workers stopped")
 
 	// Graceful shutdown with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

@@ -77,6 +77,16 @@ services:
       # You'll need to update this after deploying the frontend manually
       - key: CORS_ALLOWED_ORIGINS
         value: "https://camp-manager.onrender.com,https://YOUR_GITHUB_USERNAME.github.io"
+      
+      # Cleanup Worker Configuration (optional)
+      - key: CLEANUP_ENABLED
+        value: "true"
+      - key: CLEANUP_POLL_INTERVAL
+        value: "24h"
+      - key: CLEANUP_SUCCESS_RETENTION_DAYS
+        value: "30"
+      - key: CLEANUP_FAILED_RETENTION_DAYS
+        value: "90"
 
 # Note: Static sites are not supported in render.yaml Blueprint
 # You'll need to deploy the frontend separately through the Render Dashboard
