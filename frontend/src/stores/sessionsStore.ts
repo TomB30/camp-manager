@@ -33,10 +33,52 @@ export const useSessionsStore = defineStore("sessions", {
   },
 
   actions: {
-    async loadSessions(): Promise<void> {
+    async loadSessions(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<Session[]> {
       this.loading = true;
       try {
-        this.sessions = await sessionsService.listSessions();
+        const response = await sessionsService.listSessions(params);
+        this.sessions = Array.isArray(response) ? response : response.items;
+        return this.sessions;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadSessionsPaginated(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<{
+      items: Session[];
+      total: number;
+      limit: number;
+      offset: number;
+      next: number | null;
+    }> {
+      this.loading = true;
+      try {
+        const response = await sessionsService.listSessions(params);
+        if (Array.isArray(response)) {
+          return {
+            items: response,
+            total: response.length,
+            limit: params?.limit || response.length,
+            offset: params?.offset || 0,
+            next: null,
+          };
+        }
+        this.sessions = response.items;
+        return response;
       } finally {
         this.loading = false;
       }

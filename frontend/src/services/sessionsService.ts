@@ -14,7 +14,17 @@ import type {
 const impl = () => (isBackendEnabled() ? sessionsApi : sessionsStorage);
 
 export const sessionsService = {
-  listSessions: (): Promise<Session[]> => impl().listSessions(),
+  listSessions: (params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    filterBy?: string[];
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }): Promise<
+    | { items: Session[]; total: number; limit: number; offset: number; next: number | null }
+    | Session[]
+  > => impl().listSessions(params as any),
   createSession: (data: SessionCreationRequest): Promise<Session> =>
     impl().createSession(data),
   updateSession: (id: string, data: SessionUpdateRequest): Promise<Session> =>
