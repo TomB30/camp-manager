@@ -139,6 +139,7 @@ import Icon from "@/components/Icon.vue";
 import BaseButton from "@/components/common/BaseButton.vue";
 import { dateUtils } from "@/utils/dateUtils";
 import LoadingState from "@/components/LoadingState.vue";
+import { isBackendEnabled } from "@/config/dataSource";
 
 export default defineComponent({
   name: "Campers",
@@ -283,25 +284,29 @@ export default defineComponent({
     async fetchCampers(): Promise<void> {
       if (!this.isInitialized) return;
 
-      try {
-        const filterBy = this.buildFilterByArray();
-        const response = await this.campersStore.loadCampersPaginated({
-          offset: this.filters.pagination.offset,
-          limit: this.filters.pagination.limit,
-          search: this.filters.searchQuery || undefined,
-          filterBy: filterBy.length > 0 ? filterBy : undefined,
-          sortBy: this.filters.pagination.sortBy,
-          sortOrder: this.filters.pagination.sortOrder,
-        });
+      if (!isBackendEnabled()) {
+        this.campersData = await this.campersStore.loadCampers();
+      } else {
+        try {
+          const filterBy = this.buildFilterByArray();
+          const response = await this.campersStore.loadCampersPaginated({
+            offset: this.filters.pagination.offset,
+            limit: this.filters.pagination.limit,
+            search: this.filters.searchQuery || undefined,
+            filterBy: filterBy.length > 0 ? filterBy : undefined,
+            sortBy: this.filters.pagination.sortBy,
+            sortOrder: this.filters.pagination.sortOrder,
+          });
 
-        this.campersData = response.items;
-        this.updateFilter("pagination", {
-          ...this.filters.pagination,
-          total: response.total,
-        });
-      } catch (error) {
-        console.error("Failed to fetch campers:", error);
-        this.campersData = [];
+          this.campersData = response.items;
+          this.updateFilter("pagination", {
+            ...this.filters.pagination,
+            total: response.total,
+          });
+        } catch (error) {
+          console.error("Failed to fetch campers:", error);
+          this.campersData = [];
+        }
       }
     },
 
@@ -349,7 +354,7 @@ export default defineComponent({
     getSessionName(sessionId: string | undefined): string {
       if (!sessionId) return "No session";
       const session = this.sessionsStore.sessions.find(
-        (s) => s.meta.id === sessionId,
+        (s) => s.meta.id === sessionId
       );
       return session?.meta.name || "Unknown Session";
     },

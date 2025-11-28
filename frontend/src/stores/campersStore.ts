@@ -36,10 +36,11 @@ export const useCampersStore = defineStore("campers", {
   },
 
   actions: {
-    async loadCampers(): Promise<void> {
+    async loadCampers(): Promise<Camper[]> {
       this.loading = true;
       try {
         this.campers = await campersService.listCampers();
+        return this.campers;
       } finally {
         this.loading = false;
       }

@@ -30,10 +30,11 @@ export const useStaffMembersStore = defineStore("staffMembers", {
     },
   },
   actions: {
-    async loadStaffMembers(): Promise<void> {
+    async loadStaffMembers(): Promise<StaffMember[]> {
       this.loading = true;
       try {
         this.staffMembers = await staffMembersService.listStaffMembers();
+        return this.staffMembers;
       } finally {
         this.loading = false;
       }

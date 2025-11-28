@@ -133,6 +133,7 @@ import StaffMemberDetailModal from "@/components/modals/StaffMemberDetailModal.v
 import StaffMemberFormModal from "@/components/modals/StaffMemberFormModal.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import LoadingState from "@/components/LoadingState.vue";
+import { isBackendEnabled } from "@/config/dataSource";
 
 export default defineComponent({
   name: "StaffMembers",
@@ -210,7 +211,8 @@ export default defineComponent({
           label: "Certifications",
           field: (row: StaffMember) => row.spec.certificationIds,
           align: "left" as const,
-          format: (value: string[] | undefined) => (value?.length || 0) + " cert(s)",
+          format: (value: string[] | undefined) =>
+            (value?.length || 0) + " cert(s)",
         },
       ] as QTableColumn[],
     };
@@ -256,8 +258,9 @@ export default defineComponent({
     selectedMember(): StaffMember | null {
       if (!this.selectedMemberId) return null;
       return (
-        this.staffMembersData.find((m) => m.meta.id === this.selectedMemberId) ||
-        null
+        this.staffMembersData.find(
+          (m) => m.meta.id === this.selectedMemberId
+        ) || null
       );
     },
   },
@@ -274,25 +277,30 @@ export default defineComponent({
     async fetchStaffMembers(): Promise<void> {
       if (!this.isInitialized) return;
 
-      try {
-        const filterBy = this.buildFilterByArray();
-        const response = await this.staffMembersStore.loadStaffMembersPaginated({
-          offset: this.filters.pagination.offset,
-          limit: this.filters.pagination.limit,
-          search: this.filters.searchQuery || undefined,
-          filterBy: filterBy.length > 0 ? filterBy : undefined,
-          sortBy: this.filters.pagination.sortBy,
-          sortOrder: this.filters.pagination.sortOrder,
-        });
+      if (!isBackendEnabled()) {
+        this.staffMembersData = await this.staffMembersStore.loadStaffMembers();
+      } else {
+        try {
+          const filterBy = this.buildFilterByArray();
+          const response =
+            await this.staffMembersStore.loadStaffMembersPaginated({
+              offset: this.filters.pagination.offset,
+              limit: this.filters.pagination.limit,
+              search: this.filters.searchQuery || undefined,
+              filterBy: filterBy.length > 0 ? filterBy : undefined,
+              sortBy: this.filters.pagination.sortBy,
+              sortOrder: this.filters.pagination.sortOrder,
+            });
 
-        this.staffMembersData = response.items;
-        this.updateFilter("pagination", {
-          ...this.filters.pagination,
-          total: response.total,
-        });
-      } catch (error) {
-        console.error("Failed to fetch staff members:", error);
-        this.staffMembersData = [];
+          this.staffMembersData = response.items;
+          this.updateFilter("pagination", {
+            ...this.filters.pagination,
+            total: response.total,
+          });
+        } catch (error) {
+          console.error("Failed to fetch staff members:", error);
+          this.staffMembersData = [];
+        }
       }
     },
 
