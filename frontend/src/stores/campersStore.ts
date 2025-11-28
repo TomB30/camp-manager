@@ -5,6 +5,7 @@ import type {
   CamperUpdateRequest,
 } from "@/generated/api";
 import { campersService } from "@/services";
+import { campersApi } from "@/services/api/campersApi";
 
 export const useCampersStore = defineStore("campers", {
   state: () => ({
@@ -39,6 +40,24 @@ export const useCampersStore = defineStore("campers", {
       this.loading = true;
       try {
         this.campers = await campersService.listCampers();
+      } finally {
+        this.loading = false;
+      }
+    },
+    
+    async loadCampersPaginated(params: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<{ items: Camper[]; total: number; limit: number; offset: number; next: number | null }> {
+      this.loading = true;
+      try {
+        const response = await campersApi.listCampers(params);
+        this.campers = response.items;
+        return response;
       } finally {
         this.loading = false;
       }

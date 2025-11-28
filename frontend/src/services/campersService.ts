@@ -14,7 +14,18 @@ import type {
 const impl = () => (isBackendEnabled() ? campersApi : campersStorage);
 
 export const campersService = {
-  listCampers: (): Promise<Camper[]> => impl().listCampers(),
+  listCampers: async (params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    filterBy?: string[];
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }): Promise<Camper[]> => {
+    const result = await impl().listCampers(params as any);
+    // Handle both array (from storage) and paginated response (from API)
+    return Array.isArray(result) ? result : result.items;
+  },
   createCamper: (data: CamperCreationRequest): Promise<Camper> =>
     impl().createCamper(data),
   updateCamper: (id: string, data: CamperUpdateRequest): Promise<Camper> =>

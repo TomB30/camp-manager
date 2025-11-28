@@ -1,6 +1,6 @@
 <template>
   <div class="view">
-    <LoadingState v-if="loading" message="Loading campers..." />
+    <LoadingState v-if="!isInitialized" message="Loading campers..." />
     <template v-else>
       <TabHeader
         title="Campers"
@@ -22,68 +22,43 @@
       </TabHeader>
 
       <FilterBar
-        v-model:searchQuery="searchQuery"
-        v-model:filter-gender="filterGender"
-        v-model:filter-age="filterAge"
-        v-model:filter-session="filterSession"
+        v-model:searchQuery="filters.searchQuery"
+        v-model:filter-gender="filters.filterGender"
+        v-model:filter-age="filters.filterAge"
+        v-model:filter-session="filters.filterSession"
         :filters="campersFilters"
-        :filtered-count="filteredCampers.length"
-        :total-count="campersStore.campers.length"
+        :filtered-count="filters.pagination.total"
+        :total-count="filters.pagination.total"
         @clear="clearFilters"
       >
         <template #prepend>
-          <ViewToggle v-model="viewMode" />
+          <ViewToggle v-model="filters.viewMode" />
         </template>
       </FilterBar>
 
-      <TransitionGroup
-        v-if="viewMode === 'grid'"
-        name="list"
-        tag="div"
-        class="campers-grid"
-      >
-        <CamperCard
-          v-for="camper in filteredCampers"
-          :key="camper.meta.id"
-          :camper="camper"
-          :formatted-gender="formatGender(camper.spec.gender)"
-          :session-name="getSessionName(camper.spec.sessionId)"
-          @click="selectCamper(camper.meta.id)"
-        />
-
-        <EmptyState
-          v-if="
-            filteredCampers.length === 0 && campersStore.campers.length === 0
-          "
-          type="empty"
-          title="No Campers Yet"
-          message="Add your first camper to start managing registrations and camp activities."
-          action-text="Camper"
-          @action="showModal = true"
-          icon-name="UsersRound"
-        />
-
-        <EmptyState
-          v-if="filteredCampers.length === 0 && campersStore.campers.length > 0"
-          type="no-results"
-          title="No Campers Found"
-          message="No campers match your current filters. Try adjusting your search criteria."
-          action-text="Clear Filters"
-          no-action-icon
-          action-button-class="btn-secondary"
-          @action="clearFilters"
-          icon-name="UsersRound"
-        />
-      </TransitionGroup>
-
-      <DataTable
-        v-if="viewMode === 'table'"
+      <ServerTable
+        v-if="isInitialized"
         :columns="camperColumns"
-        :data="filteredCampers"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
+        :rows="campersData"
+        row-key="meta.id"
+        :grid="filters.viewMode === 'grid'"
+        :loading="loading"
+        :pagination="filters.pagination"
+        @update:pagination="
+          updateFilter('pagination', $event);
+          fetchCampers();
+        "
+        @row-click="selectCamper"
       >
+        <template #item="{ item }">
+          <CamperCard
+            :camper="item"
+            :formatted-gender="formatGender(item.spec.gender)"
+            :session-name="getSessionName(item.spec.sessionId)"
+            @click="selectCamper(item.meta.id)"
+          />
+        </template>
+
         <template #cell-name="{ item }">
           <div class="camper-name-content">
             <AvatarInitials
@@ -97,33 +72,17 @@
           </div>
         </template>
 
-        <template #cell-age="{ item }">
-          {{ calculateAge(item.spec.birthday) }}
-        </template>
-
-        <template #cell-gender="{ item }">
-          <span class="badge badge-primary badge-sm">{{
-            formatGender(item.spec.gender)
-          }}</span>
-        </template>
-
-        <template #cell-session="{ item }">
-          <span v-if="item.spec.sessionId" class="badge badge-info badge-sm">
-            {{ getSessionName(item.spec.sessionId) }}
-          </span>
-          <span v-else class="text-secondary">Not registered</span>
-        </template>
-
-        <template #cell-actions="{ item }">
-          <BaseButton
-            outline
-            color="grey-8"
-            size="sm"
-            @click="selectCamper(item.meta.id)"
-            label="View Details"
+        <template #empty>
+          <EmptyState
+            type="empty"
+            title="No Campers Yet"
+            message="Add your first camper to start managing registrations and camp activities."
+            action-text="Camper"
+            @action="showModal = true"
+            icon-name="UsersRound"
           />
         </template>
-      </DataTable>
+      </ServerTable>
 
       <CamperDetailModal
         v-if="!!selectedCamperId"
@@ -162,12 +121,14 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useCampersStore, useSessionsStore } from "@/stores";
+import { usePageFilters } from "@/composables/usePageFilters";
 import type { Camper } from "@/generated/api";
+import type { QTableColumn } from "quasar";
 import AvatarInitials from "@/components/AvatarInitials.vue";
 import CamperCard from "@/components/cards/CamperCard.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar, { type Filter } from "@/components/FilterBar.vue";
-import DataTable from "@/components/DataTable.vue";
+import ServerTable from "@/components/ServerTable.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import CamperDetailModal from "@/components/modals/CamperDetailModal.vue";
@@ -175,6 +136,7 @@ import CamperFormModal from "@/components/modals/CamperFormModal.vue";
 import CamperCSVModal from "@/components/modals/CamperCSVModal.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import Icon from "@/components/Icon.vue";
+import BaseButton from "@/components/common/BaseButton.vue";
 import { dateUtils } from "@/utils/dateUtils";
 import LoadingState from "@/components/LoadingState.vue";
 
@@ -185,7 +147,7 @@ export default defineComponent({
     CamperCard,
     ConfirmModal,
     FilterBar,
-    DataTable,
+    ServerTable,
     ViewToggle,
     EmptyState,
     CamperDetailModal,
@@ -193,31 +155,76 @@ export default defineComponent({
     CamperCSVModal,
     TabHeader,
     Icon,
+    BaseButton,
     LoadingState,
+  },
+  setup() {
+    const { filters, updateFilter, updateFilters, isInitialized } =
+      usePageFilters("campers", {
+        searchQuery: "",
+        filterGender: "",
+        filterAge: "",
+        filterSession: "",
+        viewMode: "grid" as "grid" | "table",
+        pagination: {
+          offset: 0,
+          limit: 20,
+          total: 0,
+          sortBy: "name" as "name" | "birthday" | "gender" | "sessionId",
+          sortOrder: "asc" as "asc" | "desc",
+        },
+      });
+
+    return {
+      filters,
+      updateFilter,
+      updateFilters,
+      isInitialized,
+    };
   },
   data() {
     return {
       loading: false,
+      campersData: [] as Camper[],
       selectedCamperId: null as string | null,
       showModal: false,
       showCSVModal: false,
       editingCamperId: null as string | null,
-      viewMode: "grid" as "grid" | "table",
-      currentPage: 1,
-      pageSize: 10,
       showConfirmModal: false,
       camperToDelete: null as { id: string; name: string } | null,
-      searchQuery: "",
-      filterGender: "",
-      filterAge: "",
-      filterSession: "",
       camperColumns: [
-        { key: "name", label: "Name", width: "200px" },
-        { key: "age", label: "Age", width: "80px" },
-        { key: "gender", label: "Gender", width: "100px" },
-        { key: "session", label: "Session", width: "150px" },
-        { key: "actions", label: "Actions", width: "140px" },
-      ],
+        {
+          name: "name",
+          label: "Name",
+          field: (row: Camper) => row.meta.name,
+          align: "left" as const,
+          sortable: true,
+        },
+        {
+          name: "birthday",
+          label: "Age",
+          field: (row: Camper) => row.spec.birthday,
+          align: "left" as const,
+          sortable: true,
+          format: (value: string) => this.calculateAge(value) + " Years Old",
+        },
+        {
+          name: "gender",
+          label: "Gender",
+          field: (row: Camper) => row.spec.gender,
+          align: "left" as const,
+          sortable: true,
+          format: (value: string) => this.formatGender(value),
+        },
+        {
+          name: "sessionId",
+          label: "Session",
+          field: (row: Camper) => row.spec.sessionId,
+          align: "left" as const,
+          format: (value: string) => this.getSessionName(value),
+          sortable: true,
+        },
+      ] as QTableColumn[],
     };
   },
   computed: {
@@ -231,7 +238,7 @@ export default defineComponent({
       return [
         {
           model: "filterSession",
-          value: this.filterSession,
+          value: this.filters.filterSession,
           placeholder: "Filter by Session",
           options: this.sessionsStore.sessions.map((session) => ({
             label: session.meta.name,
@@ -240,7 +247,7 @@ export default defineComponent({
         },
         {
           model: "filterGender",
-          value: this.filterGender,
+          value: this.filters.filterGender,
           placeholder: "Filter by Gender",
           options: [
             { label: "Male", value: "male" },
@@ -249,7 +256,7 @@ export default defineComponent({
         },
         {
           model: "filterAge",
-          value: this.filterAge,
+          value: this.filters.filterAge,
           placeholder: "Filter by Age",
           options: [
             { label: "6-8 years", value: "6-8" },
@@ -262,80 +269,79 @@ export default defineComponent({
     },
     selectedCamper(): Camper | null {
       if (!this.selectedCamperId) return null;
-      return this.campersStore.getCamperById(this.selectedCamperId) || null;
-    },
-    filteredCampers(): Camper[] {
-      let campers: Camper[] = this.campersStore.campers;
-
-      // Search filter
-      if (this.searchQuery) {
-        const query = this.searchQuery.toLowerCase();
-        campers = campers.filter(
-          (camper: Camper) =>
-            camper.meta.name.split(" ")[0].toLowerCase().includes(query) ||
-            camper.meta.name
-              .split(" ")
-              .slice(1)
-              .join(" ")
-              .toLowerCase()
-              .includes(query) ||
-            `${camper.meta.name.split(" ")[0]} ${camper.meta.name.split(" ").slice(1).join(" ")}`
-              .toLowerCase()
-              .includes(query),
-        );
-      }
-
-      // Session filter
-      if (this.filterSession) {
-        campers = campers.filter(
-          (camper: Camper) => camper.spec.sessionId === this.filterSession,
-        );
-      }
-
-      // Gender filter
-      if (this.filterGender) {
-        campers = campers.filter(
-          (camper: Camper) => camper.spec.gender === this.filterGender,
-        );
-      }
-
-      // Age filter - calculate age from birthday
-      if (this.filterAge) {
-        const [min, max] =
-          this.filterAge === "15+"
-            ? [15, 999]
-            : this.filterAge.split("-").map(Number);
-        campers = campers.filter((camper: Camper) => {
-          const age = camper.spec.birthday
-            ? dateUtils.calculateAge(camper.spec.birthday)
-            : 0;
-          return age >= min && (max ? age <= max : true);
-        });
-      }
-
-      return campers;
+      return (
+        this.campersData.find((c) => c.meta.id === this.selectedCamperId) ||
+        null
+      );
     },
   },
   async created() {
-    this.loading = true;
-    try {
-      await Promise.all([
-        this.campersStore.loadCampers(),
-        this.sessionsStore.loadSessions(),
-      ]);
-    } finally {
-      this.loading = false;
-    }
+    // Load sessions for filter dropdown
+    await this.sessionsStore.loadSessions();
   },
   methods: {
+    async fetchCampers(): Promise<void> {
+      if (!this.isInitialized) return;
+
+      try {
+        const filterBy = this.buildFilterByArray();
+        const response = await this.campersStore.loadCampersPaginated({
+          offset: this.filters.pagination.offset,
+          limit: this.filters.pagination.limit,
+          search: this.filters.searchQuery || undefined,
+          filterBy: filterBy.length > 0 ? filterBy : undefined,
+          sortBy: this.filters.pagination.sortBy,
+          sortOrder: this.filters.pagination.sortOrder,
+        });
+
+        this.campersData = response.items;
+        this.updateFilter("pagination", {
+          ...this.filters.pagination,
+          total: response.total,
+        });
+      } catch (error) {
+        console.error("Failed to fetch campers:", error);
+        this.campersData = [];
+      }
+    },
+
+    buildFilterByArray(): string[] {
+      const filterBy: string[] = [];
+
+      if (this.filters.filterGender) {
+        filterBy.push(`gender==${this.filters.filterGender}`);
+      }
+
+      if (this.filters.filterAge) {
+        const [min, max] =
+          this.filters.filterAge === "15+"
+            ? [15, 999]
+            : this.filters.filterAge.split("-").map(Number);
+        filterBy.push(`age>=${min}`);
+        if (max !== 999) filterBy.push(`age<=${max}`);
+      }
+
+      if (this.filters.filterSession) {
+        filterBy.push(`sessionId==${this.filters.filterSession}`);
+      }
+
+      return filterBy;
+    },
+
     calculateAge(birthday: string): number {
       return birthday ? dateUtils.calculateAge(birthday) : 0;
     },
     clearFilters(): void {
-      this.searchQuery = "";
-      this.filterGender = "";
-      this.filterAge = "";
-      this.filterSession = "";
+      this.updateFilters({
+        searchQuery: "",
+        filterGender: "",
+        filterAge: "",
+        filterSession: "",
+        pagination: {
+          ...this.filters.pagination,
+          offset: 0,
+        },
+      });
     },
     formatGender(gender: string): string {
       return gender.charAt(0).toUpperCase() + gender.slice(1);
@@ -343,12 +349,12 @@ export default defineComponent({
     getSessionName(sessionId: string | undefined): string {
       if (!sessionId) return "No session";
       const session = this.sessionsStore.sessions.find(
-        (s) => s.meta.id === sessionId,
+        (s) => s.meta.id === sessionId
       );
       return session?.meta.name || "Unknown Session";
     },
-    selectCamper(camperId: string): void {
-      this.selectedCamperId = camperId;
+    selectCamper(camper: Camper): void {
+      this.selectedCamperId = camper.meta.id;
     },
     editCamper(): void {
       if (!this.selectedCamper) return;
@@ -372,6 +378,7 @@ export default defineComponent({
       if (!this.camperToDelete) return;
 
       await this.campersStore.deleteCamper(this.camperToDelete.id);
+      await this.fetchCampers();
       this.selectedCamperId = null;
       this.showConfirmModal = false;
       this.camperToDelete = null;
@@ -386,37 +393,52 @@ export default defineComponent({
     },
     async handleImportSuccess(): Promise<void> {
       // Reload campers after successful import
-      await this.campersStore.loadCampers();
+      await this.fetchCampers();
       this.showCSVModal = false;
     },
   },
   watch: {
-    searchQuery() {
-      this.currentPage = 1;
+    isInitialized: {
+      immediate: true,
+      handler(initialized) {
+        if (initialized) {
+          this.fetchCampers();
+        }
+      },
     },
-    filterGender() {
-      this.currentPage = 1;
+    "filters.searchQuery"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchCampers();
     },
-    filterAge() {
-      this.currentPage = 1;
+    "filters.filterGender"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchCampers();
+    },
+    "filters.filterAge"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchCampers();
+    },
+    "filters.filterSession"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchCampers();
     },
   },
 });
 </script>
 
-<style scoped>
-.campers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 0.5rem;
-}
-
-.campers-grid .empty-state {
-  grid-column: 1 / -1;
-}
-
-/* Table View Styles */
-/* Table cell custom styles */
+<style scoped lang="scss">
 .camper-name-content {
   display: flex;
   align-items: center;
@@ -440,24 +462,5 @@ export default defineComponent({
 .camper-fullname {
   font-weight: 500;
   color: var(--text-primary);
-}
-
-.event-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 8px;
-  background: var(--primary-color);
-  color: white;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.badge-sm {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
 }
 </style>
