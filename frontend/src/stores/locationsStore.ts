@@ -27,10 +27,54 @@ export const useLocationsStore = defineStore("locations", {
   },
 
   actions: {
-    async loadLocations(): Promise<void> {
+    async loadLocations(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<
+      Location[] | { items: Location[]; total: number; limit: number; offset: number; next: number | null }
+    > {
       this.loading = true;
       try {
-        this.locations = await locationsService.listLocations();
+        const response = await locationsService.listLocations(params);
+        this.locations = Array.isArray(response) ? response : response.items;
+        return response;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadLocationsPaginated(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<{
+      items: Location[];
+      total: number;
+      limit: number;
+      offset: number;
+      next: number | null;
+    }> {
+      this.loading = true;
+      try {
+        const response = await locationsService.listLocations(params);
+        if (Array.isArray(response)) {
+          return {
+            items: response,
+            total: response.length,
+            limit: params?.limit || response.length,
+            offset: params?.offset || 0,
+            next: null,
+          };
+        }
+        this.locations = response.items;
+        return response;
       } finally {
         this.loading = false;
       }

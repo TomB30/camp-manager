@@ -1,6 +1,6 @@
 <template>
   <div class="activity-locations-tab view">
-    <LoadingState v-if="loading" message="Loading locations..." />
+    <LoadingState v-if="!isInitialized" message="Loading locations..." />
     <template v-else>
       <TabHeader
         title="Locations"
@@ -9,149 +9,63 @@
         @action="showModal = true"
       />
 
-      <!-- Search and Filters -->
       <FilterBar
-        v-model:searchQuery="searchQuery"
-        v-model:filter-area="filterArea"
+        v-model:searchQuery="filters.searchQuery"
+        v-model:filter-area="filters.filterArea"
         :filters="locationFilters"
-        :filtered-count="filteredLocations.length"
+        :filtered-count="filters.pagination.total"
         search-placeholder="Search by location name..."
-        :total-count="locationsStore.locations.length"
+        :total-count="filters.pagination.total"
         @clear="clearFilters"
       >
         <template #prepend>
-          <ViewToggle v-model="viewMode" />
+          <ViewToggle v-model="filters.viewMode" />
         </template>
       </FilterBar>
 
-      <!-- Empty State -->
-      <EmptyState
-        v-if="locationsStore.locations.length === 0"
-        icon-name="MapPin"
-        title="No locations configured"
-        message="Add your first location to start organizing your camp spaces."
-        action-text="Location"
-        @action="showModal = true"
-      />
-
-      <!-- Grid View -->
-      <transition-group
-        v-else-if="viewMode === 'grid'"
-        name="list"
-        tag="div"
-        class="locations-grid transition-wrapper"
-      >
-        <LocationCard
-          v-for="location in filteredLocations"
-          :key="location.meta.id"
-          :location="location"
-          @click="selectLocation(location.meta.id)"
-        />
-      </transition-group>
-
-      <!-- Table View -->
-      <DataTable
-        v-else
+      <ServerTable
+        v-if="isInitialized"
         :columns="locationColumns"
-        :data="filteredLocations"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
+        :rows="locationsData"
+        row-key="meta.id"
+        :grid="filters.viewMode === 'grid'"
+        :loading="loading"
+        :pagination="filters.pagination"
+        @update:pagination="
+          updateFilter('pagination', $event);
+          fetchLocations();
+        "
+        @row-click="selectLocation"
       >
-        <template #cell-name="{ item }">
-          <div class="location-name-content">
-            <div class="location-icon-sm" :style="{ background: '#3b82f6' }">
-              <Icon name="MapPin" :size="18" :stroke-width="2" />
-            </div>
-            <div class="location-name">{{ item.meta.name }}</div>
-          </div>
+        <template #item="{ item }">
+          <LocationCard :location="item" @click="selectLocation(item)" />
         </template>
 
-        <template #cell-location="{ item }">
-          <span v-if="item.spec.areaId">
-            {{
-              areasStore.getAreaById(item.spec.areaId)?.meta.name || "Unknown"
-            }}
-          </span>
-          <span v-else class="text-caption">No area</span>
-        </template>
-
-        <template #cell-equipment="{ item }">
-          <span
-            v-if="item.spec.equipment && item.spec.equipment.length > 0"
-            class="badge badge-success badge-sm"
-          >
-            {{ item.spec.equipment.length }} item(s)
-          </span>
-          <span v-else class="text-caption">None</span>
-        </template>
-
-        <template #cell-usage="{ item }">
-          <div class="usage-indicator">
-            <div class="usage-bar-sm">
-              <div
-                class="usage-fill-sm"
-                :style="{
-                  width: `${getLocationUsage(item.meta.id)}%`,
-                  background:
-                    getLocationUsage(item.meta.id) > 80
-                      ? 'var(--error-color)'
-                      : 'var(--success-color)',
-                }"
-              ></div>
-            </div>
-            <span class="usage-text"
-              >{{ getLocationUsage(item.meta.id).toFixed(0) }}%</span
-            >
-          </div>
-        </template>
-
-        <template #cell-events="{ item }">
-          <span class="event-count">{{
-            getLocationEvents(item.meta.id).length
-          }}</span>
-        </template>
-
-        <template #cell-actions="{ item }">
-          <BaseButton
-            outline
-            color="grey-8"
-            size="sm"
-            @click="selectLocation(item.meta.id)"
-            label="View Details"
+        <template #empty>
+          <EmptyState
+            icon-name="MapPin"
+            title="No locations configured"
+            message="Add your first location to start organizing your camp spaces."
+            action-text="Location"
+            @action="showModal = true"
           />
         </template>
-      </DataTable>
+      </ServerTable>
 
-      <!-- Location Detail Modal -->
       <LocationDetailModal
         v-if="!!selectedLocationId"
         :location="selectedLocation"
         @close="selectedLocationId = null"
         @edit="editLocation"
         @delete="deleteLocationConfirm"
-      >
-        <template #events-list>
-          <EventsByDate
-            :events="
-              selectedLocation
-                ? getLocationEvents(selectedLocation.meta.id)
-                : []
-            "
-            :show-enrollment="true"
-            empty-message="No events scheduled"
-          />
-        </template>
-      </LocationDetailModal>
+      />
 
-      <!-- Add/Edit Location Modal -->
       <LocationFormModal
         v-if="showModal"
         :location-id="editingLocationId || undefined"
         @close="closeModal"
       />
 
-      <!-- Confirm Delete Modal -->
       <ConfirmModal
         v-if="showConfirmModal"
         title="Delete Location"
@@ -167,87 +81,112 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useLocationsStore, useAreasStore, useEventsStore } from "@/stores";
+import { useLocationsStore, useAreasStore } from "@/stores";
+import { usePageFilters } from "@/composables/usePageFilters";
 import type { Area, Location } from "@/generated/api";
+import type { QTableColumn } from "quasar";
+import { isBackendEnabled } from "@/config/dataSource";
+import type { Filter } from "@/components/FilterBar.vue";
 import LocationCard from "@/components/cards/LocationCard.vue";
-import FilterBar, { type Filter } from "@/components/FilterBar.vue";
-import EventsByDate from "@/components/EventsByDate.vue";
-import ConfirmModal from "@/components/ConfirmModal.vue";
-import DataTable from "@/components/DataTable.vue";
-import ViewToggle from "@/components/ViewToggle.vue";
+import FilterBar from "@/components/FilterBar.vue";
 import LocationDetailModal from "@/components/modals/LocationDetailModal.vue";
 import LocationFormModal from "@/components/modals/LocationFormModal.vue";
-import EmptyState from "@/components/EmptyState.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
-import Icon from "@/components/Icon.vue";
-import { useToast } from "@/composables/useToast";
+import EmptyState from "@/components/EmptyState.vue";
+import ServerTable from "@/components/ServerTable.vue";
+import ViewToggle from "@/components/ViewToggle.vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
 import LoadingState from "@/components/LoadingState.vue";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
-  name: "LocationsTab",
+  name: "ActivityLocationsTab",
   components: {
     LocationCard,
     FilterBar,
-    EventsByDate,
     ConfirmModal,
-    DataTable,
+    ServerTable,
     ViewToggle,
     LocationDetailModal,
     LocationFormModal,
     EmptyState,
     TabHeader,
-    Icon,
     LoadingState,
   },
   setup() {
+    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("locations", {
+      searchQuery: "",
+      filterArea: "",
+      viewMode: "grid" as "grid" | "table",
+      pagination: {
+        offset: 0,
+        limit: 20,
+        total: 0,
+        sortBy: undefined,
+        sortOrder: "asc" as "asc" | "desc",
+      },
+    });
+
     const locationsStore = useLocationsStore();
-    const toast = useToast();
     const areasStore = useAreasStore();
-    const eventsStore = useEventsStore();
-    return { locationsStore, toast, areasStore, eventsStore };
+    const toast = useToast();
+
+    return {
+      filters,
+      updateFilter,
+      updateFilters,
+      isInitialized,
+      locationsStore,
+      areasStore,
+      toast,
+    };
   },
   data() {
     return {
       loading: false,
-      selectedLocationId: null as string | null,
+      locationsData: [] as Location[],
       showModal: false,
-      editingLocationId: null as string | null,
       showConfirmModal: false,
+      editingLocationId: null as string | null,
+      selectedLocationId: null as string | null,
       confirmAction: null as (() => void) | null,
-      viewMode: "grid" as "grid" | "table",
-      currentPage: 1,
-      pageSize: 10,
-      searchQuery: "",
-      filterArea: "",
       locationColumns: [
-        { key: "name", label: "Location Name", width: "200px" },
-        { key: "capacity", label: "Capacity", width: "100px" },
-        { key: "location", label: "Area", width: "180px" },
-        { key: "equipment", label: "Equipment", width: "120px" },
-        { key: "usage", label: "Usage", width: "140px" },
-        { key: "events", label: "Events", width: "100px" },
-        { key: "actions", label: "Actions", width: "140px" },
-      ],
+        {
+          name: "name",
+          label: "Location Name",
+          field: (row: Location) => row.meta.name,
+          align: "left" as const,
+          sortable: true,
+        },
+        {
+          name: "areaId",
+          label: "Area",
+          field: (row: Location) => row.spec.areaId,
+          align: "left" as const,
+          sortable: true,
+          format: (value: string) => this.getAreaName(value),
+        },
+        {
+          name: "capacity",
+          label: "Capacity",
+          field: (row: Location) => row.spec.capacity,
+          align: "left" as const,
+          sortable: true,
+          format: (value: number | undefined) =>
+            value ? value.toString() : "Unlimited",
+        },
+      ] as QTableColumn[],
     };
   },
   async created() {
-    this.loading = true;
-    try {
-      await Promise.all([
-        this.locationsStore.loadLocations(),
-        this.areasStore.loadAreas(),
-        this.eventsStore.loadEvents(),
-      ]);
-    } finally {
-      this.loading = false;
-    }
+    await this.areasStore.loadAreas();
   },
   computed: {
     locationFilters(): Filter[] {
       return [
         {
           model: "filterArea",
-          value: this.filterArea,
+          value: this.filters.filterArea,
           placeholder: "Filter by Area",
           options: this.areasStore.areas.map((area: Area) => ({
             label: area.meta.name,
@@ -259,83 +198,92 @@ export default defineComponent({
     selectedLocation(): Location | null {
       if (!this.selectedLocationId) return null;
       return (
-        this.locationsStore.getLocationById(this.selectedLocationId) || null
+        this.locationsData.find((l) => l.meta.id === this.selectedLocationId) ||
+        null
       );
-    },
-    filteredLocations(): Location[] {
-      let locations: Location[] = this.locationsStore.locations;
-
-      // Search filter
-      if (this.searchQuery) {
-        const query = this.searchQuery.toLowerCase();
-        locations = locations.filter((location: Location) =>
-          location.meta.name.toLowerCase().includes(query),
-        );
-      }
-
-      return locations;
-    },
-  },
-  watch: {
-    searchQuery() {
-      this.currentPage = 1;
-    },
-    filterArea() {
-      this.currentPage = 1;
     },
   },
   methods: {
+    async fetchLocations(): Promise<void> {
+      if (!this.isInitialized) return;
+
+      if (!isBackendEnabled()) {
+        const response = await this.locationsStore.loadLocations();
+        this.locationsData = Array.isArray(response) ? response : response.items;
+      } else {
+        try {
+          const filterBy = this.buildFilterByArray();
+          const response = await this.locationsStore.loadLocationsPaginated({
+            offset: this.filters.pagination.offset,
+            limit: this.filters.pagination.limit,
+            search: this.filters.searchQuery || undefined,
+            filterBy: filterBy.length > 0 ? filterBy : undefined,
+            sortBy: this.filters.pagination.sortBy,
+            sortOrder: this.filters.pagination.sortOrder,
+          });
+
+          this.locationsData = response.items;
+          this.updateFilter("pagination", {
+            ...this.filters.pagination,
+            total: response.total,
+          });
+        } catch (error) {
+          console.error("Failed to fetch locations:", error);
+          this.locationsData = [];
+        }
+      }
+    },
+
+    buildFilterByArray(): string[] {
+      const filterBy: string[] = [];
+
+      if (this.filters.filterArea) {
+        filterBy.push(`areaId==${this.filters.filterArea}`);
+      }
+
+      return filterBy;
+    },
+
     clearFilters() {
-      this.searchQuery = "";
-      this.filterArea = "";
+      this.updateFilters({
+        searchQuery: "",
+        filterArea: "",
+        pagination: {
+          ...this.filters.pagination,
+          offset: 0,
+        },
+      });
     },
-    getLocationEvents(locationId: string) {
-      return this.eventsStore.locationEvents(locationId);
+
+    selectLocation(location: Location) {
+      this.selectedLocationId = location.meta.id;
     },
-    getLocationUsage(locationId: string): number {
-      const locationEvents = this.eventsStore.locationEvents(locationId);
-      if (locationEvents.length === 0) return 0;
 
-      const location = this.locationsStore.getLocationById(locationId);
-      if (!location) return 0;
-
-      // Calculate average capacity usage
-      const totalUsage = locationEvents.reduce((sum, event) => {
-        return (
-          sum +
-          (this.eventsStore.getEventCamperIds(event.meta.id).length /
-            (location.spec.capacity || 0)) *
-            100
-        );
-      }, 0);
-
-      return totalUsage / locationEvents.length;
+    getAreaName(areaId: string): string {
+      const area = this.areasStore.getAreaById(areaId);
+      return area?.meta.name || "Unknown Area";
     },
-    selectLocation(locationId: string) {
-      this.selectedLocationId = locationId;
-    },
-    editLocation() {
-      if (!this.selectedLocation) return;
 
-      this.editingLocationId = this.selectedLocation.meta.id;
+    editLocation(location: Location) {
+      this.editingLocationId = location.meta.id;
       this.selectedLocationId = null;
       this.showModal = true;
     },
+
     deleteLocationConfirm() {
       if (!this.selectedLocationId) return;
+
       this.confirmAction = async () => {
         if (this.selectedLocationId) {
-          try {
-            await this.locationsStore.deleteLocation(this.selectedLocationId);
-            this.toast.success("Location deleted successfully");
-            this.selectedLocationId = null;
-          } catch (error: any) {
-            this.toast.error(error.message || "Failed to delete location");
-          }
+          await this.locationsStore.deleteLocation(this.selectedLocationId);
+          await this.fetchLocations();
+          this.toast.success("Location deleted successfully");
+          this.selectedLocationId = null;
         }
       };
       this.showConfirmModal = true;
     },
+
     async handleConfirmAction() {
       if (this.confirmAction) {
         await this.confirmAction();
@@ -343,111 +291,40 @@ export default defineComponent({
       this.showConfirmModal = false;
       this.confirmAction = null;
     },
+
     handleCancelConfirm() {
       this.showConfirmModal = false;
       this.confirmAction = null;
     },
+
     closeModal() {
       this.showModal = false;
       this.editingLocationId = null;
     },
   },
+  watch: {
+    isInitialized: {
+      immediate: true,
+      handler(initialized) {
+        if (initialized) {
+          this.fetchLocations();
+        }
+      },
+    },
+    "filters.searchQuery"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchLocations();
+    },
+    "filters.filterArea"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchLocations();
+    },
+  },
 });
 </script>
-
-<style scoped>
-.activity-locations-tab {
-  animation: slideIn 0.3s ease;
-}
-
-.locations-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 0.5rem;
-}
-
-.locations-grid .empty-state {
-  grid-column: 1 / -1;
-}
-
-.location-name-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.location-icon-sm {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.location-name {
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.usage-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.usage-bar-sm {
-  flex: 1;
-  height: 6px;
-  background: var(--border-color);
-  border-radius: 999px;
-  overflow: hidden;
-  min-width: 60px;
-}
-
-.usage-fill-sm {
-  height: 100%;
-  transition:
-    width 0.3s,
-    background 0.3s;
-}
-
-.usage-text {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.event-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 8px;
-  background: var(--primary-color);
-  color: white;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@media (max-width: 768px) {
-  .locations-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
