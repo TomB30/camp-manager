@@ -20,13 +20,13 @@
     </template>
 
     <!-- Table mode: Custom cell slots -->
-    <template v-for="col in columns" :key="col.name" #[`body-cell-${col.name}`]="props">
+    <template
+      v-for="col in columns"
+      :key="col.name"
+      #[`body-cell-${col.name}`]="props"
+    >
       <q-td :props="props">
-        <slot
-          :name="`cell-${col.name}`"
-          :item="props.row"
-          :value="props.value"
-        >
+        <slot :name="`cell-${col.name}`" :item="props.row" :value="props.value">
           {{ props.value }}
         </slot>
       </q-td>
@@ -34,12 +34,14 @@
 
     <!-- Empty state slot -->
     <template #no-data>
-      <slot name="empty">
-        <div class="text-center q-pa-lg">
-          <q-icon name="inbox" size="3em" color="grey-5" />
-          <div class="text-h6 q-mt-md">No data available</div>
-        </div>
-      </slot>
+      <div class="empty-state-wrapper">
+        <slot name="empty">
+          <div class="text-center q-pa-lg">
+            <q-icon name="inbox" size="3em" color="grey-5" />
+            <div class="text-h6 q-mt-md">No data available</div>
+          </div>
+        </slot>
+      </div>
     </template>
 
     <!-- Loading slot -->
@@ -161,5 +163,14 @@ export default defineComponent({
 /* Ensure pagination shows in grid mode */
 .server-table :deep(.q-table__bottom) {
   border-top: 1px solid var(--border-light);
+}
+
+/* Center empty state */
+.empty-state-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  width: 100%;
 }
 </style>

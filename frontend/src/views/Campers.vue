@@ -349,7 +349,7 @@ export default defineComponent({
     getSessionName(sessionId: string | undefined): string {
       if (!sessionId) return "No session";
       const session = this.sessionsStore.sessions.find(
-        (s) => s.meta.id === sessionId
+        (s) => s.meta.id === sessionId,
       );
       return session?.meta.name || "Unknown Session";
     },

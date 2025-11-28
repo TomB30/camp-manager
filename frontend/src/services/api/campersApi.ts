@@ -27,18 +27,26 @@ async function listCampers(params?: {
   filterBy?: string[];
   sortBy?: string;
   sortOrder?: "asc" | "desc";
-}): Promise<{ items: Camper[]; total: number; limit: number; offset: number; next: number | null }> {
+}): Promise<{
+  items: Camper[];
+  total: number;
+  limit: number;
+  offset: number;
+  next: number | null;
+}> {
   const response = await sdk.listCampers({
     client: apiClient,
     path: { camp_id: getApiCampId() },
-    query: params ? {
-      limit: params.limit,
-      offset: params.offset,
-      search: params.search,
-      filterBy: params.filterBy,
-      sortBy: params.sortBy as any,
-      sortOrder: params.sortOrder,
-    } : undefined,
+    query: params
+      ? {
+          limit: params.limit,
+          offset: params.offset,
+          search: params.search,
+          filterBy: params.filterBy,
+          sortBy: params.sortBy as any,
+          sortOrder: params.sortOrder,
+        }
+      : undefined,
   });
 
   if (response.error) {
@@ -115,7 +123,9 @@ async function getCampersByFamilyGroup(
 ): Promise<Camper[]> {
   // Backend doesn't have this specific filter, so fetch all and filter client-side
   const response = await listCampers();
-  return response.items.filter((c: Camper) => c.spec.housingGroupId === housingGroupId);
+  return response.items.filter(
+    (c: Camper) => c.spec.housingGroupId === housingGroupId,
+  );
 }
 
 async function getCampersBySession(sessionId: string): Promise<Camper[]> {

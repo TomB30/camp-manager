@@ -44,7 +44,7 @@ export const useCampersStore = defineStore("campers", {
         this.loading = false;
       }
     },
-    
+
     async loadCampersPaginated(params: {
       limit?: number;
       offset?: number;
@@ -52,7 +52,13 @@ export const useCampersStore = defineStore("campers", {
       filterBy?: string[];
       sortBy?: string;
       sortOrder?: "asc" | "desc";
-    }): Promise<{ items: Camper[]; total: number; limit: number; offset: number; next: number | null }> {
+    }): Promise<{
+      items: Camper[];
+      total: number;
+      limit: number;
+      offset: number;
+      next: number | null;
+    }> {
       this.loading = true;
       try {
         const response = await campersApi.listCampers(params);
