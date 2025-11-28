@@ -14,7 +14,17 @@ import type {
 const impl = () => (isBackendEnabled() ? timeBlocksApi : timeBlocksStorage);
 
 export const timeBlocksService = {
-  listTimeBlocks: (): Promise<TimeBlock[]> => impl().listTimeBlocks(),
+  listTimeBlocks: (params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    filterBy?: string[];
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }): Promise<
+    | { items: TimeBlock[]; total: number; limit: number; offset: number; next: number | null }
+    | TimeBlock[]
+  > => impl().listTimeBlocks(params as any),
   createTimeBlock: (data: TimeBlockCreationRequest): Promise<TimeBlock> =>
     impl().createTimeBlock(data),
   updateTimeBlock: (

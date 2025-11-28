@@ -47,10 +47,54 @@ export const useProgramsStore = defineStore("programs", {
   },
 
   actions: {
-    async loadPrograms(): Promise<void> {
+    async loadPrograms(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<
+      Program[] | { items: Program[]; total: number; limit: number; offset: number; next: number | null }
+    > {
       this.loading = true;
       try {
-        this.programs = await programsService.listPrograms();
+        const response = await programsService.listPrograms(params);
+        this.programs = Array.isArray(response) ? response : response.items;
+        return response;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadProgramsPaginated(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<{
+      items: Program[];
+      total: number;
+      limit: number;
+      offset: number;
+      next: number | null;
+    }> {
+      this.loading = true;
+      try {
+        const response = await programsService.listPrograms(params);
+        if (Array.isArray(response)) {
+          return {
+            items: response,
+            total: response.length,
+            limit: params?.limit || response.length,
+            offset: params?.offset || 0,
+            next: null,
+          };
+        }
+        this.programs = response.items;
+        return response;
       } finally {
         this.loading = false;
       }

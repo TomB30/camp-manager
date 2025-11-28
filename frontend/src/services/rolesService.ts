@@ -14,7 +14,17 @@ import type {
 const impl = () => (isBackendEnabled() ? rolesApi : rolesStorage);
 
 export const rolesService = {
-  listRoles: (): Promise<Role[]> => impl().listRoles(),
+  listRoles: (params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    filterBy?: string[];
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }): Promise<
+    | { items: Role[]; total: number; limit: number; offset: number; next: number | null }
+    | Role[]
+  > => impl().listRoles(params as any),
   createRole: (data: RoleCreationRequest): Promise<Role> =>
     impl().createRole(data),
   updateRole: (id: string, data: RoleUpdateRequest): Promise<Role> =>

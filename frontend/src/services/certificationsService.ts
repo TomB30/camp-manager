@@ -15,8 +15,17 @@ const impl = () =>
   isBackendEnabled() ? certificationsApi : certificationsStorage;
 
 export const certificationsService = {
-  listCertifications: (): Promise<Certification[]> =>
-    impl().listCertifications(),
+  listCertifications: (params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    filterBy?: string[];
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }): Promise<
+    | { items: Certification[]; total: number; limit: number; offset: number; next: number | null }
+    | Certification[]
+  > => impl().listCertifications(params as any),
   createCertification: (
     data: CertificationCreationRequest,
   ): Promise<Certification> => impl().createCertification(data),

@@ -18,17 +18,46 @@ export const areasApi = {
   getAreaById,
 };
 
-async function listAreas(): Promise<Area[]> {
+async function listAreas(params?: {
+  limit?: number;
+  offset?: number;
+  search?: string;
+  filterBy?: string[];
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}): Promise<{
+  items: Area[];
+  total: number;
+  limit: number;
+  offset: number;
+  next: number | null;
+}> {
   const response = await sdk.listAreas({
     client: apiClient,
     path: { camp_id: getApiCampId() },
+    query: params
+      ? {
+          limit: params.limit,
+          offset: params.offset,
+          search: params.search,
+          filterBy: params.filterBy,
+          sortBy: params.sortBy as any,
+          sortOrder: params.sortOrder,
+        }
+      : undefined,
   });
 
   if (response.error) {
     throw new Error("Failed to fetch areas");
   }
 
-  return response.data?.items || [];
+  return {
+    items: response.data?.items || [],
+    total: response.data?.total || 0,
+    limit: response.data?.limit || 50,
+    offset: response.data?.offset || 0,
+    next: response.data?.next ?? null,
+  };
 }
 
 async function createArea(area: AreaCreationRequest): Promise<Area> {

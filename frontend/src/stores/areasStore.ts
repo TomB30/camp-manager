@@ -21,10 +21,54 @@ export const useAreasStore = defineStore("areas", {
   },
 
   actions: {
-    async loadAreas(): Promise<void> {
+    async loadAreas(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<
+      Area[] | { items: Area[]; total: number; limit: number; offset: number; next: number | null }
+    > {
       this.loading = true;
       try {
-        this.areas = await areasService.listAreas();
+        const response = await areasService.listAreas(params);
+        this.areas = Array.isArray(response) ? response : response.items;
+        return response;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadAreasPaginated(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<{
+      items: Area[];
+      total: number;
+      limit: number;
+      offset: number;
+      next: number | null;
+    }> {
+      this.loading = true;
+      try {
+        const response = await areasService.listAreas(params);
+        if (Array.isArray(response)) {
+          return {
+            items: response,
+            total: response.length,
+            limit: params?.limit || response.length,
+            offset: params?.offset || 0,
+            next: null,
+          };
+        }
+        this.areas = response.items;
+        return response;
       } finally {
         this.loading = false;
       }

@@ -14,7 +14,17 @@ import type {
 const impl = () => (isBackendEnabled() ? housingRoomsApi : housingRoomsStorage);
 
 export const housingRoomsService = {
-  listHousingRooms: (): Promise<HousingRoom[]> => impl().listHousingRooms(),
+  listHousingRooms: (params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    filterBy?: string[];
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }): Promise<
+    | { items: HousingRoom[]; total: number; limit: number; offset: number; next: number | null }
+    | HousingRoom[]
+  > => impl().listHousingRooms(params as any),
   createHousingRoom: (data: HousingRoomCreationRequest): Promise<HousingRoom> =>
     impl().createHousingRoom(data),
   updateHousingRoom: (

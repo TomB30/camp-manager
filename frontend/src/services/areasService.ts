@@ -14,7 +14,17 @@ import type {
 const impl = () => (isBackendEnabled() ? areasApi : areasStorage);
 
 export const areasService = {
-  listAreas: (): Promise<Area[]> => impl().listAreas(),
+  listAreas: (params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    filterBy?: string[];
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }): Promise<
+    | { items: Area[]; total: number; limit: number; offset: number; next: number | null }
+    | Area[]
+  > => impl().listAreas(params as any),
   createArea: (data: AreaCreationRequest): Promise<Area> =>
     impl().createArea(data),
   updateArea: (id: string, data: AreaUpdateRequest): Promise<Area> =>

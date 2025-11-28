@@ -14,7 +14,17 @@ import type {
 const impl = () => (isBackendEnabled() ? programsApi : programsStorage);
 
 export const programsService = {
-  listPrograms: (): Promise<Program[]> => impl().listPrograms(),
+  listPrograms: (params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    filterBy?: string[];
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }): Promise<
+    | { items: Program[]; total: number; limit: number; offset: number; next: number | null }
+    | Program[]
+  > => impl().listPrograms(params as any),
   createProgram: (data: ProgramCreationRequest): Promise<Program> =>
     impl().createProgram(data),
   updateProgram: (id: string, data: ProgramUpdateRequest): Promise<Program> =>

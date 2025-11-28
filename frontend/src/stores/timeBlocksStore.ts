@@ -21,10 +21,54 @@ export const useTimeBlocksStore = defineStore("timeBlocks", {
   },
 
   actions: {
-    async loadTimeBlocks(): Promise<void> {
+    async loadTimeBlocks(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<
+      TimeBlock[] | { items: TimeBlock[]; total: number; limit: number; offset: number; next: number | null }
+    > {
       this.loading = true;
       try {
-        this.timeBlocks = await timeBlocksService.listTimeBlocks();
+        const response = await timeBlocksService.listTimeBlocks(params);
+        this.timeBlocks = Array.isArray(response) ? response : response.items;
+        return response;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadTimeBlocksPaginated(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<{
+      items: TimeBlock[];
+      total: number;
+      limit: number;
+      offset: number;
+      next: number | null;
+    }> {
+      this.loading = true;
+      try {
+        const response = await timeBlocksService.listTimeBlocks(params);
+        if (Array.isArray(response)) {
+          return {
+            items: response,
+            total: response.length,
+            limit: params?.limit || response.length,
+            offset: params?.offset || 0,
+            next: null,
+          };
+        }
+        this.timeBlocks = response.items;
+        return response;
       } finally {
         this.loading = false;
       }
