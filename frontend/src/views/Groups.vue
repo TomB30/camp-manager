@@ -1,6 +1,6 @@
 <template>
   <div class="groups-tab view">
-    <LoadingState v-if="loading" message="Loading groups..." />
+    <LoadingState v-if="!isInitialized" message="Loading groups..." />
     <template v-else>
       <TabHeader
         title="Groups"
@@ -10,66 +10,43 @@
       />
 
       <FilterBar
-        v-model:searchQuery="searchQuery"
-        v-model:filter-type="filterType"
-        v-model:filter-session="filterSession"
+        v-model:searchQuery="filters.searchQuery"
+        v-model:filter-type="filters.filterType"
+        v-model:filter-session="filters.filterSession"
         :filters="groupsFilters"
-        :filtered-count="filteredGroups.length"
-        :total-count="groupsStore.groups.length"
+        :filtered-count="filters.pagination.total"
+        :total-count="filters.pagination.total"
         search-placeholder="Search groups..."
         @clear="clearFilters"
       >
         <template #prepend>
-          <ViewToggle v-model="viewMode" />
+          <ViewToggle v-model="filters.viewMode" />
         </template>
       </FilterBar>
 
-      <TransitionGroup
-        v-if="viewMode === 'grid'"
-        name="list"
-        tag="div"
-        class="groups-grid"
-      >
-        <GroupCard
-          v-for="group in filteredGroups"
-          :key="group.meta.id"
-          :group="group"
-          :campers-count="getCampersCount(group.meta.id)"
-          :staff-count="getStaffCount(group.meta.id)"
-          @click="selectGroup(group.meta.id)"
-        />
-
-        <EmptyState
-          v-if="filteredGroups.length === 0 && groupsStore.groups.length === 0"
-          type="empty"
-          title="No Groups Yet"
-          message="Create your first group to organize campers and staff efficiently."
-          action-text="Group"
-          icon-name="FolderOpen"
-          @action="showModal = true"
-        />
-
-        <EmptyState
-          v-if="filteredGroups.length === 0 && groupsStore.groups.length > 0"
-          type="no-results"
-          title="No Groups Found"
-          message="No groups match your current filters. Try adjusting your search criteria."
-          action-text="Clear Filters"
-          action-button-class="btn-secondary"
-          hide-action-icon
-          icon-name="FolderOpen"
-          @action="clearFilters"
-        />
-      </TransitionGroup>
-
-      <DataTable
-        v-if="viewMode === 'table'"
+      <ServerTable
+        v-if="isInitialized"
         :columns="groupColumns"
-        :data="filteredGroups"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
+        :rows="groupsData"
+        row-key="meta.id"
+        :grid="filters.viewMode === 'grid'"
+        :loading="loading"
+        :pagination="filters.pagination"
+        @update:pagination="
+          updateFilter('pagination', $event);
+          fetchGroups();
+        "
+        @row-click="selectGroup"
       >
+        <template #item="{ item }">
+          <GroupCard
+            :group="item"
+            :campers-count="getCampersCount(item.meta.id)"
+            :staff-count="getStaffCount(item.meta.id)"
+            @click="selectGroup(item)"
+          />
+        </template>
+
         <template #cell-name="{ item }">
           <div class="group-name-content">
             <div class="group-name-text">{{ item.meta.name }}</div>
@@ -78,45 +55,24 @@
 
         <template #cell-type="{ item }">
           <div class="type-badges">
-            <span v-if="isNestedGroup(item)" class="badge badge-sm badge-info"
-              >Nested</span
-            >
-            <span
-              v-else-if="hasManualCampers(item)"
-              class="badge badge-sm badge-primary"
-              >Manual Campers</span
-            >
+            <span v-if="isNestedGroup(item)" class="badge badge-sm badge-info">Nested</span>
+            <span v-else-if="hasManualCampers(item)" class="badge badge-sm badge-primary">Manual Campers</span>
             <span v-else class="badge badge-sm badge-secondary">Empty</span>
 
-            <span
-              v-if="item.housingRoomId"
-              class="badge badge-sm badge-secondary"
-              >Housing</span
-            >
+            <span v-if="item.spec.housingRoomId" class="badge badge-sm badge-secondary">Housing</span>
           </div>
         </template>
 
         <template #cell-members="{ item }">
-          <div
-            class="members-counts text-caption row items-center q-gutter-x-md"
-          >
-            <span
-              v-if="getCampersCount(item.meta.id) > 0"
-              class="badge badge-success badge-sm"
-            >
+          <div class="members-counts text-caption row items-center q-gutter-x-md">
+            <span v-if="getCampersCount(item.meta.id) > 0" class="badge badge-success badge-sm">
               {{ getCampersCount(item.meta.id) }} campers
             </span>
-            <span
-              v-if="getStaffCount(item.meta.id) > 0"
-              class="badge badge-success badge-sm"
-            >
+            <span v-if="getStaffCount(item.meta.id) > 0" class="badge badge-success badge-sm">
               {{ getStaffCount(item.meta.id) }} staff
             </span>
             <span
-              v-if="
-                getCampersCount(item.meta.id) === 0 &&
-                getStaffCount(item.meta.id) === 0
-              "
+              v-if="getCampersCount(item.meta.id) === 0 && getStaffCount(item.meta.id) === 0"
               class="text-caption text-sm"
             >
               No members
@@ -124,23 +80,17 @@
           </div>
         </template>
 
-        <template #cell-session="{ item }">
-          <span v-if="item.sessionId" class="text-caption">{{
-            getSessionName(item.sessionId)
-          }}</span>
-          <span v-else class="text-caption text-sm">-</span>
-        </template>
-
-        <template #cell-actions="{ item }">
-          <BaseButton
-            outline
-            color="grey-8"
-            size="sm"
-            @click="selectGroup(item.meta.id)"
-            label="View Details"
+        <template #empty>
+          <EmptyState
+            type="empty"
+            title="No Groups Yet"
+            message="Create your first group to organize campers and staff efficiently."
+            action-text="Group"
+            icon-name="FolderOpen"
+            @action="showModal = true"
           />
         </template>
-      </DataTable>
+      </ServerTable>
 
       <GroupDetailModal
         v-if="!!selectedGroupId"
@@ -191,18 +141,20 @@ import {
   useHousingRoomsStore,
   useCertificationsStore,
 } from "@/stores";
+import { usePageFilters } from "@/composables/usePageFilters";
 import type { Group, Camper, StaffMember, Session } from "@/generated/api";
+import type { QTableColumn } from "quasar";
+import { isBackendEnabled } from "@/config/dataSource";
 import EmptyState from "@/components/EmptyState.vue";
 import GroupCard from "@/components/cards/GroupCard.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar, { type Filter } from "@/components/FilterBar.vue";
-import DataTable from "@/components/DataTable.vue";
+import ServerTable from "@/components/ServerTable.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import GroupDetailModal from "@/components/modals/GroupDetailModal.vue";
 import GroupFormModal from "@/components/modals/GroupFormModal.vue";
 import { useToast } from "@/composables/useToast";
 import TabHeader from "@/components/settings/TabHeader.vue";
-import Icon from "@/components/Icon.vue";
 import LoadingState from "@/components/LoadingState.vue";
 
 export default defineComponent({
@@ -212,28 +164,44 @@ export default defineComponent({
     GroupCard,
     ConfirmModal,
     FilterBar,
-    DataTable,
+    ServerTable,
     ViewToggle,
     GroupDetailModal,
     GroupFormModal,
     TabHeader,
-    Icon,
     LoadingState,
+  },
+  setup() {
+    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("groups", {
+      searchQuery: "",
+      filterType: "",
+      filterSession: "",
+      viewMode: "grid" as "grid" | "table",
+      pagination: {
+        offset: 0,
+        limit: 20,
+        total: 0,
+        sortBy: undefined,
+        sortOrder: "asc" as "asc" | "desc",
+      },
+    });
+
+    return {
+      filters,
+      updateFilter,
+      updateFilters,
+      isInitialized,
+    };
   },
   data() {
     return {
       loading: false,
+      groupsData: [] as Group[],
       selectedGroupId: null as string | null,
       showModal: false,
       editingGroupId: null as string | null,
       showConfirmModal: false,
       groupToDelete: null as { id: string; name: string } | null,
-      searchQuery: "",
-      filterType: "",
-      filterSession: "",
-      viewMode: "grid" as "grid" | "table",
-      currentPage: 1,
-      pageSize: 10,
       formData: {
         name: "",
         description: "",
@@ -244,32 +212,49 @@ export default defineComponent({
         staffIds: [] as string[],
       },
       groupColumns: [
-        { key: "name", label: "Group Name", width: "200px" },
-        { key: "type", label: "Type", width: "180px" },
-        { key: "members", label: "Members", width: "180px" },
-        { key: "session", label: "Session", width: "150px" },
-        { key: "actions", label: "Actions", width: "140px" },
-      ],
+        {
+          name: "name",
+          label: "Group Name",
+          field: (row: Group) => row.meta.name,
+          align: "left" as const,
+          sortable: true,
+        },
+        {
+          name: "type",
+          label: "Type",
+          field: (row: Group) => row.spec.groupIds ? "nested" : "manual",
+          align: "left" as const,
+        },
+        {
+          name: "members",
+          label: "Members",
+          field: (row: Group) => row.spec.camperIds?.length || 0,
+          align: "left" as const,
+        },
+        {
+          name: "sessionId",
+          label: "Session",
+          field: (row: Group) => row.spec.sessionId,
+          align: "left" as const,
+          sortable: true,
+          format: (value: string | undefined) => value ? this.getSessionName(value) : "-",
+        },
+      ] as QTableColumn[],
     };
   },
   async created() {
-    this.loading = true;
-    try {
-      await Promise.all([
-        this.groupsStore.loadGroups(),
-        this.campersStore.loadCampers(),
-        this.staffMembersStore.loadStaffMembers(),
-        this.sessionsStore.loadSessions(),
-        this.housingRoomsStore.loadHousingRooms(),
-        this.certificationsStore.loadCertifications(),
-      ]);
-    } finally {
-      this.loading = false;
-    }
+    // Load reference data for filters
+    await Promise.all([
+      this.campersStore.loadCampers(),
+      this.staffMembersStore.loadStaffMembers(),
+      this.sessionsStore.loadSessions(),
+      this.housingRoomsStore.loadHousingRooms(),
+      this.certificationsStore.loadCertifications(),
+    ]);
   },
   mounted() {
     if (this.$route.query.id) {
-      this.selectGroup(this.$route.query.id as string);
+      this.selectGroup({ meta: { id: this.$route.query.id as string } } as Group);
     }
   },
   computed: {
@@ -295,7 +280,7 @@ export default defineComponent({
       return [
         {
           model: "filterType",
-          value: this.filterType,
+          value: this.filters.filterType,
           placeholder: "Filter by Type",
           options: [
             { label: "Nested Groups", value: "nested" },
@@ -306,7 +291,7 @@ export default defineComponent({
         },
         {
           model: "filterSession",
-          value: this.filterSession,
+          value: this.filters.filterSession,
           placeholder: "Filter by Session",
           options: this.sessionsStore.sessions.map((session: Session) => ({
             label: session.meta.name,
@@ -327,56 +312,75 @@ export default defineComponent({
       if (!this.selectedGroupId) return [];
       return this.groupsStore.getStaffInGroup(this.selectedGroupId);
     },
-    filteredGroups(): Group[] {
-      let groups: Group[] = this.groupsStore.groups;
-
-      // Search filter
-      if (this.searchQuery) {
-        const query = this.searchQuery.toLowerCase();
-        groups = groups.filter(
-          (group: Group) =>
-            group.meta.name.toLowerCase().includes(query) ||
-            (group.meta.description &&
-              group.meta.description.toLowerCase().includes(query)),
-        );
-      }
-
-      // Type filter
-      if (this.filterType) {
-        groups = groups.filter((group: Group) => {
-          switch (this.filterType) {
-            case "nested":
-              return !!(group.spec.groupIds && group.spec.groupIds.length > 0);
-            case "manual-campers":
-              return !!(
-                group.spec.camperIds && group.spec.camperIds.length > 0
-              );
-            case "has-housing":
-              return !!group.spec.housingRoomId;
-            case "has-session":
-              return !!group.spec.sessionId;
-            default:
-              return true;
-          }
-        });
-      }
-
-      // Session filter
-      if (this.filterSession) {
-        groups = groups.filter(
-          (group: Group) => group.spec.sessionId === this.filterSession,
-        );
-      }
-
-      return groups;
-    },
   },
 
   methods: {
+    async fetchGroups(): Promise<void> {
+      if (!this.isInitialized) return;
+
+      if (!isBackendEnabled()) {
+        this.groupsData = await this.groupsStore.loadGroups();
+      } else {
+        try {
+          const filterBy = this.buildFilterByArray();
+          const response = await this.groupsStore.loadGroupsPaginated({
+            offset: this.filters.pagination.offset,
+            limit: this.filters.pagination.limit,
+            search: this.filters.searchQuery || undefined,
+            filterBy: filterBy.length > 0 ? filterBy : undefined,
+            sortBy: this.filters.pagination.sortBy,
+            sortOrder: this.filters.pagination.sortOrder,
+          });
+
+          this.groupsData = response.items;
+          this.updateFilter("pagination", {
+            ...this.filters.pagination,
+            total: response.total,
+          });
+        } catch (error) {
+          console.error("Failed to fetch groups:", error);
+          this.groupsData = [];
+        }
+      }
+    },
+
+    buildFilterByArray(): string[] {
+      const filterBy: string[] = [];
+
+      if (this.filters.filterType) {
+        switch (this.filters.filterType) {
+          case "nested":
+            filterBy.push("groupIds!=null");
+            break;
+          case "manual-campers":
+            filterBy.push("camperIds!=null");
+            break;
+          case "has-housing":
+            filterBy.push("housingRoomId!=null");
+            break;
+          case "has-session":
+            filterBy.push("sessionId!=null");
+            break;
+        }
+      }
+
+      if (this.filters.filterSession) {
+        filterBy.push(`sessionId==${this.filters.filterSession}`);
+      }
+
+      return filterBy;
+    },
+
     clearFilters(): void {
-      this.searchQuery = "";
-      this.filterType = "";
-      this.filterSession = "";
+      this.updateFilters({
+        searchQuery: "",
+        filterType: "",
+        filterSession: "",
+        pagination: {
+          ...this.filters.pagination,
+          offset: 0,
+        },
+      });
     },
     getCampersCount(groupId: string): number {
       return this.groupsStore.getCampersInGroup(groupId).length;
@@ -387,20 +391,15 @@ export default defineComponent({
     isNestedGroup(group: Group): boolean {
       return !!(group.spec.groupIds && group.spec.groupIds.length > 0);
     },
-    hasAutoAssignedCampers(): boolean {
-      return false; // No longer supporting auto-assigned campers
-    },
     hasManualCampers(group: Group): boolean {
       return !!(group.spec.camperIds && group.spec.camperIds.length > 0);
     },
     getSessionName(sessionId: string): string {
-      const session = this.sessionsStore.sessions.find(
-        (s) => s.meta.id === sessionId,
-      );
+      const session = this.sessionsStore.sessions.find((s) => s.meta.id === sessionId);
       return session?.meta.name || "Unknown Session";
     },
-    selectGroup(groupId: string): void {
-      this.selectedGroupId = groupId;
+    selectGroup(group: Group): void {
+      this.selectedGroupId = group.meta.id;
     },
     editGroup(): void {
       if (!this.selectedGroup) return;
@@ -423,9 +422,7 @@ export default defineComponent({
     },
     async saveGroup(formData: typeof this.formData): Promise<void> {
       const toast = useToast();
-      const { getCurrentTenantId, getCurrentCampId } = await import(
-        "@/utils/tenantContext"
-      );
+      const { getCurrentTenantId, getCurrentCampId } = await import("@/utils/tenantContext");
 
       // Build the group object
       const groupData: Group = {
@@ -441,12 +438,9 @@ export default defineComponent({
         spec: {
           sessionId: formData.sessionId || undefined,
           housingRoomId: formData.housingRoomId || undefined,
-          groupIds:
-            formData.groupIds.length > 0 ? formData.groupIds : undefined,
-          camperIds:
-            formData.camperIds.length > 0 ? formData.camperIds : undefined,
-          staffIds:
-            formData.staffIds.length > 0 ? formData.staffIds : undefined,
+          groupIds: formData.groupIds.length > 0 ? formData.groupIds : undefined,
+          camperIds: formData.camperIds.length > 0 ? formData.camperIds : undefined,
+          staffIds: formData.staffIds.length > 0 ? formData.staffIds : undefined,
         },
       };
 
@@ -465,6 +459,7 @@ export default defineComponent({
         toast.success("Group created successfully");
       }
 
+      await this.fetchGroups();
       this.closeModal();
     },
     deleteGroupConfirm(): void {
@@ -485,6 +480,7 @@ export default defineComponent({
       await this.groupsStore.deleteGroup(this.groupToDelete.id);
       toast.success("Group deleted successfully");
 
+      await this.fetchGroups();
       this.selectedGroupId = null;
       this.showConfirmModal = false;
       this.groupToDelete = null;
@@ -507,21 +503,41 @@ export default defineComponent({
       };
     },
   },
+  watch: {
+    isInitialized: {
+      immediate: true,
+      handler(initialized) {
+        if (initialized) {
+          this.fetchGroups();
+        }
+      },
+    },
+    "filters.searchQuery"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchGroups();
+    },
+    "filters.filterType"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchGroups();
+    },
+    "filters.filterSession"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchGroups();
+    },
+  },
 });
 </script>
 
-<style scoped>
-.groups-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 0.5rem;
-}
-
-.empty-state {
-  grid-column: 1 / -1;
-}
-
-/* Table View Styles */
+<style scoped lang="scss">
 .group-name-content {
   display: flex;
   align-items: center;

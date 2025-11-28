@@ -119,10 +119,54 @@ export const useGroupsStore = defineStore("groups", {
   },
 
   actions: {
-    async loadGroups(): Promise<void> {
+    async loadGroups(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<
+      Group[] | { items: Group[]; total: number; limit: number; offset: number; next: number | null }
+    > {
       this.loading = true;
       try {
-        this.groups = await groupsService.listGroups();
+        const response = await groupsService.listGroups(params);
+        this.groups = Array.isArray(response) ? response : response.items;
+        return response;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadGroupsPaginated(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<{
+      items: Group[];
+      total: number;
+      limit: number;
+      offset: number;
+      next: number | null;
+    }> {
+      this.loading = true;
+      try {
+        const response = await groupsService.listGroups(params);
+        if (Array.isArray(response)) {
+          return {
+            items: response,
+            total: response.length,
+            limit: params?.limit || response.length,
+            offset: params?.offset || 0,
+            next: null,
+          };
+        }
+        this.groups = response.items;
+        return response;
       } finally {
         this.loading = false;
       }

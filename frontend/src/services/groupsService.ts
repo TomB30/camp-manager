@@ -14,7 +14,17 @@ import type {
 const impl = () => (isBackendEnabled() ? groupsApi : groupsStorage);
 
 export const groupsService = {
-  listGroups: (): Promise<Group[]> => impl().listGroups(),
+  listGroups: (params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    filterBy?: string[];
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }): Promise<
+    | { items: Group[]; total: number; limit: number; offset: number; next: number | null }
+    | Group[]
+  > => impl().listGroups(params as any),
   createGroup: (data: GroupCreationRequest): Promise<Group> =>
     impl().createGroup(data),
   updateGroup: (id: string, data: GroupUpdateRequest): Promise<Group> =>
