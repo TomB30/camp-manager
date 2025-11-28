@@ -1,6 +1,6 @@
 <template>
   <div class="view">
-    <LoadingState v-if="loading" message="Loading programs..." />
+    <LoadingState v-if="!isInitialized" message="Loading programs..." />
     <template v-else>
       <!-- Breadcrumb Navigation (only show when inside a program) -->
       <nav v-if="selectedProgramId" class="breadcrumbs">
@@ -23,68 +23,35 @@
         />
         <!-- Search and Filters -->
         <FilterBar
-          v-model:searchQuery="searchQuery"
-          :filtered-count="filteredPrograms.length"
-          :total-count="programsStore.programs.length"
+          v-model:searchQuery="filters.searchQuery"
+          :filtered-count="filters.pagination.total"
+          :total-count="filters.pagination.total"
           search-placeholder="Search programs..."
           @clear="clearFilters"
         >
           <template #prepend>
-            <ViewToggle v-model="viewMode" />
+            <ViewToggle v-model="filters.viewMode" />
           </template>
         </FilterBar>
 
-        <!-- Grid View -->
-        <TransitionGroup
-          v-if="viewMode === 'grid'"
-          name="list"
-          tag="div"
-          class="programs-grid"
-        >
-          <ProgramCard
-            v-for="program in filteredPrograms"
-            :key="program.meta.id"
-            :program="program"
-            @click="selectProgram(program.meta.id)"
-          />
-
-          <EmptyState
-            v-if="
-              filteredPrograms.length === 0 &&
-              programsStore.programs.length === 0
-            "
-            type="empty"
-            title="No Programs Yet"
-            message="Create your first program to organize activities, staff, and locations."
-            action-text="Program"
-            icon-name="Boxes"
-            @action="showProgramModal = true"
-          />
-
-          <EmptyState
-            v-if="
-              filteredPrograms.length === 0 && programsStore.programs.length > 0
-            "
-            type="no-results"
-            title="No Programs Found"
-            message="No programs match your search query."
-            action-text="Clear Filters"
-            action-button-class="btn-secondary"
-            @action="clearFilters"
-            icon-name="Boxes"
-            hide-action-icon
-          />
-        </TransitionGroup>
-
-        <!-- Table View -->
-        <DataTable
-          v-if="viewMode === 'table'"
+        <ServerTable
+          v-if="isInitialized"
           :columns="programColumns"
-          :data="filteredPrograms"
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          row-key="id"
+          :rows="programsData"
+          row-key="meta.id"
+          :grid="filters.viewMode === 'grid'"
+          :loading="loading"
+          :pagination="filters.pagination"
+          @update:pagination="
+            updateFilter('pagination', $event);
+            fetchPrograms();
+          "
+          @row-click="selectProgram"
         >
+          <template #item="{ item }">
+            <ProgramCard :program="item" @click="selectProgram(item)" />
+          </template>
+
           <template #cell-name="{ item }">
             <div class="program-name-content">
               <div
@@ -95,34 +62,17 @@
             </div>
           </template>
 
-          <template #cell-description="{ item }">
-            <span>{{ item.meta.description || "No description" }}</span>
-          </template>
-
-          <template #cell-activities="{ item }">
-            <span class="badge badge-sm badge-primary"
-              >{{ getActivitiesCount(item.meta.id) }} activities</span
-            >
-          </template>
-
-          <template #cell-staff="{ item }">
-            <span>{{ getStaffGroupsCount(item.meta.id) }} staff groups</span>
-          </template>
-
-          <template #cell-locations="{ item }">
-            <span>{{ getLocationsCount(item.meta.id) }} locations</span>
-          </template>
-
-          <template #cell-actions="{ item }">
-            <BaseButton
-              color="grey-8"
-              outline
-              label="View Details"
-              size="sm"
-              @click="selectProgram(item.meta.id)"
+          <template #empty>
+            <EmptyState
+              type="empty"
+              title="No Programs Yet"
+              message="Create your first program to organize activities, staff, and locations."
+              action-text="Program"
+              icon-name="Boxes"
+              @action="showProgramModal = true"
             />
           </template>
-        </DataTable>
+        </ServerTable>
       </div>
 
       <ProgramDetails
@@ -223,50 +173,67 @@ import {
   useColorsStore,
   useGroupsStore,
 } from "@/stores";
+import { usePageFilters } from "@/composables/usePageFilters";
 import { useToast } from "@/composables/useToast";
 import type { Program, ProgramUpdateRequest, Group } from "@/generated/api";
-import ViewHeader from "@/components/ViewHeader.vue";
+import type { QTableColumn } from "quasar";
+import { isBackendEnabled } from "@/config/dataSource";
 import EmptyState from "@/components/EmptyState.vue";
 import ProgramCard from "@/components/cards/ProgramCard.vue";
 import BaseModal from "@/components/BaseModal.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import FilterBar from "@/components/FilterBar.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
-import DataTable from "@/components/DataTable.vue";
+import ServerTable from "@/components/ServerTable.vue";
 import ProgramFormModal from "@/components/modals/ProgramFormModal.vue";
 import type { AutocompleteOption } from "@/components/Autocomplete.vue";
 import SelectionList from "@/components/SelectionList.vue";
 import ProgramDetails from "@/components/ProgramDetails.vue";
 import ActivityFormModal from "@/components/modals/ActivityFormModal.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
-import Icon from "@/components/Icon.vue";
 import LoadingState from "@/components/LoadingState.vue";
+
 export default defineComponent({
   name: "Programs",
   components: {
-    ViewHeader,
     EmptyState,
     ProgramCard,
     BaseModal,
     ConfirmModal,
     FilterBar,
     ViewToggle,
-    DataTable,
+    ServerTable,
     ProgramFormModal,
     SelectionList,
     ProgramDetails,
     ActivityFormModal,
     TabHeader,
-    Icon,
     LoadingState,
+  },
+  setup() {
+    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("programs", {
+      searchQuery: "",
+      viewMode: "grid" as "grid" | "table",
+      pagination: {
+        offset: 0,
+        limit: 20,
+        total: 0,
+        sortBy: undefined,
+        sortOrder: "asc" as "asc" | "desc",
+      },
+    });
+
+    return {
+      filters,
+      updateFilter,
+      updateFilters,
+      isInitialized,
+    };
   },
   data() {
     return {
       loading: false,
-      searchQuery: "",
-      viewMode: "grid" as "grid" | "table",
-      currentPage: 1,
-      pageSize: 10,
+      programsData: [] as Program[],
       selectedProgramId: null as string | null,
       showProgramModal: false,
       showStaffSelector: false,
@@ -278,28 +245,52 @@ export default defineComponent({
         id: string;
       } | null,
       programColumns: [
-        { key: "name", label: "Program Name", width: "200px" },
-        { key: "description", label: "Description", width: "250px" },
-        { key: "activities", label: "Activities", width: "120px" },
-        { key: "staff", label: "Staff", width: "100px" },
-        { key: "locations", label: "Locations", width: "100px" },
-        { key: "actions", label: "Actions", width: "140px" },
-      ],
+        {
+          name: "name",
+          label: "Program Name",
+          field: (row: Program) => row.meta.name,
+          align: "left" as const,
+          sortable: true,
+        },
+        {
+          name: "description",
+          label: "Description",
+          field: (row: Program) => row.meta.description,
+          align: "left" as const,
+          format: (value: string | undefined) => value || "No description",
+        },
+        {
+          name: "activities",
+          label: "Activities",
+          field: (row: Program) => row.meta.id,
+          align: "left" as const,
+          format: (value: string) => this.getActivitiesCount(value) + " activities",
+        },
+        {
+          name: "staff",
+          label: "Staff",
+          field: (row: Program) => row.spec.staffGroupIds?.length || 0,
+          align: "left" as const,
+          format: (value: number) => value + " staff groups",
+        },
+        {
+          name: "locations",
+          label: "Locations",
+          field: (row: Program) => row.spec.locationIds?.length || 0,
+          align: "left" as const,
+          format: (value: number) => value + " locations",
+        },
+      ] as QTableColumn[],
     };
   },
   async created() {
-    this.loading = true;
-    try {
-      await Promise.all([
-        this.programsStore.loadPrograms(),
-        this.activitiesStore.loadActivities(),
-        this.locationsStore.loadLocations(),
-        this.colorsStore.loadColors(),
-        this.groupsStore.loadGroups(),
-      ]);
-    } finally {
-      this.loading = false;
-    }
+    // Load reference data
+    await Promise.all([
+      this.activitiesStore.loadActivities(),
+      this.locationsStore.loadLocations(),
+      this.colorsStore.loadColors(),
+      this.groupsStore.loadGroups(),
+    ]);
   },
   computed: {
     programsStore() {
@@ -334,17 +325,6 @@ export default defineComponent({
         label: `${location.meta.name}`,
         value: location.meta.id,
       }));
-    },
-    filteredPrograms() {
-      const query = this.searchQuery.toLowerCase().trim();
-      if (!query) return this.programsStore.programs;
-
-      return this.programsStore.programs.filter(
-        (program) =>
-          program.meta.name.toLowerCase().includes(query) ||
-          (program.meta.description &&
-            program.meta.description.toLowerCase().includes(query)),
-      );
     },
     selectedProgram(): Program | null {
       return this.selectedProgramId
@@ -390,11 +370,44 @@ export default defineComponent({
     },
   },
   methods: {
-    clearFilters() {
-      this.searchQuery = "";
+    async fetchPrograms(): Promise<void> {
+      if (!this.isInitialized) return;
+
+      if (!isBackendEnabled()) {
+        this.programsData = await this.programsStore.loadPrograms();
+      } else {
+        try {
+          const response = await this.programsStore.loadProgramsPaginated({
+            offset: this.filters.pagination.offset,
+            limit: this.filters.pagination.limit,
+            search: this.filters.searchQuery || undefined,
+            sortBy: this.filters.pagination.sortBy,
+            sortOrder: this.filters.pagination.sortOrder,
+          });
+
+          this.programsData = response.items;
+          this.updateFilter("pagination", {
+            ...this.filters.pagination,
+            total: response.total,
+          });
+        } catch (error) {
+          console.error("Failed to fetch programs:", error);
+          this.programsData = [];
+        }
+      }
     },
-    selectProgram(id: string) {
-      this.selectedProgramId = id;
+
+    clearFilters() {
+      this.updateFilters({
+        searchQuery: "",
+        pagination: {
+          ...this.filters.pagination,
+          offset: 0,
+        },
+      });
+    },
+    selectProgram(program: Program) {
+      this.selectedProgramId = program.meta.id;
     },
     getProgramColor(program: Program): string {
       if (program.spec.colorId) {
@@ -488,6 +501,23 @@ export default defineComponent({
           error.message || "Failed to update location assignments",
         );
       }
+    },
+  },
+  watch: {
+    isInitialized: {
+      immediate: true,
+      handler(initialized) {
+        if (initialized) {
+          this.fetchPrograms();
+        }
+      },
+    },
+    "filters.searchQuery"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchPrograms();
     },
   },
 });
