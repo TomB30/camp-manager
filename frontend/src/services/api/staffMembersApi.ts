@@ -19,17 +19,46 @@ export const staffMembersApi = {
   getStaffMembersByCertification,
 };
 
-async function listStaffMembers(): Promise<StaffMember[]> {
+async function listStaffMembers(params?: {
+  limit?: number;
+  offset?: number;
+  search?: string;
+  filterBy?: string[];
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}): Promise<{
+  items: StaffMember[];
+  total: number;
+  limit: number;
+  offset: number;
+  next: number | null;
+}> {
   const response = await sdk.listStaffMembers({
     client: apiClient,
     path: { camp_id: getApiCampId() },
+    query: params
+      ? {
+          limit: params.limit,
+          offset: params.offset,
+          search: params.search,
+          filterBy: params.filterBy,
+          sortBy: params.sortBy as any,
+          sortOrder: params.sortOrder,
+        }
+      : undefined,
   });
 
   if (response.error) {
     throw new Error("Failed to fetch staff members");
   }
 
-  return response.data?.items || [];
+  return {
+    items: response.data?.items || [],
+    total: response.data?.total || 0,
+    limit: response.data?.limit || 50,
+    offset: response.data?.offset || 0,
+    next: response.data?.next ?? null,
+  };
 }
 
 async function createStaffMember(
@@ -93,8 +122,6 @@ async function getStaffMembersByCertification(
   certificationId: string,
 ): Promise<StaffMember[]> {
   // Backend doesn't have this specific filter, so fetch all and filter client-side
-  const staffMembers = await listStaffMembers();
-  return staffMembers.filter((s) =>
-    s.spec.certificationIds?.includes(certificationId),
-  );
+  const response = await listStaffMembers({ filterBy: [`certificationId==${certificationId}`] });
+  return response.items
 }

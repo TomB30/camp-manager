@@ -5,6 +5,7 @@ import type {
   StaffMemberUpdateRequest,
 } from "@/generated/api";
 import { staffMembersService } from "@/services";
+import { staffMembersApi } from "@/services/api/staffMembersApi";
 
 export const useStaffMembersStore = defineStore("staffMembers", {
   state: () => ({
@@ -33,6 +34,24 @@ export const useStaffMembersStore = defineStore("staffMembers", {
       this.loading = true;
       try {
         this.staffMembers = await staffMembersService.listStaffMembers();
+      } finally {
+        this.loading = false;
+      }
+    },
+    
+    async loadStaffMembersPaginated(params: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<{ items: StaffMember[]; total: number; limit: number; offset: number; next: number | null }> {
+      this.loading = true;
+      try {
+        const response = await staffMembersApi.listStaffMembers(params);
+        this.staffMembers = response.items;
+        return response;
       } finally {
         this.loading = false;
       }

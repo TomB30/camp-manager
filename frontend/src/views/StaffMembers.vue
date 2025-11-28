@@ -1,6 +1,6 @@
 <template>
   <div class="view">
-    <LoadingState v-if="loading" message="Loading staff members..." />
+    <LoadingState v-if="!isInitialized" message="Loading staff members..." />
     <template v-else>
       <TabHeader
         title="Staff Management"
@@ -9,74 +9,42 @@
         @action="showModal = true"
       />
 
-      <!-- Search and Filters -->
       <FilterBar
-        v-model:searchQuery="searchQuery"
-        v-model:filter-role="filterRole"
-        v-model:filter-certification="filterCertification"
+        v-model:searchQuery="filters.searchQuery"
+        v-model:filter-role="filters.filterRole"
+        v-model:filter-certification="filters.filterCertification"
         :filters="staffFilters"
-        :filtered-count="filteredMembers.length"
-        :total-count="staffMembersStore.staffMembers.length"
+        :filtered-count="filters.pagination.total"
+        :total-count="filters.pagination.total"
         @clear="clearFilters"
       >
         <template #prepend>
-          <ViewToggle v-model="viewMode" />
+          <ViewToggle v-model="filters.viewMode" />
         </template>
       </FilterBar>
 
-      <!-- Grid View -->
-      <TransitionGroup
-        v-if="viewMode === 'grid'"
-        name="list"
-        tag="div"
-        class="staff-grid"
-      >
-        <StaffCard
-          v-for="member in filteredMembers"
-          :key="member.meta.id"
-          :member="member"
-          :formatted-role="formatRole(member.spec.roleId)"
-          @click="selectMember(member.meta.id)"
-        />
-
-        <EmptyState
-          v-if="
-            filteredMembers.length === 0 &&
-            staffMembersStore.staffMembers.length === 0
-          "
-          type="empty"
-          title="No Staff Members Yet"
-          message="Add your first staff member to start building your camp team and managing assignments."
-          action-text="Staff Member"
-          @action="showModal = true"
-          icon-name="Users"
-        />
-
-        <EmptyState
-          v-if="
-            filteredMembers.length === 0 &&
-            staffMembersStore.staffMembers.length > 0
-          "
-          type="no-results"
-          title="No Staff Members Found"
-          message="No staff members match your current filters. Try adjusting your search criteria."
-          action-text="Clear Filters"
-          action-button-class="btn-secondary"
-          @action="clearFilters"
-          icon-name="Users"
-          hide-action-icon
-        />
-      </TransitionGroup>
-
-      <!-- Table View -->
-      <DataTable
-        v-if="viewMode === 'table'"
+      <ServerTable
+        v-if="isInitialized"
         :columns="memberColumns"
-        :data="filteredMembers"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
+        :rows="staffMembersData"
+        row-key="meta.id"
+        :grid="filters.viewMode === 'grid'"
+        :loading="loading"
+        :pagination="filters.pagination"
+        @update:pagination="
+          updateFilter('pagination', $event);
+          fetchStaffMembers();
+        "
+        @row-click="selectMember"
       >
+        <template #item="{ item }">
+          <StaffCard
+            :member="item"
+            :formatted-role="formatRole(item.spec.roleId)"
+            @click="selectMember(item.meta.id)"
+          />
+        </template>
+
         <template #cell-name="{ item }">
           <div class="member-name-content">
             <AvatarInitials
@@ -90,40 +58,18 @@
           </div>
         </template>
 
-        <template #cell-role="{ item }">
-          <span class="badge badge-primary badge-sm">{{
-            formatRole(item.spec.roleId)
-          }}</span>
-        </template>
-
-        <template #cell-certifications="{ item }">
-          <span
-            v-if="item.certificationIds && item.certificationIds.length > 0"
-            class="badge badge-success badge-sm"
-          >
-            {{ item.certificationIds.length }} cert(s)
-          </span>
-          <span v-else class="text-caption">None</span>
-        </template>
-
-        <template #cell-events="{ item }">
-          <span class="event-count">{{
-            getMemberEvents(item.meta.id).length
-          }}</span>
-        </template>
-
-        <template #cell-actions="{ item }">
-          <BaseButton
-            outline
-            color="grey-8"
-            size="sm"
-            @click="selectMember(item.meta.id)"
-            label="View Details"
+        <template #empty>
+          <EmptyState
+            type="empty"
+            title="No Staff Members Yet"
+            message="Add your first staff member to start building your camp team and managing assignments."
+            action-text="Staff Member"
+            @action="showModal = true"
+            icon-name="Users"
           />
         </template>
-      </DataTable>
+      </ServerTable>
 
-      <!-- Member Detail Modal -->
       <StaffMemberDetailModal
         v-if="!!selectedMemberId && selectedMember"
         :member="selectedMember"
@@ -143,14 +89,12 @@
         </template>
       </StaffMemberDetailModal>
 
-      <!-- Add/Edit Member Modal -->
       <StaffMemberFormModal
         v-if="showModal"
         :staff-member-id="editingMemberId || undefined"
         @close="closeModal"
       />
 
-      <!-- Confirm Delete Modal -->
       <ConfirmModal
         v-if="showConfirmModal"
         title="Delete Staff Member"
@@ -170,24 +114,24 @@ import { defineComponent } from "vue";
 import {
   useStaffMembersStore,
   useCertificationsStore,
-  useProgramsStore,
   useEventsStore,
   useAreasStore,
   useRolesStore,
 } from "@/stores";
+import { usePageFilters } from "@/composables/usePageFilters";
 import type { StaffMember, Event } from "@/generated/api";
+import type { QTableColumn } from "quasar";
 import AvatarInitials from "@/components/AvatarInitials.vue";
 import StaffCard from "@/components/cards/StaffCard.vue";
 import FilterBar, { type Filter } from "@/components/FilterBar.vue";
 import EventsByDate from "@/components/EventsByDate.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
-import DataTable from "@/components/DataTable.vue";
+import ServerTable from "@/components/ServerTable.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import StaffMemberDetailModal from "@/components/modals/StaffMemberDetailModal.vue";
 import StaffMemberFormModal from "@/components/modals/StaffMemberFormModal.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
-import Icon from "@/components/Icon.vue";
 import LoadingState from "@/components/LoadingState.vue";
 
 export default defineComponent({
@@ -198,38 +142,77 @@ export default defineComponent({
     FilterBar,
     EventsByDate,
     ConfirmModal,
-    DataTable,
+    ServerTable,
     ViewToggle,
     EmptyState,
     StaffMemberDetailModal,
     StaffMemberFormModal,
     TabHeader,
-    Icon,
     LoadingState,
+  },
+  setup() {
+    const { filters, updateFilter, updateFilters, isInitialized } =
+      usePageFilters("staffMembers", {
+        searchQuery: "",
+        filterRole: "",
+        filterCertification: "",
+        viewMode: "grid" as "grid" | "table",
+        pagination: {
+          offset: 0,
+          limit: 20,
+          total: 0,
+          sortBy: undefined,
+          sortOrder: "asc" as "asc" | "desc",
+        },
+      });
+
+    return {
+      filters,
+      updateFilter,
+      updateFilters,
+      isInitialized,
+    };
   },
   data() {
     return {
       loading: false,
+      staffMembersData: [] as StaffMember[],
       selectedMemberId: null as string | null,
       showModal: false,
       editingMemberId: null as string | null,
-      viewMode: "grid" as "grid" | "table",
-      currentPage: 1,
-      pageSize: 10,
       showConfirmModal: false,
       confirmAction: null as (() => void) | null,
-      searchQuery: "",
-      filterRole: "",
-      filterCertification: "",
       memberColumns: [
-        { key: "name", label: "Name", width: "200px" },
-        { key: "role", label: "Role", width: "140px" },
-        { key: "email", label: "Email", width: "200px" },
-        { key: "phone", label: "Phone", width: "150px" },
-        { key: "certifications", label: "Certifications", width: "140px" },
-        { key: "events", label: "Events", width: "100px" },
-        { key: "actions", label: "Actions", width: "140px" },
-      ],
+        {
+          name: "name",
+          label: "Name",
+          field: (row: StaffMember) => row.meta.name,
+          align: "left" as const,
+          sortable: true,
+        },
+        {
+          name: "roleId",
+          label: "Role",
+          field: (row: StaffMember) => row.spec.roleId,
+          align: "left" as const,
+          sortable: true,
+          format: (value: string) => this.formatRole(value),
+        },
+        {
+          name: "phone",
+          label: "Phone",
+          field: (row: StaffMember) => row.spec.phone,
+          align: "left" as const,
+          sortable: true,
+        },
+        {
+          name: "certificationIds",
+          label: "Certifications",
+          field: (row: StaffMember) => row.spec.certificationIds,
+          align: "left" as const,
+          format: (value: string[] | undefined) => (value?.length || 0) + " cert(s)",
+        },
+      ] as QTableColumn[],
     };
   },
   computed: {
@@ -238,9 +221,6 @@ export default defineComponent({
     },
     certificationsStore() {
       return useCertificationsStore();
-    },
-    programsStore() {
-      return useProgramsStore();
     },
     eventsStore() {
       return useEventsStore();
@@ -255,7 +235,7 @@ export default defineComponent({
       return [
         {
           model: "filterRole",
-          value: this.filterRole,
+          value: this.filters.filterRole,
           placeholder: "Filter by Role",
           options: this.rolesStore.roles.map((role) => ({
             label: role.meta.name,
@@ -264,11 +244,11 @@ export default defineComponent({
         },
         {
           model: "filterCertification",
-          value: this.filterCertification,
+          value: this.filters.filterCertification,
           placeholder: "Filter by Certification",
           options: this.certificationsStore.certifications.map((cert) => ({
             label: cert.meta.name,
-            value: cert.meta.name,
+            value: cert.meta.id,
           })),
         },
       ];
@@ -276,77 +256,70 @@ export default defineComponent({
     selectedMember(): StaffMember | null {
       if (!this.selectedMemberId) return null;
       return (
-        this.staffMembersStore.getStaffMemberById(this.selectedMemberId) || null
+        this.staffMembersData.find((m) => m.meta.id === this.selectedMemberId) ||
+        null
       );
-    },
-    filteredMembers(): StaffMember[] {
-      let members: StaffMember[] = this.staffMembersStore.staffMembers;
-
-      // Search filter
-      if (this.searchQuery) {
-        const query = this.searchQuery.toLowerCase();
-        members = members.filter(
-          (member: StaffMember) =>
-            member.meta.name.toLowerCase().includes(query) ||
-            (member.spec.phone &&
-              member.spec.phone.toLowerCase().includes(query)),
-        );
-      }
-
-      // Role filter
-      if (this.filterRole) {
-        members = members.filter(
-          (member: StaffMember) => member.spec.roleId === this.filterRole,
-        );
-      }
-
-      // Certification filter
-      if (this.filterCertification) {
-        members = members.filter((member: StaffMember) => {
-          if (!member.spec.certificationIds) return false;
-          return member.spec.certificationIds.some((id) => {
-            const cert = this.certificationsStore.getCertificationById(id);
-            return cert && cert.meta.name === this.filterCertification;
-          });
-        });
-      }
-
-      return members;
     },
   },
   async created() {
-    this.loading = true;
-    try {
-      await Promise.all([
-        this.staffMembersStore.loadStaffMembers(),
-        this.rolesStore.loadRoles(),
-        this.certificationsStore.loadCertifications(),
-        this.eventsStore.loadEvents(),
-        this.areasStore.loadAreas(),
-      ]);
-    } finally {
-      this.loading = false;
-    }
-  },
-  watch: {
-    searchQuery() {
-      this.currentPage = 1;
-    },
-    filterRole() {
-      this.currentPage = 1;
-    },
-    filterCertification() {
-      this.currentPage = 1;
-    },
-    filterProgram() {
-      this.currentPage = 1;
-    },
+    // Load reference data for filters
+    await Promise.all([
+      this.rolesStore.loadRoles(),
+      this.certificationsStore.loadCertifications(),
+      this.eventsStore.loadEvents(),
+      this.areasStore.loadAreas(),
+    ]);
   },
   methods: {
+    async fetchStaffMembers(): Promise<void> {
+      if (!this.isInitialized) return;
+
+      try {
+        const filterBy = this.buildFilterByArray();
+        const response = await this.staffMembersStore.loadStaffMembersPaginated({
+          offset: this.filters.pagination.offset,
+          limit: this.filters.pagination.limit,
+          search: this.filters.searchQuery || undefined,
+          filterBy: filterBy.length > 0 ? filterBy : undefined,
+          sortBy: this.filters.pagination.sortBy,
+          sortOrder: this.filters.pagination.sortOrder,
+        });
+
+        this.staffMembersData = response.items;
+        this.updateFilter("pagination", {
+          ...this.filters.pagination,
+          total: response.total,
+        });
+      } catch (error) {
+        console.error("Failed to fetch staff members:", error);
+        this.staffMembersData = [];
+      }
+    },
+
+    buildFilterByArray(): string[] {
+      const filterBy: string[] = [];
+
+      if (this.filters.filterRole) {
+        filterBy.push(`roleId==${this.filters.filterRole}`);
+      }
+
+      if (this.filters.filterCertification) {
+        filterBy.push(`certificationIds=@${this.filters.filterCertification}`);
+      }
+
+      return filterBy;
+    },
+
     clearFilters(): void {
-      this.searchQuery = "";
-      this.filterRole = "";
-      this.filterCertification = "";
+      this.updateFilters({
+        searchQuery: "",
+        filterRole: "",
+        filterCertification: "",
+        pagination: {
+          ...this.filters.pagination,
+          offset: 0,
+        },
+      });
     },
     formatRole(roleId: string): string {
       const role = this.rolesStore.getRoleById(roleId);
@@ -361,8 +334,8 @@ export default defineComponent({
       const location = this.areasStore.getAreaById(locationId);
       return location?.meta.name || "Unknown Location";
     },
-    selectMember(memberId: string): void {
-      this.selectedMemberId = memberId;
+    selectMember(member: StaffMember): void {
+      this.selectedMemberId = member.meta.id;
     },
     editMember(): void {
       if (!this.selectedMember) return;
@@ -376,6 +349,7 @@ export default defineComponent({
       this.confirmAction = async () => {
         if (this.selectedMemberId) {
           await this.staffMembersStore.deleteStaffMember(this.selectedMemberId);
+          await this.fetchStaffMembers();
           this.selectedMemberId = null;
         }
       };
@@ -397,22 +371,41 @@ export default defineComponent({
       this.editingMemberId = null;
     },
   },
+  watch: {
+    isInitialized: {
+      immediate: true,
+      handler(initialized) {
+        if (initialized) {
+          this.fetchStaffMembers();
+        }
+      },
+    },
+    "filters.searchQuery"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchStaffMembers();
+    },
+    "filters.filterRole"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchStaffMembers();
+    },
+    "filters.filterCertification"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchStaffMembers();
+    },
+  },
 });
 </script>
 
-<style scoped>
-.staff-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 0.5rem;
-}
-
-.staff-grid .empty-state {
-  grid-column: 1 / -1;
-}
-
-/* Table View Styles */
-/* Table cell custom styles */
+<style scoped lang="scss">
 .member-name-content {
   display: flex;
   align-items: center;
@@ -422,24 +415,5 @@ export default defineComponent({
 .member-fullname {
   font-weight: 500;
   color: var(--text-primary);
-}
-
-.event-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 8px;
-  background: var(--primary-color);
-  color: white;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.badge-sm {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
 }
 </style>

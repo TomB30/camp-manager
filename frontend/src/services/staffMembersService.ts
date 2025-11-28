@@ -14,7 +14,17 @@ import type {
 const impl = () => (isBackendEnabled() ? staffMembersApi : staffMembersStorage);
 
 export const staffMembersService = {
-  listStaffMembers: (): Promise<StaffMember[]> => impl().listStaffMembers(),
+  listStaffMembers: async (params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    filterBy?: string[];
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }): Promise<StaffMember[]> => {
+    const result = await impl().listStaffMembers(params as any);
+    return Array.isArray(result) ? result : result.items;
+  },
   createStaffMember: (data: StaffMemberCreationRequest): Promise<StaffMember> =>
     impl().createStaffMember(data),
   updateStaffMember: (
