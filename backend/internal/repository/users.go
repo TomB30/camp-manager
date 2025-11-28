@@ -60,12 +60,40 @@ func (r *UsersRepository) FindByID(ctx context.Context, id string) (*api.User, e
 }
 
 // Create inserts a new user
-func (r *UsersRepository) Create(ctx context.Context, user *api.User) error {
-	// TODO: Implement INSERT query
-	// Generate UUID and timestamps
-	// Store hashed password
-	// Handle tenant relationship
+func (r *UsersRepository) Create(ctx context.Context, user *domain.User) error {
+	err := r.db.DB.WithContext(ctx).Create(user).Error
+	if err != nil {
+		return fmt.Errorf("failed to create user: %w", err)
+	}
 	return nil
+}
+
+// CreateWithAccessRules inserts a new user along with their access rules in a transaction
+func (r *UsersRepository) CreateWithAccessRules(ctx context.Context, user *domain.User, accessRules []domain.AccessRule) error {
+	return r.db.DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// Create user
+		if err := tx.Create(user).Error; err != nil {
+			return fmt.Errorf("failed to create user: %w", err)
+		}
+
+		fmt.Println("user", user.ID.String())
+
+		// Create access rules if any
+		if len(accessRules) > 0 {
+			// Set user ID for all access rules
+			for i := range accessRules {
+				accessRules[i].UserID = user.ID
+			}
+
+			if err := tx.Create(&accessRules).Error; err != nil {
+				return fmt.Errorf("failed to create access rules: %w", err)
+			}
+
+			fmt.Println("accessRules", accessRules)
+		}
+
+		return nil
+	})
 }
 
 // Update updates an existing user
@@ -120,6 +148,21 @@ func (r *UsersRepository) UpdateLastLogin(ctx context.Context, userID uuid.UUID)
 	}
 
 	return nil
+}
+
+// CountByTenantID counts the number of active users in a tenant
+func (r *UsersRepository) CountByTenantID(ctx context.Context, tenantID uuid.UUID) (int64, error) {
+	var count int64
+	err := r.db.DB.WithContext(ctx).
+		Model(&domain.User{}).
+		Where("tenant_id = ? AND is_active = ?", tenantID, true).
+		Count(&count).Error
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to count users by tenant: %w", err)
+	}
+
+	return count, nil
 }
 
 // domainToAPI converts a domain.User to api.User

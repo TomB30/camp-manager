@@ -28,15 +28,17 @@ type AuthService interface {
 
 // authService implements AuthService
 type authService struct {
-	usersRepo  UsersRepository
-	jwtService *domain.JWTService
+	usersRepo   UsersRepository
+	tenantsRepo TenantsRepository
+	jwtService  *domain.JWTService
 }
 
 // NewAuthService creates a new auth service
-func NewAuthService(usersRepo UsersRepository, jwtService *domain.JWTService) AuthService {
+func NewAuthService(usersRepo UsersRepository, tenantsRepo TenantsRepository, jwtService *domain.JWTService) AuthService {
 	return &authService{
-		usersRepo:  usersRepo,
-		jwtService: jwtService,
+		usersRepo:   usersRepo,
+		tenantsRepo: tenantsRepo,
+		jwtService:  jwtService,
 	}
 }
 
@@ -136,15 +138,139 @@ func (s *authService) validateLoginRequest(req *api.LoginRequest) error {
 
 // Signup registers a new user
 func (s *authService) Signup(ctx context.Context, req *api.SignupRequest) (*api.LoginResponse, error) {
-	// TODO: Implement signup logic
-	// 1. Validate email, password, and tenantId
-	// 2. Check if user already exists
+	// 1. Validate signup request
+	if err := s.validateSignupRequest(req); err != nil {
+		return nil, errors.BadRequest("Invalid signup request", err)
+	}
+
+	// 2. Parse tenant ID
+	tenantID, err := uuid.Parse(req.TenantId)
+	if err != nil {
+		return nil, errors.BadRequest("Invalid tenant ID", err)
+	}
+
 	// 3. Verify tenant exists
-	// 4. Hash password
-	// 5. Create user in database
-	// 6. Generate JWT token
-	// 7. Return user and token
-	return nil, nil
+	tenant, err := s.tenantsRepo.GetByID(ctx, tenantID)
+	if err != nil {
+		return nil, errors.NotFound("Tenant not found", err)
+	}
+
+	// 4. Check if user already exists
+	existingUser, err := s.usersRepo.FindByEmail(ctx, string(req.Email))
+	if err == nil && existingUser != nil {
+		return nil, errors.BadRequest("User with this email already exists", nil)
+	}
+
+	// 5. Hash password
+	passwordHash, err := domain.HashPassword(req.Password)
+	if err != nil {
+		return nil, errors.InternalServerError("Failed to hash password", err)
+	}
+
+	// 6. Create user object
+	user := &domain.User{
+		TenantID:     tenant.ID,
+		Email:        string(req.Email),
+		PasswordHash: passwordHash,
+		IsActive:     true,
+	}
+
+	// 7. Check if this is the first user in the tenant
+	userCount, err := s.usersRepo.CountByTenantID(ctx, tenant.ID)
+	if err != nil {
+		return nil, errors.InternalServerError("Failed to check user count", err)
+	}
+
+	fmt.Println("userCount", userCount)
+
+	// 8. Create access rules - first user gets admin access
+	var accessRules []domain.AccessRule
+	if userCount == 0 {
+		// First user gets admin access at tenant scope
+		accessRules = []domain.AccessRule{
+			{
+				Role:      "admin",
+				ScopeType: "tenant",
+				ScopeID:   &tenant.ID,
+			},
+		}
+	}
+
+	fmt.Println("accessRules", accessRules)
+
+	// 9. Create user with access rules in database
+	if err := s.usersRepo.CreateWithAccessRules(ctx, user, accessRules); err != nil {
+		return nil, errors.InternalServerError("Failed to create user", err)
+	}
+
+	// 10. Get user with access rules for JWT and response
+	apiUser, err := s.usersRepo.GetUserWithAccessRules(ctx, user.ID.String())
+	if err != nil {
+		return nil, errors.InternalServerError("Failed to retrieve user details", err)
+	}
+
+	// 11. Convert API access rules to domain access rules for JWT
+	fmt.Println("apiUser", apiUser)
+	domainAccessRules := make([]domain.AccessRule, len(apiUser.AccessRules))
+	for i, ar := range apiUser.AccessRules {
+		domainAccessRules[i] = domain.AccessRule{
+			Role:      string(ar.Role),
+			ScopeType: string(ar.ScopeType),
+		}
+		if ar.ScopeId != nil {
+			scopeIDPtr := new(uuid.UUID)
+			parsed, err := uuid.Parse(*ar.ScopeId)
+			if err == nil {
+				*scopeIDPtr = parsed
+				domainAccessRules[i].ScopeID = scopeIDPtr
+			}
+		}
+	}
+
+	fmt.Println("domainAccessRules", domainAccessRules)
+
+	// 12. Generate JWT token with access rules
+	token, err := s.jwtService.GenerateToken(
+		user.ID.String(),
+		user.TenantID.String(),
+		user.Email,
+		domainAccessRules,
+	)
+	if err != nil {
+		return nil, errors.InternalServerError("Failed to generate token", err)
+	}
+
+	// 13. Return user and token
+	return &api.LoginResponse{
+		Token: token,
+		User:  *apiUser,
+	}, nil
+}
+
+// validateSignupRequest validates the signup request
+func (s *authService) validateSignupRequest(req *api.SignupRequest) error {
+	if req == nil {
+		return fmt.Errorf("request cannot be nil")
+	}
+
+	email := strings.TrimSpace(string(req.Email))
+	if email == "" {
+		return fmt.Errorf("email is required")
+	}
+
+	if req.Password == "" {
+		return fmt.Errorf("password is required")
+	}
+
+	if len(req.Password) < 6 {
+		return fmt.Errorf("password must be at least 6 characters")
+	}
+
+	if req.TenantId == "" {
+		return fmt.Errorf("tenant ID is required")
+	}
+
+	return nil
 }
 
 // GetCurrentUser retrieves the current authenticated user's information

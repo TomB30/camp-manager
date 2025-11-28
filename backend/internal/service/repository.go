@@ -151,11 +151,13 @@ type StaffMembersRepository interface {
 type UsersRepository interface {
 	FindByEmail(ctx context.Context, email string) (*domain.User, error)
 	FindByID(ctx context.Context, id string) (*api.User, error)
-	Create(ctx context.Context, user *api.User) error
+	Create(ctx context.Context, user *domain.User) error
+	CreateWithAccessRules(ctx context.Context, user *domain.User, accessRules []domain.AccessRule) error
 	Update(ctx context.Context, id string, user *api.User) error
 	Delete(ctx context.Context, id string) error
 	GetUserWithAccessRules(ctx context.Context, id string) (*api.User, error)
 	UpdateLastLogin(ctx context.Context, userID uuid.UUID) error
+	CountByTenantID(ctx context.Context, tenantID uuid.UUID) (int64, error)
 }
 
 // TenantsRepository defines the data access interface for tenants (used by auth service)

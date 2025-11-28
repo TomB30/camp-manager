@@ -80,7 +80,7 @@ func NewHandler(db *database.Database, cfg *config.Config) *Handler {
 	eventsService := service.NewEventsService(eventsRepo, activitiesRepo, programsRepo, locationsRepo, groupsRepo)
 	activitiesService := service.NewActivitiesService(activitiesRepo, programsRepo, locationsRepo, timeBlocksRepo, certificationsRepo, eventsRepo)
 	areasService := service.NewAreasService(areasRepo)
-	authService := service.NewAuthService(usersRepo, jwtService)
+	authService := service.NewAuthService(usersRepo, tenantsRepo, jwtService)
 	campersService := service.NewCampersService(campersRepo, sessionsRepo, groupsRepo)
 	campsService := service.NewCampsService(campsRepo)
 	certificationsService := service.NewCertificationsService(certificationsRepo)

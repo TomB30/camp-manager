@@ -10,7 +10,7 @@ post:
         schema:
           $ref: "../schemas/SignupRequest.yaml"
   responses:
-    "200":
+    "201":
       description: Successfully registered
       content:
         application/json:
@@ -18,4 +18,6 @@ post:
             $ref: "../schemas/LoginResponse.yaml"
     "400":
       description: Invalid request or user already exists
+    "404":
+      description: Tenant not found
 

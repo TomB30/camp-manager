@@ -48,11 +48,26 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 // Signup handles POST /api/v1/auth/signup
 func (h *AuthHandler) Signup(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement signup handler
 	// 1. Parse request body into SignupRequest
+	var req api.SignupRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		errors.WriteError(w, errors.BadRequest("Invalid request body", err))
+		return
+	}
+
 	// 2. Call service.Signup()
-	// 3. Handle errors appropriately (400 for validation errors or existing user)
+	response, err := h.service.Signup(r.Context(), &req)
+	if err != nil {
+		// 3. Handle errors appropriately (400 for validation errors or existing user)
+		errors.WriteError(w, err)
+		return
+	}
+
 	// 4. Return LoginResponse with user and token
+	if err := errors.WriteJSON(w, http.StatusCreated, response); err != nil {
+		errors.WriteError(w, errors.InternalServerError("Failed to write response", err))
+		return
+	}
 }
 
 // GetCurrentUser handles GET /api/v1/auth/me
