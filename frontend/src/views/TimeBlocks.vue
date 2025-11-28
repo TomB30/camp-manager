@@ -1,6 +1,6 @@
 <template>
   <div class="time-blocks-tab view">
-    <LoadingState v-if="loading" message="Loading time blocks..." />
+    <LoadingState v-if="!isInitialized" message="Loading time blocks..." />
     <template v-else>
       <TabHeader
         title="Time Blocks"
@@ -11,55 +11,39 @@
 
       <!-- Search and Filters -->
       <FilterBar
-        v-model:searchQuery="searchQuery"
+        v-model:searchQuery="filters.searchQuery"
         search-placeholder="Search by time block name..."
-        :filtered-count="filteredTimeBlocks.length"
-        :total-count="timeBlocksStore.timeBlocks.length"
+        :filtered-count="filters.pagination.total"
+        :total-count="filters.pagination.total"
         @clear="clearFilters"
       >
         <template #prepend>
-          <ViewToggle v-model="viewMode" />
+          <ViewToggle v-model="filters.viewMode" />
         </template>
       </FilterBar>
 
-      <!-- Empty State -->
-      <EmptyState
-        v-if="timeBlocksStore.timeBlocks.length === 0"
-        icon-name="Clock"
-        title="No time blocks configured"
-        message="Add your first time block to start organizing your daily schedule."
-        action-text="Time Block"
-        @action="showModal = true"
-      />
-
-      <!-- Grid View -->
-      <transition-group
-        v-else-if="viewMode === 'grid'"
-        name="list"
-        tag="div"
-        class="time-blocks-grid transition-wrapper"
-      >
-        <TimeBlockCard
-          v-for="timeBlock in filteredTimeBlocks"
-          :key="timeBlock.meta.id"
-          :time-block="timeBlock"
-          @click="selectTimeBlock(timeBlock.meta.id)"
-        >
-          <template #icon>
-            <Icon name="Clock" :size="24" :stroke-width="2" />
-          </template>
-        </TimeBlockCard>
-      </transition-group>
-
-      <!-- Table View -->
-      <DataTable
-        v-else
+      <ServerTable
+        v-if="isInitialized"
         :columns="timeBlockColumns"
-        :data="filteredTimeBlocks"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
+        :rows="timeBlocksData"
+        row-key="meta.id"
+        :grid="filters.viewMode === 'grid'"
+        :loading="loading"
+        :pagination="filters.pagination"
+        @update:pagination="
+          updateFilter('pagination', $event);
+          fetchTimeBlocks();
+        "
+        @row-click="selectTimeBlock"
       >
+        <template #item="{ item }">
+          <TimeBlockCard :time-block="item" @click="selectTimeBlock(item)">
+            <template #icon>
+              <Icon name="Clock" :size="24" :stroke-width="2" />
+            </template>
+          </TimeBlockCard>
+        </template>
+
         <template #cell-name="{ item }">
           <div class="time-block-name-content">
             <div class="time-block-icon-sm" :style="{ background: '#8b5cf6' }">
@@ -69,30 +53,16 @@
           </div>
         </template>
 
-        <template #cell-startTime="{ item }">
-          <span>{{ formatTime(item.spec.startTime) }}</span>
-        </template>
-
-        <template #cell-endTime="{ item }">
-          <span>{{ formatTime(item.spec.endTime) }}</span>
-        </template>
-
-        <template #cell-duration="{ item }">
-          <span class="badge badge-success badge-sm">
-            {{ calculateDuration(item.spec.startTime, item.spec.endTime) }}
-          </span>
-        </template>
-
-        <template #cell-actions="{ item }">
-          <BaseButton
-            outline
-            color="grey-8"
-            size="sm"
-            @click="selectTimeBlock(item.meta.id)"
-            label="View Details"
+        <template #empty>
+          <EmptyState
+            icon-name="Clock"
+            title="No time blocks configured"
+            message="Add your first time block to start organizing your daily schedule."
+            action-text="Time Block"
+            @action="showModal = true"
           />
         </template>
-      </DataTable>
+      </ServerTable>
 
       <TimeBlockDetailModal
         v-if="!!selectedTimeBlockId"
@@ -123,11 +93,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-// Stores
 import { useTimeBlocksStore } from "@/stores";
-// Types
+import { usePageFilters } from "@/composables/usePageFilters";
 import type { TimeBlock } from "@/generated/api";
-// Components
+import type { QTableColumn } from "quasar";
+import { isBackendEnabled } from "@/config/dataSource";
 import TimeBlockCard from "@/components/cards/TimeBlockCard.vue";
 import FilterBar from "@/components/FilterBar.vue";
 import TimeBlockDetailModal from "@/components/modals/TimeBlockDetailModal.vue";
@@ -135,11 +105,10 @@ import TimeBlockFormModal from "@/components/modals/TimeBlockFormModal.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import Icon from "@/components/Icon.vue";
-import DataTable from "@/components/DataTable.vue";
+import ServerTable from "@/components/ServerTable.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import LoadingState from "@/components/LoadingState.vue";
-// Composables
 import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
@@ -148,7 +117,7 @@ export default defineComponent({
     TimeBlockCard,
     FilterBar,
     ConfirmModal,
-    DataTable,
+    ServerTable,
     ViewToggle,
     TimeBlockDetailModal,
     TimeBlockFormModal,
@@ -158,150 +127,217 @@ export default defineComponent({
     LoadingState,
   },
   setup() {
+    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("timeBlocks", {
+      searchQuery: "",
+      viewMode: "grid" as "grid" | "table",
+      pagination: {
+        offset: 0,
+        limit: 20,
+        total: 0,
+        sortBy: undefined,
+        sortOrder: "asc" as "asc" | "desc",
+      },
+    });
+
     const timeBlocksStore = useTimeBlocksStore();
     const toast = useToast();
-    return { timeBlocksStore, toast };
+
+    return {
+      filters,
+      updateFilter,
+      updateFilters,
+      isInitialized,
+      timeBlocksStore,
+      toast,
+    };
   },
   data() {
     return {
       loading: false,
+      timeBlocksData: [] as TimeBlock[],
       showModal: false,
       showConfirmModal: false,
       editingTimeBlockId: null as string | null,
       selectedTimeBlockId: null as string | null,
-      searchQuery: "",
-      viewMode: "grid" as "grid" | "table",
-      currentPage: 1,
-      pageSize: 10,
       confirmAction: null as (() => void) | null,
       timeBlockColumns: [
-        { key: "name", label: "Time Block Name", sortable: true },
-        { key: "startTime", label: "Start Time", sortable: true },
-        { key: "endTime", label: "End Time", sortable: true },
-        { key: "duration", label: "Duration" },
-        { key: "actions", label: "", width: "120px" },
-      ],
+        {
+          name: "name",
+          label: "Time Block Name",
+          field: (row: TimeBlock) => row.meta.name,
+          align: "left" as const,
+          sortable: true,
+        },
+        {
+          name: "startTime",
+          label: "Start Time",
+          field: (row: TimeBlock) => row.spec.startTime,
+          align: "left" as const,
+          sortable: true,
+          format: (value: string) => this.formatTime(value),
+        },
+        {
+          name: "endTime",
+          label: "End Time",
+          field: (row: TimeBlock) => row.spec.endTime,
+          align: "left" as const,
+          sortable: true,
+          format: (value: string) => this.formatTime(value),
+        },
+        {
+          name: "duration",
+          label: "Duration",
+          field: (row: TimeBlock) => row.spec.startTime + "-" + row.spec.endTime,
+          align: "left" as const,
+          format: (value: string) => {
+            const [start, end] = value.split("-");
+            return this.calculateDuration(start, end);
+          },
+        },
+      ] as QTableColumn[],
     };
   },
-  async created() {
-    this.loading = true;
-    try {
-      await this.timeBlocksStore.loadTimeBlocks();
-    } finally {
-      this.loading = false;
-    }
-  },
   computed: {
-    filteredTimeBlocks(): TimeBlock[] {
-      const timeBlocks = this.timeBlocksStore.timeBlocks;
-
-      // Search filter
-      if (this.searchQuery) {
-        const query = this.searchQuery.toLowerCase();
-        return timeBlocks.filter((timeBlock: TimeBlock) =>
-          timeBlock.meta.name.toLowerCase().includes(query),
-        );
-      }
-
-      return timeBlocks;
-    },
     selectedTimeBlock(): TimeBlock | null {
       if (!this.selectedTimeBlockId) return null;
       return (
-        this.timeBlocksStore.getTimeBlockById(this.selectedTimeBlockId) || null
+        this.timeBlocksData.find((tb) => tb.meta.id === this.selectedTimeBlockId) ||
+        null
       );
     },
   },
   methods: {
-    selectTimeBlock(id: string) {
-      this.selectedTimeBlockId = id;
+    async fetchTimeBlocks(): Promise<void> {
+      if (!this.isInitialized) return;
+
+      if (!isBackendEnabled()) {
+        const response = await this.timeBlocksStore.loadTimeBlocks();
+        this.timeBlocksData = Array.isArray(response) ? response : response.items;
+      } else {
+        try {
+          const response = await this.timeBlocksStore.loadTimeBlocksPaginated({
+            offset: this.filters.pagination.offset,
+            limit: this.filters.pagination.limit,
+            search: this.filters.searchQuery || undefined,
+            sortBy: this.filters.pagination.sortBy,
+            sortOrder: this.filters.pagination.sortOrder,
+          });
+
+          this.timeBlocksData = response.items;
+          this.updateFilter("pagination", {
+            ...this.filters.pagination,
+            total: response.total,
+          });
+        } catch (error) {
+          console.error("Failed to fetch time blocks:", error);
+          this.timeBlocksData = [];
+        }
+      }
     },
+
+    clearFilters() {
+      this.updateFilters({
+        searchQuery: "",
+        pagination: {
+          ...this.filters.pagination,
+          offset: 0,
+        },
+      });
+    },
+
+    selectTimeBlock(timeBlock: TimeBlock) {
+      this.selectedTimeBlockId = timeBlock.meta.id;
+    },
+
+    formatTime(time: string): string {
+      const [hours, minutes] = time.split(":").map(Number);
+      const period = hours >= 12 ? "PM" : "AM";
+      const displayHours = hours % 12 || 12;
+      return `${displayHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+    },
+
+    calculateDuration(startTime: string, endTime: string): string {
+      const [startHours, startMinutes] = startTime.split(":").map(Number);
+      const [endHours, endMinutes] = endTime.split(":").map(Number);
+
+      const startTotalMinutes = startHours * 60 + startMinutes;
+      const endTotalMinutes = endHours * 60 + endMinutes;
+
+      const durationMinutes = endTotalMinutes - startTotalMinutes;
+
+      if (durationMinutes < 60) {
+        return `${durationMinutes}m`;
+      }
+
+      const hours = Math.floor(durationMinutes / 60);
+      const minutes = durationMinutes % 60;
+
+      if (minutes === 0) {
+        return `${hours}h`;
+      }
+
+      return `${hours}h ${minutes}m`;
+    },
+
     editTimeBlock(timeBlock: TimeBlock) {
       this.editingTimeBlockId = timeBlock.meta.id;
       this.selectedTimeBlockId = null;
       this.showModal = true;
     },
-    deleteTimeBlockConfirm(id: string) {
-      this.confirmAction = () => this.deleteTimeBlock(id);
+
+    deleteTimeBlockConfirm() {
+      if (!this.selectedTimeBlockId) return;
+
+      this.confirmAction = async () => {
+        if (this.selectedTimeBlockId) {
+          await this.timeBlocksStore.deleteTimeBlock(this.selectedTimeBlockId);
+          await this.fetchTimeBlocks();
+          this.toast.success("Time block deleted successfully");
+          this.selectedTimeBlockId = null;
+        }
+      };
       this.showConfirmModal = true;
-      this.selectedTimeBlockId = null;
     },
-    async deleteTimeBlock(id: string) {
-      try {
-        await this.timeBlocksStore.deleteTimeBlock(id);
-        this.toast.success("Time block deleted successfully");
-      } catch (error: any) {
-        this.toast.error(error.message || "Failed to delete time block");
+
+    async handleConfirmAction() {
+      if (this.confirmAction) {
+        await this.confirmAction();
       }
+      this.showConfirmModal = false;
+      this.confirmAction = null;
     },
+
+    handleCancelConfirm() {
+      this.showConfirmModal = false;
+      this.confirmAction = null;
+    },
+
     closeModal() {
       this.showModal = false;
       this.editingTimeBlockId = null;
     },
-    clearFilters() {
-      this.searchQuery = "";
+  },
+  watch: {
+    isInitialized: {
+      immediate: true,
+      handler(initialized) {
+        if (initialized) {
+          this.fetchTimeBlocks();
+        }
+      },
     },
-    handleConfirmAction() {
-      if (this.confirmAction) {
-        this.confirmAction();
-        this.confirmAction = null;
-      }
-      this.showConfirmModal = false;
-    },
-    handleCancelConfirm() {
-      this.confirmAction = null;
-      this.showConfirmModal = false;
-    },
-    formatTime(timeString: string): string {
-      const [hours, minutes] = timeString.split(":").map(Number);
-      const date = new Date();
-      date.setHours(hours, minutes, 0, 0);
-      return date.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
+    "filters.searchQuery"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
       });
-    },
-    calculateDuration(startTime: string, endTime: string): string {
-      const start = this.parseTime(startTime);
-      const end = this.parseTime(endTime);
-      const diffMs = end.getTime() - start.getTime();
-      const diffMins = Math.floor(diffMs / 60000);
-      const hours = Math.floor(diffMins / 60);
-      const mins = diffMins % 60;
-
-      if (hours === 0) {
-        return `${mins}m`;
-      } else if (mins === 0) {
-        return `${hours}h`;
-      }
-      return `${hours}h ${mins}m`;
-    },
-    parseTime(timeString: string): Date {
-      const [hours, minutes] = timeString.split(":").map(Number);
-      const date = new Date();
-      date.setHours(hours, minutes, 0, 0);
-      return date;
+      this.fetchTimeBlocks();
     },
   },
 });
 </script>
 
-<style scoped>
-.time-blocks-tab {
-  animation: slideIn 0.3s ease;
-}
-
-.time-blocks-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 0.5rem;
-}
-
-.time-blocks-grid .empty-state {
-  grid-column: 1 / -1;
-}
-
+<style scoped lang="scss">
 .time-block-name-content {
   display: flex;
   align-items: center;
@@ -311,27 +347,16 @@ export default defineComponent({
 .time-block-icon-sm {
   width: 32px;
   height: 32px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   color: white;
+  flex-shrink: 0;
 }
 
 .time-block-name {
   font-weight: 500;
   color: var(--text-primary);
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
 }
 </style>
