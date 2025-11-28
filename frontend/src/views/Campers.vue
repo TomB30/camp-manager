@@ -23,12 +23,7 @@
 
       <FilterBar
         v-model:searchQuery="filters.searchQuery"
-        v-model:filter-gender="filters.filterGender"
-        v-model:filter-age="filters.filterAge"
-        v-model:filter-session="filters.filterSession"
-        :filters="campersFilters"
-        :filtered-count="filters.pagination.total"
-        :total-count="filters.pagination.total"
+        search-placeholder="Search by name..."
         @clear="clearFilters"
       >
         <template #prepend>
@@ -127,7 +122,7 @@ import type { QTableColumn } from "quasar";
 import AvatarInitials from "@/components/AvatarInitials.vue";
 import CamperCard from "@/components/cards/CamperCard.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
-import FilterBar, { type Filter } from "@/components/FilterBar.vue";
+import FilterBar from "@/components/FilterBar.vue";
 import ServerTable from "@/components/ServerTable.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import EmptyState from "@/components/EmptyState.vue";
@@ -163,9 +158,6 @@ export default defineComponent({
     const { filters, updateFilter, updateFilters, isInitialized } =
       usePageFilters("campers", {
         searchQuery: "",
-        filterGender: "",
-        filterAge: "",
-        filterSession: "",
         viewMode: "grid" as "grid" | "table",
         pagination: {
           offset: 0,
@@ -228,45 +220,15 @@ export default defineComponent({
       ] as QTableColumn[],
     };
   },
+  async created() {
+    await this.sessionsStore.loadSessions();
+  },
   computed: {
     campersStore() {
       return useCampersStore();
     },
     sessionsStore() {
       return useSessionsStore();
-    },
-    campersFilters(): Filter[] {
-      return [
-        {
-          model: "filterSession",
-          value: this.filters.filterSession,
-          placeholder: "Filter by Session",
-          options: this.sessionsStore.sessions.map((session) => ({
-            label: session.meta.name,
-            value: session.meta.id,
-          })),
-        },
-        {
-          model: "filterGender",
-          value: this.filters.filterGender,
-          placeholder: "Filter by Gender",
-          options: [
-            { label: "Male", value: "male" },
-            { label: "Female", value: "female" },
-          ],
-        },
-        {
-          model: "filterAge",
-          value: this.filters.filterAge,
-          placeholder: "Filter by Age",
-          options: [
-            { label: "6-8 years", value: "6-8" },
-            { label: "9-11 years", value: "9-11" },
-            { label: "12-14 years", value: "12-14" },
-            { label: "15+ years", value: "15+" },
-          ],
-        },
-      ];
     },
     selectedCamper(): Camper | null {
       if (!this.selectedCamperId) return null;
@@ -276,10 +238,6 @@ export default defineComponent({
       );
     },
   },
-  async created() {
-    // Load sessions for filter dropdown
-    await this.sessionsStore.loadSessions();
-  },
   methods: {
     async fetchCampers(): Promise<void> {
       if (!this.isInitialized) return;
@@ -288,12 +246,10 @@ export default defineComponent({
         this.campersData = await this.campersStore.loadCampers();
       } else {
         try {
-          const filterBy = this.buildFilterByArray();
           const response = await this.campersStore.loadCampersPaginated({
             offset: this.filters.pagination.offset,
             limit: this.filters.pagination.limit,
             search: this.filters.searchQuery || undefined,
-            filterBy: filterBy.length > 0 ? filterBy : undefined,
             sortBy: this.filters.pagination.sortBy,
             sortOrder: this.filters.pagination.sortOrder,
           });
@@ -309,39 +265,12 @@ export default defineComponent({
         }
       }
     },
-
-    buildFilterByArray(): string[] {
-      const filterBy: string[] = [];
-
-      if (this.filters.filterGender) {
-        filterBy.push(`gender==${this.filters.filterGender}`);
-      }
-
-      if (this.filters.filterAge) {
-        const [min, max] =
-          this.filters.filterAge === "15+"
-            ? [15, 999]
-            : this.filters.filterAge.split("-").map(Number);
-        filterBy.push(`age>=${min}`);
-        if (max !== 999) filterBy.push(`age<=${max}`);
-      }
-
-      if (this.filters.filterSession) {
-        filterBy.push(`sessionId==${this.filters.filterSession}`);
-      }
-
-      return filterBy;
-    },
-
     calculateAge(birthday: string): number {
       return birthday ? dateUtils.calculateAge(birthday) : 0;
     },
     clearFilters(): void {
       this.updateFilters({
         searchQuery: "",
-        filterGender: "",
-        filterAge: "",
-        filterSession: "",
         pagination: {
           ...this.filters.pagination,
           offset: 0,
@@ -412,27 +341,6 @@ export default defineComponent({
       },
     },
     "filters.searchQuery"() {
-      this.updateFilter("pagination", {
-        ...this.filters.pagination,
-        offset: 0,
-      });
-      this.fetchCampers();
-    },
-    "filters.filterGender"() {
-      this.updateFilter("pagination", {
-        ...this.filters.pagination,
-        offset: 0,
-      });
-      this.fetchCampers();
-    },
-    "filters.filterAge"() {
-      this.updateFilter("pagination", {
-        ...this.filters.pagination,
-        offset: 0,
-      });
-      this.fetchCampers();
-    },
-    "filters.filterSession"() {
       this.updateFilter("pagination", {
         ...this.filters.pagination,
         offset: 0,

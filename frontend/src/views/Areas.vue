@@ -11,8 +11,7 @@
 
       <FilterBar
         v-model:searchQuery="filters.searchQuery"
-        :filtered-count="filters.pagination.total"
-        :total-count="filters.pagination.total"
+        search-placeholder="Search by name..."
         @clear="clearFilters"
       >
         <template #prepend>
@@ -159,6 +158,20 @@ export default defineComponent({
           align: "left" as const,
           format: (value: string | undefined) => value || "No description",
         },
+        {
+          name: "capacity",
+          label: "Capacity",
+          field: (row: Area) => row.spec.capacity,
+          align: "left" as const,
+          format: (value: number | undefined) => value ? value.toString() : "Unlimited",
+        },
+        {
+          name: "equipment",
+          label: "Equipment",
+          field: (row: Area) => row.spec.equipment,
+          align: "left" as const,
+          format: (value: string[] | undefined) => value ? value.join(", ") : "No equipment",
+        }
       ] as QTableColumn[],
     };
   },

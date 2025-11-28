@@ -11,8 +11,7 @@
 
       <FilterBar
         v-model:searchQuery="filters.searchQuery"
-        :filtered-count="filters.pagination.total"
-        :total-count="filters.pagination.total"
+        search-placeholder="Search by name..."
         @clear="clearFilters"
       >
         <template #prepend>

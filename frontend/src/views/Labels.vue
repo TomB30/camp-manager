@@ -14,10 +14,8 @@
       </TabHeader>
 
       <FilterBar
-        v-if="labelsStore.labels.length > 0"
         v-model:searchQuery="searchQuery"
-        :filtered-count="filteredLabels.length"
-        :total-count="labelsStore.labels.length"
+        search-placeholder="Search by name..."
         @clear="clearFilters"
       />
 

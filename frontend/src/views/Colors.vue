@@ -10,10 +10,8 @@
       />
 
       <FilterBar
-        v-if="colorsStore.colors.length > 0"
+        search-placeholder="Search by name..."
         v-model:searchQuery="searchQuery"
-        :filtered-count="filteredColors.length"
-        :total-count="colorsStore.colors.length"
         @clear="clearFilters"
       />
 

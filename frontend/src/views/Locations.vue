@@ -11,11 +11,7 @@
 
       <FilterBar
         v-model:searchQuery="filters.searchQuery"
-        v-model:filter-area="filters.filterArea"
-        :filters="locationFilters"
-        :filtered-count="filters.pagination.total"
-        search-placeholder="Search by location name..."
-        :total-count="filters.pagination.total"
+        search-placeholder="Search by name..."
         @clear="clearFilters"
       >
         <template #prepend>
@@ -83,10 +79,9 @@
 import { defineComponent } from "vue";
 import { useLocationsStore, useAreasStore } from "@/stores";
 import { usePageFilters } from "@/composables/usePageFilters";
-import type { Area, Location } from "@/generated/api";
+import type { Location } from "@/generated/api";
 import type { QTableColumn } from "quasar";
 import { isBackendEnabled } from "@/config/dataSource";
-import type { Filter } from "@/components/FilterBar.vue";
 import LocationCard from "@/components/cards/LocationCard.vue";
 import FilterBar from "@/components/FilterBar.vue";
 import LocationDetailModal from "@/components/modals/LocationDetailModal.vue";
@@ -116,7 +111,6 @@ export default defineComponent({
   setup() {
     const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("locations", {
       searchQuery: "",
-      filterArea: "",
       viewMode: "grid" as "grid" | "table",
       pagination: {
         offset: 0,
@@ -182,19 +176,6 @@ export default defineComponent({
     await this.areasStore.loadAreas();
   },
   computed: {
-    locationFilters(): Filter[] {
-      return [
-        {
-          model: "filterArea",
-          value: this.filters.filterArea,
-          placeholder: "Filter by Area",
-          options: this.areasStore.areas.map((area: Area) => ({
-            label: area.meta.name,
-            value: area.meta.id,
-          })),
-        },
-      ];
-    },
     selectedLocation(): Location | null {
       if (!this.selectedLocationId) return null;
       return (
@@ -212,12 +193,10 @@ export default defineComponent({
         this.locationsData = Array.isArray(response) ? response : response.items;
       } else {
         try {
-          const filterBy = this.buildFilterByArray();
           const response = await this.locationsStore.loadLocationsPaginated({
             offset: this.filters.pagination.offset,
             limit: this.filters.pagination.limit,
             search: this.filters.searchQuery || undefined,
-            filterBy: filterBy.length > 0 ? filterBy : undefined,
             sortBy: this.filters.pagination.sortBy,
             sortOrder: this.filters.pagination.sortOrder,
           });
@@ -233,21 +212,9 @@ export default defineComponent({
         }
       }
     },
-
-    buildFilterByArray(): string[] {
-      const filterBy: string[] = [];
-
-      if (this.filters.filterArea) {
-        filterBy.push(`areaId==${this.filters.filterArea}`);
-      }
-
-      return filterBy;
-    },
-
     clearFilters() {
       this.updateFilters({
         searchQuery: "",
-        filterArea: "",
         pagination: {
           ...this.filters.pagination,
           offset: 0,
@@ -261,7 +228,7 @@ export default defineComponent({
 
     getAreaName(areaId: string): string {
       const area = this.areasStore.getAreaById(areaId);
-      return area?.meta.name || "Unknown Area";
+      return area?.meta.name || "-";
     },
 
     editLocation(location: Location) {
@@ -312,13 +279,6 @@ export default defineComponent({
       },
     },
     "filters.searchQuery"() {
-      this.updateFilter("pagination", {
-        ...this.filters.pagination,
-        offset: 0,
-      });
-      this.fetchLocations();
-    },
-    "filters.filterArea"() {
       this.updateFilter("pagination", {
         ...this.filters.pagination,
         offset: 0,

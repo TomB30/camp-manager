@@ -13,57 +13,6 @@
         </template>
       </BaseInput>
 
-      <!-- Add Filter Button -->
-      <!-- <BaseButton
-        v-if="availableFilters.length > 0"
-        color="grey-6"
-        flat
-        class="add-filter-btn"
-        icon="add"
-        label="Add Filter"
-      >
-        <q-menu>
-          <q-list style="min-width: 180px">
-            <q-item
-              v-for="filter in availableFilters"
-              :key="filter.model"
-              clickable
-              v-close-popup
-              @click="addFilter(filter.model)"
-            >
-              <q-item-section>{{ filter.placeholder }}</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </BaseButton> -->
-
-      <!-- Active Filters -->
-      <!-- <div class="filters-group">
-        <div
-          v-for="filter in activeFilters"
-          :key="filter.model"
-          class="active-filter-wrapper"
-        >
-          <Autocomplete
-            :model-value="filter.value"
-            @update:model-value="
-              (value) => handleFilterChange(filter.model, value)
-            "
-            :options="getFilterOptions(filter)"
-            :placeholder="filter.placeholder"
-            :show-clear="false"
-            class="filter-autocomplete"
-          />
-          <button
-            @click="removeFilter(filter.model)"
-            class="remove-filter-btn"
-            :title="`Remove ${filter.placeholder} filter`"
-          >
-            
-          </button>
-        </div>
-      </div> -->
-
       <!-- Actions -->
       <div class="filter-actions">
         <!-- <button
@@ -73,9 +22,6 @@
         >
           Clear All
         </button> -->
-        <span v-if="showCount" class="text-caption">
-          {{ filteredCount }}/{{ totalCount }}
-        </span>
         <!-- Custom slot for additional controls (e.g., view toggle) -->
         <div v-if="$slots.prepend" class="prepend-slot">
           <slot name="prepend"></slot>
@@ -128,18 +74,6 @@ export default defineComponent({
     filters: {
       type: Array as PropType<Filter[]>,
       default: () => [],
-    },
-    filteredCount: {
-      type: Number,
-      default: 0,
-    },
-    totalCount: {
-      type: Number,
-      default: 0,
-    },
-    showCount: {
-      type: Boolean,
-      default: true,
     },
   },
   data() {

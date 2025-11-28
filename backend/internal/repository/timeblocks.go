@@ -21,16 +21,20 @@ func NewTimeBlocksRepository(db *database.Database) *TimeBlocksRepository {
 
 // timeBlockFields defines the filterable fields and their types for time blocks (API field names)
 var timeBlockFields = map[string]domain.FieldType{
-	"name": domain.FieldTypeText,
+	"name":      domain.FieldTypeText,
+	"startTime": domain.FieldTypeDate,
+	"endTime":   domain.FieldTypeDate,
 }
 
 // timeBlockFieldToColumn maps API field names to database column names
 var timeBlockFieldToColumn = map[string]string{
-	"name": "name",
+	"name":      "name",
+	"startTime": "start_time",
+	"endTime":   "end_time",
 }
 
 // timeBlockSortableFields defines the sortable fields for time blocks (API field names)
-var timeBlockSortableFields = []string{"name"}
+var timeBlockSortableFields = []string{"name", "startTime", "endTime"}
 
 // List retrieves a paginated list of time blocks filtered by tenant and camp
 func (r *TimeBlocksRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.TimeBlock, int64, error) {
@@ -144,4 +148,3 @@ func (r *TimeBlocksRepository) Delete(ctx context.Context, tenantID, campID, id 
 
 	return nil
 }
-

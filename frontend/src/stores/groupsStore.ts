@@ -127,13 +127,13 @@ export const useGroupsStore = defineStore("groups", {
       sortBy?: string;
       sortOrder?: "asc" | "desc";
     }): Promise<
-      Group[] | { items: Group[]; total: number; limit: number; offset: number; next: number | null }
+      Group[]
     > {
       this.loading = true;
       try {
         const response = await groupsService.listGroups(params);
         this.groups = Array.isArray(response) ? response : response.items;
-        return response;
+        return this.groups;
       } finally {
         this.loading = false;
       }

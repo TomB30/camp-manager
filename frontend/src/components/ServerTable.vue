@@ -114,6 +114,9 @@ export default defineComponent({
         // We handle it in handlePaginationUpdate instead
       },
     },
+    gridMarginTop(): string {
+      return this.grid ? "8px" : "0";
+    }
   },
   methods: {
     request(newPagination: any): void {
@@ -148,7 +151,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .server-table {
   border-radius: var(--radius-lg);
 }
@@ -162,6 +165,7 @@ export default defineComponent({
 
 /* Ensure pagination shows in grid mode */
 .server-table :deep(.q-table__bottom) {
+  margin-top: v-bind(gridMarginTop);
   border-top: 1px solid var(--border-light);
 }
 

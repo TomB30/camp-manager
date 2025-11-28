@@ -11,12 +11,7 @@
 
       <FilterBar
         v-model:searchQuery="filters.searchQuery"
-        v-model:filter-type="filters.filterType"
-        v-model:filter-session="filters.filterSession"
-        :filters="groupsFilters"
-        :filtered-count="filters.pagination.total"
-        :total-count="filters.pagination.total"
-        search-placeholder="Search groups..."
+        search-placeholder="Search by name..."
         @clear="clearFilters"
       >
         <template #prepend>
@@ -53,18 +48,8 @@
           </div>
         </template>
 
-        <template #cell-type="{ item }">
-          <div class="type-badges">
-            <span v-if="isNestedGroup(item)" class="badge badge-sm badge-info">Nested</span>
-            <span v-else-if="hasManualCampers(item)" class="badge badge-sm badge-primary">Manual Campers</span>
-            <span v-else class="badge badge-sm badge-secondary">Empty</span>
-
-            <span v-if="item.spec.housingRoomId" class="badge badge-sm badge-secondary">Housing</span>
-          </div>
-        </template>
-
         <template #cell-members="{ item }">
-          <div class="members-counts text-caption row items-center q-gutter-x-md">
+          <div class="members-counts text-caption row items-center q-gutter-x-sm">
             <span v-if="getCampersCount(item.meta.id) > 0" class="badge badge-success badge-sm">
               {{ getCampersCount(item.meta.id) }} campers
             </span>
@@ -174,8 +159,6 @@ export default defineComponent({
   setup() {
     const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("groups", {
       searchQuery: "",
-      filterType: "",
-      filterSession: "",
       viewMode: "grid" as "grid" | "table",
       pagination: {
         offset: 0,
@@ -214,16 +197,10 @@ export default defineComponent({
       groupColumns: [
         {
           name: "name",
-          label: "Group Name",
+          label: "Name",
           field: (row: Group) => row.meta.name,
           align: "left" as const,
           sortable: true,
-        },
-        {
-          name: "type",
-          label: "Type",
-          field: (row: Group) => row.spec.groupIds ? "nested" : "manual",
-          align: "left" as const,
         },
         {
           name: "members",
@@ -239,6 +216,14 @@ export default defineComponent({
           sortable: true,
           format: (value: string | undefined) => value ? this.getSessionName(value) : "-",
         },
+        {
+          name: "housingRoomId",
+          label: "Housing Room",
+          field: (row: Group) => row.spec.housingRoomId,
+          align: "left" as const,
+          sortable: true,
+          format: (value: string | undefined) => value ? this.getHousingRoomName(value) : "-",
+        }
       ] as QTableColumn[],
     };
   },
@@ -276,30 +261,6 @@ export default defineComponent({
     certificationsStore() {
       return useCertificationsStore();
     },
-    groupsFilters(): Filter[] {
-      return [
-        {
-          model: "filterType",
-          value: this.filters.filterType,
-          placeholder: "Filter by Type",
-          options: [
-            { label: "Nested Groups", value: "nested" },
-            { label: "Manual Campers", value: "manual-campers" },
-            { label: "With Housing", value: "has-housing" },
-            { label: "With Session", value: "has-session" },
-          ],
-        },
-        {
-          model: "filterSession",
-          value: this.filters.filterSession,
-          placeholder: "Filter by Session",
-          options: this.sessionsStore.sessions.map((session: Session) => ({
-            label: session.meta.name,
-            value: session.meta.id,
-          })),
-        },
-      ];
-    },
     selectedGroup(): Group | null {
       if (!this.selectedGroupId) return null;
       return this.groupsStore.getGroupById(this.selectedGroupId) || null;
@@ -322,12 +283,11 @@ export default defineComponent({
         this.groupsData = await this.groupsStore.loadGroups();
       } else {
         try {
-          const filterBy = this.buildFilterByArray();
+          this.loading = true;
           const response = await this.groupsStore.loadGroupsPaginated({
             offset: this.filters.pagination.offset,
             limit: this.filters.pagination.limit,
             search: this.filters.searchQuery || undefined,
-            filterBy: filterBy.length > 0 ? filterBy : undefined,
             sortBy: this.filters.pagination.sortBy,
             sortOrder: this.filters.pagination.sortOrder,
           });
@@ -340,42 +300,14 @@ export default defineComponent({
         } catch (error) {
           console.error("Failed to fetch groups:", error);
           this.groupsData = [];
+        } finally {
+          this.loading = false;
         }
       }
     },
-
-    buildFilterByArray(): string[] {
-      const filterBy: string[] = [];
-
-      if (this.filters.filterType) {
-        switch (this.filters.filterType) {
-          case "nested":
-            filterBy.push("groupIds!=null");
-            break;
-          case "manual-campers":
-            filterBy.push("camperIds!=null");
-            break;
-          case "has-housing":
-            filterBy.push("housingRoomId!=null");
-            break;
-          case "has-session":
-            filterBy.push("sessionId!=null");
-            break;
-        }
-      }
-
-      if (this.filters.filterSession) {
-        filterBy.push(`sessionId==${this.filters.filterSession}`);
-      }
-
-      return filterBy;
-    },
-
     clearFilters(): void {
       this.updateFilters({
         searchQuery: "",
-        filterType: "",
-        filterSession: "",
         pagination: {
           ...this.filters.pagination,
           offset: 0,
@@ -397,6 +329,10 @@ export default defineComponent({
     getSessionName(sessionId: string): string {
       const session = this.sessionsStore.sessions.find((s) => s.meta.id === sessionId);
       return session?.meta.name || "Unknown Session";
+    },
+    getHousingRoomName(housingRoomId: string): string {
+      const housingRoom = this.housingRoomsStore.getHousingRoomById(housingRoomId);
+      return housingRoom?.meta.name || "Unknown Room";
     },
     selectGroup(group: Group): void {
       this.selectedGroupId = group.meta.id;

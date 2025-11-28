@@ -12,20 +12,6 @@
         :show-search="true"
         v-model:search-query="searchQuery"
         search-placeholder="Search events by title, room, program, camper, or staff"
-        v-model:filter-room="filterRoom"
-        v-model:filter-program="filterProgram"
-        v-model:filter-staff="filterStaff"
-        v-model:filter-group="filterGroup"
-        :filters="eventFilters"
-        :filtered-count="filteredEvents.length"
-        :total-count="
-          viewMode === 'daily'
-            ? todayEvents.length
-            : viewMode === 'weekly'
-              ? weekEvents.length
-              : monthEvents.length
-        "
-        :show-count="true"
         @clear="clearEventFilters"
       >
         <template #prepend>

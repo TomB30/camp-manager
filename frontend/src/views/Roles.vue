@@ -11,8 +11,6 @@
 
       <FilterBar
         v-model:searchQuery="filters.searchQuery"
-        :filtered-count="filters.pagination.total"
-        :total-count="filters.pagination.total"
         @clear="clearFilters"
       >
         <template #prepend>
@@ -40,9 +38,6 @@
 
         <template #cell-name="{ item }">
           <div class="role-name-content">
-            <div class="role-icon-sm">
-              <Icon name="Shield" :size="18" />
-            </div>
             <div>{{ item.meta.name }}</div>
           </div>
         </template>
@@ -168,7 +163,6 @@ export default defineComponent({
           label: "Description",
           field: (row: Role) => row.meta.description,
           align: "left" as const,
-          sortable: true,
           format: (value: string | undefined) => value || "No description",
         },
       ] as QTableColumn[],

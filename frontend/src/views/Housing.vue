@@ -11,8 +11,7 @@
 
       <FilterBar
         v-model:searchQuery="filters.searchQuery"
-        :filtered-count="filters.pagination.total"
-        :total-count="filters.pagination.total"
+        search-placeholder="Search by name..."
         @clear="clearFilters"
       >
         <template #prepend>
@@ -159,18 +158,19 @@ export default defineComponent({
           sortable: true,
         },
         {
-          name: "capacity",
+          name: "beds",
           label: "Capacity",
-          field: (row: HousingRoom) => row.spec.capacity,
+          field: (row: HousingRoom) => row.spec.beds,
           align: "left" as const,
           sortable: true,
         },
         {
-          name: "occupied",
-          label: "Occupied",
-          field: (row: HousingRoom) => this.getGroupsForRoom(row.meta.id).length,
+          name: "bathroom",
+          label: "Bathroom",
+          field: (row: HousingRoom) => row.spec.bathroom,
           align: "left" as const,
-        },
+          format: (value: string | undefined) => value ? value.charAt(0).toUpperCase() + value.slice(1) : "-",
+        }
       ] as QTableColumn[],
     };
   },

@@ -11,11 +11,6 @@
 
       <FilterBar
         v-model:searchQuery="filters.searchQuery"
-        v-model:filter-role="filters.filterRole"
-        v-model:filter-certification="filters.filterCertification"
-        :filters="staffFilters"
-        :filtered-count="filters.pagination.total"
-        :total-count="filters.pagination.total"
         @clear="clearFilters"
       >
         <template #prepend>
@@ -123,7 +118,7 @@ import type { StaffMember, Event } from "@/generated/api";
 import type { QTableColumn } from "quasar";
 import AvatarInitials from "@/components/AvatarInitials.vue";
 import StaffCard from "@/components/cards/StaffCard.vue";
-import FilterBar, { type Filter } from "@/components/FilterBar.vue";
+import FilterBar from "@/components/FilterBar.vue";
 import EventsByDate from "@/components/EventsByDate.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import ServerTable from "@/components/ServerTable.vue";
@@ -155,8 +150,6 @@ export default defineComponent({
     const { filters, updateFilter, updateFilters, isInitialized } =
       usePageFilters("staffMembers", {
         searchQuery: "",
-        filterRole: "",
-        filterCertification: "",
         viewMode: "grid" as "grid" | "table",
         pagination: {
           offset: 0,
@@ -233,28 +226,6 @@ export default defineComponent({
     rolesStore() {
       return useRolesStore();
     },
-    staffFilters(): Filter[] {
-      return [
-        {
-          model: "filterRole",
-          value: this.filters.filterRole,
-          placeholder: "Filter by Role",
-          options: this.rolesStore.roles.map((role) => ({
-            label: role.meta.name,
-            value: role.meta.id,
-          })),
-        },
-        {
-          model: "filterCertification",
-          value: this.filters.filterCertification,
-          placeholder: "Filter by Certification",
-          options: this.certificationsStore.certifications.map((cert) => ({
-            label: cert.meta.name,
-            value: cert.meta.id,
-          })),
-        },
-      ];
-    },
     selectedMember(): StaffMember | null {
       if (!this.selectedMemberId) return null;
       return (
@@ -281,13 +252,11 @@ export default defineComponent({
         this.staffMembersData = await this.staffMembersStore.loadStaffMembers();
       } else {
         try {
-          const filterBy = this.buildFilterByArray();
           const response =
             await this.staffMembersStore.loadStaffMembersPaginated({
               offset: this.filters.pagination.offset,
               limit: this.filters.pagination.limit,
               search: this.filters.searchQuery || undefined,
-              filterBy: filterBy.length > 0 ? filterBy : undefined,
               sortBy: this.filters.pagination.sortBy,
               sortOrder: this.filters.pagination.sortOrder,
             });
@@ -303,26 +272,9 @@ export default defineComponent({
         }
       }
     },
-
-    buildFilterByArray(): string[] {
-      const filterBy: string[] = [];
-
-      if (this.filters.filterRole) {
-        filterBy.push(`roleId==${this.filters.filterRole}`);
-      }
-
-      if (this.filters.filterCertification) {
-        filterBy.push(`certificationIds=@${this.filters.filterCertification}`);
-      }
-
-      return filterBy;
-    },
-
     clearFilters(): void {
       this.updateFilters({
         searchQuery: "",
-        filterRole: "",
-        filterCertification: "",
         pagination: {
           ...this.filters.pagination,
           offset: 0,
@@ -389,20 +341,6 @@ export default defineComponent({
       },
     },
     "filters.searchQuery"() {
-      this.updateFilter("pagination", {
-        ...this.filters.pagination,
-        offset: 0,
-      });
-      this.fetchStaffMembers();
-    },
-    "filters.filterRole"() {
-      this.updateFilter("pagination", {
-        ...this.filters.pagination,
-        offset: 0,
-      });
-      this.fetchStaffMembers();
-    },
-    "filters.filterCertification"() {
       this.updateFilter("pagination", {
         ...this.filters.pagination,
         offset: 0,

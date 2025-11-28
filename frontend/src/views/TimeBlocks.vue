@@ -12,9 +12,7 @@
       <!-- Search and Filters -->
       <FilterBar
         v-model:searchQuery="filters.searchQuery"
-        search-placeholder="Search by time block name..."
-        :filtered-count="filters.pagination.total"
-        :total-count="filters.pagination.total"
+        search-placeholder="Search by name..."
         @clear="clearFilters"
       >
         <template #prepend>
@@ -163,7 +161,7 @@ export default defineComponent({
       timeBlockColumns: [
         {
           name: "name",
-          label: "Time Block Name",
+          label: "Name",
           field: (row: TimeBlock) => row.meta.name,
           align: "left" as const,
           sortable: true,

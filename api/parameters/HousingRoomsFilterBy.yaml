@@ -11,7 +11,7 @@ schema:
   type: array
   items:
     type: string
-    pattern: "^(name|capacity)(==|!=|<=|>=|=@|!@|=\\^|=~).+$"
-  example: ["name=@Cabin", "capacity>=20"]
+    pattern: "^(name|beds)(==|!=|<=|>=|=@|!@|=\\^|=~).+$"
+  example: ["name=@Cabin", "beds>=20"]
 explode: true
 
