@@ -29,7 +29,14 @@ export const useAreasStore = defineStore("areas", {
       sortBy?: string;
       sortOrder?: "asc" | "desc";
     }): Promise<
-      Area[] | { items: Area[]; total: number; limit: number; offset: number; next: number | null }
+      | Area[]
+      | {
+          items: Area[];
+          total: number;
+          limit: number;
+          offset: number;
+          next: number | null;
+        }
     > {
       this.loading = true;
       try {

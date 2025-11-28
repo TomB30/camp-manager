@@ -117,17 +117,18 @@ export default defineComponent({
     LoadingState,
   },
   setup() {
-    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("roles", {
-      searchQuery: "",
-      viewMode: "grid" as "grid" | "table",
-      pagination: {
-        offset: 0,
-        limit: 20,
-        total: 0,
-        sortBy: undefined,
-        sortOrder: "asc" as "asc" | "desc",
-      },
-    });
+    const { filters, updateFilter, updateFilters, isInitialized } =
+      usePageFilters("roles", {
+        searchQuery: "",
+        viewMode: "grid" as "grid" | "table",
+        pagination: {
+          offset: 0,
+          limit: 20,
+          total: 0,
+          sortBy: undefined,
+          sortOrder: "asc" as "asc" | "desc",
+        },
+      });
 
     const rolesStore = useRolesStore();
     const toast = useToast();
@@ -171,7 +172,9 @@ export default defineComponent({
   computed: {
     selectedRole(): Role | null {
       if (!this.selectedRoleId) return null;
-      return this.rolesData.find((r) => r.meta.id === this.selectedRoleId) || null;
+      return (
+        this.rolesData.find((r) => r.meta.id === this.selectedRoleId) || null
+      );
     },
   },
   methods: {

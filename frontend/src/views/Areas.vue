@@ -110,17 +110,18 @@ export default defineComponent({
     LoadingState,
   },
   setup() {
-    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("areas", {
-      searchQuery: "",
-      viewMode: "grid" as "grid" | "table",
-      pagination: {
-        offset: 0,
-        limit: 20,
-        total: 0,
-        sortBy: undefined,
-        sortOrder: "asc" as "asc" | "desc",
-      },
-    });
+    const { filters, updateFilter, updateFilters, isInitialized } =
+      usePageFilters("areas", {
+        searchQuery: "",
+        viewMode: "grid" as "grid" | "table",
+        pagination: {
+          offset: 0,
+          limit: 20,
+          total: 0,
+          sortBy: undefined,
+          sortOrder: "asc" as "asc" | "desc",
+        },
+      });
 
     const areasStore = useAreasStore();
     const toast = useToast();
@@ -163,15 +164,17 @@ export default defineComponent({
           label: "Capacity",
           field: (row: Area) => row.spec.capacity,
           align: "left" as const,
-          format: (value: number | undefined) => value ? value.toString() : "Unlimited",
+          format: (value: number | undefined) =>
+            value ? value.toString() : "Unlimited",
         },
         {
           name: "equipment",
           label: "Equipment",
           field: (row: Area) => row.spec.equipment,
           align: "left" as const,
-          format: (value: string[] | undefined) => value ? value.join(", ") : "No equipment",
-        }
+          format: (value: string[] | undefined) =>
+            value ? value.join(", ") : "No equipment",
+        },
       ] as QTableColumn[],
     };
   },
@@ -179,8 +182,7 @@ export default defineComponent({
     selectedArea(): Area | null {
       if (!this.selectedAreaId) return null;
       return (
-        this.areasData.find((a) => a.meta.id === this.selectedAreaId) ||
-        null
+        this.areasData.find((a) => a.meta.id === this.selectedAreaId) || null
       );
     },
   },

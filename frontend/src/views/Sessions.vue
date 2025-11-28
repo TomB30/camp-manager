@@ -110,17 +110,18 @@ export default defineComponent({
     LoadingState,
   },
   setup() {
-    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("sessions", {
-      searchQuery: "",
-      viewMode: "grid" as "grid" | "table",
-      pagination: {
-        offset: 0,
-        limit: 20,
-        total: 0,
-        sortBy: undefined,
-        sortOrder: "asc" as "asc" | "desc",
-      },
-    });
+    const { filters, updateFilter, updateFilters, isInitialized } =
+      usePageFilters("sessions", {
+        searchQuery: "",
+        viewMode: "grid" as "grid" | "table",
+        pagination: {
+          offset: 0,
+          limit: 20,
+          total: 0,
+          sortBy: undefined,
+          sortOrder: "asc" as "asc" | "desc",
+        },
+      });
 
     const sessionsStore = useSessionsStore();
     const toast = useToast();

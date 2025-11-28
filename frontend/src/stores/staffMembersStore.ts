@@ -39,7 +39,7 @@ export const useStaffMembersStore = defineStore("staffMembers", {
         this.loading = false;
       }
     },
-    
+
     async loadStaffMembersPaginated(params: {
       limit?: number;
       offset?: number;
@@ -47,7 +47,13 @@ export const useStaffMembersStore = defineStore("staffMembers", {
       filterBy?: string[];
       sortBy?: string;
       sortOrder?: "asc" | "desc";
-    }): Promise<{ items: StaffMember[]; total: number; limit: number; offset: number; next: number | null }> {
+    }): Promise<{
+      items: StaffMember[];
+      total: number;
+      limit: number;
+      offset: number;
+      next: number | null;
+    }> {
       this.loading = true;
       try {
         const response = await staffMembersApi.listStaffMembers(params);

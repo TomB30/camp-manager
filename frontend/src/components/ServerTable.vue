@@ -116,7 +116,7 @@ export default defineComponent({
     },
     gridMarginTop(): string {
       return this.grid ? "8px" : "0";
-    }
+    },
   },
   methods: {
     request(newPagination: any): void {

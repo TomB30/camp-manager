@@ -35,7 +35,14 @@ export const useLocationsStore = defineStore("locations", {
       sortBy?: string;
       sortOrder?: "asc" | "desc";
     }): Promise<
-      Location[] | { items: Location[]; total: number; limit: number; offset: number; next: number | null }
+      | Location[]
+      | {
+          items: Location[];
+          total: number;
+          limit: number;
+          offset: number;
+          next: number | null;
+        }
     > {
       this.loading = true;
       try {

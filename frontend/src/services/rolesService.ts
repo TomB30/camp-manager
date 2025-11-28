@@ -22,7 +22,13 @@ export const rolesService = {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }): Promise<
-    | { items: Role[]; total: number; limit: number; offset: number; next: number | null }
+    | {
+        items: Role[];
+        total: number;
+        limit: number;
+        offset: number;
+        next: number | null;
+      }
     | Role[]
   > => impl().listRoles(params as any),
   createRole: (data: RoleCreationRequest): Promise<Role> =>

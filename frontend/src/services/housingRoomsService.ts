@@ -22,7 +22,13 @@ export const housingRoomsService = {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }): Promise<
-    | { items: HousingRoom[]; total: number; limit: number; offset: number; next: number | null }
+    | {
+        items: HousingRoom[];
+        total: number;
+        limit: number;
+        offset: number;
+        next: number | null;
+      }
     | HousingRoom[]
   > => impl().listHousingRooms(params as any),
   createHousingRoom: (data: HousingRoomCreationRequest): Promise<HousingRoom> =>

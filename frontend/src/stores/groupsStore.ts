@@ -126,9 +126,7 @@ export const useGroupsStore = defineStore("groups", {
       filterBy?: string[];
       sortBy?: string;
       sortOrder?: "asc" | "desc";
-    }): Promise<
-      Group[]
-    > {
+    }): Promise<Group[]> {
       this.loading = true;
       try {
         const response = await groupsService.listGroups(params);

@@ -27,7 +27,14 @@ export const useRolesStore = defineStore("roles", {
       sortBy?: string;
       sortOrder?: "asc" | "desc";
     }): Promise<
-      Role[] | { items: Role[]; total: number; limit: number; offset: number; next: number | null }
+      | Role[]
+      | {
+          items: Role[];
+          total: number;
+          limit: number;
+          offset: number;
+          next: number | null;
+        }
     > {
       this.loading = true;
       try {

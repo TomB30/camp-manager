@@ -114,17 +114,18 @@ export default defineComponent({
     LoadingState,
   },
   setup() {
-    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("housing", {
-      searchQuery: "",
-      viewMode: "grid" as "grid" | "table",
-      pagination: {
-        offset: 0,
-        limit: 20,
-        total: 0,
-        sortBy: undefined,
-        sortOrder: "asc" as "asc" | "desc",
-      },
-    });
+    const { filters, updateFilter, updateFilters, isInitialized } =
+      usePageFilters("housing", {
+        searchQuery: "",
+        viewMode: "grid" as "grid" | "table",
+        pagination: {
+          offset: 0,
+          limit: 20,
+          total: 0,
+          sortBy: undefined,
+          sortOrder: "asc" as "asc" | "desc",
+        },
+      });
 
     const housingRoomsStore = useHousingRoomsStore();
     const groupsStore = useGroupsStore();
@@ -169,8 +170,9 @@ export default defineComponent({
           label: "Bathroom",
           field: (row: HousingRoom) => row.spec.bathroom,
           align: "left" as const,
-          format: (value: string | undefined) => value ? value.charAt(0).toUpperCase() + value.slice(1) : "-",
-        }
+          format: (value: string | undefined) =>
+            value ? value.charAt(0).toUpperCase() + value.slice(1) : "-",
+        },
       ] as QTableColumn[],
     };
   },
@@ -196,16 +198,19 @@ export default defineComponent({
 
       if (!isBackendEnabled()) {
         const response = await this.housingRoomsStore.loadHousingRooms();
-        this.housingRoomsData = Array.isArray(response) ? response : response.items;
+        this.housingRoomsData = Array.isArray(response)
+          ? response
+          : response.items;
       } else {
         try {
-          const response = await this.housingRoomsStore.loadHousingRoomsPaginated({
-            offset: this.filters.pagination.offset,
-            limit: this.filters.pagination.limit,
-            search: this.filters.searchQuery || undefined,
-            sortBy: this.filters.pagination.sortBy,
-            sortOrder: this.filters.pagination.sortOrder,
-          });
+          const response =
+            await this.housingRoomsStore.loadHousingRoomsPaginated({
+              offset: this.filters.pagination.offset,
+              limit: this.filters.pagination.limit,
+              search: this.filters.searchQuery || undefined,
+              sortBy: this.filters.pagination.sortBy,
+              sortOrder: this.filters.pagination.sortOrder,
+            });
 
           this.housingRoomsData = response.items;
           this.updateFilter("pagination", {
@@ -235,7 +240,7 @@ export default defineComponent({
 
     getGroupsForRoom(roomId: string): Group[] {
       return this.groupsStore.groups.filter(
-        (g) => g.spec.housingRoomId === roomId
+        (g) => g.spec.housingRoomId === roomId,
       );
     },
 

@@ -122,6 +122,8 @@ async function getStaffMembersByCertification(
   certificationId: string,
 ): Promise<StaffMember[]> {
   // Backend doesn't have this specific filter, so fetch all and filter client-side
-  const response = await listStaffMembers({ filterBy: [`certificationId==${certificationId}`] });
-  return response.items
+  const response = await listStaffMembers({
+    filterBy: [`certificationId==${certificationId}`],
+  });
+  return response.items;
 }

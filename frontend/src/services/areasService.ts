@@ -22,7 +22,13 @@ export const areasService = {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }): Promise<
-    | { items: Area[]; total: number; limit: number; offset: number; next: number | null }
+    | {
+        items: Area[];
+        total: number;
+        limit: number;
+        offset: number;
+        next: number | null;
+      }
     | Area[]
   > => impl().listAreas(params as any),
   createArea: (data: AreaCreationRequest): Promise<Area> =>

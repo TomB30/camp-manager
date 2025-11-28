@@ -109,17 +109,18 @@ export default defineComponent({
     LoadingState,
   },
   setup() {
-    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("locations", {
-      searchQuery: "",
-      viewMode: "grid" as "grid" | "table",
-      pagination: {
-        offset: 0,
-        limit: 20,
-        total: 0,
-        sortBy: undefined,
-        sortOrder: "asc" as "asc" | "desc",
-      },
-    });
+    const { filters, updateFilter, updateFilters, isInitialized } =
+      usePageFilters("locations", {
+        searchQuery: "",
+        viewMode: "grid" as "grid" | "table",
+        pagination: {
+          offset: 0,
+          limit: 20,
+          total: 0,
+          sortBy: undefined,
+          sortOrder: "asc" as "asc" | "desc",
+        },
+      });
 
     const locationsStore = useLocationsStore();
     const areasStore = useAreasStore();
@@ -190,7 +191,9 @@ export default defineComponent({
 
       if (!isBackendEnabled()) {
         const response = await this.locationsStore.loadLocations();
-        this.locationsData = Array.isArray(response) ? response : response.items;
+        this.locationsData = Array.isArray(response)
+          ? response
+          : response.items;
       } else {
         try {
           const response = await this.locationsStore.loadLocationsPaginated({

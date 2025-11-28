@@ -55,7 +55,14 @@ export const useProgramsStore = defineStore("programs", {
       sortBy?: string;
       sortOrder?: "asc" | "desc";
     }): Promise<
-      Program[] | { items: Program[]; total: number; limit: number; offset: number; next: number | null }
+      | Program[]
+      | {
+          items: Program[];
+          total: number;
+          limit: number;
+          offset: number;
+          next: number | null;
+        }
     > {
       this.loading = true;
       try {

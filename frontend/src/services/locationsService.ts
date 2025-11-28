@@ -22,7 +22,13 @@ export const locationsService = {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }): Promise<
-    | { items: Location[]; total: number; limit: number; offset: number; next: number | null }
+    | {
+        items: Location[];
+        total: number;
+        limit: number;
+        offset: number;
+        next: number | null;
+      }
     | Location[]
   > => impl().listLocations(params as any),
   createLocation: (data: LocationCreationRequest): Promise<Location> =>

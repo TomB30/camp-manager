@@ -29,7 +29,14 @@ export const useTimeBlocksStore = defineStore("timeBlocks", {
       sortBy?: string;
       sortOrder?: "asc" | "desc";
     }): Promise<
-      TimeBlock[] | { items: TimeBlock[]; total: number; limit: number; offset: number; next: number | null }
+      | TimeBlock[]
+      | {
+          items: TimeBlock[];
+          total: number;
+          limit: number;
+          offset: number;
+          next: number | null;
+        }
     > {
       this.loading = true;
       try {

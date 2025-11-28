@@ -22,7 +22,13 @@ export const sessionsService = {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }): Promise<
-    | { items: Session[]; total: number; limit: number; offset: number; next: number | null }
+    | {
+        items: Session[];
+        total: number;
+        limit: number;
+        offset: number;
+        next: number | null;
+      }
     | Session[]
   > => impl().listSessions(params as any),
   createSession: (data: SessionCreationRequest): Promise<Session> =>

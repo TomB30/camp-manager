@@ -230,7 +230,7 @@ export default defineComponent({
       if (!this.selectedMemberId) return null;
       return (
         this.staffMembersData.find(
-          (m) => m.meta.id === this.selectedMemberId
+          (m) => m.meta.id === this.selectedMemberId,
         ) || null
       );
     },

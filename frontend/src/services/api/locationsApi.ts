@@ -121,5 +121,5 @@ async function getLocationById(id: string): Promise<Location | null> {
 async function getLocationsByArea(areaId: string): Promise<Location[]> {
   // Backend doesn't have this specific filter, so fetch all and filter client-side
   const locations = await listLocations();
-  return locations.filter((l) => l.spec.areaId === areaId);
+  return locations.items.filter((l) => l.spec.areaId === areaId);
 }

@@ -35,7 +35,14 @@ export const useHousingRoomsStore = defineStore("housingRooms", {
       sortBy?: string;
       sortOrder?: "asc" | "desc";
     }): Promise<
-      HousingRoom[] | { items: HousingRoom[]; total: number; limit: number; offset: number; next: number | null }
+      | HousingRoom[]
+      | {
+          items: HousingRoom[];
+          total: number;
+          limit: number;
+          offset: number;
+          next: number | null;
+        }
     > {
       this.loading = true;
       try {

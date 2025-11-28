@@ -22,7 +22,13 @@ export const programsService = {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }): Promise<
-    | { items: Program[]; total: number; limit: number; offset: number; next: number | null }
+    | {
+        items: Program[];
+        total: number;
+        limit: number;
+        offset: number;
+        next: number | null;
+      }
     | Program[]
   > => impl().listPrograms(params as any),
   createProgram: (data: ProgramCreationRequest): Promise<Program> =>

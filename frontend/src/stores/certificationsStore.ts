@@ -29,12 +29,21 @@ export const useCertificationsStore = defineStore("certifications", {
       sortBy?: string;
       sortOrder?: "asc" | "desc";
     }): Promise<
-      Certification[] | { items: Certification[]; total: number; limit: number; offset: number; next: number | null }
+      | Certification[]
+      | {
+          items: Certification[];
+          total: number;
+          limit: number;
+          offset: number;
+          next: number | null;
+        }
     > {
       this.loading = true;
       try {
         const response = await certificationsService.listCertifications(params);
-        this.certifications = Array.isArray(response) ? response : response.items;
+        this.certifications = Array.isArray(response)
+          ? response
+          : response.items;
         return response;
       } finally {
         this.loading = false;

@@ -34,7 +34,10 @@
         @row-click="selectCertification"
       >
         <template #item="{ item }">
-          <CertificationCard :certification="item" @click="selectCertification(item)" />
+          <CertificationCard
+            :certification="item"
+            @click="selectCertification(item)"
+          />
         </template>
 
         <template #empty>
@@ -110,17 +113,18 @@ export default defineComponent({
     LoadingState,
   },
   setup() {
-    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("certifications", {
-      searchQuery: "",
-      viewMode: "grid" as "grid" | "table",
-      pagination: {
-        offset: 0,
-        limit: 20,
-        total: 0,
-        sortBy: undefined,
-        sortOrder: "asc" as "asc" | "desc",
-      },
-    });
+    const { filters, updateFilter, updateFilters, isInitialized } =
+      usePageFilters("certifications", {
+        searchQuery: "",
+        viewMode: "grid" as "grid" | "table",
+        pagination: {
+          offset: 0,
+          limit: 20,
+          total: 0,
+          sortBy: undefined,
+          sortOrder: "asc" as "asc" | "desc",
+        },
+      });
 
     const certificationsStore = useCertificationsStore();
     const toast = useToast();
@@ -165,8 +169,9 @@ export default defineComponent({
     selectedCertification(): Certification | null {
       if (!this.selectedCertificationId) return null;
       return (
-        this.certificationsData.find((c) => c.meta.id === this.selectedCertificationId) ||
-        null
+        this.certificationsData.find(
+          (c) => c.meta.id === this.selectedCertificationId,
+        ) || null
       );
     },
   },
@@ -176,16 +181,19 @@ export default defineComponent({
 
       if (!isBackendEnabled()) {
         const response = await this.certificationsStore.loadCertifications();
-        this.certificationsData = Array.isArray(response) ? response : response.items;
+        this.certificationsData = Array.isArray(response)
+          ? response
+          : response.items;
       } else {
         try {
-          const response = await this.certificationsStore.loadCertificationsPaginated({
-            offset: this.filters.pagination.offset,
-            limit: this.filters.pagination.limit,
-            search: this.filters.searchQuery || undefined,
-            sortBy: this.filters.pagination.sortBy,
-            sortOrder: this.filters.pagination.sortOrder,
-          });
+          const response =
+            await this.certificationsStore.loadCertificationsPaginated({
+              offset: this.filters.pagination.offset,
+              limit: this.filters.pagination.limit,
+              search: this.filters.searchQuery || undefined,
+              sortBy: this.filters.pagination.sortBy,
+              sortOrder: this.filters.pagination.sortOrder,
+            });
 
           this.certificationsData = response.items;
           this.updateFilter("pagination", {
@@ -225,7 +233,7 @@ export default defineComponent({
       this.confirmAction = async () => {
         if (this.selectedCertificationId) {
           await this.certificationsStore.deleteCertification(
-            this.selectedCertificationId
+            this.selectedCertificationId,
           );
           await this.fetchCertifications();
           this.toast.success("Certification deleted successfully");

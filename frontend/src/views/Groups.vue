@@ -49,15 +49,26 @@
         </template>
 
         <template #cell-members="{ item }">
-          <div class="members-counts text-caption row items-center q-gutter-x-sm">
-            <span v-if="getCampersCount(item.meta.id) > 0" class="badge badge-success badge-sm">
+          <div
+            class="members-counts text-caption row items-center q-gutter-x-sm"
+          >
+            <span
+              v-if="getCampersCount(item.meta.id) > 0"
+              class="badge badge-success badge-sm"
+            >
               {{ getCampersCount(item.meta.id) }} campers
             </span>
-            <span v-if="getStaffCount(item.meta.id) > 0" class="badge badge-success badge-sm">
+            <span
+              v-if="getStaffCount(item.meta.id) > 0"
+              class="badge badge-success badge-sm"
+            >
               {{ getStaffCount(item.meta.id) }} staff
             </span>
             <span
-              v-if="getCampersCount(item.meta.id) === 0 && getStaffCount(item.meta.id) === 0"
+              v-if="
+                getCampersCount(item.meta.id) === 0 &&
+                getStaffCount(item.meta.id) === 0
+              "
               class="text-caption text-sm"
             >
               No members
@@ -127,13 +138,13 @@ import {
   useCertificationsStore,
 } from "@/stores";
 import { usePageFilters } from "@/composables/usePageFilters";
-import type { Group, Camper, StaffMember, Session } from "@/generated/api";
+import type { Group, Camper, StaffMember } from "@/generated/api";
 import type { QTableColumn } from "quasar";
 import { isBackendEnabled } from "@/config/dataSource";
 import EmptyState from "@/components/EmptyState.vue";
 import GroupCard from "@/components/cards/GroupCard.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
-import FilterBar, { type Filter } from "@/components/FilterBar.vue";
+import FilterBar from "@/components/FilterBar.vue";
 import ServerTable from "@/components/ServerTable.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import GroupDetailModal from "@/components/modals/GroupDetailModal.vue";
@@ -157,17 +168,18 @@ export default defineComponent({
     LoadingState,
   },
   setup() {
-    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("groups", {
-      searchQuery: "",
-      viewMode: "grid" as "grid" | "table",
-      pagination: {
-        offset: 0,
-        limit: 20,
-        total: 0,
-        sortBy: undefined,
-        sortOrder: "asc" as "asc" | "desc",
-      },
-    });
+    const { filters, updateFilter, updateFilters, isInitialized } =
+      usePageFilters("groups", {
+        searchQuery: "",
+        viewMode: "grid" as "grid" | "table",
+        pagination: {
+          offset: 0,
+          limit: 20,
+          total: 0,
+          sortBy: undefined,
+          sortOrder: "asc" as "asc" | "desc",
+        },
+      });
 
     return {
       filters,
@@ -214,7 +226,8 @@ export default defineComponent({
           field: (row: Group) => row.spec.sessionId,
           align: "left" as const,
           sortable: true,
-          format: (value: string | undefined) => value ? this.getSessionName(value) : "-",
+          format: (value: string | undefined) =>
+            value ? this.getSessionName(value) : "-",
         },
         {
           name: "housingRoomId",
@@ -222,8 +235,9 @@ export default defineComponent({
           field: (row: Group) => row.spec.housingRoomId,
           align: "left" as const,
           sortable: true,
-          format: (value: string | undefined) => value ? this.getHousingRoomName(value) : "-",
-        }
+          format: (value: string | undefined) =>
+            value ? this.getHousingRoomName(value) : "-",
+        },
       ] as QTableColumn[],
     };
   },
@@ -239,7 +253,9 @@ export default defineComponent({
   },
   mounted() {
     if (this.$route.query.id) {
-      this.selectGroup({ meta: { id: this.$route.query.id as string } } as Group);
+      this.selectGroup({
+        meta: { id: this.$route.query.id as string },
+      } as Group);
     }
   },
   computed: {
@@ -327,11 +343,14 @@ export default defineComponent({
       return !!(group.spec.camperIds && group.spec.camperIds.length > 0);
     },
     getSessionName(sessionId: string): string {
-      const session = this.sessionsStore.sessions.find((s) => s.meta.id === sessionId);
+      const session = this.sessionsStore.sessions.find(
+        (s) => s.meta.id === sessionId,
+      );
       return session?.meta.name || "Unknown Session";
     },
     getHousingRoomName(housingRoomId: string): string {
-      const housingRoom = this.housingRoomsStore.getHousingRoomById(housingRoomId);
+      const housingRoom =
+        this.housingRoomsStore.getHousingRoomById(housingRoomId);
       return housingRoom?.meta.name || "Unknown Room";
     },
     selectGroup(group: Group): void {
@@ -358,7 +377,9 @@ export default defineComponent({
     },
     async saveGroup(formData: typeof this.formData): Promise<void> {
       const toast = useToast();
-      const { getCurrentTenantId, getCurrentCampId } = await import("@/utils/tenantContext");
+      const { getCurrentTenantId, getCurrentCampId } = await import(
+        "@/utils/tenantContext"
+      );
 
       // Build the group object
       const groupData: Group = {
@@ -374,9 +395,12 @@ export default defineComponent({
         spec: {
           sessionId: formData.sessionId || undefined,
           housingRoomId: formData.housingRoomId || undefined,
-          groupIds: formData.groupIds.length > 0 ? formData.groupIds : undefined,
-          camperIds: formData.camperIds.length > 0 ? formData.camperIds : undefined,
-          staffIds: formData.staffIds.length > 0 ? formData.staffIds : undefined,
+          groupIds:
+            formData.groupIds.length > 0 ? formData.groupIds : undefined,
+          camperIds:
+            formData.camperIds.length > 0 ? formData.camperIds : undefined,
+          staffIds:
+            formData.staffIds.length > 0 ? formData.staffIds : undefined,
         },
       };
 

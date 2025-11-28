@@ -22,7 +22,13 @@ export const groupsService = {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }): Promise<
-    | { items: Group[]; total: number; limit: number; offset: number; next: number | null }
+    | {
+        items: Group[];
+        total: number;
+        limit: number;
+        offset: number;
+        next: number | null;
+      }
     | Group[]
   > => impl().listGroups(params as any),
   createGroup: (data: GroupCreationRequest): Promise<Group> =>

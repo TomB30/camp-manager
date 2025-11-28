@@ -23,7 +23,13 @@ export const certificationsService = {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }): Promise<
-    | { items: Certification[]; total: number; limit: number; offset: number; next: number | null }
+    | {
+        items: Certification[];
+        total: number;
+        limit: number;
+        offset: number;
+        next: number | null;
+      }
     | Certification[]
   > => impl().listCertifications(params as any),
   createCertification: (

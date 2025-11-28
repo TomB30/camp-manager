@@ -209,17 +209,18 @@ export default defineComponent({
     LoadingState,
   },
   setup() {
-    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("programs", {
-      searchQuery: "",
-      viewMode: "grid" as "grid" | "table",
-      pagination: {
-        offset: 0,
-        limit: 20,
-        total: 0,
-        sortBy: undefined,
-        sortOrder: "asc" as "asc" | "desc",
-      },
-    });
+    const { filters, updateFilter, updateFilters, isInitialized } =
+      usePageFilters("programs", {
+        searchQuery: "",
+        viewMode: "grid" as "grid" | "table",
+        pagination: {
+          offset: 0,
+          limit: 20,
+          total: 0,
+          sortBy: undefined,
+          sortOrder: "asc" as "asc" | "desc",
+        },
+      });
 
     return {
       filters,
@@ -262,7 +263,8 @@ export default defineComponent({
           label: "Activities",
           field: (row: Program) => row.meta.id,
           align: "left" as const,
-          format: (value: string) => this.getActivitiesCount(value) + " activities",
+          format: (value: string) =>
+            this.getActivitiesCount(value) + " activities",
         },
         {
           name: "staff",

@@ -125,17 +125,18 @@ export default defineComponent({
     LoadingState,
   },
   setup() {
-    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("timeBlocks", {
-      searchQuery: "",
-      viewMode: "grid" as "grid" | "table",
-      pagination: {
-        offset: 0,
-        limit: 20,
-        total: 0,
-        sortBy: undefined,
-        sortOrder: "asc" as "asc" | "desc",
-      },
-    });
+    const { filters, updateFilter, updateFilters, isInitialized } =
+      usePageFilters("timeBlocks", {
+        searchQuery: "",
+        viewMode: "grid" as "grid" | "table",
+        pagination: {
+          offset: 0,
+          limit: 20,
+          total: 0,
+          sortBy: undefined,
+          sortOrder: "asc" as "asc" | "desc",
+        },
+      });
 
     const timeBlocksStore = useTimeBlocksStore();
     const toast = useToast();
@@ -185,7 +186,8 @@ export default defineComponent({
         {
           name: "duration",
           label: "Duration",
-          field: (row: TimeBlock) => row.spec.startTime + "-" + row.spec.endTime,
+          field: (row: TimeBlock) =>
+            row.spec.startTime + "-" + row.spec.endTime,
           align: "left" as const,
           format: (value: string) => {
             const [start, end] = value.split("-");
@@ -199,8 +201,9 @@ export default defineComponent({
     selectedTimeBlock(): TimeBlock | null {
       if (!this.selectedTimeBlockId) return null;
       return (
-        this.timeBlocksData.find((tb) => tb.meta.id === this.selectedTimeBlockId) ||
-        null
+        this.timeBlocksData.find(
+          (tb) => tb.meta.id === this.selectedTimeBlockId,
+        ) || null
       );
     },
   },
@@ -210,7 +213,9 @@ export default defineComponent({
 
       if (!isBackendEnabled()) {
         const response = await this.timeBlocksStore.loadTimeBlocks();
-        this.timeBlocksData = Array.isArray(response) ? response : response.items;
+        this.timeBlocksData = Array.isArray(response)
+          ? response
+          : response.items;
       } else {
         try {
           const response = await this.timeBlocksStore.loadTimeBlocksPaginated({

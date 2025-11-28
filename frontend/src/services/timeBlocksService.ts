@@ -22,7 +22,13 @@ export const timeBlocksService = {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }): Promise<
-    | { items: TimeBlock[]; total: number; limit: number; offset: number; next: number | null }
+    | {
+        items: TimeBlock[];
+        total: number;
+        limit: number;
+        offset: number;
+        next: number | null;
+      }
     | TimeBlock[]
   > => impl().listTimeBlocks(params as any),
   createTimeBlock: (data: TimeBlockCreationRequest): Promise<TimeBlock> =>
