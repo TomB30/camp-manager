@@ -14,6 +14,30 @@
         search-placeholder="Search by name..."
         @clear="clearFilters"
       >
+        <template #filters>
+          <div class="row q-gutter-x-sm items-center">
+            <BaseInput
+              v-model="filters.startDate"
+              type="date"
+              clearable
+              label="Filter by Start Date"
+              @update:model-value="
+                updateFilter('startDate', $event);
+                fetchSessions();
+              "
+            />
+            <BaseInput
+              v-model="filters.endDate"
+              type="date"
+              clearable
+              label="Filter by End Date"
+              @update:model-value="
+                updateFilter('endDate', $event);
+                fetchSessions();
+              "
+            />
+          </div>
+        </template>
         <template #prepend>
           <ViewToggle v-model="filters.viewMode" />
         </template>
@@ -81,7 +105,6 @@ import { defineComponent } from "vue";
 import { useSessionsStore } from "@/stores";
 import { usePageFilters } from "@/composables/usePageFilters";
 import type { Session } from "@/generated/api";
-import type { QTableColumn } from "quasar";
 import { isBackendEnabled } from "@/config/dataSource";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import SessionCard from "@/components/cards/SessionCard.vue";
@@ -94,6 +117,7 @@ import ViewToggle from "@/components/ViewToggle.vue";
 import EmptyState from "@/components/EmptyState.vue";
 import { useToast } from "@/composables/useToast";
 import LoadingState from "@/components/LoadingState.vue";
+import { tableUtils } from "@/utils/tableUtils";
 
 export default defineComponent({
   name: "SessionsTab",
@@ -113,6 +137,8 @@ export default defineComponent({
     const { filters, updateFilter, updateFilters, isInitialized } =
       usePageFilters("sessions", {
         searchQuery: "",
+        startDate: "",
+        endDate: "",
         viewMode: "grid" as "grid" | "table",
         pagination: {
           offset: 0,
@@ -145,37 +171,35 @@ export default defineComponent({
       selectedSessionId: null as string | null,
       sessionToDelete: null as Session | null,
       sessionColumns: [
-        {
+        tableUtils.newTableColumn({
           name: "name",
           label: "Name",
           field: (row: Session) => row.meta.name,
-          align: "left" as const,
           sortable: true,
-        },
-        {
-          name: "startDate",
-          label: "Start Date",
-          field: (row: Session) => row.spec.startDate,
-          align: "left" as const,
-          sortable: true,
-          format: (value: string) => new Date(value).toLocaleDateString(),
-        },
-        {
-          name: "endDate",
-          label: "End Date",
-          field: (row: Session) => row.spec.endDate,
-          align: "left" as const,
-          sortable: true,
-          format: (value: string) => new Date(value).toLocaleDateString(),
-        },
-        {
+        }),
+        tableUtils.newTableColumn({
           name: "description",
           label: "Description",
           field: (row: Session) => row.meta.description,
-          align: "left" as const,
           format: (value: string | undefined) => value || "No description",
-        },
-      ] as QTableColumn[],
+          style:
+            "max-width: 350px; padding-right: 10px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;",
+        }),
+        tableUtils.newTableColumn({
+          name: "startDate",
+          label: "Start Date",
+          field: (row: Session) => row.spec.startDate,
+          sortable: true,
+          format: (value: string) => new Date(value).toLocaleDateString(),
+        }),
+        tableUtils.newTableColumn({
+          name: "endDate",
+          label: "End Date",
+          field: (row: Session) => row.spec.endDate,
+          sortable: true,
+          format: (value: string) => new Date(value).toLocaleDateString(),
+        }),
+      ],
     };
   },
   computed: {
@@ -202,6 +226,7 @@ export default defineComponent({
             search: this.filters.searchQuery || undefined,
             sortBy: this.filters.pagination.sortBy,
             sortOrder: this.filters.pagination.sortOrder,
+            filterBy: this.buildFilterBy(),
           });
 
           this.sessionsData = response.items;
@@ -214,6 +239,17 @@ export default defineComponent({
           this.sessionsData = [];
         }
       }
+    },
+
+    buildFilterBy(): string[] {
+      const filterBy = [];
+      if (this.filters.startDate) {
+        filterBy.push(`startDate==${this.filters.startDate}`);
+      }
+      if (this.filters.endDate) {
+        filterBy.push(`endDate==${this.filters.endDate}`);
+      }
+      return filterBy;
     },
 
     clearFilters(): void {

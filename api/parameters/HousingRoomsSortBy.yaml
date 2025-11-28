@@ -4,6 +4,6 @@ required: false
 description: Field name to sort by
 schema:
   type: string
-  enum: [name, beds]
+  enum: [name, beds, areaId, bathroom]
   example: name
 

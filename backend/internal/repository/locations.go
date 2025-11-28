@@ -21,18 +21,20 @@ func NewLocationsRepository(db *database.Database) *LocationsRepository {
 
 // locationFields defines the filterable fields and their types for locations (API field names)
 var locationFields = map[string]domain.FieldType{
-	"name":   domain.FieldTypeText,
-	"areaId": domain.FieldTypeUUID,
+	"name":     domain.FieldTypeText,
+	"areaId":   domain.FieldTypeUUID,
+	"capacity": domain.FieldTypeNumber,
 }
 
 // locationFieldToColumn maps API field names to database column names
 var locationFieldToColumn = map[string]string{
-	"name":   "name",
-	"areaId": "area_id",
+	"name":     "name",
+	"areaId":   "area_id",
+	"capacity": "capacity",
 }
 
 // locationSortableFields defines the sortable fields for locations (API field names)
-var locationSortableFields = []string{"name", "areaId"}
+var locationSortableFields = []string{"name", "areaId", "capacity"}
 
 // List retrieves a paginated list of locations filtered by tenant and camp
 func (r *LocationsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Location, int64, error) {

@@ -21,18 +21,22 @@ func NewHousingRoomsRepository(db *database.Database) *HousingRoomsRepository {
 
 // housingRoomFields defines the filterable fields and their types for housing rooms (API field names)
 var housingRoomFields = map[string]domain.FieldType{
-	"name": domain.FieldTypeText,
-	"beds": domain.FieldTypeNumber,
+	"name":     domain.FieldTypeText,
+	"beds":     domain.FieldTypeNumber,
+	"areaId":   domain.FieldTypeUUID,
+	"bathroom": domain.FieldTypeText,
 }
 
 // housingRoomFieldToColumn maps API field names to database column names
 var housingRoomFieldToColumn = map[string]string{
-	"name": "name",
-	"beds": "beds",
+	"name":     "name",
+	"beds":     "beds",
+	"areaId":   "area_id",
+	"bathroom": "bathroom",
 }
 
 // housingRoomSortableFields defines the sortable fields for housing rooms (API field names)
-var housingRoomSortableFields = []string{"name", "beds"}
+var housingRoomSortableFields = []string{"name", "beds", "areaId", "bathroom"}
 
 // List retrieves a paginated list of housing rooms filtered by tenant and camp
 func (r *HousingRoomsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.HousingRoom, int64, error) {

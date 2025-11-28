@@ -13,6 +13,28 @@
         v-model:searchQuery="filters.searchQuery"
         @clear="clearFilters"
       >
+        <template #filters>
+          <div class="row q-gutter-x-sm items-center">
+            <BaseSelect
+              v-model="filters.gender"
+              :options="genderOptions"
+              @update:model-value="
+                updateFilter('gender', $event);
+                fetchStaffMembers();
+              "
+              label="Filter by Gender"
+            />
+            <BaseSelect
+              v-model="filters.roleId"
+              :options="roleOptions"
+              @update:model-value="
+                updateFilter('roleId', $event);
+                fetchStaffMembers();
+              "
+              label="Filter by Role"
+            />
+          </div>
+        </template>
         <template #prepend>
           <ViewToggle v-model="filters.viewMode" />
         </template>
@@ -114,7 +136,7 @@ import {
   useRolesStore,
 } from "@/stores";
 import { usePageFilters } from "@/composables/usePageFilters";
-import type { StaffMember, Event } from "@/generated/api";
+import type { StaffMember, Event, Role } from "@/generated/api";
 import type { QTableColumn } from "quasar";
 import AvatarInitials from "@/components/AvatarInitials.vue";
 import StaffCard from "@/components/cards/StaffCard.vue";
@@ -129,6 +151,8 @@ import StaffMemberFormModal from "@/components/modals/StaffMemberFormModal.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import { isBackendEnabled } from "@/config/dataSource";
+import { ISelectOption } from "@/components/SelectionList.vue";
+import BaseSelect from "@/components/common/BaseSelect.vue";
 
 export default defineComponent({
   name: "StaffMembers",
@@ -145,11 +169,14 @@ export default defineComponent({
     StaffMemberFormModal,
     TabHeader,
     LoadingState,
+    BaseSelect,
   },
   setup() {
     const { filters, updateFilter, updateFilters, isInitialized } =
       usePageFilters("staffMembers", {
         searchQuery: "",
+        gender: "",
+        roleId: "",
         viewMode: "grid" as "grid" | "table",
         pagination: {
           offset: 0,
@@ -200,6 +227,14 @@ export default defineComponent({
           sortable: true,
         },
         {
+          name: "gender",
+          label: "Gender",
+          field: (row: StaffMember) => row.spec.gender,
+          align: "left" as const,
+          sortable: true,
+          format: (value: string) => this.formatGender(value),
+        },
+        {
           name: "certificationIds",
           label: "Certifications",
           field: (row: StaffMember) => row.spec.certificationIds,
@@ -209,6 +244,15 @@ export default defineComponent({
         },
       ] as QTableColumn[],
     };
+  },
+  async created() {
+    // Load reference data for filters
+    await Promise.all([
+      this.rolesStore.loadRoles(),
+      this.certificationsStore.loadCertifications(),
+      this.eventsStore.loadEvents(),
+      this.areasStore.loadAreas(),
+    ]);
   },
   computed: {
     staffMembersStore() {
@@ -234,17 +278,23 @@ export default defineComponent({
         ) || null
       );
     },
-  },
-  async created() {
-    // Load reference data for filters
-    await Promise.all([
-      this.rolesStore.loadRoles(),
-      this.certificationsStore.loadCertifications(),
-      this.eventsStore.loadEvents(),
-      this.areasStore.loadAreas(),
-    ]);
+    genderOptions(): ISelectOption[] {
+      return [
+        { label: "Male", value: "male" },
+        { label: "Female", value: "female" },
+      ];
+    },
+    roleOptions(): ISelectOption[] {
+      return this.rolesStore.roles.map((role: Role) => ({
+        label: role.meta.name,
+        value: role.meta.id,
+      }));
+    },
   },
   methods: {
+    formatGender(gender: string): string {
+      return gender.charAt(0).toUpperCase() + gender.slice(1);
+    },
     async fetchStaffMembers(): Promise<void> {
       if (!this.isInitialized) return;
 
@@ -259,6 +309,7 @@ export default defineComponent({
               search: this.filters.searchQuery || undefined,
               sortBy: this.filters.pagination.sortBy,
               sortOrder: this.filters.pagination.sortOrder,
+              filterBy: this.buildFilterBy(),
             });
 
           this.staffMembersData = response.items;
@@ -271,6 +322,16 @@ export default defineComponent({
           this.staffMembersData = [];
         }
       }
+    },
+    buildFilterBy(): string[] {
+      const filterBy = [];
+      if (this.filters.gender) {
+        filterBy.push(`gender==${this.filters.gender}`);
+      }
+      if (this.filters.roleId) {
+        filterBy.push(`roleId==${this.filters.roleId}`);
+      }
+      return filterBy;
     },
     clearFilters(): void {
       this.updateFilters({

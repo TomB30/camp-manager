@@ -26,6 +26,50 @@
         search-placeholder="Search by name..."
         @clear="clearFilters"
       >
+        <template #filters>
+          <div class="row q-gutter-x-sm items-center">
+            <BaseInput
+              v-model="filters.minAge"
+              type="number"
+              clearable
+              label="Minimum Age"
+              :min="0"
+              :max="100"
+              style="width: 150px"
+              @update:model-value="
+                updateFilter('minAge', $event);
+                fetchCampers();
+              "
+            />
+            <BaseSelect
+              v-model="filters.gender"
+              :options="genderOptions"
+              @update:model-value="
+                updateFilter('gender', $event);
+                fetchCampers();
+              "
+              label="Filter by Gender"
+            />
+            <BaseSelect
+              v-model="filters.sessionId"
+              :options="sessionOptions"
+              @update:model-value="
+                updateFilter('sessionId', $event);
+                fetchCampers();
+              "
+              label="Filter by Session"
+            />
+            <BaseSelect
+              v-model="filters.housingGroupId"
+              :options="housingGroupOptions"
+              @update:model-value="
+                updateFilter('housingGroupId', $event);
+                fetchCampers();
+              "
+              label="Filter by Housing"
+            />
+          </div>
+        </template>
         <template #prepend>
           <ViewToggle v-model="filters.viewMode" />
         </template>
@@ -115,7 +159,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useCampersStore, useSessionsStore } from "@/stores";
+import { useCampersStore, useGroupsStore, useSessionsStore } from "@/stores";
 import { usePageFilters } from "@/composables/usePageFilters";
 import type { Camper } from "@/generated/api";
 import type { QTableColumn } from "quasar";
@@ -135,6 +179,7 @@ import BaseButton from "@/components/common/BaseButton.vue";
 import { dateUtils } from "@/utils/dateUtils";
 import LoadingState from "@/components/LoadingState.vue";
 import { isBackendEnabled } from "@/config/dataSource";
+import BaseSelect from "@/components/common/BaseSelect.vue";
 
 export default defineComponent({
   name: "Campers",
@@ -153,11 +198,17 @@ export default defineComponent({
     Icon,
     BaseButton,
     LoadingState,
+    BaseSelect,
   },
   setup() {
     const { filters, updateFilter, updateFilters, isInitialized } =
       usePageFilters("campers", {
         searchQuery: "",
+        minAge: "",
+        maxAge: "",
+        gender: "",
+        sessionId: "",
+        housingGroupId: "",
         viewMode: "grid" as "grid" | "table",
         pagination: {
           offset: 0,
@@ -221,9 +272,33 @@ export default defineComponent({
     };
   },
   async created() {
-    await this.sessionsStore.loadSessions();
+    await Promise.all([
+      this.campersStore.loadCampers(),
+      this.sessionsStore.loadSessions(),
+      this.groupsStore.loadGroups(),
+    ]);
   },
   computed: {
+    genderOptions() {
+      return [
+        { label: "Male", value: "male" },
+        { label: "Female", value: "female" },
+      ];
+    },
+    sessionOptions() {
+      return this.sessionsStore.sessions.map((s) => ({
+        label: s.meta.name,
+        value: s.meta.id,
+      }));
+    },
+    housingGroupOptions() {
+      return this.groupsStore.groups
+        .filter((g) => g.spec.housingRoomId)
+        .map((h) => ({ label: h.meta.name, value: h.meta.id }));
+    },
+    groupsStore() {
+      return useGroupsStore();
+    },
     campersStore() {
       return useCampersStore();
     },
@@ -252,6 +327,7 @@ export default defineComponent({
             search: this.filters.searchQuery || undefined,
             sortBy: this.filters.pagination.sortBy,
             sortOrder: this.filters.pagination.sortOrder,
+            filterBy: this.buildFilterBy(),
           });
 
           this.campersData = response.items;
@@ -264,6 +340,35 @@ export default defineComponent({
           this.campersData = [];
         }
       }
+    },
+    buildFilterBy(): string[] {
+      const filterBy = [];
+      if (this.filters.minAge) {
+        const dateOfMinAge = new Date(
+          new Date().setFullYear(
+            new Date().getFullYear() - Number(this.filters.minAge),
+          ),
+        );
+        filterBy.push(`birthday<=${dateOfMinAge.toISOString()}`);
+      }
+      if (this.filters.maxAge) {
+        const dateOfMaxAge = new Date(
+          new Date().setFullYear(
+            new Date().getFullYear() - Number(this.filters.maxAge),
+          ),
+        );
+        filterBy.push(`birthday>=${dateOfMaxAge.toISOString()}`);
+      }
+      if (this.filters.gender) {
+        filterBy.push(`gender==${this.filters.gender}`);
+      }
+      if (this.filters.sessionId) {
+        filterBy.push(`sessionId==${this.filters.sessionId}`);
+      }
+      if (this.filters.housingGroupId) {
+        filterBy.push(`housingGroupId==${this.filters.housingGroupId}`);
+      }
+      return filterBy;
     },
     calculateAge(birthday: string): number {
       return birthday ? dateUtils.calculateAge(birthday) : 0;

@@ -7558,7 +7558,7 @@ func (r GetCurrentUserHTTPResponse) StatusCode() int {
 type SignupHTTPResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *LoginResponse
+	JSON201      *LoginResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -10476,12 +10476,12 @@ func ParseSignupHTTPResponse(rsp *http.Response) (*SignupHTTPResponse, error) {
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
 		var dest LoginResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
-		response.JSON200 = &dest
+		response.JSON201 = &dest
 
 	}
 

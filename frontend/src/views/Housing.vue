@@ -14,6 +14,46 @@
         search-placeholder="Search by name..."
         @clear="clearFilters"
       >
+        <template #filters>
+          <div class="row q-gutter-x-sm items-center">
+            <BaseSelect
+              v-model="filters.areaId"
+              :options="areaFilterOptions"
+              @update:model-value="
+                updateFilter('areaId', $event);
+                fetchHousingRooms();
+              "
+              label="Filter by area"
+            />
+            <BaseSelect
+              v-model="filters.bathroom"
+              :options="[
+                { label: 'Private', value: 'private' },
+                { label: 'Shared', value: 'shared' },
+              ]"
+              @update:model-value="
+                updateFilter('bathroom', $event);
+                fetchHousingRooms();
+              "
+              label="Filter by bathroom"
+            />
+            <q-input
+              clearable
+              outlined
+              dense
+              label="Filter by minimum beds"
+              style="width: 200px"
+              v-model="filters.beds"
+              @update:model-value="
+                updateFilter('beds', $event);
+                fetchHousingRooms();
+              "
+              type="number"
+              :min="1"
+              :max="100"
+            />
+          </div>
+        </template>
         <template #prepend>
           <ViewToggle v-model="filters.viewMode" />
         </template>
@@ -82,10 +122,10 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useHousingRoomsStore, useGroupsStore } from "@/stores";
+import { useHousingRoomsStore, useGroupsStore, useAreasStore } from "@/stores";
 import { usePageFilters } from "@/composables/usePageFilters";
 import type { HousingRoom, Group } from "@/generated/api";
-import type { QTableColumn } from "quasar";
+import type { QSelectOption, QTableColumn } from "quasar";
 import { isBackendEnabled } from "@/config/dataSource";
 import HousingRoomCard from "@/components/cards/HousingRoomCard.vue";
 import FilterBar from "@/components/FilterBar.vue";
@@ -98,7 +138,7 @@ import ViewToggle from "@/components/ViewToggle.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import { useToast } from "@/composables/useToast";
-
+import BaseSelect from "@/components/common/BaseSelect.vue";
 export default defineComponent({
   name: "CabinsTab",
   components: {
@@ -112,11 +152,15 @@ export default defineComponent({
     EmptyState,
     TabHeader,
     LoadingState,
+    BaseSelect,
   },
   setup() {
     const { filters, updateFilter, updateFilters, isInitialized } =
       usePageFilters("housing", {
         searchQuery: "",
+        areaId: "",
+        beds: undefined as number | undefined | null | string,
+        bathroom: undefined,
         viewMode: "grid" as "grid" | "table",
         pagination: {
           offset: 0,
@@ -129,6 +173,7 @@ export default defineComponent({
 
     const housingRoomsStore = useHousingRoomsStore();
     const groupsStore = useGroupsStore();
+    const areasStore = useAreasStore();
     const toast = useToast();
 
     return {
@@ -138,6 +183,7 @@ export default defineComponent({
       isInitialized,
       housingRoomsStore,
       groupsStore,
+      areasStore,
       toast,
     };
   },
@@ -159,6 +205,14 @@ export default defineComponent({
           sortable: true,
         },
         {
+          name: "areaId",
+          label: "Area",
+          field: (row: HousingRoom) => row.spec.areaId,
+          align: "left" as const,
+          sortable: true,
+          format: (value: string) => this.getAreaName(value),
+        },
+        {
           name: "beds",
           label: "Capacity",
           field: (row: HousingRoom) => row.spec.beds,
@@ -177,9 +231,18 @@ export default defineComponent({
     };
   },
   async created() {
-    await this.groupsStore.loadGroups();
+    await Promise.all([
+      this.groupsStore.loadGroups(),
+      this.areasStore.loadAreas(),
+    ]);
   },
   computed: {
+    areaFilterOptions(): QSelectOption[] {
+      return this.areasStore.areas.map((area) => ({
+        label: area.meta.name,
+        value: area.meta.id,
+      }));
+    },
     selectedRoom(): HousingRoom | null {
       if (!this.selectedRoomId) return null;
       return (
@@ -193,6 +256,23 @@ export default defineComponent({
     },
   },
   methods: {
+    getAreaName(areaId: string): string {
+      const area = this.areasStore.getAreaById(areaId);
+      return area?.meta.name || "-";
+    },
+    buildFilterBy(): string[] {
+      const filterBy = [];
+      if (this.filters.areaId) {
+        filterBy.push(`areaId==${this.filters.areaId}`);
+      }
+      if (this.filters.bathroom) {
+        filterBy.push(`bathroom==${this.filters.bathroom}`);
+      }
+      if (this.filters.beds) {
+        filterBy.push(`beds>=${this.filters.beds}`);
+      }
+      return filterBy;
+    },
     async fetchHousingRooms(): Promise<void> {
       if (!this.isInitialized) return;
 
@@ -210,6 +290,7 @@ export default defineComponent({
               search: this.filters.searchQuery || undefined,
               sortBy: this.filters.pagination.sortBy,
               sortOrder: this.filters.pagination.sortOrder,
+              filterBy: this.buildFilterBy(),
             });
 
           this.housingRoomsData = response.items;

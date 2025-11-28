@@ -94,7 +94,6 @@ import { defineComponent } from "vue";
 import { useTimeBlocksStore } from "@/stores";
 import { usePageFilters } from "@/composables/usePageFilters";
 import type { TimeBlock } from "@/generated/api";
-import type { QTableColumn } from "quasar";
 import { isBackendEnabled } from "@/config/dataSource";
 import TimeBlockCard from "@/components/cards/TimeBlockCard.vue";
 import FilterBar from "@/components/FilterBar.vue";
@@ -108,6 +107,7 @@ import ViewToggle from "@/components/ViewToggle.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import { useToast } from "@/composables/useToast";
+import { tableUtils } from "@/utils/tableUtils";
 
 export default defineComponent({
   name: "TimeBlocksTab",
@@ -160,41 +160,32 @@ export default defineComponent({
       selectedTimeBlockId: null as string | null,
       confirmAction: null as (() => void) | null,
       timeBlockColumns: [
-        {
+        tableUtils.newTableColumn({
           name: "name",
           label: "Name",
           field: (row: TimeBlock) => row.meta.name,
-          align: "left" as const,
           sortable: true,
-        },
-        {
+        }),
+        tableUtils.newTableColumn({
+          name: "description",
+          label: "Description",
+          field: (row: TimeBlock) => row.meta.description,
+        }),
+        tableUtils.newTableColumn({
           name: "startTime",
           label: "Start Time",
           field: (row: TimeBlock) => row.spec.startTime,
-          align: "left" as const,
           sortable: true,
           format: (value: string) => this.formatTime(value),
-        },
-        {
+        }),
+        tableUtils.newTableColumn({
           name: "endTime",
           label: "End Time",
           field: (row: TimeBlock) => row.spec.endTime,
-          align: "left" as const,
           sortable: true,
           format: (value: string) => this.formatTime(value),
-        },
-        {
-          name: "duration",
-          label: "Duration",
-          field: (row: TimeBlock) =>
-            row.spec.startTime + "-" + row.spec.endTime,
-          align: "left" as const,
-          format: (value: string) => {
-            const [start, end] = value.split("-");
-            return this.calculateDuration(start, end);
-          },
-        },
-      ] as QTableColumn[],
+        }),
+      ],
     };
   },
   computed: {

@@ -1,6 +1,6 @@
 <template>
   <div class="filter-bar card">
-    <div class="filter-bar-content">
+    <div class="filter-bar-content row justify-between">
       <BaseInput
         v-model="internalSearchQuery"
         :placeholder="searchPlaceholder"
@@ -14,15 +14,10 @@
       </BaseInput>
 
       <!-- Actions -->
-      <div class="filter-actions">
-        <!-- <button
-          v-if="hasActiveFilters"
-          @click="$emit('clear')"
-          class="btn btn-sm btn-secondary"
-        >
-          Clear All
-        </button> -->
-        <!-- Custom slot for additional controls (e.g., view toggle) -->
+      <div class="col row justify-between items-center">
+        <div>
+          <slot name="filters"></slot>
+        </div>
         <div v-if="$slots.prepend" class="prepend-slot">
           <slot name="prepend"></slot>
         </div>

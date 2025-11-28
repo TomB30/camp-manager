@@ -14,6 +14,31 @@
         search-placeholder="Search by name..."
         @clear="clearFilters"
       >
+        <template #filters>
+          <div class="row q-gutter-x-sm items-center">
+            <BaseSelect
+              v-model="filters.areaId"
+              :options="areaFilterOptions"
+              @update:model-value="
+                updateFilter('areaId', $event);
+                fetchLocations();
+              "
+              label="Filter by area"
+            />
+            <q-input
+              clearable
+              outlined
+              dense
+              v-model="filters.capacity"
+              type="number"
+              placeholder="Filter by capacity"
+              @update:model-value="
+                updateFilter('capacity', $event);
+                fetchLocations();
+              "
+            />
+          </div>
+        </template>
         <template #prepend>
           <ViewToggle v-model="filters.viewMode" />
         </template>
@@ -80,7 +105,7 @@ import { defineComponent } from "vue";
 import { useLocationsStore, useAreasStore } from "@/stores";
 import { usePageFilters } from "@/composables/usePageFilters";
 import type { Location } from "@/generated/api";
-import type { QTableColumn } from "quasar";
+import type { QSelectOption, QTableColumn } from "quasar";
 import { isBackendEnabled } from "@/config/dataSource";
 import LocationCard from "@/components/cards/LocationCard.vue";
 import FilterBar from "@/components/FilterBar.vue";
@@ -93,6 +118,7 @@ import ViewToggle from "@/components/ViewToggle.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import { useToast } from "@/composables/useToast";
+import BaseSelect from "@/components/common/BaseSelect.vue";
 
 export default defineComponent({
   name: "ActivityLocationsTab",
@@ -107,11 +133,14 @@ export default defineComponent({
     EmptyState,
     TabHeader,
     LoadingState,
+    BaseSelect,
   },
   setup() {
     const { filters, updateFilter, updateFilters, isInitialized } =
       usePageFilters("locations", {
         searchQuery: "",
+        areaId: "",
+        capacity: undefined as number | undefined | null | string,
         viewMode: "grid" as "grid" | "table",
         pagination: {
           offset: 0,
@@ -148,7 +177,7 @@ export default defineComponent({
       locationColumns: [
         {
           name: "name",
-          label: "Location Name",
+          label: "Name",
           field: (row: Location) => row.meta.name,
           align: "left" as const,
           sortable: true,
@@ -177,6 +206,12 @@ export default defineComponent({
     await this.areasStore.loadAreas();
   },
   computed: {
+    areaFilterOptions(): QSelectOption[] {
+      return this.areasStore.areas.map((area) => ({
+        label: area.meta.name,
+        value: area.meta.id,
+      }));
+    },
     selectedLocation(): Location | null {
       if (!this.selectedLocationId) return null;
       return (
@@ -196,12 +231,14 @@ export default defineComponent({
           : response.items;
       } else {
         try {
+          const filterBy = this.buildFilterBy();
           const response = await this.locationsStore.loadLocationsPaginated({
             offset: this.filters.pagination.offset,
             limit: this.filters.pagination.limit,
             search: this.filters.searchQuery || undefined,
             sortBy: this.filters.pagination.sortBy,
             sortOrder: this.filters.pagination.sortOrder,
+            filterBy,
           });
 
           this.locationsData = response.items;
@@ -214,6 +251,16 @@ export default defineComponent({
           this.locationsData = [];
         }
       }
+    },
+    buildFilterBy(): string[] {
+      const filterBy = [];
+      if (this.filters.areaId) {
+        filterBy.push(`areaId==${this.filters.areaId}`);
+      }
+      if (this.filters.capacity) {
+        filterBy.push(`capacity>=${this.filters.capacity}`);
+      }
+      return filterBy;
     },
     clearFilters() {
       this.updateFilters({

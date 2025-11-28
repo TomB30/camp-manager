@@ -1152,7 +1152,7 @@ export type HousingRoomsFilterBy = Array<string>;
 /**
  * Field name to sort by
  */
-export type HousingRoomsSortBy = 'name' | 'capacity';
+export type HousingRoomsSortBy = 'name' | 'beds' | 'areaId' | 'bathroom';
 
 /**
  * Filter results by parameters. Format: field operator value
@@ -1229,13 +1229,17 @@ export type SignupErrors = {
      * Invalid request or user already exists
      */
     400: unknown;
+    /**
+     * Tenant not found
+     */
+    404: unknown;
 };
 
 export type SignupResponses = {
     /**
      * Successfully registered
      */
-    200: LoginResponse;
+    201: LoginResponse;
 };
 
 export type SignupResponse = SignupResponses[keyof SignupResponses];
@@ -3118,7 +3122,7 @@ export type ListHousingRoomsData = {
         /**
          * Field name to sort by
          */
-        sortBy?: 'name' | 'capacity';
+        sortBy?: 'name' | 'beds' | 'areaId' | 'bathroom';
         /**
          * Sort direction
          */

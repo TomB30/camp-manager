@@ -14,6 +14,28 @@
         search-placeholder="Search by name..."
         @clear="clearFilters"
       >
+        <template #filters>
+          <div class="row q-gutter-x-sm items-center">
+            <BaseSelect
+              v-model="filters.sessionId"
+              :options="sessionOptions"
+              @update:model-value="
+                updateFilter('sessionId', $event);
+                fetchGroups();
+              "
+              label="Filter by Session"
+            />
+            <BaseSelect
+              v-model="filters.housingRoomId"
+              :options="housingRoomOptions"
+              @update:model-value="
+                updateFilter('housingRoomId', $event);
+                fetchGroups();
+              "
+              label="Filter by Housing Room"
+            />
+          </div>
+        </template>
         <template #prepend>
           <ViewToggle v-model="filters.viewMode" />
         </template>
@@ -152,7 +174,8 @@ import GroupFormModal from "@/components/modals/GroupFormModal.vue";
 import { useToast } from "@/composables/useToast";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import LoadingState from "@/components/LoadingState.vue";
-
+import { ISelectOption } from "@/components/SelectionList.vue";
+import BaseSelect from "@/components/common/BaseSelect.vue";
 export default defineComponent({
   name: "GroupsNew",
   components: {
@@ -166,11 +189,14 @@ export default defineComponent({
     GroupFormModal,
     TabHeader,
     LoadingState,
+    BaseSelect,
   },
   setup() {
     const { filters, updateFilter, updateFilters, isInitialized } =
       usePageFilters("groups", {
         searchQuery: "",
+        sessionId: "",
+        housingRoomId: "",
         viewMode: "grid" as "grid" | "table",
         pagination: {
           offset: 0,
@@ -289,6 +315,18 @@ export default defineComponent({
       if (!this.selectedGroupId) return [];
       return this.groupsStore.getStaffInGroup(this.selectedGroupId);
     },
+    sessionOptions(): ISelectOption[] {
+      return this.sessionsStore.sessions.map((s) => ({
+        label: s.meta.name,
+        value: s.meta.id,
+      }));
+    },
+    housingRoomOptions(): ISelectOption[] {
+      return this.housingRoomsStore.housingRooms.map((h) => ({
+        label: h.meta.name,
+        value: h.meta.id,
+      }));
+    },
   },
 
   methods: {
@@ -306,6 +344,7 @@ export default defineComponent({
             search: this.filters.searchQuery || undefined,
             sortBy: this.filters.pagination.sortBy,
             sortOrder: this.filters.pagination.sortOrder,
+            filterBy: this.buildFilterBy(),
           });
 
           this.groupsData = response.items;
@@ -329,6 +368,16 @@ export default defineComponent({
           offset: 0,
         },
       });
+    },
+    buildFilterBy(): string[] {
+      const filterBy = [];
+      if (this.filters.sessionId) {
+        filterBy.push(`sessionId==${this.filters.sessionId}`);
+      }
+      if (this.filters.housingRoomId) {
+        filterBy.push(`housingRoomId==${this.filters.housingRoomId}`);
+      }
+      return filterBy;
     },
     getCampersCount(groupId: string): number {
       return this.groupsStore.getCampersInGroup(groupId).length;

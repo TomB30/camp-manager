@@ -134,7 +134,9 @@ const (
 
 // Defines values for HousingRoomsSortBy.
 const (
-	HousingRoomsSortByCapacity HousingRoomsSortBy = "capacity"
+	HousingRoomsSortByAreaId   HousingRoomsSortBy = "areaId"
+	HousingRoomsSortByBathroom HousingRoomsSortBy = "bathroom"
+	HousingRoomsSortByBeds     HousingRoomsSortBy = "beds"
 	HousingRoomsSortByName     HousingRoomsSortBy = "name"
 )
 
@@ -309,7 +311,9 @@ const (
 
 // Defines values for ListHousingRoomsParamsSortBy.
 const (
-	ListHousingRoomsParamsSortByCapacity ListHousingRoomsParamsSortBy = "capacity"
+	ListHousingRoomsParamsSortByAreaId   ListHousingRoomsParamsSortBy = "areaId"
+	ListHousingRoomsParamsSortByBathroom ListHousingRoomsParamsSortBy = "bathroom"
+	ListHousingRoomsParamsSortByBeds     ListHousingRoomsParamsSortBy = "beds"
 	ListHousingRoomsParamsSortByName     ListHousingRoomsParamsSortBy = "name"
 )
 
