@@ -374,7 +374,8 @@ export default defineComponent({
       if (!this.isInitialized) return;
 
       if (!isBackendEnabled()) {
-        this.programsData = await this.programsStore.loadPrograms();
+        const response = await this.programsStore.loadPrograms();
+        this.programsData = Array.isArray(response) ? response : response.items;
       } else {
         try {
           const response = await this.programsStore.loadProgramsPaginated({
