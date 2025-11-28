@@ -1,6 +1,6 @@
 <template>
   <div class="cabins-tab view">
-    <LoadingState v-if="loading" message="Loading housing..." />
+    <LoadingState v-if="!isInitialized" message="Loading housing..." />
     <template v-else>
       <TabHeader
         title="Housing"
@@ -9,99 +9,49 @@
         @action="showModal = true"
       />
 
-      <!-- Search and Filters -->
       <FilterBar
-        v-model:searchQuery="searchQuery"
-        :filtered-count="filteredRooms.length"
-        :total-count="housingRoomsStore.housingRooms.length"
+        v-model:searchQuery="filters.searchQuery"
+        :filtered-count="filters.pagination.total"
+        :total-count="filters.pagination.total"
         @clear="clearFilters"
       >
         <template #prepend>
-          <ViewToggle v-model="viewMode" />
+          <ViewToggle v-model="filters.viewMode" />
         </template>
       </FilterBar>
 
-      <!-- Empty State -->
-      <EmptyState
-        v-if="housingRoomsStore.housingRooms.length === 0"
-        icon-name="Bed"
-        title="No housing configured"
-        message="Add your first room to start managing sleeping accommodations for campers."
-        action-text="Room"
-        @action="showModal = true"
-      />
-
-      <!-- Grid View -->
-      <transition-group
-        v-else-if="viewMode === 'grid'"
-        name="list"
-        tag="div"
-        class="rooms-grid transition-wrapper"
-      >
-        <HousingRoomCard
-          v-for="room in filteredRooms"
-          :key="room.meta.id"
-          :room="room"
-          :groups="getGroupsForRoom(room.meta.id)"
-          @click="selectRoom(room.meta.id)"
-        />
-      </transition-group>
-
-      <!-- Table View -->
-      <DataTable
-        v-else
+      <ServerTable
+        v-if="isInitialized"
         :columns="roomColumns"
-        :data="filteredRooms"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
+        :rows="housingRoomsData"
+        row-key="meta.id"
+        :grid="filters.viewMode === 'grid'"
+        :loading="loading"
+        :pagination="filters.pagination"
+        @update:pagination="
+          updateFilter('pagination', $event);
+          fetchHousingRooms();
+        "
+        @row-click="selectRoom"
       >
-        <template #cell-name="{ item }">
-          <div class="cabin-name-content">
-            <div class="cabin-icon-sm">
-              <Icon name="Bed" :size="18" :stroke-width="2" />
-            </div>
-            <div class="cabin-name">{{ item.meta.name }}</div>
-          </div>
-        </template>
-
-        <template #cell-beds="{ item }">
-          <span class="badge badge-primary badge-sm">{{ item.beds }} beds</span>
-        </template>
-
-        <template #cell-location="{ item }">
-          <span v-if="item.areaId">
-            {{ areasStore.getAreaById(item.areaId)?.meta.name || "Unknown" }}
-          </span>
-          <span v-else>—</span>
-        </template>
-
-        <template #cell-groups="{ item }">
-          <div
-            v-if="getGroupsForRoom(item.meta.id).length > 0"
-            class="flex gap-1 flex-wrap"
-          >
-            <span
-              v-for="group in getGroupsForRoom(item.meta.id)"
-              :key="group.meta.id"
-              class="badge badge-success badge-sm"
-            >
-              {{ group.meta.name }}
-            </span>
-          </div>
-          <span v-else class="text-caption">None</span>
-        </template>
-
-        <template #cell-actions="{ item }">
-          <BaseButton
-            outline
-            color="grey-8"
-            size="sm"
-            @click="selectRoom(item.meta.id)"
-            label="View Details"
+        <template #item="{ item }">
+          <HousingRoomCard
+            :room="item"
+            :groups="getGroupsForRoom(item.meta.id)"
+            @click="selectRoom(item)"
           />
         </template>
-      </DataTable>
+
+        <template #empty>
+          <EmptyState
+            icon-name="Bed"
+            title="No housing configured"
+            message="Add your first room to start managing sleeping accommodations for campers."
+            action-text="Room"
+            @action="showModal = true"
+          />
+        </template>
+      </ServerTable>
 
       <HousingRoomDetailModal
         v-if="!!selectedRoomId"
@@ -110,7 +60,6 @@
         @close="selectedRoomId = null"
         @edit="editRoom"
         @delete="deleteRoomConfirm"
-        @view-group="viewGroup"
       />
 
       <HousingRoomFormModal
@@ -118,11 +67,11 @@
         :room-id="editingRoomId || undefined"
         @close="closeModal"
       />
+
       <ConfirmModal
         v-if="showConfirmModal"
-        :title="confirmModalTitle"
-        :message="confirmModalMessage"
-        :details="confirmModalDetails"
+        title="Delete Housing Room"
+        message="Are you sure you want to delete this housing room?"
         confirm-text="Delete"
         :danger-mode="true"
         @confirm="handleConfirmAction"
@@ -134,110 +83,107 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import {
-  useGroupsStore,
-  useHousingRoomsStore,
-  useSessionsStore,
-} from "@/stores";
-import type { Group, HousingRoom } from "@/generated/api";
+import { useHousingRoomsStore, useGroupsStore } from "@/stores";
+import { usePageFilters } from "@/composables/usePageFilters";
+import type { HousingRoom, Group } from "@/generated/api";
+import type { QTableColumn } from "quasar";
+import { isBackendEnabled } from "@/config/dataSource";
 import HousingRoomCard from "@/components/cards/HousingRoomCard.vue";
 import FilterBar from "@/components/FilterBar.vue";
-import ConfirmModal from "@/components/ConfirmModal.vue";
-import DataTable from "@/components/DataTable.vue";
-import ViewToggle from "@/components/ViewToggle.vue";
 import HousingRoomDetailModal from "@/components/modals/HousingRoomDetailModal.vue";
 import HousingRoomFormModal from "@/components/modals/HousingRoomFormModal.vue";
-import EmptyState from "@/components/EmptyState.vue";
-import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
-import { useToast } from "@/composables/useToast";
-import { useAreasStore } from "@/stores";
+import EmptyState from "@/components/EmptyState.vue";
+import ServerTable from "@/components/ServerTable.vue";
+import ViewToggle from "@/components/ViewToggle.vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
 import LoadingState from "@/components/LoadingState.vue";
+import { useToast } from "@/composables/useToast";
 
 export default defineComponent({
-  name: "HousingTab",
+  name: "CabinsTab",
   components: {
     HousingRoomCard,
     FilterBar,
     ConfirmModal,
-    DataTable,
+    ServerTable,
     ViewToggle,
     HousingRoomDetailModal,
     HousingRoomFormModal,
     EmptyState,
     TabHeader,
-    Icon,
     LoadingState,
   },
   setup() {
+    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("housing", {
+      searchQuery: "",
+      viewMode: "grid" as "grid" | "table",
+      pagination: {
+        offset: 0,
+        limit: 20,
+        total: 0,
+        sortBy: undefined,
+        sortOrder: "asc" as "asc" | "desc",
+      },
+    });
+
     const housingRoomsStore = useHousingRoomsStore();
-    const areasStore = useAreasStore();
-    const sessionsStore = useSessionsStore();
-    const toast = useToast();
     const groupsStore = useGroupsStore();
-    return { housingRoomsStore, areasStore, sessionsStore, toast, groupsStore };
+    const toast = useToast();
+
+    return {
+      filters,
+      updateFilter,
+      updateFilters,
+      isInitialized,
+      housingRoomsStore,
+      groupsStore,
+      toast,
+    };
   },
   data() {
     return {
       loading: false,
-      selectedRoomId: null as string | null,
+      housingRoomsData: [] as HousingRoom[],
       showModal: false,
-      editingRoomId: null as string | null,
       showConfirmModal: false,
-      confirmModalTitle: "",
-      confirmModalMessage: "",
-      confirmModalDetails: "",
+      editingRoomId: null as string | null,
+      selectedRoomId: null as string | null,
       confirmAction: null as (() => void) | null,
-      viewMode: "grid" as "grid" | "table",
-      currentPage: 1,
-      pageSize: 10,
-      searchQuery: "",
       roomColumns: [
-        { key: "name", label: "Room Name", width: "250px" },
-        { key: "beds", label: "Beds", width: "100px" },
-        { key: "location", label: "Area", width: "250px" },
-        { key: "groups", label: "Family Groups", width: "250px" },
-        { key: "actions", label: "Actions", width: "140px" },
-      ],
+        {
+          name: "name",
+          label: "Room Name",
+          field: (row: HousingRoom) => row.meta.name,
+          align: "left" as const,
+          sortable: true,
+        },
+        {
+          name: "capacity",
+          label: "Capacity",
+          field: (row: HousingRoom) => row.spec.capacity,
+          align: "left" as const,
+          sortable: true,
+        },
+        {
+          name: "occupied",
+          label: "Occupied",
+          field: (row: HousingRoom) => this.getGroupsForRoom(row.meta.id).length,
+          align: "left" as const,
+        },
+      ] as QTableColumn[],
     };
   },
   async created() {
-    this.loading = true;
-    try {
-      await Promise.all([
-        this.housingRoomsStore.loadHousingRooms(),
-        this.groupsStore.loadGroups(),
-        this.areasStore.loadAreas(),
-        this.sessionsStore.loadSessions(),
-      ]);
-    } finally {
-      this.loading = false;
-    }
+    await this.groupsStore.loadGroups();
   },
   computed: {
     selectedRoom(): HousingRoom | null {
       if (!this.selectedRoomId) return null;
       return (
-        this.housingRoomsStore.getHousingRoomById(this.selectedRoomId) || null
+        this.housingRoomsData.find((r) => r.meta.id === this.selectedRoomId) ||
+        null
       );
-    },
-    filteredRooms(): HousingRoom[] {
-      let rooms: HousingRoom[] = this.housingRoomsStore.housingRooms;
-
-      if (this.searchQuery) {
-        const query = this.searchQuery.toLowerCase();
-        rooms = rooms.filter((room: HousingRoom) => {
-          const areaName = room.spec.areaId
-            ? this.areasStore.getAreaById(room.spec.areaId)?.meta.name
-            : undefined;
-          return (
-            room.meta.name.toLowerCase().includes(query) ||
-            (areaName && areaName.toLowerCase().includes(query))
-          );
-        });
-      }
-
-      return rooms;
     },
     selectedRoomGroups(): Group[] {
       if (!this.selectedRoomId) return [];
@@ -245,125 +191,108 @@ export default defineComponent({
     },
   },
   methods: {
-    viewGroup(groupId: string): void {
-      this.$router.push(`/groups?id=${groupId}`);
-    },
-    clearFilters(): void {
-      this.searchQuery = "";
-    },
-    getGroupsForRoom(housingRoomId: string): Group[] {
-      return this.groupsStore
-        .getGroupsByType({ hasHousing: true, hasSession: true })
-        .filter((g) => g.spec.housingRoomId === housingRoomId);
-    },
-    selectRoom(housingRoomId: string): void {
-      this.selectedRoomId = housingRoomId;
-    },
-    editRoom(): void {
-      if (!this.selectedRoom) return;
+    async fetchHousingRooms(): Promise<void> {
+      if (!this.isInitialized) return;
 
-      this.editingRoomId = this.selectedRoom.meta.id;
+      if (!isBackendEnabled()) {
+        const response = await this.housingRoomsStore.loadHousingRooms();
+        this.housingRoomsData = Array.isArray(response) ? response : response.items;
+      } else {
+        try {
+          const response = await this.housingRoomsStore.loadHousingRoomsPaginated({
+            offset: this.filters.pagination.offset,
+            limit: this.filters.pagination.limit,
+            search: this.filters.searchQuery || undefined,
+            sortBy: this.filters.pagination.sortBy,
+            sortOrder: this.filters.pagination.sortOrder,
+          });
 
+          this.housingRoomsData = response.items;
+          this.updateFilter("pagination", {
+            ...this.filters.pagination,
+            total: response.total,
+          });
+        } catch (error) {
+          console.error("Failed to fetch housing rooms:", error);
+          this.housingRoomsData = [];
+        }
+      }
+    },
+
+    clearFilters() {
+      this.updateFilters({
+        searchQuery: "",
+        pagination: {
+          ...this.filters.pagination,
+          offset: 0,
+        },
+      });
+    },
+
+    selectRoom(room: HousingRoom) {
+      this.selectedRoomId = room.meta.id;
+    },
+
+    getGroupsForRoom(roomId: string): Group[] {
+      return this.groupsStore.groups.filter(
+        (g) => g.spec.housingRoomId === roomId
+      );
+    },
+
+    editRoom(room: HousingRoom) {
+      this.editingRoomId = room.meta.id;
       this.selectedRoomId = null;
       this.showModal = true;
     },
-    deleteRoomConfirm(): void {
+
+    deleteRoomConfirm() {
       if (!this.selectedRoomId) return;
-
-      const groupCount = this.getGroupsForRoom(this.selectedRoomId).length;
-
-      this.confirmModalTitle = "Delete Room";
-      this.confirmModalMessage = "Are you sure you want to delete this room?";
-      this.confirmModalDetails =
-        groupCount > 0
-          ? `This room has ${groupCount} group(s) assigned. You will need to reassign them to another room.`
-          : "";
 
       this.confirmAction = async () => {
         if (this.selectedRoomId) {
-          try {
-            await this.housingRoomsStore.deleteHousingRoom(this.selectedRoomId);
-            this.toast.success("Room deleted successfully");
-            this.selectedRoomId = null;
-          } catch (error: any) {
-            this.toast.error(error.message || "Failed to delete room");
-          }
+          await this.housingRoomsStore.deleteHousingRoom(this.selectedRoomId);
+          await this.fetchHousingRooms();
+          this.toast.success("Housing room deleted successfully");
+          this.selectedRoomId = null;
         }
       };
-
       this.showConfirmModal = true;
     },
-    async handleConfirmAction(): Promise<void> {
+
+    async handleConfirmAction() {
       if (this.confirmAction) {
         await this.confirmAction();
       }
       this.showConfirmModal = false;
       this.confirmAction = null;
     },
-    handleCancelConfirm(): void {
+
+    handleCancelConfirm() {
       this.showConfirmModal = false;
       this.confirmAction = null;
     },
-    closeModal(): void {
+
+    closeModal() {
       this.showModal = false;
       this.editingRoomId = null;
     },
   },
+  watch: {
+    isInitialized: {
+      immediate: true,
+      handler(initialized) {
+        if (initialized) {
+          this.fetchHousingRooms();
+        }
+      },
+    },
+    "filters.searchQuery"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchHousingRooms();
+    },
+  },
 });
 </script>
-
-<style scoped>
-.cabins-tab {
-  animation: slideIn 0.3s ease;
-}
-
-.rooms-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 0.5rem;
-}
-
-.rooms-grid .empty-state {
-  grid-column: 1 / -1;
-}
-
-.cabin-name-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.cabin-icon-sm {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius);
-  background: var(--primary-color);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.cabin-name {
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@media (max-width: 768px) {
-  .rooms-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
