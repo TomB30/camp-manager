@@ -1,6 +1,6 @@
 <template>
   <div class="roles-tab view">
-    <LoadingState v-if="loading" message="Loading roles..." />
+    <LoadingState v-if="!isInitialized" message="Loading roles..." />
     <template v-else>
       <TabHeader
         title="Staff Roles"
@@ -9,54 +9,35 @@
         @action="showModal = true"
       />
 
-      <!-- Search and Filters -->
       <FilterBar
-        v-model:searchQuery="searchQuery"
-        :filtered-count="filteredRoles.length"
-        :total-count="rolesStore.roles.length"
+        v-model:searchQuery="filters.searchQuery"
+        :filtered-count="filters.pagination.total"
+        :total-count="filters.pagination.total"
         @clear="clearFilters"
       >
         <template #prepend>
-          <ViewToggle v-model="viewMode" />
+          <ViewToggle v-model="filters.viewMode" />
         </template>
       </FilterBar>
 
-      <!-- Empty State -->
-      <EmptyState
-        v-if="rolesStore.roles.length === 0"
-        type="empty"
-        title="No Roles Yet"
-        message="Add your first role to start organizing staff positions and responsibilities."
-        action-text="Role"
-        @action="showModal = true"
-        icon-name="Shield"
-      />
-
-      <!-- Grid View -->
-      <transition-group
-        v-else-if="viewMode === 'grid'"
-        name="list"
-        tag="div"
-        class="roles-grid transition-wrapper"
-      >
-        <div
-          v-for="role in filteredRoles"
-          :key="role.meta.id"
-          class="role-card-wrapper"
-        >
-          <RoleCard :role="role" @click="selectRole(role.meta.id)" />
-        </div>
-      </transition-group>
-
-      <!-- Table View -->
-      <DataTable
-        v-else-if="viewMode === 'table' && filteredRoles.length > 0"
+      <ServerTable
+        v-if="isInitialized"
         :columns="roleColumns"
-        :data="filteredRoles"
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        row-key="id"
+        :rows="rolesData"
+        row-key="meta.id"
+        :grid="filters.viewMode === 'grid'"
+        :loading="loading"
+        :pagination="filters.pagination"
+        @update:pagination="
+          updateFilter('pagination', $event);
+          fetchRoles();
+        "
+        @row-click="selectRole"
       >
+        <template #item="{ item }">
+          <RoleCard :role="item" @click="selectRole(item)" />
+        </template>
+
         <template #cell-name="{ item }">
           <div class="role-name-content">
             <div class="role-icon-sm">
@@ -66,21 +47,17 @@
           </div>
         </template>
 
-        <template #cell-description="{ item }">
-          <span v-if="item.meta.description">{{ item.meta.description }}</span>
-          <span v-else class="text-caption">No description</span>
-        </template>
-
-        <template #cell-actions="{ item }">
-          <BaseButton
-            outline
-            color="grey-8"
-            size="sm"
-            @click="selectRole(item.meta.id)"
-            label="View Details"
+        <template #empty>
+          <EmptyState
+            type="empty"
+            title="No Roles Yet"
+            message="Add your first role to start organizing staff positions and responsibilities."
+            action-text="Role"
+            @action="showModal = true"
+            icon-name="Shield"
           />
         </template>
-      </DataTable>
+      </ServerTable>
 
       <RoleDetailModal
         v-if="!!selectedRoleId"
@@ -112,14 +89,17 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useRolesStore } from "@/stores";
+import { usePageFilters } from "@/composables/usePageFilters";
 import type { Role } from "@/generated/api";
+import type { QTableColumn } from "quasar";
+import { isBackendEnabled } from "@/config/dataSource";
 import Icon from "@/components/Icon.vue";
 import TabHeader from "@/components/settings/TabHeader.vue";
 import RoleCard from "@/components/cards/RoleCard.vue";
 import RoleDetailModal from "@/components/modals/RoleDetailModal.vue";
 import RoleFormModal from "@/components/modals/RoleFormModal.vue";
 import ConfirmModal from "@/components/ConfirmModal.vue";
-import DataTable from "@/components/DataTable.vue";
+import ServerTable from "@/components/ServerTable.vue";
 import FilterBar from "@/components/FilterBar.vue";
 import ViewToggle from "@/components/ViewToggle.vue";
 import EmptyState from "@/components/EmptyState.vue";
@@ -135,86 +115,136 @@ export default defineComponent({
     RoleDetailModal,
     RoleFormModal,
     ConfirmModal,
-    DataTable,
+    ServerTable,
     FilterBar,
     ViewToggle,
     EmptyState,
     LoadingState,
   },
   setup() {
+    const { filters, updateFilter, updateFilters, isInitialized } = usePageFilters("roles", {
+      searchQuery: "",
+      viewMode: "grid" as "grid" | "table",
+      pagination: {
+        offset: 0,
+        limit: 20,
+        total: 0,
+        sortBy: undefined,
+        sortOrder: "asc" as "asc" | "desc",
+      },
+    });
+
     const rolesStore = useRolesStore();
     const toast = useToast();
-    return { rolesStore, toast };
+
+    return {
+      filters,
+      updateFilter,
+      updateFilters,
+      isInitialized,
+      rolesStore,
+      toast,
+    };
   },
   data() {
     return {
       loading: false,
+      rolesData: [] as Role[],
       showModal: false,
       showConfirmModal: false,
       editingRoleId: null as string | null,
       selectedRoleId: null as string | null,
       roleToDelete: null as string | null,
-      searchQuery: "",
-      viewMode: "grid" as "grid" | "table",
-      currentPage: 1,
-      pageSize: 10,
       roleColumns: [
-        { key: "name", label: "Role Name", sortable: true },
-        { key: "description", label: "Description", sortable: true },
-        { key: "actions", label: "", width: "120px" },
-      ],
+        {
+          name: "name",
+          label: "Role Name",
+          field: (row: Role) => row.meta.name,
+          align: "left" as const,
+          sortable: true,
+        },
+        {
+          name: "description",
+          label: "Description",
+          field: (row: Role) => row.meta.description,
+          align: "left" as const,
+          sortable: true,
+          format: (value: string | undefined) => value || "No description",
+        },
+      ] as QTableColumn[],
     };
   },
-  async created() {
-    this.loading = true;
-    try {
-      await this.rolesStore.loadRoles();
-    } finally {
-      this.loading = false;
-    }
-  },
   computed: {
-    filteredRoles(): Role[] {
-      let filtered = this.rolesStore.roles;
-
-      if (this.searchQuery) {
-        const query = this.searchQuery.toLowerCase();
-        filtered = filtered.filter(
-          (role) =>
-            role.meta.name.toLowerCase().includes(query) ||
-            role.meta.description?.toLowerCase().includes(query),
-        );
-      }
-
-      return filtered.sort((a, b) => a.meta.name.localeCompare(b.meta.name));
-    },
     selectedRole(): Role | null {
       if (!this.selectedRoleId) return null;
-      return this.rolesStore.getRoleById(this.selectedRoleId) || null;
+      return this.rolesData.find((r) => r.meta.id === this.selectedRoleId) || null;
     },
   },
   methods: {
-    selectRole(id: string) {
-      this.selectedRoleId = id;
+    async fetchRoles(): Promise<void> {
+      if (!this.isInitialized) return;
+
+      if (!isBackendEnabled()) {
+        const response = await this.rolesStore.loadRoles();
+        this.rolesData = Array.isArray(response) ? response : response.items;
+      } else {
+        try {
+          const response = await this.rolesStore.loadRolesPaginated({
+            offset: this.filters.pagination.offset,
+            limit: this.filters.pagination.limit,
+            search: this.filters.searchQuery || undefined,
+            sortBy: this.filters.pagination.sortBy,
+            sortOrder: this.filters.pagination.sortOrder,
+          });
+
+          this.rolesData = response.items;
+          this.updateFilter("pagination", {
+            ...this.filters.pagination,
+            total: response.total,
+          });
+        } catch (error) {
+          console.error("Failed to fetch roles:", error);
+          this.rolesData = [];
+        }
+      }
     },
+
+    clearFilters() {
+      this.updateFilters({
+        searchQuery: "",
+        pagination: {
+          ...this.filters.pagination,
+          offset: 0,
+        },
+      });
+    },
+
+    selectRole(role: Role) {
+      this.selectedRoleId = role.meta.id;
+    },
+
     editRoleFromDetail(role: Role) {
       this.selectedRoleId = null;
       this.editRole(role);
     },
+
     editRole(role: Role) {
       this.editingRoleId = role.meta.id;
       this.showModal = true;
     },
+
     deleteRoleConfirm(id: string) {
       this.roleToDelete = id;
       this.selectedRoleId = null;
       this.showConfirmModal = true;
     },
+
     async handleDeleteRole() {
       if (!this.roleToDelete) return;
 
       try {
         await this.rolesStore.deleteRole(this.roleToDelete);
+        await this.fetchRoles();
         this.toast.success("Role deleted successfully");
         this.showConfirmModal = false;
         this.roleToDelete = null;
@@ -222,36 +252,33 @@ export default defineComponent({
         this.toast.error(error.message || "Failed to delete role");
       }
     },
+
     closeModal() {
       this.showModal = false;
       this.editingRoleId = null;
     },
-    clearFilters() {
-      this.searchQuery = "";
+  },
+  watch: {
+    isInitialized: {
+      immediate: true,
+      handler(initialized) {
+        if (initialized) {
+          this.fetchRoles();
+        }
+      },
+    },
+    "filters.searchQuery"() {
+      this.updateFilter("pagination", {
+        ...this.filters.pagination,
+        offset: 0,
+      });
+      this.fetchRoles();
     },
   },
 });
 </script>
 
-<style scoped>
-.roles-tab {
-  animation: slideIn 0.3s ease;
-}
-
-.roles-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 0.5rem;
-}
-
-.roles-grid .empty-state {
-  grid-column: 1 / -1;
-}
-
-.role-card-wrapper {
-  position: relative;
-}
-
+<style scoped lang="scss">
 .role-name-content {
   display: flex;
   align-items: center;
@@ -261,29 +288,12 @@ export default defineComponent({
 .role-icon-sm {
   width: 32px;
   height: 32px;
-  border-radius: var(--radius);
-  background: #6366f1;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  justify-center: center;
   color: white;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 768px) {
-  .roles-grid {
-    grid-template-columns: 1fr;
-  }
+  flex-shrink: 0;
 }
 </style>
