@@ -302,6 +302,7 @@ export default defineComponent({
         this.staffMembersData = await this.staffMembersStore.loadStaffMembers();
       } else {
         try {
+          this.loading = true;
           const response =
             await this.staffMembersStore.loadStaffMembersPaginated({
               offset: this.filters.pagination.offset,
@@ -320,6 +321,8 @@ export default defineComponent({
         } catch (error) {
           console.error("Failed to fetch staff members:", error);
           this.staffMembersData = [];
+        } finally {
+          this.loading = false;
         }
       }
     },

@@ -283,6 +283,7 @@ export default defineComponent({
           : response.items;
       } else {
         try {
+          this.loading = true;
           const response =
             await this.housingRoomsStore.loadHousingRoomsPaginated({
               offset: this.filters.pagination.offset,
@@ -301,6 +302,8 @@ export default defineComponent({
         } catch (error) {
           console.error("Failed to fetch housing rooms:", error);
           this.housingRoomsData = [];
+        } finally {
+          this.loading = false;
         }
       }
     },

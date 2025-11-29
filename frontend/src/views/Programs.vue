@@ -378,6 +378,7 @@ export default defineComponent({
         this.programsData = Array.isArray(response) ? response : response.items;
       } else {
         try {
+          this.loading = true;
           const response = await this.programsStore.loadProgramsPaginated({
             offset: this.filters.pagination.offset,
             limit: this.filters.pagination.limit,
@@ -394,6 +395,8 @@ export default defineComponent({
         } catch (error) {
           console.error("Failed to fetch programs:", error);
           this.programsData = [];
+        } finally {
+          this.loading = false;
         }
       }
     },

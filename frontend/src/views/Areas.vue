@@ -195,6 +195,7 @@ export default defineComponent({
         this.areasData = Array.isArray(response) ? response : response.items;
       } else {
         try {
+          this.loading = true;
           const response = await this.areasStore.loadAreasPaginated({
             offset: this.filters.pagination.offset,
             limit: this.filters.pagination.limit,
@@ -211,6 +212,8 @@ export default defineComponent({
         } catch (error) {
           console.error("Failed to fetch areas:", error);
           this.areasData = [];
+        } finally {
+          this.loading = false;
         }
       }
     },

@@ -186,6 +186,7 @@ export default defineComponent({
         this.rolesData = Array.isArray(response) ? response : response.items;
       } else {
         try {
+          this.loading = true;
           const response = await this.rolesStore.loadRolesPaginated({
             offset: this.filters.pagination.offset,
             limit: this.filters.pagination.limit,
@@ -202,6 +203,8 @@ export default defineComponent({
         } catch (error) {
           console.error("Failed to fetch roles:", error);
           this.rolesData = [];
+        } finally {
+          this.loading = false;
         }
       }
     },

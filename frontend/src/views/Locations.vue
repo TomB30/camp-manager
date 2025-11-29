@@ -231,6 +231,7 @@ export default defineComponent({
           : response.items;
       } else {
         try {
+          this.loading = true;
           const filterBy = this.buildFilterBy();
           const response = await this.locationsStore.loadLocationsPaginated({
             offset: this.filters.pagination.offset,
@@ -249,6 +250,8 @@ export default defineComponent({
         } catch (error) {
           console.error("Failed to fetch locations:", error);
           this.locationsData = [];
+        } finally {
+          this.loading = false;
         }
       }
     },

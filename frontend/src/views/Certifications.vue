@@ -186,6 +186,7 @@ export default defineComponent({
           : response.items;
       } else {
         try {
+          this.loading = true;
           const response =
             await this.certificationsStore.loadCertificationsPaginated({
               offset: this.filters.pagination.offset,
@@ -203,6 +204,8 @@ export default defineComponent({
         } catch (error) {
           console.error("Failed to fetch certifications:", error);
           this.certificationsData = [];
+        } finally {
+          this.loading = false;
         }
       }
     },

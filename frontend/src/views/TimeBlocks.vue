@@ -209,6 +209,7 @@ export default defineComponent({
           : response.items;
       } else {
         try {
+          this.loading = true;
           const response = await this.timeBlocksStore.loadTimeBlocksPaginated({
             offset: this.filters.pagination.offset,
             limit: this.filters.pagination.limit,
@@ -225,6 +226,8 @@ export default defineComponent({
         } catch (error) {
           console.error("Failed to fetch time blocks:", error);
           this.timeBlocksData = [];
+        } finally {
+          this.loading = false;
         }
       }
     },

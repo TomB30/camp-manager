@@ -220,6 +220,7 @@ export default defineComponent({
         this.sessionsData = Array.isArray(response) ? response : response;
       } else {
         try {
+          this.loading = true;
           const response = await this.sessionsStore.loadSessionsPaginated({
             offset: this.filters.pagination.offset,
             limit: this.filters.pagination.limit,
@@ -237,6 +238,8 @@ export default defineComponent({
         } catch (error) {
           console.error("Failed to fetch sessions:", error);
           this.sessionsData = [];
+        } finally {
+          this.loading = false;
         }
       }
     },

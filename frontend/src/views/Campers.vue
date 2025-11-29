@@ -321,6 +321,7 @@ export default defineComponent({
         this.campersData = await this.campersStore.loadCampers();
       } else {
         try {
+          this.loading = true;
           const response = await this.campersStore.loadCampersPaginated({
             offset: this.filters.pagination.offset,
             limit: this.filters.pagination.limit,
@@ -338,6 +339,8 @@ export default defineComponent({
         } catch (error) {
           console.error("Failed to fetch campers:", error);
           this.campersData = [];
+        } finally {
+          this.loading = false;
         }
       }
     },
