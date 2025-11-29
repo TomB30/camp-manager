@@ -35,7 +35,10 @@
         @row-click="selectTimeBlock($event.meta.id)"
       >
         <template #item="{ item }">
-          <TimeBlockCard :time-block="item" @click="selectTimeBlock(item.meta.id)">
+          <TimeBlockCard
+            :time-block="item"
+            @click="selectTimeBlock(item.meta.id)"
+          >
             <template #icon>
               <Icon name="Clock" :size="24" :stroke-width="2" />
             </template>

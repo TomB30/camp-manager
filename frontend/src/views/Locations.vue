@@ -59,7 +59,10 @@
         @row-click="selectLocation($event.meta.id)"
       >
         <template #item="{ item }">
-          <LocationCard :location="item" @click="selectLocation(item.meta.id)" />
+          <LocationCard
+            :location="item"
+            @click="selectLocation(item.meta.id)"
+          />
         </template>
 
         <template #empty>
