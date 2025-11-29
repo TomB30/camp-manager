@@ -281,8 +281,9 @@ export default defineComponent({
       return area?.meta.name || "-";
     },
 
-    editLocation(location: Location) {
-      this.editingLocationId = location.meta.id;
+    editLocation() {
+      if (!this.selectedLocation) return;
+      this.editingLocationId = this.selectedLocation.meta.id;
       this.selectedLocationId = null;
       this.showModal = true;
     },

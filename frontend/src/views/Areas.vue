@@ -229,8 +229,9 @@ export default defineComponent({
       this.selectedAreaId = areaId;
     },
 
-    editArea(area: Area) {
-      this.editingAreaId = area.meta.id;
+    editArea() {
+      if (!this.selectedArea) return;
+      this.editingAreaId = this.selectedArea.meta.id;
       this.selectedAreaId = null;
       this.showModal = true;
     },

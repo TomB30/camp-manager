@@ -325,8 +325,9 @@ export default defineComponent({
       );
     },
 
-    editRoom(room: HousingRoom) {
-      this.editingRoomId = room.meta.id;
+    editRoom() {
+      if (!this.selectedRoom) return;
+      this.editingRoomId = this.selectedRoom.meta.id;
       this.selectedRoomId = null;
       this.showModal = true;
     },

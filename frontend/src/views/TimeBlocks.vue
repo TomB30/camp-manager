@@ -273,8 +273,9 @@ export default defineComponent({
       return `${hours}h ${minutes}m`;
     },
 
-    editTimeBlock(timeBlock: TimeBlock) {
-      this.editingTimeBlockId = timeBlock.meta.id;
+    editTimeBlock() {
+      if (!this.selectedTimeBlock) return;
+      this.editingTimeBlockId = this.selectedTimeBlock.meta.id;
       this.selectedTimeBlockId = null;
       this.showModal = true;
     },
