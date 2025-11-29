@@ -28,6 +28,7 @@
         <div class="form-group">
           <label class="form-label">Birthday</label>
           <BaseInput
+            :rules="[(val: string) => !!val || 'Select a birthday']"
             v-model="localFormData.spec.birthday"
             type="date"
             placeholder="Select birthday"
@@ -54,6 +55,7 @@
         <div class="form-group">
           <label class="form-label">Role</label>
           <Autocomplete
+            :rules="[(val: string) => !!val || 'Select a role']"
             v-model="localFormData.spec.roleId"
             :options="roleOptions"
           />

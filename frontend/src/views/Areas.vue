@@ -31,10 +31,10 @@
           updateFilter('pagination', $event);
           fetchAreas();
         "
-        @row-click="selectArea"
+        @row-click="selectArea($event.meta.id)"
       >
         <template #item="{ item }">
-          <AreaCard :area="item" @click="selectArea(item)" />
+          <AreaCard :area="item" @click="selectArea(item.meta.id)" />
         </template>
 
         <template #empty>
@@ -225,8 +225,8 @@ export default defineComponent({
       });
     },
 
-    selectArea(area: Area) {
-      this.selectedAreaId = area.meta.id;
+    selectArea(areaId: string) {
+      this.selectedAreaId = areaId;
     },
 
     editArea(area: Area) {
@@ -265,6 +265,7 @@ export default defineComponent({
     closeModal() {
       this.showModal = false;
       this.editingAreaId = null;
+      this.fetchAreas();
     },
   },
   watch: {

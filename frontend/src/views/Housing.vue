@@ -71,13 +71,13 @@
           updateFilter('pagination', $event);
           fetchHousingRooms();
         "
-        @row-click="selectRoom"
+        @row-click="selectRoom($event.meta.id)"
       >
         <template #item="{ item }">
           <HousingRoomCard
             :room="item"
             :groups="getGroupsForRoom(item.meta.id)"
-            @click="selectRoom(item)"
+            @click="selectRoom(item.meta.id)"
           />
         </template>
 
@@ -315,8 +315,8 @@ export default defineComponent({
       });
     },
 
-    selectRoom(room: HousingRoom) {
-      this.selectedRoomId = room.meta.id;
+    selectRoom(roomId: string) {
+      this.selectedRoomId = roomId;
     },
 
     getGroupsForRoom(roomId: string): Group[] {
@@ -361,6 +361,7 @@ export default defineComponent({
     closeModal() {
       this.showModal = false;
       this.editingRoomId = null;
+      this.fetchHousingRooms();
     },
   },
   watch: {

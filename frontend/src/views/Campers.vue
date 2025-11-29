@@ -87,7 +87,7 @@
           updateFilter('pagination', $event);
           fetchCampers();
         "
-        @row-click="selectCamper"
+        @row-click="selectCamper($event.meta.id)"
       >
         <template #item="{ item }">
           <CamperCard
@@ -392,8 +392,8 @@ export default defineComponent({
       );
       return session?.meta.name || "Unknown Session";
     },
-    selectCamper(camper: Camper): void {
-      this.selectedCamperId = camper.meta.id;
+    selectCamper(camperId: string): void {
+      this.selectedCamperId = camperId;
     },
     editCamper(): void {
       if (!this.selectedCamper) return;
@@ -429,6 +429,7 @@ export default defineComponent({
     closeModal(): void {
       this.showModal = false;
       this.editingCamperId = null;
+      this.fetchCampers();
     },
     async handleImportSuccess(): Promise<void> {
       // Reload campers after successful import

@@ -52,7 +52,7 @@
           updateFilter('pagination', $event);
           fetchStaffMembers();
         "
-        @row-click="selectMember"
+        @row-click="selectMember($event.meta.id)"
       >
         <template #item="{ item }">
           <StaffCard
@@ -355,8 +355,8 @@ export default defineComponent({
       const location = this.areasStore.getAreaById(locationId);
       return location?.meta.name || "Unknown Location";
     },
-    selectMember(member: StaffMember): void {
-      this.selectedMemberId = member.meta.id;
+    selectMember(memberId: string): void {
+      this.selectedMemberId = memberId;
     },
     editMember(): void {
       if (!this.selectedMember) return;
@@ -390,6 +390,7 @@ export default defineComponent({
     closeModal(): void {
       this.showModal = false;
       this.editingMemberId = null;
+      this.fetchStaffMembers();
     },
   },
   watch: {

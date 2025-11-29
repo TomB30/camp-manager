@@ -32,10 +32,10 @@
           updateFilter('pagination', $event);
           fetchTimeBlocks();
         "
-        @row-click="selectTimeBlock"
+        @row-click="selectTimeBlock($event.meta.id)"
       >
         <template #item="{ item }">
-          <TimeBlockCard :time-block="item" @click="selectTimeBlock(item)">
+          <TimeBlockCard :time-block="item" @click="selectTimeBlock(item.meta.id)">
             <template #icon>
               <Icon name="Clock" :size="24" :stroke-width="2" />
             </template>
@@ -239,8 +239,8 @@ export default defineComponent({
       });
     },
 
-    selectTimeBlock(timeBlock: TimeBlock) {
-      this.selectedTimeBlockId = timeBlock.meta.id;
+    selectTimeBlock(timeBlockId: string) {
+      this.selectedTimeBlockId = timeBlockId;
     },
 
     formatTime(time: string): string {
@@ -309,6 +309,7 @@ export default defineComponent({
     closeModal() {
       this.showModal = false;
       this.editingTimeBlockId = null;
+      this.fetchTimeBlocks();
     },
   },
   watch: {

@@ -6,6 +6,7 @@
     :model-value="selectedOption"
     @update:model-value="updateModelValue"
     use-input
+    :rules="rules"
     emit-value
     input-debounce="0"
     :options="filteredOptions"
@@ -25,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import { QSelectOption } from "quasar";
+import { QSelectOption, ValidationRule } from "quasar";
 import { defineComponent, type PropType } from "vue";
 
 export interface AutocompleteOption {
@@ -98,6 +99,10 @@ export default defineComponent({
     noOptionText: {
       type: String,
       default: "No results",
+    },
+    rules: {
+      type: Array as PropType<ValidationRule[]>,
+      default: [],
     },
   },
   emits: ["update:modelValue", "change"],

@@ -30,10 +30,10 @@
           updateFilter('pagination', $event);
           fetchRoles();
         "
-        @row-click="selectRole"
+        @row-click="selectRole($event.meta.id)"
       >
         <template #item="{ item }">
-          <RoleCard :role="item" @click="selectRole(item)" />
+          <RoleCard :role="item" @click="selectRole(item.meta.id)" />
         </template>
 
         <template #cell-name="{ item }">
@@ -216,8 +216,8 @@ export default defineComponent({
       });
     },
 
-    selectRole(role: Role) {
-      this.selectedRoleId = role.meta.id;
+    selectRole(roleId: string) {
+      this.selectedRoleId = roleId;
     },
 
     editRoleFromDetail(role: Role) {
@@ -253,6 +253,7 @@ export default defineComponent({
     closeModal() {
       this.showModal = false;
       this.editingRoleId = null;
+      this.fetchRoles();
     },
   },
   watch: {

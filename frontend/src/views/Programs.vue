@@ -430,6 +430,7 @@ export default defineComponent({
     },
     closeProgramModal() {
       this.showProgramModal = false;
+      this.fetchPrograms();
     },
     editProgram(program: Program) {
       this.selectedProgramId = program.meta.id;
@@ -446,6 +447,7 @@ export default defineComponent({
         if (this.deleteTarget.type === "program") {
           await this.programsStore.deleteProgram(this.deleteTarget.id);
           this.toast.success("Program deleted successfully");
+          this.fetchPrograms();
           this.selectedProgramId = null;
         }
       } catch (error: any) {
@@ -476,6 +478,7 @@ export default defineComponent({
           updatedProgram,
         );
         this.toast.success("Staff assignments updated");
+        this.fetchPrograms();
       } catch (error: any) {
         this.toast.error(error.message || "Failed to update staff assignments");
       }
@@ -497,6 +500,7 @@ export default defineComponent({
           updatedProgram,
         );
         this.toast.success("Location assignments updated");
+        this.fetchPrograms();
       } catch (error: any) {
         this.toast.error(
           error.message || "Failed to update location assignments",

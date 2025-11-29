@@ -55,10 +55,10 @@
           updateFilter('pagination', $event);
           fetchSessions();
         "
-        @row-click="selectSession"
+        @row-click="selectSession($event.meta.id)"
       >
         <template #item="{ item }">
-          <SessionCard :session="item" @click="selectSession(item)" />
+          <SessionCard :session="item" @click="selectSession(item.meta.id)" />
         </template>
 
         <template #empty>
@@ -262,8 +262,8 @@ export default defineComponent({
       });
     },
 
-    selectSession(session: Session): void {
-      this.selectedSessionId = session.meta.id;
+    selectSession(sessionId: string): void {
+      this.selectedSessionId = sessionId;
     },
 
     editSessionFromDetail(session: Session): void {
@@ -302,6 +302,7 @@ export default defineComponent({
     closeModal(): void {
       this.showFormModal = false;
       this.editingSession = null;
+      this.fetchSessions();
     },
   },
   watch: {

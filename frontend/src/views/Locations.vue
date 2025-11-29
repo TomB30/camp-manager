@@ -56,10 +56,10 @@
           updateFilter('pagination', $event);
           fetchLocations();
         "
-        @row-click="selectLocation"
+        @row-click="selectLocation($event.meta.id)"
       >
         <template #item="{ item }">
-          <LocationCard :location="item" @click="selectLocation(item)" />
+          <LocationCard :location="item" @click="selectLocation(item.meta.id)" />
         </template>
 
         <template #empty>
@@ -272,8 +272,8 @@ export default defineComponent({
       });
     },
 
-    selectLocation(location: Location) {
-      this.selectedLocationId = location.meta.id;
+    selectLocation(locationId: string) {
+      this.selectedLocationId = locationId;
     },
 
     getAreaName(areaId: string): string {
@@ -317,6 +317,7 @@ export default defineComponent({
     closeModal() {
       this.showModal = false;
       this.editingLocationId = null;
+      this.fetchLocations();
     },
   },
   watch: {

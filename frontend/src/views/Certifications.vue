@@ -31,12 +31,12 @@
           updateFilter('pagination', $event);
           fetchCertifications();
         "
-        @row-click="selectCertification"
+        @row-click="selectCertification($event.meta.id)"
       >
         <template #item="{ item }">
           <CertificationCard
             :certification="item"
-            @click="selectCertification(item)"
+            @click="selectCertification(item.meta.id)"
           />
         </template>
 
@@ -217,8 +217,8 @@ export default defineComponent({
       });
     },
 
-    selectCertification(certification: Certification) {
-      this.selectedCertificationId = certification.meta.id;
+    selectCertification(certificationId: string) {
+      this.selectedCertificationId = certificationId;
     },
 
     editCertification(certification: Certification) {
@@ -259,6 +259,7 @@ export default defineComponent({
     closeModal() {
       this.showModal = false;
       this.editingCertificationId = null;
+      this.fetchCertifications();
     },
   },
   watch: {
