@@ -518,6 +518,15 @@ export default defineComponent({
       this.showEventModal = true;
     },
     openNewEventModal() {
+      // If in daily view, set the default date to the current daily view date
+      if (this.viewMode === "daily") {
+        const eventDate = new Date(this.selectedDate);
+        eventDate.setHours(8, 0, 0, 0); // Set to 8 AM as a reasonable default time
+        this.defaultEventDate = eventDate;
+      } else {
+        // For weekly/monthly views, use current date/time
+        this.defaultEventDate = new Date();
+      }
       this.showEventModal = true;
     },
     createEventAtHour(hour: number) {

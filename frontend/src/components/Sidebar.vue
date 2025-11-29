@@ -375,7 +375,8 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 1.5rem 0;
+  padding: 1.5rem 0 0 0;
+  overflow: auto;
 }
 
 .logo {
