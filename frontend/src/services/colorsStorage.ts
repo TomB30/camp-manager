@@ -17,7 +17,14 @@ export const colorsStorage = {
   getColorByHex,
 };
 
-async function listColors(): Promise<Color[]> {
+async function listColors(_params?: {
+  limit?: number;
+  offset?: number;
+  search?: string;
+  filterBy?: string[];
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}): Promise<Color[]> {
   return storageService.getAll<Color>(STORAGE_KEYS.COLORS);
 }
 

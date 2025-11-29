@@ -11,7 +11,7 @@ schema:
   type: array
   items:
     type: string
-    pattern: "^(name|hexCode)(==|!=|<=|>=|=@|!@|=\\^|=~).+$"
-  example: ["name=@Blue", "hexCode==ff0000"]
+    pattern: "^(name|hexValue)(==|!=|<=|>=|=@|!@|=\\^|=~).+$"
+  example: ["name=@Blue", "hexValue==ff0000"]
 explode: true
 

@@ -21,18 +21,18 @@ func NewColorsRepository(db *database.Database) *ColorsRepository {
 
 // colorFields defines the filterable fields and their types for colors (API field names)
 var colorFields = map[string]domain.FieldType{
-	"name":    domain.FieldTypeText,
-	"hexCode": domain.FieldTypeText,
+	"name":     domain.FieldTypeText,
+	"hexValue": domain.FieldTypeText,
 }
 
 // colorFieldToColumn maps API field names to database column names
 var colorFieldToColumn = map[string]string{
-	"name":    "name",
-	"hexCode": "hex_code",
+	"name":     "name",
+	"hexValue": "hex_value",
 }
 
 // colorSortableFields defines the sortable fields for colors (API field names)
-var colorSortableFields = []string{"name", "hexCode"}
+var colorSortableFields = []string{"name", "hexValue"}
 
 // List retrieves a paginated list of colors filtered by tenant and camp
 func (r *ColorsRepository) List(ctx context.Context, tenantID, campID uuid.UUID, limit, offset int, search *string, filterStrings []string, sortBy *string, sortOrder string) ([]domain.Color, int64, error) {

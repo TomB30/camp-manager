@@ -1057,7 +1057,7 @@ export type LocationsFilterBy = Array<string>;
 /**
  * Field name to sort by
  */
-export type LocationsSortBy = 'name' | 'areaId';
+export type LocationsSortBy = 'name' | 'areaId' | 'capacity';
 
 /**
  * Filter results by parameters. Format: field operator value
@@ -1107,7 +1107,7 @@ export type ColorsFilterBy = Array<string>;
 /**
  * Field name to sort by
  */
-export type ColorsSortBy = 'name' | 'hexCode';
+export type ColorsSortBy = 'name' | 'hexValue';
 
 /**
  * Filter results by parameters. Format: field operator value
@@ -2216,7 +2216,7 @@ export type ListLocationsData = {
         /**
          * Field name to sort by
          */
-        sortBy?: 'name' | 'areaId';
+        sortBy?: 'name' | 'areaId' | 'capacity';
         /**
          * Sort direction
          */
@@ -2681,7 +2681,7 @@ export type ListColorsData = {
         /**
          * Field name to sort by
          */
-        sortBy?: 'name' | 'hexCode';
+        sortBy?: 'name' | 'hexValue';
         /**
          * Sort direction
          */

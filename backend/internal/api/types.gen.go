@@ -114,8 +114,8 @@ const (
 
 // Defines values for ColorsSortBy.
 const (
-	ColorsSortByHexCode ColorsSortBy = "hexCode"
-	ColorsSortByName    ColorsSortBy = "name"
+	ColorsSortByHexValue ColorsSortBy = "hexValue"
+	ColorsSortByName     ColorsSortBy = "name"
 )
 
 // Defines values for EventsSortBy.
@@ -142,8 +142,9 @@ const (
 
 // Defines values for LocationsSortBy.
 const (
-	LocationsSortByAreaId LocationsSortBy = "areaId"
-	LocationsSortByName   LocationsSortBy = "name"
+	LocationsSortByAreaId   LocationsSortBy = "areaId"
+	LocationsSortByCapacity LocationsSortBy = "capacity"
+	LocationsSortByName     LocationsSortBy = "name"
 )
 
 // Defines values for ProgramsSortBy.
@@ -259,8 +260,8 @@ const (
 
 // Defines values for ListColorsParamsSortBy.
 const (
-	ListColorsParamsSortByHexCode ListColorsParamsSortBy = "hexCode"
-	ListColorsParamsSortByName    ListColorsParamsSortBy = "name"
+	ListColorsParamsSortByHexValue ListColorsParamsSortBy = "hexValue"
+	ListColorsParamsSortByName     ListColorsParamsSortBy = "name"
 )
 
 // Defines values for ListColorsParamsSortOrder.
@@ -325,8 +326,9 @@ const (
 
 // Defines values for ListLocationsParamsSortBy.
 const (
-	ListLocationsParamsSortByAreaId ListLocationsParamsSortBy = "areaId"
-	ListLocationsParamsSortByName   ListLocationsParamsSortBy = "name"
+	ListLocationsParamsSortByAreaId   ListLocationsParamsSortBy = "areaId"
+	ListLocationsParamsSortByCapacity ListLocationsParamsSortBy = "capacity"
+	ListLocationsParamsSortByName     ListLocationsParamsSortBy = "name"
 )
 
 // Defines values for ListLocationsParamsSortOrder.

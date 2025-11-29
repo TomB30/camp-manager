@@ -24,10 +24,11 @@ export const useColorsStore = defineStore("colors", {
   },
 
   actions: {
-    async loadColors(): Promise<void> {
+    async loadColors(): Promise<Color[]> {
       this.loading = true;
       try {
-        this.colors = await colorsService.listColors();
+        const response = await colorsService.listColors();
+        this.colors = Array.isArray(response) ? response : response.items;
         this.colorsById = this.colors.reduce(
           (acc, color) => {
             acc[color.meta.id] = color;
@@ -35,6 +36,40 @@ export const useColorsStore = defineStore("colors", {
           },
           {} as Record<string, Color>,
         );
+        return this.colors;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadColorsPaginated(params?: {
+      limit?: number;
+      offset?: number;
+      search?: string;
+      filterBy?: string[];
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+    }): Promise<{
+      items: Color[];
+      total: number;
+      limit: number;
+      offset: number;
+      next: number | null;
+    }> {
+      this.loading = true;
+      try {
+        const response = await colorsService.listColors(params);
+        if (Array.isArray(response)) {
+          return {
+            items: response,
+            total: response.length,
+            limit: params?.limit || response.length,
+            offset: params?.offset || 0,
+            next: null,
+          };
+        }
+        this.colors = response.items;
+        return response;
       } finally {
         this.loading = false;
       }
